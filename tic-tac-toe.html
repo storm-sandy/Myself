@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tic Tac Toe Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+font-family:Arial;
+text-align:center;
+background:#111;
+color:white;
+}
+
+.board{
+display:grid;
+grid-template-columns:repeat(3,100px);
+gap:10px;
+justify-content:center;
+margin-top:20px;
+}
+
+.cell{
+width:100px;
+height:100px;
+background:#222;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:40px;
+border-radius:10px;
+cursor:pointer;
+}
+
+#status{
+margin-top:20px;
+font-size:22px;
+}
+
+button{
+margin-top:15px;
+padding:10px 20px;
+font-size:18px;
+border:none;
+border-radius:8px;
+}
+
+canvas{
+background:white;
+margin-top:30px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>❌⭕ Tic Tac Toe</h1>
+
+<div class="board">
+<div class="cell" onclick="move(this,0)"></div>
+<div class="cell" onclick="move(this,1)"></div>
+<div class="cell" onclick="move(this,2)"></div>
+<div class="cell" onclick="move(this,3)"></div>
+<div class="cell" onclick="move(this,4)"></div>
+<div class="cell" onclick="move(this,5)"></div>
+<div class="cell" onclick="move(this,6)"></div>
+<div class="cell" onclick="move(this,7)"></div>
+<div class="cell" onclick="move(this,8)"></div>
+</div>
+
+<div id="status">Player X Turn</div>
+
+<button onclick="resetBoard()">Reset Board</button>
+
+<h2>📊 Score Dashboard</h2>
+<canvas id="scoreChart"></canvas>
+
+<script>
+
+let board=["","","","","","","","",""]
+let current="X"
+let active=true
+let scoreX=0
+let scoreO=0
+let chart
+
+const win=[
+[0,1,2],[3,4,5],[6,7,8],
+[0,3,6],[1,4,7],[2,5,8],
+[0,4,8],[2,4,6]
+]
+
+function move(cell,i){
+
+if(board[i]!=="" || !active) return
+
+board[i]=current
+cell.innerHTML=current
+
+checkWinner()
+
+current=current==="X"?"O":"X"
+
+document.getElementById("status").innerHTML="Player "+current+" Turn"
+
+}
+
+function checkWinner(){
+
+for(let c of win){
+
+let a=board[c[0]]
+let b=board[c[1]]
+let d=board[c[2]]
+
+if(a && a===b && a===d){
+
+active=false
+
+document.getElementById("status").innerHTML="🏆 Player "+a+" Wins!"
+
+if(a==="X") scoreX++
+else scoreO++
+
+drawChart()
+
+return
+}
+
+}
+
+if(!board.includes("")){
+active=false
+document.getElementById("status").innerHTML="Draw"
+}
+
+}
+
+function resetBoard(){
+
+board=["","","","","","","","",""]
+active=true
+current="X"
+
+document.querySelectorAll(".cell").forEach(c=>c.innerHTML="")
+
+document.getElementById("status").innerHTML="Player X Turn"
+
+}
+
+function drawChart(){
+
+const ctx=document.getElementById("scoreChart")
+
+if(chart) chart.destroy()
+
+chart=new Chart(ctx,{
+type:'bar',
+data:{
+labels:["Player X","Player O"],
+datasets:[{
+label:"Wins",
+data:[scoreX,scoreO]
+}]
+}
+})
+
+}
+
+drawChart()
+
+</script>
+
+</body>
+</html>
