@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Clock with Country Timezones</title>
+
+<style>
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  background:#0f172a;
+  font-family:Arial, sans-serif;
+  color:#fff;
+  padding-top:20px;
+}
+
+.container{
+  width:100%;
+  max-width:440px;
+  padding:20px;
+}
+
+h1{
+  text-align:center;
+  margin-bottom:20px;
+  font-size:22px;
+}
+
+form{
+  display:flex;
+  margin-bottom:20px;
+}
+
+form select{
+  flex:1;
+  padding:8px;
+  border-radius:6px 0 0 6px;
+  border:none;
+  font-size:16px;
+  background:#020617;
+  color:#fff;
+}
+
+form button{
+  padding:8px 12px;
+  border:none;
+  border-radius:0 6px 6px 0;
+  background:#2563eb;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+
+/* CLOCK CARD */
+.clock{
+  background:#020617;
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.city{
+  font-size:16px;
+  font-weight:bold;
+}
+
+.time{
+  font-size:20px;
+  font-family:monospace;
+}
+
+.local{
+  border:2px solid #2563eb;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>🌍 World Clock</h1>
+
+  <form id="addForm">
+    <select id="tzSelect">
+      <option value="" disabled selected>Select Timezone</option>
+      <option value="Europe/London">London, UK</option>
+      <option value="Europe/Paris">Paris, France</option>
+      <option value="Europe/Berlin">Berlin, Germany</option>
+      <option value="America/New_York">New York, USA</option>
+      <option value="America/Los_Angeles">Los Angeles, USA</option>
+      <option value="Asia/Dubai">Dubai, UAE</option>
+      <option value="Asia/Kolkata">Mumbai, India</option>
+      <option value="Asia/Tokyo">Tokyo, Japan</option>
+      <option value="Australia/Sydney">Sydney, Australia</option>
+      <option value="Pacific/Auckland">Auckland, NZ</option>
+    </select>
+    <button type="submit">Add</button>
+  </form>
+
+  <div class="clock local">
+    <div class="city">Local Time</div>
+    <div class="time" id="local"></div>
+  </div>
+
+  <div id="clocks"></div>
+</div>
+
+<script>
+const clocksContainer = document.getElementById("clocks");
+const customClocks = [];
+
+function formatTime(date, tz){
+  try{
+    return date.toLocaleTimeString("en-US",{
+      timeZone: tz,
+      hour:"2-digit",
+      minute:"2-digit",
+      second:"2-digit",
+      hour12:true
+    });
+  }catch(e){
+    return "Invalid timezone";
+  }
+}
+
+function updateClocks(){
+  const now = new Date();
+  document.getElementById("local").textContent = now.toLocaleTimeString();
+
+  customClocks.forEach(c=>{
+    c.timeEl.textContent = formatTime(now, c.tz);
+  });
+}
+
+document.getElementById("addForm").addEventListener("submit", e=>{
+  e.preventDefault();
+  const tzInput = document.getElementById("tzSelect").value;
+  if(!tzInput) return;
+
+  // Prevent duplicate clocks
+  if(customClocks.find(c=>c.tz===tzInput)) return alert("Clock already added");
+
+  const clockDiv = document.createElement("div");
+  clockDiv.className="clock";
+  clockDiv.innerHTML = `<div class="city">${tzInput}</div><div class="time">--:--:--</div>`;
+
+  clocksContainer.appendChild(clockDiv);
+
+  const timeEl = clockDiv.querySelector(".time");
+  customClocks.push({tz:tzInput, timeEl});
+});
+
+setInterval(updateClocks,1000);
+updateClocks();
+</script>
+
+</body>
+</html>

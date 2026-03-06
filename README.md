@@ -1,2 +1,1 @@
-# Myself
-Self development initiative 
+My Notes App.Freeze your moments

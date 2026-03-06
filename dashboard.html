@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Family Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:10px;
+}
+
+.dashboard{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+}
+
+.card{
+flex:1;
+background:#fafafa;
+padding:15px;
+border-radius:8px;
+text-align:center;
+}
+
+.task{
+display:flex;
+justify-content:space-between;
+background:#eee;
+padding:10px;
+margin-top:8px;
+border-radius:5px;
+}
+
+.done{
+text-decoration:line-through;
+color:gray;
+}
+
+input,select,button{
+width:100%;
+padding:8px;
+margin-top:5px;
+}
+
+.section{
+margin-top:30px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🏠 Family Dashboard</h2>
+
+<div class="dashboard">
+
+<div class="card">
+Total
+<h3 id="total">0</h3>
+</div>
+
+<div class="card">
+Completed
+<h3 id="done">0</h3>
+</div>
+
+<div class="card">
+Pending
+<h3 id="pending">0</h3>
+</div>
+
+</div>
+
+<canvas id="taskChart"></canvas>
+
+<div class="section">
+
+<h3>Add Task</h3>
+
+<input id="taskInput" placeholder="Task">
+
+<select id="member">
+<option>Dad</option>
+<option>Mom</option>
+<option>Son</option>
+<option>Daughter</option>
+</select>
+
+<input id="timeInput" type="datetime-local">
+
+<button onclick="addTask()">Add Task</button>
+
+<div id="taskList"></div>
+
+</div>
+
+<div class="section">
+
+<h3>Weekly Productivity</h3>
+
+<canvas id="weeklyChart"></canvas>
+
+</div>
+
+<div class="section">
+
+<h3>Shopping List</h3>
+
+<input id="itemInput" placeholder="Item">
+<button onclick="addItem()">Add</button>
+
+<ul id="shoppingList"></ul>
+
+</div>
+
+<div class="section">
+
+<h3>Expense Tracker</h3>
+
+<input id="expenseName" placeholder="Expense name">
+<input id="expenseAmount" placeholder="Amount">
+
+<button onclick="addExpense()">Add Expense</button>
+
+<ul id="expenseList"></ul>
+
+<h4>Total ₹<span id="totalExpense">0</span></h4>
+
+</div>
+
+</div>
+
+<script>
+
+let tasks=JSON.parse(localStorage.getItem("tasks"))||[]
+let shopping=JSON.parse(localStorage.getItem("shopping"))||[]
+let expenses=JSON.parse(localStorage.getItem("expenses"))||[]
+
+function save(){
+
+localStorage.setItem("tasks",JSON.stringify(tasks))
+localStorage.setItem("shopping",JSON.stringify(shopping))
+localStorage.setItem("expenses",JSON.stringify(expenses))
+
+}
+
+function addTask(){
+
+let text=document.getElementById("taskInput").value
+let member=document.getElementById("member").value
+let time=document.getElementById("timeInput").value
+
+tasks.push({text,member,time,done:false})
+
+save()
+
+scheduleReminder(text,time)
+
+render()
+
+}
+
+function toggle(i){
+
+tasks[i].done=!tasks[i].done
+save()
+render()
+
+}
+
+function removeTask(i){
+
+tasks.splice(i,1)
+save()
+render()
+
+}
+
+function sendWhatsApp(task){
+
+let phone="91XXXXXXXXXX"
+
+let msg=encodeURIComponent("Reminder: "+task)
+
+window.open(`https://wa.me/${phone}?text=${msg}`)
+
+}
+
+function render(){
+
+let list=document.getElementById("taskList")
+list.innerHTML=""
+
+tasks.forEach((t,i)=>{
+
+let div=document.createElement("div")
+div.className="task"
+
+div.innerHTML=`
+<span class="${t.done?'done':''}">
+${t.text} (${t.member})
+</span>
+
+<div>
+<button onclick="toggle(${i})">✔</button>
+<button onclick="sendWhatsApp('${t.text}')">📲</button>
+<button onclick="removeTask(${i})">❌</button>
+</div>
+`
+
+list.appendChild(div)
+
+})
+
+updateDashboard()
+
+}
+
+function updateDashboard(){
+
+let total=tasks.length
+let done=tasks.filter(t=>t.done).length
+let pending=total-done
+
+document.getElementById("total").innerText=total
+document.getElementById("done").innerText=done
+document.getElementById("pending").innerText=pending
+
+drawChart(done,pending)
+
+}
+
+let chart
+
+function drawChart(done,pending){
+
+if(chart) chart.destroy()
+
+chart=new Chart(document.getElementById("taskChart"),{
+
+type:"doughnut",
+
+data:{
+labels:["Completed","Pending"],
+datasets:[{data:[done,pending]}]
+}
+
+})
+
+}
+
+new Chart(document.getElementById("weeklyChart"),{
+
+type:"bar",
+
+data:{
+labels:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+datasets:[{
+label:"Tasks Completed",
+data:[2,3,1,4,2,5,3]
+}]
+}
+
+})
+
+function addItem(){
+
+let item=document.getElementById("itemInput").value
+shopping.push(item)
+
+save()
+
+renderItems()
+
+}
+
+function renderItems(){
+
+let list=document.getElementById("shoppingList")
+list.innerHTML=""
+
+shopping.forEach(i=>{
+let li=document.createElement("li")
+li.innerText=i
+list.appendChild(li)
+})
+
+}
+
+function addExpense(){
+
+let name=document.getElementById("expenseName").value
+let amount=parseInt(document.getElementById("expenseAmount").value)
+
+expenses.push({name,amount})
+
+save()
+
+renderExpense()
+
+}
+
+function renderExpense(){
+
+let list=document.getElementById("expenseList")
+list.innerHTML=""
+
+let total=0
+
+expenses.forEach(e=>{
+
+total+=e.amount
+
+let li=document.createElement("li")
+li.innerText=e.name+" ₹"+e.amount
+
+list.appendChild(li)
+
+})
+
+document.getElementById("totalExpense").innerText=total
+
+}
+
+function scheduleReminder(task,time){
+
+if(!("Notification" in window)) return
+
+Notification.requestPermission()
+
+let delay=new Date(time)-new Date()
+
+if(delay>0){
+
+setTimeout(()=>{
+
+new Notification("Task Reminder",{body:task})
+
+},delay)
+
+}
+
+}
+
+render()
+renderItems()
+renderExpense()
+
+</script>
+
+</body>
+</html>
