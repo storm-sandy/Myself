@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Transport Grid Tracker</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f0f2f5;
+padding:20px;
+}
+
+h2{
+text-align:center;
+}
+
+table{
+border-collapse:collapse;
+width:100%;
+background:white;
+table-layout:fixed;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:6px;
+text-align:center;
+}
+
+th{
+background:#1976d2;
+color:white;
+}
+
+/* column width control */
+th:nth-child(1), td:nth-child(1){width:130px;}
+th:nth-child(2), td:nth-child(2){width:150px;}
+th:nth-child(3), td:nth-child(3){width:220px;}
+th:nth-child(4), td:nth-child(4){width:220px;}
+th:nth-child(5), td:nth-child(5){width:130px;}
+th:nth-child(6), td:nth-child(6){width:120px;}
+th:nth-child(7), td:nth-child(7){width:120px;}
+th:nth-child(8), td:nth-child(8){width:140px;}
+th:nth-child(9), td:nth-child(9){width:200px;}
+
+input,select{
+width:100%;
+border:none;
+padding:4px;
+text-align:center;
+}
+
+button{
+padding:8px 12px;
+margin:5px;
+cursor:pointer;
+border:none;
+}
+
+.add{background:green;color:white;}
+.delete{background:red;color:white;}
+
+</style>
+</head>
+
+<body>
+
+<h2>🚍 Transport Record Grid</h2>
+
+<button class="add" onclick="addRow()">Add Row</button>
+
+<table id="grid">
+
+<tr>
+<th>Type</th>
+<th>Number / Name</th>
+<th>From</th>
+<th>To</th>
+<th>Date</th>
+<th>Departure</th>
+<th>Arrival</th>
+<th>Seat / Gate</th>
+<th>Notes</th>
+<th>Delete</th>
+</tr>
+
+</table>
+
+<script>
+
+let table=document.getElementById("grid")
+
+function addRow(data={}){
+
+let row=table.insertRow()
+
+row.innerHTML=`
+<td>
+<select>
+<option ${data.type=="Bus"?"selected":""}>Bus</option>
+<option ${data.type=="Train"?"selected":""}>Train</option>
+<option ${data.type=="Metro"?"selected":""}>Metro</option>
+<option ${data.type=="Ship"?"selected":""}>Ship</option>
+<option ${data.type=="Flight"?"selected":""}>Flight</option>
+<option ${data.type=="Other"?"selected":""}>Other</option>
+</select>
+</td>
+
+<td><input value="${data.number||""}"></td>
+<td><input value="${data.from||""}"></td>
+<td><input value="${data.to||""}"></td>
+<td><input type="date" value="${data.date||""}"></td>
+<td><input type="time" value="${data.depart||""}"></td>
+<td><input type="time" value="${data.arrive||""}"></td>
+<td><input value="${data.seat||""}"></td>
+<td><input value="${data.notes||""}"></td>
+<td><button class="delete" onclick="deleteRow(this)">X</button></td>
+`
+
+row.querySelectorAll("input,select").forEach(el=>{
+el.onchange=saveData
+})
+
+saveData()
+}
+
+function deleteRow(btn){
+btn.parentElement.parentElement.remove()
+saveData()
+}
+
+function saveData(){
+
+let rows=[...table.rows].slice(1)
+
+let data=rows.map(r=>{
+
+let cells=r.querySelectorAll("input,select")
+
+return{
+type:cells[0].value,
+number:cells[1].value,
+from:cells[2].value,
+to:cells[3].value,
+date:cells[4].value,
+depart:cells[5].value,
+arrive:cells[6].value,
+seat:cells[7].value,
+notes:cells[8].value
+}
+
+})
+
+localStorage.setItem("transportGrid",JSON.stringify(data))
+
+}
+
+function loadData(){
+
+let saved=localStorage.getItem("transportGrid")
+
+if(saved){
+JSON.parse(saved).forEach(d=>addRow(d))
+}
+
+}
+
+loadData()
+
+</script>
+
+</body>
+</html>
