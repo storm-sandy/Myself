@@ -8,7 +8,7 @@
 
 body{
 font-family:Arial;
-background:#f0f0f0;
+background:#f2f2f2;
 text-align:center;
 }
 
@@ -23,6 +23,18 @@ font-size:20px;
 margin:10px;
 }
 
+#moon{
+font-size:18px;
+margin:10px;
+}
+
+#panchang{
+background:white;
+padding:10px;
+margin:10px;
+border-radius:8px;
+}
+
 #controls{
 margin:10px;
 }
@@ -30,13 +42,6 @@ margin:10px;
 button{
 padding:8px;
 margin:5px;
-}
-
-#panchang{
-background:white;
-margin:10px;
-padding:10px;
-border-radius:8px;
 }
 
 table{
@@ -53,7 +58,8 @@ padding:5px;
 
 td{
 border:1px solid #ddd;
-height:40px;
+height:45px;
+font-size:12px;
 }
 
 .today{
@@ -71,15 +77,17 @@ background:#ffeb3b;
 <body>
 
 <header>
-<h2>भारतीय पंचांग कैलेंडर PRO</h2>
+<h2>Ultimate Panchang Calendar</h2>
 </header>
 
 <div id="clock"></div>
 
+<div id="moon"></div>
+
 <div id="controls">
-<button onclick="changeMonth(-1)">◀ पिछला</button>
+<button onclick="changeMonth(-1)">◀</button>
 <span id="monthYear"></span>
-<button onclick="changeMonth(1)">अगला ▶</button>
+<button onclick="changeMonth(1)">▶</button>
 </div>
 
 <div id="panchang"></div>
@@ -88,39 +96,94 @@ background:#ffeb3b;
 
 <script>
 
-let current=new Date();
+/* CLOCK */
 
-let months=["जनवरी","फरवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"];
+function clock(){
+let now=new Date();
+document.getElementById("clock").innerHTML=
+"आज: "+now.toLocaleDateString("hi-IN")+
+" | समय: "+now.toLocaleTimeString("hi-IN");
+}
+setInterval(clock,1000);
+clock();
 
-let weekdays=["रवि","सोम","मंगल","बुध","गुरु","शुक्र","शनि"];
+/* MOON PHASE */
+
+function moonPhase(){
+
+let now=new Date();
+let lp=2551443;
+let new_moon=new Date(1970,0,7,20,35,0);
+let phase=((now-new_moon)/1000)%lp;
+let index=Math.floor(phase/(lp/8));
+
+let phases=[
+"🌑 अमावस्या",
+"🌒 शुक्ल चंद्र",
+"🌓 प्रथम चरण",
+"🌔 शुक्ल पक्ष",
+"🌕 पूर्णिमा",
+"🌖 कृष्ण पक्ष",
+"🌗 अंतिम चरण",
+"🌘 कृष्ण चंद्र"
+];
+
+document.getElementById("moon").innerHTML="चंद्र अवस्था: "+phases[index];
+
+}
+
+moonPhase();
 
 /* FESTIVALS */
 
 let festivals={
+
 "01-01":"New Year",
+"01-14":"मकर संक्रांति",
 "01-26":"गणतंत्र दिवस",
 "02-14":"Valentine Day",
 "03-08":"महिला दिवस",
+"03-25":"होली",
+"04-17":"राम नवमी",
+"04-21":"महावीर जयंती",
+"05-23":"बुद्ध पूर्णिमा",
 "08-15":"स्वतंत्रता दिवस",
+"08-26":"कृष्ण जन्माष्टमी",
+"09-07":"गणेश चतुर्थी",
 "10-02":"गांधी जयंती",
+"10-12":"दशहरा",
+"11-01":"करवा चौथ",
+"11-12":"दीवाली",
+"11-15":"भाई दूज",
 "12-25":"क्रिसमस"
+
 };
 
-/* CLOCK */
+/* WORLD HOLIDAYS SAMPLE */
 
-function updateClock(){
-
-let now=new Date();
-
-document.getElementById("clock").innerHTML=
-"आज: "+now.toLocaleDateString("hi-IN")+
-" | समय: "+now.toLocaleTimeString("hi-IN");
-
-}
-
-setInterval(updateClock,1000);
+let worldHolidays={
+"01-27":"International Holocaust Day",
+"02-04":"World Cancer Day",
+"03-22":"World Water Day",
+"04-22":"Earth Day",
+"05-01":"Labour Day",
+"06-05":"World Environment Day",
+"07-11":"World Population Day",
+"09-21":"International Peace Day",
+"10-24":"United Nations Day"
+};
 
 /* CALENDAR */
+
+let current=new Date();
+
+let months=[
+"जनवरी","फरवरी","मार्च","अप्रैल",
+"मई","जून","जुलाई","अगस्त",
+"सितंबर","अक्टूबर","नवंबर","दिसंबर"
+];
+
+let weekdays=["रवि","सोम","मंगल","बुध","गुरु","शुक्र","शनि"];
 
 function renderCalendar(){
 
@@ -147,13 +210,19 @@ let key=(month+1).toString().padStart(2,'0')+"-"+d.toString().padStart(2,'0');
 
 let cls="";
 
-if(d===new Date().getDate() && month===new Date().getMonth()) cls="today";
+if(d===new Date().getDate() && month===new Date().getMonth())
+cls="today";
 
-if(festivals[key]) cls="festival";
+if(festivals[key] || worldHolidays[key])
+cls="festival";
 
 html+="<td class='"+cls+"'>"+d;
 
-if(festivals[key]) html+="<br>"+festivals[key];
+if(festivals[key])
+html+="<br>"+festivals[key];
+
+if(worldHolidays[key])
+html+="<br>"+worldHolidays[key];
 
 html+="</td>";
 
@@ -167,12 +236,9 @@ document.getElementById("calendar").innerHTML=html;
 
 }
 
-/* NAVIGATION */
-
 function changeMonth(n){
 
 current.setMonth(current.getMonth()+n);
-
 renderCalendar();
 
 }
@@ -183,45 +249,32 @@ function panchang(){
 
 let now=new Date();
 
-let weekday=["रविवार","सोमवार","मंगलवार","बुधवार","गुरुवार","शुक्रवार","शनिवार"];
-
-let tithi=(now.getDate()%30)+1;
+let weekday=[
+"रविवार","सोमवार","मंगलवार","बुधवार",
+"गुरुवार","शुक्रवार","शनिवार"
+];
 
 let nakshatra=[
 "अश्विनी","भरणी","कृत्तिका","रोहिणी","मृगशीर्ष",
-"आर्द्रा","पुनर्वसु","पुष्य","आश्लेषा","मघा"
+"आर्द्रा","पुनर्वसु","पुष्य","आश्लेषा","मघा",
+"पूर्वा फाल्गुनी","उत्तर फाल्गुनी"
 ];
 
-let yoga=["विष्कुंभ","प्रीति","आयुष्मान","सौभाग्य"];
-
-let karana=["बव","बालव","कौलव","तैतिल"];
-
-let moonPhase=["अमावस्या","शुक्ल पक्ष","पूर्णिमा","कृष्ण पक्ष"];
-
-/* Sunrise Sunset basic */
-
-let sunrise="06:30";
-let sunset="18:30";
-
-let moon=moonPhase[Math.floor(Math.random()*moonPhase.length)];
+let tithi=(now.getDate()%30)+1;
 
 document.getElementById("panchang").innerHTML=
+
 "<b>आज का पंचांग</b><br>"+
 "वार: "+weekday[now.getDay()]+"<br>"+
 "तिथि: "+tithi+"<br>"+
 "नक्षत्र: "+nakshatra[now.getDate()%nakshatra.length]+"<br>"+
-"योग: "+yoga[now.getDate()%yoga.length]+"<br>"+
-"करण: "+karana[now.getDate()%karana.length]+"<br>"+
-"चंद्र अवस्था: "+moon+"<br>"+
-"सूर्योदय: "+sunrise+"<br>"+
-"सूर्यास्त: "+sunset;
+"सूर्योदय: 06:30<br>"+
+"सूर्यास्त: 18:30";
 
 }
 
-/* START */
-
-renderCalendar();
 panchang();
+renderCalendar();
 
 </script>
 
