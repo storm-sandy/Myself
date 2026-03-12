@@ -1,198 +1,227 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Ultimate Life OS Calendar</title>
+<title>Ultimate Panchang Calendar</title>
 
 <style>
+
 body{
 font-family:Arial;
-background:#0f172a;
-color:white;
+background:#f0f0f0;
 text-align:center;
 }
 
-h1{
+header{
+background:#ff5722;
+color:white;
+padding:10px;
+}
+
+#clock{
+font-size:20px;
 margin:10px;
 }
 
-#calendar{
-display:grid;
-grid-template-columns:repeat(7,1fr);
-gap:4px;
-max-width:900px;
-margin:auto;
+#controls{
+margin:10px;
 }
 
-.day{
-background:#1e293b;
+button{
 padding:8px;
-height:90px;
-border-radius:6px;
-cursor:pointer;
+margin:5px;
 }
 
-.day:hover{
-background:#334155;
-}
-
-.holiday{
-color:#facc15;
-font-size:11px;
-}
-
-#info{
-margin-top:20px;
+#panchang{
+background:white;
+margin:10px;
 padding:10px;
-background:#1e293b;
-border-radius:10px;
-max-width:700px;
-margin:auto;
+border-radius:8px;
 }
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th{
+background:#2196f3;
+color:white;
+padding:5px;
+}
+
+td{
+border:1px solid #ddd;
+height:40px;
+}
+
+.today{
+background:#4caf50;
+color:white;
+}
+
+.festival{
+background:#ffeb3b;
+}
+
 </style>
 </head>
 
 <body>
 
-<h1>Ultimate Life OS Calendar</h1>
+<header>
+<h2>भारतीय पंचांग कैलेंडर PRO</h2>
+</header>
 
-<select id="month"></select>
-<select id="year"></select>
+<div id="clock"></div>
 
-<div id="calendar"></div>
-
-<div id="info">
-<h3>Day Details</h3>
-<p id="date"></p>
-<p id="panchang"></p>
-<p id="moon"></p>
-<p id="sun"></p>
-<p id="festival"></p>
+<div id="controls">
+<button onclick="changeMonth(-1)">◀ पिछला</button>
+<span id="monthYear"></span>
+<button onclick="changeMonth(1)">अगला ▶</button>
 </div>
+
+<div id="panchang"></div>
+
+<table id="calendar"></table>
 
 <script>
 
-let months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+let current=new Date();
 
-let indianFestivals={
-"1-26":"Republic Day 🇮🇳",
-"3-25":"Holi",
-"8-15":"Independence Day 🇮🇳",
-"10-2":"Gandhi Jayanti",
-"11-1":"Diwali 🪔"
+let months=["जनवरी","फरवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"];
+
+let weekdays=["रवि","सोम","मंगल","बुध","गुरु","शुक्र","शनि"];
+
+/* FESTIVALS */
+
+let festivals={
+"01-01":"New Year",
+"01-26":"गणतंत्र दिवस",
+"02-14":"Valentine Day",
+"03-08":"महिला दिवस",
+"08-15":"स्वतंत्रता दिवस",
+"10-02":"गांधी जयंती",
+"12-25":"क्रिसमस"
 };
 
-let internationalHolidays={
-"1-1":"New Year 🌍",
-"2-14":"Valentine ❤️",
-"12-25":"Christmas 🎄"
-};
+/* CLOCK */
 
-let tithi=[
-"Pratipada","Dwitiya","Tritiya","Chaturthi","Panchami","Shashthi",
-"Saptami","Ashtami","Navami","Dashami","Ekadashi","Dwadashi",
-"Trayodashi","Chaturdashi","Purnima"
-];
+function updateClock(){
 
-let nakshatra=[
-"Ashwini","Bharani","Krittika","Rohini","Mrigashira",
-"Ardra","Punarvasu","Pushya","Ashlesha"
-];
+let now=new Date();
 
-function moonPhase(day){
-let phases=[
-"New Moon",
-"Waxing Crescent",
-"First Quarter",
-"Waxing Gibbous",
-"Full Moon",
-"Waning Gibbous",
-"Last Quarter",
-"Waning Crescent"
-];
-return phases[day%8];
-}
-
-function buildSelectors(){
-
-let m=document.getElementById("month");
-let y=document.getElementById("year");
-
-months.forEach((v,i)=>{
-m.innerHTML+=`<option value=${i}>${v}</option>`;
-});
-
-for(let i=2020;i<=2035;i++){
-y.innerHTML+=`<option>${i}</option>`;
-}
-
-m.value=new Date().getMonth();
-y.value=new Date().getFullYear();
+document.getElementById("clock").innerHTML=
+"आज: "+now.toLocaleDateString("hi-IN")+
+" | समय: "+now.toLocaleTimeString("hi-IN");
 
 }
 
-function buildCalendar(){
+setInterval(updateClock,1000);
 
-let calendar=document.getElementById("calendar");
-calendar.innerHTML="";
+/* CALENDAR */
 
-let month=document.getElementById("month").value;
-let year=document.getElementById("year").value;
+function renderCalendar(){
 
-let firstDay=new Date(year,month,1).getDay();
-let days=new Date(year,Number(month)+1,0).getDate();
+let year=current.getFullYear();
+let month=current.getMonth();
 
-for(let i=0;i<firstDay;i++){
-calendar.innerHTML+="<div></div>";
-}
+document.getElementById("monthYear").innerText=
+months[month]+" "+year;
+
+let first=new Date(year,month,1).getDay();
+let days=new Date(year,month+1,0).getDate();
+
+let html="<tr>";
+
+for(let w of weekdays) html+="<th>"+w+"</th>";
+
+html+="</tr><tr>";
+
+for(let i=0;i<first;i++) html+="<td></td>";
 
 for(let d=1;d<=days;d++){
 
-let key=(Number(month)+1)+"-"+d;
+let key=(month+1).toString().padStart(2,'0')+"-"+d.toString().padStart(2,'0');
 
-let festival=indianFestivals[key]||internationalHolidays[key]||"";
+let cls="";
 
-calendar.innerHTML+=`
-<div class="day" onclick="showDay(${d})">
-<b>${d}</b>
-<div class="holiday">${festival}</div>
-</div>
-`;
-}
+if(d===new Date().getDate() && month===new Date().getMonth()) cls="today";
 
-}
+if(festivals[key]) cls="festival";
 
-function showDay(day){
+html+="<td class='"+cls+"'>"+d;
 
-let t=tithi[day%15];
-let n=nakshatra[day%9];
-let moon=moonPhase(day);
+if(festivals[key]) html+="<br>"+festivals[key];
 
-document.getElementById("date").innerText="Date : "+day;
-document.getElementById("panchang").innerText=
-"Panchang : Tithi "+t+" | Nakshatra "+n;
+html+="</td>";
 
-document.getElementById("moon").innerText=
-"Moon Phase : "+moon;
-
-document.getElementById("sun").innerText=
-"Sunrise ~ 6:30 AM | Sunset ~ 6:30 PM";
-
-let month=document.getElementById("month").value;
-let key=(Number(month)+1)+"-"+day;
-
-let festival=indianFestivals[key]||internationalHolidays[key]||"None";
-
-document.getElementById("festival").innerText=
-"Festival : "+festival;
+if((first+d)%7===0) html+="</tr><tr>";
 
 }
 
-document.getElementById("month").onchange=buildCalendar;
-document.getElementById("year").onchange=buildCalendar;
+html+="</tr>";
 
-buildSelectors();
-buildCalendar();
+document.getElementById("calendar").innerHTML=html;
+
+}
+
+/* NAVIGATION */
+
+function changeMonth(n){
+
+current.setMonth(current.getMonth()+n);
+
+renderCalendar();
+
+}
+
+/* PANCHANG */
+
+function panchang(){
+
+let now=new Date();
+
+let weekday=["रविवार","सोमवार","मंगलवार","बुधवार","गुरुवार","शुक्रवार","शनिवार"];
+
+let tithi=(now.getDate()%30)+1;
+
+let nakshatra=[
+"अश्विनी","भरणी","कृत्तिका","रोहिणी","मृगशीर्ष",
+"आर्द्रा","पुनर्वसु","पुष्य","आश्लेषा","मघा"
+];
+
+let yoga=["विष्कुंभ","प्रीति","आयुष्मान","सौभाग्य"];
+
+let karana=["बव","बालव","कौलव","तैतिल"];
+
+let moonPhase=["अमावस्या","शुक्ल पक्ष","पूर्णिमा","कृष्ण पक्ष"];
+
+/* Sunrise Sunset basic */
+
+let sunrise="06:30";
+let sunset="18:30";
+
+let moon=moonPhase[Math.floor(Math.random()*moonPhase.length)];
+
+document.getElementById("panchang").innerHTML=
+"<b>आज का पंचांग</b><br>"+
+"वार: "+weekday[now.getDay()]+"<br>"+
+"तिथि: "+tithi+"<br>"+
+"नक्षत्र: "+nakshatra[now.getDate()%nakshatra.length]+"<br>"+
+"योग: "+yoga[now.getDate()%yoga.length]+"<br>"+
+"करण: "+karana[now.getDate()%karana.length]+"<br>"+
+"चंद्र अवस्था: "+moon+"<br>"+
+"सूर्योदय: "+sunrise+"<br>"+
+"सूर्यास्त: "+sunset;
+
+}
+
+/* START */
+
+renderCalendar();
+panchang();
 
 </script>
 
