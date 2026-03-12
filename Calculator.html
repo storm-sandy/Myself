@@ -2,251 +2,258 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate Calculator</title>
+<title>Calculator Pro</title>
+
 <style>
-*{box-sizing:border-box;}
+
 body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#0f172a;
-  color:#fff;
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  min-height:100vh;
-  padding:20px;
+font-family:Arial;
+background:#e0e0e0;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
 }
-.container{
-  width:100%;
-  max-width:420px;
-}
-h1{text-align:center;margin-bottom:10px;}
-#modeToggle{
-  margin-bottom:10px;
-  padding:8px 12px;
-  border:none;
-  border-radius:6px;
-  background:#2563eb;
-  color:#fff;
-  font-size:16px;
-  cursor:pointer;
-}
-#modeToggle:hover{background:#3b82f6;}
 
 .calculator{
-  background:#111827;
-  padding:15px;
-  border-radius:12px;
-  box-shadow:0 10px 25px rgba(0,0,0,.5);
+background:#bdbdbd;
+padding:20px;
+border-radius:12px;
+width:380px;
+box-shadow:0 4px 10px rgba(0,0,0,0.3);
 }
 
-.display{
-  background:#1f2933;
-  border-radius:6px;
-  padding:10px;
-  font-size:28px;
-  text-align:right;
-  margin-bottom:10px;
-  min-height:50px;
-  word-wrap:break-word;
+#display{
+width:100%;
+height:55px;
+font-size:24px;
+text-align:right;
+padding:10px;
+border:none;
+border-radius:6px;
+background:#f5f5f5;
+margin-bottom:10px;
 }
 
-.buttons{
-  display:grid;
-  gap:8px;
+.controls{
+text-align:center;
+margin-bottom:10px;
 }
-.buttons.simple{grid-template-columns:repeat(4,1fr);}
-.buttons.scientific{grid-template-columns:repeat(6,1fr);}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:8px;
+}
 
 button{
-  padding:15px;
-  font-size:18px;
-  border:none;
-  border-radius:6px;
-  background:#2563eb;
-  color:#fff;
-  cursor:pointer;
-  transition:0.2s;
+height:50px;
+font-size:17px;
+border:none;
+border-radius:6px;
+background:#616161;
+color:white;
+cursor:pointer;
 }
-button:hover{background:#3b82f6;}
-button.function{background:#f59e0b;}
-button.function:hover{background:#fbbf24;}
-button.equals{background:#ef4444; grid-column:span 2;}
-button.equals:hover{background:#f87171;}
 
-#history{
-  max-height:150px;
-  overflow-y:auto;
-  margin-top:10px;
-  background:#1f2933;
-  padding:8px;
-  border-radius:6px;
+button:hover{
+background:#424242;
 }
-.history-item{
-  cursor:pointer;
-  padding:4px;
+
+.history{
+background:white;
+height:80px;
+overflow:auto;
+margin-top:10px;
+font-size:14px;
+padding:5px;
 }
-.history-item:hover{background:#2563eb;}
+
+.scientific{
+display:none;
+}
+
 </style>
+
 </head>
+
 <body>
-<div class="container">
-<h1>Ultimate Calculator</h1>
-<button id="modeToggle">Switch to Scientific</button>
 
 <div class="calculator">
-  <div class="display" id="display">0</div>
 
-  <!-- Simple -->
-  <div class="buttons simple" id="simpleButtons">
-    <button onclick="appendNumber('7')">7</button>
-    <button onclick="appendNumber('8')">8</button>
-    <button onclick="appendNumber('9')">9</button>
-    <button class="function" onclick="appendOperator('/')">/</button>
-    <button onclick="appendNumber('4')">4</button>
-    <button onclick="appendNumber('5')">5</button>
-    <button onclick="appendNumber('6')">6</button>
-    <button class="function" onclick="appendOperator('*')">*</button>
-    <button onclick="appendNumber('1')">1</button>
-    <button onclick="appendNumber('2')">2</button>
-    <button onclick="appendNumber('3')">3</button>
-    <button class="function" onclick="appendOperator('-')">-</button>
-    <button onclick="appendNumber('0')">0</button>
-    <button onclick="appendNumber('.')">.</button>
-    <button class="equals" onclick="calculate()">=</button>
-    <button class="function" onclick="appendOperator('+')">+</button>
-    <button class="function" onclick="clearDisplay()">C</button>
-    <button class="function" onclick="deleteChar()">DEL</button>
-    <button class="function" onclick="appendOperator('%')">%</button>
-  </div>
+<div class="controls">
 
-  <!-- Scientific -->
-  <div class="buttons scientific" id="scientificButtons" style="display:none;">
-    <button class="function" onclick="clearDisplay()">C</button>
-    <button class="function" onclick="deleteChar()">DEL</button>
-    <button class="function" onclick="appendOperator('%')">%</button>
-    <button class="function" onclick="appendOperator('/')">/</button>
-    <button class="function" onclick="appendOperator('*')">*</button>
-    <button class="function" onclick="appendOperator('-')">-</button>
+<button onclick="setMode('simple')">Simple</button>
+<button onclick="setMode('scientific')">Scientific</button>
 
-    <button onclick="appendNumber('7')">7</button>
-    <button onclick="appendNumber('8')">8</button>
-    <button onclick="appendNumber('9')">9</button>
-    <button class="function" onclick="appendOperator('+')">+</button>
-    <button class="function" onclick="appendFunction('Math.sqrt(')">√</button>
-    <button class="function" onclick="appendFunction('Math.pow(')">x²</button>
+<button onclick="toggleAngle()">DEG</button>
 
-    <button onclick="appendNumber('4')">4</button>
-    <button onclick="appendNumber('5')">5</button>
-    <button onclick="appendNumber('6')">6</button>
-    <button class="function" onclick="appendFunction('Math.sin(')">sin</button>
-    <button class="function" onclick="appendFunction('Math.cos(')">cos</button>
-    <button class="function" onclick="appendFunction('Math.tan(')">tan</button>
-
-    <button onclick="appendNumber('1')">1</button>
-    <button onclick="appendNumber('2')">2</button>
-    <button onclick="appendNumber('3')">3</button>
-    <button class="function" onclick="appendFunction('Math.log(')">log</button>
-    <button class="function" onclick="appendFunction('Math.exp(')">exp</button>
-    <button class="function" onclick="appendFunction('Math.PI')">π</button>
-
-    <button onclick="appendNumber('0')">0</button>
-    <button onclick="appendNumber('.')">.</button>
-    <button class="equals" onclick="calculate()">=</button>
-    <button class="function" onclick="appendOperator('^')">^</button>
-    <button class="function" onclick="appendFunction('Math.abs(')">abs</button>
-    <button class="function" onclick="appendFunction('Math.floor(')">floor</button>
-
-    <!-- Memory buttons -->
-    <button class="function" onclick="memoryClear()">MC</button>
-    <button class="function" onclick="memoryRecall()">MR</button>
-    <button class="function" onclick="memoryAdd()">M+</button>
-    <button class="function" onclick="memorySubtract()">M-</button>
-  </div>
 </div>
 
-<div id="history"></div>
+<input id="display">
+
+<div class="grid">
+
+<button class="scientific" onclick="sin()">sin</button>
+<button class="scientific" onclick="cos()">cos</button>
+<button class="scientific" onclick="tan()">tan</button>
+<button class="scientific" onclick="asin()">sin⁻¹</button>
+<button class="scientific" onclick="acos()">cos⁻¹</button>
+
+<button class="scientific" onclick="atan()">tan⁻¹</button>
+<button class="scientific" onclick="log()">log</button>
+<button class="scientific" onclick="sqrt()">√</button>
+<button class="scientific" onclick="press(Math.PI)">π</button>
+<button onclick="square()">x²</button>
+
+<button onclick="press('7')">7</button>
+<button onclick="press('8')">8</button>
+<button onclick="press('9')">9</button>
+<button onclick="press('/')">÷</button>
+<button onclick="percent()">%</button>
+
+<button onclick="press('4')">4</button>
+<button onclick="press('5')">5</button>
+<button onclick="press('6')">6</button>
+<button onclick="press('*')">×</button>
+<button onclick="clearDisplay()">C</button>
+
+<button onclick="press('1')">1</button>
+<button onclick="press('2')">2</button>
+<button onclick="press('3')">3</button>
+<button onclick="press('-')">−</button>
+<button onclick="calculate()">=</button>
+
+<button onclick="press('0')">0</button>
+<button onclick="press('.')">.</button>
+<button onclick="press('+')">+</button>
+
+</div>
+
+<div class="history" id="history"></div>
+
 </div>
 
 <script>
-let display = document.getElementById("display");
-let expression = "";
-let memory = 0;
-let historyArr = [];
 
-// DISPLAY
-function updateDisplay(){ display.textContent = expression || "0"; }
-function appendNumber(num){ expression += num; updateDisplay(); }
-function appendOperator(op){ 
-  if(op==='^'){ expression += '**'; } else { expression += op; } 
-  updateDisplay();
+let display=document.getElementById("display");
+let historyBox=document.getElementById("history");
+
+let degreeMode=true;
+
+/* BASIC */
+
+function press(val){
+display.value+=val;
 }
-function appendFunction(fn){ expression += fn; updateDisplay(); }
-function clearDisplay(){ expression=""; updateDisplay(); }
-function deleteChar(){ expression=expression.slice(0,-1); updateDisplay(); }
 
-// CALC
+function clearDisplay(){
+display.value="";
+}
+
 function calculate(){
-  try{
-    let result = eval(expression);
-    addHistory(expression+" = "+result);
-    expression = result.toString();
-  } catch(e){ expression="Error"; }
-  updateDisplay();
+try{
+let result=eval(display.value);
+historyBox.innerHTML+=display.value+" = "+result+"<br>";
+display.value=result;
+}
+catch{
+display.value="Error";
+}
 }
 
-// HISTORY
-const historyEl = document.getElementById("history");
-function addHistory(text){
-  historyArr.unshift(text);
-  renderHistory();
-}
-function renderHistory(){
-  historyEl.innerHTML = "";
-  historyArr.forEach(item=>{
-    const div = document.createElement("div");
-    div.textContent = item;
-    div.className="history-item";
-    div.onclick = ()=>{ expression = item.split(" = ")[1]; updateDisplay(); }
-    historyEl.appendChild(div);
-  });
+function percent(){
+display.value=display.value/100;
 }
 
-// MEMORY
-function memoryClear(){ memory=0; }
-function memoryRecall(){ expression += memory; updateDisplay(); }
-function memoryAdd(){ memory += eval(expression); updateDisplay(); }
-function memorySubtract(){ memory -= eval(expression); updateDisplay(); }
+function square(){
+display.value=display.value*display.value;
+}
 
-// MODE TOGGLE
-const simpleButtons=document.getElementById("simpleButtons");
-const scientificButtons=document.getElementById("scientificButtons");
-const modeToggle=document.getElementById("modeToggle");
-let scientificMode=false;
+/* ANGLE MODE */
 
-modeToggle.addEventListener("click",()=>{
-  scientificMode=!scientificMode;
-  if(scientificMode){
-    simpleButtons.style.display="none";
-    scientificButtons.style.display="grid";
-    modeToggle.textContent="Switch to Simple";
-  } else {
-    simpleButtons.style.display="grid";
-    scientificButtons.style.display="none";
-    modeToggle.textContent="Switch to Scientific";
-  }
+function toggleAngle(){
+degreeMode=!degreeMode;
+alert(degreeMode?"Degree Mode":"Radian Mode");
+}
+
+function toRad(x){
+return degreeMode?x*Math.PI/180:x;
+}
+
+function fromRad(x){
+return degreeMode?x*180/Math.PI:x;
+}
+
+/* TRIG */
+
+function sin(){
+display.value=Math.sin(toRad(parseFloat(display.value)));
+}
+
+function cos(){
+display.value=Math.cos(toRad(parseFloat(display.value)));
+}
+
+function tan(){
+display.value=Math.tan(toRad(parseFloat(display.value)));
+}
+
+function asin(){
+display.value=fromRad(Math.asin(parseFloat(display.value)));
+}
+
+function acos(){
+display.value=fromRad(Math.acos(parseFloat(display.value)));
+}
+
+function atan(){
+display.value=fromRad(Math.atan(parseFloat(display.value)));
+}
+
+/* OTHER */
+
+function log(){
+display.value=Math.log10(display.value);
+}
+
+function sqrt(){
+display.value=Math.sqrt(display.value);
+}
+
+/* MODE */
+
+function setMode(mode){
+
+let sci=document.querySelectorAll(".scientific");
+
+sci.forEach(btn=>{
+btn.style.display=(mode==="scientific")?"block":"none";
 });
 
-// KEYBOARD SUPPORT
-document.addEventListener("keydown", e=>{
-  const key=e.key;
-  if(!isNaN(key) || key==="."){ appendNumber(key); }
-  else if(key==="+"||key==="-"||key==="*"||key==="/"){ appendOperator(key); }
-  else if(key==="Enter"){ calculate(); }
-  else if(key==="Backspace"){ deleteChar(); }
-  else if(key==="Escape"){ clearDisplay(); }
+}
+
+setMode("simple");
+
+/* KEYBOARD SUPPORT */
+
+document.addEventListener("keydown",function(e){
+
+if("0123456789+-*/.".includes(e.key)){
+display.value+=e.key;
+}
+
+if(e.key==="Enter"){
+calculate();
+}
+
+if(e.key==="Backspace"){
+display.value=display.value.slice(0,-1);
+}
+
 });
+
 </script>
+
 </body>
 </html>
