@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ultimate Data Dashboard OS</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+background:#ececec;
+margin:0;
+padding:20px;
+}
+
+h2{text-align:center}
+
+.panel{
+background:white;
+padding:15px;
+margin-bottom:15px;
+border-radius:8px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+textarea{
+width:100%;
+height:120px;
+}
+
+select,input,button{
+padding:6px;
+margin:4px;
+}
+
+table{
+border-collapse:collapse;
+width:100%;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:5px;
+text-align:center;
+}
+
+canvas{
+background:white;
+margin-top:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Ultimate Data Dashboard OS</h2>
+
+<div class="panel">
+
+<input type="file" id="fileInput">
+
+<button onclick="loadCSV()">Load Data</button>
+
+<button onclick="saveDashboard()">Save Dashboard</button>
+
+<button onclick="loadDashboard()">Load Dashboard</button>
+
+<button onclick="exportCSV()">Export CSV</button>
+
+<button onclick="exportChart()">Export Chart</button>
+
+<textarea id="csvInput" placeholder="Paste CSV data"></textarea>
+
+</div>
+
+<div class="panel">
+
+Group By
+<select id="groupCol"></select>
+
+Sub Group
+<select id="subGroupCol"></select>
+
+Value Columns
+<select id="valueCols" multiple size="5"></select>
+
+Chart Type
+<select id="chartType">
+<option>bar</option>
+<option>line</option>
+<option>pie</option>
+<option>doughnut</option>
+<option>radar</option>
+<option>polarArea</option>
+<option>scatter</option>
+<option>bubble</option>
+</select>
+
+Filter Column
+<select id="filterCol"></select>
+
+Value
+<input id="filterVal">
+
+<button onclick="applyFilter()">Filter</button>
+
+<button onclick="buildChart()">Build Chart</button>
+
+<button onclick="buildPivot()">Pivot Table</button>
+
+</div>
+
+<div class="panel">
+<h3>Statistics</h3>
+<div id="stats"></div>
+</div>
+
+<div class="panel">
+<h3>Pivot Table</h3>
+<table id="pivotTable"></table>
+</div>
+
+<div class="panel">
+<h3>Data Table</h3>
+<table id="dataTable"></table>
+</div>
+
+<div class="panel">
+<canvas id="chartCanvas"></canvas>
+</div>
+
+<script>
+
+let rawData=[]
+let filteredData=[]
+let headers=[]
+let chart
+
+document.getElementById("fileInput").addEventListener("change",function(e){
+
+let file=e.target.files[0]
+
+if(file.name.endsWith(".xlsx")){
+
+let reader=new FileReader()
+
+reader.onload=function(e){
+
+let data=new Uint8Array(e.target.result)
+
+let wb=XLSX.read(data,{type:"array"})
+
+let sheet=wb.Sheets[wb.SheetNames[0]]
+
+let csv=XLSX.utils.sheet_to_csv(sheet)
+
+document.getElementById("csvInput").value=csv
+
+}
+
+reader.readAsArrayBuffer(file)
+
+}else{
+
+let reader=new FileReader()
+
+reader.onload=function(){
+document.getElementById("csvInput").value=reader.result
+}
+
+reader.readAsText(file)
+
+}
+
+})
+
+function loadCSV(){
+
+let csv=document.getElementById("csvInput").value.trim()
+
+let rows=csv.split("\n").map(r=>r.split(","))
+
+headers=rows[0]
+
+rawData=rows.slice(1)
+
+filteredData=[...rawData]
+
+buildSelectors()
+
+drawTable(filteredData)
+
+}
+
+function buildSelectors(){
+
+let ids=["groupCol","subGroupCol","filterCol"]
+
+ids.forEach(id=>{
+
+let s=document.getElementById(id)
+
+s.innerHTML=""
+
+headers.forEach((h,i)=>{
+s.innerHTML+=`<option value=${i}>${h}</option>`
+})
+
+})
+
+let v=document.getElementById("valueCols")
+v.innerHTML=""
+
+headers.forEach((h,i)=>{
+v.innerHTML+=`<option value=${i}>${h}</option>`
+})
+
+}
+
+function drawTable(data){
+
+let t=document.getElementById("dataTable")
+
+t.innerHTML=""
+
+let head="<tr>"+headers.map(h=>"<th>"+h+"</th>").join("")+"</tr>"
+
+t.innerHTML+=head
+
+data.forEach(r=>{
+t.innerHTML+="<tr>"+r.map(c=>"<td>"+c+"</td>").join("")+"</tr>"
+})
+
+}
+
+function applyFilter(){
+
+let col=document.getElementById("filterCol").value
+let val=document.getElementById("filterVal").value
+
+filteredData=rawData.filter(r=>r[col]==val)
+
+drawTable(filteredData)
+
+}
+
+function buildChart(){
+
+let g=document.getElementById("groupCol").value
+let vals=[...document.getElementById("valueCols").selectedOptions].map(o=>o.value)
+let type=document.getElementById("chartType").value
+
+let grouped={}
+
+filteredData.forEach(r=>{
+
+let key=r[g]
+
+if(!grouped[key]){
+
+grouped[key]={}
+
+vals.forEach(v=>grouped[key][v]=0)
+
+}
+
+vals.forEach(v=>{
+
+grouped[key][v]+=parseFloat(r[v])||0
+
+})
+
+})
+
+let labels=Object.keys(grouped)
+
+let datasets=[]
+
+vals.forEach(v=>{
+
+datasets.push({
+
+label:headers[v],
+
+data:labels.map(l=>grouped[l][v]),
+
+borderWidth:2
+
+})
+
+})
+
+if(chart)chart.destroy()
+
+chart=new Chart(chartCanvas,{
+
+type:type,
+
+data:{labels:labels,datasets:datasets},
+
+options:{responsive:true}
+
+})
+
+calcStats(vals)
+
+}
+
+function calcStats(cols){
+
+let div=document.getElementById("stats")
+
+let html=""
+
+cols.forEach(c=>{
+
+let nums=filteredData.map(r=>parseFloat(r[c])).filter(n=>!isNaN(n))
+
+let sum=nums.reduce((a,b)=>a+b,0)
+
+let avg=sum/nums.length
+
+let min=Math.min(...nums)
+
+let max=Math.max(...nums)
+
+nums.sort((a,b)=>a-b)
+
+let median=nums[Math.floor(nums.length/2)]
+
+html+=`<b>${headers[c]}</b> :
+Sum ${sum} |
+Avg ${avg.toFixed(2)} |
+Min ${min} |
+Max ${max} |
+Median ${median}<br>`
+
+})
+
+div.innerHTML=html
+
+}
+
+function buildPivot(){
+
+let g=document.getElementById("groupCol").value
+let vals=[...document.getElementById("valueCols").selectedOptions].map(o=>o.value)
+
+let table=document.getElementById("pivotTable")
+
+table.innerHTML=""
+
+let head="<tr><th>"+headers[g]+"</th>"+vals.map(v=>"<th>"+headers[v]+"</th>").join("")+"</tr>"
+
+table.innerHTML+=head
+
+let grouped={}
+
+filteredData.forEach(r=>{
+
+let key=r[g]
+
+if(!grouped[key]){
+
+grouped[key]={}
+
+vals.forEach(v=>grouped[key][v]=0)
+
+}
+
+vals.forEach(v=>grouped[key][v]+=parseFloat(r[v])||0)
+
+})
+
+Object.keys(grouped).forEach(k=>{
+
+let row="<tr><td>"+k+"</td>"
+
+vals.forEach(v=>{
+row+="<td>"+grouped[k][v]+"</td>"
+})
+
+row+="</tr>"
+
+table.innerHTML+=row
+
+})
+
+}
+
+function exportChart(){
+
+let link=document.createElement("a")
+
+link.href=chartCanvas.toDataURL()
+
+link.download="chart.png"
+
+link.click()
+
+}
+
+function exportCSV(){
+
+let csv=headers.join(",")+"\n"
+
+filteredData.forEach(r=>{
+
+csv+=r.join(",")+"\n"
+
+})
+
+let blob=new Blob([csv])
+
+let a=document.createElement("a")
+
+a.href=URL.createObjectURL(blob)
+
+a.download="data.csv"
+
+a.click()
+
+}
+
+function saveDashboard(){
+
+localStorage.setItem("dashboardCSV",document.getElementById("csvInput").value)
+
+alert("Dashboard saved")
+
+}
+
+function loadDashboard(){
+
+let data=localStorage.getItem("dashboardCSV")
+
+if(data){
+
+document.getElementById("csvInput").value=data
+
+loadCSV()
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
