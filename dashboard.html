@@ -2,65 +2,60 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>Family Dashboard</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Family Information System</title>
 
 <style>
 
 body{
 font-family:Arial;
-background:#f4f4f4;
-margin:0;
+background:#f2f2f2;
 padding:20px;
 }
 
-.container{
-max-width:900px;
-margin:auto;
-background:white;
-padding:20px;
-border-radius:10px;
-}
-
-.dashboard{
-display:flex;
-gap:10px;
-margin-bottom:20px;
-}
-
-.card{
-flex:1;
-background:#fafafa;
-padding:15px;
-border-radius:8px;
+h1{
 text-align:center;
 }
 
-.task{
-display:flex;
-justify-content:space-between;
-background:#eee;
-padding:10px;
-margin-top:8px;
-border-radius:5px;
+h2{
+background:#333;
+color:white;
+padding:6px;
 }
 
-.done{
-text-decoration:line-through;
-color:gray;
-}
-
-input,select,button{
+table{
 width:100%;
-padding:8px;
-margin-top:5px;
+border-collapse:collapse;
+background:white;
+margin-bottom:20px;
 }
 
-.section{
-margin-top:30px;
+th,td{
+border:1px solid #ccc;
+padding:6px;
+text-align:center;
+}
+
+th{
+background:#444;
+color:white;
+}
+
+td[contenteditable]{
+background:#fffef2;
+}
+
+button{
+padding:6px 12px;
+margin:5px;
+cursor:pointer;
+}
+
+#idcard{
+border:2px solid black;
+width:320px;
+padding:10px;
+background:white;
+display:none;
 }
 
 </style>
@@ -69,303 +64,268 @@ margin-top:30px;
 
 <body>
 
-<div class="container">
+<h1>Family Information System</h1>
 
-<h2>🏠 Family Dashboard</h2>
+<button onclick="exportCSV()">Export CSV</button>
+<input type="file" id="csvFile" onchange="importCSV()">
 
-<div class="dashboard">
+<h2>Family Members</h2>
 
-<div class="card">
-Total
-<h3 id="total">0</h3>
-</div>
+<table id="family">
 
-<div class="card">
-Completed
-<h3 id="done">0</h3>
-</div>
+<tr>
+<th>Name</th>
+<th>DOB</th>
+<th>Age</th>
+<th>Blood</th>
+<th>Height</th>
+<th>Weight</th>
+<th>Allergy</th>
+<th>Bank Account</th>
+<th>Passport</th>
+<th>Driving License</th>
+<th>Ration Card</th>
+<th>Government Schemes</th>
+<th>Phone</th>
+<th>ID Card</th>
+</tr>
 
-<div class="card">
-Pending
-<h3 id="pending">0</h3>
-</div>
+<tr>
 
-</div>
+<td contenteditable></td>
 
-<canvas id="taskChart"></canvas>
+<td contenteditable onblur="calcAge(this)"></td>
 
-<div class="section">
+<td></td>
 
-<h3>Add Task</h3>
+<td contenteditable></td>
 
-<input id="taskInput" placeholder="Task">
+<td contenteditable></td>
 
-<select id="member">
-<option>Dad</option>
-<option>Mom</option>
-<option>Son</option>
-<option>Daughter</option>
-</select>
+<td contenteditable></td>
 
-<input id="timeInput" type="datetime-local">
+<td contenteditable></td>
 
-<button onclick="addTask()">Add Task</button>
+<td contenteditable></td>
 
-<div id="taskList"></div>
+<td contenteditable></td>
 
-</div>
+<td contenteditable></td>
 
-<div class="section">
+<td contenteditable></td>
 
-<h3>Weekly Productivity</h3>
+<td contenteditable></td>
 
-<canvas id="weeklyChart"></canvas>
+<td contenteditable></td>
 
-</div>
+<td><button onclick="generateID(this)">Generate</button></td>
 
-<div class="section">
+</tr>
 
-<h3>Shopping List</h3>
+</table>
 
-<input id="itemInput" placeholder="Item">
-<button onclick="addItem()">Add</button>
+<button onclick="addRow('family',14)">Add Member</button>
 
-<ul id="shoppingList"></ul>
 
-</div>
+<h2>Medicine Records</h2>
 
-<div class="section">
+<table id="medicine">
 
-<h3>Expense Tracker</h3>
+<tr>
+<th>Person</th>
+<th>Medicine</th>
+<th>Dose</th>
+<th>Doctor</th>
+<th>Start Date</th>
+<th>Notes</th>
+</tr>
 
-<input id="expenseName" placeholder="Expense name">
-<input id="expenseAmount" placeholder="Amount">
+<tr>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+</tr>
 
-<button onclick="addExpense()">Add Expense</button>
+</table>
 
-<ul id="expenseList"></ul>
+<button onclick="addRow('medicine',6)">Add Medicine</button>
 
-<h4>Total ₹<span id="totalExpense">0</span></h4>
 
-</div>
+<h2>Insurance Policies</h2>
 
-</div>
+<table id="insurance">
+
+<tr>
+<th>Person</th>
+<th>Policy Type</th>
+<th>Company</th>
+<th>Policy Number</th>
+<th>Expiry</th>
+<th>Amount</th>
+</tr>
+
+<tr>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+</tr>
+
+</table>
+
+<button onclick="addRow('insurance',6)">Add Insurance</button>
+
+
+<h2>Emergency Contacts</h2>
+
+<table id="emergency">
+
+<tr>
+<th>Name</th>
+<th>Relation</th>
+<th>Phone</th>
+<th>Address</th>
+</tr>
+
+<tr>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+</tr>
+
+</table>
+
+<button onclick="addRow('emergency',4)">Add Contact</button>
+
+
+<div id="idcard"></div>
+
 
 <script>
 
-let tasks=JSON.parse(localStorage.getItem("tasks"))||[]
-let shopping=JSON.parse(localStorage.getItem("shopping"))||[]
-let expenses=JSON.parse(localStorage.getItem("expenses"))||[]
+function addRow(tableId,cells){
 
-function save(){
+let table=document.getElementById(tableId)
 
-localStorage.setItem("tasks",JSON.stringify(tasks))
-localStorage.setItem("shopping",JSON.stringify(shopping))
-localStorage.setItem("expenses",JSON.stringify(expenses))
+let row=table.insertRow()
 
-}
+for(let i=0;i<cells;i++){
 
-function addTask(){
+let cell=row.insertCell()
 
-let text=document.getElementById("taskInput").value
-let member=document.getElementById("member").value
-let time=document.getElementById("timeInput").value
-
-tasks.push({text,member,time,done:false})
-
-save()
-
-scheduleReminder(text,time)
-
-render()
+cell.contentEditable=true
 
 }
 
-function toggle(i){
+}
 
-tasks[i].done=!tasks[i].done
-save()
-render()
+function calcAge(cell){
+
+let dob=new Date(cell.innerText)
+
+let today=new Date()
+
+let age=today.getFullYear()-dob.getFullYear()
+
+cell.parentNode.cells[2].innerText=age
 
 }
 
-function removeTask(i){
+function exportCSV(){
 
-tasks.splice(i,1)
-save()
-render()
+let tables=document.querySelectorAll("table")
+
+let csv=[]
+
+tables.forEach(function(table){
+
+let rows=table.querySelectorAll("tr")
+
+rows.forEach(function(row){
+
+let cols=row.querySelectorAll("th,td")
+
+let data=[]
+
+cols.forEach(function(col){
+
+data.push(col.innerText)
+
+})
+
+csv.push(data.join(","))
+
+})
+
+csv.push("")
+
+})
+
+let blob=new Blob([csv.join("\n")],{type:"text/csv"})
+
+let a=document.createElement("a")
+
+a.href=URL.createObjectURL(blob)
+
+a.download="family_information.csv"
+
+a.click()
 
 }
 
-function sendWhatsApp(task){
+function importCSV(){
 
-let phone="91XXXXXXXXXX"
+let file=document.getElementById("csvFile").files[0]
 
-let msg=encodeURIComponent("Reminder: "+task)
+let reader=new FileReader()
 
-window.open(`https://wa.me/${phone}?text=${msg}`)
+reader.onload=function(){
+
+alert("CSV loaded. Copy data to tables if needed.")
 
 }
 
-function render(){
+reader.readAsText(file)
 
-let list=document.getElementById("taskList")
-list.innerHTML=""
+}
 
-tasks.forEach((t,i)=>{
+function generateID(btn){
 
-let div=document.createElement("div")
-div.className="task"
+let row=btn.parentNode.parentNode
 
-div.innerHTML=`
-<span class="${t.done?'done':''}">
-${t.text} (${t.member})
-</span>
+let name=row.cells[0].innerText
 
-<div>
-<button onclick="toggle(${i})">✔</button>
-<button onclick="sendWhatsApp('${t.text}')">📲</button>
-<button onclick="removeTask(${i})">❌</button>
-</div>
+let age=row.cells[2].innerText
+
+let blood=row.cells[3].innerText
+
+let phone=row.cells[12].innerText
+
+let card=document.getElementById("idcard")
+
+card.style.display="block"
+
+card.innerHTML=`
+
+<h3>Family ID Card</h3>
+
+Name: ${name}<br>
+
+Age: ${age}<br>
+
+Blood: ${blood}<br>
+
+Phone: ${phone}
+
 `
 
-list.appendChild(div)
-
-})
-
-updateDashboard()
-
 }
-
-function updateDashboard(){
-
-let total=tasks.length
-let done=tasks.filter(t=>t.done).length
-let pending=total-done
-
-document.getElementById("total").innerText=total
-document.getElementById("done").innerText=done
-document.getElementById("pending").innerText=pending
-
-drawChart(done,pending)
-
-}
-
-let chart
-
-function drawChart(done,pending){
-
-if(chart) chart.destroy()
-
-chart=new Chart(document.getElementById("taskChart"),{
-
-type:"doughnut",
-
-data:{
-labels:["Completed","Pending"],
-datasets:[{data:[done,pending]}]
-}
-
-})
-
-}
-
-new Chart(document.getElementById("weeklyChart"),{
-
-type:"bar",
-
-data:{
-labels:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-datasets:[{
-label:"Tasks Completed",
-data:[2,3,1,4,2,5,3]
-}]
-}
-
-})
-
-function addItem(){
-
-let item=document.getElementById("itemInput").value
-shopping.push(item)
-
-save()
-
-renderItems()
-
-}
-
-function renderItems(){
-
-let list=document.getElementById("shoppingList")
-list.innerHTML=""
-
-shopping.forEach(i=>{
-let li=document.createElement("li")
-li.innerText=i
-list.appendChild(li)
-})
-
-}
-
-function addExpense(){
-
-let name=document.getElementById("expenseName").value
-let amount=parseInt(document.getElementById("expenseAmount").value)
-
-expenses.push({name,amount})
-
-save()
-
-renderExpense()
-
-}
-
-function renderExpense(){
-
-let list=document.getElementById("expenseList")
-list.innerHTML=""
-
-let total=0
-
-expenses.forEach(e=>{
-
-total+=e.amount
-
-let li=document.createElement("li")
-li.innerText=e.name+" ₹"+e.amount
-
-list.appendChild(li)
-
-})
-
-document.getElementById("totalExpense").innerText=total
-
-}
-
-function scheduleReminder(task,time){
-
-if(!("Notification" in window)) return
-
-Notification.requestPermission()
-
-let delay=new Date(time)-new Date()
-
-if(delay>0){
-
-setTimeout(()=>{
-
-new Notification("Task Reminder",{body:task})
-
-},delay)
-
-}
-
-}
-
-render()
-renderItems()
-renderExpense()
 
 </script>
 
