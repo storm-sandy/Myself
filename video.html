@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ultimate Folder Video Player</title>
+
+<style>
+body{
+background:#111;
+color:white;
+font-family:Arial;
+margin:0;
+}
+
+header{
+background:#000;
+padding:10px;
+text-align:center;
+}
+
+video{
+width:100%;
+height:40vh;
+background:black;
+}
+
+.controls{
+padding:10px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+background:#222;
+}
+
+button,input,select{
+padding:8px;
+border:none;
+border-radius:6px;
+}
+
+#playlist{
+height:50vh;
+overflow:auto;
+background:#111;
+}
+
+.item{
+padding:8px;
+border-bottom:1px solid #333;
+cursor:pointer;
+}
+
+.item:hover{
+background:#333;
+}
+
+.active{
+background:#555;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>Ultimate Folder Video Player</h2>
+</header>
+
+<video id="player" controls></video>
+
+<div class="controls">
+
+<input type="file" id="folder" webkitdirectory multiple>
+
+<input type="text" id="search" placeholder="Search video">
+
+<button onclick="shuffle()">Shuffle</button>
+<button onclick="repeat()">Repeat</button>
+
+<label>Speed</label>
+<select id="speed">
+<option value="0.5">0.5x</option>
+<option value="1" selected>1x</option>
+<option value="1.5">1.5x</option>
+<option value="2">2x</option>
+</select>
+
+<button onclick="fullscreen()">Fullscreen</button>
+
+</div>
+
+<div id="playlist"></div>
+
+<script>
+
+let videos=[]
+let current=0
+let repeatMode=false
+
+const player=document.getElementById("player")
+const playlist=document.getElementById("playlist")
+
+document.getElementById("folder").addEventListener("change",function(e){
+
+videos=[]
+
+for(let file of e.target.files){
+
+if(file.type.startsWith("video") ||
+file.name.match(/\.(mp4|mkv|webm|mov|avi|m4v|3gp)$/i)){
+
+videos.push(file)
+
+}
+
+}
+
+render()
+
+})
+
+function render(){
+
+playlist.innerHTML=""
+
+videos.forEach((file,i)=>{
+
+let div=document.createElement("div")
+div.className="item"
+div.innerHTML=file.name
+
+div.onclick=()=>play(i)
+
+playlist.appendChild(div)
+
+})
+
+}
+
+function play(i){
+
+current=i
+
+let url=URL.createObjectURL(videos[i])
+
+player.src=url
+
+highlight()
+
+}
+
+function highlight(){
+
+document.querySelectorAll(".item").forEach((el,i)=>{
+
+el.classList.toggle("active",i===current)
+
+})
+
+}
+
+player.onended=()=>{
+
+if(repeatMode){
+
+play(current)
+
+}else{
+
+current++
+
+if(current<videos.length){
+
+play(current)
+
+}
+
+}
+
+}
+
+document.getElementById("speed").onchange=function(){
+
+player.playbackRate=this.value
+
+}
+
+function shuffle(){
+
+videos.sort(()=>Math.random()-0.5)
+
+render()
+
+}
+
+function repeat(){
+
+repeatMode=!repeatMode
+alert("Repeat: "+repeatMode)
+
+}
+
+function fullscreen(){
+
+player.requestFullscreen()
+
+}
+
+document.getElementById("search").addEventListener("input",function(){
+
+let s=this.value.toLowerCase()
+
+document.querySelectorAll(".item").forEach(el=>{
+
+el.style.display=el.innerText.toLowerCase().includes(s)?"block":"none"
+
+})
+
+})
+
+document.addEventListener("keydown",e=>{
+
+if(e.code==="Space"){
+
+e.preventDefault()
+
+if(player.paused) player.play()
+else player.pause()
+
+}
+
+if(e.code==="ArrowRight") player.currentTime+=10
+if(e.code==="ArrowLeft") player.currentTime-=10
+
+})
+
+</script>
+
+</body>
+</html>
