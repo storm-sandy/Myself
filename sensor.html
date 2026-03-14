@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sensor Dashboard</title>
+
+<style>
+body{
+font-family:Arial;
+background:#111;
+color:#fff;
+text-align:center;
+}
+
+.box{
+border:1px solid #444;
+margin:10px;
+padding:15px;
+border-radius:10px;
+}
+
+#compass{
+width:200px;
+height:200px;
+margin:auto;
+border:6px solid white;
+border-radius:50%;
+position:relative;
+}
+
+#needle{
+width:4px;
+height:90px;
+background:red;
+position:absolute;
+top:10px;
+left:98px;
+transform-origin:bottom;
+}
+
+.big{
+font-size:35px;
+}
+
+.small{
+font-size:14px;
+color:#aaa;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Ultimate Sensor Dashboard</h2>
+
+<div class="box">
+<div id="clock"></div>
+</div>
+
+<div class="box">
+<h3>Compass</h3>
+<div id="compass">
+<div id="needle"></div>
+</div>
+<div class="big" id="direction">--</div>
+</div>
+
+<div class="box">
+<h3>Speedometer</h3>
+<div class="big"><span id="speed">0</span> km/h</div>
+</div>
+
+<div class="box">
+<h3>Odometer</h3>
+<div class="big"><span id="distance">0</span> km</div>
+</div>
+
+<div class="box">
+<h3>GPS</h3>
+<div>Lat: <span id="lat">-</span></div>
+<div>Lon: <span id="lon">-</span></div>
+<div>Altitude: <span id="alt">-</span></div>
+<div>Accuracy: <span id="acc">-</span></div>
+</div>
+
+<div class="box">
+<h3>Accelerometer</h3>
+<div>X: <span id="ax">0</span></div>
+<div>Y: <span id="ay">0</span></div>
+<div>Z: <span id="az">0</span></div>
+</div>
+
+<div class="box">
+<h3>Gyroscope</h3>
+<div>Alpha: <span id="ga">0</span></div>
+<div>Beta: <span id="gb">0</span></div>
+<div>Gamma: <span id="gg">0</span></div>
+</div>
+
+<script>
+
+function getDirection(deg){
+
+if(deg>=337.5||deg<22.5) return "North";
+if(deg<67.5) return "North-East";
+if(deg<112.5) return "East";
+if(deg<157.5) return "South-East";
+if(deg<202.5) return "South";
+if(deg<247.5) return "South-West";
+if(deg<292.5) return "West";
+return "North-West";
+
+}
+
+window.addEventListener("deviceorientation",e=>{
+
+let heading=e.alpha;
+
+document.getElementById("needle").style.transform=
+"rotate("+heading+"deg)";
+
+document.getElementById("direction").innerText=
+getDirection(heading)+" ("+Math.round(heading)+"°)";
+
+});
+
+let lastLat=null;
+let lastLon=null;
+let distance=0;
+
+navigator.geolocation.watchPosition(pos=>{
+
+let lat=pos.coords.latitude;
+let lon=pos.coords.longitude;
+
+document.getElementById("lat").innerText=lat;
+document.getElementById("lon").innerText=lon;
+document.getElementById("alt").innerText=pos.coords.altitude;
+document.getElementById("acc").innerText=pos.coords.accuracy+" m";
+
+let speed=pos.coords.speed;
+
+if(speed){
+document.getElementById("speed").innerText=
+(speed*3.6).toFixed(1);
+}
+
+if(lastLat){
+
+let R=6371;
+
+let dLat=(lat-lastLat)*Math.PI/180;
+let dLon=(lon-lastLon)*Math.PI/180;
+
+let a=Math.sin(dLat/2)*Math.sin(dLat/2)+
+Math.cos(lastLat*Math.PI/180)*
+Math.cos(lat*Math.PI/180)*
+Math.sin(dLon/2)*Math.sin(dLon/2);
+
+let c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+
+distance+=R*c;
+
+document.getElementById("distance").innerText=
+distance.toFixed(3);
+
+}
+
+lastLat=lat;
+lastLon=lon;
+
+});
+
+window.addEventListener("devicemotion",e=>{
+
+if(e.accelerationIncludingGravity){
+
+document.getElementById("ax").innerText=
+e.accelerationIncludingGravity.x.toFixed(2);
+
+document.getElementById("ay").innerText=
+e.accelerationIncludingGravity.y.toFixed(2);
+
+document.getElementById("az").innerText=
+e.accelerationIncludingGravity.z.toFixed(2);
+
+}
+
+});
+
+window.addEventListener("deviceorientation",e=>{
+
+document.getElementById("ga").innerText=
+e.alpha.toFixed(1);
+
+document.getElementById("gb").innerText=
+e.beta.toFixed(1);
+
+document.getElementById("gg").innerText=
+e.gamma.toFixed(1);
+
+});
+
+setInterval(()=>{
+
+let d=new Date();
+
+document.getElementById("clock").innerHTML=
+d.toLocaleTimeString();
+
+},1000);
+
+</script>
+
+</body>
+</html>
