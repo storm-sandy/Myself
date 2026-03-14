@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Smartwatch OS</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:black;
+color:#00ffcc;
+text-align:center;
+padding:10px;
+}
+
+.card{
+border:1px solid #00ffcc;
+border-radius:12px;
+padding:12px;
+margin:8px;
+}
+
+.big{
+font-size:30px;
+font-weight:bold;
+}
+
+button{
+padding:6px 10px;
+margin:4px;
+}
+
+#compassDial{
+width:120px;
+height:120px;
+border:3px solid #00ffcc;
+border-radius:50%;
+margin:auto;
+position:relative;
+}
+
+#needle{
+width:4px;
+height:60px;
+background:red;
+position:absolute;
+top:0;
+left:58px;
+transform-origin:bottom;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>Smartwatch Dashboard</h2>
+
+<div class="card">
+<div class="big" id="clock"></div>
+<div id="date"></div>
+</div>
+
+<div class="card">
+<h3>Alarm</h3>
+<input type="time" id="alarmTime">
+<button onclick="setAlarm()">Set</button>
+<div id="alarmStatus"></div>
+</div>
+
+<div class="card">
+<h3>Stopwatch</h3>
+<div id="stopwatch">00:00:00</div>
+<button onclick="startSW()">Start</button>
+<button onclick="stopSW()">Stop</button>
+<button onclick="resetSW()">Reset</button>
+</div>
+
+<div class="card">
+<h3>Countdown Timer</h3>
+<input type="number" id="timerInput">
+<div id="timerDisplay">0</div>
+<button onclick="startTimer()">Start</button>
+</div>
+
+<div class="card">
+<h3>Moon Phase</h3>
+<div id="moon"></div>
+</div>
+
+<div class="card">
+<h3>Battery</h3>
+<div id="battery">Checking...</div>
+</div>
+
+<div class="card">
+<h3>Graphical Compass</h3>
+
+<div id="compassDial">
+<div id="needle"></div>
+</div>
+
+<div id="direction"></div>
+
+</div>
+
+<div class="card">
+<h3>GPS Speedometer</h3>
+<div id="speed">0 km/h</div>
+</div>
+
+<div class="card">
+<h3>Step Counter</h3>
+<div id="steps">0</div>
+<button onclick="resetSteps()">Reset</button>
+</div>
+
+<div class="card">
+<h3>Music Player</h3>
+
+<input type="file" id="musicFile" accept="audio/*">
+
+<br>
+
+<button onclick="playMusic()">Play</button>
+<button onclick="pauseMusic()">Pause</button>
+<button onclick="stopMusic()">Stop</button>
+
+</div>
+
+<audio id="audioPlayer"></audio>
+
+<script>
+
+/* CLOCK */
+
+function updateClock(){
+
+let now=new Date()
+
+document.getElementById("clock").innerText=now.toLocaleTimeString()
+
+document.getElementById("date").innerText=now.toDateString()
+
+}
+
+setInterval(updateClock,1000)
+
+/* ALARM */
+
+let alarmTime=null
+
+function setAlarm(){
+
+alarmTime=document.getElementById("alarmTime").value
+
+document.getElementById("alarmStatus").innerText="Alarm set "+alarmTime
+
+}
+
+setInterval(()=>{
+
+let now=new Date()
+
+let time=now.toTimeString().slice(0,5)
+
+if(time==alarmTime){
+
+alert("Alarm ringing")
+
+alarmTime=null
+
+}
+
+},1000)
+
+/* STOPWATCH */
+
+let swInterval
+let swTime=0
+
+function startSW(){
+
+swInterval=setInterval(()=>{
+
+swTime++
+
+displaySW()
+
+},1000)
+
+}
+
+function stopSW(){
+
+clearInterval(swInterval)
+
+}
+
+function resetSW(){
+
+swTime=0
+
+displaySW()
+
+}
+
+function displaySW(){
+
+let h=Math.floor(swTime/3600)
+
+let m=Math.floor((swTime%3600)/60)
+
+let s=swTime%60
+
+document.getElementById("stopwatch").innerText=
+
+String(h).padStart(2,"0")+":"+
+String(m).padStart(2,"0")+":"+
+String(s).padStart(2,"0")
+
+}
+
+/* TIMER */
+
+let timerInt
+
+function startTimer(){
+
+let t=parseInt(document.getElementById("timerInput").value)
+
+clearInterval(timerInt)
+
+timerInt=setInterval(()=>{
+
+if(t<=0){
+
+clearInterval(timerInt)
+
+alert("Timer finished")
+
+return
+
+}
+
+t--
+
+document.getElementById("timerDisplay").innerText=t
+
+},1000)
+
+}
+
+/* MOON */
+
+function moonPhase(){
+
+let lp=2551443
+
+let now=new Date()
+
+let new_moon=new Date(1970,0,7,20,35,0)
+
+let phase=((now-new_moon)/1000)%lp
+
+let days=Math.floor(phase/(24*3600))
+
+document.getElementById("moon").innerText="Lunar Day: "+days
+
+}
+
+moonPhase()
+
+/* BATTERY */
+
+if(navigator.getBattery){
+
+navigator.getBattery().then(function(battery){
+
+function updateBattery(){
+
+document.getElementById("battery").innerText=
+
+Math.round(battery.level*100)+"%"
+
+}
+
+updateBattery()
+
+battery.addEventListener("levelchange",updateBattery)
+
+})
+
+}
+
+/* GRAPHICAL COMPASS */
+
+window.addEventListener("deviceorientation",function(e){
+
+let dir=e.alpha
+
+document.getElementById("needle").style.transform="rotate("+dir+"deg)"
+
+document.getElementById("direction").innerText=Math.round(dir)+"°"
+
+})
+
+/* GPS SPEED */
+
+navigator.geolocation.watchPosition(function(pos){
+
+let speed=pos.coords.speed
+
+if(speed==null) speed=0
+
+speed=speed*3.6
+
+document.getElementById("speed").innerText=speed.toFixed(1)+" km/h"
+
+})
+
+/* STEP COUNTER */
+
+let steps=0
+
+window.addEventListener("devicemotion",function(e){
+
+let acc=e.accelerationIncludingGravity
+
+let total=Math.abs(acc.x)+Math.abs(acc.y)+Math.abs(acc.z)
+
+if(total>25){
+
+steps++
+
+document.getElementById("steps").innerText=steps
+
+}
+
+})
+
+function resetSteps(){
+
+steps=0
+
+document.getElementById("steps").innerText=0
+
+}
+
+/* MUSIC PLAYER */
+
+let player=document.getElementById("audioPlayer")
+
+document.getElementById("musicFile").addEventListener("change",function(){
+
+let file=this.files[0]
+
+player.src=URL.createObjectURL(file)
+
+})
+
+function playMusic(){
+
+player.play()
+
+}
+
+function pauseMusic(){
+
+player.pause()
+
+}
+
+function stopMusic(){
+
+player.pause()
+
+player.currentTime=0
+
+}
+
+</script>
+
+</body>
+</html>
