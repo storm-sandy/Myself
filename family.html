@@ -3,15 +3,70 @@
 <head>
 <meta charset="UTF-8">
 <title>Family Personal Details Tracker</title>
+
 <style>
-body{font-family:Arial;background:#f0f0f0;padding:10px}
-h2{text-align:center}
-table{border-collapse:collapse;width:100%;background:#fff}
-th,td{border:1px solid #ccc;padding:6px;text-align:center}
-th{background:#444;color:white}
-input{width:100%;border:none;text-align:center}
-button{padding:8px;margin:5px}
-.controls{text-align:center;margin-bottom:10px}
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+padding:10px;
+}
+
+h2{
+text-align:center;
+}
+
+.controls{
+text-align:center;
+margin-bottom:10px;
+}
+
+button{
+padding:6px 10px;
+margin:3px;
+}
+
+table{
+border-collapse:collapse;
+width:100%;
+background:white;
+table-layout:fixed;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:5px;
+text-align:center;
+}
+
+th{
+background:#333;
+color:white;
+}
+
+input{
+width:100%;
+border:none;
+padding:4px;
+text-align:center;
+}
+
+.name{width:140px}
+.dob{width:110px}
+.age{width:50px}
+.gender{width:80px}
+.blood{width:70px}
+.phone{width:120px}
+.aadhaar{width:150px}
+.passport{width:130px}
+.driving{width:130px}
+.height{width:70px}
+.weight{width:70px}
+.allergy{width:150px}
+.bank{width:130px}
+.insurance{width:130px}
+.emergency{width:120px}
+
 </style>
 </head>
 
@@ -26,27 +81,30 @@ button{padding:8px;margin:5px}
 </div>
 
 <table id="familyTable">
+
 <thead>
 <tr>
-<th>Name</th>
-<th>DOB</th>
-<th>Age</th>
-<th>Gender</th>
-<th>Blood</th>
-<th>Phone</th>
-<th>Aadhaar</th>
-<th>Passport</th>
-<th>Driving</th>
-<th>Height</th>
-<th>Weight</th>
-<th>Allergy</th>
-<th>Bank</th>
-<th>Insurance</th>
-<th>Emergency</th>
+<th class="name">Name</th>
+<th class="dob">DOB (DD-MM-YYYY)</th>
+<th class="age">Age</th>
+<th class="gender">Gender</th>
+<th class="blood">Blood</th>
+<th class="phone">Phone</th>
+<th class="aadhaar">Aadhaar</th>
+<th class="passport">Passport</th>
+<th class="driving">Driving</th>
+<th class="height">Height</th>
+<th class="weight">Weight</th>
+<th class="allergy">Allergy</th>
+<th class="bank">Bank</th>
+<th class="insurance">Insurance</th>
+<th class="emergency">Emergency</th>
 <th>Delete</th>
 </tr>
 </thead>
+
 <tbody></tbody>
+
 </table>
 
 <script>
@@ -67,7 +125,7 @@ let input=document.createElement("input")
 input.value=data[i]||""
 
 if(i==1){
-input.type="date"
+input.placeholder="DD-MM-YYYY"
 input.onchange=()=>updateAge(row)
 }
 
@@ -79,15 +137,19 @@ row.appendChild(cell)
 }
 
 let del=document.createElement("td")
+
 let btn=document.createElement("button")
 btn.innerText="X"
-btn.onclick=()=>{row.remove();saveData()}
+
+btn.onclick=()=>{
+row.remove()
+saveData()
+}
+
 del.appendChild(btn)
 row.appendChild(del)
 
 table.appendChild(row)
-
-updateAge(row)
 
 }
 
@@ -97,9 +159,19 @@ let dob=row.cells[1].querySelector("input").value
 let ageCell=row.cells[2].querySelector("input")
 
 if(dob){
-let birth=new Date(dob)
-let age=new Date().getFullYear()-birth.getFullYear()
+
+let parts=dob.split("-")
+
+if(parts.length==3){
+
+let birthYear=parseInt(parts[2])
+
+let age=new Date().getFullYear()-birthYear
+
 ageCell.value=age
+
+}
+
 }
 
 saveData()
@@ -111,9 +183,13 @@ function saveData(){
 let data=[]
 
 table.querySelectorAll("tr").forEach(r=>{
+
 let row=[]
+
 r.querySelectorAll("input").forEach(i=>row.push(i.value))
+
 data.push(row)
+
 })
 
 localStorage.setItem("familyData",JSON.stringify(data))
@@ -123,6 +199,7 @@ localStorage.setItem("familyData",JSON.stringify(data))
 function loadData(){
 
 let data=JSON.parse(localStorage.getItem("familyData")||"[]")
+
 data.forEach(r=>addRow(r))
 
 }
@@ -132,15 +209,23 @@ function exportCSV(){
 let csv=""
 
 table.querySelectorAll("tr").forEach(r=>{
+
 let row=[]
+
 r.querySelectorAll("input").forEach(i=>row.push(i.value))
+
 csv+=row.join(",")+"\n"
+
 })
 
 let blob=new Blob([csv])
+
 let a=document.createElement("a")
+
 a.href=URL.createObjectURL(blob)
+
 a.download="family_records.csv"
+
 a.click()
 
 }
@@ -148,6 +233,7 @@ a.click()
 function importCSV(e){
 
 let file=e.target.files[0]
+
 let reader=new FileReader()
 
 reader.onload=function(){
@@ -157,8 +243,11 @@ table.innerHTML=""
 let rows=reader.result.split("\n")
 
 rows.forEach(r=>{
+
 let data=r.split(",")
+
 if(data.length>1) addRow(data)
+
 })
 
 saveData()
