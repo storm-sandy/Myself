@@ -2,292 +2,166 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Family Information System</title>
-
+<title>Family Personal Details Tracker</title>
 <style>
-
-body{
-font-family:Arial;
-background:#f2f2f2;
-padding:20px;
-}
-
-h1{
-text-align:center;
-}
-
-h2{
-background:#333;
-color:white;
-padding:6px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-background:white;
-margin-bottom:20px;
-}
-
-th,td{
-border:1px solid #ccc;
-padding:6px;
-text-align:center;
-}
-
-th{
-background:#444;
-color:white;
-}
-
-td[contenteditable]{
-background:#fffef2;
-}
-
-button{
-padding:6px 12px;
-margin:5px;
-cursor:pointer;
-}
-
-#idcard{
-border:2px solid black;
-width:320px;
-padding:10px;
-background:white;
-display:none;
-}
-
+body{font-family:Arial;background:#f0f0f0;padding:10px}
+h2{text-align:center}
+table{border-collapse:collapse;width:100%;background:#fff}
+th,td{border:1px solid #ccc;padding:6px;text-align:center}
+th{background:#444;color:white}
+input{width:100%;border:none;text-align:center}
+button{padding:8px;margin:5px}
+.controls{text-align:center;margin-bottom:10px}
 </style>
-
 </head>
 
 <body>
 
-<h1>Family Information System</h1>
+<h2>Family Personal Details</h2>
 
+<div class="controls">
+<button onclick="addRow()">Add Member</button>
 <button onclick="exportCSV()">Export CSV</button>
-<input type="file" id="csvFile" onchange="importCSV()">
+<input type="file" onchange="importCSV(event)">
+</div>
 
-<h2>Family Members</h2>
-
-<table id="family">
-
+<table id="familyTable">
+<thead>
 <tr>
 <th>Name</th>
 <th>DOB</th>
 <th>Age</th>
+<th>Gender</th>
 <th>Blood</th>
+<th>Phone</th>
+<th>Aadhaar</th>
+<th>Passport</th>
+<th>Driving</th>
 <th>Height</th>
 <th>Weight</th>
 <th>Allergy</th>
-<th>Bank Account</th>
-<th>Passport</th>
-<th>Driving License</th>
-<th>Ration Card</th>
-<th>Government Schemes</th>
-<th>Phone</th>
-<th>ID Card</th>
+<th>Bank</th>
+<th>Insurance</th>
+<th>Emergency</th>
+<th>Delete</th>
 </tr>
-
-<tr>
-
-<td contenteditable></td>
-
-<td contenteditable onblur="calcAge(this)"></td>
-
-<td></td>
-
-<td contenteditable></td>
-
-<td contenteditable></td>
-
-<td contenteditable></td>
-
-<td contenteditable></td>
-
-<td contenteditable></td>
-
-<td contenteditable></td>
-
-<td contenteditable></td>
-
-<td contenteditable></td>
-
-<td contenteditable></td>
-
-<td contenteditable></td>
-
-<td><button onclick="generateID(this)">Generate</button></td>
-
-</tr>
-
+</thead>
+<tbody></tbody>
 </table>
-
-<button onclick="addRow('family',14)">Add Member</button>
-
-
-<h2>Medicine Records</h2>
-
-<table id="medicine">
-
-<tr>
-<th>Person</th>
-<th>Medicine</th>
-<th>Dose</th>
-<th>Doctor</th>
-<th>Start Date</th>
-<th>Notes</th>
-</tr>
-
-<tr>
-<td contenteditable></td>
-<td contenteditable></td>
-<td contenteditable></td>
-<td contenteditable></td>
-<td contenteditable></td>
-<td contenteditable></td>
-</tr>
-
-</table>
-
-<button onclick="addRow('medicine',6)">Add Medicine</button>
-
-
-<h2>Insurance Policies</h2>
-
-<table id="insurance">
-
-<tr>
-<th>Person</th>
-<th>Policy Type</th>
-<th>Company</th>
-<th>Policy Number</th>
-<th>Expiry</th>
-<th>Amount</th>
-</tr>
-
-<tr>
-<td contenteditable></td>
-<td contenteditable></td>
-<td contenteditable></td>
-<td contenteditable></td>
-<td contenteditable></td>
-<td contenteditable></td>
-</tr>
-
-</table>
-
-<button onclick="addRow('insurance',6)">Add Insurance</button>
-
-
-<h2>Emergency Contacts</h2>
-
-<table id="emergency">
-
-<tr>
-<th>Name</th>
-<th>Relation</th>
-<th>Phone</th>
-<th>Address</th>
-</tr>
-
-<tr>
-<td contenteditable></td>
-<td contenteditable></td>
-<td contenteditable></td>
-<td contenteditable></td>
-</tr>
-
-</table>
-
-<button onclick="addRow('emergency',4)">Add Contact</button>
-
-
-<div id="idcard"></div>
-
 
 <script>
 
-function addRow(tableId,cells){
+let table=document.querySelector("#familyTable tbody")
 
-let table=document.getElementById(tableId)
+function addRow(data=[]){
 
-let row=table.insertRow()
+let row=document.createElement("tr")
 
-for(let i=0;i<cells;i++){
+let cols=15
 
-let cell=row.insertCell()
+for(let i=0;i<cols;i++){
 
-cell.contentEditable=true
+let cell=document.createElement("td")
+let input=document.createElement("input")
+
+input.value=data[i]||""
+
+if(i==1){
+input.type="date"
+input.onchange=()=>updateAge(row)
+}
+
+input.oninput=saveData
+
+cell.appendChild(input)
+row.appendChild(cell)
 
 }
 
+let del=document.createElement("td")
+let btn=document.createElement("button")
+btn.innerText="X"
+btn.onclick=()=>{row.remove();saveData()}
+del.appendChild(btn)
+row.appendChild(del)
+
+table.appendChild(row)
+
+updateAge(row)
+
 }
 
-function calcAge(cell){
+function updateAge(row){
 
-let dob=new Date(cell.innerText)
+let dob=row.cells[1].querySelector("input").value
+let ageCell=row.cells[2].querySelector("input")
 
-let today=new Date()
+if(dob){
+let birth=new Date(dob)
+let age=new Date().getFullYear()-birth.getFullYear()
+ageCell.value=age
+}
 
-let age=today.getFullYear()-dob.getFullYear()
+saveData()
 
-cell.parentNode.cells[2].innerText=age
+}
+
+function saveData(){
+
+let data=[]
+
+table.querySelectorAll("tr").forEach(r=>{
+let row=[]
+r.querySelectorAll("input").forEach(i=>row.push(i.value))
+data.push(row)
+})
+
+localStorage.setItem("familyData",JSON.stringify(data))
+
+}
+
+function loadData(){
+
+let data=JSON.parse(localStorage.getItem("familyData")||"[]")
+data.forEach(r=>addRow(r))
 
 }
 
 function exportCSV(){
 
-let tables=document.querySelectorAll("table")
+let csv=""
 
-let csv=[]
-
-tables.forEach(function(table){
-
-let rows=table.querySelectorAll("tr")
-
-rows.forEach(function(row){
-
-let cols=row.querySelectorAll("th,td")
-
-let data=[]
-
-cols.forEach(function(col){
-
-data.push(col.innerText)
-
+table.querySelectorAll("tr").forEach(r=>{
+let row=[]
+r.querySelectorAll("input").forEach(i=>row.push(i.value))
+csv+=row.join(",")+"\n"
 })
 
-csv.push(data.join(","))
-
-})
-
-csv.push("")
-
-})
-
-let blob=new Blob([csv.join("\n")],{type:"text/csv"})
-
+let blob=new Blob([csv])
 let a=document.createElement("a")
-
 a.href=URL.createObjectURL(blob)
-
-a.download="family_information.csv"
-
+a.download="family_records.csv"
 a.click()
 
 }
 
-function importCSV(){
+function importCSV(e){
 
-let file=document.getElementById("csvFile").files[0]
-
+let file=e.target.files[0]
 let reader=new FileReader()
 
 reader.onload=function(){
 
-alert("CSV loaded. Copy data to tables if needed.")
+table.innerHTML=""
+
+let rows=reader.result.split("\n")
+
+rows.forEach(r=>{
+let data=r.split(",")
+if(data.length>1) addRow(data)
+})
+
+saveData()
 
 }
 
@@ -295,37 +169,7 @@ reader.readAsText(file)
 
 }
 
-function generateID(btn){
-
-let row=btn.parentNode.parentNode
-
-let name=row.cells[0].innerText
-
-let age=row.cells[2].innerText
-
-let blood=row.cells[3].innerText
-
-let phone=row.cells[12].innerText
-
-let card=document.getElementById("idcard")
-
-card.style.display="block"
-
-card.innerHTML=`
-
-<h3>Family ID Card</h3>
-
-Name: ${name}<br>
-
-Age: ${age}<br>
-
-Blood: ${blood}<br>
-
-Phone: ${phone}
-
-`
-
-}
+loadData()
 
 </script>
 
