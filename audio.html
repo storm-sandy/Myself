@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Folder Music Player</title>
+<style>
+body{
+font-family:Arial;
+background:#111;
+color:white;
+text-align:center;
+}
+
+button{
+padding:10px 15px;
+margin:5px;
+font-size:16px;
+}
+
+#playlist{
+margin-top:20px;
+text-align:left;
+max-height:300px;
+overflow:auto;
+border-top:1px solid #444;
+}
+
+.song{
+padding:8px;
+border-bottom:1px solid #333;
+cursor:pointer;
+}
+
+.song:hover{
+background:#222;
+}
+
+.active{
+background:#444;
+}
+</style>
+</head>
+
+<body>
+
+<h2>📁 Folder Music Player</h2>
+
+<button onclick="pickFolder()">Select Music Folder</button>
+
+<br><br>
+
+<audio id="player" controls style="width:90%"></audio>
+
+<br>
+
+<button onclick="prev()">⏮ Prev</button>
+<button onclick="next()">⏭ Next</button>
+
+<div id="playlist"></div>
+
+<script>
+
+let songs=[];
+let current=0;
+
+async function pickFolder(){
+try{
+const dirHandle = await window.showDirectoryPicker();
+songs=[];
+document.getElementById("playlist").innerHTML="";
+
+for await (const entry of dirHandle.values()){
+if(entry.kind==="file" && entry.name.match(/\.(mp3|wav|m4a|ogg)$/i)){
+const file = await entry.getFile();
+songs.push(file);
+}
+}
+
+buildPlaylist();
+}
+catch(e){
+alert("Folder access cancelled");
+}
+}
+
+function buildPlaylist(){
+let list=document.getElementById("playlist");
+list.innerHTML="";
+
+songs.forEach((file,i)=>{
+let div=document.createElement("div");
+div.className="song";
+div.innerText=file.name;
+
+div.onclick=()=>{
+playSong(i);
+};
+
+list.appendChild(div);
+});
+}
+
+function playSong(i){
+current=i;
+let audio=document.getElementById("player");
+
+audio.src=URL.createObjectURL(songs[i]);
+audio.play();
+
+document.querySelectorAll(".song").forEach(e=>e.classList.remove("active"));
+document.querySelectorAll(".song")[i].classList.add("active");
+}
+
+function next(){
+if(current<songs.length-1){
+playSong(current+1);
+}
+}
+
+function prev(){
+if(current>0){
+playSong(current-1);
+}
+}
+
+document.getElementById("player").addEventListener("ended",next);
+
+</script>
+
+</body>
+</html>
