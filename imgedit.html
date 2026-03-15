@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Image Editor</title>
+
+<style>
+body{
+font-family:Arial;
+background:#222;
+color:white;
+text-align:center;
+padding:20px;
+}
+
+.container{
+background:#333;
+padding:15px;
+border-radius:10px;
+max-width:900px;
+margin:auto;
+}
+
+canvas{
+border:1px solid white;
+margin-top:10px;
+max-width:100%;
+}
+
+button,input{
+margin:5px;
+padding:6px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Simple Image Editor</h2>
+
+<input type="file" id="upload" accept="image/*"><br>
+
+Width <input type="number" id="width">
+Height <input type="number" id="height">
+<button onclick="resizeImage()">Resize</button>
+
+<br>
+
+<button onclick="rotate(90)">Rotate 90°</button>
+<button onclick="rotate(-90)">Rotate -90°</button>
+
+<button onclick="flipH()">Flip Horizontal</button>
+<button onclick="flipV()">Flip Vertical</button>
+
+<br>
+
+<button onclick="download()">Download Image</button>
+
+<br>
+
+<canvas id="canvas"></canvas>
+
+</div>
+
+<script>
+
+let canvas=document.getElementById("canvas");
+let ctx=canvas.getContext("2d");
+
+let img=new Image();
+
+document.getElementById("upload").onchange=function(e){
+
+let reader=new FileReader();
+
+reader.onload=function(event){
+
+img.onload=function(){
+
+canvas.width=img.width;
+canvas.height=img.height;
+
+ctx.drawImage(img,0,0);
+
+document.getElementById("width").value=img.width;
+document.getElementById("height").value=img.height;
+
+}
+
+img.src=event.target.result;
+
+}
+
+reader.readAsDataURL(e.target.files[0]);
+
+};
+
+function resizeImage(){
+
+let w=document.getElementById("width").value;
+let h=document.getElementById("height").value;
+
+let temp=document.createElement("canvas");
+let tctx=temp.getContext("2d");
+
+temp.width=w;
+temp.height=h;
+
+tctx.drawImage(canvas,0,0,w,h);
+
+canvas.width=w;
+canvas.height=h;
+
+ctx.drawImage(temp,0,0);
+
+}
+
+function rotate(angle){
+
+let temp=document.createElement("canvas");
+let tctx=temp.getContext("2d");
+
+if(angle==90 || angle==-90){
+temp.width=canvas.height;
+temp.height=canvas.width;
+}else{
+temp.width=canvas.width;
+temp.height=canvas.height;
+}
+
+tctx.translate(temp.width/2,temp.height/2);
+tctx.rotate(angle*Math.PI/180);
+tctx.drawImage(canvas,-canvas.width/2,-canvas.height/2);
+
+canvas.width=temp.width;
+canvas.height=temp.height;
+
+ctx.drawImage(temp,0,0);
+
+}
+
+function flipH(){
+
+ctx.save();
+ctx.scale(-1,1);
+ctx.drawImage(canvas,-canvas.width,0);
+ctx.restore();
+
+}
+
+function flipV(){
+
+ctx.save();
+ctx.scale(1,-1);
+ctx.drawImage(canvas,0,-canvas.height);
+ctx.restore();
+
+}
+
+function download(){
+
+let link=document.createElement("a");
+link.download="edited_image.png";
+link.href=canvas.toDataURL();
+link.click();
+
+}
+
+</script>
+
+</body>
+</html>
