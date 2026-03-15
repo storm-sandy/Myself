@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>100 Real Puzzles</title>
+
+<style>
+body{
+font-family:Arial;
+background:#eef6ff;
+text-align:center;
+padding:20px;
+}
+
+h1{color:#333;}
+
+#box{
+background:white;
+padding:20px;
+max-width:650px;
+margin:auto;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+button{
+padding:10px 15px;
+margin:5px;
+font-size:16px;
+border:none;
+border-radius:6px;
+background:#007bff;
+color:white;
+cursor:pointer;
+}
+
+button:hover{background:#0056b3;}
+
+#answer{
+margin-top:10px;
+font-weight:bold;
+color:green;
+}
+
+ul{
+text-align:left;
+max-width:700px;
+margin:auto;
+margin-top:30px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🧩 100 Puzzle Riddles</h1>
+
+<div id="box">
+<div id="puzzle">Click "Random Puzzle"</div>
+<div id="answer"></div>
+
+<button onclick="randomPuzzle()">Random Puzzle</button>
+<button onclick="showAnswer()">Show Answer</button>
+</div>
+
+<h2>All Puzzles</h2>
+<ul id="list"></ul>
+
+<script>
+
+let puzzles=[
+
+{q:"What has keys but can't open locks?",a:"Keyboard"},
+{q:"What has hands but can't clap?",a:"Clock"},
+{q:"What has a face and two hands but no arms or legs?",a:"Clock"},
+{q:"What has a neck but no head?",a:"Bottle"},
+{q:"What gets wetter the more it dries?",a:"Towel"},
+{q:"What goes up but never comes down?",a:"Age"},
+{q:"What has one eye but can't see?",a:"Needle"},
+{q:"What has many teeth but cannot bite?",a:"Comb"},
+{q:"What can travel around the world while staying in a corner?",a:"Stamp"},
+{q:"What has legs but doesn't walk?",a:"Table"},
+
+{q:"What runs but never walks?",a:"Water"},
+{q:"What has a thumb and four fingers but isn't alive?",a:"Glove"},
+{q:"What has an eye but cannot see?",a:"Needle"},
+{q:"What can fill a room but takes no space?",a:"Light"},
+{q:"What has a head and a tail but no body?",a:"Coin"},
+{q:"What gets bigger the more you take away?",a:"Hole"},
+{q:"What belongs to you but others use it more?",a:"Your name"},
+{q:"What has cities but no houses?",a:"Map"},
+{q:"What can you catch but not throw?",a:"Cold"},
+{q:"What has a ring but no finger?",a:"Phone"},
+
+{q:"What is full of holes but still holds water?",a:"Sponge"},
+{q:"What has a bark but no bite?",a:"Tree"},
+{q:"What goes up and down but stays in place?",a:"Stairs"},
+{q:"What begins with T ends with T and has tea inside?",a:"Teapot"},
+{q:"What has a bed but never sleeps?",a:"River"},
+{q:"What has ears but cannot hear?",a:"Corn"},
+{q:"What flies without wings?",a:"Time"},
+{q:"What has a heart that doesn’t beat?",a:"Artichoke"},
+{q:"What kind of band never plays music?",a:"Rubber band"},
+{q:"What has a tail but no body?",a:"Coin"},
+
+{q:"What can you break even if you never pick it up?",a:"Promise"},
+{q:"What has words but never speaks?",a:"Book"},
+{q:"What gets sharper the more you use it?",a:"Brain"},
+{q:"What goes through cities and fields but never moves?",a:"Road"},
+{q:"What comes down but never goes up?",a:"Rain"},
+{q:"What has branches but no fruit, trunk, or leaves?",a:"Bank"},
+{q:"What is always in front of you but can't be seen?",a:"Future"},
+{q:"What gets shorter as it burns?",a:"Candle"},
+{q:"What has a spine but no bones?",a:"Book"},
+{q:"What has four wheels and flies?",a:"Garbage truck"},
+
+{q:"What begins with an E but only has one letter?",a:"Envelope"},
+{q:"What has a foot but no legs?",a:"Ruler"},
+{q:"What can run but never walks?",a:"River"},
+{q:"What kind of coat is always wet?",a:"Paint"},
+{q:"What is always coming but never arrives?",a:"Tomorrow"},
+{q:"What can be cracked, made, told, and played?",a:"Joke"},
+{q:"What is always hungry and must always be fed?",a:"Fire"},
+{q:"What has teeth but cannot eat?",a:"Comb"},
+{q:"What has a bottom at the top?",a:"Leg"},
+{q:"What building has the most stories?",a:"Library"},
+
+{q:"What has a mouth but can't eat?",a:"River"},
+{q:"What goes up when rain comes down?",a:"Umbrella"},
+{q:"What has 13 hearts but no organs?",a:"Deck of cards"},
+{q:"What gets bigger when more is taken away?",a:"Hole"},
+{q:"What word becomes shorter when you add two letters?",a:"Short"},
+{q:"What runs all around a backyard but never moves?",a:"Fence"},
+{q:"What can be seen once in a minute twice in a moment and never in a thousand years?",a:"Letter M"},
+{q:"What has one head one foot and four legs?",a:"Bed"},
+{q:"What has an endless supply of letters but starts empty?",a:"Mailbox"},
+{q:"What is easy to lift but hard to throw?",a:"Feather"},
+
+{q:"What goes up but never down?",a:"Age"},
+{q:"What can travel around the world while staying in a corner?",a:"Stamp"},
+{q:"What is always running but never tired?",a:"River"},
+{q:"What has a golden head and golden tail but no body?",a:"Coin"},
+{q:"What is always in the middle of March and April?",a:"Letter R"},
+{q:"What has many needles but does not sew?",a:"Pine tree"},
+{q:"What is tall when young and short when old?",a:"Candle"},
+{q:"What month has 28 days?",a:"All months"},
+{q:"What kind of room has no doors or windows?",a:"Mushroom"},
+{q:"What gets wetter the more it dries?",a:"Towel"},
+
+{q:"What kind of tree can you carry in your hand?",a:"Palm"},
+{q:"What has a neck but no head two arms but no hands?",a:"Shirt"},
+{q:"What can you hold without touching?",a:"Conversation"},
+{q:"What goes up and down but never moves?",a:"Stairs"},
+{q:"What gets broken without being held?",a:"Promise"},
+{q:"What can’t talk but will reply when spoken to?",a:"Echo"},
+{q:"What begins with T finishes with T and has tea inside?",a:"Teapot"},
+{q:"What is always in front of you but cannot be seen?",a:"Future"},
+{q:"What can’t be used until it’s broken?",a:"Egg"},
+{q:"What has a face and two hands but no arms?",a:"Clock"},
+
+{q:"What has cities but no houses forests but no trees rivers but no water?",a:"Map"},
+{q:"What flies without wings and cries without eyes?",a:"Cloud"},
+{q:"What can be measured but has no length width or height?",a:"Time"},
+{q:"What has many keys but cannot open a single lock?",a:"Piano"},
+{q:"What has a ring but no finger?",a:"Phone"},
+{q:"What can fill a room but takes no space?",a:"Light"},
+{q:"What gets bigger the more you take away?",a:"Hole"},
+{q:"What has a head and a tail but no body?",a:"Coin"},
+{q:"What has a face but no eyes mouth or nose?",a:"Clock"},
+{q:"What runs but never walks has a mouth but never talks?",a:"River"}
+
+];
+
+let current=0;
+
+function randomPuzzle(){
+current=Math.floor(Math.random()*puzzles.length);
+document.getElementById("puzzle").innerText=puzzles[current].q;
+document.getElementById("answer").innerText="";
+}
+
+function showAnswer(){
+document.getElementById("answer").innerText="Answer: "+puzzles[current].a;
+}
+
+let ul=document.getElementById("list");
+
+puzzles.forEach((p,i)=>{
+let li=document.createElement("li");
+li.innerText=(i+1)+". "+p.q+" (Answer: "+p.a+")";
+ul.appendChild(li);
+});
+
+</script>
+
+</body>
+</html>
