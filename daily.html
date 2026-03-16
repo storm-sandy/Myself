@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Attendance System</title>
+<title>Attendance Dashboard</title>
 
 <style>
 
@@ -32,6 +32,10 @@ background:#333;
 color:white;
 }
 
+td{
+cursor:text;
+}
+
 button{
 padding:6px 10px;
 margin:3px;
@@ -40,9 +44,10 @@ cursor:pointer;
 
 canvas{
 width:100%;
-height:300px;
+height:320px;
 background:white;
 border:1px solid #ccc;
+margin-bottom:20px;
 }
 
 .controls{
@@ -50,11 +55,30 @@ text-align:center;
 margin-bottom:10px;
 }
 
+.calendar{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:5px;
+background:white;
+padding:10px;
+border:1px solid #ccc;
+}
+
+.day{
+padding:10px;
+border:1px solid #ddd;
+text-align:center;
+font-size:12px;
+}
+
+.present{background:#b2f2bb}
+.absent{background:#ffb3b3}
+
 .report{
 background:white;
 padding:10px;
 border:1px solid #ccc;
-margin-top:20px;
+margin-top:10px;
 }
 
 </style>
@@ -62,7 +86,7 @@ margin-top:20px;
 
 <body>
 
-<h2>Daily Attendance System</h2>
+<h2>Attendance Dashboard</h2>
 
 <div class="controls">
 <button onclick="addRow()">Add Attendance</button>
@@ -86,20 +110,23 @@ margin-top:20px;
 <tbody></tbody>
 </table>
 
-<h3>Daily Hours Vertical Bar Graph</h3>
+<h3>Daily Hours Graph</h3>
 <canvas id="chart"></canvas>
 
-<div class="report" id="report"></div>
+<h3>Monthly Calendar</h3>
+<div id="calendar" class="calendar"></div>
+
+<div id="report" class="report"></div>
 
 <script>
 
 let table=document.querySelector("#table tbody")
 
-function getTime(){
+function nowTime(){
 return new Date().toLocaleTimeString()
 }
 
-function getDate(){
+function today(){
 return new Date().toISOString().split("T")[0]
 }
 
@@ -109,9 +136,9 @@ let row=table.insertRow()
 
 row.innerHTML=`
 <td contenteditable="true">Name</td>
-<td>${getDate()}</td>
-<td>${getTime()}</td>
-<td><button onclick="timeOut(this)">Time Out</button></td>
+<td contenteditable="true">${today()}</td>
+<td contenteditable="true">${nowTime()}</td>
+<td contenteditable="true"></td>
 <td>0</td>
 <td contenteditable="true"></td>
 <td><button onclick="deleteRow(this)">Delete</button></td>
@@ -119,34 +146,22 @@ row.innerHTML=`
 
 saveData()
 updateGraph()
-
-}
-
-function timeOut(btn){
-
-let row=btn.parentElement.parentElement
-
-let inTime=row.cells[2].innerText
-let outTime=getTime()
-
-row.cells[3].innerText=outTime
-
-let start=new Date("1970/01/01 "+inTime)
-let end=new Date("1970/01/01 "+outTime)
-
-let diff=(end-start)/3600000
-
-row.cells[4].innerText=diff.toFixed(2)
-
-saveData()
-updateGraph()
+generateCalendar()
 
 }
 
 function deleteRow(btn){
 btn.parentElement.parentElement.remove()
 saveData()
-updateGraph()
+updateAll()
+}
+
+function clearAll(){
+if(confirm("Clear all data?")){
+localStorage.removeItem("attendanceData")
+table.innerHTML=""
+updateAll()
+}
 }
 
 function saveData(){
@@ -158,12 +173,47 @@ let data=localStorage.getItem("attendanceData")
 if(data) table.innerHTML=data
 }
 
-function clearAll(){
-if(confirm("Clear all data?")){
-localStorage.removeItem("attendanceData")
-table.innerHTML=""
+function updateAll(){
+calculateHours()
 updateGraph()
+generateCalendar()
 }
+
+document.addEventListener("input",function(e){
+
+if(e.target.closest("table")){
+calculateHours()
+saveData()
+updateGraph()
+generateCalendar()
+}
+
+})
+
+function calculateHours(){
+
+let rows=table.querySelectorAll("tr")
+
+rows.forEach(r=>{
+
+let inTime=r.cells[2]?.innerText
+let outTime=r.cells[3]?.innerText
+
+if(inTime && outTime){
+
+let start=new Date("1970/01/01 "+inTime)
+let end=new Date("1970/01/01 "+outTime)
+
+let diff=(end-start)/3600000
+
+if(!isNaN(diff)){
+r.cells[4].innerText=diff.toFixed(2)
+}
+
+}
+
+})
+
 }
 
 function exportCSV(){
@@ -188,8 +238,8 @@ a.click()
 
 function updateGraph(){
 
-let dates=[]
-let hours=[]
+let labels=[]
+let data=[]
 
 let rows=table.querySelectorAll("tr")
 
@@ -199,13 +249,13 @@ let date=r.cells[1]?.innerText
 let h=parseFloat(r.cells[4]?.innerText)
 
 if(date && !isNaN(h)){
-dates.push(date)
-hours.push(h)
+labels.push(date)
+data.push(h)
 }
 
 })
 
-drawGraph(dates,hours)
+drawGraph(labels,data)
 
 }
 
@@ -215,41 +265,91 @@ let canvas=document.getElementById("chart")
 let ctx=canvas.getContext("2d")
 
 canvas.width=canvas.offsetWidth
-canvas.height=300
+canvas.height=320
 
 ctx.clearRect(0,0,canvas.width,canvas.height)
 
-let max=Math.max(...data,1)
+let max=Math.max(...data,8)
 
 let margin=40
-let graphHeight=200
-let graphBottom=250
+let height=200
+let bottom=260
+
+for(let i=0;i<=max;i++){
+
+let y=bottom-(i/max)*height
+
+ctx.strokeStyle="#eee"
+ctx.beginPath()
+ctx.moveTo(margin,y)
+ctx.lineTo(canvas.width-margin,y)
+ctx.stroke()
+
+ctx.fillStyle="#000"
+ctx.fillText(i+"h",5,y+3)
+
+}
 
 let barWidth=(canvas.width-margin*2)/data.length
 
-ctx.beginPath()
-ctx.moveTo(margin,graphBottom)
-ctx.lineTo(canvas.width-margin,graphBottom)
-ctx.stroke()
-
 data.forEach((v,i)=>{
 
-let barHeight=(v/max)*graphHeight
-
+let barHeight=(v/max)*height
 let x=margin+i*barWidth+10
-let y=graphBottom-barHeight
+let y=bottom-barHeight
 
-ctx.fillStyle="#2196F3"
-
+ctx.fillStyle="#4CAF50"
 ctx.fillRect(x,y,barWidth-20,barHeight)
 
 ctx.fillStyle="#000"
-ctx.font="10px Arial"
-
-ctx.fillText(labels[i],x-5,graphBottom+15)
-ctx.fillText(v+"h",x+5,y-5)
+ctx.fillText(labels[i].slice(5),x,280)
 
 })
+
+}
+
+function generateCalendar(){
+
+let calendar=document.getElementById("calendar")
+calendar.innerHTML=""
+
+let rows=table.querySelectorAll("tr")
+let status={}
+
+rows.forEach(r=>{
+
+let date=r.cells[1]?.innerText
+let hours=parseFloat(r.cells[4]?.innerText)
+
+if(date){
+
+let day=date.split("-")[2]
+
+if(hours>0){
+status[day]="present"
+}else{
+status[day]="absent"
+}
+
+}
+
+})
+
+for(let i=1;i<=31;i++){
+
+let dayStr=String(i).padStart(2,"0")
+
+let div=document.createElement("div")
+div.className="day"
+
+if(status[dayStr]=="present") div.classList.add("present")
+if(status[dayStr]=="absent") div.classList.add("absent")
+
+div.innerText=i
+
+calendar.appendChild(div)
+
+}
 
 }
 
@@ -277,9 +377,8 @@ document.getElementById("report").innerHTML=
 
 `
 <h3>Monthly Attendance Report</h3>
-
-Total Days Present : ${days}<br>
-Total Hours Worked : ${totalHours.toFixed(2)}<br>
+Days Present : ${days}<br>
+Total Hours : ${totalHours.toFixed(2)}<br>
 Average Hours / Day : ${avg.toFixed(2)}
 `
 
@@ -288,7 +387,7 @@ Average Hours / Day : ${avg.toFixed(2)}
 window.addEventListener("resize",updateGraph)
 
 loadData()
-updateGraph()
+updateAll()
 
 </script>
 
