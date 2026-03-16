@@ -14,6 +14,14 @@ padding:20px;
 
 h2{text-align:center}
 
+.controls{text-align:center;margin-bottom:10px}
+
+button{
+padding:6px 10px;
+margin:3px;
+cursor:pointer;
+}
+
 table{
 width:100%;
 border-collapse:collapse;
@@ -32,16 +40,6 @@ background:#333;
 color:white;
 }
 
-td{
-cursor:text;
-}
-
-button{
-padding:6px 10px;
-margin:3px;
-cursor:pointer;
-}
-
 canvas{
 width:100%;
 height:320px;
@@ -50,9 +48,12 @@ border:1px solid #ccc;
 margin-bottom:20px;
 }
 
-.controls{
-text-align:center;
-margin-bottom:10px;
+.calendarHeader{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:10px;
+margin-bottom:5px;
 }
 
 .calendar{
@@ -68,7 +69,7 @@ border:1px solid #ccc;
 padding:10px;
 border:1px solid #ddd;
 text-align:center;
-font-size:12px;
+cursor:pointer;
 }
 
 .present{background:#b2f2bb}
@@ -79,6 +80,11 @@ background:white;
 padding:10px;
 border:1px solid #ccc;
 margin-top:10px;
+}
+
+.week{
+font-weight:bold;
+background:#eee;
 }
 
 </style>
@@ -92,6 +98,7 @@ margin-top:10px;
 <button onclick="addRow()">Add Attendance</button>
 <button onclick="exportCSV()">Export CSV</button>
 <button onclick="monthlyReport()">Monthly Report</button>
+<button onclick="yearlyReport()">Yearly Report</button>
 <button onclick="clearAll()">Clear All</button>
 </div>
 
@@ -113,7 +120,19 @@ margin-top:10px;
 <h3>Daily Hours Graph</h3>
 <canvas id="chart"></canvas>
 
-<h3>Monthly Calendar</h3>
+<h3>Calendar</h3>
+
+<div class="calendarHeader">
+<button onclick="prevMonth()">◀</button>
+<span id="monthLabel"></span>
+<button onclick="nextMonth()">▶</button>
+</div>
+
+<div class="calendar week">
+<div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div>
+<div>Thu</div><div>Fri</div><div>Sat</div>
+</div>
+
 <div id="calendar" class="calendar"></div>
 
 <div id="report" class="report"></div>
@@ -121,6 +140,8 @@ margin-top:10px;
 <script>
 
 let table=document.querySelector("#table tbody")
+
+let current=new Date()
 
 function nowTime(){
 return new Date().toLocaleTimeString()
@@ -145,8 +166,7 @@ row.innerHTML=`
 `
 
 saveData()
-updateGraph()
-generateCalendar()
+updateAll()
 
 }
 
@@ -313,6 +333,15 @@ function generateCalendar(){
 let calendar=document.getElementById("calendar")
 calendar.innerHTML=""
 
+let year=current.getFullYear()
+let month=current.getMonth()
+
+document.getElementById("monthLabel").innerText=
+current.toLocaleString("default",{month:"long",year:"numeric"})
+
+let firstDay=new Date(year,month,1).getDay()
+let daysInMonth=new Date(year,month+1,0).getDate()
+
 let rows=table.querySelectorAll("tr")
 let status={}
 
@@ -323,7 +352,11 @@ let hours=parseFloat(r.cells[4]?.innerText)
 
 if(date){
 
-let day=date.split("-")[2]
+let d=new Date(date)
+
+if(d.getMonth()==month && d.getFullYear()==year){
+
+let day=d.getDate()
 
 if(hours>0){
 status[day]="present"
@@ -333,19 +366,31 @@ status[day]="absent"
 
 }
 
+}
+
 })
 
-for(let i=1;i<=31;i++){
+for(let i=0;i<firstDay;i++){
+calendar.appendChild(document.createElement("div"))
+}
 
-let dayStr=String(i).padStart(2,"0")
+for(let i=1;i<=daysInMonth;i++){
 
 let div=document.createElement("div")
 div.className="day"
 
-if(status[dayStr]=="present") div.classList.add("present")
-if(status[dayStr]=="absent") div.classList.add("absent")
+if(status[i]=="present") div.classList.add("present")
+if(status[i]=="absent") div.classList.add("absent")
 
 div.innerText=i
+
+div.onclick=function(){
+
+let date=year+"-"+String(month+1).padStart(2,"0")+"-"+String(i).padStart(2,"0")
+
+openAttendance(date)
+
+}
 
 calendar.appendChild(div)
 
@@ -353,11 +398,51 @@ calendar.appendChild(div)
 
 }
 
+function openAttendance(date){
+
+let rows=table.querySelectorAll("tr")
+
+for(let r of rows){
+
+if(r.cells[1].innerText==date){
+r.scrollIntoView({behavior:"smooth"})
+return
+}
+
+}
+
+let row=table.insertRow()
+
+row.innerHTML=`
+<td contenteditable="true">Name</td>
+<td contenteditable="true">${date}</td>
+<td contenteditable="true">${nowTime()}</td>
+<td contenteditable="true"></td>
+<td>0</td>
+<td contenteditable="true"></td>
+<td><button onclick="deleteRow(this)">Delete</button></td>
+`
+
+saveData()
+updateAll()
+
+}
+
+function prevMonth(){
+current.setMonth(current.getMonth()-1)
+generateCalendar()
+}
+
+function nextMonth(){
+current.setMonth(current.getMonth()+1)
+generateCalendar()
+}
+
 function monthlyReport(){
 
 let rows=table.querySelectorAll("tr")
 
-let totalHours=0
+let total=0
 let days=0
 
 rows.forEach(r=>{
@@ -365,22 +450,48 @@ rows.forEach(r=>{
 let h=parseFloat(r.cells[4]?.innerText)
 
 if(!isNaN(h)){
-totalHours+=h
+total+=h
 days++
 }
 
 })
 
-let avg=days?totalHours/days:0
+let avg=days?total/days:0
 
 document.getElementById("report").innerHTML=
 
-`
-<h3>Monthly Attendance Report</h3>
-Days Present : ${days}<br>
-Total Hours : ${totalHours.toFixed(2)}<br>
-Average Hours / Day : ${avg.toFixed(2)}
-`
+`<h3>Monthly Report</h3>
+Days Present: ${days}<br>
+Total Hours: ${total.toFixed(2)}<br>
+Average Hours: ${avg.toFixed(2)}`
+
+}
+
+function yearlyReport(){
+
+let rows=table.querySelectorAll("tr")
+
+let months=new Array(12).fill(0)
+
+rows.forEach(r=>{
+
+let date=r.cells[1]?.innerText
+let h=parseFloat(r.cells[4]?.innerText)
+
+if(date && !isNaN(h)){
+let m=new Date(date).getMonth()
+months[m]+=h
+}
+
+})
+
+let html="<h3>Yearly Report</h3>"
+
+months.forEach((h,i)=>{
+html+=`Month ${i+1} : ${h.toFixed(2)} hours<br>`
+})
+
+document.getElementById("report").innerHTML=html
 
 }
 
