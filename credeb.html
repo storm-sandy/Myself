@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Personal Finance Dashboard</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+padding:20px;
+}
+
+h2{text-align:center}
+
+.controls{margin-bottom:15px}
+
+input,select{
+padding:10px;
+font-size:16px;
+width:100%;
+margin-top:5px;
+box-sizing:border-box;
+}
+
+button{
+padding:8px 12px;
+cursor:pointer;
+margin:3px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+margin-top:10px;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:10px;
+text-align:center;
+}
+
+th{background:#eee}
+
+.summary{
+margin-top:20px;
+font-size:18px;
+}
+
+.sectionTitle{
+margin-top:30px;
+font-size:20px;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>Personal Finance Dashboard</h2>
+
+<div class="controls">
+
+<button onclick="exportCSV()">Export CSV</button>
+<input type="file" accept=".csv" onchange="importCSV(event)">
+
+<br><br>
+
+<label>Filter Month</label>
+<select id="monthFilter" onchange="render()">
+<option value="All">All Months</option>
+</select>
+
+<label>Search Description</label>
+<input type="text" id="searchDesc" onkeyup="render()" placeholder="Search...">
+
+</div>
+
+<table>
+
+<tr>
+<th>Date</th>
+<th>Month</th>
+<th>Type</th>
+<th>Description</th>
+<th>Credit</th>
+<th>Debit</th>
+<th>Action</th>
+</tr>
+
+<tr>
+
+<td><input type="date" id="date"></td>
+<td id="monthDisplay"></td>
+
+<td>
+<select id="type">
+<option>Rent</option>
+<option>HL</option>
+<option>PL</option>
+<option>Other</option>
+</select>
+</td>
+
+<td><input type="text" id="desc"></td>
+<td><input type="number" id="credit"></td>
+<td><input type="number" id="debit"></td>
+
+<td><button onclick="addOrUpdate()">Save</button></td>
+
+</tr>
+
+<tbody id="dataTable"></tbody>
+
+</table>
+
+<div class="summary">
+Total Credit: ₹<span id="totalCredit">0</span><br>
+Total Debit: ₹<span id="totalDebit">0</span><br>
+Balance: ₹<span id="balance">0</span>
+</div>
+
+<div class="sectionTitle">Category Totals</div>
+
+<table id="categoryTable">
+<tr>
+<th>Category</th>
+<th>Total Debit</th>
+</tr>
+</table>
+
+<div class="sectionTitle">Monthly Summary</div>
+
+<table id="monthlyTable">
+<tr>
+<th>Month</th>
+<th>Total Credit</th>
+<th>Total Debit</th>
+<th>Balance</th>
+</tr>
+</table>
+
+<script>
+
+let data=JSON.parse(localStorage.getItem("financeData"))||[];
+let editIndex=-1;
+
+function getMonthYear(date){
+
+let d=new Date(date);
+
+let m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+return m[d.getMonth()]+" "+d.getFullYear();
+
+}
+
+document.getElementById("date").addEventListener("change",function(){
+
+if(this.value)
+document.getElementById("monthDisplay").innerText=getMonthYear(this.value);
+
+});
+
+function save(){
+
+localStorage.setItem("financeData",JSON.stringify(data));
+updateMonthFilter();
+render();
+
+}
+
+function addOrUpdate(){
+
+let date=document.getElementById("date").value;
+if(!date)return;
+
+let rec={
+date:date,
+month:getMonthYear(date),
+type:document.getElementById("type").value,
+desc:document.getElementById("desc").value,
+credit:document.getElementById("credit").value,
+debit:document.getElementById("debit").value
+};
+
+if(editIndex==-1)
+data.push(rec);
+else{
+data[editIndex]=rec;
+editIndex=-1;
+}
+
+clearForm();
+save();
+
+}
+
+function editRow(i){
+
+let d=data[i];
+
+document.getElementById("date").value=d.date;
+document.getElementById("monthDisplay").innerText=d.month;
+document.getElementById("type").value=d.type;
+document.getElementById("desc").value=d.desc;
+document.getElementById("credit").value=d.credit;
+document.getElementById("debit").value=d.debit;
+
+editIndex=i;
+
+window.scrollTo(0,0);
+
+}
+
+function deleteRow(i){
+
+if(confirm("Delete record?")){
+data.splice(i,1);
+save();
+}
+
+}
+
+function clearForm(){
+
+document.getElementById("desc").value="";
+document.getElementById("credit").value="";
+document.getElementById("debit").value="";
+
+}
+
+function updateMonthFilter(){
+
+let months=[...new Set(data.map(d=>d.month))];
+
+let f=document.getElementById("monthFilter");
+
+f.innerHTML='<option value="All">All Months</option>';
+
+months.forEach(m=>{
+let o=document.createElement("option");
+o.value=m;
+o.textContent=m;
+f.appendChild(o);
+});
+
+}
+
+function render(){
+
+let filter=document.getElementById("monthFilter").value;
+let search=document.getElementById("searchDesc").value.toLowerCase();
+
+let table="";
+let totalCredit=0;
+let totalDebit=0;
+
+let cat={Rent:0,HL:0,PL:0,Other:0};
+
+let monthly={};
+
+data.forEach((d,i)=>{
+
+if(filter!="All" && d.month!=filter) return;
+
+if(search && !d.desc.toLowerCase().includes(search)) return;
+
+let c=Number(d.credit)||0;
+let db=Number(d.debit)||0;
+
+totalCredit+=c;
+totalDebit+=db;
+
+cat[d.type]+=db;
+
+if(!monthly[d.month])
+monthly[d.month]={credit:0,debit:0};
+
+monthly[d.month].credit+=c;
+monthly[d.month].debit+=db;
+
+table+=`
+<tr>
+<td>${d.date}</td>
+<td>${d.month}</td>
+<td>${d.type}</td>
+<td>${d.desc}</td>
+<td>${c}</td>
+<td>${db}</td>
+<td>
+<button onclick="editRow(${i})">Edit</button>
+<button onclick="deleteRow(${i})">Delete</button>
+</td>
+</tr>
+`;
+
+});
+
+document.getElementById("dataTable").innerHTML=table;
+
+document.getElementById("totalCredit").innerText=totalCredit;
+document.getElementById("totalDebit").innerText=totalDebit;
+document.getElementById("balance").innerText=totalCredit-totalDebit;
+
+renderCategory(cat);
+renderMonthly(monthly);
+
+}
+
+function renderCategory(cat){
+
+let html=`<tr><th>Category</th><th>Total Debit</th></tr>`;
+
+for(let k in cat)
+html+=`<tr><td>${k}</td><td>₹${cat[k]}</td></tr>`;
+
+document.getElementById("categoryTable").innerHTML=html;
+
+}
+
+function renderMonthly(monthly){
+
+let html=`<tr>
+<th>Month</th>
+<th>Total Credit</th>
+<th>Total Debit</th>
+<th>Balance</th>
+</tr>`;
+
+for(let m in monthly){
+
+let c=monthly[m].credit;
+let d=monthly[m].debit;
+
+html+=`
+<tr>
+<td>${m}</td>
+<td>₹${c}</td>
+<td>₹${d}</td>
+<td>₹${c-d}</td>
+</tr>
+`;
+
+}
+
+document.getElementById("monthlyTable").innerHTML=html;
+
+}
+
+function exportCSV(){
+
+let csv="Date,Month,Type,Description,Credit,Debit\n";
+
+data.forEach(d=>{
+csv+=`${d.date},${d.month},${d.type},${d.desc},${d.credit},${d.debit}\n`;
+});
+
+let blob=new Blob([csv],{type:"text/csv"});
+let url=URL.createObjectURL(blob);
+
+let a=document.createElement("a");
+a.href=url;
+a.download="finance_report.csv";
+a.click();
+
+}
+
+function importCSV(e){
+
+let file=e.target.files[0];
+if(!file)return;
+
+let r=new FileReader();
+
+r.onload=function(ev){
+
+let rows=ev.target.result.split("\n").slice(1);
+
+rows.forEach(row=>{
+
+let c=row.split(",");
+
+if(c.length<6)return;
+
+data.push({
+date:c[0],
+month:c[1],
+type:c[2],
+desc:c[3],
+credit:c[4],
+debit:c[5]
+});
+
+});
+
+save();
+
+};
+
+r.readAsText(file);
+
+}
+
+updateMonthFilter();
+render();
+
+</script>
+
+</body>
+</html>
