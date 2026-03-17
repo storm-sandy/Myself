@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Food Tracker</title>
+
+<style>
+body{
+font-family:Arial;
+background:#f2f2f2;
+padding:20px;
+}
+
+h2{text-align:center}
+
+.container{
+background:white;
+padding:15px;
+border-radius:8px;
+max-width:900px;
+margin:auto;
+}
+
+input,select,button{
+padding:8px;
+margin:5px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:8px;
+text-align:center;
+}
+
+button{
+cursor:pointer;
+}
+
+.export{
+background:#4CAF50;
+color:white;
+border:none;
+}
+
+.delete{
+background:#ff4d4d;
+color:white;
+border:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Food Tracker</h2>
+
+<input type="datetime-local" id="datetime">
+
+<select id="type">
+<option>Breakfast</option>
+<option>Morning Snack</option>
+<option>Lunch</option>
+<option>Evening Snack</option>
+<option>Dinner</option>
+</select>
+
+<input type="text" id="desc" placeholder="Food Description (e.g. Dal Rice)">
+<input type="text" id="amount" placeholder="Amount (e.g. 2 roti)">
+
+<button onclick="addFood()">Add</button>
+<button class="export" onclick="exportCSV()">Export CSV</button>
+
+<table id="foodTable">
+<thead>
+<tr>
+<th>Date & Time</th>
+<th>Food Type</th>
+<th>Description</th>
+<th>Amount</th>
+<th>Delete</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+</table>
+
+</div>
+
+<script>
+
+let foods = JSON.parse(localStorage.getItem("foods")) || []
+
+function save(){
+localStorage.setItem("foods",JSON.stringify(foods))
+}
+
+function render(){
+
+let tbody=document.querySelector("#foodTable tbody")
+tbody.innerHTML=""
+
+foods.forEach((f,i)=>{
+
+let row=`
+<tr>
+<td>${f.datetime}</td>
+<td>${f.type}</td>
+<td>${f.desc}</td>
+<td>${f.amount}</td>
+<td><button class="delete" onclick="del(${i})">Delete</button></td>
+</tr>
+`
+
+tbody.innerHTML+=row
+
+})
+
+}
+
+function addFood(){
+
+let datetime=document.getElementById("datetime").value
+let type=document.getElementById("type").value
+let desc=document.getElementById("desc").value
+let amount=document.getElementById("amount").value
+
+if(!datetime || !desc || !amount){
+alert("Enter all details")
+return
+}
+
+foods.push({datetime,type,desc,amount})
+
+save()
+render()
+
+document.getElementById("desc").value=""
+document.getElementById("amount").value=""
+
+}
+
+function del(i){
+
+foods.splice(i,1)
+
+save()
+render()
+
+}
+
+function exportCSV(){
+
+let csv="DateTime,Food Type,Description,Amount\n"
+
+foods.forEach(f=>{
+csv+=`${f.datetime},${f.type},${f.desc},${f.amount}\n`
+})
+
+let blob=new Blob([csv],{type:"text/csv"})
+let url=URL.createObjectURL(blob)
+
+let a=document.createElement("a")
+a.href=url
+a.download="food_tracker.csv"
+a.click()
+
+}
+
+render()
+
+</script>
+
+</body>
+</html>
