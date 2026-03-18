@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Fitness Tracker PRO</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{font-family:Arial; background:#f4f6f9; padding:20px;}
+h2{text-align:center;}
+.card{background:white;padding:15px;margin-bottom:20px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
+input,select,button{padding:8px;margin:5px;}
+table{width:100%; border-collapse:collapse;}
+th,td{border:1px solid #ccc; padding:6px; text-align:center;}
+.calendar-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+.calendar-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:5px;}
+.day{border:1px solid #ddd; padding:10px; cursor:pointer; text-align:center;}
+.day:hover{background:#cfe9ff;}
+.activeDay{background:#2196f3;color:white;}
+.today{border:2px solid #f00;}
+.exercise-btn{margin:3px;padding:5px;cursor:pointer;background:#ddd;border-radius:5px;}
+.exercise-btn:hover{background:#6ec1ff;color:white;}
+</style>
+</head>
+<body>
+
+<h2>🏋 Fitness Tracker PRO</h2>
+
+<div class="card">
+<h3>Add Exercise</h3>
+<input type="date" id="date">
+<input type="time" id="time">
+<select id="exercise">
+<option>Running</option>
+<option>Walking</option>
+<option>Gym</option>
+<option>Cycling</option>
+<option>Yoga</option>
+<option>Workout</option>
+</select>
+<input type="number" id="minutes" placeholder="Minutes">
+<button onclick="addExercise()">Add</button>
+<button onclick="exportCSV()">Export CSV</button>
+<input type="file" onchange="importCSV(event)">
+</div>
+
+<div class="card">
+<h3>Calendar</h3>
+<div class="calendar-header">
+<button onclick="prevMonth()">◀ Prev</button>
+<h4 id="monthYear"></h4>
+<button onclick="nextMonth()">Next ▶</button>
+</div>
+<div id="calendar" class="calendar-grid"></div>
+<div id="dayExercises"></div>
+</div>
+
+<div class="card">
+<h3>Exercise Records</h3>
+<table id="table">
+<tr><th>Date</th><th>Time</th><th>Exercise</th><th>Minutes</th><th>Delete</th></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Daily Chart</h3>
+<canvas id="dailyChart"></canvas>
+</div>
+
+<div class="card">
+<h3>Monthly Chart</h3>
+<canvas id="monthlyChart"></canvas>
+</div>
+
+<div class="card">
+<h3>Yearly Chart</h3>
+<canvas id="yearlyChart"></canvas>
+</div>
+
+<script>
+let exercises = JSON.parse(localStorage.getItem("exercises"))||[];
+let today = new Date();
+let currentMonth = today.getMonth();
+let currentYear = today.getFullYear();
+const monthNames=["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+// Global chart instances
+let dailyChartInstance=null;
+let monthlyChartInstance=null;
+let yearlyChartInstance=null;
+
+function save(){ localStorage.setItem("exercises",JSON.stringify(exercises)) }
+
+function addExercise(){
+if(!date.value || !time.value || !exercise.value || !minutes.value) return;
+exercises.push({date:date.value,time:time.value,exercise:exercise.value,minutes:Number(minutes.value)});
+save(); renderTable(); renderCharts(); renderCalendar();
+}
+
+function renderTable(){
+table.innerHTML=`<tr><th>Date</th><th>Time</th><th>Exercise</th><th>Minutes</th><th>Delete</th></tr>`;
+exercises.forEach((e,i)=>{
+table.innerHTML+=`<tr>
+<td>${e.date}</td><td>${e.time}</td><td>${e.exercise}</td><td>${e.minutes}</td>
+<td><button onclick="del(${i})">X</button></td></tr>`;
+});
+}
+
+function del(i){ exercises.splice(i,1); save(); renderTable(); renderCharts(); renderCalendar(); }
+
+function renderCalendar(){
+calendar.innerHTML="";
+dayExercises.innerHTML="";
+let firstDay=new Date(currentYear,currentMonth,1).getDay();
+let daysInMonth=new Date(currentYear,currentMonth+1,0).getDate();
+monthYear.innerText=monthNames[currentMonth]+" "+currentYear;
+
+// Empty cells for alignment
+for(let i=0;i<firstDay;i++){ let empty=document.createElement("div"); calendar.appendChild(empty); }
+
+// Days
+for(let d=1;d<=daysInMonth;d++){
+let dayDiv=document.createElement("div");
+dayDiv.className="day"; dayDiv.innerText=d;
+let fullDate=`${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+dayDiv.onclick=()=>{
+document.querySelectorAll(".day").forEach(x=>x.classList.remove("activeDay"));
+dayDiv.classList.add("activeDay");
+date.value=fullDate;
+showDayExercises(fullDate);
+}
+if(d===today.getDate() && currentMonth===today.getMonth() && currentYear===today.getFullYear()){ dayDiv.classList.add("today"); }
+calendar.appendChild(dayDiv);
+}
+}
+
+function showDayExercises(day){
+dayExercises.innerHTML="<h4>Exercises for "+day+"</h4>";
+let dayEx=exercises.filter(e=>e.date===day);
+if(dayEx.length===0){ dayExercises.innerHTML+="<p>No exercises</p>"; return;}
+dayEx.forEach(e=>{
+let btn=document.createElement("button");
+btn.className="exercise-btn"; btn.innerText=e.exercise+" ("+e.minutes+"min)";
+btn.onclick=()=>{ exercise.value=e.exercise; minutes.value=e.minutes; time.value=e.time; };
+dayExercises.appendChild(btn);
+});
+}
+
+function prevMonth(){ currentMonth--; if(currentMonth<0){currentMonth=11;currentYear--;} renderCalendar();}
+function nextMonth(){ currentMonth++; if(currentMonth>11){currentMonth=0;currentYear++;} renderCalendar(); }
+
+function renderCharts(){
+let daily={}, monthly={}, yearly={};
+exercises.forEach(e=>{
+daily[e.date]=(daily[e.date]||0)+e.minutes;
+let m=e.date.slice(0,7); monthly[m]=(monthly[m]||0)+e.minutes;
+let y=e.date.slice(0,4); yearly[y]=(yearly[y]||0)+e.minutes;
+});
+
+// Destroy old charts before creating new ones
+if(dailyChartInstance) dailyChartInstance.destroy();
+if(monthlyChartInstance) monthlyChartInstance.destroy();
+if(yearlyChartInstance) yearlyChartInstance.destroy();
+
+// Create new chart instances
+dailyChartInstance=new Chart(dailyChart,{type:'bar',data:{labels:Object.keys(daily),datasets:[{label:'Minutes',data:Object.values(daily)}]}});
+monthlyChartInstance=new Chart(monthlyChart,{type:'line',data:{labels:Object.keys(monthly),datasets:[{label:'Minutes',data:Object.values(monthly)}]}});
+yearlyChartInstance=new Chart(yearlyChart,{type:'bar',data:{labels:Object.keys(yearly),datasets:[{label:'Minutes',data:Object.values(yearly)}]}});
+}
+
+// CSV export/import
+function exportCSV(){
+let csv="date,time,exercise,minutes\n";
+exercises.forEach(e=>{ csv+=`${e.date},${e.time},${e.exercise},${e.minutes}\n`; });
+let blob=new Blob([csv]); let a=document.createElement("a");
+a.href=URL.createObjectURL(blob); a.download="fitness.csv"; a.click();
+}
+
+function importCSV(e){
+let file=e.target.files[0]; let reader=new FileReader();
+reader.onload=function(){
+let rows=reader.result.split("\n");
+rows.slice(1).forEach(r=>{
+let c=r.split(",");
+if(c.length>3){ exercises.push({date:c[0],time:c[1],exercise:c[2],minutes:Number(c[3])}); }
+});
+save(); renderTable(); renderCharts(); renderCalendar();
+}
+reader.readAsText(file);
+}
+
+// Initial render
+renderTable(); renderCalendar(); renderCharts();
+</script>
+
+</body>
+</html>
