@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Gas Cylinder Tracker</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+padding:20px;
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+background:white;
+padding:15px;
+border-radius:8px;
+}
+
+input,textarea,button{
+padding:6px;
+margin:4px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:6px;
+}
+
+th{
+background:#eee;
+}
+
+canvas{
+margin-top:20px;
+background:#fafafa;
+border:1px solid #ccc;
+}
+
+.analytics{
+margin-top:20px;
+background:#f9f9f9;
+padding:10px;
+border:1px solid #ddd;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Gas Cylinder Tracker</h2>
+
+Booking Date
+<input type="date" id="bdate">
+
+Booking Time
+<input type="time" id="btime">
+
+Received Date
+<input type="date" id="rdate">
+
+Received Time
+<input type="time" id="rtime">
+
+<br>
+
+Price
+<input type="number" id="price">
+
+<br>
+
+Delivery Address
+<input type="text" id="addr" style="width:300px">
+
+<br>
+
+Gas Agency
+<input type="text" id="agency">
+
+<br>
+
+Description
+<textarea id="desc"></textarea>
+
+<br>
+
+<button onclick="addRecord()">Add / Update</button>
+
+<input type="text" id="search" placeholder="Search..." onkeyup="searchRecord()">
+
+<button onclick="showAll()">Show All</button>
+
+<button onclick="exportCSV()">Export CSV</button>
+
+<input type="file" onchange="importCSV(event)">
+
+<table id="table">
+
+<thead>
+<tr>
+<th>Booking</th>
+<th>Received</th>
+<th>Price</th>
+<th>Address</th>
+<th>Agency</th>
+<th>Description</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+<h3>Yearly Booking Graph</h3>
+
+Year
+<select id="yearSelect" onchange="buildChart()"></select>
+
+<canvas id="chartCanvas" height="300"></canvas>
+
+<div class="analytics">
+
+<h3>Gas Usage Analytics</h3>
+
+Average Delivery Time:
+<b id="avgDelivery">0</b> days
+
+<br><br>
+
+Average Cylinder Usage:
+<b id="avgUsage">0</b> days
+
+<br><br>
+
+Estimated Next Booking Date:
+<b id="nextBooking">-</b>
+
+</div>
+
+</div>
+
+<script>
+
+let gasData=JSON.parse(localStorage.getItem("gasData"))||[];
+
+let editIndex=-1;
+
+function save(){
+localStorage.setItem("gasData",JSON.stringify(gasData));
+}
+
+function addRecord(){
+
+let r={
+bdate:bdate.value,
+btime:btime.value,
+rdate:rdate.value,
+rtime:rtime.value,
+price:price.value,
+addr:addr.value,
+agency:agency.value,
+desc:desc.value
+};
+
+if(!r.bdate) return;
+
+if(editIndex==-1){
+gasData.push(r);
+}else{
+gasData[editIndex]=r;
+editIndex=-1;
+}
+
+save();
+renderTable(gasData);
+populateYearSelector();
+buildChart();
+buildAnalytics();
+
+}
+
+function renderTable(data){
+
+let tbody=document.querySelector("#table tbody");
+
+tbody.innerHTML="";
+
+data.forEach((r,i)=>{
+
+let tr=document.createElement("tr");
+
+tr.innerHTML=
+`<td>${r.bdate} ${r.btime}</td>
+<td>${r.rdate} ${r.rtime}</td>
+<td>${r.price}</td>
+<td>${r.addr}</td>
+<td>${r.agency}</td>
+<td>${r.desc}</td>
+<td>
+<button onclick="editRecord(${i})">Edit</button>
+<button onclick="deleteRecord(${i})">Delete</button>
+</td>`;
+
+tbody.appendChild(tr);
+
+});
+
+}
+
+function editRecord(i){
+
+let r=gasData[i];
+
+bdate.value=r.bdate;
+btime.value=r.btime;
+rdate.value=r.rdate;
+rtime.value=r.rtime;
+price.value=r.price;
+addr.value=r.addr;
+agency.value=r.agency;
+desc.value=r.desc;
+
+editIndex=i;
+
+}
+
+function deleteRecord(i){
+
+gasData.splice(i,1);
+
+save();
+
+renderTable(gasData);
+populateYearSelector();
+buildChart();
+buildAnalytics();
+
+}
+
+function searchRecord(){
+
+let q=search.value.toLowerCase();
+
+let f=gasData.filter(r=>
+r.addr.toLowerCase().includes(q) ||
+r.agency.toLowerCase().includes(q) ||
+r.bdate.includes(q)
+);
+
+renderTable(f);
+
+}
+
+function showAll(){
+renderTable(gasData);
+}
+
+function exportCSV(){
+
+let csv="bdate,btime,rdate,rtime,price,address,agency,desc\n";
+
+gasData.forEach(r=>{
+csv+=`${r.bdate},${r.btime},${r.rdate},${r.rtime},${r.price},${r.addr},${r.agency},${r.desc}\n`;
+});
+
+let blob=new Blob([csv]);
+
+let a=document.createElement("a");
+
+a.href=URL.createObjectURL(blob);
+
+a.download="gas_tracker.csv";
+
+a.click();
+
+}
+
+function importCSV(e){
+
+let file=e.target.files[0];
+
+let reader=new FileReader();
+
+reader.onload=function(){
+
+let lines=reader.result.split("\n");
+
+lines.slice(1).forEach(l=>{
+
+let c=l.split(",");
+
+if(c.length>3){
+
+gasData.push({
+bdate:c[0],
+btime:c[1],
+rdate:c[2],
+rtime:c[3],
+price:c[4],
+addr:c[5],
+agency:c[6],
+desc:c[7]
+});
+
+}
+
+});
+
+save();
+renderTable(gasData);
+populateYearSelector();
+buildChart();
+buildAnalytics();
+
+};
+
+reader.readAsText(file);
+
+}
+
+function populateYearSelector(){
+
+let years=[...new Set(gasData.map(r=>new Date(r.bdate).getFullYear()))];
+
+if(years.length==0){
+years=[new Date().getFullYear()];
+}
+
+yearSelect.innerHTML="";
+
+years.sort().forEach(y=>{
+
+let opt=document.createElement("option");
+opt.value=y;
+opt.text=y;
+
+yearSelect.appendChild(opt);
+
+});
+
+yearSelect.value=years[years.length-1];
+
+}
+
+function buildChart(){
+
+let year=parseInt(yearSelect.value);
+
+let months=new Array(12).fill(0);
+
+gasData.forEach(r=>{
+
+let d=new Date(r.bdate);
+
+if(d.getFullYear()==year){
+months[d.getMonth()]++;
+}
+
+});
+
+let canvas=document.getElementById("chartCanvas");
+
+let ctx=canvas.getContext("2d");
+
+canvas.width=900;
+canvas.height=300;
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+let names=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+let max=Math.max(...months,1);
+
+let barWidth=50;
+let gap=20;
+
+months.forEach((v,i)=>{
+
+let x=50+i*(barWidth+gap);
+
+let h=(v/max)*200;
+
+let y=250-h;
+
+ctx.fillStyle="#4CAF50";
+
+ctx.fillRect(x,y,barWidth,h);
+
+ctx.fillStyle="black";
+
+ctx.fillText(v,x+18,y-5);
+
+ctx.fillText(names[i],x+10,270);
+
+});
+
+ctx.fillText("Year: "+year,20,20);
+
+}
+
+function buildAnalytics(){
+
+if(gasData.length<2) return;
+
+let deliveryDays=0;
+let deliveryCount=0;
+
+let usageDays=0;
+let usageCount=0;
+
+let sorted=[...gasData].sort((a,b)=>new Date(a.bdate)-new Date(b.bdate));
+
+for(let i=0;i<sorted.length;i++){
+
+let b=new Date(sorted[i].bdate);
+
+let r=new Date(sorted[i].rdate);
+
+if(sorted[i].rdate){
+
+let diff=(r-b)/(1000*60*60*24);
+
+deliveryDays+=diff;
+deliveryCount++;
+
+}
+
+if(i>0){
+
+let prev=new Date(sorted[i-1].bdate);
+
+let diff=(b-prev)/(1000*60*60*24);
+
+usageDays+=diff;
+usageCount++;
+
+}
+
+}
+
+let avgDelivery=(deliveryDays/deliveryCount).toFixed(1);
+
+let avgUsage=(usageDays/usageCount).toFixed(1);
+
+document.getElementById("avgDelivery").innerText=avgDelivery;
+
+document.getElementById("avgUsage").innerText=avgUsage;
+
+let lastBooking=new Date(sorted[sorted.length-1].bdate);
+
+let next=new Date(lastBooking);
+
+next.setDate(next.getDate()+parseFloat(avgUsage));
+
+document.getElementById("nextBooking").innerText=next.toLocaleDateString();
+
+}
+
+renderTable(gasData);
+
+populateYearSelector();
+
+buildChart();
+
+buildAnalytics();
+
+</script>
+
+</body>
+</html>
