@@ -134,7 +134,8 @@ a:active {
 </div>
 <div class="header">
 <span id="mdate"></span>|
-<span id="mtime"></span>
+<span id="mtime12"></span>|
+<span id="mtime24"></span>|
 </div>
 
 <!-- GRID -->
@@ -268,7 +269,15 @@ function updateClock(){
 
 let now=new Date();
 
-mtime.innerHTML=now.toLocaleTimeString();
+mtime24.innerHTML=now.toLocaleTimeString();
+mtime12.innerHTML=
+now.toLocaleTimeString('en-IN',{
+hour: '2-digit',
+minute: '2-digit',
+second: '2-digit',
+hour12: true
+});
+
 mdate.innerHTML=now.toLocaleDateString("en-IN", {
   weekday: "long",
   year: "numeric",
