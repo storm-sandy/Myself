@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DOB Tracker PRO</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:10px;
+}
+
+.controls{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:20px;
+}
+
+input,button,textarea{
+padding:8px;
+font-size:14px;
+}
+
+button{
+cursor:pointer;
+background:#4285f4;
+color:white;
+border:none;
+border-radius:4px;
+}
+
+button.delete{
+background:red;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:6px;
+text-align:center;
+}
+
+.calendar{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:5px;
+margin-top:20px;
+}
+
+.day{
+background:#fafafa;
+padding:10px;
+border:1px solid #ddd;
+min-height:70px;
+}
+
+.day span{
+font-size:12px;
+color:red;
+}
+
+.nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-top:20px;
+}
+
+canvas{
+margin-top:30px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>DOB Tracker</h2>
+
+<div class="controls">
+<input id="name" placeholder="Name">
+<input id="dob" type="date">
+<input id="gift" placeholder="Gift">
+<input id="amount" type="number" placeholder="Amount">
+<input id="comments" placeholder="Comments">
+
+<button onclick="addEntry()">Add</button>
+<button onclick="exportData()">Export</button>
+<input type="file" onchange="importData(event)">
+<button onclick="clearAll()">Clear All</button>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>DOB</th>
+<th>Gift</th>
+<th>Amount</th>
+<th>Comments</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+
+<div class="nav">
+<button onclick="prevMonth()">Prev</button>
+<h3 id="monthTitle"></h3>
+<button onclick="nextMonth()">Next</button>
+</div>
+
+<div class="calendar" id="calendar"></div>
+
+<canvas id="yearChart"></canvas>
+
+</div>
+
+<script>
+
+let data = JSON.parse(localStorage.getItem("dobData")) || []
+let editIndex=null
+
+function save(){
+localStorage.setItem("dobData",JSON.stringify(data))
+renderTable()
+renderCalendar()
+renderChart()
+}
+
+function addEntry(){
+
+let entry={
+name:document.getElementById("name").value,
+dob:document.getElementById("dob").value,
+gift:document.getElementById("gift").value,
+amount:document.getElementById("amount").value,
+comments:document.getElementById("comments").value
+}
+
+if(editIndex!=null){
+data[editIndex]=entry
+editIndex=null
+}else{
+data.push(entry)
+}
+
+save()
+}
+
+function renderTable(){
+
+let html=""
+
+data.forEach((d,i)=>{
+
+html+=`
+<tr>
+<td>${d.name}</td>
+<td>${d.dob}</td>
+<td>${d.gift}</td>
+<td>${d.amount}</td>
+<td>${d.comments}</td>
+<td>
+<button onclick="edit(${i})">Edit</button>
+<button class="delete" onclick="del(${i})">Delete</button>
+</td>
+</tr>
+`
+
+})
+
+document.getElementById("tableBody").innerHTML=html
+}
+
+function edit(i){
+
+let d=data[i]
+
+name.value=d.name
+dob.value=d.dob
+gift.value=d.gift
+amount.value=d.amount
+comments.value=d.comments
+
+editIndex=i
+}
+
+function del(i){
+data.splice(i,1)
+save()
+}
+
+function clearAll(){
+if(confirm("Delete all records?")){
+data=[]
+save()
+}
+}
+
+function exportData(){
+
+let blob=new Blob([JSON.stringify(data)],{type:"application/json"})
+let a=document.createElement("a")
+
+a.href=URL.createObjectURL(blob)
+a.download="dob-data.json"
+a.click()
+
+}
+
+function importData(e){
+
+let file=e.target.files[0]
+let reader=new FileReader()
+
+reader.onload=function(){
+data=JSON.parse(reader.result)
+save()
+}
+
+reader.readAsText(file)
+
+}
+
+let current=new Date()
+
+function renderCalendar(){
+
+let year=current.getFullYear()
+let month=current.getMonth()
+
+document.getElementById("monthTitle").innerText=
+current.toLocaleString("default",{month:"long"})+" "+year
+
+let first=new Date(year,month,1).getDay()
+let days=new Date(year,month+1,0).getDate()
+
+let html=""
+
+for(let i=0;i<first;i++) html+="<div></div>"
+
+for(let d=1;d<=days;d++){
+
+let count=0
+
+data.forEach(x=>{
+let date=new Date(x.dob)
+if(date.getDate()==d && date.getMonth()==month)
+count++
+})
+
+html+=`
+<div class="day">
+${d}<br>
+<span>${count>0?count+" birthday":""}</span>
+</div>
+`
+}
+
+calendar.innerHTML=html
+}
+
+function prevMonth(){
+current.setMonth(current.getMonth()-1)
+renderCalendar()
+}
+
+function nextMonth(){
+current.setMonth(current.getMonth()+1)
+renderCalendar()
+}
+
+let chart
+
+function renderChart(){
+
+let months=new Array(12).fill(0)
+
+data.forEach(x=>{
+let m=new Date(x.dob).getMonth()
+months[m]++
+})
+
+if(chart) chart.destroy()
+
+chart=new Chart(yearChart,{
+type:'bar',
+data:{
+labels:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+datasets:[{
+label:"Birthdays",
+data:months
+}]
+}
+})
+
+}
+
+renderTable()
+renderCalendar()
+renderChart()
+
+</script>
+
+</body>
+</html>
