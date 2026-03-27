@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Kids Reward Manager SUPER PRO</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f3f3f3;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:1300px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:10px;
+}
+
+.controls{
+display:flex;
+flex-wrap:wrap;
+align-items: center;
+gap:8px;
+margin-bottom:20px;
+}
+
+input,select,button{
+padding:6px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:6px;
+font-size:13px;
+text-align:center;
+}
+
+th{
+background:#eee;
+}
+
+.calendarHeader{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-top:30px;
+}
+
+.calendar{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:5px;
+margin-top:10px;
+}
+
+.day{
+border:1px solid #ddd;
+min-height:100px;
+background:#fafafa;
+padding:5px;
+font-size:12px;
+cursor:pointer;
+}
+
+.day:hover{
+background:#e8f3ff;
+}
+
+.weekday{
+text-align:center;
+font-weight:bold;
+}
+
+.hidden{
+display:none;
+}
+
+.leaderboard{
+margin-top:20px;
+padding:10px;
+background:#fafafa;
+border-radius:6px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="login">
+
+<h3>Parent Lock</h3>
+
+PIN
+<input type="password" id="pin">
+
+<button onclick="unlock()">Unlock</button>
+<p>Default PIN is 1234 </p>
+</div>
+
+<div class="container hidden" id="app">
+
+<h2>Kids Reward Dashboard</h2>
+
+<div class="controls">
+
+Kid
+<select id="kidSelect"></select>
+
+<button onclick="addKid()">Add Kid</button>
+<button onclick="renameKid()">Rename Kid</button>
+<button onclick="removeKid()">Remove Kid</button>
+<button onclick="clearKids()">Clear All Kids</button>
+</div>
+
+<div class="controls">
+Date
+<input type="date" id="date">
+
+Task
+<select id="task">
+<option>Listening</option>
+<option>Poem/Story</option>
+<option>Healthy Habits</option>
+<option>Helping Parents</option>
+<option>Good Habits</option>
+<option>Healthy Food</option>
+<option>Exercise/yoga</option>
+<option>No Tv</option>
+<option>No Mobile</option>
+<option>Laughing</option>
+</select>
+
+Level
+<select id="level">
+<option value="1">Ok</option>
+<option value="2">Good</option>
+<option value="3">Best</option>
+<option value="4">Cool</option>
+<option value="5">Super</option>
+</select>
+</div>
+
+<div class="controls">
+<button onclick="addRecord()">Add Record</button>
+<button onclick="clearAllRecords()">Remove All Records</button>
+<button onclick="exportData()">Export</button>
+<input type="file" onchange="importData(event)">
+
+</div>
+
+<div class="leaderboard" id="leaderboard"></div>
+
+<h3>Task History</h3>
+
+<table id="recordTable">
+
+<thead>
+<tr>
+<th>Date</th>
+<th>Kid</th>
+<th>Task</th>
+<th>Level</th>
+<th>Points</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+<h3>Reward Shop</h3>
+
+<div class="controls">
+
+<input id="rewardName" placeholder="Reward name">
+
+<input id="rewardCost" type="number" placeholder="Points">
+
+<button onclick="addReward()">Add Reward</button>
+
+</div>
+
+<table id="rewardTable">
+
+<thead>
+<tr>
+<th>Reward</th>
+<th>Cost</th>
+<th>Redeem</th>
+<th>Delete</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+<h3>Reward History</h3>
+
+<table id="rewardHistory">
+
+<thead>
+<tr>
+<th>Date</th>
+<th>Kid</th>
+<th>Reward</th>
+<th>Cost</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+<div class="calendarHeader">
+
+<button onclick="prevMonth()">◀</button>
+
+<h3 id="monthTitle"></h3>
+
+<button onclick="nextMonth()">▶</button>
+
+</div>
+
+<div class="calendar" id="calendar"></div>
+
+</div>
+
+<script>
+
+let PIN="1234"
+
+let kids=JSON.parse(localStorage.getItem("kids")||'["Kid1"]')
+let records=JSON.parse(localStorage.getItem("records")||"[]")
+let rewards=JSON.parse(localStorage.getItem("rewards")||"[]")
+let rewardHistory=JSON.parse(localStorage.getItem("rewardHistory")||"[]")
+
+let current=new Date()
+
+function unlock(){
+
+if(pin.value===PIN){
+
+login.style.display="none"
+app.classList.remove("hidden")
+
+init()
+
+}else{
+
+alert("Wrong PIN")
+
+}
+
+}
+
+function init(){
+
+loadKids()
+renderTable()
+renderCalendar()
+updateLeaderboard()
+renderRewards()
+renderRewardHistory()
+
+}
+
+function save(){
+
+localStorage.setItem("kids",JSON.stringify(kids))
+localStorage.setItem("records",JSON.stringify(records))
+localStorage.setItem("rewards",JSON.stringify(rewards))
+localStorage.setItem("rewardHistory",JSON.stringify(rewardHistory))
+
+init()
+
+}
+
+function loadKids(){
+
+kidSelect.innerHTML=""
+
+kids.forEach(k=>{
+
+let o=document.createElement("option")
+o.textContent=k
+o.value=k
+
+kidSelect.appendChild(o)
+
+})
+
+}
+
+function addKid(){
+
+let name=prompt("Kid name")
+
+if(name){
+
+kids.push(name)
+save()
+
+}
+
+}
+
+function renameKid(){
+
+let old=kidSelect.value
+
+let name=prompt("New name",old)
+
+if(!name) return
+
+kids[kids.indexOf(old)]=name
+
+records.forEach(r=>{
+if(r.kid===old) r.kid=name
+})
+
+save()
+
+}
+
+function removeKid(){
+
+let kid=kidSelect.value
+
+kids=kids.filter(k=>k!==kid)
+
+records=records.filter(r=>r.kid!==kid)
+
+save()
+
+}
+
+function clearKids(){
+
+if(confirm("Delete ALL kids?")){
+
+kids=[]
+records=[]
+
+save()
+
+}
+
+}
+
+function addRecord(){
+
+let rec={
+
+date:date.value,
+kid:kidSelect.value,
+task:task.value,
+level:level.options[level.selectedIndex].text,
+points:Number(level.value)
+
+}
+
+records.push(rec)
+
+save()
+
+}
+
+function clearAllRecords(){
+
+if(confirm("Delete ALL records? This cannot be undone.")){
+
+records=[]
+
+save()
+
+}
+
+}
+
+function renderTable(){
+
+let tb=document.querySelector("#recordTable tbody")
+
+tb.innerHTML=""
+
+records.forEach((r,i)=>{
+
+let tr=document.createElement("tr")
+
+tr.innerHTML=
+
+"<td>"+r.date+"</td>"+
+"<td>"+r.kid+"</td>"+
+"<td>"+r.task+"</td>"+
+"<td>"+r.level+"</td>"+
+"<td>"+r.points+"</td>"+
+"<td><button onclick='deleteRecord("+i+")'>Delete</button></td>"
+
+tb.appendChild(tr)
+
+})
+
+}
+
+function deleteRecord(i){
+
+records.splice(i,1)
+
+save()
+
+}
+
+function updateLeaderboard(){
+
+let scores={}
+
+kids.forEach(k=>scores[k]=0)
+
+records.forEach(r=>scores[r.kid]+=r.points)
+
+let arr=Object.entries(scores)
+
+arr.sort((a,b)=>b[1]-a[1])
+
+let medals=["🥇","🥈","🥉"]
+
+let html="<h3>Leaderboard</h3>"
+
+arr.forEach((a,i)=>{
+
+html+=(medals[i]||"")+" "+a[0]+" - "+a[1]+" pts<br>"
+
+})
+
+leaderboard.innerHTML=html
+
+}
+
+function renderRewards(){
+
+let tb=document.querySelector("#rewardTable tbody")
+
+tb.innerHTML=""
+
+rewards.forEach((r,i)=>{
+
+let tr=document.createElement("tr")
+
+tr.innerHTML=
+
+"<td>"+r.name+"</td>"+
+"<td>"+r.cost+"</td>"+
+"<td><button onclick='redeemReward("+i+")'>Redeem</button></td>"+
+"<td><button onclick='deleteReward("+i+")'>Delete</button></td>"
+
+tb.appendChild(tr)
+
+})
+
+}
+
+function addReward(){
+
+let name=rewardName.value
+let cost=Number(rewardCost.value)
+
+if(!name || !cost) return
+
+rewards.push({name,cost})
+
+rewardName.value=""
+rewardCost.value=""
+
+save()
+
+}
+
+function deleteReward(i){
+
+rewards.splice(i,1)
+
+save()
+
+}
+
+function redeemReward(i){
+
+let reward=rewards[i]
+
+let kid=kidSelect.value
+
+let total=0
+
+records.forEach(r=>{
+if(r.kid===kid) total+=r.points
+})
+
+rewardHistory.forEach(h=>{
+if(h.kid===kid) total-=h.cost
+})
+
+if(total<reward.cost){
+
+alert("Not enough points")
+
+return
+
+}
+
+rewardHistory.push({
+
+date:new Date().toISOString().slice(0,10),
+kid:kid,
+reward:reward.name,
+cost:reward.cost
+
+})
+
+save()
+
+}
+
+function renderRewardHistory(){
+
+let tb=document.querySelector("#rewardHistory tbody")
+
+tb.innerHTML=""
+
+rewardHistory.forEach(h=>{
+
+let tr=document.createElement("tr")
+
+tr.innerHTML=
+
+"<td>"+h.date+"</td>"+
+"<td>"+h.kid+"</td>"+
+"<td>"+h.reward+"</td>"+
+"<td>"+h.cost+"</td>"
+
+tb.appendChild(tr)
+
+})
+
+}
+
+function prevMonth(){
+
+current.setMonth(current.getMonth()-1)
+
+renderCalendar()
+
+}
+
+function nextMonth(){
+
+current.setMonth(current.getMonth()+1)
+
+renderCalendar()
+
+}
+
+function renderCalendar(){
+
+calendar.innerHTML=""
+
+let days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+
+days.forEach(d=>{
+
+let w=document.createElement("div")
+w.className="weekday"
+w.textContent=d
+calendar.appendChild(w)
+
+})
+
+let y=current.getFullYear()
+let m=current.getMonth()
+
+monthTitle.innerText=current.toLocaleString("default",{month:"long"})+" "+y
+
+let first=new Date(y,m,1)
+let last=new Date(y,m+1,0)
+
+for(let i=0;i<first.getDay();i++){
+
+calendar.appendChild(document.createElement("div"))
+
+}
+
+for(let d=1;d<=last.getDate();d++){
+
+let ds=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0")
+
+let div=document.createElement("div")
+div.className="day"
+
+div.onclick=function(){
+showDayDetails(ds)
+}
+
+let html="<b>"+d+"</b>"
+
+records.forEach(r=>{
+if(r.date===ds){
+html+="<div>"+r.kid+" "+r.points+"</div>"
+}
+})
+
+div.innerHTML=html
+
+calendar.appendChild(div)
+
+}
+
+}
+
+function showDayDetails(date){
+
+let list=records.filter(r=>r.date===date)
+
+if(list.length===0){
+
+alert("No records for "+date)
+
+return
+
+}
+
+let text="Points for "+date+"\n\n"
+
+list.forEach(r=>{
+
+text+=r.kid+" - "+r.task+" - "+r.points+" pts\n"
+
+})
+
+alert(text)
+
+}
+
+function exportData(){
+
+let blob=new Blob([JSON.stringify({kids,records,rewards,rewardHistory})],{type:"application/json"})
+
+let a=document.createElement("a")
+
+a.href=URL.createObjectURL(blob)
+a.download="kids_reward_backup.json"
+a.click()
+
+}
+
+function importData(e){
+
+let file=e.target.files[0]
+
+let reader=new FileReader()
+
+reader.onload=function(){
+
+let obj=JSON.parse(reader.result)
+
+kids=obj.kids
+records=obj.records
+rewards=obj.rewards
+rewardHistory=obj.rewardHistory
+
+save()
+
+}
+
+reader.readAsText(file)
+
+}
+
+</script>
+
+</body>
+</html>
