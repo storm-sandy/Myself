@@ -219,29 +219,94 @@ save()
 }
 }
 
+
 function exportData(){
 
-let blob=new Blob([JSON.stringify(data)],{type:"application/json"})
-let a=document.createElement("a")
+if(data.length===0){
+alert("No data to export");
+return;
+}
 
-a.href=URL.createObjectURL(blob)
-a.download="dob-data.json"
-a.click()
+// CSV header
+let csv = "Name,DOB,Gift,Amount,Comments\n";
+
+// rows
+data.forEach(d=>{
+csv += `"${d.name}","${d.dob}","${d.gift}","${d.amount}","${d.comments}"\n`;
+});
+
+// create file
+let blob = new Blob([csv], { type: "text/csv" });
+let a = document.createElement("a");
+
+a.href = URL.createObjectURL(blob);
+a.download = "dob-data.csv";
+a.click();
 
 }
 
 function importData(e){
 
-let file=e.target.files[0]
-let reader=new FileReader()
+let file = e.target.files[0];
+if(!file) return;
 
-reader.onload=function(){
-data=JSON.parse(reader.result)
-save()
+let reader = new FileReader();
+
+reader.onload = function(){
+
+let text = reader.result.trim();
+
+// Split rows safely
+let rows = text.split(/\r?\n/);
+
+// Remove header
+rows.shift();
+
+data = rows.map(row => {
+
+let cols = parseCSVRow(row);
+
+return {
+name: cols[0] || "",
+dob: cols[1] || "",
+gift: cols[2] || "",
+amount: cols[3] || "",
+comments: cols[4] || ""
+};
+
+}).filter(r => r.name); // remove empty rows
+
+save();
+};
+
+reader.readAsText(file);
 }
 
-reader.readAsText(file)
+function parseCSVRow(row){
 
+let cols = [];
+let current = "";
+let insideQuotes = false;
+
+for(let i=0;i<row.length;i++){
+
+let char = row[i];
+
+if(char === '"'){
+insideQuotes = !insideQuotes;
+}
+else if(char === "," && !insideQuotes){
+cols.push(current);
+current = "";
+}
+else{
+current += char;
+}
+}
+
+cols.push(current);
+
+return cols.map(c => c.trim());
 }
 
 let current=new Date()
