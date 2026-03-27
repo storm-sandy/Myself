@@ -313,20 +313,29 @@ let current=new Date()
 
 function renderCalendar(){
 
-let year=current.getFullYear()
-let month=current.getMonth()
+let year = current.getFullYear()
+let month = current.getMonth()
 
-document.getElementById("monthTitle").innerText=
+document.getElementById("monthTitle").innerText =
 current.toLocaleString("default",{month:"long"})+" "+year
 
-let first=new Date(year,month,1).getDay()
-let days=new Date(year,month+1,0).getDate()
+let first = new Date(year,month,1).getDay()
+let days = new Date(year,month+1,0).getDate()
 
 let html=""
 
-for(let i=0;i<first;i++) html+="<div></div>"
+/* Day Names Row */
+let dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
 
-for(let d=1;d<=days;d++){
+dayNames.forEach(d=>{
+html += `<div class="dayName">${d}</div>`
+})
+
+/* Empty spaces before first day */
+for(let i=0;i<first;i++) html += `<div></div>`
+
+/* Calendar Days */
+for(let d=1; d<=days; d++){
 
 let count=0
 
@@ -346,6 +355,7 @@ ${d}<br>
 
 calendar.innerHTML=html
 }
+
 
 function prevMonth(){
 current.setMonth(current.getMonth()-1)
