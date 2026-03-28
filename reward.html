@@ -159,7 +159,6 @@ Level
 <button onclick="clearAllRecords()">Remove All Records</button>
 <button onclick="exportData()">Export</button>
 <input type="file" onchange="importData(event)">
-
 </div>
 
 <div class="leaderboard" id="leaderboard"></div>
@@ -200,7 +199,7 @@ Level
 <thead>
 <tr>
 <th>Reward</th>
-<th>Points</th>
+<th>Cost</th>
 <th>Redeem</th>
 <th>Delete</th>
 </tr>
@@ -245,7 +244,7 @@ Level
 
 let PIN="1234"
 
-let kids=JSON.parse(localStorage.getItem("kids")||'["Kid1"]')
+let kids=JSON.parse(localStorage.getItem("kids")||'[]')
 let records=JSON.parse(localStorage.getItem("records")||"[]")
 let rewards=JSON.parse(localStorage.getItem("rewards")||"[]")
 let rewardHistory=JSON.parse(localStorage.getItem("rewardHistory")||"[]")
@@ -386,6 +385,7 @@ function clearAllRecords(){
 if(confirm("Delete ALL records? This cannot be undone.")){
 
 records=[]
+rewardHistory=[]
 
 save()
 
@@ -426,31 +426,6 @@ save()
 
 }
 
-function updateLeaderboard(){
-
-let scores={}
-
-kids.forEach(k=>scores[k]=0)
-
-records.forEach(r=>scores[r.kid]+=r.points)
-
-let arr=Object.entries(scores)
-
-arr.sort((a,b)=>b[1]-a[1])
-
-let medals=["🥇","🥈","🥉"]
-
-let html="<h3>Leaderboard</h3>"
-
-arr.forEach((a,i)=>{
-
-html+=(medals[i]||"")+" "+a[0]+" - "+a[1]+" pts<br>"
-
-})
-
-leaderboard.innerHTML=html
-
-}
 
 function renderRewards(){
 
@@ -472,6 +447,36 @@ tr.innerHTML=
 tb.appendChild(tr)
 
 })
+
+}
+
+function updateLeaderboard(){
+
+let scores={}
+
+kids.forEach(k=>scores[k]=0)
+
+records.forEach(r=>{
+//scores[r.kid] += Number(r.points)
+// convert to numeric
+scores[r.kid] += parseFloat(r.points) || 0
+})
+
+let arr = Object.entries(scores)
+
+arr.sort((a,b)=>b[1]-a[1])
+
+let medals=["🥇","🥈","🥉"]
+
+let html="<h3>Leaderboard</h3>"
+
+arr.forEach((a,i)=>{
+
+html += (medals[i] || "") + " " + a[0] + " - " + a[1] + " pts<br>"
+
+})
+
+leaderboard.innerHTML = html
 
 }
 
@@ -515,6 +520,7 @@ rewardHistory.forEach(h=>{
 if(h.kid===kid) total-=h.cost
 })
 
+
 if(total<reward.cost){
 
 alert("Not enough points")
@@ -522,6 +528,26 @@ alert("Not enough points")
 return
 
 }
+
+//new 
+
+if(total>=reward.cost){
+
+let now=new Date()
+
+records.push({
+date:new Date().toISOString().slice(0,10),
+kid:kid,
+task:"Reward Redeemed",
+level:reward.name,
+points:-reward.cost
+})
+
+save()
+renderTable()
+
+}
+
 
 rewardHistory.push({
 
@@ -655,39 +681,90 @@ alert(text)
 
 }
 
+
 function exportData(){
 
-let blob=new Blob([JSON.stringify({kids,records,rewards,rewardHistory})],{type:"application/json"})
+let csv="Date,Kid,Task,Level,Points\n"
 
-let a=document.createElement("a")
+records.forEach(r=>{
 
-a.href=URL.createObjectURL(blob)
-a.download="kids_reward_backup.json"
+csv += `${r.date},${r.kid},${r.task},${r.level},${r.points}\n`
+
+})
+
+let blob = new Blob([csv],{type:"text/csv"})
+
+let a = document.createElement("a")
+a.href = URL.createObjectURL(blob)
+a.download = "kids_reward_records.csv"
 a.click()
 
 }
 
 function importData(e){
 
-let file=e.target.files[0]
+let file = e.target.files[0];
+if(!file) return;
 
-let reader=new FileReader()
+let reader = new FileReader();
 
-reader.onload=function(){
+reader.onload = function(){
 
-let obj=JSON.parse(reader.result)
+let text = reader.result.trim();
 
-kids=obj.kids
-records=obj.records
-rewards=obj.rewards
-rewardHistory=obj.rewardHistory
+// Split rows safely
+let rows = text.split(/\r?\n/);
 
-save()
+// Remove header
+rows.shift();
 
+records = rows.map(row => {
+
+let cols = parseCSVRow(row);
+
+return {
+date: cols[0] || "",
+kid: cols[1] || "",
+task: cols[2] || "",
+level: cols[3] || "",
+points: cols[4] || ""
+
+};
+
+}).filter(r => r.kid); // remove empty rows
+
+save();
+};
+
+reader.readAsText(file);
+e.target.value = ""
 }
 
-reader.readAsText(file)
+function parseCSVRow(row){
 
+let cols = [];
+let current = "";
+let insideQuotes = false;
+
+for(let i=0;i<row.length;i++){
+
+let char = row[i];
+
+if(char === '"'){
+insideQuotes = !insideQuotes;
+}
+else if(char === "," && !insideQuotes){
+cols.push(current);
+current = "";
+}
+else{
+current += char;
+}
+}
+
+cols.push(current);
+
+return cols.map(c => c.trim());
 }
 
 </script>
