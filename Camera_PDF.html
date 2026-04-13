@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pro Camera to PDF</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+
+<style>
+body { font-family: Arial; background:#f0f0f0; text-align:center; }
+video { width:90%; max-width:400px; border-radius:10px; }
+button, input { margin:5px; padding:8px; border-radius:5px; border:none; }
+.preview { display:flex; flex-wrap:wrap; justify-content:center; }
+.card {
+    background:white; margin:5px; padding:8px;
+    border-radius:10px; width:130px;
+}
+img { width:100%; border-radius:5px; }
+</style>
+</head>
+
+<body>
+
+<h2>📷 Pro Camera to PDF</h2>
+
+<video id="video" autoplay></video><br>
+
+<button onclick="capture()">📸 Capture</button>
+<input type="file" accept="image/*" multiple onchange="importImages(event)">
+<br>
+
+<label>Compression:
+<select id="quality">
+<option value="1">High</option>
+<option value="0.7">Medium</option>
+<option value="0.5">Low</option>
+</select>
+</label>
+
+<br>
+
+<button onclick="generatePDF()">📄 Generate PDF</button>
+<button onclick="runOCR()">🔍 Extract Text</button>
+
+<h3 id="total">Total Pages: 0</h3>
+
+<div class="preview" id="preview"></div>
+
+<script>
+let images = [];
+const video = document.getElementById("video");
+
+// Start camera with high resolution
+navigator.mediaDevices.getUserMedia({
+    video: {
+        facingMode: "environment",
+        width: { ideal: 1920 },
+        height: { ideal: 1080 }
+    }
+}).then(stream => video.srcObject = stream);
+
+// Capture image
+function capture() {
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0);
+
+    saveImage(canvas.toDataURL("image/jpeg", 1));
+}
+
+// Import images
+function importImages(event) {
+    const files = event.target.files;
+    for(let file of files) {
+        const reader = new FileReader();
+        reader.onload = e => saveImage(e.target.result);
+        reader.readAsDataURL(file);
+    }
+}
+
+// Save image
+function saveImage(src) {
+    let img = new Image();
+    img.src = src;
+    img.onload = function() {
+        let sizeKB = Math.round((src.length * 3) / 4 / 1024);
+
+        images.push({
+            src: src,
+            width: img.width,
+            height: img.height,
+            size: sizeKB
+        });
+
+        render();
+    };
+}
+
+// Delete image
+function deleteImage(index) {
+    images.splice(index,1);
+    render();
+}
+
+// Drag reorder
+let dragIndex;
+
+function dragStart(i) { dragIndex = i; }
+function drop(i) {
+    let item = images.splice(dragIndex,1)[0];
+    images.splice(i,0,item);
+    render();
+}
+
+// Render preview
+function render() {
+    const preview = document.getElementById("preview");
+    preview.innerHTML = "";
+
+    images.forEach((img, i) => {
+        preview.innerHTML += `
+        <div class="card" draggable="true"
+             ondragstart="dragStart(${i})"
+             ondragover="event.preventDefault()"
+             ondrop="drop(${i})">
+             
+            <img src="${img.src}">
+            <p>Page ${i+1}</p>
+            <p>${img.width}x${img.height}</p>
+            <p>${img.size}KB</p>
+            <button onclick="deleteImage(${i})">❌</button>
+        </div>
+        `;
+    });
+
+    document.getElementById("total").innerText = "Total Pages: " + images.length;
+}
+
+// Generate PDF
+function generatePDF() {
+    if(images.length === 0) return alert("No images");
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+    let quality = parseFloat(document.getElementById("quality").value);
+
+    images.forEach((img, i) => {
+        if(i > 0) pdf.addPage();
+
+        pdf.text(`Page ${i+1}`, 10, 10);
+        pdf.text(`Res: ${img.width}x${img.height}`, 10, 16);
+        pdf.text(`Size: ${img.size}KB`, 10, 22);
+
+        pdf.addImage(img.src, 'JPEG', 10, 30, 180, 160, '', 'FAST');
+    });
+
+    pdf.save("Pro_Document.pdf");
+}
+
+// OCR
+async function runOCR() {
+    if(images.length === 0) return;
+
+    alert("Processing OCR...");
+
+    let fullText = "";
+
+    for(let img of images) {
+        const result = await Tesseract.recognize(img.src, 'eng');
+        fullText += result.data.text + "\n\n";
+    }
+
+    console.log(fullText);
+    alert("OCR Done! Check console.");
+}
+</script>
+
+</body>
+</html>
