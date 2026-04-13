@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PDF Merger Pro+</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f4f6f9;
+  text-align: center;
+}
+.container {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 20px auto;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+button {
+  padding: 10px 15px;
+  margin: 10px;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+button:hover { background: #0056b3; }
+
+.file-list {
+  margin-top: 15px;
+}
+.file-item {
+  background: #eef;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  cursor: grab;
+}
+.remove-btn {
+  background: red;
+  padding: 5px 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>📄 PDF Merger Pro+</h2>
+
+  <input type="file" id="pdfInput" multiple accept="application/pdf">
+  <br>
+
+  <button onclick="mergePDFs()">Merge & Download</button>
+
+  <div id="fileList" class="file-list"></div>
+</div>
+
+<script>
+let filesArray = [];
+
+const fileList = document.getElementById('fileList');
+
+document.getElementById('pdfInput').addEventListener('change', function(e) {
+  filesArray = Array.from(e.target.files);
+  renderList();
+});
+
+function renderList() {
+  fileList.innerHTML = '';
+  filesArray.forEach((file, index) => {
+    const div = document.createElement('div');
+    div.className = 'file-item';
+    div.setAttribute('data-index', index);
+
+    div.innerHTML = `
+      <span>${index + 1}. ${file.name}</span>
+      <button class="remove-btn" onclick="removeFile(${index})">❌</button>
+    `;
+    fileList.appendChild(div);
+  });
+}
+
+function removeFile(index) {
+  filesArray.splice(index, 1);
+  renderList();
+}
+
+new Sortable(fileList, {
+  animation: 150,
+  onEnd: function () {
+    const newOrder = [];
+    document.querySelectorAll('.file-item').forEach(item => {
+      newOrder.push(filesArray[item.dataset.index]);
+    });
+    filesArray = newOrder;
+    renderList();
+  }
+});
+
+async function mergePDFs() {
+  if (filesArray.length === 0) {
+    alert("Select PDFs first!");
+    return;
+  }
+
+  const { PDFDocument } = PDFLib;
+  const mergedPdf = await PDFDocument.create();
+
+  for (let file of filesArray) {
+    const bytes = await file.arrayBuffer();
+    const pdf = await PDFDocument.load(bytes);
+
+    const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+
+    pages.forEach(page => {
+      // Keep original size (NO scaling → quality preserved)
+      mergedPdf.addPage(page);
+    });
+  }
+
+  const mergedBytes = await mergedPdf.save({
+    useObjectStreams: false
+  });
+
+  const blob = new Blob([mergedBytes], { type: "application/pdf" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "merged_pro.pdf";
+  link.click();
+}
+</script>
+
+</body>
+</html>
