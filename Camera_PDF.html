@@ -10,50 +10,104 @@
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 
 <style>
-body { font-family: Arial; background:#f0f0f0; text-align:center; }
-video { width:90%; max-width:400px; border-radius:10px; }
-button, input { margin:5px; padding:8px; border-radius:5px; border:none; }
-.preview { display:flex; flex-wrap:wrap; justify-content:center; }
-.card {
-    background:white; margin:5px; padding:8px;
-    border-radius:10px; width:130px;
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: Arial;
+    background: #111;
+    color: white;
 }
-img { width:100%; border-radius:5px; }
+
+/* Camera */
+.camera-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+video {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Controls */
+.controls {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+button, input, select {
+    margin: 5px;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+}
+
+/* Preview */
+.preview {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    background: #f0f0f0;
+    padding: 10px;
+}
+
+.card {
+    background: white;
+    margin: 5px;
+    padding: 8px;
+    border-radius: 10px;
+    width: 130px;
+    color: black;
+}
+
+img {
+    width: 100%;
+    border-radius: 5px;
+}
 </style>
 </head>
 
 <body>
 
-<h2>📷 Pro Camera to PDF</h2>
+<div class="camera-container">
+    <video id="video" autoplay playsinline></video>
 
-<video id="video" autoplay></video><br>
+    <div class="controls">
+        <button onclick="capture()">📸 Capture</button>
+        <input type="file" accept="image/*" multiple onchange="importImages(event)">
+        <br>
 
-<button onclick="capture()">📸 Capture</button>
-<input type="file" accept="image/*" multiple onchange="importImages(event)">
-<br>
+        <label>Compression:
+        <select id="quality">
+            <option value="1">High</option>
+            <option value="0.7">Medium</option>
+            <option value="0.5">Low</option>
+        </select>
+        </label>
 
-<label>Compression:
-<select id="quality">
-<option value="1">High</option>
-<option value="0.7">Medium</option>
-<option value="0.5">Low</option>
-</select>
-</label>
+        <br>
 
-<br>
+        <button onclick="generatePDF()">📄 PDF</button>
+        <button onclick="runOCR()">🔍 OCR</button>
+    </div>
+</div>
 
-<button onclick="generatePDF()">📄 Generate PDF</button>
-<button onclick="runOCR()">🔍 Extract Text</button>
-
-<h3 id="total">Total Pages: 0</h3>
-
+<h3 id="total" style="text-align:center; color:black;">Total Pages: 0</h3>
 <div class="preview" id="preview"></div>
 
 <script>
 let images = [];
 const video = document.getElementById("video");
 
-// Start camera with high resolution
+// Camera
 navigator.mediaDevices.getUserMedia({
     video: {
         facingMode: "environment",
@@ -62,19 +116,27 @@ navigator.mediaDevices.getUserMedia({
     }
 }).then(stream => video.srcObject = stream);
 
-// Capture image
+// Capture
 function capture() {
+    const width = video.videoWidth;
+    const height = video.videoHeight;
+
+    if (!width || !height) {
+        alert("Camera not ready");
+        return;
+    }
+
     const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    canvas.width = width;
+    canvas.height = height;
 
     const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0);
+    ctx.drawImage(video, 0, 0, width, height);
 
     saveImage(canvas.toDataURL("image/jpeg", 1));
 }
 
-// Import images
+// Import
 function importImages(event) {
     const files = event.target.files;
     for(let file of files) {
@@ -84,41 +146,42 @@ function importImages(event) {
     }
 }
 
-// Save image
+// Save (REAL resolution fix)
 function saveImage(src) {
     let img = new Image();
-    img.src = src;
+
     img.onload = function() {
         let sizeKB = Math.round((src.length * 3) / 4 / 1024);
 
         images.push({
             src: src,
-            width: img.width,
-            height: img.height,
+            width: img.naturalWidth,
+            height: img.naturalHeight,
             size: sizeKB
         });
 
         render();
     };
+
+    img.src = src;
 }
 
-// Delete image
-function deleteImage(index) {
-    images.splice(index,1);
+// Delete
+function deleteImage(i) {
+    images.splice(i,1);
     render();
 }
 
 // Drag reorder
 let dragIndex;
-
-function dragStart(i) { dragIndex = i; }
-function drop(i) {
+function dragStart(i){ dragIndex = i; }
+function drop(i){
     let item = images.splice(dragIndex,1)[0];
     images.splice(i,0,item);
     render();
 }
 
-// Render preview
+// Render
 function render() {
     const preview = document.getElementById("preview");
     preview.innerHTML = "";
@@ -126,41 +189,68 @@ function render() {
     images.forEach((img, i) => {
         preview.innerHTML += `
         <div class="card" draggable="true"
-             ondragstart="dragStart(${i})"
-             ondragover="event.preventDefault()"
-             ondrop="drop(${i})">
-             
+            ondragstart="dragStart(${i})"
+            ondragover="event.preventDefault()"
+            ondrop="drop(${i})">
             <img src="${img.src}">
             <p>Page ${i+1}</p>
-            <p>${img.width}x${img.height}</p>
-            <p>${img.size}KB</p>
+            <p>${img.width} x ${img.height}</p>
+            <p>${img.size} KB</p>
             <button onclick="deleteImage(${i})">❌</button>
-        </div>
-        `;
+        </div>`;
     });
 
     document.getElementById("total").innerText = "Total Pages: " + images.length;
 }
 
-// Generate PDF
+// 🔥 PRINT PERFECT PDF
 function generatePDF() {
     if(images.length === 0) return alert("No images");
 
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF();
     let quality = parseFloat(document.getElementById("quality").value);
 
-    images.forEach((img, i) => {
-        if(i > 0) pdf.addPage();
+    images.forEach((img, index) => {
 
-        pdf.text(`Page ${i+1}`, 10, 10);
-        pdf.text(`Res: ${img.width}x${img.height}`, 10, 16);
-        pdf.text(`Size: ${img.size}KB`, 10, 22);
+        // Auto orientation
+        let orientation = img.width > img.height ? 'landscape' : 'portrait';
 
-        pdf.addImage(img.src, 'JPEG', 10, 30, 180, 160, '', 'FAST');
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+            orientation: orientation,
+            unit: "mm",
+            format: "a4"
+        });
+
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+        const imgRatio = img.width / img.height;
+        const pageRatio = pageWidth / pageHeight;
+
+        let w, h;
+
+        if (imgRatio > pageRatio) {
+            w = pageWidth;
+            h = w / imgRatio;
+        } else {
+            h = pageHeight;
+            w = h * imgRatio;
+        }
+
+        const x = (pageWidth - w) / 2;
+        const y = (pageHeight - h) / 2;
+
+        pdf.addImage(img.src, 'JPEG', x, y, w, h, '', 'FAST');
+
+        if(index === 0){
+            window.finalPDF = pdf;
+        } else {
+            window.finalPDF.addPage([pageWidth, pageHeight], orientation);
+            window.finalPDF.addImage(img.src, 'JPEG', x, y, w, h, '', 'FAST');
+        }
     });
 
-    pdf.save("Pro_Document.pdf");
+    window.finalPDF.save("Print_Perfect.pdf");
 }
 
 // OCR
@@ -168,16 +258,15 @@ async function runOCR() {
     if(images.length === 0) return;
 
     alert("Processing OCR...");
+    let text = "";
 
-    let fullText = "";
-
-    for(let img of images) {
-        const result = await Tesseract.recognize(img.src, 'eng');
-        fullText += result.data.text + "\n\n";
+    for(let img of images){
+        const res = await Tesseract.recognize(img.src, 'eng');
+        text += res.data.text + "\n\n";
     }
 
-    console.log(fullText);
-    alert("OCR Done! Check console.");
+    console.log(text);
+    alert("OCR Done (check console)");
 }
 </script>
 
