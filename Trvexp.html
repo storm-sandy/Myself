@@ -238,7 +238,7 @@ function loadFullTable() {
 }
 
 // CHART
-function updateChart() {
+function updateChart1() {
     let labels = data.map(r => r.date);
     let values = data.map(r => r.cost);
 
@@ -251,6 +251,40 @@ function updateChart() {
             datasets: [{ label: "Cost", data: values }]
         }
     });
+}
+
+
+
+// Convert to Month-wise totals
+function getMonthlyTotals() {
+  let monthly = {};
+
+  data.forEach(r => {
+    let month = r.date.substring(0, 7); // YYYY-MM
+    monthly[month] = (monthly[month] || 0) + r.cost;
+  });
+
+  return monthly;
+}
+
+// Update Chart
+function updateChart() {
+  let monthly = getMonthlyTotals();
+  let labels = Object.keys(monthly);
+  let values = Object.values(monthly);
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(document.getElementById("chart"), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Monthly Total',
+        data: values
+      }]
+    }
+  });
 }
 
 // INIT
