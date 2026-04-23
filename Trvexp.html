@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Travel Inventory Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        input, button { padding: 8px; margin: 5px; }
+        .box { border: 1px solid #ccc; padding: 15px; width: 400px; }
+        .nav-btns button { width: 60px; }
+        .status { margin-top: 10px; font-weight: bold; }
+
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        table, th, td { border: 1px solid #ccc; }
+        th, td { padding: 8px; text-align: center; }
+        th { background: #f2f2f2; }
+        tr:hover { background: #eef; cursor: pointer; }
+    </style>
+</head>
+
+<body>
+
+<h2>Travel Inventory System</h2>
+
+<div class="box">
+
+    Place <input type="text" id="place" placeholder="Place"><br>
+    Date <input type="date" id="date"><br>
+    Cost <input type="number" id="cost" placeholder="Cost"><br>
+
+    <!-- NAVIGATION -->
+    <div class="nav-btns">
+        <button onclick="first()">|&lt;</button>
+        <button onclick="prev()">&lt;</button>
+        <button onclick="next()">&gt;</button>
+        <button onclick="last()">&gt;|</button>
+    </div>
+
+    <!-- ACTIONS -->
+    <button onclick="save()">Save</button>
+    <button onclick="newRecord()">New</button>
+    <button onclick="deleteRecord()">Delete</button>
+    <br>
+    <!-- EXPORT -->
+    <button onclick="exportCSV()">Export CSV</button>
+    <br>
+    <!-- SEARCH -->
+    <input type="text" id="search" placeholder="Search Place">
+    <button onclick="search()">Search</button>
+    
+
+
+    <div class="status" id="status"></div>
+
+</div>
+
+<h3>Chart</h3>
+<canvas id="chart"></canvas>
+
+<!-- EXCEL STYLE TABLE -->
+<h3>Records (Excel Style)</h3>
+
+<input type="date" id="tableDate">
+<button onclick="searchTableByDate()">Search by Date</button>
+<button onclick="loadFullTable()">Show All</button>
+
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Place</th>
+            <th>Date</th>
+            <th>Cost</th>
+        </tr>
+    </thead>
+    <tbody id="excelTable"></tbody>
+</table>
+
+<script>
+let data = JSON.parse(localStorage.getItem("travelData")) || [];
+let index = -1;
+let filteredData = null;
+let chart;
+
+// LOAD FORM
+function loadForm(i) {
+    let arr = filteredData || data;
+    if (i < 0 || i >= arr.length) return;
+
+    index = i;
+    let r = arr[i];
+
+    place.value = r.place;
+    date.value = r.date;
+    cost.value = r.cost;
+
+    updateStatus();
+}
+
+// STATUS
+function updateStatus() {
+    let arr = filteredData || data;
+
+    if (index === -1) {
+        status.innerText = "New Record";
+    } else {
+        status.innerText = `Record ${index + 1} of ${arr.length}`;
+    }
+}
+
+// SAVE
+function save() {
+    let p = place.value.trim();
+    let d = date.value;
+    let c = cost.value;
+
+    if (!p || !d || !c) return alert("Fill all fields");
+
+    if (filteredData) {
+        alert("Clear filter before saving");
+        return;
+    }
+
+    if (index >= 0) {
+        data[index] = { place: p, date: d, cost: +c };
+    } else {
+        data.push({ place: p, date: d, cost: +c });
+        index = data.length - 1;
+    }
+
+    localStorage.setItem("travelData", JSON.stringify(data));
+    updateChart();
+    loadFullTable();
+    updateStatus();
+}
+
+// NEW
+function newRecord() {
+    place.value = "";
+    date.value = "";
+    cost.value = "";
+    index = -1;
+    updateStatus();
+}
+
+// DELETE
+function deleteRecord() {
+    if (index < 0) return;
+
+    data.splice(index, 1);
+    localStorage.setItem("travelData", JSON.stringify(data));
+
+    if (data.length > 0) loadForm(0);
+    else newRecord();
+
+    updateChart();
+    loadFullTable();
+}
+
+// NAV
+function first() { loadForm(0); }
+function last() { loadForm((filteredData || data).length - 1); }
+function next() { if (index < (filteredData || data).length - 1) loadForm(index + 1); }
+function prev() { if (index > 0) loadForm(index - 1); }
+
+// SEARCH FORM
+function search() {
+    let key = document.getElementById("search").value.toLowerCase();
+
+    let found = data.findIndex(r =>
+        r.place.toLowerCase().includes(key)
+    );
+
+    if (found !== -1) {
+        loadForm(found);
+    } else {
+        alert("Not found");
+    }
+}
+
+// FILTER FORM
+
+
+// CLEAR FILTER
+
+
+// EXPORT CSV
+function exportCSV() {
+    let csv = "Place,Date,Cost\n";
+    data.forEach(r => {
+        csv += `${r.place},${r.date},${r.cost}\n`;
+    });
+
+    let blob = new Blob([csv], { type: "text/csv" });
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "travel.csv";
+    a.click();
+}
+
+// TABLE RENDER
+function renderTable(arr) {
+    let tbody = document.getElementById("excelTable");
+    tbody.innerHTML = "";
+
+    arr.forEach((r, i) => {
+        tbody.innerHTML += `
+        <tr onclick="loadFromTable(${i})">
+            <td>${i + 1}</td>
+            <td>${r.place}</td>
+            <td>${r.date}</td>
+            <td>${r.cost}</td>
+        </tr>`;
+    });
+}
+
+// LOAD FROM TABLE
+function loadFromTable(i) {
+    filteredData = null;
+    loadForm(i);
+}
+
+// TABLE DATE SEARCH
+function searchTableByDate() {
+    let d = document.getElementById("tableDate").value;
+    let filtered = data.filter(r => r.date === d);
+
+    if (filtered.length > 0) {
+        renderTable(filtered);
+    } else {
+        alert("No records found");
+    }
+}
+
+// LOAD FULL TABLE
+function loadFullTable() {
+    renderTable(data);
+}
+
+// CHART
+function updateChart() {
+    let labels = data.map(r => r.place);
+    let values = data.map(r => r.cost);
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(document.getElementById("chart"), {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{ label: "Cost", data: values }]
+        }
+    });
+}
+
+// INIT
+if (data.length > 0) loadForm(0);
+updateChart();
+loadFullTable();
+
+</script>
+
+</body>
+</html>
