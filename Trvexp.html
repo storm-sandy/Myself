@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Travel Inventory Pro</title>
+    <title>Spend Daily Inventory</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: Arial; padding: 20px; }
@@ -20,7 +20,7 @@
 
 <body>
 
-<h2>Travel Inventory System</h2>
+<h2>Spending Inventory System</h2>
 
 <div class="box">
 
@@ -54,8 +54,11 @@
 
 </div>
 
-<h3>Chart</h3>
+<h3>Chart Monthly</h3>
 <canvas id="chart"></canvas>
+
+<h3>Chart Daily</h3>
+<canvas id="chart1"></canvas>
 
 <!-- EXCEL STYLE TABLE -->
 <h3>Records (Excel Style)</h3>
@@ -237,23 +240,37 @@ function loadFullTable() {
     renderTable(data);
 }
 
-// CHART
-function updateChart1() {
-    let labels = data.map(r => r.date);
-    let values = data.map(r => r.cost);
-
-    if (chart) chart.destroy();
-
-    chart = new Chart(document.getElementById("chart"), {
-        type: "bar",
-        data: {
-            labels: labels,
-            datasets: [{ label: "Cost", data: values }]
-        }
-    });
+// group by date
+function groupByDay() {
+  let grouped = {};
+  data.forEach(r => {
+    if (!grouped[r.date]) grouped[r.date] = 0;
+    grouped[r.date] += r.cost;
+  });
+  return grouped;
 }
 
 
+let chart1;
+
+function renderChart() {
+  let grouped = groupByDay();
+  let labels = Object.keys(grouped);
+  let values = Object.values(grouped);
+
+  if (chart1) chart.destroy();
+
+  chart1 = new Chart(document.getElementById("chart1"), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Day Total',
+        data: values
+      }]
+    }
+  });
+}
 
 // Convert to Month-wise totals
 function getMonthlyTotals() {
@@ -289,6 +306,7 @@ function updateChart() {
 
 // INIT
 if (data.length > 0) loadForm(0);
+renderChart();
 updateChart();
 loadFullTable();
 
