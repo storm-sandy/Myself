@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Shopping Manager</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+padding:20px;
+}
+
+h2{text-align:center}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+margin-bottom:15px;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:6px;
+text-align:center;
+}
+
+input{
+width:100%;
+padding:5px;
+}
+
+button{
+padding:6px 10px;
+margin:2px;
+cursor:pointer;
+}
+
+.add{background:#28a745;color:white;border:none}
+.edit{background:#007bff;color:white;border:none}
+.del{background:#dc3545;color:white;border:none}
+
+.box{
+background:white;
+padding:10px;
+margin-top:10px;
+}
+
+.done{
+text-decoration:line-through;
+color:gray;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Shopping Manager</h2>
+
+<input id="search" placeholder="Search item..." onkeyup="render()">
+
+<button onclick="generateGrocery()">Auto Grocery List</button>
+<button onclick="exportCSV()">Export Excel</button>
+<button onclick="printReport()">Print</button>
+
+<table>
+
+<thead>
+<tr>
+<th>Buy</th>
+<th>Date</th>
+<th>Item</th>
+<th>Qty</th>
+<th>Price</th>
+<th>Type</th>
+<th>Total</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="list"></tbody>
+
+<tfoot>
+<tr>
+<td>-</td>
+<td><input type="date" id="date"></td>
+<td><input id="name"></td>
+<td><input type="number" id="qty"></td>
+<td><input type="number" id="price"></td>
+<td><input id="type"></td>
+<td>-</td>
+<td><button class="add" onclick="addItem()">Add</button></td>
+</tr>
+</tfoot>
+
+</table>
+
+<div class="box">
+
+Budget ₹ <input id="budget" type="number" oninput="render()">
+
+<br><br>
+
+Actual Spending ₹ <span id="actual">0</span>
+
+<br>
+
+Remaining Budget ₹ <span id="remaining">0</span>
+
+<br>
+
+Total Items: <span id="itemCount">0</span>
+
+<br>
+
+Pending Cost ₹ <span id="pendingCost">0</span>
+
+</div>
+
+<h3>Category Totals</h3>
+<div id="categoryTotals" class="box"></div>
+
+<h3>Monthly Summary</h3>
+<div id="monthlySummary" class="box"></div>
+
+<h3>Pending Shopping List</h3>
+<div id="pendingList" class="box"></div>
+
+<h3>Completed Shopping List</h3>
+<div id="completedList" class="box"></div>
+
+<h3>Auto Grocery List</h3>
+<div id="groceryList" class="box"></div>
+
+<script>
+
+let items = JSON.parse(localStorage.getItem("shoppingData")) || [];
+
+function save(){
+localStorage.setItem("shoppingData",JSON.stringify(items));
+}
+
+function addItem(){
+
+let date=document.getElementById("date").value;
+let name=document.getElementById("name").value;
+let qty=Number(document.getElementById("qty").value);
+let price=Number(document.getElementById("price").value);
+let type=document.getElementById("type").value;
+
+if(!name || !qty || !price){
+alert("Enter item, quantity and price");
+return;
+}
+
+items.push({date,name,qty,price,type,done:false});
+
+document.getElementById("date").value="";
+document.getElementById("name").value="";
+document.getElementById("qty").value="";
+document.getElementById("price").value="";
+document.getElementById("type").value="";
+
+render();
+
+}
+
+function deleteItem(i){
+
+if(confirm("Delete record?")){
+items.splice(i,1);
+render();
+}
+
+}
+
+function editItem(i){
+
+let item=items[i];
+
+item.date=prompt("Date",item.date);
+item.name=prompt("Item",item.name);
+item.qty=Number(prompt("Qty",item.qty));
+item.price=Number(prompt("Price",item.price));
+item.type=prompt("Type",item.type);
+
+render();
+
+}
+
+function toggleDone(i){
+items[i].done=!items[i].done;
+render();
+}
+
+function render(){
+
+let list=document.getElementById("list");
+list.innerHTML="";
+
+let search=document.getElementById("search").value.toLowerCase();
+
+let totalSpend=0;
+let categories={};
+let monthly={};
+
+let pendingHTML="";
+let doneHTML="";
+let pendingCost=0;
+
+let visibleCount=0;
+
+items.forEach((item,i)=>{
+
+if(search && !item.name.toLowerCase().includes(search)) return;
+
+visibleCount++;
+
+let total=item.qty*item.price;
+
+if(item.done) totalSpend+=total;
+else pendingCost+=total;
+
+if(!categories[item.type]) categories[item.type]=0;
+categories[item.type]+=total;
+
+let month=item.date.slice(0,7);
+
+if(!monthly[month]) monthly[month]=0;
+monthly[month]+=total;
+
+list.innerHTML+=`
+<tr class="${item.done?'done':''}">
+<td><input type="checkbox" ${item.done?'checked':''} onclick="toggleDone(${i})"></td>
+<td>${item.date}</td>
+<td>${item.name}</td>
+<td>${item.qty}</td>
+<td>${item.price}</td>
+<td>${item.type}</td>
+<td>${total}</td>
+<td>
+<button class="edit" onclick="editItem(${i})">Edit</button>
+<button class="del" onclick="deleteItem(${i})">Delete</button>
+</td>
+</tr>
+`;
+
+if(item.done)
+doneHTML+=item.name+" ₹"+total+"<br>";
+else
+pendingHTML+=item.name+" ₹"+total+"<br>";
+
+});
+
+document.getElementById("actual").innerText=totalSpend;
+
+let budget=document.getElementById("budget").value||0;
+
+document.getElementById("remaining").innerText=budget-totalSpend;
+
+document.getElementById("itemCount").innerText=visibleCount;
+
+document.getElementById("pendingCost").innerText=pendingCost;
+
+let catHTML="";
+for(let c in categories){
+catHTML+=c+" : ₹ "+categories[c]+"<br>";
+}
+document.getElementById("categoryTotals").innerHTML=catHTML;
+
+let monthHTML="";
+for(let m in monthly){
+monthHTML+=m+" : ₹ "+monthly[m]+"<br>";
+}
+document.getElementById("monthlySummary").innerHTML=monthHTML;
+
+document.getElementById("pendingList").innerHTML=pendingHTML;
+document.getElementById("completedList").innerHTML=doneHTML;
+
+save();
+
+}
+
+function generateGrocery(){
+
+let grocery={};
+
+items.forEach(i=>{
+if(!grocery[i.name]) grocery[i.name]=0;
+grocery[i.name]+=i.qty;
+});
+
+let html="";
+for(let g in grocery){
+html+=g+" : "+grocery[g]+"<br>";
+}
+
+document.getElementById("groceryList").innerHTML=html;
+
+}
+
+function exportCSV(){
+
+let csv="Date,Item,Qty,Price,Type,Total\n";
+
+items.forEach(i=>{
+let t=i.qty*i.price;
+csv+=`${i.date},${i.name},${i.qty},${i.price},${i.type},${t}\n`;
+});
+
+let blob=new Blob([csv],{type:"text/csv"});
+
+let a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="shopping_report.csv";
+a.click();
+
+}
+
+function printReport(){
+window.print();
+}
+
+render();
+
+</script>
+
+</body>
+</html>
