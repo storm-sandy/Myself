@@ -250,15 +250,17 @@ function groupByDay() {
   return grouped;
 }
 
-
 let chart1;
 
 function renderChart() {
   let grouped = groupByDay();
-  let labels = Object.keys(grouped);
-  let values = Object.values(grouped);
 
-  if (chart1) chart.destroy();
+  // Sort dates
+  let labels = Object.keys(grouped).sort();
+  let values = labels.map(d => grouped[d]);
+
+  // Destroy old chart properly
+  if (chart1) chart1.destroy();
 
   chart1 = new Chart(document.getElementById("chart1"), {
     type: 'bar',
@@ -266,30 +268,56 @@ function renderChart() {
       labels: labels,
       datasets: [{
         label: 'Day Total',
-        data: values
+        data: values,
+        borderWidth: 1
       }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
     }
   });
 }
 
-// Convert to Month-wise totals
+//let chart;
+
+// Group by month (YYYY-MM)
 function getMonthlyTotals() {
   let monthly = {};
 
   data.forEach(r => {
-    let month = r.date.substring(0, 7); // YYYY-MM
+    let month = r.date.substring(0, 7); // fast & safe
     monthly[month] = (monthly[month] || 0) + r.cost;
   });
 
   return monthly;
 }
 
+// Convert YYYY-MM → "Apr 2026"
+function formatMonth(monthKey) {
+  let [y, m] = monthKey.split("-");
+  let d = new Date(y, m - 1);
+  return d.toLocaleString('default', { month: 'short', year: 'numeric' });
+}
+
 // Update Chart
 function updateChart() {
   let monthly = getMonthlyTotals();
-  let labels = Object.keys(monthly);
-  let values = Object.values(monthly);
 
+  // ✅ sort months
+  let keys = Object.keys(monthly).sort();
+
+  let labels = keys.map(formatMonth);
+  let values = keys.map(k => monthly[k]);
+
+  // ✅ destroy correctly
   if (chart) chart.destroy();
 
   chart = new Chart(document.getElementById("chart"), {
@@ -298,8 +326,24 @@ function updateChart() {
       labels: labels,
       datasets: [{
         label: 'Monthly Total',
-        data: values
+        data: values,
+        borderWidth: 1
       }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: ctx => `₹ ${ctx.raw}`
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
     }
   });
 }
