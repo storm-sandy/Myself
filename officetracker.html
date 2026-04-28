@@ -132,7 +132,7 @@ function deleteByDateRange() {
 
   if (!from || !to) return alert("Select date range");
 
-  data = data.filter(r => !(r.date >= from && r.date <= to));
+  data = data.filter(rs => !(rs.date >= from && rs.date <= to));
   save();
   renderAll();
 }
@@ -142,9 +142,9 @@ function getFilteredData() {
   let from = fromDate.value;
   let to = toDate.value;
 
-  return data.filter(r => {
-    if (from && r.date < from) return false;
-    if (to && r.date > to) return false;
+  return data.filter(rs => {
+    if (from && rs.date < from) return false;
+    if (to && rs.date > to) return false;
     return true;
   });
 }
@@ -179,9 +179,9 @@ function formatLabel(key, type) {
 // Group
 function groupData(filtered, type) {
   let g={};
-  filtered.forEach(r=>{
-    let k=getKey(r.date,type);
-    g[k]=(g[k]||0)+r.cost;
+  filtered.forEach(rs=>{
+    let k=getKey(rs.date,type);
+    g[k]=(g[k]||0)+rs.cost;
   });
   return g;
 }
@@ -189,15 +189,15 @@ function groupData(filtered, type) {
 // Table
 function renderTable(filtered) {
   tableBody.innerHTML="";
-  filtered.forEach(r=>{
+  filtered.forEach(rs=>{
     let i=data.indexOf(r);
     tableBody.innerHTML+=`
       <tr>
-        <td>${r.date}</td>
-        <td>${r.cost}</td>
-        <td>${r.place||""}</td>
-        <td>${r.desc||""}</td>
-        <td>${r.type||""}</td>
+        <td>${rs.date}</td>
+        <td>${rs.cost}</td>
+        <td>${rs.place||""}</td>
+        <td>${rs.desc||""}</td>
+        <td>${rs.type||""}</td>
         <td><button onclick="deleteRow(${i})">X</button></td>
       </tr>`;
   });
@@ -228,14 +228,14 @@ function renderChart(filtered) {
 
 // Total
 function renderTotal(filtered){
-  total.innerText=filtered.reduce((s,r)=>s+r.cost,0);
+  total.innerText=filtered.reduce((s,rs)=>s+rs.cost,0);
 }
 
 // Export CSV
 function exportCSV() {
   let csv = "date,cost,place,desc,type\n";
-  data.forEach(r=>{
-    csv += `${r.date},${r.cost},${r.place||""},${r.desc||""},${r.type||""}\n`;
+  data.forEach(rs=>{
+    csv += `${rs.date},${rs.cost},${rs.place||""},${rs.desc||""},${rs.type||""}\n`;
   });
 
   let blob = new Blob([csv], {type:"text/csv"});
