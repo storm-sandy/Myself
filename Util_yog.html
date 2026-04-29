@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+<title>Sanskar Dashboard</title>
+<style>
+body{
+font-family:Arial;
+margin:0;
+transition:0.3s;
+}
+
+/* HEADER */
+
+.header{
+padding:0px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+/* GRID */
+
+.list-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:15px;
+padding:15px;
+}
+
+/* CARD */
+
+.card{
+padding:15px;
+border-radius:8px;
+box-shadow:0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* LIST */
+
+ul{
+padding-left:18px;
+}
+
+li{
+margin:6px 0;
+cursor:pointer;
+}
+
+/* THEMES */
+
+.light{
+background:#f4f6f9;
+color:#000;
+}
+
+.light .header{
+background:#1e88e5;
+color:white;
+}
+
+.light .card{
+background:white;
+}
+
+
+.dark{
+background:#1e1e1e;
+color:white;
+a:link {
+  color:white;
+}
+}
+}
+
+.dark .header{
+background:#000;
+}
+
+.dark .card{
+background:#2b2b2b;
+}
+
+
+.blue{
+background:#e3f2fd;
+color:#000;
+}
+
+.blue .header{
+background:#1565c0;
+color:white;
+}
+
+.blue .card{
+background:white;
+}
+/* link color */
+a:link {
+  color: black;
+}
+
+a:visited {
+  color: purple;
+}
+
+a:hover {
+  color: red;
+}
+
+a:active {
+  color: green;
+}
+</style>
+
+</head>
+
+<body class="light">
+
+<!-- HEADER -->
+
+<div class="header">
+<h2>Swayam Vihar Upakarana</h2>
+<select onchange="changeTheme(this.value)">
+
+<option value="light">Light Theme</option>
+<option value="dark">Dark Theme</option>
+<option value="blue">Blue Theme</option>
+
+</select>
+</div>
+<div class="header">
+<span id="mdate"></span>|
+<span id="mtime12"></span>|
+<span id="mtime24"></span>|
+</div>
+
+<!-- GRID -->
+
+<div class="list-grid">
+
+<div class="card">
+<h3>Sanskar Dashboard</h3>
+<ul>
+<li><a href="#">Yoga</a></li>
+
+</ul>
+</div>
+
+
+
+
+
+
+
+
+</div>
+
+<ul>
+<li>Kindly export data on weekly basis.</li>
+<li>Chart Builder can be used for Basic Analysis with exported data.</li>
+<li>This app has Auto Update Feature Activated on refresh.</li>
+</ul>
+
+<script>
+
+/* CHANGE THEME */
+
+function changeTheme(theme){
+
+document.body.className=theme;
+
+localStorage.setItem("theme",theme);
+
+}
+
+
+/* LOAD SAVED THEME */
+
+let savedTheme=localStorage.getItem("theme");
+
+if(savedTheme){
+
+document.body.className=savedTheme;
+
+}
+/* CLOCK */
+
+function updateClock(){
+
+let now=new Date();
+
+mtime24.innerHTML=now.toLocaleTimeString();
+mtime12.innerHTML=
+now.toLocaleTimeString('en-IN',{
+hour: '2-digit',
+minute: '2-digit',
+second: '2-digit',
+hour12: true
+});
+
+mdate.innerHTML=now.toLocaleDateString("en-IN", {
+  weekday: "long",
+  year: "numeric",
+  month: "long",
+  day: "numeric"
+});
+
+}
+
+setInterval(updateClock,1000);
+</script>
+</body>
+</html>
