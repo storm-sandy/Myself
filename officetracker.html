@@ -30,6 +30,18 @@
   <input type="text" id="place" placeholder="Task">
   <input type="text" id="desc" placeholder="Description">
 
+<select id="types">
+    <option value="">Select Time</option>
+    <option>Early Morning 3-6</option>
+    <option>Good Morning 6-9</option>
+    <option>Mid Morning 9-12</option>
+    <option>Good Afternoon 12-3</option>
+    <option>Early Evening 3-6</option>
+    <option>Early Night 6-9</option>
+    <option>Good Night 9-12</option>
+    <option>Mid Night 12-3</option>
+  </select>
+
   <select id="type">
     <option value="">Select Type</option>
     <option>Daily</option>
@@ -87,7 +99,10 @@
     <thead>
       <tr>
         <th>Date</th><th>Amount</th><th>Place</th>
-        <th>Description</th><th>Type</th><th>Delete</th>
+        <th>Description</th>
+<th>Time</th>
+<th>Type</th>
+<th>Delete</th>
       </tr>
     </thead>
     <tbody id="tableBody"></tbody>
@@ -105,6 +120,7 @@ function addRecord() {
     cost: parseFloat(cost.value),
     place: place.value,
     desc: desc.value,
+    types: types.value,
     type: type.value
   };
 
@@ -197,6 +213,7 @@ function renderTable(filtered) {
         <td>${rs.cost}</td>
         <td>${rs.place||""}</td>
         <td>${rs.desc||""}</td>
+        <td>${rs.types||""}</td>
         <td>${rs.type||""}</td>
         <td><button onclick="deleteRow(${i})">X</button></td>
       </tr>`;
@@ -235,7 +252,7 @@ function renderTotal(filtered){
 function exportCSV() {
   let csv = "date,cost,place,desc,type\n";
   data.forEach(rs=>{
-    csv += `${rs.date},${rs.cost},${rs.place||""},${rs.desc||""},${rs.type||""}\n`;
+    csv += `${rs.date},${rs.cost},${rs.place||""},${rs.desc||""},${rs.types||""},{rs.type||""}\n`;
   });
 
   let blob = new Blob([csv], {type:"text/csv"});
@@ -261,6 +278,7 @@ function importCSV(e) {
           cost: parseFloat(cost),
           place,
           desc,
+          types,
           type
         });
       }
