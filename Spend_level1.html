@@ -211,8 +211,9 @@ function renderTable(filtered) {
         <td>${r.cost}</td>
         <td>${r.place||""}</td>
         <td>${r.desc||""}</td>
-        <td>${r.type||""}</td>
         <td>${r.types||""}</td>
+        <td>${r.type||""}</td>
+        
         <td><button onclick="deleteRow(${i})">X</button></td>
       </tr>`;
   });
@@ -248,9 +249,9 @@ function renderTotal(filtered){
 
 // Export CSV
 function exportCSV() {
-  let csv = "date,cost,place,desc,type\n";
+  let csv = "date,cost,place,desc,types,type\n";
   data.forEach(r=>{
-    csv += `${r.date},${r.cost},${r.place||""},${r.desc||""},${r.type||""}\n`;
+    csv += `${r.date},${r.cost},${r.place||""},${r.desc||""},${r.types||""},${r.type||""}\n`;
   });
 
   let blob = new Blob([csv], {type:"text/csv"});
@@ -269,7 +270,7 @@ function importCSV(e) {
     let rows = reader.result.split("\n").slice(1);
 
     rows.forEach(row=>{
-      let [date,cost,place,desc,type] = row.split(",");
+      let [date,cost,place,desc,types,type] = row.split(",");
       if(date && cost){
         data.push({
           date,
