@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Attendance Dashboard</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+padding:20px;
+}
+
+h2{text-align:center}
+
+.controls{text-align:center;margin-bottom:10px}
+
+button{
+padding:6px 10px;
+margin:3px;
+cursor:pointer;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+margin-bottom:20px;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:8px;
+text-align:center;
+}
+
+th{
+background:#333;
+color:white;
+}
+
+canvas{
+width:100%;
+height:320px;
+background:white;
+border:1px solid #ccc;
+margin-bottom:20px;
+}
+
+.calendarHeader{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:10px;
+margin-bottom:5px;
+}
+
+.calendar{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:5px;
+background:white;
+padding:10px;
+border:1px solid #ccc;
+}
+
+.day{
+padding:10px;
+border:1px solid #ddd;
+text-align:center;
+cursor:pointer;
+}
+
+.present{background:#b2f2bb}
+.absent{background:#ffb3b3}
+
+.report{
+background:white;
+padding:10px;
+border:1px solid #ccc;
+margin-top:10px;
+}
+
+.week{
+font-weight:bold;
+background:#eee;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>Attendance Dashboard</h2>
+
+<div class="controls">
+<button onclick="addRow()">Add Attendance</button>
+<button onclick="exportCSV()">Export CSV</button>
+<button onclick="monthlyReport()">Monthly Report</button>
+<button onclick="yearlyReport()">Yearly Report</button>
+<button onclick="clearAll()">Clear All</button>
+</div>
+
+<table id="table">
+<thead>
+<tr>
+<th>Name</th>
+<th>Date</th>
+<th>Time In</th>
+<th>Time Out</th>
+<th>Total Hours</th>
+<th>Remarks</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<h3>Daily Hours Graph</h3>
+<canvas id="chart"></canvas>
+
+<h3>Calendar</h3>
+
+<div class="calendarHeader">
+<button onclick="prevMonth()">◀</button>
+<span id="monthLabel"></span>
+<button onclick="nextMonth()">▶</button>
+</div>
+
+<div class="calendar week">
+<div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div>
+<div>Thu</div><div>Fri</div><div>Sat</div>
+</div>
+
+<div id="calendar" class="calendar"></div>
+
+<div id="report" class="report"></div>
+
+<script>
+
+let table=document.querySelector("#table tbody")
+
+let current=new Date()
+
+function nowTime(){
+return new Date().toLocaleTimeString()
+}
+
+function today(){
+return new Date().toISOString().split("T")[0]
+}
+
+function addRow(){
+
+let row=table.insertRow()
+
+row.innerHTML=`
+<td contenteditable="true">Name</td>
+<td contenteditable="true">${today()}</td>
+<td contenteditable="true">${nowTime()}</td>
+<td contenteditable="true"></td>
+<td>0</td>
+<td contenteditable="true"></td>
+<td><button onclick="deleteRow(this)">Delete</button></td>
+`
+
+saveData()
+updateAll()
+
+}
+
+function deleteRow(btn){
+btn.parentElement.parentElement.remove()
+saveData()
+updateAll()
+}
+
+function clearAll(){
+if(confirm("Clear all data?")){
+localStorage.removeItem("attendanceData1")
+table.innerHTML=""
+updateAll()
+}
+}
+
+function saveData(){
+localStorage.setItem("attendanceData1",table.innerHTML)
+}
+
+function loadData(){
+let data=localStorage.getItem("attendanceData1")
+if(data) table.innerHTML=data
+}
+
+function updateAll(){
+calculateHours()
+updateGraph()
+generateCalendar()
+}
+
+document.addEventListener("input",function(e){
+
+if(e.target.closest("table")){
+calculateHours()
+saveData()
+updateGraph()
+generateCalendar()
+}
+
+})
+
+function calculateHours(){
+
+let rows=table.querySelectorAll("tr")
+
+rows.forEach(r=>{
+
+let inTime=r.cells[2]?.innerText
+let outTime=r.cells[3]?.innerText
+
+if(inTime && outTime){
+
+let start=new Date("1970/01/01 "+inTime)
+let end=new Date("1970/01/01 "+outTime)
+
+let diff=(end-start)/3600000
+
+if(!isNaN(diff)){
+r.cells[4].innerText=diff.toFixed(2)
+}
+
+}
+
+})
+
+}
+
+function exportCSV(){
+
+let rows=document.querySelectorAll("table tr")
+let csv=[]
+
+rows.forEach(r=>{
+let cols=r.querySelectorAll("td,th")
+let row=[]
+cols.forEach(c=>row.push(c.innerText))
+csv.push(row.join(","))
+})
+
+let blob=new Blob([csv.join("\n")])
+let a=document.createElement("a")
+a.href=URL.createObjectURL(blob)
+a.download="attendance.csv"
+a.click()
+
+}
+
+function updateGraph(){
+
+let labels=[]
+let data=[]
+
+let rows=table.querySelectorAll("tr")
+
+rows.forEach(r=>{
+
+let date=r.cells[1]?.innerText
+let h=parseFloat(r.cells[4]?.innerText)
+
+if(date && !isNaN(h)){
+labels.push(date)
+data.push(h)
+}
+
+})
+
+drawGraph(labels,data)
+
+}
+
+function drawGraph(labels,data){
+
+let canvas=document.getElementById("chart")
+let ctx=canvas.getContext("2d")
+
+canvas.width=canvas.offsetWidth
+canvas.height=320
+
+ctx.clearRect(0,0,canvas.width,canvas.height)
+
+let max=Math.max(...data,8)
+
+let margin=40
+let height=200
+let bottom=260
+
+for(let i=0;i<=max;i++){
+
+let y=bottom-(i/max)*height
+
+ctx.strokeStyle="#eee"
+ctx.beginPath()
+ctx.moveTo(margin,y)
+ctx.lineTo(canvas.width-margin,y)
+ctx.stroke()
+
+ctx.fillStyle="#000"
+ctx.fillText(i+"h",5,y+3)
+
+}
+
+let barWidth=(canvas.width-margin*2)/data.length
+
+data.forEach((v,i)=>{
+
+let barHeight=(v/max)*height
+let x=margin+i*barWidth+10
+let y=bottom-barHeight
+
+ctx.fillStyle="#4CAF50"
+ctx.fillRect(x,y,barWidth-20,barHeight)
+
+ctx.fillStyle="#000"
+ctx.fillText(labels[i].slice(5),x,280)
+
+})
+
+}
+
+function generateCalendar(){
+
+let calendar=document.getElementById("calendar")
+calendar.innerHTML=""
+
+let year=current.getFullYear()
+let month=current.getMonth()
+
+document.getElementById("monthLabel").innerText=
+current.toLocaleString("default",{month:"long",year:"numeric"})
+
+let firstDay=new Date(year,month,1).getDay()
+let daysInMonth=new Date(year,month+1,0).getDate()
+
+let rows=table.querySelectorAll("tr")
+let status={}
+
+rows.forEach(r=>{
+
+let date=r.cells[1]?.innerText
+let hours=parseFloat(r.cells[4]?.innerText)
+
+if(date){
+
+let d=new Date(date)
+
+if(d.getMonth()==month && d.getFullYear()==year){
+
+let day=d.getDate()
+
+if(hours>0){
+status[day]="present"
+}else{
+status[day]="absent"
+}
+
+}
+
+}
+
+})
+
+for(let i=0;i<firstDay;i++){
+calendar.appendChild(document.createElement("div"))
+}
+
+for(let i=1;i<=daysInMonth;i++){
+
+let div=document.createElement("div")
+div.className="day"
+
+if(status[i]=="present") div.classList.add("present")
+if(status[i]=="absent") div.classList.add("absent")
+
+div.innerText=i
+
+div.onclick=function(){
+
+let date=year+"-"+String(month+1).padStart(2,"0")+"-"+String(i).padStart(2,"0")
+
+openAttendance(date)
+
+}
+
+calendar.appendChild(div)
+
+}
+
+}
+
+function openAttendance(date){
+
+let rows=table.querySelectorAll("tr")
+
+for(let r of rows){
+
+if(r.cells[1].innerText==date){
+r.scrollIntoView({behavior:"smooth"})
+return
+}
+
+}
+
+let row=table.insertRow()
+
+row.innerHTML=`
+<td contenteditable="true">Name</td>
+<td contenteditable="true">${date}</td>
+<td contenteditable="true">${nowTime()}</td>
+<td contenteditable="true"></td>
+<td>0</td>
+<td contenteditable="true"></td>
+<td><button onclick="deleteRow(this)">Delete</button></td>
+`
+
+saveData()
+updateAll()
+
+}
+
+function prevMonth(){
+current.setMonth(current.getMonth()-1)
+generateCalendar()
+}
+
+function nextMonth(){
+current.setMonth(current.getMonth()+1)
+generateCalendar()
+}
+
+function monthlyReport(){
+
+let rows=table.querySelectorAll("tr")
+
+let total=0
+let days=0
+
+rows.forEach(r=>{
+
+let h=parseFloat(r.cells[4]?.innerText)
+
+if(!isNaN(h)){
+total+=h
+days++
+}
+
+})
+
+let avg=days?total/days:0
+
+document.getElementById("report").innerHTML=
+
+`<h3>Monthly Report</h3>
+Days Present: ${days}<br>
+Total Hours: ${total.toFixed(2)}<br>
+Average Hours: ${avg.toFixed(2)}`
+
+}
+
+function yearlyReport(){
+
+let rows=table.querySelectorAll("tr")
+
+let months=new Array(12).fill(0)
+
+rows.forEach(r=>{
+
+let date=r.cells[1]?.innerText
+let h=parseFloat(r.cells[4]?.innerText)
+
+if(date && !isNaN(h)){
+let m=new Date(date).getMonth()
+months[m]+=h
+}
+
+})
+
+let html="<h3>Yearly Report</h3>"
+
+months.forEach((h,i)=>{
+html+=`Month ${i+1} : ${h.toFixed(2)} hours<br>`
+})
+
+document.getElementById("report").innerHTML=html
+
+}
+
+window.addEventListener("resize",updateGraph)
+
+loadData()
+updateAll()
+
+</script>
+
+</body>
+</html>
