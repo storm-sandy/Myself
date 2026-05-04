@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title> Fullday Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body { font-family: Arial; background:#f4f6f9; padding:10px; }
+    .card {
+      background:#fff; padding:12px; margin-bottom:12px;
+      border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.1);
+    }
+    input, select, button {
+      padding:8px; margin:4px; border-radius:8px; border:1px solid #ccc;
+      width: 100%;
+    }
+    button { background:#007bff; color:#fff; border:none; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { padding:6px; border-bottom:1px solid #ddd; text-align:center; }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h3>Add Task</h3>
+  <input type="date" id="date">
+  <input type="number" id="cost" placeholder="Count">
+  <input type="text" id="place" placeholder="Task">
+  <input type="text" id="desc" placeholder="Description">
+
+<select id="types">
+    <option value="">Select Time</option>
+    <option>Early Morning 3-6</option>
+    <option>Good Morning 6-9</option>
+    <option>Mid Morning 9-12</option>
+    <option>Good Afternoon 12-3</option>
+    <option>Early Evening 3-6</option>
+    <option>Early Night 6-9</option>
+    <option>Good Night 9-12</option>
+    <option>Mid Night 12-3</option>
+  </select>
+
+  <select id="type">
+    <option value="">Select Type</option>
+    <option>Office</option>
+    <option>Food</option>
+    <option>Snack</option>
+    <option>Class</option>
+    <option>Personal</option>
+    <option>Family</option>
+    <option>Medical</option>
+    <option>Doctor</option>
+    <option>Travel</option>
+    <option>Learning</option>
+    <option>Kids</option>
+    <option>Parents</option>
+    <option>Friends</option>
+    <option>Book Reading</option>
+    <option>Task</option>
+    <option>Leave</option>
+    <option>Holiday</option>
+    <option>Weekend</option>
+    <option>Exercise</option>
+    <option>Health</option>
+    <option>Others</option>
+  </select>
+
+  <button onclick="addRecord()">Add</button>
+</div>
+
+<div class="card">
+  <h3>Filters</h3>
+
+  <select id="viewType" onchange="renderAll()">
+    <option value="day">Day</option>
+    <option value="week">Week</option>
+    <option value="month" selected>Month</option>
+    <option value="year">Year</option>
+  </select>
+
+  From: <input type="date" id="fromDate">
+  To: <input type="date" id="toDate">
+  <button onclick="renderAll()">Apply</button>
+
+  <button onclick="deleteByDateRange()">Delete Records in Range</button>
+
+  <h3>Total Task: <span id="total">0</span></h3>
+</div>
+
+<div class="card">
+  <button onclick="exportCSV()">Export CSV</button>
+  <input type="file" id="fileInput" accept=".csv" onchange="importCSV(event)">
+</div>
+
+<div class="card">
+  <canvas id="chart"></canvas>
+</div>
+
+<div class="card">
+  <h3>Records</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th><th>Count</th><th>Place</th>
+        <th>Description</th>
+<th>Time</th>
+<th>Type</th>
+<th>Delete</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("expenseData7")) || [];
+let chart;
+
+// Add
+function addRecord() {
+  let record = {
+    date: date.value,
+    cost: parseFloat(cost.value),
+    place: place.value,
+    desc: desc.value,
+    types: types.value,
+    type: type.value
+  };
+
+  if (!record.date || isNaN(record.cost)) return alert("Enter valid data");
+
+  data.push(record);
+  save();
+  renderAll();
+alert("Record Added!");
+}
+
+function save() {
+  localStorage.setItem("expenseData7", JSON.stringify(data));
+}
+
+function deleteRow(i) {
+  data.splice(i,1);
+  save();
+  renderAll();
+}
+
+// Delete by range
+function deleteByDateRange() {
+  let from = fromDate.value;
+  let to = toDate.value;
+
+  if (!from || !to) return alert("Select date range");
+
+  data = data.filter(rs => !(rs.date >= from && rs.date <= to));
+  save();
+  renderAll();
+}
+
+// Filter
+function getFilteredData() {
+  let from = fromDate.value;
+  let to = toDate.value;
+
+  return data.filter(rs => {
+    if (from && rs.date < from) return false;
+    if (to && rs.date > to) return false;
+    return true;
+  });
+}
+
+// Week
+function getWeekKey(dateStr) {
+  let d = new Date(dateStr);
+  d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+  let week1 = new Date(d.getFullYear(), 0, 4);
+  let weekNo = 1 + Math.round(((d - week1)/86400000 - 3 + (week1.getDay()+6)%7)/7);
+  return d.getFullYear()+"-W"+String(weekNo).padStart(2,'0');
+}
+
+// Key
+function getKey(date, type) {
+  if (type==="day") return date;
+  if (type==="month") return date.slice(0,7);
+  if (type==="year") return date.slice(0,4);
+  if (type==="week") return getWeekKey(date);
+}
+
+// Label
+function formatLabel(key, type) {
+  if (type==="month") {
+    let [y,m]=key.split("-");
+    return new Date(y,m-1).toLocaleString('default',{month:'short',year:'numeric'});
+  }
+  if (type==="week") return "Week "+key.split("W")[1];
+  return key;
+}
+
+// Group
+function groupData(filtered, type) {
+  let g={};
+  filtered.forEach(rs=>{
+    let k=getKey(rs.date,type);
+    g[k]=(g[k]||0)+rs.cost;
+  });
+  return g;
+}
+
+// Table
+function renderTable(filtered) {
+  tableBody.innerHTML="";
+  filtered.forEach(rs=>{
+    let i=data.indexOf(rs);
+    tableBody.innerHTML+=`
+      <tr>
+        <td>${rs.date}</td>
+        <td>${rs.cost}</td>
+        <td>${rs.place||""}</td>
+        <td>${rs.desc||""}</td>
+        <td>${rs.types||""}</td>
+        <td>${rs.type||""}</td>
+        <td><button onclick="deleteRow(${i})">X</button></td>
+      </tr>`;
+  });
+}
+
+// Chart
+function renderChart(filtered) {
+  let type=viewType.value;
+  let grouped=groupData(filtered,type);
+
+  let keys=Object.keys(grouped).sort();
+  let labels=keys.map(k=>formatLabel(k,type));
+  let values=keys.map(k=>grouped[k]);
+
+  if(chart) chart.destroy();
+
+  chart=new Chart(document.getElementById("chart"),{
+    type:type==="day"?"line":"bar",
+    data:{
+      labels:labels,
+      datasets:[{
+        label:type.toUpperCase()+" Total",
+        data:values
+      }]
+    }
+  });
+}
+
+// Total
+function renderTotal(filtered){
+  total.innerText=filtered.reduce((s,rs)=>s+rs.cost,0);
+}
+
+// Export CSV
+function exportCSV() {
+  let csv = "date,cost,place,desc,type\n";
+  data.forEach(rs=>{
+    csv += `${rs.date},${rs.cost},${rs.place||""},${rs.desc||""},${rs.types||""},{rs.type||""}\n`;
+  });
+
+  let blob = new Blob([csv], {type:"text/csv"});
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "expenses.csv";
+  a.click();
+}
+
+// Import CSV
+function importCSV(e) {
+  let file = e.target.files[0];
+  let reader = new FileReader();
+
+  reader.onload = function() {
+    let rows = reader.result.split("\n").slice(1);
+
+    rows.forEach(row=>{
+      let [date,cost,place,desc,type] = row.split(",");
+      if(date && cost){
+        data.push({
+          date,
+          cost: parseFloat(cost),
+          place,
+          desc,
+          types,
+          type
+        });
+      }
+    });
+
+    save();
+    renderAll();
+  };
+
+  reader.readAsText(file);
+}
+
+// Main
+function renderAll(){
+  let filtered=getFilteredData();
+  renderTable(filtered);
+  renderChart(filtered);
+  renderTotal(filtered);
+}
+
+window.onload=renderAll;
+</script>
+
+</body>
+</html>
