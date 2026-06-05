@@ -1,0 +1,242 @@
+<!DOCTYPE html><html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agile Kanban Board</title><style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f4f4f4;
+}
+
+header{
+    background:#1976d2;
+    color:white;
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+button{
+    padding:8px 15px;
+    border:none;
+    border-radius:4px;
+    cursor:pointer;
+}
+
+.board{
+    display:flex;
+    gap:10px;
+    padding:10px;
+    overflow-x:auto;
+    height:calc(100vh - 70px);
+}
+
+.column{
+    min-width:250px;
+    background:white;
+    border-radius:8px;
+    padding:10px;
+    box-shadow:0 2px 5px rgba(0,0,0,.2);
+}
+
+.column h3{
+    text-align:center;
+}
+
+.card{
+    background:#e3f2fd;
+    padding:10px;
+    margin:8px 0;
+    border-radius:5px;
+    cursor:move;
+}
+
+.card small{
+    display:block;
+    margin-top:5px;
+    color:#555;
+}
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.5);
+}
+
+.modal-content{
+    background:white;
+    width:300px;
+    margin:100px auto;
+    padding:20px;
+    border-radius:8px;
+}
+
+input,select{
+    width:100%;
+    padding:8px;
+    margin:5px 0;
+}
+</style></head><body><header>
+<h2>Agile Kanban Board</h2>
+<button onclick="showModal()">+ Task</button>
+</header><div class="board"><div class="column" data-status="backlog">
+<h3>Backlog</h3>
+</div><div class="column" data-status="todo">
+<h3>To Do</h3>
+</div><div class="column" data-status="progress">
+<h3>In Progress</h3>
+</div><div class="column" data-status="testing">
+<h3>Testing</h3>
+</div><div class="column" data-status="done">
+<h3>Done</h3>
+</div></div><div class="modal" id="modal">
+<div class="modal-content"><h3>New Task</h3><input id="title" placeholder="Task Name"><select id="priority">
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+</select><button onclick="addTask()">Save</button>
+<button onclick="closeModal()">Close</button>
+
+</div>
+</div><script>
+
+let tasks =
+JSON.parse(localStorage.getItem("tasks")) || [];
+
+function saveTasks(){
+ localStorage.setItem(
+   "tasks",
+   JSON.stringify(tasks)
+ );
+}
+
+function render(){
+
+ document
+ .querySelectorAll(".column")
+ .forEach(col=>{
+
+   const title=
+   col.querySelector("h3");
+
+   col.innerHTML="";
+   col.appendChild(title);
+
+   const status=
+   col.dataset.status;
+
+   tasks
+   .filter(t=>t.status===status)
+   .forEach(task=>{
+
+      const card=
+      document.createElement("div");
+
+      card.className="card";
+      card.draggable=true;
+
+      card.dataset.id=task.id;
+
+      card.innerHTML=`
+      <strong>${task.title}</strong>
+      <small>${task.priority}</small>
+      `;
+
+      card.addEventListener(
+       "dragstart",
+       ()=>dragged=card
+      );
+
+      col.appendChild(card);
+
+   });
+
+ });
+
+}
+
+let dragged=null;
+
+document
+.querySelectorAll(".column")
+.forEach(col=>{
+
+ col.addEventListener(
+  "dragover",
+  e=>e.preventDefault()
+ );
+
+ col.addEventListener(
+  "drop",
+  ()=>{
+
+   if(!dragged) return;
+
+   const id=
+   Number(dragged.dataset.id);
+
+   const task=
+   tasks.find(
+    t=>t.id===id
+   );
+
+   task.status=
+   col.dataset.status;
+
+   saveTasks();
+   render();
+
+  }
+ );
+
+});
+
+function showModal(){
+ document.getElementById(
+ "modal"
+ ).style.display="block";
+}
+
+function closeModal(){
+ document.getElementById(
+ "modal"
+ ).style.display="none";
+}
+
+function addTask(){
+
+ const title=
+ document.getElementById(
+ "title"
+ ).value;
+
+ const priority=
+ document.getElementById(
+ "priority"
+ ).value;
+
+ if(!title) return;
+
+ tasks.push({
+   id:Date.now(),
+   title,
+   priority,
+   status:"backlog"
+ });
+
+ saveTasks();
+ render();
+ closeModal();
+
+ document.getElementById(
+ "title"
+ ).value="";
+}
+
+render();
+
+</script></body>
+</html>
