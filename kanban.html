@@ -140,10 +140,17 @@ function render(){
 
       card.dataset.id=task.id;
 
-      card.innerHTML=`
-      <strong>${task.title}</strong>
-      <small>${task.priority}</small>
-      `;
+card.innerHTML = `
+  <div>
+    <strong>${task.title}</strong><br>
+    <small>Priority: ${task.priority}</small>
+  </div>
+
+  <div style="margin-top:8px;">
+    <button onclick="editTask(${task.id})">✏️</button>
+    <button onclick="deleteTask(${task.id})">🗑️</button>
+  </div>
+`;
 
       card.addEventListener(
        "dragstart",
@@ -193,6 +200,39 @@ document
  );
 
 });
+
+function deleteTask(id){
+
+  if(!confirm("Delete this task?"))
+    return;
+
+  tasks = tasks.filter(
+    task => task.id !== id
+  );
+
+  saveTasks();
+  render();
+}
+
+function editTask(id){
+
+  const task = tasks.find(
+    task => task.id === id
+  );
+
+  const newTitle = prompt(
+    "Edit Task",
+    task.title
+  );
+
+  if(newTitle === null)
+    return;
+
+  task.title = newTitle;
+
+  saveTasks();
+  render();
+}
 
 function showModal(){
  document.getElementById(
