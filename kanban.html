@@ -101,182 +101,323 @@ input,select{
 <button onclick="closeModal()">Close</button>
 
 </div>
-</div><script>
+</div>
 
+
+<script>
 let tasks =
 JSON.parse(localStorage.getItem("tasks")) || [];
 
+let dragged = null;
+
 function saveTasks(){
- localStorage.setItem(
-   "tasks",
-   JSON.stringify(tasks)
- );
+  localStorage.setItem(
+    "tasks",
+    JSON.stringify(tasks)
+  );
 }
 
 function render(){
 
- document
- .querySelectorAll(".column")
- .forEach(col=>{
+  document
+  .querySelectorAll(".column")
+  .forEach(col=>{
 
-   const title=
-   col.querySelector("h3");
+    const title =
+      col.querySelector("h3");
 
-   col.innerHTML="";
-   col.appendChild(title);
+    col.innerHTML = "";
+    col.appendChild(title);
 
-   const status=
-   col.dataset.status;
+    const status =
+      col.dataset.status;
 
-   tasks
-   .filter(t=>t.status===status)
-   .forEach(task=>{
+    tasks
+    .filter(t => t.status === status)
+    .sort((a,b)=>
+      (a.order||0)-(b.order||0)
+    )
+    .forEach(task=>{
 
-      const card=
-      document.createElement("div");
+      const card =
+        document.createElement("div");
 
-      card.className="card";
-      card.draggable=true;
+      card.className = "card";
+      card.draggable = true;
+      card.dataset.id = task.id;
 
-      card.dataset.id=task.id;
+      card.innerHTML = `
+        <strong>${task.title}</strong>
+        <small>
+          Priority: ${task.priority}
+        </small>
 
-card.innerHTML = `
-  <div>
-    <strong>${task.title}</strong><br>
-    <small>Priority: ${task.priority}</small>
-  </div>
+        <div style="margin-top:8px">
+          <button onclick="editTask(${task.id})">
+            ✏️
+          </button>
 
-  <div style="margin-top:8px;">
-    <button onclick="editTask(${task.id})">✏️</button>
-    <button onclick="deleteTask(${task.id})">🗑️</button>
-  </div>
-`;
+          <button onclick="deleteTask(${task.id})">
+            🗑️
+          </button>
+        </div>
+      `;
 
       card.addEventListener(
-       "dragstart",
-       ()=>dragged=card
+        "dragstart",
+        ()=>{
+          dragged = card;
+          card.classList.add("dragging");
+        }
+      );
+
+      card.addEventListener(
+        "dragend",
+        ()=>{
+          card.classList.remove("dragging");
+        }
       );
 
       col.appendChild(card);
 
-   });
+    });
 
- });
+  });
 
 }
-
-let dragged=null;
 
 document
 .querySelectorAll(".column")
 .forEach(col=>{
 
- col.addEventListener(
-  "dragover",
-  e=>e.preventDefault()
- );
+  col.addEventListener(
+    "dragover",
+    e=>{
 
- col.addEventListener(
-  "drop",
-  ()=>{
+      e.preventDefault();
 
-   if(!dragged) return;
+      if(!dragged) return;
 
-   const id=
-   Number(dragged.dataset.id);
+      const after =
+        getDragAfterElement(
+          col,
+          e.clientY
+        );
 
-   const task=
-   tasks.find(
-    t=>t.id===id
-   );
+      if(after == null){
+        col.appendChild(dragged);
+      }else{
+        col.insertBefore(
+          dragged,
+          after
+        );
+      }
 
-   task.status=
-   col.dataset.status;
+    }
+  );
 
-   saveTasks();
-   render();
+  col.addEventListener(
+    "drop",
+    ()=>{
 
-  }
- );
+      if(!dragged) return;
+
+      updateTaskOrder();
+
+      saveTasks();
+
+      render();
+
+      dragged = null;
+
+    }
+  );
 
 });
 
+function getDragAfterElement(
+  container,
+  y
+){
+
+  const cards =
+  [...container.querySelectorAll(
+    ".card:not(.dragging)"
+  )];
+
+  return cards.reduce(
+    (closest,child)=>{
+
+      const box =
+        child.getBoundingClientRect();
+
+      const offset =
+        y -
+        box.top -
+        box.height/2;
+
+      if(
+        offset < 0 &&
+        offset > closest.offset
+      ){
+        return {
+          offset,
+          element: child
+        };
+      }
+
+      return closest;
+
+    },
+    {
+      offset:
+      Number.NEGATIVE_INFINITY
+    }
+  ).element;
+
+}
+
+function updateTaskOrder(){
+
+  document
+  .querySelectorAll(".column")
+  .forEach(col=>{
+
+    const status =
+      col.dataset.status;
+
+    const cards =
+      [...col.querySelectorAll(".card")];
+
+    cards.forEach(
+      (card,index)=>{
+
+        const id =
+          Number(card.dataset.id);
+
+        const task =
+          tasks.find(
+            t=>t.id===id
+          );
+
+        if(task){
+
+          task.status =
+            status;
+
+          task.order =
+            index;
+
+        }
+
+      }
+    );
+
+  });
+
+}
+
 function deleteTask(id){
 
-  if(!confirm("Delete this task?"))
-    return;
+  if(
+    !confirm(
+      "Delete this task?"
+    )
+  ) return;
 
-  tasks = tasks.filter(
-    task => task.id !== id
-  );
+  tasks =
+    tasks.filter(
+      t=>t.id!==id
+    );
 
   saveTasks();
   render();
+
 }
 
 function editTask(id){
 
-  const task = tasks.find(
-    task => task.id === id
-  );
+  const task =
+    tasks.find(
+      t=>t.id===id
+    );
 
-  const newTitle = prompt(
-    "Edit Task",
-    task.title
-  );
+  const title =
+    prompt(
+      "Edit Task",
+      task.title
+    );
 
-  if(newTitle === null)
+  if(title===null)
     return;
 
-  task.title = newTitle;
+  task.title = title;
 
   saveTasks();
   render();
+
 }
 
 function showModal(){
- document.getElementById(
- "modal"
- ).style.display="block";
+  document.getElementById(
+    "modal"
+  ).style.display =
+  "block";
 }
 
 function closeModal(){
- document.getElementById(
- "modal"
- ).style.display="none";
+  document.getElementById(
+    "modal"
+  ).style.display =
+  "none";
 }
 
 function addTask(){
 
- const title=
- document.getElementById(
- "title"
- ).value;
+  const title =
+    document.getElementById(
+      "title"
+    ).value.trim();
 
- const priority=
- document.getElementById(
- "priority"
- ).value;
+  const priority =
+    document.getElementById(
+      "priority"
+    ).value;
 
- if(!title) return;
+  if(!title) return;
 
- tasks.push({
-   id:Date.now(),
-   title,
-   priority,
-   status:"backlog"
- });
+  tasks.push({
 
- saveTasks();
- render();
- closeModal();
+    id: Date.now(),
 
- document.getElementById(
- "title"
- ).value="";
+    title,
+
+    priority,
+
+    status: "backlog",
+
+    order:
+      tasks.filter(
+        t=>
+        t.status==="backlog"
+      ).length
+
+  });
+
+  saveTasks();
+  render();
+
+  closeModal();
+
+  document.getElementById(
+    "title"
+  ).value = "";
+
 }
 
 render();
+</script>
 
-</script></body>
+
+</body>
 </html>
