@@ -4,6 +4,8 @@ const urlsToCache = [
   "./",
   "./index.html",
   "./style.css",
+  "./logo.jpg",
+  "./app.js",
   "./manifest.json",
   "./vendor/sql-wasm.js",
   "./vendor/sql-wasm.wasm"
