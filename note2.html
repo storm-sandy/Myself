@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personal Management PWA</title>
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="description" content="Offline-first Personal Management App with SQLite and Voice Assistant" />
+  <link rel="manifest" href="data:application/json,{%22name%22:%22Personal%20Manager%22,%22short_name%22:%22Manager%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22#ffffff%22,%22theme_color%22:%22#2563eb%22}" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --border: #e2e8f0;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    main {
+      max-width: 900px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    input, textarea, select, button {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    button {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+    }
+    button.voice-btn {
+      background: #059669;
+      width: auto;
+      padding: 0.5rem 1rem;
+    }
+    .item-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 1rem;
+    }
+    .item-card {
+      background: #f1f5f9;
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .badge {
+      background: #dbeafe;
+      color: #1e40af;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h2>Personal Management Hub</h2>
+    <button class="voice-btn" id="micBtn" onclick="toggleVoice()">🎙️ Voice Command</button>
+  </header>
+
+  <main>
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <h3>System Status</h3>
+      <p id="dbStatus">Initializing SQLite Database WebAssembly module...</p>
+      <p id="speechStatus" style="font-style: italic; color: #64748b;">Voice status: Idle</p>
+    </div>
+
+    <div class="grid">
+      <!-- Add Entry Form -->
+      <div class="card">
+        <h3>Create New Record</h3>
+        <form id="entryForm" onsubmit="handleFormSubmit(event)">
+          <label>Category
+            <select id="categorySelect">
+              <option value="Task">Task / To-Do</option>
+              <option value="Event">Event / Schedule</option>
+              <option value="Note">General Note</option>
+              <option value="Goal">Personal Goal</option>
+            </select>
+          </label>
+
+          <label>Title
+            <input type="text" id="titleInput" required placeholder="e.g., Review Weekly Budget" />
+          </label>
+
+          <label>Details
+            <textarea id="detailsInput" rows="3" placeholder="Additional notes or dates..."></textarea>
+          </label>
+
+          <button type="submit">Save Record to SQLite</button>
+        </form>
+      </div>
+
+      <!-- Quick Actions & Export -->
+      <div class="card">
+        <h3>Database Management</h3>
+        <button onclick="exportDatabase()" style="background: #475569; margin-bottom: 0.5rem;">Export SQLite File (.sqlite)</button>
+        <button onclick="clearAllData()" style="background: #dc2626;">Purge Database</button>
+
+        <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border);" />
+
+        <h4>Voice Command Syntax</h4>
+        <ul style="font-size: 0.85rem; padding-left: 1.2rem; color: #475569;">
+          <li>"Add task [title]"</li>
+          <li>"Add note [title]"</li>
+          <li>"Clear database"</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Active Records Display -->
+    <div class="card" style="margin-top: 1.5rem;">
+      <h3>Your Saved Records</h3>
+      <div style="display: flex; gap: 0.5rem;">
+        <input type="text" id="searchInput" placeholder="Search entries..." oninput="renderEntries()" />
+      </div>
+      <ul class="item-list" id="recordsList"></ul>
+    </div>
+  </main>
+
+  <script>
+    let db = null;
+    let recognition = null;
+    let isListening = false;
+
+    // Initialize WebAssembly SQLite Engine
+    async function initDB() {
+      const SQL = await initSqlJs({
+        locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+      });
+
+      const savedData = localStorage.getItem('personal_pwa_db');
+      if (savedData) {
+        const uInt8Array = new Uint8Array(JSON.parse(savedData));
+        db = new SQL.Database(uInt8Array);
+      } else {
+        db = new SQL.Database();
+        db.run(`
+          CREATE TABLE IF NOT EXISTS records (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            category TEXT,
+            title TEXT,
+            details TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          );
+        `);
+        persistDB();
+      }
+
+      document.getElementById('dbStatus').textContent = "SQLite Database Engine Ready (Local Storage Persisted)";
+      renderEntries();
+    }
+
+    function persistDB() {
+      if (!db) return;
+      const data = db.export();
+      const array = Array.from(data);
+      localStorage.setItem('personal_pwa_db', JSON.stringify(array));
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const category = document.getElementById('categorySelect').value;
+      const title = document.getElementById('titleInput').value;
+      const details = document.getElementById('detailsInput').value;
+
+      addRecord(category, title, details);
+
+      document.getElementById('titleInput').value = '';
+      document.getElementById('detailsInput').value = '';
+    }
+
+    function addRecord(category, title, details) {
+      const stmt = db.prepare("INSERT INTO records (category, title, details) VALUES (?, ?, ?)");
+      stmt.run([category, title, details]);
+      stmt.free();
+      persistDB();
+      renderEntries();
+    }
+
+    function deleteRecord(id) {
+      db.run("DELETE FROM records WHERE id = ?", [id]);
+      persistDB();
+      renderEntries();
+    }
+
+    function renderEntries() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const listEl = document.getElementById('recordsList');
+      listEl.innerHTML = '';
+
+      const res = db.exec("SELECT id, category, title, details, created_at FROM records ORDER BY id DESC");
+      if (res.length === 0) {
+        listEl.innerHTML = '<li style="color: #64748b;">No records found. Add one above or via voice!</li>';
+        return;
+      }
+
+      const rows = res[0].values;
+      rows.forEach(row => {
+        const [id, category, title, details, created_at] = row;
+        if (title.toLowerCase().includes(query) || details.toLowerCase().includes(query) || category.toLowerCase().includes(query)) {
+          const li = document.createElement('li');
+          li.className = 'item-card';
+          li.innerHTML = `
+            <div>
+              <span class="badge">${category}</span>
+              <strong style="margin-left: 0.5rem;">${title}</strong>
+              <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: #475569;">${details || 'No additional details'}</p>
+              <small style="color: #94a3b8;">${created_at}</small>
+            </div>
+            <button onclick="deleteRecord(${id})" style="width: auto; background: #ef4444; padding: 0.3rem 0.6rem;">Delete</button>
+          `;
+          listEl.appendChild(li);
+        }
+      });
+    }
+
+    function exportDatabase() {
+      const data = db.export();
+      const blob = new Blob([data], { type: 'application/x-sqlite3' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'personal_management.sqlite';
+      a.click();
+    }
+
+    function clearAllData() {
+      if (confirm("Are you sure you want to erase all stored SQLite records?")) {
+        db.run("DELETE FROM records");
+        persistDB();
+        renderEntries();
+      }
+    }
+
+    // Voice Command Web Speech API Integration
+    function setupVoice() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        document.getElementById('speechStatus').textContent = "Voice API not supported in this browser.";
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        isListening = true;
+        document.getElementById('micBtn').textContent = "🛑 Stop Listening";
+        document.getElementById('speechStatus').textContent = "Listening for commands...";
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        document.getElementById('micBtn').textContent = "🎙️ Voice Command";
+        document.getElementById('speechStatus').textContent = "Voice status: Idle";
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.toLowerCase();
+        document.getElementById('speechStatus').textContent = `Heard: "${transcript}"`;
+        processVoiceCommand(transcript);
+      };
+    }
+
+    function toggleVoice() {
+      if (!recognition) setupVoice();
+      if (!recognition) return;
+
+      if (isListening) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    }
+
+    function processVoiceCommand(cmd) {
+      if (cmd.startsWith("add task")) {
+        const title = cmd.replace("add task", "").trim();
+        if (title) addRecord("Task", title, "Added via Voice Command");
+      } else if (cmd.startsWith("add note")) {
+        const title = cmd.replace("add note", "").trim();
+        if (title) addRecord("Note", title, "Added via Voice Command");
+      } else if (cmd.includes("clear database")) {
+        clearAllData();
+      }
+    }
+
+    // Service Worker Registration for PWA / Offline Use
+    if ('serviceWorker' in navigator) {
+      const swCode = `
+        self.addEventListener('install', e => e.waitUntil(self.skipWaiting()));
+        self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+        self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => new Response('Offline'))));
+      `;
+      const blob = new Blob([swCode], { type: 'application/javascript' });
+      navigator.serviceWorker.register(URL.createObjectURL(blob));
+    }
+
+    window.onload = initDB;
+  </script>
+</body>
+</html>
