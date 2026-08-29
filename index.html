@@ -1,146 +1,983 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<link rel="stylesheet" href="style.css"> <link rel="manifest"         href="manifest.json">
- <header class="header">
- </header>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+
+<title>Swayam - Personal Governance</title>
 
 <style>
-table {
-        width: 100%;
-        border-collapse: collapse;
-        background: #fff;
-        font-size: 40px;
-        font-weight: bold;
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fb;
+    padding-bottom: 80px;
+}
+
+/* HEADER */
+
+.header {
+    height: 10px;
+}
+
+/* MAIN */
+
+.section {
+    width: 100%;
+    max-width: 1100px;
+    margin: auto;
+    padding: 10px;
+}
+
+/* =========================
+   GOOGLE STYLE CALENDAR
+========================= */
+
+.calendar-card {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+/* Calendar toolbar */
+
+.calendar-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    gap: 10px;
+}
+
+.calendar-title {
+    font-size: 25px;
+    font-weight: bold;
+    min-width: 190px;
+}
+
+.calendar-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.calendar-buttons button {
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 8px;
+    padding: 8px 13px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.calendar-buttons button:hover {
+    background: #f1f3f4;
+}
+
+.today-btn {
+    font-size: 15px !important;
+}
+
+/* Week header */
+
+.calendar-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+
+.calendar-week div {
+    text-align: center;
+    padding: 10px 2px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #555;
+}
+
+/* Calendar grid */
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+/* Day */
+
+.calendar-day {
+    min-height: 90px;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 6px;
+    position: relative;
+    cursor: pointer;
+    background: white;
+}
+
+.calendar-day:hover {
+    background: #f5faff;
+}
+
+.calendar-day.other-month {
+    background: #fafafa;
+    color: #aaa;
+}
+
+.day-number {
+    display: inline-flex;
+    width: 30px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 15px;
+}
+
+.today .day-number {
+    background: #1a73e8;
+    color: white;
+}
+
+/* Events */
+
+.event {
+    background: #1a73e8;
+    color: white;
+    border-radius: 4px;
+    padding: 3px 5px;
+    margin-top: 5px;
+    font-size: 12px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* =========================
+   EVENT MODAL
+========================= */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.45);
+}
+
+.modal-content {
+    background: white;
+    width: 92%;
+    max-width: 450px;
+    margin: 15vh auto;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0 15px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 16px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.modal-buttons button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 7px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.save-btn {
+    background: #1a73e8;
+    color: white;
+}
+
+.cancel-btn {
+    background: #eee;
+}
+
+/* =========================
+   APP TABLE
+========================= */
+
+.app-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.app-table th,
+.app-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+.app-table th {
+    background: #4CAF50;
+    color: white;
+    text-align: left;
+}
+
+.app-table tr:hover {
+    background-color: #f2f2f2;
+    cursor: pointer;
+}
+
+/* NOTE CARD */
+
+.card {
+    background: white;
+    margin: 20px 10px 90px;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 65px;
+    background: white;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.15);
+    z-index: 999;
+}
+
+.bottom-nav a {
+    text-decoration: none;
+    color: #555;
+    font-size: 15px;
+    padding: 10px;
+}
+
+.bottom-nav a.active {
+    color: #1a73e8;
+    font-weight: bold;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:600px) {
+
+    .calendar-title {
+        font-size: 20px;
+        min-width: auto;
     }
 
-    th, td {
-        padding: 12px;
-        border: 1px solid #ddd;
+    .calendar-buttons button {
+        padding: 7px 9px;
+        font-size: 16px;
     }
 
-    th {
-        background: #4CAF50;
-        color: white;
-        text-align: left;
+    .today-btn {
+        display: none;
     }
 
-    /* Hover effect (mouse in/out) */
-    tr:hover {
-        background-color: #f2f2f2;
-        cursor: pointer;
+    .calendar-day {
+        min-height: 65px;
+        padding: 3px;
     }
 
-    /* Right align Kaksha column */
-    td:last-child {
-        text-align: right;
+    .day-number {
+        width: 26px;
+        height: 26px;
+        font-size: 13px;
     }
+
+    .calendar-week div {
+        font-size: 11px;
+    }
+
+    .event {
+        font-size: 10px;
+        padding: 2px;
+    }
+
+    .app-table {
+        font-size: 16px;
+    }
+
+    .app-table th,
+    .app-table td {
+        padding: 8px;
+    }
+
+    .app-table th:nth-child(3),
+    .app-table td:nth-child(3) {
+        display: none;
+    }
+}
 
 </style>
-
 </head>
+
 <body>
+
+<header class="header"></header>
+
 <section class="section">
-<h1 style="text-align: center;">⛱️ Swayam </h1>
-<h5 style="text-align: center;">Personal Governance Simplified.</h5>
 
-<table>
+<h1 style="text-align:center;">⛱️ Swayam</h1>
+<h5 style="text-align:center;">
+Personal Governance Simplified.
+</h5>
 
-    <tr>
-        <th>App Name</th>
-        <th>App Description</th>
-        <th>Last updated</th>
-    </tr>
+
+<!-- =========================
+     CALENDAR
+========================= -->
+
+<div class="calendar-card">
+
+    <div class="calendar-toolbar">
+
+        <div class="calendar-title" id="calendarTitle">
+            August 2026
+        </div>
+
+        <div class="calendar-buttons">
+
+            <button onclick="previousMonth()">‹</button>
+
+            <button onclick="goToday()" class="today-btn">
+                Today
+            </button>
+
+            <button onclick="nextMonth()">›</button>
+
+        </div>
+
+    </div>
+
+
+    <!-- DAYS -->
+
+    <div class="calendar-week">
+
+        <div>Sun</div>
+        <div>Mon</div>
+        <div>Tue</div>
+        <div>Wed</div>
+        <div>Thu</div>
+        <div>Fri</div>
+        <div>Sat</div>
+
+    </div>
+
+
+    <!-- CALENDAR DAYS -->
+
+    <div id="calendarGrid" class="calendar-grid"></div>
+
+</div>
+
+
+<!-- =========================
+     EVENT MODAL
+========================= -->
+
+<div id="eventModal" class="modal">
+
+    <div class="modal-content">
+
+        <h2>📅 Add Event</h2>
+
+        <div id="selectedDate"></div>
+
+        <input
+            type="text"
+            id="eventTitle"
+            placeholder="Event title"
+        >
+
+        <input
+            type="time"
+            id="eventTime"
+        >
+
+        <div class="modal-buttons">
+
+            <button
+                class="cancel-btn"
+                onclick="closeModal()">
+                Cancel
+            </button>
+
+            <button
+                class="save-btn"
+                onclick="saveEvent()">
+                Save
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     APPLICATIONS
+========================= -->
+
+<table class="app-table">
+
+<tr>
+    <th>App Name</th>
+    <th>App Description</th>
+    <th>Last updated</th>
+</tr>
+
 <tr onclick="window.location='Util_smart.html'">
-        <td>Smartwatch</td>
-        <td>⌚ Samay Niyojaka</td>
-        <td>Apr 2026</td>
-    </tr>
+    <td>Smartwatch</td>
+    <td>⌚ Samay Niyojaka</td>
+    <td>Apr 2026</td>
+</tr>
+
 <tr onclick="window.location='Util_karya.html'">
-        <td>Work</td>
-        <td>💼 Karya</td>
-<td>Apr 2026</td>
-    </tr>
+    <td>Work</td>
+    <td>💼 Karya</td>
+    <td>Apr 2026</td>
+</tr>
+
 <tr onclick="window.location='Util_laxmi.html'">
-        <td>Home</td>
-        <td>🏠 Grihastha</td>
-        <td>Apr 2026</td>
-    </tr>
+    <td>Home</td>
+    <td>🏠 Grihastha</td>
+    <td>Apr 2026</td>
+</tr>
 
-    <tr onclick="window.location='Util_upkarna.html'">
-        <td>Utility</td>
-        <td>🛠️ Upkarna</td>
-<td>Apr 2026</td>
-    </tr>
+<tr onclick="window.location='Util_upkarna.html'">
+    <td>Utility</td>
+    <td>🛠️ Upkarna</td>
+    <td>Apr 2026</td>
+</tr>
+
 <tr onclick="window.location='Util_chitra.html'">
-        <td>Image</td>
-        <td>🖼️ Chitra</td>
-<td>Apr 2026</td>
-    </tr>
-    <tr onclick="window.location='Util_sutra.html'">
-        <td>Formula</td>
-        <td>📐 Sutra</td>
-<td>Apr 2026</td>
-    </tr>
-    
+    <td>Image</td>
+    <td>🖼️ Chitra</td>
+    <td>Apr 2026</td>
+</tr>
 
-    <tr onclick="window.location='Util_lang.html'">
-        <td>Languages</td>
-        <td>🌐 Bhasha</td>
-<td>Apr 2026</td>
-    </tr>
+<tr onclick="window.location='Util_sutra.html'">
+    <td>Formula</td>
+    <td>📐 Sutra</td>
+    <td>Apr 2026</td>
+</tr>
+
+<tr onclick="window.location='Util_lang.html'">
+    <td>Languages</td>
+    <td>🌐 Bhasha</td>
+    <td>Apr 2026</td>
+</tr>
+
 <tr onclick="window.location='Util_sanskar.html'">
-        <td>Ethics</td>
-        <td>🙏 Sanskar</td>
-<td>Apr 2026</td>
-    </tr>
+    <td>Ethics</td>
+    <td>🙏 Sanskar</td>
+    <td>Apr 2026</td>
+</tr>
+
 <tr onclick="window.location='Util_yog.html'">
-        <td>Fitness</td>
-        <td>🏠 Yoga</td>
-        <td>Apr 2026</td>
-    </tr>
+    <td>Fitness</td>
+    <td>🧘 Yoga</td>
+    <td>Apr 2026</td>
+</tr>
 
 <tr onclick="window.location='Util_ranjan.html'">
-        <td>Relax</td>
-        <td>🎮 Manoranjan</td>
-<td>Apr 2026</td>
-    </tr>
+    <td>Relax</td>
+    <td>🎮 Manoranjan</td>
+    <td>Apr 2026</td>
+</tr>
 
 <tr onclick="window.location='Util_awpl.html'">
-<td>AWPL</td>       
-<td>Health Business</td>      
-<td>May 2026</td>
-    </tr>
+    <td>AWPL</td>
+    <td>Health Business</td>
+    <td>May 2026</td>
+</tr>
+
 <tr onclick="window.location='Util_sarvam.html'">
-        <td>All</td>
-        <td>🌐 Sarva</td>
-<td>Apr 2026</td>
-    </tr>
+    <td>All</td>
+    <td>🌐 Sarva</td>
+    <td>Apr 2026</td>
+</tr>
+
 </table>
 
 </section>
 
+
+<!-- =========================
+     NOTE
+========================= -->
+
 <div class="card">
+
 <h3>Note.</h3>
+
 <ul>
+
 <li>It's a PWA category app</li>
-<li>It's running on Secure Https</li> 
+
+<li>It's running on Secure Https</li>
+
 <li>App's code is in Github and free to use.</li>
+
 <li>Data stay in User's mobile Only.</li>
+
 <li>Automatic update of change/feature.</li>
+
 <li>Export and import of data available.</li>
+
 <li>Data is LOST on cleaning browser.</li>
+
 </ul>
+
 </div>
 
-<!-- BOTTOM NAV -->
+
+<!-- =========================
+     BOTTOM NAV
+========================= -->
+
 <nav class="bottom-nav">
-  <a class="active" href=index.html>Home</a>
-  <a href=service.html>Service</a>
-  <a href=booking.html>Bookings</a>
-  <a href=contact.html>About Us</a>
+
+<a class="active" href="index.html">Home</a>
+
+<a href="service.html">Service</a>
+
+<a href="booking.html">Bookings</a>
+
+<a href="contact.html">About Us</a>
+
 </nav>
-  <script src="app.js"></script>
-  </body>
-</html>
+
+
+<script>
+
+/* =========================
+   CALENDAR VARIABLES
+========================= */
+
+let currentDate = new Date();
+
+let selectedDate = null;
+
+let events = JSON.parse(
+    localStorage.getItem("swayam_calendar_events") || "{}"
+);
+
+
+/* =========================
+   RENDER CALENDAR
+========================= */
+
+function renderCalendar() {
+
+    const year = currentDate.getFullYear();
+
+    const month = currentDate.getMonth();
+
+    const grid = document.getElementById("calendarGrid");
+
+    const title = document.getElementById("calendarTitle");
+
+
+    const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    ];
+
+
+    title.innerText =
+        monthNames[month] + " " + year;
+
+
+    grid.innerHTML = "";
+
+
+    /* First day of month */
+
+    const firstDay =
+        new Date(year, month, 1).getDay();
+
+
+    /* Days in month */
+
+    const daysInMonth =
+        new Date(year, month + 1, 0).getDate();
+
+
+    /* Days in previous month */
+
+    const previousMonthDays =
+        new Date(year, month, 0).getDate();
+
+
+    /* Previous month */
+
+    for(let i = firstDay - 1; i >= 0; i--) {
+
+        const day =
+            previousMonthDays - i;
+
+        const cell =
+            createDayCell(
+                year,
+                month - 1,
+                day,
+                true
+            );
+
+        grid.appendChild(cell);
+    }
+
+
+    /* Current month */
+
+    for(let day = 1; day <= daysInMonth; day++) {
+
+        const cell =
+            createDayCell(
+                year,
+                month,
+                day,
+                false
+            );
+
+        grid.appendChild(cell);
+    }
+
+
+    /* Next month */
+
+    const totalCells =
+        Math.ceil(grid.children.length / 7) * 7;
+
+
+    let nextDay = 1;
+
+    while(grid.children.length < totalCells) {
+
+        const cell =
+            createDayCell(
+                year,
+                month + 1,
+                nextDay++,
+                true
+            );
+
+        grid.appendChild(cell);
+    }
+
+}
+
+
+/* =========================
+   CREATE DAY CELL
+========================= */
+
+function createDayCell(year, month, day, otherMonth) {
+
+    const cell =
+        document.createElement("div");
+
+    cell.className = "calendar-day";
+
+
+    if(otherMonth) {
+
+        cell.classList.add("other-month");
+
+    }
+
+
+    const date =
+        new Date(year, month, day);
+
+
+    const dateKey =
+        formatDate(date);
+
+
+    /* Today */
+
+    const today =
+        new Date();
+
+
+    if(
+        date.getFullYear() === today.getFullYear() &&
+        date.getMonth() === today.getMonth() &&
+        date.getDate() === today.getDate()
+    ) {
+
+        cell.classList.add("today");
+
+    }
+
+
+    const number =
+        document.createElement("div");
+
+    number.className = "day-number";
+
+    number.innerText = day;
+
+    cell.appendChild(number);
+
+
+    /* Events */
+
+    if(events[dateKey]) {
+
+        events[dateKey].forEach(function(event) {
+
+            const eventDiv =
+                document.createElement("div");
+
+            eventDiv.className = "event";
+
+            eventDiv.innerText =
+                (event.time ? event.time + " " : "") +
+                event.title;
+
+            cell.appendChild(eventDiv);
+
+        });
+
+    }
+
+
+    /* Click */
+
+    cell.onclick = function() {
+
+        openModal(date);
+
+    };
+
+
+    return cell;
+}
+
+
+/* =========================
+   DATE FORMAT
+========================= */
+
+function formatDate(date) {
+
+    const y =
+        date.getFullYear();
+
+    const m =
+        String(date.getMonth() + 1).padStart(2, "0");
+
+    const d =
+        String(date.getDate()).padStart(2, "0");
+
+    return `${y}-${m}-${d}`;
+}
+
+
+/* =========================
+   MONTH NAVIGATION
+========================= */
+
+function previousMonth() {
+
+    currentDate.setMonth(
+        currentDate.getMonth() - 1
+    );
+
+    renderCalendar();
+
+}
+
+
+function nextMonth() {
+
+    currentDate.setMonth(
+        currentDate.getMonth() + 1
+    );
+
+    renderCalendar();
+
+}
+
+
+function goToday() {
+
+    currentDate = new Date();
+
+    renderCalendar();
+
+}
+
+
+/* =========================
+   EVENT MODAL
+========================= */
+
+function openModal(date) {
+
+    selectedDate = date;
+
+    document.getElementById("selectedDate")
+        .innerText =
+        date.toDateString();
+
+    document.getElementById("eventTitle")
+        .value = "";
+
+    document.getElementById("eventTime")
+        .value = "";
+
+    document.getElementById("eventModal")
+        .style.display = "block";
+
+}
+
+
+function closeModal() {
+
+    document.getElementById("eventModal")
+        .style.display = "none";
+
+}
+
+
+/* =========================
+   SAVE EVENT
+========================= */
+
+function saveEvent() {
+
+    const title =
+        document.getElementById("eventTitle")
+        .value.trim();
+
+    const time =
+        document.getElementById("eventTime")
+        .value;
+
+
+    if(!title) {
+
+        alert("Please enter event title.");
+
+        return;
+
+    }
+
+
+    const key =
+        formatDate(selectedDate);
+
+
+    if(!events[key]) {
+
+        events[key] = [];
+
+    }
+
+
+    events[key].push({
+
+        title: title,
+
+        time: time
+
+    });
+
+
+    localStorage.setItem(
+        "swayam_calendar_events",
+        JSON.stringify(events)
+    );
+
+
+    closeModal();
+
+    renderCalendar();
+
+}
+
+
+/* =========================
+   CLOSE MODAL OUTSIDE
+========================= */
+
+window.onclick = function(event) {
+
+    const modal =
+        document.getElementById("eventModal");
+
+    if(event.target === modal) {
+
+        closeModal();
+
+    }
+
+};
+
+
+/* =========================
+   START
+========================= */
+
+renderCalendar();
+
+</script>
+
+
+<script src="app.js"></script>
+
 </body>
 </html>
