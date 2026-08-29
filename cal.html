@@ -1430,3 +1430,2499 @@ body.theme-minimal{
         <button class="theme"
                 onclick="setTheme('theme-ios')">
             iOS
+        </button>
+
+        <button class="theme"
+                onclick="setTheme('theme-dark')">
+            Dark
+        </button>
+
+        <button class="theme"
+                onclick="setTheme('theme-amoled')">
+            AMOLED
+        </button>
+
+        <button class="theme"
+                onclick="setTheme('theme-ocean')">
+            Ocean
+        </button>
+
+        <button class="theme"
+                onclick="setTheme('theme-forest')">
+            Forest
+        </button>
+
+        <button class="theme"
+                onclick="setTheme('theme-sunset')">
+            Sunset
+        </button>
+
+        <button class="theme"
+                onclick="setTheme('theme-purple')">
+            Purple
+        </button>
+
+        <button class="theme"
+                onclick="setTheme('theme-rose')">
+            Rose
+        </button>
+
+        <button class="theme"
+                onclick="setTheme('theme-minimal')">
+            Minimal
+        </button>
+
+    </div>
+
+</div>
+
+<!-- =====================================================
+     DRAWER
+===================================================== -->
+
+<div class="drawer-overlay"
+     id="drawerOverlay"
+     onclick="closeDrawer()">
+</div>
+
+<aside class="drawer"
+       id="drawer">
+
+    <div class="drawer-title">
+        Calendar
+    </div>
+
+    <button class="drawer-create"
+            onclick="closeDrawer();openEvent()">
+
+        <span>＋</span>
+        Create event
+
+    </button>
+
+    <div class="drawer-section">
+
+        <div class="drawer-section-title">
+            CALENDARS
+        </div>
+
+        <div class="drawer-item">
+            🔵 Events
+        </div>
+
+        <div class="drawer-item">
+            🟢 Personal
+        </div>
+
+        <div class="drawer-item">
+            🟡 Work
+        </div>
+
+        <div class="drawer-item">
+            🔴 Important
+        </div>
+
+    </div>
+
+    <div class="drawer-section">
+
+        <div class="drawer-section-title">
+            HOLIDAYS
+        </div>
+
+        <div class="drawer-item">
+            🇮🇳 Indian Holidays
+        </div>
+
+        <div class="drawer-item">
+            🌎 International Holidays
+        </div>
+
+    </div>
+
+    <div class="drawer-section">
+
+        <div class="drawer-section-title">
+            DATA
+        </div>
+
+        <div class="drawer-item"
+             onclick="exportEvents()">
+            📤 Export Events
+        </div>
+
+        <div class="drawer-item"
+             onclick="document.getElementById('importFile').click()">
+            📥 Import Events
+        </div>
+
+        <div class="drawer-item"
+             onclick="window.print()">
+            🖨 Print
+        </div>
+
+        <div class="drawer-item"
+             onclick="deleteAll()">
+            🗑 Delete All Events
+        </div>
+
+    </div>
+
+</aside>
+
+<!-- =====================================================
+     CONTENT
+===================================================== -->
+
+<div class="content">
+
+    <!-- MONTH HEADER -->
+
+    <div class="month-header">
+
+        <button class="month-title"
+                onclick="openPicker()"
+                id="monthTitle">
+        </button>
+
+        <div class="year-subtitle"
+             id="yearSubtitle">
+        </div>
+
+    </div>
+
+    <!-- WEEKDAYS -->
+
+    <div class="weekdays">
+
+        <div>Sun</div>
+        <div>Mon</div>
+        <div>Tue</div>
+        <div>Wed</div>
+        <div>Thu</div>
+        <div>Fri</div>
+        <div>Sat</div>
+
+    </div>
+
+    <!-- CALENDAR -->
+
+    <div id="calendar">
+    </div>
+
+    <!-- BOTTOM NAV -->
+
+    <div class="bottom-nav">
+
+        <div class="nav-row">
+
+            <button
+                class="nav-btn nav-arrow"
+                onclick="navigate(-1)">
+                ‹
+            </button>
+
+            <button
+                class="nav-btn primary"
+                onclick="goToday()">
+                Today
+            </button>
+
+            <button
+                class="nav-btn nav-arrow"
+                onclick="navigate(1)">
+                ›
+            </button>
+
+            <select
+                id="viewSelect"
+                class="view-select"
+                onchange="changeView(this.value)">
+
+                <option value="month">
+                    Month
+                </option>
+
+                <option value="week">
+                    Week
+                </option>
+
+                <option value="day">
+                    Day
+                </option>
+
+                <option value="agenda">
+                    Agenda
+                </option>
+
+                <option value="year">
+                    Year
+                </option>
+
+            </select>
+
+        </div>
+
+        <div style="
+            text-align:center;
+            margin-top:5px;
+            font-size:9px;
+            color:var(--muted);
+        ">
+            Tap month/year to jump • Swipe left/right to navigate
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =====================================================
+     PICKER
+===================================================== -->
+
+<div class="overlay"
+     id="pickerOverlay"
+     onclick="closePicker()">
+</div>
+
+<div class="picker"
+     id="picker">
+
+    <div class="picker-header">
+
+        <div class="picker-year"
+             id="pickerYear">
+        </div>
+
+        <div class="picker-arrows">
+
+            <button class="circle-btn"
+                    onclick="pickerYear(-1)">
+                ‹
+            </button>
+
+            <button class="circle-btn"
+                    onclick="pickerYear(1)">
+                ›
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="month-options"
+         id="monthOptions">
+    </div>
+
+</div>
+
+<!-- =====================================================
+     EVENT MODAL
+===================================================== -->
+
+<div class="modal-overlay"
+     id="eventModal">
+
+    <div class="modal">
+
+        <div class="modal-head">
+
+            <h2 id="eventFormTitle">
+                Create event
+            </h2>
+
+            <button class="close"
+                    onclick="closeEvent()">
+                ×
+            </button>
+
+        </div>
+
+        <input
+            type="hidden"
+            id="eventId">
+
+        <div class="form">
+
+            <div class="field">
+
+                <label>TITLE</label>
+
+                <input
+                    id="eventTitle"
+                    placeholder="Event title">
+
+            </div>
+
+            <div class="field checkbox">
+
+                <input
+                    type="checkbox"
+                    id="allDay">
+
+                <label>
+                    All day
+                </label>
+
+            </div>
+
+            <div class="two">
+
+                <div class="field">
+
+                    <label>START DATE</label>
+
+                    <input
+                        type="date"
+                        id="startDate">
+
+                </div>
+
+                <div class="field">
+
+                    <label>START TIME</label>
+
+                    <input
+                        type="time"
+                        id="startTime"
+                        value="09:00">
+
+                </div>
+
+            </div>
+
+            <div class="two">
+
+                <div class="field">
+
+                    <label>END DATE</label>
+
+                    <input
+                        type="date"
+                        id="endDate">
+
+                </div>
+
+                <div class="field">
+
+                    <label>END TIME</label>
+
+                    <input
+                        type="time"
+                        id="endTime"
+                        value="10:00">
+
+                </div>
+
+            </div>
+
+            <div class="two">
+
+                <div class="field">
+
+                    <label>CALENDAR</label>
+
+                    <select id="calendarType">
+
+                        <option>Events</option>
+                        <option>Personal</option>
+                        <option>Work</option>
+                        <option>Important</option>
+
+                    </select>
+
+                </div>
+
+                <div class="field">
+
+                    <label>PRIORITY</label>
+
+                    <select id="priority">
+
+                        <option>Normal</option>
+                        <option>High</option>
+                        <option>Low</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="two">
+
+                <div class="field">
+
+                    <label>REPEAT</label>
+
+                    <select id="repeat">
+
+                        <option value="none">
+                            Does not repeat
+                        </option>
+
+                        <option value="daily">
+                            Daily
+                        </option>
+
+                        <option value="weekly">
+                            Weekly
+                        </option>
+
+                        <option value="monthly">
+                            Monthly
+                        </option>
+
+                        <option value="yearly">
+                            Yearly
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="field">
+
+                    <label>REMINDER</label>
+
+                    <select id="reminder">
+
+                        <option value="none">
+                            No reminder
+                        </option>
+
+                        <option value="5">
+                            5 min
+                        </option>
+
+                        <option value="10">
+                            10 min
+                        </option>
+
+                        <option value="30">
+                            30 min
+                        </option>
+
+                        <option value="60">
+                            1 hour
+                        </option>
+
+                        <option value="1440">
+                            1 day
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="field">
+
+                <label>LOCATION</label>
+
+                <input
+                    id="location"
+                    placeholder="Location">
+
+            </div>
+
+            <div class="field">
+
+                <label>DESCRIPTION</label>
+
+                <textarea
+                    id="description"
+                    placeholder="Notes">
+                </textarea>
+
+            </div>
+
+            <div class="field">
+
+                <label>EVENT COLOR</label>
+
+                <div class="colors">
+
+                    <button
+                        type="button"
+                        class="color active"
+                        data-color="#1a73e8"
+                        style="background:#1a73e8">
+                    </button>
+
+                    <button
+                        type="button"
+                        class="color"
+                        data-color="#34a853"
+                        style="background:#34a853">
+                    </button>
+
+                    <button
+                        type="button"
+                        class="color"
+                        data-color="#fbbc04"
+                        style="background:#fbbc04">
+                    </button>
+
+                    <button
+                        type="button"
+                        class="color"
+                        data-color="#ea4335"
+                        style="background:#ea4335">
+                    </button>
+
+                    <button
+                        type="button"
+                        class="color"
+                        data-color="#9334e6"
+                        style="background:#9334e6">
+                    </button>
+
+                    <button
+                        type="button"
+                        class="color"
+                        data-color="#ff6d00"
+                        style="background:#ff6d00">
+                    </button>
+
+                    <button
+                        type="button"
+                        class="color"
+                        data-color="#0097a7"
+                        style="background:#0097a7">
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="btn danger"
+                id="deleteEventButton"
+                onclick="deleteCurrentEvent()"
+                style="display:none">
+                Delete
+            </button>
+
+            <div>
+
+                <button
+                    class="btn"
+                    onclick="closeEvent()">
+                    Cancel
+                </button>
+
+                <button
+                    class="btn primary"
+                    onclick="saveEvent()">
+                    Save
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =====================================================
+     DETAILS MODAL
+===================================================== -->
+
+<div class="modal-overlay"
+     id="detailsModal">
+
+    <div class="modal">
+
+        <div class="modal-head">
+
+            <h2>
+                Event
+            </h2>
+
+            <button class="close"
+                    onclick="closeDetails()">
+                ×
+            </button>
+
+        </div>
+
+        <div class="details"
+             id="details">
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="btn danger"
+                onclick="deleteDetail()">
+                Delete
+            </button>
+
+            <div>
+
+                <button
+                    class="btn"
+                    onclick="editDetail()">
+                    Edit
+                </button>
+
+                <button
+                    class="btn primary"
+                    onclick="closeDetails()">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<input
+    type="file"
+    id="importFile"
+    accept=".json"
+    style="display:none">
+
+<div class="toast"
+     id="toast">
+</div>
+
+<script>
+
+/* =========================================================
+   DATA
+========================================================= */
+
+const STORAGE="mobileCalendarAdvanced";
+
+let events=[];
+
+try{
+    events=
+        JSON.parse(
+            localStorage.getItem(STORAGE)||"[]"
+        );
+}catch{
+    events=[];
+}
+
+let currentDate=new Date();
+
+let currentView="month";
+
+let selectedColor="#1a73e8";
+
+let selectedEventId=null;
+
+let pickerYearValue=
+    currentDate.getFullYear();
+
+const MONTHS=[
+    "January","February","March","April",
+    "May","June","July","August",
+    "September","October","November","December"
+];
+
+const DAYS=[
+    "Sunday","Monday","Tuesday",
+    "Wednesday","Thursday","Friday","Saturday"
+];
+
+/* =========================================================
+   HOLIDAYS
+========================================================= */
+
+const holidays={
+
+"2026-01-01":"New Year's Day",
+"2026-01-14":"Makar Sankranti",
+"2026-01-26":"Republic Day",
+
+"2026-02-15":"Maha Shivaratri",
+
+"2026-03-03":"Holi",
+"2026-03-19":"Gudi Padwa",
+"2026-03-20":"Ugadi",
+"2026-03-21":"Eid",
+
+"2026-04-02":"Ram Navami",
+"2026-04-03":"Good Friday",
+"2026-04-14":"Ambedkar Jayanti",
+
+"2026-05-01":"Maharashtra Day",
+"2026-05-27":"Eid al-Adha",
+
+"2026-06-26":"Muharram",
+
+"2026-08-15":"Independence Day",
+"2026-08-26":"Janmashtami",
+
+"2026-09-14":"Ganesh Chaturthi",
+
+"2026-10-02":"Gandhi Jayanti",
+"2026-10-20":"Dussehra",
+
+"2026-11-08":"Diwali",
+"2026-11-09":"Bhai Dooj",
+
+"2026-11-24":"Guru Nanak Jayanti",
+
+"2026-12-25":"Christmas"
+
+};
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function pad(n){
+    return String(n).padStart(2,"0");
+}
+
+function key(d){
+
+    return d.getFullYear()+"-"+
+           pad(d.getMonth()+1)+"-"+
+           pad(d.getDate());
+}
+
+function todayKey(){
+    return key(new Date());
+}
+
+function uid(){
+
+    return Date.now().toString(36)+
+           Math.random().toString(36).slice(2);
+}
+
+function save(){
+
+    localStorage.setItem(
+        STORAGE,
+        JSON.stringify(events)
+    );
+}
+
+function escapeHTML(x){
+
+    return String(x||"")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+function toast(msg){
+
+    const t=
+        document.getElementById("toast");
+
+    t.textContent=msg;
+
+    t.classList.add("show");
+
+    setTimeout(
+        ()=>t.classList.remove("show"),
+        2200
+    );
+}
+
+function eventsForDate(d){
+
+    const k=key(d);
+
+    return events.filter(e=>{
+
+        if(e.startDate===k)
+            return true;
+
+        if(
+            e.endDate &&
+            e.startDate<=k &&
+            k<=e.endDate
+        )
+            return true;
+
+        return false;
+    });
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+function updateHeader(){
+
+    document.getElementById(
+        "monthTitle"
+    ).textContent=
+        MONTHS[currentDate.getMonth()];
+
+    document.getElementById(
+        "yearSubtitle"
+    ).textContent=
+        currentDate.getFullYear();
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function navigate(dir){
+
+    if(currentView==="month"){
+
+        currentDate.setMonth(
+            currentDate.getMonth()+dir
+        );
+
+    }else if(currentView==="year"){
+
+        currentDate.setFullYear(
+            currentDate.getFullYear()+dir
+        );
+
+    }else if(currentView==="week"){
+
+        currentDate.setDate(
+            currentDate.getDate()+dir*7
+        );
+
+    }else{
+
+        currentDate.setDate(
+            currentDate.getDate()+dir
+        );
+
+    }
+
+    render();
+}
+
+function goToday(){
+
+    currentDate=new Date();
+
+    render();
+}
+
+/* =========================================================
+   VIEW
+========================================================= */
+
+function changeView(view){
+
+    currentView=view;
+
+    render();
+}
+
+/* =========================================================
+   MONTH
+========================================================= */
+
+function renderMonth(){
+
+    const y=
+        currentDate.getFullYear();
+
+    const m=
+        currentDate.getMonth();
+
+    const first=
+        new Date(y,m,1);
+
+    const start=
+        new Date(
+            y,m,1-first.getDay()
+        );
+
+    let html=
+        '<div class="month-grid">';
+
+    for(let i=0;i<42;i++){
+
+        const d=
+            new Date(start);
+
+        d.setDate(
+            start.getDate()+i
+        );
+
+        const k=key(d);
+
+        const list=
+            eventsForDate(d);
+
+        const isToday=
+            k===todayKey();
+
+        const isOther=
+            d.getMonth()!==m;
+
+        const weekend=
+            d.getDay()===0 ||
+            d.getDay()===6;
+
+        html+=`
+
+            <div
+                class="
+                    day
+                    ${isToday?"today":""}
+                    ${isOther?"other":""}
+                    ${weekend?"weekend":""}
+                "
+                onclick="openEvent('${k}')">
+
+                <div class="day-number">
+                    ${d.getDate()}
+                </div>
+
+        `;
+
+        if(holidays[k]){
+
+            html+=`
+                <div class="holiday">
+                    ${escapeHTML(
+                        holidays[k]
+                    )}
+                </div>
+            `;
+        }
+
+        list
+        .slice(0,3)
+        .forEach(e=>{
+
+            html+=`
+
+                <div
+                    class="event"
+                    style="
+                        background:
+                        ${e.color||"#1a73e8"}
+                    "
+                    onclick="
+                        event.stopPropagation();
+                        showDetails('${e.id}')
+                    ">
+
+                    ${escapeHTML(e.title)}
+
+                </div>
+
+            `;
+        });
+
+        if(list.length>3){
+
+            html+=`
+                <div class="more">
+                    +${list.length-3} more
+                </div>
+            `;
+        }
+
+        html+="</div>";
+    }
+
+    html+="</div>";
+
+    document.getElementById(
+        "calendar"
+    ).innerHTML=html;
+}
+
+/* =========================================================
+   WEEK / DAY
+========================================================= */
+
+function startWeek(d){
+
+    const x=new Date(d);
+
+    x.setHours(0,0,0,0);
+
+    x.setDate(
+        x.getDate()-x.getDay()
+    );
+
+    return x;
+}
+
+function renderTimeView(){
+
+    const isDay=
+        currentView==="day";
+
+    const count=
+        isDay?1:7;
+
+    const start=
+        isDay
+            ?new Date(currentDate)
+            :startWeek(currentDate);
+
+    let html=`
+
+        <div style="overflow:auto">
+
+        <div class="time-container">
+
+            <div class="time-header">
+
+                <div></div>
+    `;
+
+    for(let i=0;i<count;i++){
+
+        const d=
+            new Date(start);
+
+        d.setDate(
+            start.getDate()+i
+        );
+
+        html+=`
+
+            <div>
+                ${DAYS[d.getDay()].slice(0,3)}
+                <br>
+                ${d.getDate()}
+            </div>
+
+        `;
+    }
+
+    html+=`
+            </div>
+
+            <div class="time-body">
+    `;
+
+    for(let hour=0;hour<24;hour++){
+
+        html+=`
+
+            <div class="time-label">
+                ${pad(hour)}:00
+            </div>
+
+        `;
+
+        for(let i=0;i<count;i++){
+
+            const d=
+                new Date(start);
+
+            d.setDate(
+                start.getDate()+i
+            );
+
+            const list=
+                eventsForDate(d)
+                .filter(e=>
+                    !e.allDay &&
+                    parseInt(
+                        (e.startTime||"00:00")
+                        .split(":")[0]
+                    )===hour
+                );
+
+            html+=`
+
+                <div
+                    class="time-cell"
+                    onclick="
+                        openEvent(
+                            '${key(d)}',
+                            '${pad(hour)}:00'
+                        )
+                    ">
+
+            `;
+
+            list.forEach(e=>{
+
+                html+=`
+
+                    <div
+                        class="time-event"
+                        style="
+                            background:
+                            ${e.color||"#1a73e8"}
+                        "
+                        onclick="
+                            event.stopPropagation();
+                            showDetails('${e.id}')
+                        ">
+
+                        ${escapeHTML(e.title)}
+
+                    </div>
+
+                `;
+            });
+
+            html+="</div>";
+        }
+    }
+
+    html+=`
+            </div>
+        </div>
+        </div>
+    `;
+
+    document.getElementById(
+        "calendar"
+    ).innerHTML=html;
+}
+
+/* =========================================================
+   AGENDA
+========================================================= */
+
+function renderAgenda(){
+
+    const list=
+        events
+        .slice()
+        .sort((a,b)=>
+            (
+                a.startDate+
+                (a.startTime||"")
+            )
+            .localeCompare(
+                b.startDate+
+                (b.startTime||"")
+            )
+        );
+
+    if(!list.length){
+
+        document.getElementById(
+            "calendar"
+        ).innerHTML=`
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    📅
+                </div>
+
+                No events yet
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+    let html=
+        '<div class="agenda">';
+
+    let previous="";
+
+    list.forEach(e=>{
+
+        if(e.startDate!==previous){
+
+            previous=e.startDate;
+
+            const d=
+                new Date(
+                    e.startDate+
+                    "T00:00:00"
+                );
+
+            html+=`
+
+                <div class="agenda-date">
+
+                    ${DAYS[d.getDay()]},
+                    ${MONTHS[d.getMonth()]}
+                    ${d.getDate()},
+                    ${d.getFullYear()}
+
+                </div>
+            `;
+        }
+
+        html+=`
+
+            <div
+                class="agenda-event"
+                onclick="showDetails('${e.id}')">
+
+                <div
+                    class="agenda-color"
+                    style="
+                        background:
+                        ${e.color||"#1a73e8"}
+                    ">
+                </div>
+
+                <div class="agenda-info">
+
+                    <div class="agenda-title">
+                        ${escapeHTML(e.title)}
+                    </div>
+
+                    <div class="agenda-time">
+
+                        ${
+                            e.allDay
+                            ?"All day"
+                            :(e.startTime||"")+
+                             " – "+
+                             (e.endTime||"")
+                        }
+
+                    </div>
+
+                    ${
+                        e.location
+                        ?`
+                        <div class="agenda-location">
+                            📍 ${escapeHTML(e.location)}
+                        </div>
+                        `
+                        :""
+                    }
+
+                </div>
+
+            </div>
+
+        `;
+    });
+
+    html+="</div>";
+
+    document.getElementById(
+        "calendar"
+    ).innerHTML=html;
+}
+
+/* =========================================================
+   YEAR
+========================================================= */
+
+function renderYear(){
+
+    const year=
+        currentDate.getFullYear();
+
+    let html=
+        '<div class="year-grid">';
+
+    for(let m=0;m<12;m++){
+
+        html+=`
+
+            <div class="year-month">
+
+                <div class="year-title">
+                    ${MONTHS[m]}
+                </div>
+
+                <div class="year-days">
+
+        `;
+
+        ["S","M","T","W","T","F","S"]
+        .forEach(x=>{
+            html+=`<div>${x}</div>`;
+        });
+
+        const first=
+            new Date(
+                year,m,1
+            ).getDay();
+
+        const total=
+            new Date(
+                year,m+1,0
+            ).getDate();
+
+        for(let i=0;i<first;i++)
+            html+="<div></div>";
+
+        for(let day=1;
+            day<=total;
+            day++){
+
+            const d=
+                new Date(
+                    year,m,day
+                );
+
+            const has=
+                eventsForDate(d).length ||
+                holidays[key(d)];
+
+            html+=`
+
+                <div
+                    class="${has?"year-event-day":""}"
+                    onclick="
+                        jumpToDate(
+                            ${year},
+                            ${m},
+                            ${day}
+                        )
+                    ">
+
+                    ${day}
+
+                </div>
+
+            `;
+        }
+
+        html+=`
+                </div>
+            </div>
+        `;
+    }
+
+    html+="</div>";
+
+    document.getElementById(
+        "calendar"
+    ).innerHTML=html;
+}
+
+function jumpToDate(y,m,d){
+
+    currentDate=
+        new Date(y,m,d);
+
+    currentView="day";
+
+    document.getElementById(
+        "viewSelect"
+    ).value="day";
+
+    render();
+}
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function render(){
+
+    updateHeader();
+
+    if(currentView==="month")
+        renderMonth();
+
+    else if(
+        currentView==="week" ||
+        currentView==="day"
+    )
+        renderTimeView();
+
+    else if(currentView==="agenda")
+        renderAgenda();
+
+    else
+        renderYear();
+}
+
+/* =========================================================
+   PICKER
+========================================================= */
+
+function openPicker(){
+
+    pickerYearValue=
+        currentDate.getFullYear();
+
+    renderPicker();
+
+    document.getElementById(
+        "pickerOverlay"
+    ).classList.add("show");
+
+    document.getElementById(
+        "picker"
+    ).classList.add("show");
+}
+
+function closePicker(){
+
+    document.getElementById(
+        "pickerOverlay"
+    ).classList.remove("show");
+
+    document.getElementById(
+        "picker"
+    ).classList.remove("show");
+}
+
+function pickerYear(dir){
+
+    pickerYearValue+=dir;
+
+    renderPicker();
+}
+
+function renderPicker(){
+
+    document.getElementById(
+        "pickerYear"
+    ).textContent=
+        pickerYearValue;
+
+    const box=
+        document.getElementById(
+            "monthOptions"
+        );
+
+    box.innerHTML="";
+
+    MONTHS.forEach((month,index)=>{
+
+        const b=
+            document.createElement("button");
+
+        b.className="month-option";
+
+        if(
+            pickerYearValue===
+                currentDate.getFullYear()
+            &&
+            index===
+                currentDate.getMonth()
+        ){
+            b.classList.add("selected");
+        }
+
+        b.textContent=month;
+
+        b.onclick=()=>{
+
+            currentDate=
+                new Date(
+                    pickerYearValue,
+                    index,
+                    1
+                );
+
+            currentView="month";
+
+            document.getElementById(
+                "viewSelect"
+            ).value="month";
+
+            closePicker();
+
+            render();
+
+        };
+
+        box.appendChild(b);
+
+    });
+}
+
+/* =========================================================
+   EVENT FORM
+========================================================= */
+
+function openEvent(date=null,time=null){
+
+    const d=
+        date||key(currentDate);
+
+    document.getElementById(
+        "eventId"
+    ).value="";
+
+    document.getElementById(
+        "eventTitle"
+    ).value="";
+
+    document.getElementById(
+        "startDate"
+    ).value=d;
+
+    document.getElementById(
+        "endDate"
+    ).value=d;
+
+    document.getElementById(
+        "startTime"
+    ).value=time||"09:00";
+
+    document.getElementById(
+        "endTime"
+    ).value=time
+        ?pad(
+            Math.min(
+                23,
+                parseInt(
+                    time.split(":")[0]
+                )+1
+            )
+        )+":00"
+        :"10:00";
+
+    document.getElementById(
+        "allDay"
+    ).checked=false;
+
+    document.getElementById(
+        "calendarType"
+    ).value="Events";
+
+    document.getElementById(
+        "priority"
+    ).value="Normal";
+
+    document.getElementById(
+        "repeat"
+    ).value="none";
+
+    document.getElementById(
+        "reminder"
+    ).value="none";
+
+    document.getElementById(
+        "location"
+    ).value="";
+
+    document.getElementById(
+        "description"
+    ).value="";
+
+    selectedColor="#1a73e8";
+
+    updateColors();
+
+    document.getElementById(
+        "eventFormTitle"
+    ).textContent=
+        "Create event";
+
+    document.getElementById(
+        "deleteEventButton"
+    ).style.display="none";
+
+    document.getElementById(
+        "eventModal"
+    ).classList.add("show");
+}
+
+function closeEvent(){
+
+    document.getElementById(
+        "eventModal"
+    ).classList.remove("show");
+}
+
+function saveEvent(){
+
+    const title=
+        document.getElementById(
+            "eventTitle"
+        ).value.trim();
+
+    if(!title){
+
+        toast(
+            "Enter an event title"
+        );
+
+        return;
+    }
+
+    const id=
+        document.getElementById(
+            "eventId"
+        ).value;
+
+    const obj={
+
+        id:id||uid(),
+
+        title:title,
+
+        startDate:
+            document.getElementById(
+                "startDate"
+            ).value,
+
+        endDate:
+            document.getElementById(
+                "endDate"
+            ).value,
+
+        startTime:
+            document.getElementById(
+                "startTime"
+            ).value,
+
+        endTime:
+            document.getElementById(
+                "endTime"
+            ).value,
+
+        allDay:
+            document.getElementById(
+                "allDay"
+            ).checked,
+
+        calendar:
+            document.getElementById(
+                "calendarType"
+            ).value,
+
+        priority:
+            document.getElementById(
+                "priority"
+            ).value,
+
+        repeat:
+            document.getElementById(
+                "repeat"
+            ).value,
+
+        reminder:
+            document.getElementById(
+                "reminder"
+            ).value,
+
+        location:
+            document.getElementById(
+                "location"
+            ).value.trim(),
+
+        description:
+            document.getElementById(
+                "description"
+            ).value.trim(),
+
+        color:selectedColor
+
+    };
+
+    if(id){
+
+        const index=
+            events.findIndex(
+                e=>e.id===id
+            );
+
+        if(index>=0)
+            events[index]=obj;
+
+        toast("Event updated");
+
+    }else{
+
+        events.push(obj);
+
+        toast("Event created");
+
+    }
+
+    save();
+
+    closeEvent();
+
+    render();
+}
+
+/* =========================================================
+   DETAILS
+========================================================= */
+
+function showDetails(id){
+
+    const e=
+        events.find(x=>x.id===id);
+
+    if(!e)return;
+
+    selectedEventId=id;
+
+    const d=
+        new Date(
+            e.startDate+
+            "T00:00:00"
+        );
+
+    document.getElementById(
+        "details"
+    ).innerHTML=`
+
+        <div class="details-title">
+            ${escapeHTML(e.title)}
+        </div>
+
+        <div class="detail">
+
+            <div class="detail-icon">
+                📅
+            </div>
+
+            <div>
+
+                ${DAYS[d.getDay()]},
+                ${MONTHS[d.getMonth()]}
+                ${d.getDate()},
+                ${d.getFullYear()}
+
+                <br><br>
+
+                ${
+                    e.allDay
+                    ?"All day"
+                    :(e.startTime||"")+
+                     " – "+
+                     (e.endTime||"")
+                }
+
+            </div>
+
+        </div>
+
+        ${
+            e.location
+            ?`
+            <div class="detail">
+
+                <div class="detail-icon">
+                    📍
+                </div>
+
+                <div>
+                    ${escapeHTML(e.location)}
+                </div>
+
+            </div>
+            `
+            :""
+        }
+
+        <div class="detail">
+
+            <div class="detail-icon">
+                📁
+            </div>
+
+            <div>
+                ${escapeHTML(
+                    e.calendar||"Events"
+                )}
+            </div>
+
+        </div>
+
+        <div class="detail">
+
+            <div class="detail-icon">
+                ⭐
+            </div>
+
+            <div>
+                ${escapeHTML(
+                    e.priority||"Normal"
+                )}
+            </div>
+
+        </div>
+
+        ${
+            e.description
+            ?`
+            <div class="detail">
+
+                <div class="detail-icon">
+                    📝
+                </div>
+
+                <div>
+                    ${escapeHTML(
+                        e.description
+                    ).replace(/\n/g,"<br>")}
+                </div>
+
+            </div>
+            `
+            :""
+        }
+
+    `;
+
+    document.getElementById(
+        "detailsModal"
+    ).classList.add("show");
+}
+
+function closeDetails(){
+
+    document.getElementById(
+        "detailsModal"
+    ).classList.remove("show");
+}
+
+function editDetail(){
+
+    const id=selectedEventId;
+
+    closeDetails();
+
+    editEvent(id);
+}
+
+function editEvent(id){
+
+    const e=
+        events.find(x=>x.id===id);
+
+    if(!e)return;
+
+    document.getElementById(
+        "eventId"
+    ).value=e.id;
+
+    document.getElementById(
+        "eventTitle"
+    ).value=e.title;
+
+    document.getElementById(
+        "startDate"
+    ).value=e.startDate;
+
+    document.getElementById(
+        "endDate"
+    ).value=e.endDate||e.startDate;
+
+    document.getElementById(
+        "startTime"
+    ).value=e.startTime||"";
+
+    document.getElementById(
+        "endTime"
+    ).value=e.endTime||"";
+
+    document.getElementById(
+        "allDay"
+    ).checked=!!e.allDay;
+
+    document.getElementById(
+        "calendarType"
+    ).value=e.calendar||"Events";
+
+    document.getElementById(
+        "priority"
+    ).value=e.priority||"Normal";
+
+    document.getElementById(
+        "repeat"
+    ).value=e.repeat||"none";
+
+    document.getElementById(
+        "reminder"
+    ).value=e.reminder||"none";
+
+    document.getElementById(
+        "location"
+    ).value=e.location||"";
+
+    document.getElementById(
+        "description"
+    ).value=e.description||"";
+
+    selectedColor=
+        e.color||"#1a73e8";
+
+    updateColors();
+
+    document.getElementById(
+        "eventFormTitle"
+    ).textContent=
+        "Edit event";
+
+    document.getElementById(
+        "deleteEventButton"
+    ).style.display="block";
+
+    document.getElementById(
+        "eventModal"
+    ).classList.add("show");
+}
+
+function deleteDetail(){
+
+    if(!selectedEventId)
+        return;
+
+    if(!confirm(
+        "Delete this event?"
+    ))
+        return;
+
+    events=
+        events.filter(
+            e=>e.id!==selectedEventId
+        );
+
+    save();
+
+    closeDetails();
+
+    render();
+
+    toast("Event deleted");
+}
+
+function deleteCurrentEvent(){
+
+    const id=
+        document.getElementById(
+            "eventId"
+        ).value;
+
+    if(!id)return;
+
+    if(!confirm(
+        "Delete this event?"
+    ))
+        return;
+
+    events=
+        events.filter(
+            e=>e.id!==id
+        );
+
+    save();
+
+    closeEvent();
+
+    render();
+
+    toast("Event deleted");
+}
+
+/* =========================================================
+   COLORS
+========================================================= */
+
+document
+.querySelectorAll(".color")
+.forEach(btn=>{
+
+    btn.addEventListener(
+        "click",
+        ()=>{
+
+            selectedColor=
+                btn.dataset.color;
+
+            updateColors();
+
+        }
+    );
+
+});
+
+function updateColors(){
+
+    document
+    .querySelectorAll(".color")
+    .forEach(btn=>{
+
+        btn.classList.toggle(
+            "active",
+            btn.dataset.color===
+                selectedColor
+        );
+
+    });
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+function openSearch(){
+
+    document.getElementById(
+        "searchBox"
+    ).classList.add("show");
+
+    setTimeout(
+        ()=>document
+            .getElementById("searchInput")
+            .focus(),
+        100
+    );
+}
+
+function closeSearch(){
+
+    document.getElementById(
+        "searchBox"
+    ).classList.remove("show");
+
+    document.getElementById(
+        "searchResults"
+    ).classList.remove("show");
+
+    document.getElementById(
+        "searchInput"
+    ).value="";
+
+    render();
+}
+
+document.getElementById(
+    "searchInput"
+).addEventListener(
+    "input",
+    searchEvents
+);
+
+function searchEvents(){
+
+    const q=
+        document.getElementById(
+            "searchInput"
+        )
+        .value
+        .trim()
+        .toLowerCase();
+
+    const box=
+        document.getElementById(
+            "searchResults"
+        );
+
+    if(!q){
+
+        box.classList.remove("show");
+
+        return;
+    }
+
+    const results=
+        events.filter(e=>
+
+            (e.title||"")
+            .toLowerCase()
+            .includes(q)
+
+            ||
+
+            (e.location||"")
+            .toLowerCase()
+            .includes(q)
+
+            ||
+
+            (e.description||"")
+            .toLowerCase()
+            .includes(q)
+
+            ||
+
+            (e.calendar||"")
+            .toLowerCase()
+            .includes(q)
+
+            ||
+
+            (e.priority||"")
+            .toLowerCase()
+            .includes(q)
+
+        );
+
+    box.classList.add("show");
+
+    if(!results.length){
+
+        box.innerHTML=`
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    🔍
+                </div>
+
+                No matching events
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+    box.innerHTML=
+        results.map(e=>`
+
+            <div
+                class="result"
+                onclick="showDetails('${e.id}')">
+
+                <div
+                    class="result-color"
+                    style="
+                        background:
+                        ${e.color||"#1a73e8"}
+                    ">
+                </div>
+
+                <div>
+
+                    <div class="result-title">
+                        ${escapeHTML(e.title)}
+                    </div>
+
+                    <div class="result-date">
+
+                        ${e.startDate}
+
+                        ·
+
+                        ${
+                            e.allDay
+                            ?"All day"
+                            :(e.startTime||"")+
+                             " – "+
+                             (e.endTime||"")
+                        }
+
+                    </div>
+
+                    ${
+                        e.location
+                        ?`
+                        <div class="result-location">
+                            📍
+                            ${escapeHTML(e.location)}
+                        </div>
+                        `
+                        :""
+                    }
+
+                </div>
+
+            </div>
+
+        `).join("");
+}
+
+/* =========================================================
+   THEMES
+========================================================= */
+
+function toggleThemePanel(){
+
+    document.getElementById(
+        "themePanel"
+    ).classList.toggle("show");
+}
+
+function setTheme(theme){
+
+    document.body.className="";
+
+    if(theme!=="default")
+        document.body.classList.add(theme);
+
+    localStorage.setItem(
+        "calendarTheme",
+        theme
+    );
+
+    document.getElementById(
+        "themePanel"
+    ).classList.remove("show");
+}
+
+/* restore theme */
+
+const savedTheme=
+    localStorage.getItem(
+        "calendarTheme"
+    );
+
+if(savedTheme && savedTheme!=="default")
+    document.body.classList.add(
+        savedTheme
+    );
+
+/* =========================================================
+   DRAWER
+========================================================= */
+
+function openDrawer(){
+
+    document.getElementById(
+        "drawer"
+    ).classList.add("show");
+
+    document.getElementById(
+        "drawerOverlay"
+    ).classList.add("show");
+}
+
+function closeDrawer(){
+
+    document.getElementById(
+        "drawer"
+    ).classList.remove("show");
+
+    document.getElementById(
+        "drawerOverlay"
+    ).classList.remove("show");
+}
+
+/* =========================================================
+   EXPORT / IMPORT
+========================================================= */
+
+function exportEvents(){
+
+    const blob=
+        new Blob(
+            [
+                JSON.stringify(
+                    events,
+                    null,
+                    2
+                )
+            ],
+            {
+                type:
+                    "application/json"
+            }
+        );
+
+    const url=
+        URL.createObjectURL(blob);
+
+    const a=
+        document.createElement("a");
+
+    a.href=url;
+
+    a.download=
+        "calendar-events.json";
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    toast(
+        "Events exported"
+    );
+
+    closeDrawer();
+}
+
+document.getElementById(
+    "importFile"
+).addEventListener(
+    "change",
+    function(){
+
+        const file=this.files[0];
+
+        if(!file)return;
+
+        const reader=
+            new FileReader();
+
+        reader.onload=function(){
+
+            try{
+
+                const data=
+                    JSON.parse(
+                        reader.result
+                    );
+
+                if(!Array.isArray(data))
+                    throw new Error();
+
+                events=data;
+
+                save();
+
+                render();
+
+                toast(
+                    "Events imported"
+                );
+
+            }catch{
+
+                alert(
+                    "Invalid calendar JSON"
+                );
+
+            }
+
+        };
+
+        reader.readAsText(file);
+
+        this.value="";
+
+    }
+);
+
+/* =========================================================
+   DELETE ALL
+========================================================= */
+
+function deleteAll(){
+
+    if(!events.length){
+
+        toast(
+            "No events"
+        );
+
+        return;
+    }
+
+    if(!confirm(
+        "Delete all calendar events?"
+    ))
+        return;
+
+    events=[];
+
+    save();
+
+    render();
+
+    closeDrawer();
+
+    toast(
+        "All events deleted"
+    );
+}
+
+/* =========================================================
+   SWIPE
+========================================================= */
+
+let sx=0;
+let sy=0;
+
+document.addEventListener(
+    "touchstart",
+    e=>{
+
+        if(e.touches.length!==1)
+            return;
+
+        sx=e.touches[0].clientX;
+        sy=e.touches[0].clientY;
+
+    },
+    {passive:true}
+);
+
+document.addEventListener(
+    "touchend",
+    e=>{
+
+        if(!sx)return;
+
+        const dx=
+            e.changedTouches[0].clientX-sx;
+
+        const dy=
+            e.changedTouches[0].clientY-sy;
+
+        sx=0;
+
+        if(
+            Math.abs(dx)>70 &&
+            Math.abs(dx)>Math.abs(dy)
+        ){
+
+            navigate(
+                dx<0?1:-1
+            );
+
+        }
+
+    },
+    {passive:true}
+);
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    e=>{
+
+        if(
+            e.target.matches(
+                "input,textarea,select"
+            )
+        )
+            return;
+
+        if(e.key==="ArrowLeft")
+            navigate(-1);
+
+        if(e.key==="ArrowRight")
+            navigate(1);
+
+        if(e.key.toLowerCase()==="t")
+            goToday();
+
+        if(e.key==="Escape"){
+
+            closeDrawer();
+            closeSearch();
+            closePicker();
+            closeEvent();
+            closeDetails();
+
+        }
+
+    }
+);
+
+/* =========================================================
+   START
+========================================================= */
+
+render();
+
+</script>
+
+</body>
+</html>
