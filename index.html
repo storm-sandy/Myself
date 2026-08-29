@@ -1,550 +1,917 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="style.css">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
 <link rel="manifest" href="manifest.json">
 
-<title>Swayam - Personal Governance</title>
+<title>⛱️ Swayam</title>
+
 
 <style>
 
-* {
-    box-sizing: border-box;
-}
+/* =====================================================
+   ORIGINAL SWAYAM STYLE
+===================================================== */
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f5f7fb;
-    padding-bottom: 80px;
-}
-
-/* HEADER */
-
-.header {
-    height: 10px;
-}
-
-/* MAIN */
-
-.section {
-    width: 100%;
-    max-width: 1100px;
-    margin: auto;
-    padding: 10px;
-}
-
-/* =========================
-   GOOGLE STYLE CALENDAR
-========================= */
-
-.calendar-card {
-    background: white;
-    border-radius: 14px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.10);
-    margin: 20px 0;
-    overflow: hidden;
-}
-
-/* Calendar toolbar */
-
-.calendar-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px;
-    border-bottom: 1px solid #ddd;
-    gap: 10px;
-}
-
-.calendar-title {
-    font-size: 25px;
-    font-weight: bold;
-    min-width: 190px;
-}
-
-.calendar-buttons {
-    display: flex;
-    gap: 5px;
-}
-
-.calendar-buttons button {
-    border: 1px solid #ddd;
-    background: white;
-    border-radius: 8px;
-    padding: 8px 13px;
-    font-size: 18px;
-    cursor: pointer;
-}
-
-.calendar-buttons button:hover {
-    background: #f1f3f4;
-}
-
-.today-btn {
-    font-size: 15px !important;
-}
-
-/* Week header */
-
-.calendar-week {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    background: #f8f9fa;
-    border-bottom: 1px solid #ddd;
-}
-
-.calendar-week div {
-    text-align: center;
-    padding: 10px 2px;
-    font-size: 14px;
-    font-weight: bold;
-    color: #555;
-}
-
-/* Calendar grid */
-
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-}
-
-/* Day */
-
-.calendar-day {
-    min-height: 90px;
-    border-right: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-    padding: 6px;
-    position: relative;
-    cursor: pointer;
-    background: white;
-}
-
-.calendar-day:hover {
-    background: #f5faff;
-}
-
-.calendar-day.other-month {
-    background: #fafafa;
-    color: #aaa;
-}
-
-.day-number {
-    display: inline-flex;
-    width: 30px;
-    height: 30px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-size: 15px;
-}
-
-.today .day-number {
-    background: #1a73e8;
-    color: white;
-}
-
-/* Events */
-
-.event {
-    background: #1a73e8;
-    color: white;
-    border-radius: 4px;
-    padding: 3px 5px;
-    margin-top: 5px;
-    font-size: 12px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-/* =========================
-   EVENT MODAL
-========================= */
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.45);
-}
-
-.modal-content {
-    background: white;
-    width: 92%;
-    max-width: 450px;
-    margin: 15vh auto;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.3);
-}
-
-.modal-content h2 {
-    margin-top: 0;
-}
-
-.modal-content input {
-    width: 100%;
-    padding: 12px;
-    margin: 8px 0 15px;
-    border: 1px solid #ccc;
-    border-radius: 7px;
-    font-size: 16px;
-}
-
-.modal-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.modal-buttons button {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 7px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.save-btn {
-    background: #1a73e8;
-    color: white;
-}
-
-.cancel-btn {
-    background: #eee;
-}
-
-/* =========================
-   APP TABLE
-========================= */
-
-.app-table {
+table {
     width: 100%;
     border-collapse: collapse;
     background: #fff;
-    font-size: 22px;
+    font-size: 40px;
     font-weight: bold;
 }
 
-.app-table th,
-.app-table td {
+th, td {
     padding: 12px;
     border: 1px solid #ddd;
 }
 
-.app-table th {
+th {
     background: #4CAF50;
     color: white;
     text-align: left;
 }
 
-.app-table tr:hover {
+/* Hover effect */
+
+tr:hover {
     background-color: #f2f2f2;
     cursor: pointer;
 }
 
-/* NOTE CARD */
+
+/* Right align last column */
+
+td:last-child {
+    text-align: right;
+}
+
+
+/* =====================================================
+   CALENDAR CONTAINER
+===================================================== */
+
+.calendar-box {
+
+    width: 100%;
+
+    background: white;
+
+    margin-top: 25px;
+
+    margin-bottom: 10px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    overflow: hidden;
+
+}
+
+
+/* =====================================================
+   CALENDAR HEADER
+===================================================== */
+
+.calendar-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    background: #4CAF50;
+
+    color: white;
+
+    padding: 10px;
+
+}
+
+
+.calendar-header button {
+
+    border: none;
+
+    background: white;
+
+    color: #333;
+
+    border-radius: 5px;
+
+    padding: 7px 10px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+
+.calendar-title {
+
+    font-size: 21px;
+
+    font-weight: bold;
+
+    text-align: center;
+
+}
+
+
+/* =====================================================
+   YEAR NAVIGATION
+===================================================== */
+
+.calendar-year {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 8px;
+
+    background: #f5f5f5;
+
+    border-bottom: 1px solid #ddd;
+
+}
+
+
+.calendar-year button {
+
+    border: 1px solid #ccc;
+
+    background: white;
+
+    border-radius: 5px;
+
+    padding: 6px 12px;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+}
+
+
+.year-text {
+
+    font-weight: bold;
+
+    font-size: 18px;
+
+}
+
+
+/* =====================================================
+   TODAY BUTTON
+===================================================== */
+
+.today-button {
+
+    display: block;
+
+    margin: 8px auto;
+
+    padding: 7px 18px;
+
+    border: 1px solid #ccc;
+
+    background: white;
+
+    border-radius: 5px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+
+/* =====================================================
+   WEEK HEADER
+===================================================== */
+
+.calendar-week {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(7, 1fr);
+
+    background: #eee;
+
+}
+
+
+.calendar-week div {
+
+    text-align: center;
+
+    padding: 7px 2px;
+
+    font-weight: bold;
+
+    font-size: 14px;
+
+}
+
+
+/* =====================================================
+   CALENDAR GRID
+===================================================== */
+
+.calendar-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(7, 1fr);
+
+}
+
+
+.calendar-day {
+
+    min-height: 75px;
+
+    border-right: 1px solid #ddd;
+
+    border-bottom: 1px solid #ddd;
+
+    padding: 4px;
+
+    cursor: pointer;
+
+    background: white;
+
+}
+
+
+.calendar-day:hover {
+
+    background: #f2f2f2;
+
+}
+
+
+.calendar-day.other-month {
+
+    color: #aaa;
+
+    background: #fafafa;
+
+}
+
+
+.day-number {
+
+    display: inline-flex;
+
+    width: 28px;
+
+    height: 28px;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-size: 14px;
+
+}
+
+
+/* =====================================================
+   TODAY
+===================================================== */
+
+.calendar-day.today
+.day-number {
+
+    background: #4CAF50;
+
+    color: white;
+
+}
+
+
+/* =====================================================
+   HOLIDAY
+===================================================== */
+
+.holiday-day {
+
+    background: #fff3f3 !important;
+
+}
+
+
+.holiday-label {
+
+    color: #d32f2f;
+
+    font-size: 10px;
+
+    font-weight: bold;
+
+    margin-top: 3px;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+}
+
+
+/* =====================================================
+   PERSONAL EVENT
+===================================================== */
+
+.calendar-event {
+
+    background: #4CAF50;
+
+    color: white;
+
+    border-radius: 3px;
+
+    padding: 2px 4px;
+
+    margin-top: 3px;
+
+    font-size: 10px;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+}
+
+
+/* =====================================================
+   HOLIDAY / EVENT LIST
+===================================================== */
+
+.calendar-list-title {
+
+    background: #4CAF50;
+
+    color: white;
+
+    padding: 10px;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+}
+
+
+.calendar-list {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 16px;
+
+    font-weight: normal;
+
+}
+
+
+.calendar-list th {
+
+    background: #f1f1f1;
+
+    color: #333;
+
+    padding: 8px;
+
+    border: 1px solid #ddd;
+
+}
+
+
+.calendar-list td {
+
+    padding: 8px;
+
+    border: 1px solid #ddd;
+
+}
+
+
+.holiday-row {
+
+    background: #fff5f5;
+
+}
+
+
+.event-row {
+
+    background: #f5fff5;
+
+}
+
+
+/* =====================================================
+   CALENDAR TOOLS
+===================================================== */
+
+.calendar-tools {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 10px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.calendar-tools button {
+
+    border: 1px solid #ccc;
+
+    background: white;
+
+    padding: 7px 12px;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.calendar-modal {
+
+    display: none;
+
+    position: fixed;
+
+    z-index: 1000;
+
+    left: 0;
+
+    top: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    background: rgba(0,0,0,0.45);
+
+}
+
+
+.calendar-modal-content {
+
+    background: white;
+
+    width: 90%;
+
+    max-width: 420px;
+
+    margin: 15% auto;
+
+    padding: 20px;
+
+    border-radius: 8px;
+
+}
+
+
+.calendar-modal-content input {
+
+    width: 100%;
+
+    padding: 10px;
+
+    margin: 8px 0;
+
+    border: 1px solid #ccc;
+
+    border-radius: 5px;
+
+    font-size: 16px;
+
+}
+
+
+.modal-button {
+
+    padding: 10px 15px;
+
+    border: none;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+}
+
+
+.save-button {
+
+    background: #4CAF50;
+
+    color: white;
+
+}
+
+
+.delete-button {
+
+    background: #d32f2f;
+
+    color: white;
+
+}
+
+
+.close-button {
+
+    background: #ddd;
+
+}
+
+
+/* =====================================================
+   NOTE CARD
+===================================================== */
 
 .card {
+
     background: white;
-    margin: 20px 10px 90px;
+
+    margin: 20px 0;
+
     padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+    border-radius: 8px;
+
 }
 
-/* BOTTOM NAV */
+
+/* =====================================================
+   BOTTOM NAVIGATION
+===================================================== */
 
 .bottom-nav {
+
     position: fixed;
+
     bottom: 0;
+
     left: 0;
+
     width: 100%;
-    height: 65px;
+
+    height: 60px;
+
     background: white;
+
     display: flex;
+
     justify-content: space-around;
+
     align-items: center;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.15);
+
+    box-shadow:
+        0 -2px 8px rgba(0,0,0,0.15);
+
     z-index: 999;
+
 }
+
 
 .bottom-nav a {
+
     text-decoration: none;
+
     color: #555;
+
     font-size: 15px;
+
     padding: 10px;
+
 }
+
 
 .bottom-nav a.active {
-    color: #1a73e8;
+
+    color: #4CAF50;
+
     font-weight: bold;
+
 }
 
-/* =========================
+
+/* =====================================================
    MOBILE
-========================= */
+===================================================== */
 
 @media(max-width:600px) {
 
-    .calendar-title {
-        font-size: 20px;
-        min-width: auto;
+    table {
+
+        font-size: 40px;
+
     }
 
-    .calendar-buttons button {
-        padding: 7px 9px;
-        font-size: 16px;
+
+    th, td {
+
+        padding: 12px;
+
     }
 
-    .today-btn {
-        display: none;
-    }
 
     .calendar-day {
-        min-height: 65px;
-        padding: 3px;
+
+        min-height: 60px;
+
     }
 
-    .day-number {
-        width: 26px;
-        height: 26px;
-        font-size: 13px;
-    }
 
     .calendar-week div {
+
         font-size: 11px;
+
     }
 
-    .event {
-        font-size: 10px;
-        padding: 2px;
+
+    .calendar-title {
+
+        font-size: 17px;
+
     }
 
-    .app-table {
-        font-size: 16px;
+
+    .calendar-header button {
+
+        font-size: 14px;
+
+        padding: 6px 8px;
+
     }
 
-    .app-table th,
-    .app-table td {
-        padding: 8px;
+
+    .day-number {
+
+        width: 25px;
+
+        height: 25px;
+
+        font-size: 12px;
+
     }
 
-    .app-table th:nth-child(3),
-    .app-table td:nth-child(3) {
-        display: none;
+
+    .holiday-label,
+    .calendar-event {
+
+        font-size: 8px;
+
     }
+
+
+    .calendar-list {
+
+        font-size: 13px;
+
+    }
+
+}
+
+
+/* =====================================================
+   BODY
+===================================================== */
+
+body {
+
+    margin: 0;
+
+    padding-bottom: 75px;
+
+}
+
+.section {
+
+    width: 100%;
+
 }
 
 </style>
+
 </head>
+
 
 <body>
 
-<header class="header"></header>
+
+<!-- =====================================================
+     SWAYAM HEADER
+===================================================== -->
 
 <section class="section">
 
-<h1 style="text-align:center;">⛱️ Swayam</h1>
+<h1 style="text-align:center;">
+⛱️ Swayam
+</h1>
+
 <h5 style="text-align:center;">
 Personal Governance Simplified.
 </h5>
 
 
-<!-- =========================
-     CALENDAR
-========================= -->
+<!-- =====================================================
+     ORIGINAL APPLICATION TABLE
+===================================================== -->
 
-<div class="calendar-card">
-
-    <div class="calendar-toolbar">
-
-        <div class="calendar-title" id="calendarTitle">
-            August 2026
-        </div>
-
-        <div class="calendar-buttons">
-
-            <button onclick="previousMonth()">‹</button>
-
-            <button onclick="goToday()" class="today-btn">
-                Today
-            </button>
-
-            <button onclick="nextMonth()">›</button>
-
-        </div>
-
-    </div>
-
-
-    <!-- DAYS -->
-
-    <div class="calendar-week">
-
-        <div>Sun</div>
-        <div>Mon</div>
-        <div>Tue</div>
-        <div>Wed</div>
-        <div>Thu</div>
-        <div>Fri</div>
-        <div>Sat</div>
-
-    </div>
-
-
-    <!-- CALENDAR DAYS -->
-
-    <div id="calendarGrid" class="calendar-grid"></div>
-
-</div>
-
-
-<!-- =========================
-     EVENT MODAL
-========================= -->
-
-<div id="eventModal" class="modal">
-
-    <div class="modal-content">
-
-        <h2>📅 Add Event</h2>
-
-        <div id="selectedDate"></div>
-
-        <input
-            type="text"
-            id="eventTitle"
-            placeholder="Event title"
-        >
-
-        <input
-            type="time"
-            id="eventTime"
-        >
-
-        <div class="modal-buttons">
-
-            <button
-                class="cancel-btn"
-                onclick="closeModal()">
-                Cancel
-            </button>
-
-            <button
-                class="save-btn"
-                onclick="saveEvent()">
-                Save
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================
-     APPLICATIONS
-========================= -->
-
-<table class="app-table">
+<table>
 
 <tr>
-    <th>App Name</th>
-    <th>App Description</th>
-    <th>Last updated</th>
+
+<th>App Name</th>
+
+<th>App Description</th>
+
+<th>Last updated</th>
+
 </tr>
+
 
 <tr onclick="window.location='Util_smart.html'">
-    <td>Smartwatch</td>
-    <td>⌚ Samay Niyojaka</td>
-    <td>Apr 2026</td>
+
+<td>Smartwatch</td>
+
+<td>⌚ Samay Niyojaka</td>
+
+<td>Apr 2026</td>
+
 </tr>
+
 
 <tr onclick="window.location='Util_karya.html'">
-    <td>Work</td>
-    <td>💼 Karya</td>
-    <td>Apr 2026</td>
+
+<td>Work</td>
+
+<td>💼 Karya</td>
+
+<td>Apr 2026</td>
+
 </tr>
+
 
 <tr onclick="window.location='Util_laxmi.html'">
-    <td>Home</td>
-    <td>🏠 Grihastha</td>
-    <td>Apr 2026</td>
+
+<td>Home</td>
+
+<td>🏠 Grihastha</td>
+
+<td>Apr 2026</td>
+
 </tr>
+
 
 <tr onclick="window.location='Util_upkarna.html'">
-    <td>Utility</td>
-    <td>🛠️ Upkarna</td>
-    <td>Apr 2026</td>
+
+<td>Utility</td>
+
+<td>🛠️ Upkarna</td>
+
+<td>Apr 2026</td>
+
 </tr>
+
 
 <tr onclick="window.location='Util_chitra.html'">
-    <td>Image</td>
-    <td>🖼️ Chitra</td>
-    <td>Apr 2026</td>
+
+<td>Image</td>
+
+<td>🖼️ Chitra</td>
+
+<td>Apr 2026</td>
+
 </tr>
+
 
 <tr onclick="window.location='Util_sutra.html'">
-    <td>Formula</td>
-    <td>📐 Sutra</td>
-    <td>Apr 2026</td>
+
+<td>Formula</td>
+
+<td>📐 Sutra</td>
+
+<td>Apr 2026</td>
+
 </tr>
+
 
 <tr onclick="window.location='Util_lang.html'">
-    <td>Languages</td>
-    <td>🌐 Bhasha</td>
-    <td>Apr 2026</td>
+
+<td>Languages</td>
+
+<td>🌐 Bhasha</td>
+
+<td>Apr 2026</td>
+
 </tr>
+
 
 <tr onclick="window.location='Util_sanskar.html'">
-    <td>Ethics</td>
-    <td>🙏 Sanskar</td>
-    <td>Apr 2026</td>
+
+<td>Ethics</td>
+
+<td>🙏 Sanskar</td>
+
+<td>Apr 2026</td>
+
 </tr>
+
 
 <tr onclick="window.location='Util_yog.html'">
-    <td>Fitness</td>
-    <td>🧘 Yoga</td>
-    <td>Apr 2026</td>
+
+<td>Fitness</td>
+
+<td>🏠 Yoga</td>
+
+<td>Apr 2026</td>
+
 </tr>
+
 
 <tr onclick="window.location='Util_ranjan.html'">
-    <td>Relax</td>
-    <td>🎮 Manoranjan</td>
-    <td>Apr 2026</td>
+
+<td>Relax</td>
+
+<td>🎮 Manoranjan</td>
+
+<td>Apr 2026</td>
+
 </tr>
+
 
 <tr onclick="window.location='Util_awpl.html'">
-    <td>AWPL</td>
-    <td>Health Business</td>
-    <td>May 2026</td>
+
+<td>AWPL</td>
+
+<td>Health Business</td>
+
+<td>May 2026</td>
+
 </tr>
 
+
 <tr onclick="window.location='Util_sarvam.html'">
-    <td>All</td>
-    <td>🌐 Sarva</td>
-    <td>Apr 2026</td>
+
+<td>All</td>
+
+<td>🌐 Sarva</td>
+
+<td>Apr 2026</td>
+
 </tr>
 
 </table>
 
-</section>
 
-
-<!-- =========================
+<!-- =====================================================
      NOTE
-========================= -->
+===================================================== -->
 
 <div class="card">
 
@@ -571,178 +938,789 @@ Personal Governance Simplified.
 </div>
 
 
-<!-- =========================
-     BOTTOM NAV
-========================= -->
+<!-- =====================================================
+     CALENDAR
+===================================================== -->
+
+<div class="calendar-box">
+
+
+<!-- MONTH -->
+
+<div class="calendar-header">
+
+<button onclick="previousMonth()">
+◀
+</button>
+
+
+<div class="calendar-title"
+     id="calendarTitle">
+</div>
+
+
+<button onclick="nextMonth()">
+▶
+</button>
+
+</div>
+
+
+<!-- YEAR -->
+
+<div class="calendar-year">
+
+<button onclick="previousYear()">
+◀ Year
+</button>
+
+
+<span class="year-text"
+      id="yearText">
+</span>
+
+
+<button onclick="nextYear()">
+Year ▶
+</button>
+
+</div>
+
+
+<!-- TODAY -->
+
+<button class="today-button"
+        onclick="goToday()">
+
+Today
+
+</button>
+
+
+<!-- WEEK -->
+
+<div class="calendar-week">
+
+<div>Sun</div>
+
+<div>Mon</div>
+
+<div>Tue</div>
+
+<div>Wed</div>
+
+<div>Thu</div>
+
+<div>Fri</div>
+
+<div>Sat</div>
+
+</div>
+
+
+<!-- DAYS -->
+
+<div id="calendarGrid"
+     class="calendar-grid">
+</div>
+
+
+<!-- =====================================================
+     HOLIDAY / EVENT LIST
+===================================================== -->
+
+<div class="calendar-list-title">
+
+📅 Holidays & Events
+
+</div>
+
+
+<table class="calendar-list">
+
+<thead>
+
+<tr>
+
+<th>Date</th>
+
+<th>Day</th>
+
+<th>Type</th>
+
+<th>Name</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="calendarList">
+
+</tbody>
+
+</table>
+
+
+<!-- =====================================================
+     TOOLS
+===================================================== -->
+
+<div class="calendar-tools">
+
+<button onclick="exportCalendar()">
+📤 Export
+</button>
+
+
+<button onclick="document.getElementById('importFile').click()">
+📥 Import
+</button>
+
+
+<input
+    type="file"
+    id="importFile"
+    accept=".json"
+    style="display:none"
+    onchange="importCalendar(event)">
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+<!-- =====================================================
+     EVENT MODAL
+===================================================== -->
+
+<div id="calendarModal"
+     class="calendar-modal">
+
+
+<div class="calendar-modal-content">
+
+
+<h3>
+📅 Personal Event
+</h3>
+
+
+<p id="selectedDateText">
+</p>
+
+
+<input
+    id="eventTitle"
+    type="text"
+    placeholder="Event title">
+
+
+<input
+    id="eventTime"
+    type="time">
+
+
+<br><br>
+
+
+<button
+    class="modal-button save-button"
+    onclick="saveEvent()">
+
+Save
+
+</button>
+
+
+<button
+    class="modal-button close-button"
+    onclick="closeEventModal()">
+
+Cancel
+
+</button>
+
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     BOTTOM NAVIGATION
+===================================================== -->
 
 <nav class="bottom-nav">
 
-<a class="active" href="index.html">Home</a>
+<a class="active"
+   href="index.html">
 
-<a href="service.html">Service</a>
+Home
 
-<a href="booking.html">Bookings</a>
+</a>
 
-<a href="contact.html">About Us</a>
+
+<a href="service.html">
+
+Service
+
+</a>
+
+
+<a href="booking.html">
+
+Bookings
+
+</a>
+
+
+<a href="contact.html">
+
+About Us
+
+</a>
 
 </nav>
 
 
 <script>
 
-/* =========================
+/* =====================================================
    CALENDAR VARIABLES
-========================= */
+===================================================== */
 
-let currentDate = new Date();
+let calendarDate = new Date();
 
 let selectedDate = null;
 
-let events = JSON.parse(
-    localStorage.getItem("swayam_calendar_events") || "{}"
+
+/* =====================================================
+   LOAD PERSONAL EVENTS
+===================================================== */
+
+let calendarEvents =
+JSON.parse(
+    localStorage.getItem(
+        "swayam_calendar_events"
+    ) || "{}"
 );
 
 
-/* =========================
+/* =====================================================
+   MONTH NAMES
+===================================================== */
+
+const monthNames = [
+
+"January",
+"February",
+"March",
+"April",
+"May",
+"June",
+"July",
+"August",
+"September",
+"October",
+"November",
+"December"
+
+];
+
+
+/* =====================================================
+   HOLIDAY DATABASE
+   2026 MAHARASHTRA + MAJOR INDIAN OBSERVANCES
+===================================================== */
+
+const holidays = [
+
+/* ---------- JANUARY ---------- */
+
+{
+date:"2026-01-01",
+name:"New Year's Day",
+type:"Festival"
+},
+
+{
+date:"2026-01-13",
+name:"Lohri",
+type:"Festival"
+},
+
+{
+date:"2026-01-14",
+name:"Makar Sankranti",
+type:"Festival"
+},
+
+{
+date:"2026-01-23",
+name:"Vasant Panchami",
+type:"Festival"
+},
+
+{
+date:"2026-01-26",
+name:"Republic Day",
+type:"Public Holiday"
+},
+
+
+/* ---------- FEBRUARY ---------- */
+
+{
+date:"2026-02-15",
+name:"Mahashivratri",
+type:"Public Holiday"
+},
+
+{
+date:"2026-02-19",
+name:"Chhatrapati Shivaji Maharaj Jayanti",
+type:"Public Holiday"
+},
+
+{
+date:"2026-02-24",
+name:"Ramdas Navami",
+type:"Festival"
+},
+
+
+/* ---------- MARCH ---------- */
+
+{
+date:"2026-03-03",
+name:"Holi",
+type:"Public Holiday"
+},
+
+{
+date:"2026-03-19",
+name:"Gudi Padwa",
+type:"Public Holiday"
+},
+
+{
+date:"2026-03-21",
+name:"Eid-ul-Fitr",
+type:"Public Holiday"
+},
+
+{
+date:"2026-03-26",
+name:"Ram Navami",
+type:"Public Holiday"
+},
+
+{
+date:"2026-03-31",
+name:"Mahavir Jayanti",
+type:"Public Holiday"
+},
+
+
+/* ---------- APRIL ---------- */
+
+{
+date:"2026-04-02",
+name:"Hanuman Jayanti",
+type:"Festival"
+},
+
+{
+date:"2026-04-03",
+name:"Good Friday",
+type:"Public Holiday"
+},
+
+{
+date:"2026-04-14",
+name:"Dr. Babasaheb Ambedkar Jayanti",
+type:"Public Holiday"
+},
+
+{
+date:"2026-04-19",
+name:"Akshaya Tritiya",
+type:"Festival"
+},
+
+
+/* ---------- MAY ---------- */
+
+{
+date:"2026-05-01",
+name:"Maharashtra Day",
+type:"Public Holiday"
+},
+
+{
+date:"2026-05-01",
+name:"Buddha Purnima",
+type:"Public Holiday"
+},
+
+{
+date:"2026-05-27",
+name:"Eid al-Adha",
+type:"Public Holiday"
+},
+
+
+/* ---------- JUNE ---------- */
+
+{
+date:"2026-06-26",
+name:"Muharram",
+type:"Public Holiday"
+},
+
+{
+date:"2026-06-21",
+name:"International Yoga Day",
+type:"Observance"
+},
+
+
+/* ---------- JULY ---------- */
+
+{
+date:"2026-07-16",
+name:"Ashadhi Ekadashi",
+type:"Festival"
+},
+
+{
+date:"2026-07-29",
+name:"Guru Purnima",
+type:"Festival"
+},
+
+
+/* ---------- AUGUST ---------- */
+
+{
+date:"2026-08-15",
+name:"Independence Day",
+type:"Public Holiday"
+},
+
+{
+date:"2026-08-15",
+name:"Parsi New Year",
+type:"Public Holiday"
+},
+
+{
+date:"2026-08-26",
+name:"Eid-e-Milad",
+type:"Public Holiday"
+},
+
+{
+date:"2026-08-28",
+name:"Raksha Bandhan",
+type:"Festival"
+},
+
+{
+date:"2026-08-31",
+name:"Janmashtami",
+type:"Festival"
+},
+
+
+/* ---------- SEPTEMBER ---------- */
+
+{
+date:"2026-09-14",
+name:"Ganesh Chaturthi",
+type:"Public Holiday"
+},
+
+{
+date:"2026-09-25",
+name:"Onam",
+type:"Festival"
+},
+
+
+/* ---------- OCTOBER ---------- */
+
+{
+date:"2026-10-02",
+name:"Mahatma Gandhi Jayanti",
+type:"Public Holiday"
+},
+
+{
+date:"2026-10-18",
+name:"Navratri",
+type:"Festival"
+},
+
+{
+date:"2026-10-20",
+name:"Dasara",
+type:"Public Holiday"
+},
+
+{
+date:"2026-10-29",
+name:"Karwa Chauth",
+type:"Festival"
+},
+
+
+/* ---------- NOVEMBER ---------- */
+
+{
+date:"2026-11-08",
+name:"Diwali Amavasya / Laxmi Pujan",
+type:"Public Holiday"
+},
+
+{
+date:"2026-11-09",
+name:"Diwali",
+type:"Festival"
+},
+
+{
+date:"2026-11-10",
+name:"Bali Pratipada",
+type:"Public Holiday"
+},
+
+{
+date:"2026-11-24",
+name:"Guru Nanak Jayanti",
+type:"Public Holiday"
+},
+
+
+/* ---------- DECEMBER ---------- */
+
+{
+date:"2026-12-25",
+name:"Christmas",
+type:"Public Holiday"
+}
+
+];
+
+
+/* =====================================================
+   FORMAT DATE
+===================================================== */
+
+function formatDate(date) {
+
+    return date.getFullYear()
+        + "-"
+        + String(
+            date.getMonth()+1
+          ).padStart(2,"0")
+        + "-"
+        + String(
+            date.getDate()
+          ).padStart(2,"0");
+
+}
+
+
+/* =====================================================
    RENDER CALENDAR
-========================= */
+===================================================== */
 
 function renderCalendar() {
 
-    const year = currentDate.getFullYear();
+    const year =
+        calendarDate.getFullYear();
 
-    const month = currentDate.getMonth();
-
-    const grid = document.getElementById("calendarGrid");
-
-    const title = document.getElementById("calendarTitle");
+    const month =
+        calendarDate.getMonth();
 
 
-    const monthNames = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-    ];
+    document.getElementById(
+        "calendarTitle"
+    ).innerText =
+        monthNames[month];
 
 
-    title.innerText =
-        monthNames[month] + " " + year;
+    document.getElementById(
+        "yearText"
+    ).innerText =
+        year;
+
+
+    const grid =
+        document.getElementById(
+            "calendarGrid"
+        );
 
 
     grid.innerHTML = "";
 
 
-    /* First day of month */
-
     const firstDay =
-        new Date(year, month, 1).getDay();
+        new Date(
+            year,
+            month,
+            1
+        ).getDay();
 
-
-    /* Days in month */
 
     const daysInMonth =
-        new Date(year, month + 1, 0).getDate();
+        new Date(
+            year,
+            month+1,
+            0
+        ).getDate();
 
-
-    /* Days in previous month */
 
     const previousMonthDays =
-        new Date(year, month, 0).getDate();
+        new Date(
+            year,
+            month,
+            0
+        ).getDate();
 
 
     /* Previous month */
 
-    for(let i = firstDay - 1; i >= 0; i--) {
+    for(
+        let i=firstDay-1;
+        i>=0;
+        i--
+    ) {
 
-        const day =
-            previousMonthDays - i;
+        createCalendarDay(
+            year,
+            month-1,
+            previousMonthDays-i,
+            true
+        );
 
-        const cell =
-            createDayCell(
-                year,
-                month - 1,
-                day,
-                true
-            );
-
-        grid.appendChild(cell);
     }
 
 
     /* Current month */
 
-    for(let day = 1; day <= daysInMonth; day++) {
+    for(
+        let day=1;
+        day<=daysInMonth;
+        day++
+    ) {
 
-        const cell =
-            createDayCell(
-                year,
-                month,
-                day,
-                false
-            );
+        createCalendarDay(
+            year,
+            month,
+            day,
+            false
+        );
 
-        grid.appendChild(cell);
     }
 
 
     /* Next month */
 
-    const totalCells =
-        Math.ceil(grid.children.length / 7) * 7;
+    let nextDay=1;
 
+    while(
+        grid.children.length % 7 !== 0
+    ) {
 
-    let nextDay = 1;
+        createCalendarDay(
+            year,
+            month+1,
+            nextDay++,
+            true
+        );
 
-    while(grid.children.length < totalCells) {
-
-        const cell =
-            createDayCell(
-                year,
-                month + 1,
-                nextDay++,
-                true
-            );
-
-        grid.appendChild(cell);
     }
+
+
+    renderCalendarList();
 
 }
 
 
-/* =========================
-   CREATE DAY CELL
-========================= */
+/* =====================================================
+   CREATE CALENDAR DAY
+===================================================== */
 
-function createDayCell(year, month, day, otherMonth) {
+function createCalendarDay(
+    year,
+    month,
+    day,
+    otherMonth
+) {
+
+    const grid =
+        document.getElementById(
+            "calendarGrid"
+        );
+
 
     const cell =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
-    cell.className = "calendar-day";
+
+    cell.className =
+        "calendar-day";
 
 
     if(otherMonth) {
 
-        cell.classList.add("other-month");
+        cell.classList.add(
+            "other-month"
+        );
 
     }
 
 
     const date =
-        new Date(year, month, day);
+        new Date(
+            year,
+            month,
+            day
+        );
 
 
-    const dateKey =
+    const key =
         formatDate(date);
+
+
+    /* Day number */
+
+    const number =
+        document.createElement(
+            "span"
+        );
+
+
+    number.className =
+        "day-number";
+
+
+    number.innerText =
+        day;
+
+
+    cell.appendChild(
+        number
+    );
 
 
     /* Today */
@@ -752,88 +1730,359 @@ function createDayCell(year, month, day, otherMonth) {
 
 
     if(
-        date.getFullYear() === today.getFullYear() &&
-        date.getMonth() === today.getMonth() &&
-        date.getDate() === today.getDate()
+
+        date.getFullYear()
+        ===
+        today.getFullYear()
+
+        &&
+
+        date.getMonth()
+        ===
+        today.getMonth()
+
+        &&
+
+        date.getDate()
+        ===
+        today.getDate()
+
     ) {
 
-        cell.classList.add("today");
+        cell.classList.add(
+            "today"
+        );
 
     }
 
 
-    const number =
-        document.createElement("div");
+    /* Holiday */
 
-    number.className = "day-number";
-
-    number.innerText = day;
-
-    cell.appendChild(number);
+    const dayHolidays =
+        holidays.filter(
+            h => h.date === key
+        );
 
 
-    /* Events */
+    if(
+        dayHolidays.length > 0
+    ) {
 
-    if(events[dateKey]) {
+        cell.classList.add(
+            "holiday-day"
+        );
 
-        events[dateKey].forEach(function(event) {
 
-            const eventDiv =
-                document.createElement("div");
+        const label =
+            document.createElement(
+                "div"
+            );
 
-            eventDiv.className = "event";
 
-            eventDiv.innerText =
-                (event.time ? event.time + " " : "") +
-                event.title;
+        label.className =
+            "holiday-label";
 
-            cell.appendChild(eventDiv);
 
-        });
+        label.innerText =
+            "🔴 "
+            +
+            dayHolidays[0].name;
+
+
+        cell.appendChild(
+            label
+        );
+
+    }
+
+
+    /* Personal event */
+
+    if(
+        calendarEvents[key]
+    ) {
+
+        calendarEvents[key]
+        .forEach(
+            event => {
+
+                const eventDiv =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                eventDiv.className =
+                    "calendar-event";
+
+
+                eventDiv.innerText =
+                    (
+                        event.time
+                        ?
+                        event.time+" "
+                        :
+                        ""
+                    )
+                    +
+                    event.title;
+
+
+                cell.appendChild(
+                    eventDiv
+                );
+
+            }
+        );
 
     }
 
 
     /* Click */
 
-    cell.onclick = function() {
+    cell.onclick =
+        function() {
 
-        openModal(date);
+            openEventModal(
+                date
+            );
 
-    };
+        };
 
 
-    return cell;
+    grid.appendChild(
+        cell
+    );
+
 }
 
 
-/* =========================
-   DATE FORMAT
-========================= */
+/* =====================================================
+   HOLIDAY + EVENT LIST
+===================================================== */
 
-function formatDate(date) {
+function renderCalendarList() {
 
-    const y =
-        date.getFullYear();
+    const list =
+        document.getElementById(
+            "calendarList"
+        );
 
-    const m =
-        String(date.getMonth() + 1).padStart(2, "0");
 
-    const d =
-        String(date.getDate()).padStart(2, "0");
+    list.innerHTML = "";
 
-    return `${y}-${m}-${d}`;
+
+    const year =
+        calendarDate.getFullYear();
+
+
+    const month =
+        calendarDate.getMonth();
+
+
+    /* Holidays */
+
+    holidays.forEach(
+        holiday => {
+
+            const date =
+                new Date(
+                    holiday.date
+                );
+
+
+            if(
+
+                date.getFullYear()
+                !==
+                year
+
+                ||
+
+                date.getMonth()
+                !==
+                month
+
+            ) {
+
+                return;
+
+            }
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.className =
+                "holiday-row";
+
+
+            row.innerHTML = `
+
+<td>
+${formatDisplayDate(date)}
+</td>
+
+<td>
+${date.toLocaleDateString(
+    "en-IN",
+    {weekday:"long"}
+)}
+</td>
+
+<td>
+${holiday.type}
+</td>
+
+<td>
+🔴 ${holiday.name}
+</td>
+
+`;
+
+
+            list.appendChild(
+                row
+            );
+
+        }
+    );
+
+
+    /* Personal events */
+
+    Object.keys(
+        calendarEvents
+    ).forEach(
+        key => {
+
+            const date =
+                new Date(key);
+
+
+            if(
+
+                date.getFullYear()
+                !==
+                year
+
+                ||
+
+                date.getMonth()
+                !==
+                month
+
+            ) {
+
+                return;
+
+            }
+
+
+            calendarEvents[key]
+            .forEach(
+                event => {
+
+                    const row =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    row.className =
+                        "event-row";
+
+
+                    row.innerHTML = `
+
+<td>
+${formatDisplayDate(date)}
+</td>
+
+<td>
+${date.toLocaleDateString(
+    "en-IN",
+    {weekday:"long"}
+)}
+</td>
+
+<td>
+Personal Event
+</td>
+
+<td>
+🟢
+${event.time ? event.time+" " : ""}
+${event.title}
+</td>
+
+`;
+
+
+                    list.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    if(
+        list.children.length === 0
+    ) {
+
+        list.innerHTML = `
+
+<tr>
+
+<td colspan="4"
+    style="text-align:center">
+
+No holiday or event this month
+
+</td>
+
+</tr>
+
+`;
+
+    }
+
 }
 
 
-/* =========================
-   MONTH NAVIGATION
-========================= */
+/* =====================================================
+   DISPLAY DATE
+===================================================== */
+
+function formatDisplayDate(date) {
+
+    return date.toLocaleDateString(
+        "en-IN",
+        {
+            day:"2-digit",
+            month:"short",
+            year:"numeric"
+        }
+    );
+
+}
+
+
+/* =====================================================
+   MONTH
+===================================================== */
 
 function previousMonth() {
 
-    currentDate.setMonth(
-        currentDate.getMonth() - 1
+    calendarDate.setMonth(
+        calendarDate.getMonth()-1
     );
 
     renderCalendar();
@@ -843,8 +2092,8 @@ function previousMonth() {
 
 function nextMonth() {
 
-    currentDate.setMonth(
-        currentDate.getMonth() + 1
+    calendarDate.setMonth(
+        calendarDate.getMonth()+1
     );
 
     renderCalendar();
@@ -852,65 +2101,113 @@ function nextMonth() {
 }
 
 
-function goToday() {
+/* =====================================================
+   YEAR
+===================================================== */
 
-    currentDate = new Date();
+function previousYear() {
+
+    calendarDate.setFullYear(
+        calendarDate.getFullYear()-1
+    );
 
     renderCalendar();
 
 }
 
 
-/* =========================
+function nextYear() {
+
+    calendarDate.setFullYear(
+        calendarDate.getFullYear()+1
+    );
+
+    renderCalendar();
+
+}
+
+
+/* =====================================================
+   TODAY
+===================================================== */
+
+function goToday() {
+
+    calendarDate =
+        new Date();
+
+    renderCalendar();
+
+}
+
+
+/* =====================================================
    EVENT MODAL
-========================= */
+===================================================== */
 
-function openModal(date) {
+function openEventModal(date) {
 
-    selectedDate = date;
+    selectedDate =
+        date;
 
-    document.getElementById("selectedDate")
-        .innerText =
+
+    document.getElementById(
+        "selectedDateText"
+    ).innerText =
         date.toDateString();
 
-    document.getElementById("eventTitle")
-        .value = "";
 
-    document.getElementById("eventTime")
-        .value = "";
+    document.getElementById(
+        "eventTitle"
+    ).value = "";
 
-    document.getElementById("eventModal")
-        .style.display = "block";
+
+    document.getElementById(
+        "eventTime"
+    ).value = "";
+
+
+    document.getElementById(
+        "calendarModal"
+    ).style.display =
+        "block";
 
 }
 
 
-function closeModal() {
+function closeEventModal() {
 
-    document.getElementById("eventModal")
-        .style.display = "none";
+    document.getElementById(
+        "calendarModal"
+    ).style.display =
+        "none";
 
 }
 
 
-/* =========================
+/* =====================================================
    SAVE EVENT
-========================= */
+===================================================== */
 
 function saveEvent() {
 
     const title =
-        document.getElementById("eventTitle")
-        .value.trim();
+        document.getElementById(
+            "eventTitle"
+        ).value.trim();
+
 
     const time =
-        document.getElementById("eventTime")
-        .value;
+        document.getElementById(
+            "eventTime"
+        ).value;
 
 
     if(!title) {
 
-        alert("Please enter event title.");
+        alert(
+            "Please enter event title"
+        );
 
         return;
 
@@ -918,66 +2215,222 @@ function saveEvent() {
 
 
     const key =
-        formatDate(selectedDate);
+        formatDate(
+            selectedDate
+        );
 
 
-    if(!events[key]) {
+    if(
+        !calendarEvents[key]
+    ) {
 
-        events[key] = [];
+        calendarEvents[key] = [];
 
     }
 
 
-    events[key].push({
+    calendarEvents[key].push({
 
-        title: title,
+        title:title,
 
-        time: time
+        time:time
 
     });
 
 
     localStorage.setItem(
+
         "swayam_calendar_events",
-        JSON.stringify(events)
+
+        JSON.stringify(
+            calendarEvents
+        )
+
     );
 
 
-    closeModal();
+    closeEventModal();
 
     renderCalendar();
 
 }
 
 
-/* =========================
-   CLOSE MODAL OUTSIDE
-========================= */
+/* =====================================================
+   CLOSE MODAL
+===================================================== */
 
-window.onclick = function(event) {
+window.onclick =
+function(event) {
 
     const modal =
-        document.getElementById("eventModal");
+        document.getElementById(
+            "calendarModal"
+        );
 
-    if(event.target === modal) {
 
-        closeModal();
+    if(
+        event.target === modal
+    ) {
+
+        closeEventModal();
 
     }
 
 };
 
 
-/* =========================
+/* =====================================================
+   EXPORT
+===================================================== */
+
+function exportCalendar() {
+
+    const data = {
+
+        events:
+            calendarEvents,
+
+        holidays:
+            holidays
+
+    };
+
+
+    const blob =
+        new Blob(
+            [
+                JSON.stringify(
+                    data,
+                    null,
+                    2
+                )
+            ],
+            {
+                type:
+                "application/json"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const a =
+        document.createElement(
+            "a"
+        );
+
+
+    a.href = url;
+
+    a.download =
+        "swayam-calendar.json";
+
+
+    a.click();
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+}
+
+
+/* =====================================================
+   IMPORT
+===================================================== */
+
+function importCalendar(event) {
+
+    const file =
+        event.target.files[0];
+
+
+    if(!file) {
+
+        return;
+
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(e) {
+
+            try {
+
+                const data =
+                    JSON.parse(
+                        e.target.result
+                    );
+
+
+                if(
+                    data.events
+                ) {
+
+                    calendarEvents =
+                        data.events;
+
+
+                    localStorage.setItem(
+
+                        "swayam_calendar_events",
+
+                        JSON.stringify(
+                            calendarEvents
+                        )
+
+                    );
+
+                }
+
+
+                renderCalendar();
+
+
+                alert(
+                    "Calendar imported successfully"
+                );
+
+
+            }
+
+            catch(error) {
+
+                alert(
+                    "Invalid calendar file"
+                );
+
+            }
+
+        };
+
+
+    reader.readAsText(
+        file
+    );
+
+}
+
+
+/* =====================================================
    START
-========================= */
+===================================================== */
 
 renderCalendar();
 
 </script>
 
 
-<script src="app.js"></script>
-
 </body>
+
 </html>
