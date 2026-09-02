@@ -2,15 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Fullday Dashboard - SQLite</title>
-
-<!-- Chart.js -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fullday Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- SQL.js: SQLite running inside the browser -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/sql-wasm.js"></script>
-
 <style>
 *{box-sizing:border-box}
 body{font-family:Arial,sans-serif;background:#f4f6f9;padding:10px;margin:0}
@@ -20,7 +14,6 @@ input,select,button{padding:9px;margin:4px 0;border-radius:8px;border:1px solid 
 button{background:#007bff;color:#fff;border:none;cursor:pointer}
 button:hover{opacity:.9}
 .danger{background:#dc3545}.success{background:#198754}.secondary{background:#6c757d}
-.info{background:#0d6efd}.warning{background:#f0ad4e}
 .filter-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 @media(max-width:600px){.filter-grid{grid-template-columns:1fr}}
 .table-wrapper{overflow-x:auto}
@@ -30,38 +23,25 @@ th{background:#f1f3f5}
 .delete-btn{background:#dc3545;padding:5px 10px;width:auto}
 .stats{font-size:20px;font-weight:bold}
 .small{font-size:13px;color:#666}
-.status{padding:8px;border-radius:8px;background:#eef3f8;margin-top:8px;font-size:13px}
 #chart{max-height:400px}
 </style>
 </head>
-
 <body>
 
 <div class="card">
 <h3>➕ Add Task</h3>
-
 <input type="date" id="date">
-
-<input type="number" id="cost" placeholder="Count/Amount"
-       min="0" step="any">
-
+<input type="number" id="cost" placeholder="Count/Amount" min="0" step="any">
 <input type="text" id="place" placeholder="Title">
-
 <input type="text" id="desc" placeholder="Description">
-
 <select id="types"></select>
-
 <select id="type"></select>
-
 <button onclick="addRecord()">Add Record</button>
 </div>
 
-
 <div class="card">
 <h3>🔎 Filters</h3>
-
 <div class="filter-grid">
-
 <div>
 <label>View</label>
 <select id="viewType" onchange="renderAll()">
@@ -71,1176 +51,320 @@ th{background:#f1f3f5}
 <option value="year">Year</option>
 </select>
 </div>
-
 <div>
 <label>Category / Type</label>
 <select id="filterType" onchange="renderAll()"></select>
 </div>
-
 <div>
 <label>From Date</label>
-<input type="date" id="fromDate" onchange="renderAll()">
+<input type="date" id="fromDate">
 </div>
-
 <div>
 <label>To Date</label>
-<input type="date" id="toDate" onchange="renderAll()">
+<input type="date" id="toDate">
 </div>
-
 </div>
-
 <button onclick="renderAll()">Apply Filters</button>
-
-<button class="danger" onclick="deleteByDateRange()">
-Delete Records in Date Range
-</button>
-
+<button class="danger" onclick="deleteByDateRange()">Delete Records in Date Range</button>
 <br><br>
-
-<div class="stats">
-Total : <span id="total">0</span>
+<div class="stats">Total : <span id="total">0</span></div>
+<div class="small">Showing <span id="recordCount">0</span> records</div>
 </div>
-
-<div class="small">
-Showing <span id="recordCount">0</span> records
-</div>
-
-</div>
-
 
 <div class="card">
-<h3>💾 SQLite Database Management</h3>
-
-<button class="success" onclick="exportCSV()">
-⬇ Export CSV
-</button>
-
-<input type="file" id="fileInput"
-       accept=".csv,text/csv"
-       onchange="importCSV(event)">
-
-<button class="info" onclick="exportSQLite()">
-🗄 Export SQLite Database (.db)
-</button>
-
-<input type="file" id="dbInput"
-       accept=".db,application/octet-stream"
-       onchange="importSQLite(event)">
-
-<button class="secondary" onclick="clearAllData()">
-Clear All Data
-</button>
-
-<div class="status" id="dbStatus">
-SQLite database is loading...
+<h3>💾 Data Management</h3>
+<button class="success" onclick="exportCSV()">⬇ Export CSV</button>
+<input type="file" id="fileInput" accept=".csv,text/csv" onchange="importCSV(event)">
+<button class="secondary" onclick="clearAllData()">Clear All Data</button>
 </div>
-
-</div>
-
 
 <div class="card">
 <h3>📊 Chart</h3>
 <canvas id="chart"></canvas>
 </div>
 
-
 <div class="card">
 <h3>📋 Records</h3>
-
 <div class="table-wrapper">
 <table>
 <thead>
 <tr>
-<th>Date</th>
-<th>Count/Amount</th>
-<th>Task</th>
-<th>Description</th>
-<th>Time</th>
-<th>Category</th>
-<th>Delete</th>
+<th>Date</th><th>Count/Amount</th><th>Task</th><th>Description</th>
+<th>Time</th><th>Category</th><th>Delete</th>
 </tr>
 </thead>
-
 <tbody id="tableBody"></tbody>
 </table>
 </div>
-
 </div>
 
-
 <script>
-
-/* =========================================================
-   CONFIGURATION
-========================================================= */
-
-const CONFIG = {
-
+const CONFIG={
+  storageKey:"awploffice",
   times:[
-    "Morning 4-6",
-    "Morning 6-8",
-    "Morning 8-12",
-    "Afternoon 12-3",
-    "Afternoon 3-5",
-    "Evening 5-7",
-    "Night 7-12",
-    "Night 12-4",
-    "Others"
+"Morning 4-6",
+"Morning 6-8",
+"Morning 8-12",
+"Afternoon 12-3",
+"Afternoon 3-5",
+"Evening 5-7",
+"Night 7-12",
+"Night 12-4",
+"Others"
   ],
-
   categories:[
-    "Daily Updates",
-    "Target",
-    "Achievement",
-    "Self Improvement",
-    "Training Center",
-    "Guest Events",
-    "Leadership Events",
-    "Resort Events",
-    "Picnic Events",
-    "Team Events",
-    "Teams Trip",
-    "Business Trip",
-    "Home Meeting",
-    "Venue Meeting",
-    "Product Launch",
-    "Product Training",
-    "Product Use",
-    "Documents",
-    "Website/Link",
-    "Adding Member",
-    "Removing Member",
-    "Payments",
-    "Absent reason",
-    "Birthday",
-    "Anniversary",
-    "Party/Occasions",
-    "Food",
-    "Drinks",
-    "Loan",
-    "Stationary",
-    "Travel",
-    "Fuel",
-    "Others"
+"Daily Updates",
+"Target ",
+"Achievement",
+"Self Improvement",
+"Training Center",
+"Guest Events",
+"Leadership Events",
+"Resort Events",
+"Picnic Events",
+"Team Events",
+"Teams Trip",
+"Business Trip",
+"Home Meeting",
+"Venue Meeting",
+"Product Launch",
+"Product Training",
+"Product Use",
+"Documents",
+"Website/Link",
+"Adding Member",
+"Removing Member",
+"Payments",
+"Absent reason",
+"Birthday",
+"Anniversary",
+"Party/Occasions",
+"Food",
+"Drinks",
+"Loan",
+"Documents",
+"Stationary",
+"Travel",
+"Fuel",
+"Others"
   ]
-
 };
 
+let data=[],chart=null;
 
-/* =========================================================
-   GLOBAL VARIABLES
-========================================================= */
-
-let SQL = null;
-let db = null;
-let chart = null;
-
-
-/* =========================================================
-   HTML ELEMENTS
-========================================================= */
-
-const dateEl =
-  document.getElementById("date");
-
-const costEl =
-  document.getElementById("cost");
-
-const placeEl =
-  document.getElementById("place");
-
-const descEl =
-  document.getElementById("desc");
-
-const typesEl =
-  document.getElementById("types");
-
-const typeEl =
-  document.getElementById("type");
-
-const viewTypeEl =
-  document.getElementById("viewType");
-
-const fromDateEl =
-  document.getElementById("fromDate");
-
-const toDateEl =
-  document.getElementById("toDate");
-
-const filterTypeEl =
-  document.getElementById("filterType");
-
-const tableBodyEl =
-  document.getElementById("tableBody");
-
-const totalEl =
-  document.getElementById("total");
-
-const recordCountEl =
-  document.getElementById("recordCount");
-
-const dbStatusEl =
-  document.getElementById("dbStatus");
-
-
-/* =========================================================
-   DATE FUNCTIONS
-========================================================= */
+const dateEl=document.getElementById("date");
+const costEl=document.getElementById("cost");
+const placeEl=document.getElementById("place");
+const descEl=document.getElementById("desc");
+const typesEl=document.getElementById("types");
+const typeEl=document.getElementById("type");
+const viewTypeEl=document.getElementById("viewType");
+const fromDateEl=document.getElementById("fromDate");
+const toDateEl=document.getElementById("toDate");
+const filterTypeEl=document.getElementById("filterType");
+const tableBodyEl=document.getElementById("tableBody");
+const totalEl=document.getElementById("total");
+const recordCountEl=document.getElementById("recordCount");
 
 function formatDate(d){
-
-  return `${d.getFullYear()}-${
-    String(d.getMonth()+1).padStart(2,"0")
-  }-${
-    String(d.getDate()).padStart(2,"0")
-  }`;
-
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 }
-
-
 function initializeDates(){
-
-  const today = new Date();
-
-  dateEl.value = formatDate(today);
-
-  fromDateEl.value =
-    formatDate(
-      new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        1
-      )
-    );
-
-  toDateEl.value =
-    formatDate(
-      new Date(
-        today.getFullYear(),
-        today.getMonth()+1,
-        0
-      )
-    );
-
+  const today=new Date();
+  dateEl.value=formatDate(today);
+  fromDateEl.value=formatDate(new Date(today.getFullYear(),today.getMonth(),1));
+  toDateEl.value=formatDate(new Date(today.getFullYear(),today.getMonth()+1,0));
 }
-
-
-/* =========================================================
-   SELECT BOXES
-========================================================= */
-
 function populateTimeSelect(){
-
-  typesEl.innerHTML =
-    '<option value="">Select Time</option>';
-
+  typesEl.innerHTML='<option value="">Select Time</option>';
   CONFIG.times.forEach(v=>{
-
-    const o =
-      document.createElement("option");
-
-    o.value = v;
-    o.textContent = v;
-
-    typesEl.appendChild(o);
-
+    const o=document.createElement("option");o.value=v;o.textContent=v;typesEl.appendChild(o);
   });
-
 }
-
-
 function populateCategorySelects(){
-
-  typeEl.innerHTML =
-    '<option value="">Select Type</option>';
-
-  filterTypeEl.innerHTML =
-    '<option value="">All Categories</option>';
-
+  typeEl.innerHTML='<option value="">Select Type</option>';
+  filterTypeEl.innerHTML='<option value="">All Categories</option>';
   CONFIG.categories.forEach(v=>{
-
-    let o =
-      document.createElement("option");
-
-    o.value = v;
-    o.textContent = v;
-
-    typeEl.appendChild(o);
-
-
-    o =
-      document.createElement("option");
-
-    o.value = v;
-    o.textContent = v;
-
-    filterTypeEl.appendChild(o);
-
+    let o=document.createElement("option");o.value=v;o.textContent=v;typeEl.appendChild(o);
+    o=document.createElement("option");o.value=v;o.textContent=v;filterTypeEl.appendChild(o);
   });
-
 }
-
-
-/* =========================================================
-   INDEXEDDB
-   ---------------------------------------------------------
-   SQL.js keeps SQLite in memory.
-   Browser cannot directly keep a .db file as a normal file,
-   so the SQLite binary is automatically stored in IndexedDB.
-
-   This is NOT application data in LocalStorage.
-========================================================= */
-
-const IDB_NAME = "FulldaySQLiteStorage1";
-const IDB_STORE = "database1";
-
-
-function openIDB(){
-
-  return new Promise((resolve,reject)=>{
-
-    const request =
-      indexedDB.open(IDB_NAME,1);
-
-    request.onupgradeneeded = function(e){
-
-      const idb = e.target.result;
-
-      if(!idb.objectStoreNames.contains(IDB_STORE)){
-        idb.createObjectStore(IDB_STORE);
-      }
-
-    };
-
-    request.onsuccess =
-      () => resolve(request.result);
-
-    request.onerror =
-      () => reject(request.error);
-
-  });
-
+function normalizeRecord(r){
+  return {
+    date:String(r.date||""),
+    cost:Number.isFinite(Number(r.cost))?Number(r.cost):0,
+    place:String(r.place||""),
+    desc:String(r.desc||""),
+    types:String(r.types||r.time||""),
+    type:String(r.type||r.category||"")
+  };
 }
-
-
-async function saveSQLiteToBrowser(){
-
-  if(!db) return;
-
-  const bytes = db.export();
-
-  const idb =
-    await openIDB();
-
-  return new Promise((resolve,reject)=>{
-
-    const tx =
-      idb.transaction(IDB_STORE,"readwrite");
-
-    tx.objectStore(IDB_STORE)
-      .put(bytes,"fullday.db");
-
-    tx.oncomplete = ()=>{
-      idb.close();
-      resolve();
-    };
-
-    tx.onerror = ()=>{
-      idb.close();
-      reject(tx.error);
-    };
-
-  });
-
-}
-
-
-async function loadSQLiteFromBrowser(){
-
-  const idb =
-    await openIDB();
-
-  return new Promise((resolve,reject)=>{
-
-    const tx =
-      idb.transaction(IDB_STORE,"readonly");
-
-    const request =
-      tx.objectStore(IDB_STORE)
-        .get("fullday.db");
-
-    request.onsuccess = ()=>{
-
-      idb.close();
-      resolve(request.result || null);
-
-    };
-
-    request.onerror = ()=>{
-
-      idb.close();
-      reject(request.error);
-
-    };
-
-  });
-
-}
-
-
-/* =========================================================
-   CREATE SQLITE DATABASE
-========================================================= */
-
-async function initializeDatabase(){
-
+function loadData(){
   try{
-
-    dbStatusEl.innerText =
-      "Loading SQLite...";
-
-    const SQLConfig =
-      await initSqlJs({
-
-        locateFile:
-          file =>
-          "https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/"+file
-
-      });
-
-    SQL = SQLConfig;
-
-    const savedDB =
-      await loadSQLiteFromBrowser();
-
-
-    if(savedDB){
-
-      /*
-       * Existing SQLite database found.
-       */
-      db = new SQL.Database(savedDB);
-
-      dbStatusEl.innerText =
-        "✅ Existing SQLite database loaded.";
-
-    }
-    else{
-
-      /*
-       * First installation.
-       */
-      db = new SQL.Database();
-
-      createTables();
-
-      await saveSQLiteToBrowser();
-
-      dbStatusEl.innerText =
-        "✅ New SQLite database created.";
-
-    }
-
-
-    renderAll();
-
-  }
-  catch(error){
-
-    console.error(error);
-
-    dbStatusEl.innerText =
-      "❌ SQLite could not be loaded. Check internet connection.";
-
-    alert(
-      "SQLite could not be initialized.\n\n"+
-      "If you are using SPCK/Acode, make sure internet access "+
-      "is available the first time the page loads."
-    );
-
-  }
-
+    const saved=localStorage.getItem(CONFIG.storageKey);
+    if(saved){const p=JSON.parse(saved);if(Array.isArray(p))data=p.map(normalizeRecord);}
+  }catch(e){console.error(e);data=[]}
 }
-
-
-/* =========================================================
-   SQLITE TABLE
-========================================================= */
-
-function createTables(){
-
-  db.run(`
-    CREATE TABLE IF NOT EXISTS fullday_records (
-
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-      date TEXT NOT NULL,
-
-      cost REAL NOT NULL DEFAULT 0,
-
-      place TEXT,
-
-      description TEXT,
-
-      time_slot TEXT,
-
-      category TEXT
-
-    )
-  `);
-
-
-  db.run(`
-    CREATE INDEX IF NOT EXISTS idx_fullday_date
-    ON fullday_records(date)
-  `);
-
-
-  db.run(`
-    CREATE INDEX IF NOT EXISTS idx_fullday_category
-    ON fullday_records(category)
-  `);
-
+function save(){localStorage.setItem(CONFIG.storageKey,JSON.stringify(data));}
+function addRecord(){
+  const r={
+    date:dateEl.value,cost:parseFloat(costEl.value),
+    place:placeEl.value.trim(),desc:descEl.value.trim(),
+    types:typesEl.value,type:typeEl.value
+  };
+  if(!r.date)return alert("Please select date.");
+  if(isNaN(r.cost))return alert("Please enter a valid count.");
+  data.push(r);save();clearForm();renderAll();alert("Record Added!");
 }
-
-
-/* =========================================================
-   ADD RECORD
-========================================================= */
-
-async function addRecord(){
-
-  if(!db){
-
-    alert("SQLite database is not ready.");
-
-    return;
-
-  }
-
-
-  const date =
-    dateEl.value;
-
-  const cost =
-    parseFloat(costEl.value);
-
-  const place =
-    placeEl.value.trim();
-
-  const desc =
-    descEl.value.trim();
-
-  const time =
-    typesEl.value;
-
-  const category =
-    typeEl.value;
-
-
-  if(!date){
-
-    alert("Please select date.");
-
-    return;
-
-  }
-
-
-  if(isNaN(cost)){
-
-    alert("Please enter a valid count.");
-
-    return;
-
-  }
-
-
-  db.run(`
-    INSERT INTO fullday_records
-    (date,cost,place,description,time_slot,category)
-    VALUES (?,?,?,?,?,?)
-  `,[
-    date,
-    cost,
-    place,
-    desc,
-    time,
-    category
-  ]);
-
-
-  await saveSQLiteToBrowser();
-
-  clearForm();
-
-  renderAll();
-
-  alert("Record added to SQLite.");
-
-}
-
-
-/* =========================================================
-   CLEAR FORM
-========================================================= */
-
 function clearForm(){
-
-  dateEl.value =
-    formatDate(new Date());
-
-  costEl.value = "";
-
-  placeEl.value = "";
-
-  descEl.value = "";
-
-  typesEl.value = "";
-
-  typeEl.value = "";
-
+  dateEl.value=formatDate(new Date());costEl.value="";
+  placeEl.value="";descEl.value="";typesEl.value="";typeEl.value="";
 }
-
-
-/* =========================================================
-   GET FILTERED DATA
-========================================================= */
-
+function deleteRow(i){
+  if(!confirm("Delete this record?"))return;
+  data.splice(i,1);save();renderAll();
+}
+function deleteByDateRange(){
+  const from=fromDateEl.value,to=toDateEl.value;
+  if(!from||!to)return alert("Please select From and To dates.");
+  if(from>to)return alert("From date cannot be after To date.");
+  const old=data.length;
+  data=data.filter(r=>!(r.date>=from&&r.date<=to));
+  save();renderAll();alert((old-data.length)+" record(s) deleted.");
+}
 function getFilteredData(){
-
-  if(!db) return [];
-
-  const from =
-    fromDateEl.value;
-
-  const to =
-    toDateEl.value;
-
-  const category =
-    filterTypeEl.value;
-
-
-  let sql = `
-    SELECT
-      id,
-      date,
-      cost,
-      place,
-      description,
-      time_slot,
-      category
-    FROM fullday_records
-    WHERE 1=1
-  `;
-
-
-  const params = [];
-
-
-  if(from){
-
-    sql += " AND date >= ?";
-
-    params.push(from);
-
-  }
-
-
-  if(to){
-
-    sql += " AND date <= ?";
-
-    params.push(to);
-
-  }
-
-
-  if(category){
-
-    sql += " AND category = ?";
-
-    params.push(category);
-
-  }
-
-
-  sql += " ORDER BY date ASC, id ASC";
-
-
-  const result =
-    db.exec(sql,params);
-
-
-  if(!result.length)
-    return [];
-
-
-  return result[0].values.map(row=>({
-
-    id:row[0],
-    date:row[1],
-    cost:Number(row[2] || 0),
-    place:row[3] || "",
-    desc:row[4] || "",
-    types:row[5] || "",
-    type:row[6] || ""
-
-  }));
-
+  const from=fromDateEl.value,to=toDateEl.value,cat=filterTypeEl.value;
+  return data.filter(r=>{
+    if(from&&r.date<from)return false;
+    if(to&&r.date>to)return false;
+    if(cat&&r.type!==cat)return false;
+    return true;
+  });
 }
-
-
-/* =========================================================
-   DELETE SINGLE RECORD
-========================================================= */
-
-async function deleteRow(id){
-
-  if(!confirm("Delete this record?"))
-    return;
-
-
-  db.run(
-    "DELETE FROM fullday_records WHERE id=?",
-    [id]
-  );
-
-
-  await saveSQLiteToBrowser();
-
-  renderAll();
-
-}
-
-
-/* =========================================================
-   DELETE DATE RANGE
-========================================================= */
-
-async function deleteByDateRange(){
-
-  const from =
-    fromDateEl.value;
-
-  const to =
-    toDateEl.value;
-
-
-  if(!from || !to){
-
-    alert(
-      "Please select From and To dates."
-    );
-
-    return;
-
-  }
-
-
-  if(from > to){
-
-    alert(
-      "From date cannot be after To date."
-    );
-
-    return;
-
-  }
-
-
-  if(!confirm(
-    "Delete ALL records between "+from+
-    " and "+to+"?"
-  )) return;
-
-
-  const before =
-    getRecordCount();
-
-
-  db.run(`
-    DELETE FROM fullday_records
-    WHERE date >= ? AND date <= ?
-  `,[from,to]);
-
-
-  await saveSQLiteToBrowser();
-
-  renderAll();
-
-
-  const after =
-    getRecordCount();
-
-
-  alert(
-    (before-after)+
-    " record(s) deleted."
-  );
-
-}
-
-
-/* =========================================================
-   COUNT
-========================================================= */
-
-function getRecordCount(){
-
-  const result =
-    db.exec(
-      "SELECT COUNT(*) FROM fullday_records"
-    );
-
-  return result.length
-    ? Number(result[0].values[0][0])
-    : 0;
-
-}
-
-
-/* =========================================================
-   WEEK
-========================================================= */
-
 function getWeekKey(s){
-
-  const d =
-    new Date(s);
-
-  d.setHours(0,0,0,0);
-
-  d.setDate(
-    d.getDate() +
-    3 -
-    (d.getDay()+6)%7
-  );
-
-  const w1 =
-    new Date(
-      d.getFullYear(),
-      0,
-      4
-    );
-
-  const n =
-    1 +
-    Math.round(
-      (
-        (d-w1)/86400000 -
-        3 +
-        (w1.getDay()+6)%7
-      )/7
-    );
-
-  return d.getFullYear()+
-    "-W"+
-    String(n).padStart(2,"0");
-
+  const d=new Date(s);d.setHours(0,0,0,0);
+  d.setDate(d.getDate()+3-(d.getDay()+6)%7);
+  const w1=new Date(d.getFullYear(),0,4);
+  const n=1+Math.round(((d-w1)/86400000-3+(w1.getDay()+6)%7)/7);
+  return d.getFullYear()+"-W"+String(n).padStart(2,"0");
 }
-
-
-/* =========================================================
-   GROUPING
-========================================================= */
-
 function getKey(date,type){
-
-  if(type==="day")
-    return date;
-
-  if(type==="month")
-    return date.slice(0,7);
-
-  if(type==="year")
-    return date.slice(0,4);
-
-  if(type==="week")
-    return getWeekKey(date);
-
+  if(type==="day")return date;
+  if(type==="month")return date.slice(0,7);
+  if(type==="year")return date.slice(0,4);
+  if(type==="week")return getWeekKey(date);
 }
-
-
 function formatLabel(key,type){
-
   if(type==="month"){
-
-    const p =
-      key.split("-");
-
-    return new Date(
-      p[0],
-      p[1]-1
-    ).toLocaleString(
-      "default",
-      {
-        month:"short",
-        year:"numeric"
-      }
-    );
-
+    const p=key.split("-");
+    return new Date(p[0],p[1]-1).toLocaleString("default",{month:"short",year:"numeric"});
   }
-
-
-  if(type==="week")
-    return "Week "+key.split("W")[1];
-
-
+  if(type==="week")return "Week "+key.split("W")[1];
   return key;
-
 }
-
-
-/* =========================================================
-   GROUP DATA
-========================================================= */
-
 function groupData(filtered,type){
-
-  const g = {};
-
-  filtered.forEach(r=>{
-
-    const k =
-      getKey(r.date,type);
-
-    g[k] =
-      (g[k] || 0) +
-      Number(r.cost || 0);
-
-  });
-
+  const g={};
+  filtered.forEach(r=>{const k=getKey(r.date,type);g[k]=(g[k]||0)+Number(r.cost||0);});
   return g;
-
 }
-
-
-/* =========================================================
-   HTML ESCAPE
-========================================================= */
-
 function escapeHTML(v){
-
-  return String(v || "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
+  return String(v||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
-
-
-/* =========================================================
-   TABLE
-========================================================= */
-
 function renderTable(filtered){
-
-  tableBodyEl.innerHTML = "";
-
+  tableBodyEl.innerHTML="";
   filtered.forEach(r=>{
-
-    const tr =
-      document.createElement("tr");
-
-
-    tr.innerHTML = `
-      <td>${escapeHTML(r.date)}</td>
-      <td>${Number(r.cost || 0)}</td>
-      <td>${escapeHTML(r.place)}</td>
-      <td>${escapeHTML(r.desc)}</td>
-      <td>${escapeHTML(r.types)}</td>
-      <td>${escapeHTML(r.type)}</td>
-      <td>
-        <button
-          class="delete-btn"
-          onclick="deleteRow(${r.id})">
-          X
-        </button>
-      </td>
-    `;
-
-
+    const i=data.indexOf(r),tr=document.createElement("tr");
+    tr.innerHTML=`<td>${escapeHTML(r.date)}</td><td>${Number(r.cost||0)}</td>
+    <td>${escapeHTML(r.place)}</td><td>${escapeHTML(r.desc)}</td>
+    <td>${escapeHTML(r.types)}</td><td>${escapeHTML(r.type)}</td>
+    <td><button class="delete-btn" onclick="deleteRow(${i})">X</button></td>`;
     tableBodyEl.appendChild(tr);
-
   });
-
-
-  recordCountEl.innerText =
-    filtered.length;
-
+  recordCountEl.innerText=filtered.length;
 }
-
-
-/* =========================================================
-   CHART
-========================================================= */
-
 function renderChart(filtered){
-
-  if(!window.Chart)
-    return;
-
-
-  const type =
-    viewTypeEl.value;
-
-  const g =
-    groupData(filtered,type);
-
-  const keys =
-    Object.keys(g).sort();
-
-
-  if(chart)
-    chart.destroy();
-
-
-  chart =
-    new Chart(
-      document.getElementById("chart"),
-      {
-
-        type:
-          type==="day"
-            ? "line"
-            : "bar",
-
-        data:{
-
-          labels:
-            keys.map(
-              k=>formatLabel(k,type)
-            ),
-
-          datasets:[{
-
-            label:
-              type.toUpperCase()+
-              " Total",
-
-            data:
-              keys.map(k=>g[k]),
-
-            borderWidth:2
-
-          }]
-
-        },
-
-        options:{
-
-          responsive:true,
-
-          scales:{
-
-            y:{
-              beginAtZero:true
-            }
-
-          }
-
-        }
-
-      }
-    );
-
+  const type=viewTypeEl.value,g=groupData(filtered,type),keys=Object.keys(g).sort();
+  if(chart)chart.destroy();
+  chart=new Chart(document.getElementById("chart"),{
+    type:type==="day"?"line":"bar",
+    data:{labels:keys.map(k=>formatLabel(k,type)),datasets:[{
+      label:type.toUpperCase()+" Total",data:keys.map(k=>g[k]),borderWidth:2
+    }]},
+    options:{responsive:true,scales:{y:{beginAtZero:true}}}
+  });
 }
-
-
-/* =========================================================
-   TOTAL
-========================================================= */
-
 function renderTotal(filtered){
-
-  totalEl.innerText =
-    filtered.reduce(
-      (s,r)=>
-        s+Number(r.cost||0),
-      0
-    );
-
+  totalEl.innerText=filtered.reduce((s,r)=>s+Number(r.cost||0),0);
 }
-
-
-/* =========================================================
-   RENDER EVERYTHING
-========================================================= */
-
-function renderAll(){
-
-  if(!db)
-    return;
-
-
-  const filtered =
-    getFilteredData();
-
-
-  renderTable(filtered);
-
-  renderChart(filtered);
-
-  renderTotal(filtered);
-
-}
-
-
-/* =========================================================
-   CSV EXPORT
-========================================================= */
-
-function csvEscape(v){
-
-  return '"'+
-    String(v ?? "")
-      .replace(/"/g,'""')+
-    '"';
-
-}
-
-
+function csvEscape(v){return '"'+String(v??"").replace(/"/g,'""')+'"';}
 function exportCSV(){
-
-  if(!db){
-
-    alert("SQLite database is not ready.");
-
-    return;
-
+  if(!data.length)return alert("No records to export.");
+  let csv="date,cost,place,desc,types,type\n";
+  data.forEach(r=>{
+    csv+=[r.date,r.cost,r.place,r.desc,r.types,r.type].map(csvEscape).join(",")+"\n";
+  });
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="fullday-dashboard.csv";document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+function parseCSV(text){
+  const rows=[];let row=[],value="",quotes=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i],n=text[i+1];
+    if(c==='"'&&quotes&&n==='"'){value+='"';i++;continue}
+    if(c==='"'){quotes=!quotes;continue}
+    if(c===","&&!quotes){row.push(value);value="";continue}
+    if((c==="\n"||c==="\r")&&!quotes){
+      if(c==="\r"&&n==="\n")i++;
+      row.push(value);value="";
+      if(row.length)rows.push(row);row=[];continue;
+    }
+    value+=c;
   }
-
-
-  const result =
-    db.exec(`
-      SELECT
-        date,
-        cost,
-        place,
-        description,
-        time_slot,
-        category
-      FROM fullday_records
-      ORDER BY date,id
-    `);
-
-
-  if(!result.length){
-
-    alert(
-      "No records to export."
-    );
-
-    return;
-
-  }
-
-
-  let csv =
-    "date,cost,place,desc,types,type\n";
-
-
-  result[0].values.forE
+  if(value!==""||row.length){row.push(value);rows.push(row)}
+  return rows;
+}
+function importCSV(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const rows=parseCSV(e.target.result.replace(/^\uFEFF/,""));
+      if(rows.length<2)return alert("CSV file contains no records.");
+      const header=rows[0].map(h=>h.trim().toLowerCase()),idx=n=>header.indexOf(n);
+      let imported=0;
+      for(let i=1;i<rows.length;i++){
+        const row=rows[i];
+        const r={
+          date:idx("date")>=0?row[idx("date")]:"",
+          cost:idx("cost")>=0?parseFloat(row[idx("cost")]):NaN,
+          place:idx("place")>=0?row[idx("place")]: "",
+          desc:idx("desc")>=0?row[idx("desc")]: "",
+          types:idx("types")>=0?row[idx("types")]: "",
+          type:idx("type")>=0?row[idx("type")]: ""
+        };
+        if(!r.date||isNaN(r.cost))continue;
+        data.push(normalizeRecord(r));imported++;
+      }
+      save();renderAll();alert(imported+" record(s) imported successfully.");
+    }catch(err){console.error(err);alert("Unable to import CSV file.")}
+    event.target.value="";
+  };
+  reader.readAsText(file);
+}
+function clearAllData(){
+  if(!data.length)return alert("No data available.");
+  if(!confirm("Delete ALL records?"))return;
+  data=[];save();renderAll();
+}
+function renderAll(){
+  const f=getFilteredData();renderTable(f);renderChart(f);renderTotal(f);
+}
+window.addEventListener("DOMContentLoaded",()=>{
+  populateTimeSelect();populateCategorySelects();initializeDates();loadData();renderAll();
+});
+</script>
+</body>
+</html>
