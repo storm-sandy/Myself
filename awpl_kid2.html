@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fullday Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#f4f6f9;padding:10px;margin:0}
+.card{background:#fff;padding:12px;margin-bottom:12px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+h3{margin-top:5px}
+input,select,button{padding:9px;margin:4px 0;border-radius:8px;border:1px solid #ccc;width:100%;font-size:15px}
+button{background:#007bff;color:#fff;border:none;cursor:pointer}
+button:hover{opacity:.9}
+.danger{background:#dc3545}.success{background:#198754}.secondary{background:#6c757d}
+.filter-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+@media(max-width:600px){.filter-grid{grid-template-columns:1fr}}
+.table-wrapper{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:750px}
+th,td{padding:7px;border-bottom:1px solid #ddd;text-align:center}
+th{background:#f1f3f5}
+.delete-btn{background:#dc3545;padding:5px 10px;width:auto}
+.stats{font-size:20px;font-weight:bold}
+.small{font-size:13px;color:#666}
+#chart{max-height:400px}
+</style>
+</head>
+<body>
+
+<div class="card">
+<h3>➕ Add Task</h3>
+<input type="date" id="date">
+<input type="number" id="cost" placeholder="Count/Amount" min="0" step="any">
+<input type="text" id="place" placeholder="Title">
+<input type="text" id="desc" placeholder="Description">
+<select id="types"></select>
+<select id="type"></select>
+<button onclick="addRecord()">Add Record</button>
+</div>
+
+<div class="card">
+<h3>🔎 Filters</h3>
+<div class="filter-grid">
+<div>
+<label>View</label>
+<select id="viewType" onchange="renderAll()">
+<option value="day">Day</option>
+<option value="week">Week</option>
+<option value="month" selected>Month</option>
+<option value="year">Year</option>
+</select>
+</div>
+<div>
+<label>Category / Type</label>
+<select id="filterType" onchange="renderAll()"></select>
+</div>
+<div>
+<label>From Date</label>
+<input type="date" id="fromDate">
+</div>
+<div>
+<label>To Date</label>
+<input type="date" id="toDate">
+</div>
+</div>
+<button onclick="renderAll()">Apply Filters</button>
+<button class="danger" onclick="deleteByDateRange()">Delete Records in Date Range</button>
+<br><br>
+<div class="stats">Total : <span id="total">0</span></div>
+<div class="small">Showing <span id="recordCount">0</span> records</div>
+</div>
+
+<div class="card">
+<h3>💾 Data Management</h3>
+<button class="success" onclick="exportCSV()">⬇ Export CSV</button>
+<input type="file" id="fileInput" accept=".csv,text/csv" onchange="importCSV(event)">
+<button class="secondary" onclick="clearAllData()">Clear All Data</button>
+</div>
+
+<div class="card">
+<h3>📊 Chart</h3>
+<canvas id="chart"></canvas>
+</div>
+
+<div class="card">
+<h3>📋 Records</h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+<th>Date</th><th>Count/Amount</th><th>Task</th><th>Description</th>
+<th>Time</th><th>Category</th><th>Delete</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+</div>
+</div>
+
+<script>
+const CONFIG={
+  storageKey:"awplkid2",
+  times:[
+"Morning 4-6",
+"Morning 6-8",
+"Morning 8-12",
+"Afternoon 12-3",
+"Afternoon 3-5",
+"Evening 5-7",
+"Night 7-12",
+"Night 12-4",
+"Others"
+  ],
+  categories:[
+"Daily Updates",
+"Target ",
+"Achievement",
+"Self Improvement",
+"Training Center",
+"Guest Events",
+"Leadership Events",
+"Resort Events",
+"Picnic Events",
+"Team Events",
+"Teams Trip",
+"Business Trip",
+"Home Meeting",
+"Venue Meeting",
+"Product Launch",
+"Product Training",
+"Product Use",
+"Documents",
+"Website/Link",
+"Adding Member",
+"Removing Member",
+"Payments",
+"Absent reason",
+"Birthday",
+"Anniversary",
+"Party/Occasions",
+"Food",
+"Drinks",
+"Loan",
+"Documents",
+"Stationary",
+"Travel",
+"Fuel",
+"Others"
+  ]
+};
+
+let data=[],chart=null;
+
+const dateEl=document.getElementById("date");
+const costEl=document.getElementById("cost");
+const placeEl=document.getElementById("place");
+const descEl=document.getElementById("desc");
+const typesEl=document.getElementById("types");
+const typeEl=document.getElementById("type");
+const viewTypeEl=document.getElementById("viewType");
+const fromDateEl=document.getElementById("fromDate");
+const toDateEl=document.getElementById("toDate");
+const filterTypeEl=document.getElementById("filterType");
+const tableBodyEl=document.getElementById("tableBody");
+const totalEl=document.getElementById("total");
+const recordCountEl=document.getElementById("recordCount");
+
+function formatDate(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function initializeDates(){
+  const today=new Date();
+  dateEl.value=formatDate(today);
+  fromDateEl.value=formatDate(new Date(today.getFullYear(),today.getMonth(),1));
+  toDateEl.value=formatDate(new Date(today.getFullYear(),today.getMonth()+1,0));
+}
+function populateTimeSelect(){
+  typesEl.innerHTML='<option value="">Select Time</option>';
+  CONFIG.times.forEach(v=>{
+    const o=document.createElement("option");o.value=v;o.textContent=v;typesEl.appendChild(o);
+  });
+}
+function populateCategorySelects(){
+  typeEl.innerHTML='<option value="">Select Type</option>';
+  filterTypeEl.innerHTML='<option value="">All Categories</option>';
+  CONFIG.categories.forEach(v=>{
+    let o=document.createElement("option");o.value=v;o.textContent=v;typeEl.appendChild(o);
+    o=document.createElement("option");o.value=v;o.textContent=v;filterTypeEl.appendChild(o);
+  });
+}
+function normalizeRecord(r){
+  return {
+    date:String(r.date||""),
+    cost:Number.isFinite(Number(r.cost))?Number(r.cost):0,
+    place:String(r.place||""),
+    desc:String(r.desc||""),
+    types:String(r.types||r.time||""),
+    type:String(r.type||r.category||"")
+  };
+}
+function loadData(){
+  try{
+    const saved=localStorage.getItem(CONFIG.storageKey);
+    if(saved){const p=JSON.parse(saved);if(Array.isArray(p))data=p.map(normalizeRecord);}
+  }catch(e){console.error(e);data=[]}
+}
+function save(){localStorage.setItem(CONFIG.storageKey,JSON.stringify(data));}
+function addRecord(){
+  const r={
+    date:dateEl.value,cost:parseFloat(costEl.value),
+    place:placeEl.value.trim(),desc:descEl.value.trim(),
+    types:typesEl.value,type:typeEl.value
+  };
+  if(!r.date)return alert("Please select date.");
+  if(isNaN(r.cost))return alert("Please enter a valid count.");
+  data.push(r);save();clearForm();renderAll();alert("Record Added!");
+}
+function clearForm(){
+  dateEl.value=formatDate(new Date());costEl.value="";
+  placeEl.value="";descEl.value="";typesEl.value="";typeEl.value="";
+}
+function deleteRow(i){
+  if(!confirm("Delete this record?"))return;
+  data.splice(i,1);save();renderAll();
+}
+function deleteByDateRange(){
+  const from=fromDateEl.value,to=toDateEl.value;
+  if(!from||!to)return alert("Please select From and To dates.");
+  if(from>to)return alert("From date cannot be after To date.");
+  const old=data.length;
+  data=data.filter(r=>!(r.date>=from&&r.date<=to));
+  save();renderAll();alert((old-data.length)+" record(s) deleted.");
+}
+function getFilteredData(){
+  const from=fromDateEl.value,to=toDateEl.value,cat=filterTypeEl.value;
+  return data.filter(r=>{
+    if(from&&r.date<from)return false;
+    if(to&&r.date>to)return false;
+    if(cat&&r.type!==cat)return false;
+    return true;
+  });
+}
+function getWeekKey(s){
+  const d=new Date(s);d.setHours(0,0,0,0);
+  d.setDate(d.getDate()+3-(d.getDay()+6)%7);
+  const w1=new Date(d.getFullYear(),0,4);
+  const n=1+Math.round(((d-w1)/86400000-3+(w1.getDay()+6)%7)/7);
+  return d.getFullYear()+"-W"+String(n).padStart(2,"0");
+}
+function getKey(date,type){
+  if(type==="day")return date;
+  if(type==="month")return date.slice(0,7);
+  if(type==="year")return date.slice(0,4);
+  if(type==="week")return getWeekKey(date);
+}
+function formatLabel(key,type){
+  if(type==="month"){
+    const p=key.split("-");
+    return new Date(p[0],p[1]-1).toLocaleString("default",{month:"short",year:"numeric"});
+  }
+  if(type==="week")return "Week "+key.split("W")[1];
+  return key;
+}
+function groupData(filtered,type){
+  const g={};
+  filtered.forEach(r=>{const k=getKey(r.date,type);g[k]=(g[k]||0)+Number(r.cost||0);});
+  return g;
+}
+function escapeHTML(v){
+  return String(v||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+function renderTable(filtered){
+  tableBodyEl.innerHTML="";
+  filtered.forEach(r=>{
+    const i=data.indexOf(r),tr=document.createElement("tr");
+    tr.innerHTML=`<td>${escapeHTML(r.date)}</td><td>${Number(r.cost||0)}</td>
+    <td>${escapeHTML(r.place)}</td><td>${escapeHTML(r.desc)}</td>
+    <td>${escapeHTML(r.types)}</td><td>${escapeHTML(r.type)}</td>
+    <td><button class="delete-btn" onclick="deleteRow(${i})">X</button></td>`;
+    tableBodyEl.appendChild(tr);
+  });
+  recordCountEl.innerText=filtered.length;
+}
+function renderChart(filtered){
+  const type=viewTypeEl.value,g=groupData(filtered,type),keys=Object.keys(g).sort();
+  if(chart)chart.destroy();
+  chart=new Chart(document.getElementById("chart"),{
+    type:type==="day"?"line":"bar",
+    data:{labels:keys.map(k=>formatLabel(k,type)),datasets:[{
+      label:type.toUpperCase()+" Total",data:keys.map(k=>g[k]),borderWidth:2
+    }]},
+    options:{responsive:true,scales:{y:{beginAtZero:true}}}
+  });
+}
+function renderTotal(filtered){
+  totalEl.innerText=filtered.reduce((s,r)=>s+Number(r.cost||0),0);
+}
+function csvEscape(v){return '"'+String(v??"").replace(/"/g,'""')+'"';}
+function exportCSV(){
+  if(!data.length)return alert("No records to export.");
+  let csv="date,cost,place,desc,types,type\n";
+  data.forEach(r=>{
+    csv+=[r.date,r.cost,r.place,r.desc,r.types,r.type].map(csvEscape).join(",")+"\n";
+  });
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="fullday-dashboard.csv";document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+function parseCSV(text){
+  const rows=[];let row=[],value="",quotes=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i],n=text[i+1];
+    if(c==='"'&&quotes&&n==='"'){value+='"';i++;continue}
+    if(c==='"'){quotes=!quotes;continue}
+    if(c===","&&!quotes){row.push(value);value="";continue}
+    if((c==="\n"||c==="\r")&&!quotes){
+      if(c==="\r"&&n==="\n")i++;
+      row.push(value);value="";
+      if(row.length)rows.push(row);row=[];continue;
+    }
+    value+=c;
+  }
+  if(value!==""||row.length){row.push(value);rows.push(row)}
+  return rows;
+}
+function importCSV(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const rows=parseCSV(e.target.result.replace(/^\uFEFF/,""));
+      if(rows.length<2)return alert("CSV file contains no records.");
+      const header=rows[0].map(h=>h.trim().toLowerCase()),idx=n=>header.indexOf(n);
+      let imported=0;
+      for(let i=1;i<rows.length;i++){
+        const row=rows[i];
+        const r={
+          date:idx("date")>=0?row[idx("date")]:"",
+          cost:idx("cost")>=0?parseFloat(row[idx("cost")]):NaN,
+          place:idx("place")>=0?row[idx("place")]: "",
+          desc:idx("desc")>=0?row[idx("desc")]: "",
+          types:idx("types")>=0?row[idx("types")]: "",
+          type:idx("type")>=0?row[idx("type")]: ""
+        };
+        if(!r.date||isNaN(r.cost))continue;
+        data.push(normalizeRecord(r));imported++;
+      }
+      save();renderAll();alert(imported+" record(s) imported successfully.");
+    }catch(err){console.error(err);alert("Unable to import CSV file.")}
+    event.target.value="";
+  };
+  reader.readAsText(file);
+}
+function clearAllData(){
+  if(!data.length)return alert("No data available.");
+  if(!confirm("Delete ALL records?"))return;
+  data=[];save();renderAll();
+}
+function renderAll(){
+  const f=getFilteredData();renderTable(f);renderChart(f);renderTotal(f);
+}
+window.addEventListener("DOMContentLoaded",()=>{
+  populateTimeSelect();populateCategorySelects();initializeDates();loadData();renderAll();
+});
+</script>
+</body>
+</html>
