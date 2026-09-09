@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>Python Automation + PySpark + DataFrame Interview Guide</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--text:#182033;--muted:#667085;--border:#dfe4ec;--accent:#2563eb;--accent2:#0f766e;--chip:#e8efff;--shadow:0 5px 20px rgba(15,23,42,.08)}
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.head{max-width:1100px;margin:auto;padding:16px} h1{margin:0 0 5px;font-size:clamp(21px,5vw,32px)} .sub{color:var(--muted);font-size:14px}
+.controls{max-width:1100px;margin:auto;padding:12px 16px;display:grid;grid-template-columns:1fr 190px 110px;gap:8px}
+input,select,button{font:inherit} input,select{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text)} button{border:1px solid var(--border);background:var(--card);color:var(--text);padding:8px 11px;border-radius:9px;cursor:pointer} button:hover{border-color:var(--accent)}
+main{max-width:1100px;margin:auto;padding:12px 16px 60px} .stats{display:flex;gap:8px;flex-wrap:wrap;margin:5px 0 14px} .stat{background:var(--chip);padding:8px 11px;border-radius:999px;font-size:13px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:15px;margin:10px 0;box-shadow:var(--shadow)} .qrow{display:flex;align-items:center;gap:7px} .num{font-size:12px;font-weight:700;color:var(--muted)} .badge{font-size:11px;background:var(--chip);color:var(--accent);padding:4px 8px;border-radius:999px} .star{margin-left:auto;border:0;background:transparent;font-size:24px;padding:0;color:#f59e0b}
+h3{font-size:16px;margin:10px 0} .answer{background:#f8fafc;border-left:3px solid var(--accent);padding:11px;border-radius:8px;line-height:1.55;font-size:14px} .answer.hidden{display:none}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px} .actions button{font-size:12px} .done{opacity:.65} .done h3{text-decoration:line-through}
+.empty{text-align:center;padding:35px;color:var(--muted)} footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
+@media(max-width:700px){.controls{grid-template-columns:1fr 1fr} .controls input{grid-column:1/-1} .controls button{width:100%}}
+.dark{--bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--border:#263244;--chip:#172554;--accent:#60a5fa;--shadow:0 5px 20px rgba(0,0,0,.2)} .dark .answer{background:#0f172a}
+</style>
+</head>
+<body>
+<header>
+ <div class="head"><h1>Python Automation + Apache Spark + DataFrame</h1><div class="sub">Interview preparation • Python • PySpark • Spark SQL • DataFrames • ETL scenarios</div></div>
+ <div class="controls">
+  <input id="search" placeholder="🔎 Search question, topic or keyword..." oninput="render()">
+  <select id="category" onchange="render()"><option value="All">All Categories</option><option value="Python Automation">Python Automation</option><option value="Apache Spark / PySpark">Apache Spark / PySpark</option><option value="Spark DataFrame">Spark DataFrame</option><option value="Scenario &amp; Coding">Scenario &amp; Coding</option><option value="Favorites">⭐ Favorites</option><option value="Done">✅ Completed</option></select>
+  <button onclick="toggleTheme()">🌙 Theme</button>
+ </div>
+</header>
+<main>
+ <div class="stats"><span class="stat">Total: <b id="total">100</b></span><span class="stat">Showing: <b id="showing">100</b></span><span class="stat">Favorites: <b id="favCount">0</b></span><span class="stat">Completed: <b id="doneCount">0</b></span></div>
+ <div id="list">
+    <article class="card" data-category="Python Automation" data-text="what is python automation? using python programs to perform repetitive tasks automatically, such as file processing, api calls, database operations, validation, reporting, and scheduled jobs.">
+      <div class="qrow"><span class="num">Q1</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,1)" aria-label="Favorite">☆</button></div>
+      <h3>What is Python automation?</h3>
+      <div class="answer">Using Python programs to perform repetitive tasks automatically, such as file processing, API calls, database operations, validation, reporting, and scheduled jobs.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,1)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="why is python popular for automation? it has simple syntax and a large ecosystem. common libraries include pathlib, os, shutil, subprocess, requests, pandas, openpyxl, pytest, logging, and database drivers.">
+      <div class="qrow"><span class="num">Q2</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,2)" aria-label="Favorite">☆</button></div>
+      <h3>Why is Python popular for automation?</h3>
+      <div class="answer">It has simple syntax and a large ecosystem. Common libraries include pathlib, os, shutil, subprocess, requests, pandas, openpyxl, pytest, logging, and database drivers.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,2)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="what is the difference between a script and an automation framework? a script usually solves one task. a framework provides reusable structure, configuration, logging, error handling, testing, reporting, and scheduling for multiple automated tasks.">
+      <div class="qrow"><span class="num">Q3</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,3)" aria-label="Favorite">☆</button></div>
+      <h3>What is the difference between a script and an automation framework?</h3>
+      <div class="answer">A script usually solves one task. A framework provides reusable structure, configuration, logging, error handling, testing, reporting, and scheduling for multiple automated tasks.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,3)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="how do you handle exceptions in automation? use try/except around expected failures, log useful context, clean up resources with finally or context managers, and re-raise or return a controlled failure status when appropriate.">
+      <div class="qrow"><span class="num">Q4</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,4)" aria-label="Favorite">☆</button></div>
+      <h3>How do you handle exceptions in automation?</h3>
+      <div class="answer">Use try/except around expected failures, log useful context, clean up resources with finally or context managers, and re-raise or return a controlled failure status when appropriate.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,4)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="how do you create reliable file automation? use pathlib, validate input files, avoid hard-coded paths, use atomic/temporary output where possible, handle encoding explicitly, log every important operation, and make reruns safe.">
+      <div class="qrow"><span class="num">Q5</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,5)" aria-label="Favorite">☆</button></div>
+      <h3>How do you create reliable file automation?</h3>
+      <div class="answer">Use pathlib, validate input files, avoid hard-coded paths, use atomic/temporary output where possible, handle encoding explicitly, log every important operation, and make reruns safe.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,5)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="how do you automate excel files in python? use openpyxl for .xlsx workbook manipulation. for tabular analysis, pandas can read and write excel files, while openpyxl is useful for workbook-level formatting and formulas.">
+      <div class="qrow"><span class="num">Q6</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,6)" aria-label="Favorite">☆</button></div>
+      <h3>How do you automate Excel files in Python?</h3>
+      <div class="answer">Use openpyxl for .xlsx workbook manipulation. For tabular analysis, pandas can read and write Excel files, while openpyxl is useful for workbook-level formatting and formulas.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,6)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="how do you automate csv processing? use csv for lightweight row processing or pandas for data transformations. validate headers, data types, missing values, duplicates, and output row counts.">
+      <div class="qrow"><span class="num">Q7</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,7)" aria-label="Favorite">☆</button></div>
+      <h3>How do you automate CSV processing?</h3>
+      <div class="answer">Use csv for lightweight row processing or pandas for data transformations. Validate headers, data types, missing values, duplicates, and output row counts.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,7)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="how do you automate an api? use requests or an http client, set timeouts, authenticate securely, validate status codes and response schemas, handle pagination/rate limits, and log request context without secrets.">
+      <div class="qrow"><span class="num">Q8</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,8)" aria-label="Favorite">☆</button></div>
+      <h3>How do you automate an API?</h3>
+      <div class="answer">Use requests or an HTTP client, set timeouts, authenticate securely, validate status codes and response schemas, handle pagination/rate limits, and log request context without secrets.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,8)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="what is idempotency in automation? an operation is idempotent when running it multiple times produces the same intended final state. it is important for retries and scheduled jobs.">
+      <div class="qrow"><span class="num">Q9</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,9)" aria-label="Favorite">☆</button></div>
+      <h3>What is idempotency in automation?</h3>
+      <div class="answer">An operation is idempotent when running it multiple times produces the same intended final state. It is important for retries and scheduled jobs.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,9)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="how do you schedule a python automation? common options include cron on linux, windows task scheduler, airflow, enterprise schedulers, ci/cd pipelines, and cloud schedulers.">
+      <div class="qrow"><span class="num">Q10</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,10)" aria-label="Favorite">☆</button></div>
+      <h3>How do you schedule a Python automation?</h3>
+      <div class="answer">Common options include cron on Linux, Windows Task Scheduler, Airflow, enterprise schedulers, CI/CD pipelines, and cloud schedulers.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,10)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="what is logging? logging records application events, warnings, errors, and operational context. python&#x27;s logging module supports levels, handlers, formatters, and log files.">
+      <div class="qrow"><span class="num">Q11</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,11)" aria-label="Favorite">☆</button></div>
+      <h3>What is logging?</h3>
+      <div class="answer">Logging records application events, warnings, errors, and operational context. Python&#x27;s logging module supports levels, handlers, formatters, and log files.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,11)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="why use configuration files? configuration separates environment-specific values such as paths, database names, urls, and thresholds from application code. yaml, json, toml, or environment variables are common choices.">
+      <div class="qrow"><span class="num">Q12</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,12)" aria-label="Favorite">☆</button></div>
+      <h3>Why use configuration files?</h3>
+      <div class="answer">Configuration separates environment-specific values such as paths, database names, URLs, and thresholds from application code. YAML, JSON, TOML, or environment variables are common choices.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,12)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="how do you manage passwords and api keys? do not hard-code secrets. use environment variables, secret managers, or protected configuration mechanisms and restrict access.">
+      <div class="qrow"><span class="num">Q13</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,13)" aria-label="Favorite">☆</button></div>
+      <h3>How do you manage passwords and API keys?</h3>
+      <div class="answer">Do not hard-code secrets. Use environment variables, secret managers, or protected configuration mechanisms and restrict access.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,13)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="how do you run another program from python? use subprocess.run() for controlled execution and inspect the return code, stdout, stderr, and timeout.">
+      <div class="qrow"><span class="num">Q14</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,14)" aria-label="Favorite">☆</button></div>
+      <h3>How do you run another program from Python?</h3>
+      <div class="answer">Use subprocess.run() for controlled execution and inspect the return code, stdout, stderr, and timeout.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,14)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="how do you make automation testable? split logic into small functions/classes, inject dependencies, avoid global state, use pytest/unittest, and mock external apis/files/databases where appropriate.">
+      <div class="qrow"><span class="num">Q15</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,15)" aria-label="Favorite">☆</button></div>
+      <h3>How do you make automation testable?</h3>
+      <div class="answer">Split logic into small functions/classes, inject dependencies, avoid global state, use pytest/unittest, and mock external APIs/files/databases where appropriate.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,15)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="what is retry with backoff? a failed transient operation is retried after increasing delays, often with jitter. it reduces pressure on unstable services and helps recover from temporary failures.">
+      <div class="qrow"><span class="num">Q16</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,16)" aria-label="Favorite">☆</button></div>
+      <h3>What is retry with backoff?</h3>
+      <div class="answer">A failed transient operation is retried after increasing delays, often with jitter. It reduces pressure on unstable services and helps recover from temporary failures.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,16)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="how do you monitor an automation job? record structured logs, execution duration, input/output counts, status, exceptions, and alerts. for production systems, metrics and dashboards can be added.">
+      <div class="qrow"><span class="num">Q17</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,17)" aria-label="Favorite">☆</button></div>
+      <h3>How do you monitor an automation job?</h3>
+      <div class="answer">Record structured logs, execution duration, input/output counts, status, exceptions, and alerts. For production systems, metrics and dashboards can be added.</div>
+      <div class="actions"><button onclick="toggleAnswer(this)">Show / Hide</button><button onclick="copyAnswer(this)">Copy Answer</button><button onclick="markDone(this,17)">✓ Done</button></div>
+    </article>
+    <article class="card" data-category="Python Automation" data-text="how do you process large files efficiently? avoid loading everything into memory. stream rows, process chunks, use generators, and use pandas chunksize or spark when data becomes too large for a single machine.">
+      <div class="qrow"><span class="num">Q18</span><span class="badge">Python Automation</span><button class="star" onclick="toggleFav(this,18)" aria-label="Favorite">☆</button></div>
+      <h3>How do you process large files efficiently?</h3>
+      <div class="answer">Avoid loading everything into memory. Stream rows, process chunks,
