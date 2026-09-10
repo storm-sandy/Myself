@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#6c5ce7">
+<title>BFSI Corporate Interview — 100 Team & Client Handling Scenarios</title>
+<style>
+:root{
+  --bg:#f4f7fb;--card:rgba(255,255,255,.86);--text:#182033;--muted:#657089;
+  --primary:#6c5ce7;--secondary:#00b894;--accent:#0984e3;--border:#e3e8f0;
+  --shadow:0 12px 35px rgba(35,45,75,.12);--danger:#e17055;
+}
+[data-theme="ocean"]{--primary:#0984e3;--secondary:#00cec9;--accent:#6c5ce7}
+[data-theme="forest"]{--primary:#00a878;--secondary:#55efc4;--accent:#2d3436}
+[data-theme="sunset"]{--primary:#e17055;--secondary:#fdcb6e;--accent:#d63031}
+[data-theme="rose"]{--primary:#e84393;--secondary:#fd79a8;--accent:#6c5ce7}
+[data-theme="dark"]{--bg:#10131c;--card:rgba(28,33,47,.94);--text:#f4f6ff;--muted:#aeb7ca;--border:#343b50;--shadow:0 15px 40px rgba(0,0,0,.35)}
+[data-theme="amoled"]{--bg:#000;--card:#090909;--text:#fff;--muted:#aaa;--border:#222;--shadow:0 15px 45px rgba(255,255,255,.04)}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:
+radial-gradient(circle at 10% 0%,color-mix(in srgb,var(--primary) 16%,transparent),transparent 30%),
+radial-gradient(circle at 90% 20%,color-mix(in srgb,var(--secondary) 13%,transparent),transparent 28%),var(--bg);
+color:var(--text);min-height:100vh}
+button,input,select{font:inherit}
+button{cursor:pointer}
+
+.hero{padding:28px 16px 22px;position:relative;overflow:hidden}
+.hero-inner{max-width:1200px;margin:auto;background:linear-gradient(135deg,
+color-mix(in srgb,var(--primary) 92%,#000),color-mix(in srgb,var(--accent) 82%,#000));
+color:white;border-radius:28px;padding:30px;box-shadow:var(--shadow);position:relative}
+.hero-inner:after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;
+right:-60px;top:-80px;background:rgba(255,255,255,.12);filter:blur(3px)}
+.badge{display:inline-block;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.16);
+font-size:12px;font-weight:800;letter-spacing:.6px}
+h1{font-size:clamp(27px,5vw,48px);margin:14px 0 8px}
+.hero p{margin:0;opacity:.9;max-width:780px;line-height:1.6}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}
+.stat{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.18);border-radius:17px;padding:14px}
+.stat b{display:block;font-size:25px}.stat span{font-size:12px;opacity:.85}
+
+.toolbar{max-width:1200px;margin:0 auto;padding:8px 16px 18px;position:sticky;top:0;z-index:20}
+.toolbar-box{background:color-mix(in srgb,var(--card) 94%,transparent);backdrop-filter:blur(18px);
+border:1px solid var(--border);border-radius:20px;padding:12px;box-shadow:var(--shadow)}
+.search-row{display:grid;grid-template-columns:1fr 170px 170px auto;gap:9px}
+input,select{width:100%;border:1px solid var(--border);background:var(--card);color:var(--text);
+border-radius:13px;padding:12px 14px;outline:none}
+input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 16%,transparent)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.btn{border:1px solid var(--border);background:var(--card);color:var(--text);padding:10px 13px;border-radius:12px;font-weight:700}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn:hover{transform:translateY(-2px);box-shadow:0 7px 18px rgba(0,0,0,.1)}
+.themes{display:flex;gap:7px;margin-top:10px;overflow-x:auto;padding-bottom:2px}
+.theme{min-width:34px;height:34px;border-radius:50%;border:3px solid transparent}
+.theme.active{border-color:var(--text);transform:scale(1.1)}
+.t-purple{background:#6c5ce7}.t-ocean{background:#0984e3}.t-forest{background:#00a878}
+.t-sunset{background:#e17055}.t-rose{background:#e84393}.t-dark{background:#252b3b}.t-amoled{background:#000;border-color:#555}
+
+.progress-wrap{max-width:1200px;margin:0 auto;padding:0 16px 12px}
+.progress-text{font-size:13px;color:var(--muted);margin-bottom:6px}
+.progress{height:8px;background:var(--border);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--secondary));transition:.3s}
+
+.main{max-width:1200px;margin:auto;padding:0 16px 80px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;
+box-shadow:0 7px 24px rgba(30,40,70,.07);position:relative;overflow:hidden;
+transition:transform .25s,box-shadow .25s,border-color .25s}
+.card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--primary);
+transform:scaleY(0);transform-origin:center;transition:.25s}
+.card:hover{transform:translateY(-5px) scale(1.008);box-shadow:0 18px 38px rgba(30,40,70,.15);
+border-color:color-mix(in srgb,var(--primary) 55%,var(--border))}
+.card:hover:before{transform:scaleY(1)}
+.card.done{opacity:.72}
+.card.done:after{content:"✓";position:absolute;right:14px;top:12px;color:var(--secondary);font-size:20px;font-weight:900}
+.qtop{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.num{min-width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:
+color-mix(in srgb,var(--primary) 13%,transparent);color:var(--primary);font-weight:900}
+.tag{font-size:11px;padding:5px 9px;border-radius:999px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);font-weight:800}
+.level{margin-left:auto;font-size:10px;color:var(--muted)}
+.question{font-size:17px;font-weight:800;line-height:1.4;margin:4px 0 12px}
+.answer{display:none;border-top:1px dashed var(--border);padding-top:13px;color:var(--muted);line-height:1.6}
+.answer strong{color:var(--text)}
+.answer ul{padding-left:20px;margin:8px 0}
+.card.open .answer{display:block}
+.card-actions{display:flex;gap:7px;margin-top:13px}
+.small{padding:8px 10px;font-size:12px}
+.empty{text-align:center;padding:50px;color:var(--muted);display:none;grid-column:1/-1}
+
+.footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+
+@media(max-width:800px){
+ .stats{grid-template-columns:repeat(2,1fr)}
+ .search-row{grid-template-columns:1fr 1fr}
+ .search-row .search{grid-column:1/-1}
+ .grid{grid-template-columns:1fr}
+}
+@media(max-width:500px){
+ .hero-inner{padding:23px;border-radius:22px}
+ .toolbar{padding-left:10px;padding-right:10px}
+ .main,.progress-wrap{padding-left:10px;padding-right:10px}
+ .search-row{grid-template-columns:1fr}
+ .search-row .search{grid-column:auto}
+ .stats{gap:8px}.stat{padding:11px}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+<div class="hero-inner">
+<span class="badge">BFSI CORPORATE INTERVIEW PRACTICE</span>
+<h1>100 Team & Client Handling Scenarios</h1>
+<p>Interview-ready situations covering leadership, delivery, production incidents, SLA, banking operations, compliance, security, regulatory changes and difficult client conversations.</p>
+<div class="stats">
+<div class="stat"><b id="total">100</b><span>Total Scenarios</span></div>
+<div class="stat"><b id="teamCount">50</b><span>Team Handling</span></div>
+<div class="stat"><b id="clientCount">50</b><span>Client Handling</span></div>
+<div class="stat"><b id="doneCount">0</b><span>Completed</span></div>
+</div>
+</div>
+</header>
+
+<section class="toolbar">
+<div class="toolbar-box">
+<div class="search-row">
+<input class="search" id="search" placeholder="🔍 Search scenario, SLA, production, client, compliance...">
+<select id="category">
+<option value="all">All Categories</option>
+<option value="Team Handling">Team Handling</option>
+<option value="Client Handling">Client Handling</option>
+</select>
+<select id="difficulty">
+<option value="all">All Difficulty</option>
+<option value="Easy">Easy</option><option value="Medium">Medium</option><option value="Advanced">Advanced</option>
+</select>
+<button class="btn primary" onclick="randomScenario()">🎲 Random</button>
+</div>
+<div class="actions">
+<button class="btn" onclick="toggleAll(true)">＋ Expand All</button>
+<button class="btn" onclick="toggleAll(false)">− Collapse All</button>
+<button class="btn" onclick="resetProgress()">↻ Reset Progress</button>
+<button class="btn" onclick="showPending()">⏳ Pending Only</button>
+<button class="btn" id="pendingBtn" onclick="showAll()">📚 Show All</button>
+</div>
+<div class="themes" title="Choose theme">
+<span style="font-size:12px;font-weight:800;align-self:center;margin-right:3px">Theme:</span>
+<button class="theme t-purple active" data-theme="purple" aria-label="Purple"></button>
+<button class="theme t-ocean" data-theme="ocean" aria-label="Ocean"></button>
+<button class="theme t-forest" data-theme="forest" aria-label="Forest"></button>
+<button class="theme t-sunset" data-theme="sunset" aria-label="Sunset"></button>
+<button class="theme t-rose" data-theme="rose" aria-label="Rose"></button>
+<button class="theme t-dark" data-theme="dark" aria-label="Dark"></button>
+<button class="theme t-amoled" data-theme="amoled" aria-label="AMOLED"></button>
+</div>
+</div>
+</section>
+
+<div class="progress-wrap">
+<div class="progress-text">Interview practice progress: <b id="progressText">0%</b></div>
+<div class="progress"><i id="progressBar"></i></div>
+</div>
+
+<main class="main">
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty">No scenarios match your search/filter.</div>
+</main>
+
+<div class="footer">BFSI Interview Toolkit • 100 scenarios • Progress is saved locally in your browser</div>
+
+<script>
+const scenarios = [
+["Team Handling","A team member repeatedly misses deadlines. What would you do?","Medium"],
+["Team Handling","A high-performing employee's performance suddenly declines. How would you handle it?","Medium"],
+["Team Handling","Two team members have a serious interpersonal conflict affecting delivery. What is your approach?","Medium"],
+["Team Handling","A senior developer refuses to learn a new technology required for the banking project. What would you do?","Medium"],
+["Team Handling","One senior team member dominates every meeting and prevents juniors from speaking. How do you handle it?","Easy"],
+["Team Handling","A junior makes a production mistake in a banking application. How do you respond?","Advanced"],
+["Team Handling","A team member is repeatedly late to meetings and calls. What would you do?","Easy"],
+["Team Handling","A technically strong employee has poor communication skills. How would you improve the situation?","Medium"],
+["Team Handling","One employee says another team member is not contributing. How would you investigate?","Medium"],
+["Team Handling","A key senior resource wants to leave during a critical release. What would you do?","Advanced"],
+["Team Handling","You have five resources but seven critical activities. How do you allocate work?","Advanced"],
+["Team Handling","Two employees have the same skills but one is overloaded. How do you rebalance work?","Medium"],
+["Team Handling","A critical BFSI task requires a skill nobody on your team currently has. What is your plan?","Advanced"],
+["Team Handling","How would you fairly distribute production-support responsibilities?","Medium"],
+["Team Handling","How would you create backup resources for a critical banking application?","Advanced"],
+["Team Handling","Only one person understands a critical production process. What would you do?","Advanced"],
+["Team Handling","How do you decide which repetitive banking activities should be automated?","Advanced"],
+["Team Handling","Unexpected work arrives during an already committed sprint. How do you respond?","Medium"],
+["Team Handling","A team member has planned leave during a critical banking release. What do you do?","Medium"],
+["Team Handling","How would you prioritize regulatory work, production support and enhancements?","Advanced"],
+["Team Handling","How do you motivate a team working under continuous production pressure?","Medium"],
+["Team Handling","Team morale is low after repeated incidents. How do you improve it?","Medium"],
+["Team Handling","How do you build ownership instead of dependency on a manager?","Medium"],
+["Team Handling","What is your approach to effective daily and weekly team meetings?","Easy"],
+["Team Handling","How would you give negative feedback to an experienced employee?","Medium"],
+["Team Handling","How do you recognize and reward good performance?","Easy"],
+["Team Handling","How would you identify and develop future team leads?","Medium"],
+["Team Handling","A team member constantly needs supervision. How do you handle this?","Medium"],
+["Team Handling","How do you make a support team more self-sufficient?","Advanced"],
+["Team Handling","How would you build a knowledge-sharing culture in a BFSI team?","Medium"],
+["Team Handling","A banking application goes down at midnight. What do you do as the team lead?","Advanced"],
+["Team Handling","A P1 incident occurs during a major transaction window. How do you manage the team?","Advanced"],
+["Team Handling","After two hours, the root cause of a production incident is still unknown. What next?","Advanced"],
+["Team Handling","A production fix is ready but testing is incomplete. Would you release it?","Advanced"],
+["Team Handling","A developer accidentally deletes production data. What is your immediate response?","Advanced"],
+["Team Handling","Multiple production incidents occur simultaneously. How do you prioritize?","Advanced"],
+["Team Handling","An end-of-day banking batch fails. How do you coordinate recovery?","Advanced"],
+["Team Handling","A banking interface stops sending transactions to another system. What do you do?","Advanced"],
+["Team Handling","The same production incident keeps recurring. How do you solve it permanently?","Advanced"],
+["Team Handling","How would you conduct a post-incident review without creating a blame culture?","Medium"],
+["Team Handling","Management asks you to deliver one week earlier than the agreed date. What do you do?","Advanced"],
+["Team Handling","A client requests extra work but no additional resources are available. How do you manage the team?","Advanced"],
+["Team Handling","Your team disagrees with management's technical decision. How do you handle it?","Medium"],
+["Team Handling","How do you measure productivity without micromanaging employees?","Medium"],
+["Team Handling","An employee escalates a complaint against you to management. What is your response?","Medium"],
+["Team Handling","A team member bypasses you and complains directly to the client. How do you handle it?","Advanced"],
+["Team Handling","Senior management puts heavy pressure on the project team. How do you protect delivery quality?","Advanced"],
+["Team Handling","How do you report project risks to management?","Easy"],
+["Team Handling","How do you manage a distributed/offshore team across time zones?","Medium"],
+["Team Handling","Your team misses an important commitment. How do you communicate and recover?","Advanced"],
+
+["Client Handling","A banking client is unhappy with your team's performance. What would you do?","Medium"],
+["Client Handling","A client sends an aggressive email about a production issue. How do you respond?","Medium"],
+["Client Handling","The client demands an immediate solution when you need more time. What do you say?","Advanced"],
+["Client Handling","The client has not provided required information but expects delivery on time. How do you handle it?","Medium"],
+["Client Handling","A client misunderstands a technical limitation. How do you explain it?","Easy"],
+["Client Handling","How would you communicate a production outage to a banking client?","Advanced"],
+["Client Handling","How do you communicate a project delay without losing client confidence?","Medium"],
+["Client asks a question in a meeting that you cannot answer immediately. What do you do?","Easy"],
+["Client Handling","How would you explain a complex technical issue to a non-technical banking stakeholder?","Easy"],
+["Client Handling","How do you remain transparent with a client without creating unnecessary alarm?","Advanced"],
+["Client Handling","The client changes requirements after development has started. What is your approach?","Medium"],
+["Client Handling","A client asks for an urgent report without a formal change request. What do you do?","Advanced"],
+["Client Handling","A requested feature conflicts with banking rules or controls. How do you respond?","Advanced"],
+["Client Handling","Two client stakeholders provide contradictory requirements. What do you do?","Advanced"],
+["Client Handling","A client says 'this was already agreed' but there is no documented evidence. How do you handle it?","Advanced"],
+["Client Handling","A regulatory change is demanded immediately. How do you coordinate delivery?","Advanced"],
+["Client Handling","The client continuously adds scope without accepting timeline impact. What do you do?","Advanced"],
+["Client Handling","How do you document client requirements to avoid future disputes?","Easy"],
+["Client Handling","How do you obtain client sign-off for a deliverable?","Easy"],
+["Client Handling","How do you prevent requirement ambiguity in BFSI projects?","Medium"],
+["Client Handling","A P1 incident is approaching SLA breach. What do you tell the client?","Advanced"],
+["Client Handling","The client wants hourly updates during an incident. How do you manage communication?","Medium"],
+["Client Handling","Your team has missed an SLA. How do you communicate it?","Advanced"],
+["Client Handling","The client escalates an issue directly to senior management. What do you do?","Advanced"],
+["Client Handling","A client claims the application caused financial loss. How do you respond?","Advanced"],
+["Client Handling","The client asks you to bypass the normal incident process. What do you do?","Advanced"],
+["Client Handling","A critical transaction fails but application logs show no error. How do you investigate?","Advanced"],
+["Client Handling","Duplicate financial transactions are reported. How do you handle the incident?","Advanced"],
+["Client Handling","Payment interface transactions are delayed. What would you check first?","Advanced"],
+["Client Handling","Reconciliation shows a mismatch between two banking systems. How do you coordinate resolution?","Advanced"],
+["Client Handling","A client asks for production customer data to debug an issue. What do you do?","Advanced"],
+["Client Handling","Sensitive customer information is exposed in application logs. What is your response?","Advanced"],
+["Client Handling","A client requests real customer data in a test environment. Would you allow it?","Advanced"],
+["Client Handling","A user asks for unauthorized production access. How do you respond?","Advanced"],
+["Client Handling","A production change is requested without required approval. What do you do?","Advanced"],
+["Client Handling","A security vulnerability is discovered just before release. What is your recommendation?","Advanced"],
+["Client Handling","A client asks you to bypass a compliance control to meet a deadline. What do you do?","Advanced"],
+["Client Handling","A banking application fails an audit. How would you manage the client discussion?","Advanced"],
+["Client Handling","An auditor requests evidence that your team cannot immediately locate. What do you do?","Advanced"],
+["Client Handling","A client asks for confidential information belonging to another customer. How do you respond?","Advanced"],
+["Client Handling","The client has lost confidence in your team. How would you rebuild trust?","Advanced"],
+["Client Handling","A client escalates minor issues frequently. How do you manage expectations?","Medium"],
+["Client Handling","The client praises one team member but criticizes the rest. How do you respond?","Medium"],
+["Client Handling","The client asks that one of your employees be removed. What do you do?","Advanced"],
+["Client Handling","The client is unhappy with your technical design. How do you defend or chang
