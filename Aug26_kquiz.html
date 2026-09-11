@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌟 Kid's Fun Quiz Portal 🌟</title>
+    <style>
+        :root {
+            --primary-color: #FF6B6B;
+            --secondary-color: #4ECDC4;
+            --accent-color: #FFE66D;
+            --bg-color: #F7FFF7;
+            --text-color: #2C3E50;
+            --correct-color: #2ECC71;
+            --wrong-color: #E74C3C;
+            --admin-color: #9B59B6;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Fredoka', cursive, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            border: 4px solid var(--secondary-color);
+            border-radius: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 850px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        /* Buttons */
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+            margin: 5px;
+            box-shadow: 0 4px 0 #3b9b94;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background-color: #45b8b0;
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            box-shadow: 0 4px 0 #dcc24c;
+        }
+
+        .btn-accent:hover {
+            background-color: #f3dc61;
+        }
+
+        .btn-danger {
+            background-color: var(--primary-color);
+            box-shadow: 0 4px 0 #d95353;
+        }
+
+        .btn-success {
+            background-color: var(--correct-color);
+            box-shadow: 0 4px 0 #27ae60;
+        }
+
+        .btn-admin {
+            background-color: var(--admin-color);
+            box-shadow: 0 4px 0 #7d3c98;
+        }
+
+        /* Role Navigation Bar */
+        .role-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            border-bottom: 2px dashed #BDC3C7;
+            padding-bottom: 15px;
+        }
+
+        /* Forms & Inputs */
+        input, select {
+            padding: 10px 15px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            margin: 5px;
+            outline: none;
+        }
+
+        .question-card {
+            background: #f0fdfd;
+            border: 2px dashed var(--secondary-color);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* Quiz Player View */
+        .option-btn {
+            background-color: #EAECEE;
+            color: var(--text-color);
+            border: 3px solid #BDC3C7;
+            padding: 15px;
+            font-size: 1.1rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            background-color: #D5D8DC;
+        }
+
+        .option-btn.selected {
+            border-color: var(--secondary-color);
+            background-color: #E8F8F5;
+        }
+
+        /* Result View */
+        .result-box {
+            font-size: 1.4rem;
+            padding: 25px;
+            border-radius: 20px;
+            margin: 20px 0;
+        }
+
+        .pass {
+            background-color: #D4EDDA;
+            color: #155724;
+            border: 4px solid var(--correct-color);
+        }
+
+        .fail {
+            background-color: #F8D7DA;
+            color: #721C24;
+            border: 4px solid var(--wrong-color);
+        }
+
+        .eligibility-badge {
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 15px;
+            margin-top: 15px;
+            display: inline-block;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .badge {
+            background: var(--accent-color);
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-size: 1rem;
+            display: inline-block;
+        }
+
+        .card {
+            background: #FFF9E6;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Role Header Navigation -->
+    <div class="role-bar">
+        <button class="btn btn-admin" onclick="switchPanel('admin')">🛠️ Admin Panel</button>
+        <button class="btn btn-success" onclick="switchPanel('participant')">👧 Participant Panel</button>
+    </div>
+
+    <!-- ================= ADMIN PANEL ================= -->
+    <div id="admin-panel">
+        <h1>🛠️ Admin Control Center</h1>
+        <p>Configure settings, create questions (Up to 20), and export/import quiz files.</p>
+
+        <!-- Quiz Rules & Eligibility Settings -->
+        <div class="card">
+            <h3>⚙️ Eligibility & Passing Rules</h3>
+            <label><b>Passing Threshold (%):</b></label>
+            <input type="number" id="pass-percent" value="60" min="1" max="100" style="width: 80px;">%
+            <p style="font-size: 0.85rem; color: #7F8C8D; margin-top: 5px;">
+                Participants scoring at or above this percentage will unlock the <b>Eligible</b> status.
+            </p>
+        </div>
+
+        <!-- CSV Controls -->
+        <div style="margin-bottom: 20px;">
+            <button class="btn" onclick="exportToCSV()">📥 Export CSV</button>
+            <input type="file" id="csv-file" accept=".csv" class="hidden" onchange="importFromCSV(event)">
+            <button class="btn" onclick="document.getElementById('csv-file').click()">📤 Import CSV</button>
+        </div>
+
+        <div id="questions-container"></div>
+
+        <div style="margin-top: 20px;">
+            <button class="btn btn-accent" id="add-q-btn" onclick="addQuestionField()">➕ Add Question (<span id="q-count">0</span>/20)</button>
+        </div>
+    </div>
+
+    <!-- ================= PARTICIPANT PANEL ================= -->
+    <div id="participant-panel" class="hidden">
+        <!-- Start Screen -->
+        <div id="part-start-screen">
+            <h1>🎈 Welcome Young Scholar! 🎈</h1>
+            <p style="font-size: 1.2rem;">Ready to test your knowledge?</p>
+            <div class="card">
+                <h3>📋 Quiz Instructions</h3>
+                <p>• Total Questions: <b id="part-total-q">0</b></p>
+                <p>• Total Marks: <b id="part-total-marks">0</b></p>
+                <p>• Pass Criteria: <b id="part-pass-criteria">0%</b> score to get Eligible certification!</p>
+            </div>
+            <button class="btn btn-success" style="font-size: 1.4rem; padding: 15px 40px;" onclick="startParticipantQuiz()">🚀 Start Quiz Now</button>
+        </div>
+
+        <!-- Active Quiz Play View -->
+        <div id="part-quiz-view" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge" id="progress-badge">Question 1/5</span>
+                <span class="badge" id="marks-badge">Marks: 1</span>
+            </div>
+
+            <h2 id="play-question-text" style="margin: 25px 0; font-size: 1.6rem;">Question text goes here?</h2>
+
+            <div class="options-grid" id="options-container">
+                <!-- Dynamic Option Buttons -->
+            </div>
+
+            <div style="margin-top: 30px;">
+                <button class="btn btn-success" id="next-btn" onclick="nextQuestion()">Next Question ➡️</button>
+            </div>
+        </div>
+
+        <!-- Results & Eligibility View -->
+        <div id="part-result-view" class="hidden">
+            <h1>🎉 Quiz Complete! 🎉</h1>
+            
+            <div id="result-card" class="result-box">
+                <!-- Calculated Results populated here -->
+            </div>
+
+            <button class="btn btn-accent" onclick="resetParticipantScreen()">🔄 Retake Quiz</button>
+            <button class="btn btn-admin" onclick="switchPanel('admin')">🛠️ Go to Admin Panel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Global Quiz Data Model
+    let quizData = {
+        passPercent: 60,
+        questions: [
+            {
+                text: "What color is the sky on a clear day?",
+                options: ["Green", "Blue", "Red", "Yellow"],
+                correct: 1,
+                marks: 2
+            },
+            {
+                text: "How many legs does a spider have?",
+                options: ["6", "8", "4", "10"],
+                correct: 1,
+                marks: 2
+            },
+            {
+                text: "Which animal says 'Moo'?",
+                options: ["Dog", "Cat", "Cow", "Duck"],
+                correct: 2,
+                marks: 1
+            }
+        ]
+    };
+
+    let currentQuestionIndex = 0;
+    let selectedOption = null;
+    let userAnswers = [];
+
+    window.onload = function() {
+        renderAdminBuilder();
+    };
+
+    /* ---------------- NAVIGATION ---------------- */
+    function switchPanel(panelName) {
+        const adminP = document.getElementById('admin-panel');
+        const partP = document.getElementById('participant-panel');
+
+        if (panelName === 'admin') {
+            adminP.classList.remove('hidden');
+            partP.classList.add('hidden');
+            renderAdminBuilder();
+        } else {
+            adminP.classList.add('hidden');
+            partP.classList.remove('hidden');
+            resetParticipantScreen();
+        }
+    }
+
+    /* ---------------- ADMIN PANEL LOGIC ---------------- */
+    function renderAdminBuilder() {
+        const container = document.getElementById('questions-container');
+        container.innerHTML = '';
+
+        document.getElementById('pass-percent').value = quizData.passPercent;
+        document.getElementById('q-count').innerText = quizData.questions.length;
+
+        quizData.questions.forEach((q, qIndex) => {
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question-card';
+            qDiv.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h4>Question ${qIndex + 1}</h4>
+                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;" onclick="removeQuestion(${qIndex})">🗑️ Delete</button>
+                </div>
+                <input type="text" placeholder="Enter Question" value="${escapeHtml(q.text)}" onchange="updateQuestion(${qIndex}, 'text', this.value)" style="width: 95%;">
+                <br>
+                <label><b>Marks:</b> </label>
+                <input type="number" value="${q.marks}" min="1" style="width: 70px;" onchange="updateQuestion(${qIndex}, 'marks', parseInt(this.value) || 1)">
+                
+                <div class="options-grid" style="margin-top: 10px;">
+                    ${q.options.map((opt, oIndex) => `
+                        <div>
+                            <input type="radio" name="correct_${qIndex}" ${q.correct === oIndex ? 'checked' : ''} onchange="updateQuestion(${qIndex}, 'correct', ${oIndex})">
+                            <input type="text" placeholder="Option ${oIndex + 1}" value="${escapeHtml(opt)}" onchange="updateOption(${qIndex}, ${oIndex}, this.value)" style="width: 75%;">
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(qDiv);
+        });
+
+        document.getElementById('add-q-btn').disabled = quizData.questions.length >= 20;
+    }
+
+    function addQuestionField() {
+        if (quizData.questions.length >= 20) {
+            alert("Maximum limit of 20 questions reached!");
+            return;
+        }
+        quizData.questions.push({
+            text: "",
+            options: ["", "", "", ""],
+            correct: 0,
+            marks: 1
+        });
+        renderAdminBuilder();
+    }
+
+    function removeQuestion(index) {
+        quizData.questions.splice(index, 1);
+        renderAdminBuilder();
+    }
+
+    function updateQuestion(index, key, value) {
+        quizData.questions[index][key] = value;
+    }
+
+    function updateOption(qIndex, oIndex, value) {
+        quizData.questions[qIndex].options[oIndex] = value;
+    }
+
+    function escapeHtml(text) {
+        return text.replace(/"/g, "&quot;");
+    }
+
+    /* ---------------- PARTICIPANT PANEL LOGIC ---------------- */
+    function resetParticipantScreen() {
+        quizData.passPercent = parseInt(document.getElementById('pass-percent').value) || 60;
+
+        document.getElementById('part-start-screen').classList.remove('hidden');
+        document.getElementById('part-quiz-view').classList.add('hidden');
+        document.getElementById('part-result-view').classList.add('hidden');
+
+        // Render Summary
+        let totalMarks = quizData.questions.reduce((sum, q) => sum + q.marks, 0);
+        document.getElementById('part-total-q').innerText = quizData.questions.length;
+        document.getElementById('part-total-marks').innerText = totalMarks;
+        document.getElementById('part-pass-criteria').innerText = `${quizData.passPercent}%`;
+    }
+
+    function startParticipantQuiz() {
+        if (quizData.questions.length === 0) {
+            alert("No questions available! Please ask Admin to add questions first.");
+            return;
+        }
+
+        currentQuestionIndex = 0;
+        userAnswers = [];
+
+        document.getElementById('part-start-screen').classList.add('hidden');
+        document.getElementById('part-quiz-view').classList.remove('hidden');
+
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const q = quizData.questions[currentQuestionIndex];
+        selectedOption = null;
+
+        document.getElementById('progress-badge').innerText = `Question ${currentQuestionIndex + 1}/${quizData.questions.length}`;
+        document.getElementById('marks-badge').innerText = `Marks: ${q.marks}`;
+        document.getElementById('play-question-text').innerText = q.text;
+
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+
+        q.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => selectOption(idx, btn);
+            optionsContainer.appendChild(btn);
+        });
+
+        document.getElementById('next-btn').innerText = (currentQuestionIndex === quizData.questions.length - 1) ? "Submit Quiz 🏁" : "Next Question ➡️";
+    }
+
+    function selectOption(index, element) {
+        selectedOption = index;
+        const allOpts = document.querySelectorAll('.option-btn');
+        allOpts.forEach(btn => btn.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+
+    function nextQuestion() {
+        if (selectedOption === null) {
+            alert("Please pick an answer before moving on! 😊");
+            return;
+        }
+
+        userAnswers.push(selectedOption);
+
+        if (currentQuestionIndex < quizData.questions.length - 1) {
+            currentQuestionIndex++;
+            loadQuestion();
+        } else {
+            showEligibilityResults();
+        }
+    }
+
+    function showEligibilityResults() {
+        document.getElementById('part-quiz-view').classList.add('hidden');
+        document.getElementById('part-result-view').classList.remove('hidden');
+
+        let totalScored = 0;
+        let maxMarks = 0;
+
+        quizData.questions.forEach((q, i) => {
+            maxMarks += q.marks;
+            if (userAnswers[i] === q.correct) {
+                totalScored += q.marks;
+            }
+        });
+
+        const percentage = Math.round((totalScored / maxMarks) * 100);
+        const isEligible = percentage >= quizData.passPercent;
+
+        const resultCard = document.getElementById('result-card');
+        resultCard.className = `result-box ${isEligible ? 'pass' : 'fail'}`;
+
+        resultCard.innerHTML = `
+            <h2>${isEligible ? '🌟 CONGRATULATIONS! 🌟' : '💪 GOOD TRY! 💪'}</h2>
+            <p>Your Score: <b>${totalScored} / ${maxMarks}</b> (${percentage}%)</p>
+            <p>Required Pass Criterion: <b>${quizData.passPercent}%</b></p>
+            
+            <div class="eligibility-badge" style="background: ${isEligible ? '#2ECC71' : '#E74C3C'}; color: white;">
+                ${isEligible ? '✅ STATUS: ELIGIBLE' : '❌ STATUS: NOT ELIGIBLE'}
+            </div>
+            
+            <p style="font-size: 1rem; margin-top: 15px;">
+                ${isEligible ? 'Great job! You met the criteria for this quiz.' : 'Keep practicing and try again to unlock eligibility!'}
+            </p>
+        `;
+    }
+
+    /* ---------------- CSV IMPORT / EXPORT ---------------- */
+    function exportToCSV() {
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Question,Option1,Option2,Option3,Option4,CorrectOptionIndex,Marks\n";
+
+        quizData.questions.forEach(q => {
+            let row = [
+                `"${q.text.replace(/"/g, '""')}"`,
+                `"${q.options[0].replace(/"/g, '""')}"`,
+                `"${q.options[1].replace(/"/g, '""')}"`,
+                `"${q.options[2].replace(/"/g, '""')}"`,
+                `"${q.options[3].replace(/"/g, '""')}"`,
+                q.correct,
+                q.marks
+            ].join(",");
+            csvContent += row + "\n";
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "quiz_questions.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function importFromCSV(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const lines = e.target.result.split('\n');
+            let newQuestions = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+
+                const row = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                const cols = row ? row.map(cell => cell.replace(/^"|"$/g, '').replace(/""/g, '"')) : lines[i].split(',');
+
+                if (cols.length >= 7) {
+                    newQuestions.push({
+                        text: cols[0],
+                        options: [cols[1], cols[2], cols[3], cols[4]],
+                        correct: parseInt(cols[5]) || 0,
+                        marks: parseInt(cols[6]) || 1
+                    });
+                }
+
+                if (newQuestions.length >= 20) break;
+            }
+
+            if (newQuestions.length > 0) {
+                quizData.questions = newQuestions;
+                renderAdminBuilder();
+                alert(`Successfully imported ${newQuestions.length} questions!`);
+    
