@@ -1,771 +1,2267 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#6c5ce7">
+
 <title>Kids Reward Manager SUPER PRO</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
 
 body{
-font-family:Arial;
-background:#f3f3f3;
-margin:0;
-padding:20px;
+  margin:0;
+  font-family:"Arial Rounded MT Bold","Trebuchet MS",Arial,sans-serif;
+  background:linear-gradient(135deg,#74b9ff,#a29bfe,#fd79a8);
+  min-height:100vh;
+  color:#2d3436;
 }
+
+/* ================= LOGIN ================= */
+
+#login{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.login-card{
+  width:100%;
+  max-width:500px;
+  background:rgba(255,255,255,.96);
+  border-radius:35px;
+  padding:40px 25px;
+  text-align:center;
+  box-shadow:0 20px 50px rgba(0,0,0,.25);
+  animation:pop .6s ease;
+}
+
+.login-icon{
+  font-size:80px;
+  animation:bounce 2s infinite;
+}
+
+.login-card h1{
+  font-size:38px;
+  margin:10px 0;
+  color:#6c5ce7;
+}
+
+.login-card p{
+  font-size:21px;
+}
+
+.pin-input{
+  width:100%;
+  font-size:30px;
+  text-align:center;
+  padding:18px;
+  border:4px solid #a29bfe;
+  border-radius:20px;
+  outline:none;
+  margin:15px 0;
+  letter-spacing:8px;
+}
+
+/* ================= APP ================= */
 
 .container{
-max-width:1300px;
-margin:auto;
-background:white;
-padding:20px;
-border-radius:10px;
-}
-
-.controls{
-display:flex;
-flex-wrap:wrap;
-align-items: center;
-gap:8px;
-margin-bottom:20px;
-}
-
-input,select,button{
-padding:6px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:15px;
-}
-
-th,td{
-border:1px solid #ddd;
-padding:6px;
-font-size:13px;
-text-align:center;
-}
-
-th{
-background:#eee;
-}
-
-.calendarHeader{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-top:30px;
-}
-
-.calendar{
-display:grid;
-grid-template-columns:repeat(7,1fr);
-gap:5px;
-margin-top:10px;
-}
-
-.day{
-border:1px solid #ddd;
-min-height:100px;
-background:#fafafa;
-padding:5px;
-font-size:12px;
-cursor:pointer;
-}
-
-.day:hover{
-background:#e8f3ff;
-}
-
-.weekday{
-text-align:center;
-font-weight:bold;
+  width:96%;
+  max-width:1400px;
+  margin:20px auto;
+  background:rgba(255,255,255,.95);
+  padding:20px;
+  border-radius:35px;
+  box-shadow:0 20px 60px rgba(0,0,0,.20);
 }
 
 .hidden{
-display:none;
+  display:none!important;
 }
+
+.header{
+  background:linear-gradient(135deg,#6c5ce7,#0984e3);
+  color:white;
+  border-radius:28px;
+  padding:25px;
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.header h1{
+  font-size:38px;
+  margin:0;
+}
+
+.header p{
+  font-size:20px;
+  margin:8px;
+}
+
+/* ================= CARDS ================= */
+
+.section{
+  background:white;
+  border-radius:28px;
+  padding:20px;
+  margin:20px 0;
+  box-shadow:0 8px 25px rgba(0,0,0,.10);
+}
+
+.section-title{
+  font-size:29px;
+  margin:5px 0 20px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+/* ================= CONTROLS ================= */
+
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  align-items:center;
+}
+
+label{
+  font-size:21px;
+  font-weight:bold;
+}
+
+input,select{
+  min-height:58px;
+  padding:12px 16px;
+  border:3px solid #dfe6e9;
+  border-radius:17px;
+  font-size:20px;
+  background:#fff;
+  font-family:inherit;
+  outline:none;
+}
+
+input:focus,select:focus{
+  border-color:#6c5ce7;
+  box-shadow:0 0 0 4px rgba(108,92,231,.15);
+}
+
+/* ================= BUTTONS ================= */
+
+button{
+  border:0;
+  border-radius:18px;
+  padding:15px 21px;
+  min-height:58px;
+  font-size:19px;
+  font-weight:bold;
+  font-family:inherit;
+  cursor:pointer;
+  background:#6c5ce7;
+  color:white;
+  box-shadow:0 5px 0 rgba(0,0,0,.15);
+  transition:.18s;
+}
+
+button:hover{
+  transform:translateY(-3px) scale(1.03);
+  filter:brightness(1.08);
+}
+
+button:active{
+  transform:translateY(3px);
+  box-shadow:0 2px 0 rgba(0,0,0,.15);
+}
+
+.btn-green{background:#00b894}
+.btn-blue{background:#0984e3}
+.btn-orange{background:#e17055}
+.btn-pink{background:#e84393}
+.btn-red{background:#d63031}
+.btn-yellow{
+  background:#fdcb6e;
+  color:#2d3436;
+}
+
+.big-button{
+  font-size:24px;
+  padding:18px 28px;
+}
+
+/* ================= KID SELECT ================= */
+
+.kid-area{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:15px;
+}
+
+.kid-select{
+  width:100%;
+  font-size:27px;
+  min-height:70px;
+  border:4px solid #6c5ce7;
+  background:#f8f7ff;
+}
+
+/* ================= TASK CARDS ================= */
+
+.task-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:14px;
+}
+
+.task-button{
+  min-height:110px;
+  border-radius:25px;
+  font-size:20px;
+  padding:12px;
+  background:linear-gradient(135deg,#74b9ff,#0984e3);
+  box-shadow:0 7px 0 #075b9b;
+}
+
+.task-button.selected{
+  transform:scale(1.05);
+  outline:5px solid #fdcb6e;
+  background:linear-gradient(135deg,#ffeaa7,#fdcb6e);
+  color:#2d3436;
+}
+
+/* ================= LEVEL ================= */
+
+.level-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:12px;
+}
+
+.level-button{
+  min-height:90px;
+  font-size:20px;
+}
+
+.level-button:nth-child(1){background:#636e72}
+.level-button:nth-child(2){background:#00b894}
+.level-button:nth-child(3){background:#0984e3}
+.level-button:nth-child(4){background:#e17055}
+.level-button:nth-child(5){background:#6c5ce7}
+
+.level-button.selected{
+  transform:scale(1.08);
+  outline:5px solid #fdcb6e;
+}
+
+/* ================= DASHBOARD ================= */
+
+.dashboard{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:18px;
+}
+
+.stat-card{
+  padding:25px;
+  border-radius:28px;
+  text-align:center;
+  color:white;
+  box-shadow:0 8px 20px rgba(0,0,0,.15);
+  transition:.2s;
+}
+
+.stat-card:hover{
+  transform:translateY(-7px) rotate(1deg);
+}
+
+.stat-card .emoji{
+  font-size:55px;
+}
+
+.stat-card .number{
+  font-size:42px;
+  font-weight:bold;
+}
+
+.stat-card .label{
+  font-size:20px;
+}
+
+.card-purple{background:linear-gradient(135deg,#6c5ce7,#a29bfe)}
+.card-blue{background:linear-gradient(135deg,#0984e3,#74b9ff)}
+.card-green{background:linear-gradient(135deg,#00b894,#55efc4)}
+.card-orange{background:linear-gradient(135deg,#e17055,#fab1a0)}
+
+/* ================= LEADERBOARD ================= */
 
 .leaderboard{
-margin-top:20px;
-padding:10px;
-background:#fafafa;
-border-radius:6px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
 }
 
+.player-card{
+  border-radius:25px;
+  padding:20px;
+  text-align:center;
+  background:linear-gradient(135deg,#fff,#f1f2f6);
+  border:4px solid #dfe6e9;
+  transition:.2s;
+}
+
+.player-card:hover{
+  transform:translateY(-6px) scale(1.02);
+  border-color:#6c5ce7;
+}
+
+.medal{
+  font-size:50px;
+}
+
+.player-name{
+  font-size:25px;
+  font-weight:bold;
+}
+
+.points{
+  font-size:30px;
+  color:#6c5ce7;
+  font-weight:bold;
+}
+
+/* ================= TABLE ================= */
+
+.table-wrapper{
+  overflow-x:auto;
+  border-radius:20px;
+}
+
+table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  min-width:700px;
+  overflow:hidden;
+}
+
+th{
+  background:#6c5ce7;
+  color:white;
+  font-size:19px;
+  padding:17px;
+}
+
+td{
+  padding:15px;
+  font-size:18px;
+  text-align:center;
+  border-bottom:2px solid #eee;
+}
+
+tbody tr{
+  transition:.2s;
+}
+
+tbody tr:hover{
+  background:#f0edff;
+  transform:scale(1.01);
+}
+
+td button{
+  min-height:45px;
+  padding:8px 14px;
+  font-size:16px;
+}
+
+/* ================= REWARD SHOP ================= */
+
+.reward-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:18px;
+}
+
+.reward-card{
+  background:linear-gradient(135deg,#ffeaa7,#fab1a0);
+  padding:22px;
+  border-radius:28px;
+  text-align:center;
+  box-shadow:0 8px 18px rgba(0,0,0,.12);
+  transition:.2s;
+}
+
+.reward-card:hover{
+  transform:translateY(-8px) rotate(-1deg);
+}
+
+.reward-icon{
+  font-size:55px;
+}
+
+.reward-name{
+  font-size:24px;
+  font-weight:bold;
+}
+
+.reward-cost{
+  font-size:28px;
+  color:#d35400;
+  margin:10px;
+}
+
+/* ================= CALENDAR ================= */
+
+.calendarHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:10px;
+  background:linear-gradient(135deg,#6c5ce7,#0984e3);
+  color:white;
+  padding:15px;
+  border-radius:25px;
+}
+
+.calendarHeader h2{
+  font-size:28px;
+  margin:0;
+}
+
+.calendarHeader button{
+  background:white;
+  color:#6c5ce7;
+  min-width:60px;
+}
+
+.calendar{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:7px;
+  margin-top:12px;
+}
+
+.weekday{
+  text-align:center;
+  font-weight:bold;
+  font-size:18px;
+  padding:12px 2px;
+  background:#dfe6e9;
+  border-radius:12px;
+}
+
+.day{
+  border:2px solid #dfe6e9;
+  min-height:110px;
+  background:#fafafa;
+  padding:8px;
+  font-size:16px;
+  cursor:pointer;
+  border-radius:15px;
+  transition:.2s;
+}
+
+.day:hover{
+  background:#e8f3ff;
+  transform:scale(1.04);
+  border-color:#6c5ce7;
+}
+
+.day-number{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.day-record{
+  margin-top:5px;
+  background:#dfe6e9;
+  border-radius:8px;
+  padding:4px;
+  font-size:14px;
+}
+
+/* ================= IMPORT ================= */
+
+.file-input{
+  background:#f1f2f6;
+  padding:12px;
+  border-radius:16px;
+  font-size:17px;
+}
+
+/* ================= FOOTER ================= */
+
+.footer{
+  text-align:center;
+  padding:25px;
+  font-size:18px;
+  color:#636e72;
+}
+
+/* ================= ANIMATIONS ================= */
+
+@keyframes pop{
+  from{opacity:0;transform:scale(.8)}
+  to{opacity:1;transform:scale(1)}
+}
+
+@keyframes bounce{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-12px)}
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:700px){
+
+  body{
+    padding:0;
+  }
+
+  .container{
+    width:100%;
+    margin:0;
+    padding:12px;
+    border-radius:0;
+  }
+
+  .header{
+    border-radius:25px;
+  }
+
+  .header h1{
+    font-size:30px;
+  }
+
+  .header p{
+    font-size:18px;
+  }
+
+  .section{
+    padding:15px;
+    border-radius:24px;
+  }
+
+  .section-title{
+    font-size:25px;
+  }
+
+  .controls{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .controls>*{
+    width:100%;
+  }
+
+  button{
+    width:100%;
+    font-size:20px;
+    min-height:62px;
+  }
+
+  input,select{
+    width:100%;
+    font-size:21px;
+    min-height:62px;
+  }
+
+  .task-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .task-button{
+    min-height:105px;
+    font-size:17px;
+  }
+
+  .level-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .level-button:last-child{
+    grid-column:span 2;
+  }
+
+  .calendar{
+    gap:3px;
+  }
+
+  .weekday{
+    font-size:13px;
+    padding:9px 2px;
+  }
+
+  .day{
+    min-height:80px;
+    padding:5px;
+  }
+
+  .day-number{
+    font-size:18px;
+  }
+
+  .day-record{
+    font-size:11px;
+  }
+
+  .calendarHeader h2{
+    font-size:21px;
+  }
+
+  .login-card h1{
+    font-size:30px;
+  }
+}
 </style>
 </head>
 
 <body>
 
+<!-- ================= LOGIN ================= -->
+
 <div id="login">
 
-<h3>Parent Lock</h3>
+  <div class="login-card">
 
-PIN
-<input type="password" id="pin">
+    <div class="login-icon">🔐</div>
 
-<button onclick="unlock()">Unlock</button>
-<p>Default PIN is 1234 </p>
+    <h1>Parent Lock</h1>
+
+    <p>Parents only 👨‍👩‍👧‍👦</p>
+
+    <input
+      class="pin-input"
+      type="password"
+      id="pin"
+      maxlength="4"
+      placeholder="••••"
+    >
+
+    <button class="big-button btn-purple" onclick="unlock()">
+      🔓 Unlock
+    </button>
+
+    <p>Default PIN: <b>1234</b></p>
+
+  </div>
+
 </div>
+
+
+<!-- ================= MAIN APP ================= -->
 
 <div class="container hidden" id="app">
 
-<h2>Kids Reward Dashboard</h2>
+  <div class="header">
 
-<div class="controls">
+    <h1>🌟 Kids Reward World 🌟</h1>
 
-Kid
-<select id="kidSelect"></select>
+    <p>Learn • Help • Play • Earn • Enjoy!</p>
 
-<button onclick="addKid()">Add Kid</button>
-<button onclick="renameKid()">Rename Kid</button>
-<button onclick="removeKid()">Remove Kid</button>
-<button onclick="clearKids()">Clear All Kids</button>
+  </div>
+
+
+  <!-- ================= KID ================= -->
+
+  <div class="section">
+
+    <div class="section-title">
+      👦 Choose Your Champion
+    </div>
+
+    <div class="kid-area">
+
+      <select id="kidSelect" class="kid-select"></select>
+
+      <div class="controls">
+
+        <button class="btn-green" onclick="addKid()">
+          ➕ Add Kid
+        </button>
+
+        <button class="btn-blue" onclick="renameKid()">
+          ✏️ Rename
+        </button>
+
+        <button class="btn-orange" onclick="removeKid()">
+          🗑️ Remove
+        </button>
+
+        <button class="btn-red" onclick="clearKids()">
+          🚨 Clear Kids
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= QUICK DASHBOARD ================= -->
+
+  <div class="section">
+
+    <div class="section-title">
+      🏆 My Score Board
+    </div>
+
+    <div class="dashboard">
+
+      <div class="stat-card card-purple">
+
+        <div class="emoji">⭐</div>
+
+        <div class="number" id="myPoints">0</div>
+
+        <div class="label">My Points</div>
+
+      </div>
+
+
+      <div class="stat-card card-blue">
+
+        <div class="emoji">🎯</div>
+
+        <div class="number" id="myTasks">0</div>
+
+        <div class="label">Tasks Done</div>
+
+      </div>
+
+
+      <div class="stat-card card-green">
+
+        <div class="emoji">🎁</div>
+
+        <div class="number" id="myRewards">0</div>
+
+        <div class="label">Rewards Used</div>
+
+      </div>
+
+
+      <div class="stat-card card-orange">
+
+        <div class="emoji">🏅</div>
+
+        <div class="number" id="myRank">-</div>
+
+        <div class="label">My Rank</div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= ADD TASK ================= -->
+
+  <div class="section">
+
+    <div class="section-title">
+      🎯 Choose Today's Task
+    </div>
+
+    <div class="controls">
+
+      <label>📅 Date</label>
+
+      <input type="date" id="date">
+
+    </div>
+
+    <br>
+
+    <div class="task-grid">
+
+      <button class="task-button" onclick="selectTask(this,'Listening')">
+        👂<br>Listening
+      </button>
+
+      <button class="task-button" onclick="selectTask(this,'Poem/Story')">
+        📖<br>Poem / Story
+      </button>
+
+      <button class="task-button" onclick="selectTask(this,'Healthy Habits')">
+        🧼<br>Healthy Habits
+      </button>
+
+      <button class="task-button" onclick="selectTask(this,'Helping Parents')">
+        ❤️<br>Helping Parents
+      </button>
+
+      <button class="task-button" onclick="selectTask(this,'Good Habits')">
+        👍<br>Good Habits
+      </button>
+
+      <button class="task-button" onclick="selectTask(this,'Healthy Food')">
+        🍎<br>Healthy Food
+      </button>
+
+      <button class="task-button" onclick="selectTask(this,'Exercise/yoga')">
+        🧘<br>Exercise / Yoga
+      </button>
+
+      <button class="task-button" onclick="selectTask(this,'No Tv')">
+        📺🚫<br>No TV
+      </button>
+
+      <button class="task-button" onclick="selectTask(this,'No Mobile')">
+        📱🚫<br>No Mobile
+      </button>
+
+      <button class="task-button" onclick="selectTask(this,'Laughing')">
+        😂<br>Laughing
+      </button>
+
+    </div>
+
+    <select id="task" style="display:none">
+
+      <option>Listening</option>
+      <option>Poem/Story</option>
+      <option>Healthy Habits</option>
+      <option>Helping Parents</option>
+      <option>Good Habits</option>
+      <option>Healthy Food</option>
+      <option>Exercise/yoga</option>
+      <option>No Tv</option>
+      <option>No Mobile</option>
+      <option>Laughing</option>
+
+    </select>
+
+  </div>
+
+
+  <!-- ================= LEVEL ================= -->
+
+  <div class="section">
+
+    <div class="section-title">
+      ⭐ How Good Was It?
+    </div>
+
+    <div class="level-grid">
+
+      <button class="level-button" onclick="selectLevel(this,'1')">
+        🙂<br>OK<br>⭐
+      </button>
+
+      <button class="level-button" onclick="selectLevel(this,'2')">
+        😊<br>GOOD<br>⭐⭐
+      </button>
+
+      <button class="level-button" onclick="selectLevel(this,'3')">
+        😃<br>BEST<br>⭐⭐⭐
+      </button>
+
+      <button class="level-button" onclick="selectLevel(this,'4')">
+        😎<br>COOL<br>⭐⭐⭐⭐
+      </button>
+
+      <button class="level-button" onclick="selectLevel(this,'5')">
+        🤩<br>SUPER!<br>⭐⭐⭐⭐⭐
+      </button>
+
+    </div>
+
+    <select id="level" style="display:none">
+      <option value="1">Ok</option>
+      <option value="2">Good</option>
+      <option value="3">Best</option>
+      <option value="4">Cool</option>
+      <option value="5">Super</option>
+    </select>
+
+    <br>
+
+    <button
+      class="big-button btn-green"
+      onclick="addRecord()">
+      🚀 ADD MY ACHIEVEMENT!
+    </button>
+
+  </div>
+
+
+  <!-- ================= LEADERBOARD ================= -->
+
+  <div class="section">
+
+    <div class="section-title">
+      🏆 Champion Leaderboard
+    </div>
+
+    <div class="leaderboard" id="leaderboard"></div>
+
+  </div>
+
+
+  <!-- ================= HISTORY ================= -->
+
+  <div class="section">
+
+    <div class="section-title">
+      📜 My Achievement History
+    </div>
+
+    <div class="table-wrapper">
+
+      <table id="recordTable">
+
+        <thead>
+
+          <tr>
+            <th>📅 Date</th>
+            <th>👦 Kid</th>
+            <th>🎯 Task</th>
+            <th>⭐ Level</th>
+            <th>🏆 Points</th>
+            <th>⚙️ Action</th>
+          </tr>
+
+        </thead>
+
+        <tbody></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= REWARD SHOP ================= -->
+
+  <div class="section">
+
+    <div class="section-title">
+      🎁 Reward Shop
+    </div>
+
+    <div class="controls">
+
+      <input
+        id="rewardName"
+        placeholder="🎁 Reward name">
+
+      <input
+        id="rewardCost"
+        type="number"
+        placeholder="⭐ Points">
+
+      <button class="btn-green" onclick="addReward()">
+        ➕ Add Reward
+      </button>
+
+    </div>
+
+    <br>
+
+    <div class="reward-grid" id="rewardGrid"></div>
+
+  </div>
+
+
+  <!-- ================= REWARD HISTORY ================= -->
+
+  <div class="section">
+
+    <div class="section-title">
+      🎉 Rewards I Have Used
+    </div>
+
+    <div class="table-wrapper">
+
+      <table id="rewardHistory">
+
+        <thead>
+
+          <tr>
+            <th>📅 Date</th>
+            <th>👦 Kid</th>
+            <th>🎁 Reward</th>
+            <th>⭐ Cost</th>
+          </tr>
+
+        </thead>
+
+        <tbody></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= CALENDAR ================= -->
+
+  <div class="section">
+
+    <div class="section-title">
+      📅 Achievement Calendar
+    </div>
+
+    <div class="calendarHeader">
+
+      <button onclick="prevMonth()">◀</button>
+
+      <h2 id="monthTitle"></h2>
+
+      <button onclick="nextMonth()">▶</button>
+
+    </div>
+
+    <div class="calendar" id="calendar"></div>
+
+  </div>
+
+
+  <!-- ================= DATA ================= -->
+
+  <div class="section">
+
+    <div class="section-title">
+      💾 Parent Data Tools
+    </div>
+
+    <div class="controls">
+
+      <button class="btn-blue" onclick="exportData()">
+        📤 Export Data
+      </button>
+
+      <label class="file-input">
+        📥 Import Data
+        <input
+          type="file"
+          accept=".csv"
+          onchange="importData(event)"
+          style="display:none">
+      </label>
+
+      <button class="btn-red" onclick="clearAllRecords()">
+        🗑️ Delete All Records
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="footer">
+    🌟 Every good habit deserves a celebration! 🌟
+  </div>
+
 </div>
 
-<div class="controls">
-Date
-<input type="date" id="date">
-
-Task
-<select id="task">
-<option>Listening</option>
-<option>Poem/Story</option>
-<option>Healthy Habits</option>
-<option>Helping Parents</option>
-<option>Good Habits</option>
-<option>Healthy Food</option>
-<option>Exercise/yoga</option>
-<option>No Tv</option>
-<option>No Mobile</option>
-<option>Laughing</option>
-</select>
-
-Level
-<select id="level">
-<option value="1">Ok</option>
-<option value="2">Good</option>
-<option value="3">Best</option>
-<option value="4">Cool</option>
-<option value="5">Super</option>
-</select>
-</div>
-
-<div class="controls">
-<button onclick="addRecord()">Add Record</button>
-<button onclick="clearAllRecords()">Remove All Records</button>
-<button onclick="exportData()">Export</button>
-<input type="file" onchange="importData(event)">
-</div>
-
-<div class="leaderboard" id="leaderboard"></div>
-
-<h3>Task History</h3>
-
-<table id="recordTable">
-
-<thead>
-<tr>
-<th>Date</th>
-<th>Kid</th>
-<th>Task</th>
-<th>Level</th>
-<th>Points</th>
-<th>Actions</th>
-</tr>
-</thead>
-
-<tbody></tbody>
-
-</table>
-
-<h3>Reward Shop</h3>
-
-<div class="controls">
-
-<input id="rewardName" placeholder="Reward name">
-
-<input id="rewardCost" type="number" placeholder="Points">
-
-<button onclick="addReward()">Add Reward</button>
-
-</div>
-
-<table id="rewardTable">
-
-<thead>
-<tr>
-<th>Reward</th>
-<th>Cost</th>
-<th>Redeem</th>
-<th>Delete</th>
-</tr>
-</thead>
-
-<tbody></tbody>
-
-</table>
-
-<h3>Reward History</h3>
-
-<table id="rewardHistory">
-
-<thead>
-<tr>
-<th>Date</th>
-<th>Kid</th>
-<th>Reward</th>
-<th>Cost</th>
-</tr>
-</thead>
-
-<tbody></tbody>
-
-</table>
-
-<div class="calendarHeader">
-
-<button onclick="prevMonth()">◀</button>
-
-<h3 id="monthTitle"></h3>
-
-<button onclick="nextMonth()">▶</button>
-
-</div>
-
-<div class="calendar" id="calendar"></div>
-
-</div>
 
 <script>
 
-let PIN="1234"
+/* =========================================================
+   DATA
+========================================================= */
 
-let kids=JSON.parse(localStorage.getItem("kids")||'[]')
-let records=JSON.parse(localStorage.getItem("records")||"[]")
-let rewards=JSON.parse(localStorage.getItem("rewards")||"[]")
-let rewardHistory=JSON.parse(localStorage.getItem("rewardHistory")||"[]")
+let PIN="1234";
 
-let current=new Date()
+let kids=JSON.parse(localStorage.getItem("kids")||"[]");
+
+let records=JSON.parse(localStorage.getItem("records")||"[]");
+
+let rewards=JSON.parse(localStorage.getItem("rewards")||"[]");
+
+let rewardHistory=JSON.parse(
+  localStorage.getItem("rewardHistory")||"[]"
+);
+
+let current=new Date();
+
+let selectedTask="Listening";
+
+let selectedLevel="1";
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
 
 function unlock(){
 
-if(pin.value===PIN){
+  let entered=document.getElementById("pin").value;
 
-login.style.display="none"
-app.classList.remove("hidden")
+  if(entered===PIN){
 
-init()
+    document.getElementById("login").style.display="none";
 
-}else{
+    document.getElementById("app").classList.remove("hidden");
 
-alert("Wrong PIN")
+    init();
+
+  }else{
+
+    alert("❌ Wrong PIN!");
+
+  }
 
 }
 
-}
+
+/* =========================================================
+   INIT
+========================================================= */
 
 function init(){
 
-loadKids()
-renderTable()
-renderCalendar()
-updateLeaderboard()
-renderRewards()
-renderRewardHistory()
+  let today=new Date()
+    .toISOString()
+    .slice(0,10);
+
+  document.getElementById("date").value=today;
+
+  loadKids();
+
+  renderTable();
+
+  renderCalendar();
+
+  updateLeaderboard();
+
+  renderRewards();
+
+  renderRewardHistory();
+
+  updatePersonalDashboard();
 
 }
+
+
+/* =========================================================
+   SAVE
+========================================================= */
 
 function save(){
 
-localStorage.setItem("kids",JSON.stringify(kids))
-localStorage.setItem("records",JSON.stringify(records))
-localStorage.setItem("rewards",JSON.stringify(rewards))
-localStorage.setItem("rewardHistory",JSON.stringify(rewardHistory))
+  localStorage.setItem(
+    "kids",
+    JSON.stringify(kids)
+  );
 
-init()
+  localStorage.setItem(
+    "records",
+    JSON.stringify(records)
+  );
+
+  localStorage.setItem(
+    "rewards",
+    JSON.stringify(rewards)
+  );
+
+  localStorage.setItem(
+    "rewardHistory",
+    JSON.stringify(rewardHistory)
+  );
+
+  init();
 
 }
+
+
+/* =========================================================
+   KIDS
+========================================================= */
 
 function loadKids(){
 
-kidSelect.innerHTML=""
+  let select=document.getElementById("kidSelect");
 
-kids.forEach(k=>{
+  select.innerHTML="";
 
-let o=document.createElement("option")
-o.textContent=k
-o.value=k
+  if(kids.length===0){
 
-kidSelect.appendChild(o)
+    let o=document.createElement("option");
 
-})
+    o.textContent="👶 Add a Kid First";
+
+    o.value="";
+
+    select.appendChild(o);
+
+    return;
+
+  }
+
+  kids.forEach(k=>{
+
+    let o=document.createElement("option");
+
+    o.textContent="👦 "+k;
+
+    o.value=k;
+
+    select.appendChild(o);
+
+  });
 
 }
+
 
 function addKid(){
 
-let name=prompt("Kid name")
+  let name=prompt("👦 Enter Kid Name");
 
-if(name){
+  if(name){
 
-kids.push(name)
-save()
+    name=name.trim();
+
+    if(name && !kids.includes(name)){
+
+      kids.push(name);
+
+      save();
+
+    }
+
+  }
 
 }
 
-}
 
 function renameKid(){
 
-let old=kidSelect.value
+  let select=document.getElementById("kidSelect");
 
-let name=prompt("New name",old)
+  let old=select.value;
 
-if(!name) return
+  if(!old){
 
-kids[kids.indexOf(old)]=name
+    alert("Please select a kid");
 
-records.forEach(r=>{
-if(r.kid===old) r.kid=name
-})
+    return;
 
-save()
+  }
+
+  let name=prompt("✏️ New name",old);
+
+  if(!name)return;
+
+  name=name.trim();
+
+  kids[kids.indexOf(old)]=name;
+
+  records.forEach(r=>{
+
+    if(r.kid===old)r.kid=name;
+
+  });
+
+  rewardHistory.forEach(r=>{
+
+    if(r.kid===old)r.kid=name;
+
+  });
+
+  save();
 
 }
+
 
 function removeKid(){
 
-let kid=kidSelect.value
+  let select=document.getElementById("kidSelect");
 
-kids=kids.filter(k=>k!==kid)
+  let kid=select.value;
 
-records=records.filter(r=>r.kid!==kid)
+  if(!kid)return;
 
-save()
+  if(confirm("🗑️ Remove "+kid+" and all records?")){
+
+    kids=kids.filter(k=>k!==kid);
+
+    records=records.filter(r=>r.kid!==kid);
+
+    rewardHistory=
+      rewardHistory.filter(r=>r.kid!==kid);
+
+    save();
+
+  }
 
 }
+
 
 function clearKids(){
 
-if(confirm("Delete ALL kids?")){
+  if(confirm("🚨 Delete ALL kids and their records?")){
 
-kids=[]
-records=[]
+    kids=[];
 
-save()
+    records=[];
+
+    rewardHistory=[];
+
+    save();
+
+  }
 
 }
 
+
+/* =========================================================
+   TASK SELECTION
+========================================================= */
+
+function selectTask(btn,name){
+
+  document.querySelectorAll(".task-button")
+    .forEach(b=>b.classList.remove("selected"));
+
+  btn.classList.add("selected");
+
+  selectedTask=name;
+
+  document.getElementById("task").value=name;
+
 }
+
+
+function selectLevel(btn,value){
+
+  document.querySelectorAll(".level-button")
+    .forEach(b=>b.classList.remove("selected"));
+
+  btn.classList.add("selected");
+
+  selectedLevel=value;
+
+  document.getElementById("level").value=value;
+
+}
+
+
+/* =========================================================
+   ADD RECORD
+========================================================= */
 
 function addRecord(){
 
-let rec={
+  let kid=document.getElementById("kidSelect").value;
 
-date:date.value,
-kid:kidSelect.value,
-task:task.value,
-level:level.options[level.selectedIndex].text,
-points:Number(level.value)
+  let date=document.getElementById("date").value;
+
+  if(!kid){
+
+    alert("👶 Please add/select a kid first!");
+
+    return;
+
+  }
+
+  if(!date){
+
+    alert("📅 Please select a date!");
+
+    return;
+
+  }
+
+  let levelText=
+    document.querySelector(
+      "#level option[value='"+selectedLevel+"']"
+    ).text;
+
+  let rec={
+
+    date:date,
+
+    kid:kid,
+
+    task:selectedTask,
+
+    level:levelText,
+
+    points:Number(selectedLevel)
+
+  };
+
+  records.push(rec);
+
+  save();
+
+  alert(
+    "🎉 AMAZING!\n\n"+
+    "+"+selectedLevel+
+    " points earned by "+kid+"!"
+  );
 
 }
 
-records.push(rec)
 
-save()
-
-}
-
-function clearAllRecords(){
-
-if(confirm("Delete ALL records? This cannot be undone.")){
-
-records=[]
-rewardHistory=[]
-
-save()
-
-}
-
-}
+/* =========================================================
+   TABLE
+========================================================= */
 
 function renderTable(){
 
-let tb=document.querySelector("#recordTable tbody")
+  let tb=document.querySelector(
+    "#recordTable tbody"
+  );
 
-tb.innerHTML=""
+  tb.innerHTML="";
 
-records.forEach((r,i)=>{
+  records.slice().reverse().forEach((r,index)=>{
 
-let tr=document.createElement("tr")
+    let originalIndex=
+      records.length-1-index;
 
-tr.innerHTML=
+    let tr=document.createElement("tr");
 
-"<td>"+r.date+"</td>"+
-"<td>"+r.kid+"</td>"+
-"<td>"+r.task+"</td>"+
-"<td>"+r.level+"</td>"+
-"<td>"+r.points+"</td>"+
-"<td><button onclick='deleteRecord("+i+")'>Delete</button></td>"
+    tr.innerHTML=
 
-tb.appendChild(tr)
+      "<td>"+escapeHTML(r.date)+"</td>"+
 
-})
+      "<td>👦 "+escapeHTML(r.kid)+"</td>"+
+
+      "<td>🎯 "+escapeHTML(r.task)+"</td>"+
+
+      "<td>"+escapeHTML(r.level)+"</td>"+
+
+      "<td>⭐ "+escapeHTML(r.points)+"</td>"+
+
+      "<td>"+
+      "<button class='btn-red' "+
+      "onclick='deleteRecord("+originalIndex+")'>"+
+      "🗑️ Delete"+
+      "</button>"+
+      "</td>";
+
+    tb.appendChild(tr);
+
+  });
 
 }
 
+
 function deleteRecord(i){
 
-records.splice(i,1)
+  if(confirm("Delete this achievement?")){
 
-save()
+    records.splice(i,1);
+
+    save();
+
+  }
+
+}
+
+
+/* =========================================================
+   LEADERBOARD
+========================================================= */
+
+function updateLeaderboard(){
+
+  let scores={};
+
+  kids.forEach(k=>scores[k]=0);
+
+  records.forEach(r=>{
+
+    if(scores[r.kid]===undefined)
+      scores[r.kid]=0;
+
+    scores[r.kid]+=
+      parseFloat(r.points)||0;
+
+  });
+
+  let arr=Object.entries(scores)
+    .sort((a,b)=>b[1]-a[1]);
+
+  let medals=["🥇","🥈","🥉"];
+
+  let html="";
+
+  arr.forEach((a,i)=>{
+
+    html+=`
+
+      <div class="player-card">
+
+        <div class="medal">
+          ${medals[i]||"🏅"}
+        </div>
+
+        <div class="player-name">
+          ${escapeHTML(a[0])}
+        </div>
+
+        <div class="points">
+          ⭐ ${a[1]} Points
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+  if(!html){
+
+    html=`
+      <div class="player-card">
+        <div class="medal">🌟</div>
+        <div class="player-name">
+          Add a kid to start!
+        </div>
+      </div>
+    `;
+
+  }
+
+  document.getElementById("leaderboard").innerHTML=html;
+
+}
+
+
+/* =========================================================
+   PERSONAL DASHBOARD
+========================================================= */
+
+function updatePersonalDashboard(){
+
+  let kid=document.getElementById("kidSelect").value;
+
+  let total=0;
+
+  let tasks=0;
+
+  let used=0;
+
+  records.forEach(r=>{
+
+    if(r.kid===kid){
+
+      total+=Number(r.points)||0;
+
+      if(r.task!=="Reward Redeemed")
+        tasks++;
+
+    }
+
+  });
+
+  rewardHistory.forEach(r=>{
+
+    if(r.kid===kid)
+      used++;
+
+  });
+
+  let scores={};
+
+  kids.forEach(k=>scores[k]=0);
+
+  records.forEach(r=>{
+
+    if(scores[r.kid]===undefined)
+      scores[r.kid]=0;
+
+    scores[r.kid]+=Number(r.points)||0;
+
+  });
+
+  let ranking=
+    Object.entries(scores)
+    .sort((a,b)=>b[1]-a[1]);
+
+  let rank=
+    ranking.findIndex(x=>x[0]===kid)+1;
+
+  document.getElementById("myPoints")
+    .textContent=total;
+
+  document.getElementById("myTasks")
+    .textContent=tasks;
+
+  document.getElementById("myRewards")
+    .textContent=used;
+
+  document.getElementById("myRank")
+    .textContent=rank>0 ? "#"+rank : "-";
+
+}
+
+
+document.getElementById("kidSelect")
+  .addEventListener("change",updatePersonalDashboard);
+
+
+/* =========================================================
+   REWARDS
+========================================================= */
+
+function addReward(){
+
+  let name=document
+    .getElementById("rewardName")
+    .value.trim();
+
+  let cost=Number(
+    document.getElementById("rewardCost").value
+  );
+
+  if(!name || !cost){
+
+    alert("🎁 Enter reward name and points");
+
+    return;
+
+  }
+
+  rewards.push({
+    name:name,
+    cost:cost
+  });
+
+  document.getElementById("rewardName").value="";
+
+  document.getElementById("rewardCost").value="";
+
+  save();
 
 }
 
 
 function renderRewards(){
 
-let tb=document.querySelector("#rewardTable tbody")
+  let grid=document.getElementById("rewardGrid");
 
-tb.innerHTML=""
+  grid.innerHTML="";
 
-rewards.forEach((r,i)=>{
+  if(rewards.length===0){
 
-let tr=document.createElement("tr")
+    grid.innerHTML=`
+      <div class="reward-card">
+        <div class="reward-icon">🎁</div>
+        <div class="reward-name">
+          No rewards yet
+        </div>
+        <p>Add your first reward above!</p>
+      </div>
+    `;
 
-tr.innerHTML=
+    return;
 
-"<td>"+r.name+"</td>"+
-"<td>"+r.cost+"</td>"+
-"<td><button onclick='redeemReward("+i+")'>Redeem</button></td>"+
-"<td><button onclick='deleteReward("+i+")'>Delete</button></td>"
+  }
 
-tb.appendChild(tr)
+  rewards.forEach((r,i)=>{
 
-})
+    let div=document.createElement("div");
 
-}
+    div.className="reward-card";
 
-function updateLeaderboard(){
+    div.innerHTML=`
 
-let scores={}
+      <div class="reward-icon">🎁</div>
 
-kids.forEach(k=>scores[k]=0)
+      <div class="reward-name">
+        ${escapeHTML(r.name)}
+      </div>
 
-records.forEach(r=>{
-//scores[r.kid] += Number(r.points)
-// convert to numeric
-scores[r.kid] += parseFloat(r.points) || 0
-})
+      <div class="reward-cost">
+        ⭐ ${r.cost}
+      </div>
 
-let arr = Object.entries(scores)
+      <button
+        class="btn-green"
+        onclick="redeemReward(${i})">
+        🎉 REDEEM
+      </button>
 
-arr.sort((a,b)=>b[1]-a[1])
+      <br><br>
 
-let medals=["🥇","🥈","🥉"]
+      <button
+        class="btn-red"
+        onclick="deleteReward(${i})">
+        🗑️ Delete
+      </button>
 
-let html="<h3>Leaderboard</h3>"
+    `;
 
-arr.forEach((a,i)=>{
+    grid.appendChild(div);
 
-html += (medals[i] || "") + " " + a[0] + " - " + a[1] + " pts<br>"
-
-})
-
-leaderboard.innerHTML = html
-
-}
-
-function addReward(){
-
-let name=rewardName.value
-let cost=Number(rewardCost.value)
-
-if(!name || !cost) return
-
-rewards.push({name,cost})
-
-rewardName.value=""
-rewardCost.value=""
-
-save()
+  });
 
 }
+
 
 function deleteReward(i){
 
-rewards.splice(i,1)
+  if(confirm("Delete this reward?")){
 
-save()
+    rewards.splice(i,1);
+
+    save();
+
+  }
 
 }
+
+
+/* =========================================================
+   REDEEM
+========================================================= */
 
 function redeemReward(i){
 
-let reward=rewards[i]
+  let reward=rewards[i];
 
-let kid=kidSelect.value
+  let kid=document.getElementById("kidSelect").value;
 
-let total=0
+  if(!kid){
 
-records.forEach(r=>{
-if(r.kid===kid) total+=r.points
-})
+    alert("👶 Select a kid first!");
 
-rewardHistory.forEach(h=>{
-if(h.kid===kid) total-=h.cost
-})
+    return;
 
+  }
 
-if(total<reward.cost){
+  let total=0;
 
-alert("Not enough points")
+  records.forEach(r=>{
 
-return
+    if(r.kid===kid)
+      total+=Number(r.points)||0;
+
+  });
+
+  rewardHistory.forEach(h=>{
+
+    if(h.kid===kid)
+      total-=Number(h.cost)||0;
+
+  });
+
+  if(total<reward.cost){
+
+    alert(
+      "😔 Not enough points!\n\n"+
+      "You have "+total+
+      " points.\n"+
+      "You need "+reward.cost+
+      " points."
+    );
+
+    return;
+
+  }
+
+  let today=
+    new Date()
+    .toISOString()
+    .slice(0,10);
+
+  records.push({
+
+    date:today,
+
+    kid:kid,
+
+    task:"Reward Redeemed",
+
+    level:reward.name,
+
+    points:-reward.cost
+
+  });
+
+  rewardHistory.push({
+
+    date:today,
+
+    kid:kid,
+
+    reward:reward.name,
+
+    cost:reward.cost
+
+  });
+
+  save();
+
+  alert(
+    "🎉 CONGRATULATIONS!\n\n"+
+    kid+" redeemed:\n"+
+    "🎁 "+reward.name
+  );
 
 }
 
-//new 
 
-if(total>=reward.cost){
-
-let now=new Date()
-
-records.push({
-date:new Date().toISOString().slice(0,10),
-kid:kid,
-task:"Reward Redeemed",
-level:reward.name,
-points:-reward.cost
-})
-
-save()
-renderTable()
-
-}
-
-
-rewardHistory.push({
-
-date:new Date().toISOString().slice(0,10),
-kid:kid,
-reward:reward.name,
-cost:reward.cost
-
-})
-
-save()
-
-}
+/* =========================================================
+   REWARD HISTORY
+========================================================= */
 
 function renderRewardHistory(){
 
-let tb=document.querySelector("#rewardHistory tbody")
+  let tb=document.querySelector(
+    "#rewardHistory tbody"
+  );
 
-tb.innerHTML=""
+  tb.innerHTML="";
 
-rewardHistory.forEach(h=>{
+  rewardHistory
+    .slice()
+    .reverse()
+    .forEach(h=>{
 
-let tr=document.createElement("tr")
+      let tr=document.createElement("tr");
 
-tr.innerHTML=
+      tr.innerHTML=
 
-"<td>"+h.date+"</td>"+
-"<td>"+h.kid+"</td>"+
-"<td>"+h.reward+"</td>"+
-"<td>"+h.cost+"</td>"
+        "<td>"+escapeHTML(h.date)+"</td>"+
 
-tb.appendChild(tr)
+        "<td>👦 "+escapeHTML(h.kid)+"</td>"+
 
-})
+        "<td>🎁 "+escapeHTML(h.reward)+"</td>"+
+
+        "<td>⭐ "+escapeHTML(h.cost)+"</td>";
+
+      tb.appendChild(tr);
+
+    });
 
 }
+
+
+/* =========================================================
+   CALENDAR
+========================================================= */
 
 function prevMonth(){
 
-current.setMonth(current.getMonth()-1)
+  current.setMonth(
+    current.getMonth()-1
+  );
 
-renderCalendar()
+  renderCalendar();
 
 }
+
 
 function nextMonth(){
 
-current.setMonth(current.getMonth()+1)
+  current.setMonth(
+    current.getMonth()+1
+  );
 
-renderCalendar()
+  renderCalendar();
 
 }
+
 
 function renderCalendar(){
 
-calendar.innerHTML=""
+  let cal=document.getElementById("calendar");
 
-let days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+  cal.innerHTML="";
 
-days.forEach(d=>{
+  let days=[
+    "Sun","Mon","Tue",
+    "Wed","Thu","Fri","Sat"
+  ];
 
-let w=document.createElement("div")
-w.className="weekday"
-w.textContent=d
-calendar.appendChild(w)
+  days.forEach(d=>{
 
-})
+    let w=document.createElement("div");
 
-let y=current.getFullYear()
-let m=current.getMonth()
+    w.className="weekday";
 
-monthTitle.innerText=current.toLocaleString("default",{month:"long"})+" "+y
+    w.textContent=d;
 
-let first=new Date(y,m,1)
-let last=new Date(y,m+1,0)
+    cal.appendChild(w);
 
-for(let i=0;i<first.getDay();i++){
+  });
 
-calendar.appendChild(document.createElement("div"))
+  let y=current.getFullYear();
+
+  let m=current.getMonth();
+
+  document.getElementById("monthTitle")
+    .innerText=
+      current.toLocaleString(
+        "default",
+        {month:"long"}
+      )+" "+y;
+
+  let first=new Date(y,m,1);
+
+  let last=new Date(y,m+1,0);
+
+  for(let i=0;i<first.getDay();i++){
+
+    cal.appendChild(
+      document.createElement("div")
+    );
+
+  }
+
+  for(let d=1;d<=last.getDate();d++){
+
+    let ds=
+      y+"-"+
+      String(m+1).padStart(2,"0")+"-"+
+      String(d).padStart(2,"0");
+
+    let div=document.createElement("div");
+
+    div.className="day";
+
+    div.onclick=function(){
+
+      showDayDetails(ds);
+
+    };
+
+    let html=
+      "<div class='day-number'>"+
+      d+
+      "</div>";
+
+    records.forEach(r=>{
+
+      if(r.date===ds){
+
+        html+=
+          "<div class='day-record'>"+
+          "⭐ "+escapeHTML(r.kid)+
+          " +"+escapeHTML(r.points)+
+          "</div>";
+
+      }
+
+    });
+
+    div.innerHTML=html;
+
+    cal.appendChild(div);
+
+  }
 
 }
 
-for(let d=1;d<=last.getDate();d++){
 
-let ds=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0")
-
-let div=document.createElement("div")
-div.className="day"
-
-div.onclick=function(){
-showDayDetails(ds)
-}
-
-let html="<b>"+d+"</b>"
-
-records.forEach(r=>{
-if(r.date===ds){
-html+="<div>"+r.kid+" "+r.points+"</div>"
-}
-})
-
-div.innerHTML=html
-
-calendar.appendChild(div)
-
-}
-
-}
+/* =========================================================
+   DAY DETAILS
+========================================================= */
 
 function showDayDetails(date){
 
-let list=records.filter(r=>r.date===date)
+  let list=
+    records.filter(r=>r.date===date);
 
-if(list.length===0){
+  if(list.length===0){
 
-alert("No records for "+date)
+    alert("📅 No achievements for "+date);
 
-return
+    return;
+
+  }
+
+  let text=
+    "🏆 Achievements for "+date+
+    "\n\n";
+
+  list.forEach(r=>{
+
+    text+=
+      "👦 "+r.kid+
+      "\n🎯 "+r.task+
+      "\n⭐ "+r.points+" points\n\n";
+
+  });
+
+  alert(text);
 
 }
 
-let text="Points for "+date+"\n\n"
 
-list.forEach(r=>{
+/* =========================================================
+   CLEAR RECORDS
+========================================================= */
 
-text+=r.kid+" - "+r.task+" - "+r.points+" pts\n"
+function clearAllRecords(){
 
-})
+  if(confirm(
+    "🚨 Delete ALL achievement and reward history?"
+  )){
 
-alert(text)
+    records=[];
+
+    rewardHistory=[];
+
+    save();
+
+  }
 
 }
 
+
+/* =========================================================
+   EXPORT
+========================================================= */
 
 function exportData(){
 
-let csv="Date,Kid,Task,Level,Points\n"
+  let csv=
+    "Date,Kid,Task,Level,Points\n";
 
-records.forEach(r=>{
+  records.forEach(r=>{
 
-csv += `${r.date},${r.kid},${r.task},${r.level},${r.points}\n`
+    csv+=
+      csvEscape(r.date)+","+
+      csvEscape(r.kid)+","+
+      csvEscape(r.task)+","+
+      csvEscape(r.level)+","+
+      csvEscape(r.points)+
+      "\n";
 
-})
+  });
 
-let blob = new Blob([csv],{type:"text/csv"})
+  let blob=new Blob(
+    [csv],
+    {type:"text/csv;charset=utf-8"}
+  );
 
-let a = document.createElement("a")
-a.href = URL.createObjectURL(blob)
-a.download = "kids_reward_records.csv"
-a.click()
+  let a=document.createElement("a");
+
+  a.href=URL.createObjectURL(blob);
+
+  a.download=
+    "kids_reward_records.csv";
+
+  a.click();
+
+  URL.revokeObjectURL(a.href);
 
 }
+
+
+/* =========================================================
+   IMPORT
+========================================================= */
 
 function importData(e){
 
-let file = e.target.files[0];
-if(!file) return;
+  let file=e.target.files[0];
 
-let reader = new FileReader();
+  if(!file)return;
 
-reader.onload = function(){
+  let reader=new FileReader();
 
-let text = reader.result.trim();
+  reader.onload=function(){
 
-// Split rows safely
-let rows = text.split(/\r?\n/);
+    let text=reader.result.trim();
 
-// Remove header
-rows.shift();
+    if(!text){
 
-records = rows.map(row => {
+      alert("Empty file");
 
-let cols = parseCSVRow(row);
+      return;
 
-return {
-date: cols[0] || "",
-kid: cols[1] || "",
-task: cols[2] || "",
-level: cols[3] || "",
-points: cols[4] || ""
+    }
 
-};
+    let rows=text.split(/\r?\n/);
 
-}).filter(r => r.kid); // remove empty rows
+    rows.shift();
 
-save();
-};
+    let imported=[];
 
-reader.readAsText(file);
-e.target.value = ""
+    rows.forEach(row=>{
+
+      let cols=parseCSVRow(row);
+
+      if(cols.length>=5 && cols[1]){
+
+        imported.push({
+
+          date:cols[0]||"",
+
+          kid:cols[1]||"",
+
+          task:cols[2]||"",
+
+          level:cols[3]||"",
+
+          points:Number(cols[4])||0
+
+        });
+
+      }
+
+    });
+
+    if(imported.length===0){
+
+      alert("❌ No valid records found.");
+
+      return;
+
+    }
+
+    imported.forEach(r=>{
+
+      if(!kids.includes(r.kid))
+        kids.push(r.kid);
+
+    });
+
+    records=records.concat(imported);
+
+    save();
+
+    alert(
+      "✅ Imported "+
+      imported.length+
+      " records successfully!"
+    );
+
+  };
+
+  reader.readAsText(file);
+
+  e.target.value="";
+
 }
+
+
+/* =========================================================
+   CSV PARSER
+========================================================= */
 
 function parseCSVRow(row){
 
-let cols = [];
-let current = "";
-let insideQuotes = false;
+  let cols=[];
 
-for(let i=0;i<row.length;i++){
+  let current="";
 
-let char = row[i];
+  let insideQuotes=false;
 
-if(char === '"'){
-insideQuotes = !insideQuotes;
-}
-else if(char === "," && !insideQuotes){
-cols.push(current);
-current = "";
-}
-else{
-current += char;
-}
+  for(let i=0;i<row.length;i++){
+
+    let char=row[i];
+
+    if(char==='"'){
+
+      if(
+        insideQuotes &&
+        row[i+1]==='"'
+      ){
+
+        current+='"';
+
+        i++;
+
+      }else{
+
+        insideQuotes=!insideQuotes;
+
+      }
+
+    }
+
+    else if(
+      char==="," &&
+      !insideQuotes
+    ){
+
+      cols.push(current);
+
+      current="";
+
+    }
+
+    else{
+
+      current+=char;
+
+    }
+
+  }
+
+  cols.push(current);
+
+  return cols.map(c=>c.trim());
+
 }
 
-cols.push(current);
 
-return cols.map(c => c.trim());
+function csvEscape(value){
+
+  value=String(value??"");
+
+  if(
+    value.includes(",")||
+    value.includes('"')||
+    value.includes("\n")
+  ){
+
+    return '"'+
+      value.replace(/"/g,'""')+
+      '"';
+
+  }
+
+  return value;
+
 }
+
+
+/* =========================================================
+   SECURITY / SAFE HTML
+========================================================= */
+
+function escapeHTML(value){
+
+  return String(value??"")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   INITIAL BUTTON SELECTION
+========================================================= */
+
+window.addEventListener("DOMContentLoaded",function(){
+
+  let firstTask=
+    document.querySelector(".task-button");
+
+  let firstLevel=
+    document.querySelector(".level-button");
+
+  if(firstTask)
+    firstTask.classList.add("selected");
+
+  if(firstLevel)
+    firstLevel.classList.add("selected");
+
+});
 
 </script>
 
