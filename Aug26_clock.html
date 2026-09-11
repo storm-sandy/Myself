@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<title>Ultimate Clock & Alarm</title>
+<style>
+*{box-sizing:border-box}
+:root{
+ --bg:#08111f;--card:rgba(20,31,49,.88);--card2:rgba(30,43,65,.72);
+ --text:#f7f9fc;--muted:#9aa9bd;--accent:#5ea1ff;--danger:#ff6378;
+ --ok:#48d597;--line:rgba(255,255,255,.10);--shadow:0 18px 55px rgba(0,0,0,.35)
+}
+body{margin:0;background:radial-gradient(circle at 20% 0%,#173258 0,#08111f 42%,#050a12 100%);
+color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+.app{max-width:900px;margin:auto;padding:14px 14px 45px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 2px 15px}
+h1{font-size:20px;margin:0}.sub{font-size:12px;color:var(--muted);margin-top:2px}
+.iconbtn,.btn{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:14px;padding:11px 14px;font-weight:700;cursor:pointer}
+.iconbtn{font-size:18px;padding:10px 12px}.btn.primary{background:var(--accent);color:#06101e;border:0}
+.btn.danger{background:rgba(255,99,120,.15);color:#ff9aaa}.btn.ok{background:rgba(72,213,151,.15);color:#75e9b6}
+.clock{padding:22px 15px;text-align:center;border:1px solid var(--line);border-radius:28px;background:linear-gradient(145deg,rgba(35,52,80,.9),rgba(12,20,34,.86));box-shadow:var(--shadow)}
+.time{font-size:clamp(50px,15vw,110px);font-weight:800;letter-spacing:2px;line-height:1}
+.date{color:var(--muted);font-size:14px;margin-top:10px}.zone{font-size:11px;color:var(--accent);margin-top:5px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:0 10px 35px rgba(0,0,0,.18)}
+.card h2{font-size:16px;margin:0 0 12px}.wide{grid-column:1/-1}
+.stat{font-size:27px;font-weight:800}.muted{color:var(--muted);font-size:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}
+input,select{width:100%;background:#0c1728;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:11px;font:inherit}
+label{display:block;color:var(--muted);font-size:12px;margin:8px 0 5px}
+.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.days{display:flex;gap:5px;flex-wrap:wrap}.day input{display:none}.day span{display:block;padding:8px 9px;border:1px solid var(--line);border-radius:10px;font-size:12px;cursor:pointer}.day input:checked+span{background:var(--accent);color:#06101e;font-weight:800}
+.alarm{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid var(--line)}
+.alarm:last-child{border-bottom:0}.alarmtime{font-size:25px;font-weight:800}.alarmname{font-weight:700}.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}.tag{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:3px 7px}
+.switch{position:relative;width:48px;height:27px;display:inline-block;flex:none;cursor:pointer}.switch input{display:none}.slider{position:absolute;inset:0;background:#334257;border-radius:30px}.slider:before{content:"";position:absolute;width:21px;height:21px;left:3px;top:3px;background:white;border-radius:50%;transition:.2s}.switch input:checked+.slider{background:var(--accent)}.switch input:checked+.slider:before{transform:translateX(21px)}
+.actions{display:flex;gap:6px}.small{padding:8px 10px;font-size:12px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:none;align-items:end;justify-content:center;z-index:50}.modal.show{display:flex}.sheet{width:min(700px,100%);background:#0d192b;border:1px solid var(--line);border-radius:25px 25px 0 0;padding:18px;max-height:90vh;overflow:auto}
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,120px);background:#17263d;border:1px solid var(--line);padding:13px 18px;border-radius:15px;transition:.3s;z-index:100;box-shadow:var(--shadow)}.toast.show{transform:translate(-50%,0)}
+.alert{position:fixed;inset:0;background:rgba(2,7,14,.9);display:none;z-index:90;align-items:center;justify-content:center;padding:18px}.alert.show{display:flex}.alertbox{width:min(500px,100%);background:#101d31;border:1px solid var(--accent);border-radius:28px;padding:25px;text-align:center;box-shadow:0 0 70px rgba(94,161,255,.25)}.ring{font-size:60px;animation:pulse 1s infinite}@keyframes pulse{50%{transform:scale(1.15)}}
+footer{text-align:center;color:var(--muted);font-size:11px;margin-top:20px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}.wide{grid-column:auto}.clock{padding:20px 10px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div><h1>⏰ Ultimate Clock</h1><div class="sub">Advanced alarms • notifications • timers • reminders</div></div>
+ <div class="row"><button class="iconbtn" id="settingsBtn" title="Alarm Settings">⚙️</button></div>
+</header>
+
+<section class="clock">
+ <div class="time" id="clock">00:00:00</div>
+ <div class="date" id="date">Loading...</div>
+ <div class="zone" id="zone"></div>
+</section>
+
+<div class="grid">
+<section class="card">
+ <h2>🔔 Next Alarm</h2>
+ <div id="nextAlarm"><div class="muted">No active alarm</div></div>
+</section>
+<section class="card">
+ <h2>🔔 Notifications</h2>
+ <div class="row between">
+  <span id="notifStatus" class="muted">Permission not requested</span>
+  <button class="btn small primary" id="notifBtn">Enable</button>
+ </div>
+</section>
+
+<section class="card wide">
+ <div class="row between"><h2>⏰ Alarms</h2><button class="btn primary" id="addBtn">＋ Add Alarm</button></div>
+ <div id="alarms"></div>
+</section>
+
+<section class="card">
+ <h2>⏱ Stopwatch</h2>
+ <div class="stat" id="sw">00:00:00.00</div>
+ <div class="row" style="margin-top:10px"><button class="btn primary" id="swStart">Start</button><button class="btn" id="swReset">Reset</button></div>
+</section>
+
+<section class="card">
+ <h2>⏳ Countdown</h2>
+ <div class="stat" id="cd">05:00</div>
+ <div class="row" style="margin-top:10px"><button class="btn primary" id="cdStart">Start</button><button class="btn" id="cdSet">Set</button><button class="btn" id="cdReset">Reset</button></div>
+</section>
+
+<section class="card wide">
+ <h2>⚙️ Smart Controls</h2>
+ <div class="row">
+  <button class="btn" id="testSound">🔊 Test Sound</button>
+  <button class="btn" id="vibrate">📳 Test Vibration</button>
+  <button class="btn" id="wake">💡 Keep Screen Awake</button>
+  <button class="btn" id="fullscreen">⛶ Fullscreen</button>
+ </div>
+ <div class="muted" style="margin-top:10px">Tip: keep this page open/PWA installed for the most reliable browser alarm behavior. Browser background/closed-page restrictions can prevent exact-time alarms.</div>
+</section>
+</div>
+<footer>Alarm data is stored locally in your browser. No server required.</footer>
+</div>
+
+<div class="modal" id="setupModal">
+<div class="sheet">
+ <div class="row between"><h2>⚙️ Alarm & Notification Setup</h2><button class="iconbtn" id="closeSetup">✕</button></div>
+ <div class="card" style="margin:10px 0;background:#101e32">
+   <h2>🔔 Notification Permission</h2>
+   <div id="setupNotifStatus" class="muted">Checking permission...</div>
+   <button class="btn primary" id="enableNotif" style="margin-top:10px">🔔 Enable Notifications</button>
+ </div>
+ <div class="card" style="margin:10px 0;background:#101e32">
+   <h2>⏰ Alarm Test</h2>
+   <div class="muted">First test the sound, vibration and notification before relying on an alarm.</div>
+   <div class="row" style="margin-top:10px">
+     <button class="btn" id="setupSound">🔊 Sound</button>
+     <button class="btn" id="setupVibrate">📳 Vibration</button>
+     <button class="btn" id="setupNotify">🔔 Notification</button>
+   </div>
+ </div>
+ <div class="card" style="margin:10px 0;background:#101e32">
+   <h2>📱 If Notifications Are Blocked</h2>
+   <div class="muted">
+     Android/Chrome: tap the browser <b>⋮</b> menu → <b>Settings</b> → <b>Site settings</b> → <b>Notifications</b> → allow this site.
+   </div>
+   <button class="btn" id="browserSettings" style="margin-top:10px">⚙️ Try Open Browser Notification Settings</button>
+ </div>
+ <div class="card" style="margin:10px 0;background:#101e32">
+   <h2>🟢 Keep Alarm Running</h2>
+   <div class="muted">For browser alarms, keep this page/PWA open. Enable screen wake lock when possible. A normal HTML page cannot guarantee alarms after the browser is force-closed.</div>
+   <button class="btn ok" id="setupWake" style="margin-top:10px">💡 Keep Screen Awake</button>
+ </div>
+ <button class="btn primary" id="doneSetup" style="width:100%;margin-top:5px">Done</button>
+</div>
+</div>
+
+<div class="modal" id="modal">
+<div class="sheet">
+ <div class="row between"><h2 id="modalTitle">Add Alarm</h2><button class="iconbtn" id="closeModal">✕</button></div>
+ <input type="hidden" id="editId">
+ <div class="formgrid">
+  <div><label>Time</label><input type="time" id="aTime" required></div>
+  <div><label>Alarm name</label><input id="aName" placeholder="Wake up, medicine, meeting..."></div>
+ </div>
+ <label>Repeat</label>
+ <div class="days">
+  <label class="day"><input type="checkbox" value="0"><span>Sun</span></label>
+  <label class="day"><input type="checkbox" value="1"><span>Mon</span></label>
+  <label class="day"><input type="checkbox" value="2"><span>Tue</span></label>
+  <label class="day"><input type="checkbox" value="3"><span>Wed</span></label>
+  <label class="day"><input type="checkbox" value="4"><span>Thu</span></label>
+  <label class="day"><input type="checkbox" value="5"><span>Fri</span></label>
+  <label class="day"><input type="checkbox" value="6"><span>Sat</span></label>
+ </div>
+ <div class="formgrid">
+  <div><label>Snooze minutes</label><input type="number" id="snooze" min="1" max="60" value="5"></div>
+  <div><label>Sound</label><select id="sound"><option value="beep">Classic Beep</option><option value="digital">Digital</option><option value="pulse">Pulse</option><option value="silent">Silent</option></select></div>
+ </div>
+ <label>Options</label>
+ <div class="row">
+  <label class="day"><input type="checkbox" id="vib" checked><span>📳 Vibration</span></label>
+  <label class="day"><input type="checkbox" id="speech" checked><span>🗣 Voice</span></label>
+  <label class="day"><input type="checkbox" id="notif" checked><span>🔔 Notification</span></label>
+ </div>
+ <div class="row" style="margin-top:15px"><button class="btn primary" id="saveAlarm">Save Alarm</button><button class="btn" id="cancelAlarm">Cancel</button></div>
+</div>
+</div>
+
+<div class="alert" id="ringAlert">
+ <div class="alertbox">
+  <div class="ring">⏰</div><h1 id="ringTitle">Alarm</h1><p id="ringText">Time is up!</p>
+  <div class="row" style="justify-content:center;margin-top:20px">
+   <button class="btn primary" id="dismiss">Dismiss</button><button class="btn" id="snoozeBtn">Snooze</button>
+  </div>
+ </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+let alarms=JSON.parse(localStorage.getItem('ultimateAlarms')||'[]');
+let ringing=null, audioCtx=null, wakeLock=null, lastMinute='';
+let swRunning=false,swStartTime=0,swElapsed=0,swTimer=null;
+let cdRunning=false,cdSeconds=300,cdTimer=null;
+
+function save(){localStorage.setItem('ultimateAlarms',JSON.stringify(alarms));render()}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2500)}
+function daysText(ds){if(!ds?.length)return 'Once'; if(ds.length===7)return 'Every day'; return ds.map(x=>['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][x]).join(' ')}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+
+function render(){
+ const box=$('alarms');box.innerHTML='';
+ if(!alarms.length){box.innerHTML='<div class="muted">No alarms. Add your first alarm.</div>'}
+ alarms.slice().sort((a,b)=>a.time.localeCompare(b.time)).forEach(a=>{
+  const el=document.createElement('div');el.className='alarm';
+  el.innerHTML=`<div><div class="alarmtime">${a.time}</div><div class="alarmname">${esc(a.name||'Alarm')}</div>
+  <div class="tags"><span class="tag">${daysText(a.days)}</span><span class="tag">${a.sound==='silent'?'Silent':a.sound}</span>${a.snooze?`<span class="tag">Snooze ${a.snooze}m</span>`:''}</div></div>
+  <div class="actions"><label class="switch"><input type="checkbox" ${a.enabled?'checked':''} data-toggle="${a.id}"><span class="slider"></span></label>
+  <button class="btn small" data-edit="${a.id}">Edit</button><button class="btn small danger" data-del="${a.id}">Delete</button></div>`;
+  box.appendChild(el)
+ });
+ box.querySelectorAll('[data-toggle]').forEach(x=>x.onchange=()=>{let a=alarms.find(q=>q.id===x.dataset.toggle);a.enabled=x.checked;save()});
+ box.querySelectorAll('[data-edit]').forEach(x=>x.onclick=()=>openEdit(x.dataset.edit));
+ box.querySelectorAll('[data-del]').forEach(x=>x.onclick=()=>{if(confirm('Delete this alarm?')){alarms=alarms.filter(a=>a.id!==x.dataset.del);save();toast('Alarm deleted')}})
+ updateNext()
+}
+
+function updateNext(){
+ const now=new Date();let best=null,bestMs=Infinity;
+ alarms.filter(a=>a.enabled).forEach(a=>{
+  for(let d=0;d<8;d++){
+   let dt=new Date(now);dt.setDate(now.getDate()+d);let [h,m]=a.time.split(':').map(Number);dt.setHours(h,m,0,0);
+   if(dt<=now)continue;
+   if(a.days?.length&&!a.days.includes(dt.getDay()))continue;
+   if(dt-now<bestMs){best=a;bestMs=dt-now}
+   break
+  }
+ });
+ $('nextAlarm').innerHTML=best?`<div class="stat">${best.time}</div><div class="muted">${esc(best.name||'Alarm')} • ${daysText(best.days)}</div>`:'<div class="muted">No active alarm</div>';
+}
+
+function openEdit(id=null){
+ $('modal').classList.add('show');let a=id?alarms.find(x=>x.id===id):null;
+ $('modalTitle').textContent=a?'Edit Alarm':'Add Alarm';$('editId').value=a?.id||'';
+ $('aTime').value=a?.time||'07:00';$('aName').value=a?.name||'';$('snooze').value=a?.snooze??5;$('sound').value=a?.sound||'beep';
+ $('vib').checked=a?.vib!==false;$('speech').checked=a?.speech!==false;$('notif').checked=a?.notif!==false;
+ document.querySelectorAll('.day input').forEach(c=>c.checked=a?.days?.includes(+c.value)||false)
+}
+function closeModal(){$('modal').classList.remove('show')}
+
+$('addBtn').onclick=()=>openEdit();$('closeModal').onclick=closeModal;$('cancelAlarm').onclick=closeModal;
+$('saveAlarm').onclick=()=>{
+ if(!$('aTime').value)return toast('Please select a time');
+ let days=[...document.querySelectorAll('.day input:checked')].map(x=>+x.value);
+ let obj={id:$('editId').value||uid(),time:$('aTime').value,name:$('aName').value.trim()||'Alarm',days,snooze:+$('snooze').value||5,sound:$('sound').value,vib:$('vib').checked,speech:$('speech').checked,notif:$('notif').checked,enabled:true};
+ let i=alarms.findIndex(x=>x.id===obj.id);if(i>=0)alarms[i]=obj;else alarms.push(obj);save();closeModal();toast('Alarm saved');requestNotification()
+};
+
+$('settingsBtn').onclick=openSetup;
+$('closeSetup').onclick=()=>$('setupModal').classList.remove('show');
+$('doneSetup').onclick=()=>$('setupModal').classList.remove('show');
+$('enableNotif').onclick=requestNotification;
+$('setupSound').onclick=()=>{sound('beep');toast('🔊 Sound test played')};
+$('setupVibrate').onclick=()=>{vibrate();toast('📳 Vibration test sent')};
+$('setupNotify').onclick=async()=>{
+ const p=await requestNotification();
+ if(p==='granted') notify('🔔 Test notification','Notifications are working.');
+};
+
+$('setupWake').onclick=toggleWakeLock;
+$('wake').onclick=toggleWakeLock;
+
+async function toggleWakeLock(){
+ try{
+  if(!('wakeLock' in navigator)){toast('Wake Lock is not supported');return}
+  if(wakeLock){
+    await wakeLock.release();
+    wakeLock=null;
+    toast('💡 Screen wake lock disabled');
+  }else{
+    wakeLock=await navigator.wakeLock.request('screen');
+    toast('💡 Screen wake lock enabled');
+  }
+ }catch(e){toast('Wake lock error: '+e.message)}
+}
+
+$('browserSettings').onclick=()=>{
+ const urls=['chrome://settings/content/notifications'];
+ let w=window.open(urls[0],'_blank');
+ if(!w) toast('Browser blocked settings page. Use ⋮ → Settings → Site settings → Notifications.');
+};
+
+async function requestNotification(){
+ if(!('Notification' in window)){
+   updateNotif('unsupported');
+   toast('This browser does not support notifications');
+   openSetup();
+   return 'unsupported';
+ }
+ try{
+   const p=await Notification.requestPermission();
+   updateNotif(p);
+   updateSetupStatus(p);
+   if(p==='granted'){
+     toast('✅ Notifications enabled');
+     notify('Notifications enabled','Your alarm notifications are ready.');
+   }else if(p==='denied'){
+     toast('Notifications are blocked — open Settings');
+     openSetup();
+   }
+   return p;
+ }catch(e){
+   toast('Notification permission request error');
+   openSetup();
+ }
+}
+
+function updateNotif(p){
+ if(!('Notification' in window) || p==='unsupported'){
+   $('notifStatus').textContent='Notifications not supported here';
+   $('notifBtn').textContent='Settings';
+   return;
+ }
+ p=p||Notification.permission;
+ $('notifStatus').textContent='Permission: '+p;
+ $('notifBtn').textContent=p==='granted'?'Enabled':'Enable';
+}
+
+function updateSetupStatus(p){
+ const el=$('setupNotifStatus');
+ if(!el)return;
+ if(!('Notification' in window) || p==='unsupported'){
+   el.innerHTML='❌ This browser/page does not provide the Notification API.';
+ }else if(p==='granted'){
+   el.innerHTML='✅ Notifications are <b>enabled</b>.';
+ }else if(p==='denied'){
+   el.innerHTML='🚫 Notifications are <b>blocked</b>. Open browser/site settings and allow them.';
+ }else{
+   el.innerHTML='⚠️ Notifications are not enabled yet. Tap <b>Enable Notifications</b>.';
+ }
+}
+
+function openSetup(){
+ $('setupModal').classList.add('show');
+ if('Notification' in window){updateNotif();updateSetupStatus(Notification.permission)}
+ else updateSetupStatus('unsupported');
+}
+
+$('notifBtn').onclick=()=>{if('Notification'in window && Notification.permission==='denied')openSetup();else requestNotification()};
+if('Notification'in window){updateNotif();updateSetupStatus(Notification.permission)}else{updateNotif('unsupported');updateSetupStatus('unsupported')}
+
+function notify(title,text){
+ if('Notification'in window&&Notification.permission==='granted'){
+  try{new Notification(title,{body:text,tag:'ultimate-alarm',renotify:true})}catch(e){}
+ }
+}
+
+function audioStart(){
+ if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+ if(audioCtx.state==='suspended')audioCtx.resume()
+}
+
+function sound(type='beep'){
+ if(type==='silent')return;
+ try{
+  audioStart();
+  const now=audioCtx.currentTime;
+  const patterns=type==='digital'?[660,880,660,880]:type==='pulse'?[440,440,880,440]:[880,660,880];
+  patterns.forEach((f,i)=>{
+    let o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.frequency.value=f;o.type='sine';
+    g.gain.setValueAtTime(.0001,now+i*.25);
+    g.gain.exponentialRampToValueAtTime(.25,now+i*.25+.02);
+    g.gain.exponentialRampToValueAtTime(.0001,now+i*.25+.20);
+    o.connect(g).connect(audioCtx.destination);
+    o.start(now+i*.25);
+    o.stop(now+i*.25+.22);
+  });
+ }catch(e){}
+}
+
+function speak(t){
+  try{
+    if('speechSynthesis' in window){
+      speechSynthesis.cancel();
+      let u=new SpeechSynthesisUtterance(t);
+      u.rate=.9;u.pitch=1;
+      speechSynthesis.speak(u);
+    }
+  }catch(e){}
+}
+
+function vibrate(){if('vibrate' in navigator)navigator.vibrate([400,150,400,150,700])}
+
+function ring(a){
+ ringing=a;
+ $('ringTitle').textContent='⏰ '+(a.name||'Alarm');
+ $('ringText').textContent='Your alarm is ringing now.';
+ $('ringAlert').classList.add('show');
+ sound(a.sound);
+ if(a.vib)vibrate();
+ if(a.speech)speak('Alarm! '+(a.name||'Time is up!'));
+ if(a.notif)notify('⏰ '+(a.name||'Alarm'),'Time is up!');
+}
+
+$('dismiss').onclick=()=>{
+ $('ringAlert').classList.remove('show');
+ ringing=null;
+ if('speechSynthesis' in window) speechSynthesis.cancel();
+};
+
+$('snoozeBtn').onclick=()=>{
+ if(!ringing) return;
+ let snoozeMin=ringing.snooze||5;
+ let now=new Date();
+ now.setMinutes(now.getMinutes()+snoozeMin);
+ let h=String(now.getHours()).padStart(2,'0');
+ let m=String(now.getMinutes()).padStart(2,'0');
+ 
+ let snoozedAlarm={
+   id: uid(),
+   time: `${h}:${m}`,
+   name: `[Snoozed] ${ringing.name}`,
+   days: [],
+   snooze: snoozeMin,
+   sound: ringing.sound,
+   vib: ringing.vib,
+   speech: ringing.speech,
+   notif: ringing.notif,
+   enabled: true
+ };
+ alarms.push(snoozedAlarm);
+ save();
+ toast(`Snoozed for ${snoozeMin} minutes`);
+ $('dismiss').click();
+};
+
+// Controls
+$('testSound').onclick=()=>{sound('beep');toast('🔊 Played test sound')};
+$('vibrate').onclick=()=>{vibrate();toast('📳 Sent test vibration')};
+$('fullscreen').onclick=()=>{
+ if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+ else document.exitFullscreen().catch(()=>{});
+};
+
+// Stopwatch
+$('swStart').onclick=()=>{
+ if(!swRunning){
+   swRunning=true;
+   swStartTime=Date.now()-swElapsed;
+   swTimer=setInterval(()=>{
+     swElapsed=Date.now()-swStartTime;
+     let ms=Math.floor((swElapsed%1000)/10);
+     let s=Math.floor((swElapsed/1000)%60);
+     let m=Math.floor((swElapsed/60000)%60);
+     let h=Math.floor(swElapsed/3600000);
+     $('sw').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(ms).padStart(2,'0')}`;
+   },20);
+   $('swStart').textContent='Pause';
+ }else{
+   swRunning=false;
+   clearInterval(swTimer);
+   $('swStart').textContent='Start';
+ }
+};
+$('swReset').onclick=()=>{
+ swRunning=false;clearInterval(swTimer);swElapsed=0;
+ $('sw').textContent='00:00:00.00';
+ $('swStart').textContent='Start';
+};
+
+// Countdown Timer
+function updateCD(){
+ let m=Math.floor(cdSeconds/60);
+ let s=cdSeconds%60;
+ $('cd').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+$('cdStart').onclick=()=>{
+ if(!cdRunning){
+   if(cdSeconds<=0) return;
+   cdRunning=true;
+   $('cdStart').textContent='Pause';
+   cdTimer=setInterval(()=>{
+     cdSeconds--;
+     updateCD();
+     if(cdSeconds<=0){
+       clearInterval(cdTimer);
+       cdRunning=false;
+       $('cdStart').textContent='Start';
+       ring({name:'Countdown Timer',sound:'digital',vib:true,speech:true,notif:true});
+     }
+   },1000);
+ }else{
+   cdRunning=false;
+   clearInterval(cdTimer);
+   $('cdStart').textContent='Start';
+ }
+};
+$('cdSet').onclick=()=>{
+ let m=prompt('Enter countdown time in minutes:', Math.floor(cdSeconds/60));
+ if(m!==null && !isNaN(m)){
+   cdSeconds=Math.max(1, parseInt(m)*60);
+   updateCD();
+   if(cdRunning){$('cdStart').click();}
+ }
+};
+$('cdReset').onclick=()=>{
+ cdRunning=false;clearInterval(cdTimer);
+ cdSeconds=300;
+ updateCD();
+ $('cdStart').textContent='Start';
+};
+
+// Main Clock Loop
+function tick(){
+ const now=new Date();
+ const h=String(now.getHours()).padStart(2,'0');
+ const m=String(now.getMinutes()).padStart(2,'0');
+ const s=String(now.getSeconds()).padStart(2,'0');
+ const timeStr=`${h}:${m}:${s}`;
+ const minuteStr=`${h}:${m}`;
+
+ $('clock').textContent=timeStr;
+ $('date').textContent=now.toLocaleDateString(undefined, {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+ $('zone').textContent=Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+ if(minuteStr!==lastMinute){
+   lastMinute=minuteStr;
+   const currentDay=now.getDay();
+   alarms.forEach(a=>{
+     if(a.enabled && a.time===minuteStr){
+       if(!a.days?.length || a.days.includes(currentDay)){
+         ring(a);
+         if(!a.days?.length){ a.enabled=false; save(); }
+       }
+     }
+   });
+ }
+}
+
+setInterval(tick, 1000);
+tick();
+render();
+</script>
+</body>
+</html>
