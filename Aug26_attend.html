@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance & Event Management Dashboard</title>
+<style>
+  :root {
+    --primary: #0056b3;
+    --primary-hover: #003d80;
+    --bg-color: #f4f6f8;
+    --card-bg: #ffffff;
+    --text-main: #111111;
+    --text-muted: #444444;
+    --border-color: #cccccc;
+    --present-bg: #d4edda;
+    --present-text: #155724;
+    --absent-bg: #f8d7da;
+    --absent-text: #721c24;
+    --alarm-color: #d9534f;
+    --focus-ring: #ffbf47;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg-color);
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  header {
+    background: #ffffff;
+    border-bottom: 2px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+  }
+  .header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 16px 0 16px;
+  }
+  .header-title-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  h2 { font-size: 22px; margin: 0; color: var(--text-main); font-weight: 700; }
+  .nav-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav-tab {
+    padding: 10px 16px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-muted);
+    background: #e9ecef;
+    border: 2px solid var(--border-color);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .nav-tab:hover { color: var(--primary); background: #ffffff; }
+  .nav-tab.active { color: #ffffff; background: var(--primary); border-color: var(--primary); }
+  .dashboard-container { max-width: 1200px; margin: 16px auto; padding: 0 16px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .card {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  h3 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 16px;
+    border-bottom: 3px solid var(--primary);
+    padding-bottom: 8px;
+    color: var(--text-main);
+    font-weight: 700;
+  }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; }
+  button, .btn {
+    background: var(--primary);
+    color: white;
+    border: 2px solid transparent;
+    padding: 10px 18px;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  button:hover { background: var(--primary-hover); }
+  button:focus { outline: 3px solid var(--focus-ring); }
+  button.secondary { background: #ffffff; color: var(--text-main); border: 2px solid var(--border-color); }
+  button.secondary:hover { background: #e9ecef; }
+  button.danger { background: #c92a2a; }
+  button.danger:hover { background: #a61e1e; }
+  button.warning { background: #d97706; }
+  button.warning:hover { background: #b45309; }
+  .entry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    align-items: end;
+  }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group label { font-size: 14px; color: var(--text-main); margin-bottom: 6px; font-weight: 700; }
+  .form-group input, .form-group select {
+    padding: 10px 12px;
+    font-size: 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    outline: none;
+    background: white;
+    color: var(--text-main);
+    width: 100%;
+  }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0,86,179,0.25);
+  }
+  .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; background: white; font-size: 14px; }
+  th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; }
+  th { background: #e9ecef; color: var(--text-main); font-weight: 700; font-size: 15px; }
+  td[contenteditable="true"]:focus { outline: 2px solid var(--primary); background: #e8f0fe; }
+  .action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  canvas { width: 100%; height: 280px; background: white; border-radius: 8px; border: 1px solid var(--border-color); }
+  .metric-box {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f8f9fa;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary);
+    border-radius: 6px;
+    font-size: 15px;
+    color: var(--text-main);
+  }
+  .metric-box strong { color: var(--primary); }
+  .calendar-card { padding: 0; overflow: hidden; }
+  .calendarHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: #ffffff;
+    border-bottom: 2px solid var(--border-color);
+    gap: 8px;
+  }
+  .calendarHeader span { font-size: 18px; font-weight: 700; color: var(--text-main); text-align: center; }
+  .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--border-color); gap: 1px; }
+  .calendar-grid.week-header { background: #e9ecef; font-weight: 700; text-align: center; }
+  .calendar-grid.week-header div { padding: 10px 0; color: var(--text-main); font-size: 13px; text-transform: uppercase; }
+  .day {
+    background: white;
+    min-height: 90px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: background 0.2s;
+    overflow-y: auto;
+    max-height: 120px;
+  }
+  .day:hover { background: #e9ecef; }
+  .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .day-number {
+    font-size: 14px;
+    font-weight: 700;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--text-main);
+  }
+  .today .day-number { background: var(--primary); color: white; }
+  .status-badge { font-size: 11px; padding: 2px 6px; border-radius: 10px; font-weight: 700; text-align: center; }
+  .status-badge.present { background: var(--present-bg); color: var(--present-text); border: 1px solid var(--present-text); }
+  .status-badge.absent { background: var(--absent-bg); color: var(--absent-text); border: 1px solid var(--absent-text); }
+  .event-pill {
+    background: #e8f0fe;
+    color: var(--primary);
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 3px;
+    font-weight: 700;
+    word-break: break-word;
+    border-left: 3px solid var(--primary);
+  }
+  .event-pill.triggered { background: #fff3cd; color: #856404; border-left-color: #d97706; }
+  .remark-pill {
+    background: #e9ecef;
+    color: var(--text-muted);
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 3px;
+    font-style: italic;
+    word-break: break-word;
+  }
+  .report { font-size: 15px; line-height: 1.6; }
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+  }
+  .modal-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    border: 3px solid var(--alarm-color);
+  }
+  .modal-card h4 {
+    margin-top: 0;
+    font-size: 20px;
+    color: var(--alarm-color);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+  }
+  .modal-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 16px; }
+  .snooze-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; margin-bottom: 10px; }
+  .file-upload-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    background: var(--primary);
+    color: white;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+    min-height: 44px;
+  }
+  .file-upload-label:hover { background: var(--primary-hover); }
+  @media (min-width: 768px) {
+    body { font-size: 18px; }
+    h2 { font-size: 28px; }
+    h3 { font-size: 22px; }
+    .nav-tab { font-size: 17px; padding: 14px 20px; }
+    button, .btn { font-size: 17px; padding: 12px 20px; min-height: 48px; }
+    .form-group label { font-size: 16px; }
+    .form-group input, .form-group select { font-size: 17px; padding: 12px; }
+    table { font-size: 16px; }
+    th { font-size: 17px; }
+    .day { min-height: 120px; padding: 8px; }
+    .day-number { font-size: 16px; width: 30px; height: 30px; }
+    .status-badge, .event-pill, .remark-pill { font-size: 12px; padding: 3px 8px; }
+    .calendarHeader span { font-size: 22px; }
+  }
+  @media (max-width: 480px) {
+    .entry-grid { grid-template-columns: 1fr; }
+    .calendar-grid.week-header div { font-size: 11px; }
+    .day { min-height: 70px; padding: 4px; }
+    .day-number { width: 22px; height: 22px; font-size: 12px; }
+    .status-badge, .event-pill, .remark-pill { font-size: 10px; padding: 2px 4px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-container">
+    <div class="header-title-bar">
+      <h2>Attendance & Event Dashboard</h2>
+      <div class="controls">
+        <button onclick="requestNotificationPermission()" class="secondary">🔔 Reminders</button>
+      </div>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('tab-calendar')">1. Calendar View</button>
+      <button class="nav-tab" onclick="switchTab('tab-chart')">2. Hours Overview</button>
+      <button class="nav-tab" onclick="switchTab('tab-events')">3. Events & Reminders</button>
+      <button class="nav-tab" onclick="switchTab('tab-data-entry')">4. Attendance Entry</button>
+      <button class="nav-tab" onclick="switchTab('tab-data-management')">5. Data Management</button>
+    </div>
+  </div>
+</header>
+
+<div class="dashboard-container">
+  <!-- TAB 1: Calendar View -->
+  <div id="tab-calendar" class="tab-panel active">
+    <div class="card calendar-card">
+      <div class="calendarHeader">
+        <button onclick="prevMonth()" class="secondary">◀ Prev</button>
+        <span id="monthLabel"></span>
+        <button onclick="nextMonth()" class="secondary">Next ▶</button>
+      </div>
+      <div class="calendar-grid week-header">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div>
+        <div>Thu</div><div>Fri</div><div>Sat</div>
+      </div>
+      <div id="calendar" class="calendar-grid"></div>
+    </div>
+  </div>
+
+  <!-- TAB 2: Hours Overview (Daily, Monthly, Quarterly, Yearly) -->
+  <div id="tab-chart" class="tab-panel">
+    <div class="card">
+      <h3>Daily Hours Trend (Line Chart)</h3>
+      <canvas id="chartDaily"></canvas>
+    </div>
+    <div class="card">
+      <h3>Monthly Hours Overview</h3>
+      <canvas id="chartMonthly"></canvas>
+      <div id="metricMonthly" class="metric-box">Monthly Completion Percentage: <strong>0%</strong></div>
+    </div>
+    <div class="card">
+      <h3>Quarterly Hours Overview</h3>
+      <canvas id="chartQuarterly"></canvas>
+      <div id="metricQuarterly" class="metric-box">Quarterly Completion Percentage: <strong>0%</strong></div>
+    </div>
+    <div class="card">
+      <h3>Yearly Hours Overview</h3>
+      <canvas id="chartYearly"></canvas>
+      <div id="metricYearly" class="metric-box">Yearly Completion Percentage: <strong>0%</strong></div>
+    </div>
+  </div>
+
+  <!-- TAB 3: Event Management -->
+  <div id="tab-events" class="tab-panel">
+    <div class="card">
+      <h3 id="eventFormTitle">Add New Event / Reminder</h3>
+      <input type="hidden" id="editEventId" value="">
+      <div class="entry-grid">
+        <div class="form-group">
+          <label for="eventDate">Event Date</label>
+          <input type="date" id="eventDate">
+        </div>
+        <div class="form-group">
+          <label for="eventTime">Event Time</label>
+          <input type="time" id="eventTime">
+        </div>
+        <div class="form-group">
+          <label for="eventPriority">Priority Level</label>
+          <select id="eventPriority">
+            <option value="Normal">Normal</option>
+            <option value="High">High</option>
+            <option value="Urgent">Urgent</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column: span 2;">
+          <label for="eventTitle">Event Title / Notes</label>
+          <input type="text" id="eventTitle" placeholder="e.g. Doctor Appointment / Family Call">
+        </div>
+        <div style="display: flex; gap: 10px; align-items: flex-end;">
+          <button onclick="saveEventFromForm()" id="saveEventBtn">⏰ Save Event</button>
+          <button onclick="cancelEventEdit()" id="cancelEventBtn" class="secondary" style="display:none;">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Scheduled Events & Reminders</h3>
+      <div class="table-responsive">
+        <table id="eventsTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Priority</th>
+              <th>Event Title</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: Attendance Data Entry & Records -->
+  <div id="tab-data-entry" class="tab-panel">
+    <div class="card">
+      <h3>Record Attendance Entry</h3>
+      <div class="entry-grid">
+        <div class="form-group">
+          <label for="inputName">Full Name</label>
+          <input type="text" id="inputName" value="John Doe">
+        </div>
+        <div class="form-group">
+          <label for="inputDate">Date</label>
+          <input type="date" id="inputDate">
+        </div>
+        <div class="form-group">
+          <label for="inputTimeIn">Time In</label>
+          <input type="time" id="inputTimeIn">
+        </div>
+        <div class="form-group">
+          <label for="inputTimeOut">Time Out</label>
+          <input type="time" id="inputTimeOut">
+        </div>
+        <div class="form-group">
+          <label for="inputRemarks">Remarks / Notes</label>
+          <input type="text" id="inputRemarks" placeholder="e.g. On time / Remote">
+        </div>
+        <button onclick="addEntryFromForm()">+ Record Attendance</button>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+        <h3 style="margin: 0; border: none; padding: 0;">Attendance Records</h3>
+        <div class="controls">
+          <button onclick="monthlyReport()" class="secondary">📊 Monthly Report</button>
+          <button onclick="yearlyReport()" class="secondary">📈 Yearly Report</button>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table id="attendanceTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Date</th>
+              <th>Time In</th>
+              <th>Time Out</th>
+              <th>Total Hours</th>
+              <th>Remarks</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="reportCard" class="card" style="display:none;">
+      <div id="report" class="report"></div>
+    </div>
+  </div>
+
+  <!-- TAB 5: Data Management -->
+  <div id="tab-data-management" class="tab-panel">
+    <div class="card">
+      <h3>Export System Data</h3>
+      <p style="margin-top:0; color: var(--text-muted);">Download attendance logs and event schedules as CSV or JSON.</p>
+      <div class="controls">
+        <button onclick="exportCSV()" class="secondary">📥 Export Attendance CSV</button>
+        <button onclick="exportJSON()" class="secondary">📦 Export Full JSON Backup</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Import Backup Data</h3>
+      <p style="margin-top:0; color: var(--text-muted);">Restore attendance records and events from a JSON backup file.</p>
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <label for="importFileInput" class="file-upload-label">📂 Choose Backup File (.json)</label>
+        <input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="importJSON(event)">
+        <span id="fileNameDisplay" style="font-size: 14px; color: var(--text-muted); font-style: italic;">No file selected</span>
+      </div>
+    </div>
+    <div class="card" style="border-color: #f5c6cb;">
+      <h3 style="border-bottom-color: var(--alarm-color); color: var(--alarm-color);">Clear Dashboard Data</h3>
+      <p style="margin-top:0; color: var(--text-muted);">Permanently remove all records and schedules from local storage.</p>
+      <button onclick="clearAll()" class="danger">🗑️ Clear All Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- Alarm Modal -->
+<div class="modal-overlay" id="alarmModal">
+  <div class="modal-card" style="text-align: center;">
+    <h4>⏰ Event Reminder Triggered!</h4>
+    <p id="alarmModalText" style="font-size: 18px; font-weight: 700; margin: 16px 0;"></p>
+    <p style="font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 10px;">Choose Snooze Duration:</p>
+    <div class="snooze-options">
+      <button onclick="snoozeAlarm(5)" class="warning">💤 5 Min</button>
+      <button onclick="snoozeAlarm(10)" class="warning">💤 10 Min</button>
+      <button onclick="snoozeAlarm(15)" class="warning">💤 15 Min</button>
+    </div>
+    <div class="modal-actions">
+      <button onclick="dismissAlarm()" class="danger" style="width: 100%; font-size: 16px;">❌ Dismiss Reminder</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let attendanceTableBody = document.querySelector("#attendanceTable tbody");
+let eventsTableBody = document.querySelector("#eventsTable tbody");
+let currentMonth = new Date();
+let eventsList = JSON.parse(localStorage.getItem("dashboardEventsList") || "[]");
+let activeAlarmEvent = null;
+let audioContext = null;
+
+function switchTab(tabId) {
+  document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.remove("active"));
+  document.querySelectorAll(".nav-tab").forEach(tab => tab.classList.remove("active"));
+  document.getElementById(tabId).classList.add("active");
+  const activeBtn = Array.from(document.querySelectorAll(".nav-tab")).find(btn => 
+    btn.getAttribute("onclick").includes(tabId)
+  );
+  if (activeBtn) activeBtn.classList.add("active");
+  if (tabId === "tab-chart") {
+    setTimeout(updateGraphAscending, 50);
+  } else if (tabId === "tab-calendar") {
+    generateCalendar();
+  }
+}
+
+function getTodayString() {
+  const d = new Date();
+  return d.toISOString().split("T")[0];
+}
+
+function getCurrentTimeString() {
+  const d = new Date();
+  return d.toTimeString().split(" ")[0].substring(0, 5);
+}
+
+function initFormDefaults() {
+  const today = getTodayString();
+  const timeNow = getCurrentTimeString();
+  document.getElementById("inputDate").value = today;
+  document.getElementById("eventDate").value = today;
+  document.getElementById("inputTimeIn").value = timeNow;
+  document.getElementById("eventTime").value = timeNow;
+}
+
+function addEntryFromForm() {
+  let name = document.getElementById("inputName").value || "N/A";
+  let date = document.getElementById("inputDate").value || getTodayString();
+  let timeIn = document.getElementById("inputTimeIn").value || "";
+  let timeOut = document.getElementById("inputTimeOut").value || "";
+  let remarks = document.getElementById("inputRemarks").value || "";
+  insertAttendanceRow(name, date, timeIn, timeOut, remarks);
+  saveData();
+  updateAll();
+  alert("Attendance record added successfully!");
+}
+
+function insertAttendanceRow(name, date, timeIn, timeOut, remarks) {
+  let row = attendanceTableBody.insertRow();
+  row.innerHTML = `
+    <td contenteditable="true">${name}</td>
+    <td contenteditable="true">${date}</td>
+    <td contenteditable="true">${timeIn}</td>
+    <td contenteditable="true">${timeOut}</td>
+    <td>0.00</td>
+    <td contenteditable="true">${remarks}</td>
+    <td><button class="danger" onclick="deleteAttendanceRow(this)">Delete</button></td>
+  `;
+}
+
+function deleteAttendanceRow(btn) {
+  if (confirm("Are you sure you want to delete this record?")) {
+    btn.parentElement.parentElement.remove();
+    saveData();
+    updateAll();
+  }
+}
+
+function calculateHours() {
+  let rows = attendanceTableBody.querySelectorAll("tr");
+  rows.forEach(r => {
+    let cells = r.querySelectorAll("td");
+    if (cells.length > 0) {
+      let inTime = cells[2]?.innerText.trim();
+      let outTime = cells[3]?.innerText.trim();
+      if (inTime && outTime) {
+        let start = new Date("1970/01/01 " + inTime);
+        let end = new Date("1970/01/01 " + outTime);
+        let diff = (end - start) / 3600000;
+        if (!isNaN(diff) && diff >= 0) {
+          cells[4].innerText = diff.toFixed(2);
+        } else {
+          cells[4].innerText = "0.00";
+        }
+      } else {
+        cells[4].innerText = "0.00";
+      }
+    }
+  });
+}
+
+function saveEventFromForm() {
+  let id = document.getElementById("editEventId").value;
+  let date = document.getElementById("eventDate").value;
+  let time = document.getElementById("eventTime").value || "09:00";
+  let priority = document.getElementById("eventPriority").value;
+  let title = document.getElementById("eventTitle").value;
+
+  if (!date || !title) {
+    alert("Please fill in both the event date and title.");
+    return;
+  }
+
+  if (id) {
+    let ev = eventsList.find(e => e.id == id);
+    if (ev) {
+      ev.date = date;
+      ev.time = time;
+      ev.priority = priority;
+      ev.title = title;
+      ev.triggered = false;
+    }
+  } else {
+    let newEvent = { id: Date.now(), date: date, time: time, priority: priority, title: title, triggered: false };
+    eventsList.push(newEvent);
+  }
+  saveData();
+  renderEventsTable();
+  generateCalendar();
+  resetEventForm();
+  alert(id ? "Event updated successfully!" : "Event scheduled successfully!");
+}
+
+function renderEventsTable() {
+  eventsTableBody.innerHTML = "";
+  eventsList.sort((a,b) => new Date(a.date + "T" + a.time) - new Date(b.date + "T" + b.time));
+  eventsList.forEach(ev => {
+    let row = eventsTableBody.insertRow();
+    row.innerHTML = `
+      <td>${ev.date}</td>
+      <td>${ev.time}</td>
+      <td><strong>${ev.priority || 'Normal'}</strong></td>
+      <td>${ev.title}</td>
+      <td>${ev.triggered ? '<span style="color:#d97706; font-weight:bold;">Triggered</span>' : '<span style="color:#155724; font-weight:bold;">Active</span>'}</td>
+      <td class="action-btns">
+        <button onclick="snoozeEventDirectly(${ev.id})" class="warning">💤 Snooze 10m</button>
+        <button onclick="editEvent(${ev.id})" class="secondary">Edit</button>
+        <button onclick="deleteEvent(${ev.id})" class="danger">Delete</button>
+      </td>
+    `;
+  });
+}
+
+function snoozeEventDirectly(id) {
+  let ev = eventsList.find(e => e.id == id);
+  if (ev) {
+    let now = new Date();
+    now.setMinutes(now.getMinutes() + 10);
+    ev.date = now.toISOString().split("T")[0];
+    ev.time = now.toTimeString().split(" ")[0].substring(0, 5);
+    ev.triggered = false;
+    saveData();
+    renderEventsTable();
+    generateCalendar();
+    alert(`Event "${ev.title}" snoozed for 10 minutes!`);
+  }
+}
+
+function editEvent(id) {
+  let ev = eventsList.find(e => e.id == id);
+  if (ev) {
+    document.getElementById("editEventId").value = ev.id;
+    document.getElementById("eventDate").value = ev.date;
+    document.getElementById("eventTime").value = ev.time;
+    document.getElementById("eventPriority").value = ev.priority || "Normal";
+    document.getElementById("eventTitle").value = ev.title;
+    document.getElementById("eventFormTitle").innerText = "Edit Event / Reminder";
+    document.getElementById("saveEventBtn").innerText = "💾 Update Event";
+    document.getElementById("cancelEventBtn").style.display = "inline-block";
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function cancelEventEdit() { resetEventForm(); }
+
+function resetEventForm() {
+  document.getElementById("editEventId").value = "";
+  document.getElementById("eventTitle").value = "";
+  document.getElementById("eventDate").value = getTodayString();
+  document.getElementById("eventTime").value = getCurrentTimeString();
+  document.getElementById("eventPriority").value = "Normal";
+  document.getElementById("eventFormTitle").innerText = "Add New Event / Reminder";
+  document.getElementById("saveEventBtn").innerText = "⏰ Save Event";
+  document.getElementById("cancelEventBtn").style.display = "none";
+}
+
+function deleteEvent(id) {
+  if (confirm("Are you sure you want to delete this event?")) {
+    eventsList = eventsList.filter(e => e.id != id);
+    saveData();
+    renderEventsTable();
+    generateCalendar();
+  }
+}
+
+function saveData() {
+  let records = [];
+  let rows = attendanceTableBody.querySelectorAll("tr");
+  rows.forEach(r => {
+    let cells = r.querySelectorAll("td");
+    if (cells.length > 0) {
+      records.push({
+        name: cells[0].innerText,
+        date: cells[1].innerText,
+        timeIn: cells[2].innerText,
+        timeOut: cells[3].innerText,
+        hours: cells[4].innerText,
+        remarks: cells[5].innerText
+      });
+    }
+  });
+  localStorage.setItem("attendanceData", JSON.stringify(records));
+  localStorage.setItem("dashboardEventsList", JSON.stringify(eventsList));
+}
+
+function loadData() {
+  let data = localStorage.getItem("attendanceData");
+  if (data) {
+    let records = JSON.parse(data);
+    attendanceTableBody.innerHTML = "";
+    records.forEach(rec => {
+      let row = attendanceTableBody.insertRow();
+      row.innerHTML = `
+        <td contenteditable="true">${rec.name}</td>
+        <td contenteditable="true">${rec.date}</td>
+        <td contenteditable="true">${rec.timeIn}</td>
+        <td contenteditable="true">${rec.timeOut}</td>
+        <td>${rec.hours || "0.00"}</td>
+        <td contenteditable="true">${rec.remarks}</td>
+        <td><button class="danger" onclick="deleteAttendanceRow(this)">Delete</button></td>
+      `;
+    });
+  }
+  renderEventsTable();
+}
+
+function updateAll() {
+  calculateHours();
+  updateGraphAscending();
+  generateCalendar();
+}
+
+document.addEventListener("input", function(e) {
+  if (e.target.closest("#attendanceTable")) {
+    calculateHours();
+    saveData();
+    updateGraphAscending();
+    generateCalendar();
+  }
+});
+
+function clearAll() {
+  if (confirm("Are you sure you want to clear ALL attendance records and events? This action cannot be undone.")) {
+    localStorage.removeItem("attendanceData");
+    localStorage.removeItem("dashboardEventsList");
+    attendanceTableBody.innerHTML = "";
+    eventsList = [];
+    renderEventsTable();
+    updateAll();
+    alert("All data has been cleared.");
+  }
+}
+
+function exportCSV() {
+  let rows = document.querySelectorAll("#attendanceTable tr");
+  let csv = [];
+  rows.forEach(r => {
+    let cols = r.querySelectorAll("td,th");
+    let row = [];
+    cols.forEach((c, idx) => {
+      if (idx !== 6) row.push(`"${c.innerText.replace(/"/g, '""')}"`);
+    });
+    csv.push(row.join(","));
+  });
+  let blob = new Blob([csv.join("\n")], { type: "text/csv" });
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `attendance_export_${getTodayString()}.csv`;
+  a.click();
+}
+
+function exportJSON() {
+  let attendanceRecords = JSON.parse(localStorage.getItem("attendanceData") || "[]");
+  let dataBundle = {
+    attendance: attendanceRecords,
+    events: eventsList,
+    exportDate: new Date().toISOString()
+  };
+  let blob = new Blob([JSON.stringify(dataBundle, null, 2)], { type: "application/json" });
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `dashboard_backup_${getTodayString()}.json`;
+  a.click();
+}
+
+function importJSON(event) {
+  let file = event.target.files[0];
+  if (!file) return;
+  document.getElementById("fileNameDisplay").innerText = file.name;
+  let reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      let importedData = JSON.parse(e.target.result);
+      if (!importedData.attendance && !importedData.events) {
+        alert("Invalid file format. Please upload a valid backup JSON file.");
+        return;
+      }
+      if (confirm("Importing will merge records into your dashboard. Do you want to proceed?")) {
+        if (Array.isArray(importedData.attendance)) {
+          let existingData = JSON.parse(localStorage.getItem("attendanceData") || "[]");
+          let mergedAttendance = [...existingData, ...importedData.attendance];
+          localStorage.setItem("attendanceData", JSON.stringify(mergedAttendance));
+        }
+        if (Array.isArray(importedData.events)) {
+          eventsList = [...eventsList, ...importedData.events];
+          localStorage.setItem("dashboardEventsList", JSON.stringify(eventsList));
+        }
+        loadData();
+        updateAll();
+        alert("Data imported successfully!");
+      }
+    } catch (err) {
+      alert("Failed to parse JSON file. Make sure the file is valid JSON.");
+      console.error(err);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// Aggregation & Advanced Visualization logic
+function updateGraphAscending() {
+  let rawData = [];
+  let rows = attendanceTableBody.querySelectorAll("tr");
+  rows.forEach(r => {
+    let cells = r.querySelectorAll("td");
+    if (cells.length > 0) {
+      let dateStr = cells[1]?.innerText.trim();
+      let h = parseFloat(cells[4]?.innerText);
+      if (dateStr && !isNaN(h)) {
+        rawData.push({ date: dateStr, hours: h });
+      }
+    }
+  });
+
+  rawData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  // 1. Daily Chart (as a Line Chart)
+  let dailyLabels = rawData.map(item => item.date);
+  let dailyValues = rawData.map(item => item.hours);
+  drawLineGraph("chartDaily", dailyLabels, dailyValues);
+
+  // Data aggregations
+  let monthMap = {};
+  let quarterMap = {};
+  let yearMap = {};
+  
+  let monthDaysCount = {};
+  let quarterDaysCount = {};
+  let yearDaysCount = {};
+
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  rawData.forEach(item => {
+    let d = new Date(item.date + "T00:00:00");
+    if (isNaN(d.getTime())) return;
+    let y = d.getFullYear();
+    let mIdx = d.getMonth();
+    let monthNum = String(mIdx + 1).padStart(2, '0');
+    
+    let monthKey = `${y}-${monthNum} (${monthNames[mIdx]})`;
+    
+    // Custom Quarter Definition mapping April, May, June to Q1
+    let qLabel = "";
+    if (mIdx >= 3 && mIdx <= 5) {
+      qLabel = "Q1 (April, May, June)";
+    } else if (mIdx >= 6 && mIdx <= 8) {
+      qLabel = "Q2 (July, August, September)";
+    } else if (mIdx >= 9 && mIdx <= 11) {
+      qLabel = "Q3 (October, November, December)";
+    } else {
+      qLabel = "Q4 (January, February, March)";
+    }
+    let quarterKey = `${y} ${qLabel}`;
+    let yearKey = `Year ${y}`;
+
+    monthMap[monthKey] = (monthMap[monthKey] || 0) + item.hours;
+    monthDaysCount[monthKey] = (monthDaysCount[monthKey] || 0) + 1;
+
+    quarterMap[quarterKey] = (quarterMap[quarterKey] || 0) + item.hours;
+    quarterDaysCount[quarterKey] = (quarterDaysCount[quarterKey] || 0) + 1;
+
+    yearMap[yearKey] = (yearMap[yearKey] || 0) + item.hours;
+    yearDaysCount[yearKey] = (yearDaysCount[yearKey] || 0) + 1;
+  });
+
+  const TARGET_HOURS_PER_DAY = 8;
+
+  // 2. Monthly Chart & Percentage
+  let mLabels = Object.keys(monthMap);
+  let mValues = Object.values(monthMap);
+  drawBarGraph("chartMonthly", mLabels, mValues);
+  let totalMonthlyActual = mValues.reduce((a, b) => a + b, 0);
+  let totalMonthlyTarget = Object.values(monthDaysCount).reduce((a, b) => a + (b * TARGET_HOURS_PER_DAY), 0);
+  let monthlyPct = totalMonthlyTarget > 0 ? ((totalMonthlyActual / totalMonthlyTarget) * 100).toFixed(1) : "0.0";
+  document.getElementById("metricMonthly").innerHTML = `Monthly Target Completion: <strong>${monthlyPct}%</strong> (${totalMonthlyActual.toFixed(2)}h total logged / ${totalMonthlyTarget}h target across ${Object.values(monthDaysCount).reduce((a,b)=>a+b,0)} total logged days)`;
+
+  // 3. Quarterly Chart & Percentage
+  let qLabels = Object.keys(quarterMap);
+  let qValues = Object.values(quarterMap);
+  drawBarGraph("chartQuarterly", qLabels, qValues);
+  let totalQuarterlyActual = qValues.reduce((a, b) => a + b, 0);
+  let totalQuarterlyTarget = Object.values(quarterDaysCount).reduce((a, b) => a + (b * TARGET_HOURS_PER_DAY), 0);
+  let quarterlyPct = totalQuarterlyTarget > 0 ? ((totalQuarterlyActual / totalQuarterlyTarget) * 100).toFixed(1) : "0.0";
+  document.getElementById("metricQuarterly").innerHTML = `Quarterly Target Completion (Combined 3 Months): <strong>${quarterlyPct}%</strong> (${totalQuarterlyActual.toFixed(2)}h logged / ${totalQuarterlyTarget}h benchmark target based on logged days)`;
+
+  // 4. Yearly Chart & Percentage
+  let yLabels = Object.keys(yearMap);
+  let yValues = Object.values(yearMap);
+  drawBarGraph("chartYearly", yLabels, yValues);
+  let totalYearlyActual = yValues.reduce((a, b) => a + b, 0);
+  let totalYearlyTarget = Object.values(yearDaysCount).reduce((a, b) => a + (b * TARGET_HOURS_PER_DAY), 0);
+  let yearlyPct = totalYearlyTarget > 0 ? ((totalYearlyActual / totalYearlyTarget) * 100).toFixed(1) : "0.0";
+  let activeYearsStr = yLabels.length > 0 ? yLabels.join(", ") : "N/A";
+  document.getElementById("metricYearly").innerHTML = `Yearly Target Completion [<strong>${activeYearsStr}</strong>]: <strong>${yearlyPct}%</strong> (${totalYearlyActual.toFixed(2)}h logged / ${totalYearlyTarget}h benchmark target across ${Object.values(yearDaysCount).reduce((a,b)=>a+b,0)} total logged days)`;
+}
+
+// Render Line Chart for Daily View
+function drawLineGraph(canvasId, labels, data) {
+  let canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  let ctx = canvas.getContext("2d");
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 280;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (data.length === 0) {
+    ctx.fillStyle = "#888888";
+    ctx.font = "14px Arial";
+    ctx.fillText("No attendance data available to render line chart.", 20, 40);
+    return;
+  }
+
+  let max = Math.max(...data, 8);
+  let margin = 50;
+  let height = 180;
+  let bottom = 220;
+
+  // Horizontal Grid Lines
+  for (let i = 0; i <= max; i += Math.ceil(max / 4)) {
+    let y = bottom - (i / max) * height;
+    ctx.strokeStyle = "#e0e0e0";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(margin, y);
+    ctx.lineTo(canvas.width - margin, y);
+    ctx.stroke();
+    ctx.fillStyle = "#333333";
+    ctx.font = "bold 12px Arial";
+    ctx.fillText(i + "h", 12, y + 4);
+  }
+
+  let stepX = data.length > 1 ? (canvas.width - margin * 2) / (data.length - 1) : 0;
+  let points = [];
+
+  data.forEach((v, i) => {
+    let x = data.length === 1 ? canvas.width / 2 : margin + i * stepX;
+    let y = bottom - (v / max) * height;
+    points.push({ x, y, value: v, label: labels[i] });
+  });
+
+  // Draw connecting line
+  if (points.length > 1) {
+    ctx.strokeStyle = "#0056b3";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      ctx.lineTo(points[i].x, points[i].y);
+    }
+    ctx.stroke();
+  }
+
+  // Draw data points & X-axis Labels
+  points.forEach(p => {
+    ctx.fillStyle = "#0056b3";
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Rotated text for daily dates readability
+    ctx.save();
+    ctx.translate(p.x, 235);
+    ctx.rotate(Math.PI / 4);
+    ctx.fillStyle = "#111111";
+    ctx.font = "bold 11px Arial";
+    ctx.fillText(p.label, 0, 0);
+    ctx.restore();
+  });
+}
+
+// Render Bar Graphs for Monthly, Quarterly, and Yearly Views
+function drawBarGraph(canvasId, labels, data) {
+  let canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  let ctx = canvas.getContext("2d");
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 280;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (data.length === 0) {
+    ctx.fillStyle = "#888888";
+    ctx.font = "14px Arial";
+    ctx.fillText("No aggregate data available to render chart.", 20, 40);
+    return;
+  }
+
+  let max = Math.max(...data, 8);
+  let margin = 50;
+  let height = 180;
+  let bottom = 220;
+
+  for (let i = 0; i <= max; i += Math.ceil(max / 4)) {
+    let y = bottom - (i / max) * height;
+    ctx.strokeStyle = "#cccccc";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(margin, y);
+    ctx.lineTo(canvas.width - margin, y);
+    ctx.stroke();
+    ctx.fillStyle = "#111111";
+    ctx.font = "bold 12px Arial";
+    ctx.fillText(i + "h", 10, y + 4);
+  }
+
+  let barWidth = (canvas.width - margin * 2) / data.length;
+  data.forEach((v, i) => {
+    let barHeight = (v / max) * height;
+    let x = margin + i * barWidth + 10;
+    let y = bottom - barHeight;
+    let actualWidth = Math.max(barWidth - 20, 12);
+
+    ctx.fillStyle = "#0056b3";
+    ctx.fillRect(x, y, actualWidth, barHeight);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 11px Arial";
+    if (barHeight > 20) {
+      ctx.fillText(v.toFixed(1) + "h", x + 4, y + 15);
+    }
+
+    ctx.save();
+    ctx.translate(x, 232);
+    ctx.fillStyle = "#111111";
+    ctx.font = "bold 11px Arial";
+    let labelStr = labels[i];
+    ctx.fillText(labelStr, 0, 0);
+    ctx.restore();
+  });
+}
+
+function generateCalendar() {
+  let calendar = document.getElementById("calendar");
+  calendar.innerHTML = "";
+  let year = currentMonth.getFullYear();
+  let month = currentMonth.getMonth();
+  document.getElementById("monthLabel").innerText = currentMonth.toLocaleString("default", { month: "long", year: "numeric" });
+
+  let firstDay = new Date(year, month, 1).getDay();
+  let daysInMonth = new Date(year, month + 1, 0).getDate();
+  let rows = attendanceTableBody.querySelectorAll("tr");
+  let statusMap = {};
+  let remarksMap = {};
+
+  rows.forEach(r => {
+    let cells = r.querySelectorAll("td");
+    if (cells.length > 0) {
+      let date = cells[1]?.innerText.trim();
+      let hours = parseFloat(cells[4]?.innerText);
+      let remarks = cells[5]?.innerText.trim();
+      if (date) {
+        let d = new Date(date + "T00:00:00");
+        if (d.getMonth() === month && d.getFullYear() === year) {
+          statusMap[date] = hours > 0 ? "present" : "absent";
+          if (remarks) remarksMap[date] = remarks;
+        }
+      }
+    }
+  });
+
+  for (let i = 0; i < firstDay; i++) {
+    let emptyCell = document.createElement("div");
+    emptyCell.className = "day";
+    emptyCell.style.background = "#f4f6f8";
+    calendar.appendChild(emptyCell);
+  }
+
+  let todayObj = new Date();
+  for (let i = 1; i <= daysInMonth; i++) {
+    let div = document.createElement("div");
+    div.className = "day";
+    if (i === todayObj.getDate() && month === todayObj.getMonth() && year === todayObj.getFullYear()) {
+      div.classList.add("today");
+    }
+    let formattedDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+    let dayHeader = document.createElement("div");
+    dayHeader.className = "day-header";
+    let numDiv = document.createElement("div");
+    numDiv.className = "day-number";
+    numDiv.innerText = i;
+    dayHeader.appendChild(numDiv);
+
+    if (statusMap[formattedDate]) {
+      let badge = document.createElement("div");
+      badge.className = `status-badge ${statusMap[formattedDate]}`;
+      badge.innerText = statusMap[formattedDate] === "present" ? "Present" : "Absent";
+      dayHeader.appendChild(badge);
+    }
+    div.appendChild(dayHeader);
+
+    let dayEvents = eventsList.filter(e => e.date === formattedDate);
+    dayEvents.forEach(ev => {
+      let eventPill = document.createElement("div");
+      eventPill.className = `event-pill ${ev.triggered ? 'triggered' : ''}`;
+      eventPill.innerText = `⏰ ${ev.time || ''} ${ev.title}`;
+      div.appendChild(eventPill);
+    });
+
+    if (remarksMap[formattedDate]) {
+      let remarkPill = document.createElement("div");
+      remarkPill.className = "remark-pill";
+      remarkPill.innerText = `💬 ${remarksMap[formattedDate]}`;
+      div.appendChild(remarkPill);
+    }
+
+    div.onclick = function() { selectDateForAction(formattedDate); };
+    calendar.appendChild(div);
+  }
+}
+
+function selectDateForAction(date) {
+  document.getElementById("inputDate").value = date;
+  document.getElementById("eventDate").value = date;
+  switchTab('tab-events');
+}
+
+function prevMonth() {
+  currentMonth.setMonth(currentMonth.getMonth() - 1);
+  generateCalendar();
+}
+
+function nextMonth() {
+  currentMonth.setMonth(currentMonth.getMonth() + 1);
+  generateCalendar();
+}
+
+function playBeepSound() {
+  try {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    let osc = audioContext.createOscillator();
+    let gain = audioContext.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(880, audioContext.currentTime);
+    gain.gain.setValueAtTime(0.5, audioContext.currentTime);
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+    osc.start();
+    osc.stop(audioContext.currentTime + 1.2);
+  } catch(e) {
+    console.log("Audio playback error", e);
+  }
+}
+
+function checkReminders() {
+  let now = new Date();
+  let currentDate = now.toISOString().split("T")[0];
+  let currentTime = now.toTimeString().split(" ")[0].substring(0, 5);
+  eventsList.forEach(ev => {
+    if (!ev.triggered && ev.date === currentDate && ev.time <= currentTime) {
+      triggerAlarm(ev);
+    }
+  });
+}
+
+function triggerAlarm(ev) {
+  ev.triggered = true;
+  activeAlarmEvent = ev;
+  saveData();
+  renderEventsTable();
+  generateCalendar();
+  playBeepSound();
+  if ("Notification" in window && Notification.permission === "granted") {
+    new Notification("⏰ Event Reminder!", {
+      body: `${ev.title} (${ev.time})`,
+      icon: "https://cdn-icons-png.flaticon.com/512/2693/2693507.png"
+    });
+  }
+  document.getElementById("alarmModalText").innerText = `${ev.title} [Scheduled for ${ev.time}]`;
+  document.getElementById("alarmModal").style.display = "flex";
+}
+
+function snoozeAlarm(minutes) {
+  if (activeAlarmEvent) {
+    let now = new Date();
+    now.setMinutes(now.getMinutes() + minutes);
+    activeAlarmEvent.date = now.toISOString().split("T")[0];
+    activeAlarmEvent.time = now.toTimeString().split(" ")[0].substring(0, 5);
+    activeAlarmEvent.triggered = false;
+    saveData();
+    renderEventsTable();
+    generateCalendar();
+    alert(`Reminder snoozed for ${minutes} minutes!`);
+  }
+  closeAlarmModal();
+}
+
+function dismissAlarm() { closeAlarmModal(); }
+
+function closeAlarmModal() {
+  document.getElementById("alarmModal").style.display = "none";
+  activeAlarmEvent = null;
+}
+
+function requestNotificationPermission() {
+  if ("Notification" in window) {
+    Notification.requestPermission().then(permission => {
+      if (permission === "granted") {
+        alert("Desktop notification reminders enabled!");
+      }
+    });
+  } else {
+    alert("This web browser does not support desktop notifications.");
+  }
+}
+
+function monthlyReport() {
+  let rows = attendanceTableBody.querySelectorAll("tr");
+  let total = 0;
+  let days = 0;
+  rows.forEach(r => {
+    let cells = r.querySelectorAll("td");
+    if (cells.length > 0) {
+      let h = parseFloat(cells[4]?.innerText);
+      if (!isNaN(h) && h > 0) {
+        total += h;
+        days++;
+      }
+    }
+  });
+  let avg = days ? total / days : 0;
+  let reportCard = document.getElementById("reportCard");
+  reportCard.style.display = "block";
+  document.getElementById("report").innerHTML = `
+    <h3>Monthly Performance Summary</h3>
+    <strong>Days Active:</strong> ${days}<br>
+    <strong>Total Hours Worked:</strong> ${total.toFixed(2)} hrs<br>
+    <strong>Average Hours/Day:</strong> ${avg.toFixed(2)} hrs
+  `;
+}
+
+function yearlyReport() {
+  let rows = attendanceTableBody.querySelectorAll("tr");
+  let months = new Array(12).fill(0);
+  rows.forEach(r => {
+    let cells = r.querySelectorAll("td");
+    if (cells.length > 0) {
+      let date = cells[1]?.innerText;
+      let h = parseFloat(cells[4]?.innerText);
+      if (date && !isNaN(h)) {
+        let m = new Date(date + "T00:00:00").getMonth();
+        if (!isNaN(m)) months[m] += h;
+      }
+    }
+  });
+  let html = "<h3>Yearly Breakdown</h3>";
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  months.forEach((h, i) => {
+    html += `<strong>${monthNames[i]}:</strong> ${h.toFixed(2)} hrs<br>`;
+  });
+  let reportCard = document.getElementById("reportCard");
+  reportCard.style.display = "block";
+  document.getElementById("report").innerHTML = html;
+}
+
+window.addEventListener("resize", () => {
+  if (document.getElementById("tab-chart").classList.contains("active")) {
+    updateGraphAscending();
+  }
+});
+
+initFormDefaults();
+loadData();
+updateAll();
+setInterval(checkReminders, 10000);
+</script>
+</body>
+</html>
+
