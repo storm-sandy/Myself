@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#6c5ce7">
+<title>🌈 Kids Attendance Dashboard</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+body{
+  margin:0;
+  padding:0;
+  font-family:"Arial Rounded MT Bold","Trebuchet MS",Arial,sans-serif;
+  background:linear-gradient(135deg,#74b9ff,#a29bfe,#fd79a8);
+  color:#2d3436;
+}
+
+/* MAIN APP */
+
+.app{
+  width:96%;
+  max-width:1400px;
+  margin:20px auto;
+}
+
+/* HEADER */
+
+.header{
+  background:rgba(255,255,255,.95);
+  border-radius:35px;
+  padding:28px 20px;
+  text-align:center;
+  box-shadow:0 15px 40px rgba(0,0,0,.18);
+  margin-bottom:20px;
+}
+
+.header .emoji{
+  font-size:65px;
+}
+
+.header h1{
+  margin:5px;
+  font-size:42px;
+  color:#6c5ce7;
+}
+
+.header p{
+  font-size:22px;
+  margin:10px;
+}
+
+/* BUTTON AREA */
+
+.action-panel{
+  background:white;
+  padding:20px;
+  border-radius:30px;
+  box-shadow:0 10px 30px rgba(0,0,0,.12);
+  margin-bottom:20px;
+}
+
+.action-title{
+  font-size:28px;
+  font-weight:bold;
+  margin-bottom:18px;
+  text-align:center;
+}
+
+.actions{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:14px;
+}
+
+button{
+  border:0;
+  border-radius:20px;
+  min-height:68px;
+  padding:14px 18px;
+  font-family:inherit;
+  font-size:19px;
+  font-weight:bold;
+  cursor:pointer;
+  color:white;
+  box-shadow:0 6px 0 rgba(0,0,0,.15);
+  transition:.18s;
+}
+
+button:hover{
+  transform:translateY(-4px) scale(1.02);
+  filter:brightness(1.08);
+}
+
+button:active{
+  transform:translateY(3px);
+  box-shadow:0 2px 0 rgba(0,0,0,.15);
+}
+
+.btn-add{background:#00b894}
+.btn-export{background:#0984e3}
+.btn-month{background:#6c5ce7}
+.btn-year{background:#e17055}
+.btn-clear{background:#d63031}
+
+/* STATS */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+  margin-bottom:20px;
+}
+
+.stat{
+  color:white;
+  border-radius:28px;
+  padding:22px;
+  text-align:center;
+  box-shadow:0 10px 25px rgba(0,0,0,.15);
+  transition:.2s;
+}
+
+.stat:hover{
+  transform:translateY(-7px);
+}
+
+.stat-icon{
+  font-size:48px;
+}
+
+.stat-number{
+  font-size:38px;
+  font-weight:bold;
+}
+
+.stat-label{
+  font-size:20px;
+}
+
+.present-stat{
+  background:linear-gradient(135deg,#00b894,#55efc4);
+}
+
+.absent-stat{
+  background:linear-gradient(135deg,#d63031,#ff7675);
+}
+
+.hours-stat{
+  background:linear-gradient(135deg,#0984e3,#74b9ff);
+}
+
+.days-stat{
+  background:linear-gradient(135deg,#6c5ce7,#a29bfe);
+}
+
+/* SECTION */
+
+.section{
+  background:white;
+  border-radius:30px;
+  padding:22px;
+  margin-bottom:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.12);
+}
+
+.section-title{
+  text-align:center;
+  font-size:30px;
+  margin:5px 0 20px;
+}
+
+/* TABLE */
+
+.table-wrapper{
+  width:100%;
+  overflow-x:auto;
+  border-radius:20px;
+}
+
+table{
+  width:100%;
+  min-width:850px;
+  border-collapse:separate;
+  border-spacing:0;
+  overflow:hidden;
+}
+
+th{
+  background:#6c5ce7;
+  color:white;
+  padding:18px 12px;
+  font-size:19px;
+}
+
+td{
+  padding:17px 12px;
+  text-align:center;
+  font-size:18px;
+  border-bottom:2px solid #eee;
+}
+
+tbody tr{
+  transition:.2s;
+}
+
+tbody tr:hover{
+  background:#f0edff;
+  transform:scale(1.01);
+}
+
+td[contenteditable="true"]{
+  background:#fffdf0;
+  cursor:text;
+  border-radius:8px;
+}
+
+td button{
+  min-height:48px;
+  font-size:16px;
+  background:#d63031;
+}
+
+/* GRAPH */
+
+.graph-box{
+  background:#fafafa;
+  border-radius:25px;
+  padding:15px;
+  overflow:hidden;
+}
+
+canvas{
+  width:100%;
+  height:350px;
+  display:block;
+}
+
+/* CALENDAR */
+
+.calendar-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  background:linear-gradient(135deg,#6c5ce7,#0984e3);
+  padding:15px;
+  border-radius:25px;
+  color:white;
+}
+
+.calendar-header h2{
+  margin:0;
+  font-size:30px;
+  text-align:center;
+}
+
+.calendar-header button{
+  background:white;
+  color:#6c5ce7;
+  min-width:65px;
+}
+
+.weekdays,
+.calendar{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:7px;
+  margin-top:10px;
+}
+
+.weekdays div{
+  background:#dfe6e9;
+  border-radius:12px;
+  padding:14px 5px;
+  text-align:center;
+  font-size:18px;
+  font-weight:bold;
+}
+
+.day{
+  min-height:115px;
+  border:3px solid #dfe6e9;
+  border-radius:18px;
+  padding:8px;
+  text-align:center;
+  font-size:20px;
+  cursor:pointer;
+  background:#fafafa;
+  transition:.2s;
+}
+
+.day:hover{
+  transform:scale(1.04);
+  border-color:#6c5ce7;
+}
+
+.day-number{
+  font-size:25px;
+  font-weight:bold;
+}
+
+.day-icon{
+  font-size:30px;
+  margin-top:8px;
+}
+
+.day-hours{
+  font-size:14px;
+  font-weight:bold;
+  margin-top:4px;
+}
+
+.present{
+  background:#b8f7d0;
+  border-color:#00b894;
+}
+
+.absent{
+  background:#ffd0d0;
+  border-color:#d63031;
+}
+
+.today{
+  box-shadow:0 0 0 5px #fdcb6e;
+}
+
+/* LEGEND */
+
+.legend{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:15px;
+  margin:18px 0;
+}
+
+.legend-item{
+  padding:12px 18px;
+  border-radius:15px;
+  font-size:18px;
+  font-weight:bold;
+}
+
+.legend-present{
+  background:#b8f7d0;
+}
+
+.legend-absent{
+  background:#ffd0d0;
+}
+
+.legend-none{
+  background:#eee;
+}
+
+/* REPORT */
+
+.report{
+  background:linear-gradient(135deg,#fff7d6,#ffeaa7);
+  padding:22px;
+  border-radius:25px;
+  margin-top:20px;
+  text-align:center;
+  font-size:22px;
+  line-height:1.8;
+}
+
+.report h3{
+  font-size:30px;
+  margin-top:0;
+}
+
+/* FOOTER */
+
+.footer{
+  text-align:center;
+  color:white;
+  font-size:20px;
+  font-weight:bold;
+  padding:25px;
+}
+
+/* MOBILE */
+
+@media(max-width:800px){
+
+  .app{
+    width:100%;
+    margin:0;
+  }
+
+  .header{
+    border-radius:0 0 30px 30px;
+  }
+
+  .header h1{
+    font-size:32px;
+  }
+
+  .header p{
+    font-size:19px;
+  }
+
+  .actions{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .actions button:last-child{
+    grid-column:span 2;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .section,
+  .action-panel{
+    border-radius:25px;
+    margin:10px;
+    padding:15px;
+  }
+
+  .section-title{
+    font-size:26px;
+  }
+
+  .calendar-header h2{
+    font-size:21px;
+  }
+
+  .weekdays,
+  .calendar{
+    gap:3px;
+  }
+
+  .weekdays div{
+    font-size:13px;
+    padding:10px 2px;
+  }
+
+  .day{
+    min-height:75px;
+    padding:4px;
+  }
+
+  .day-number{
+    font-size:18px;
+  }
+
+  .day-icon{
+    font-size:24px;
+  }
+
+  .day-hours{
+    font-size:11px;
+  }
+
+  canvas{
+    height:280px;
+  }
+
+}
+
+@media(max-width:480px){
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .stat{
+    padding:15px 8px;
+  }
+
+  .stat-icon{
+    font-size:38px;
+  }
+
+  .stat-number{
+    font-size:30px;
+  }
+
+  .stat-label{
+    font-size:16px;
+  }
+
+  button{
+    font-size:17px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- HEADER -->
+
+<div class="header">
+
+  <div class="emoji">🌈📚👧👦</div>
+
+  <h1>My Attendance</h1>
+
+  <p>⭐ Come to school • Learn • Have fun! ⭐</p>
+
+</div>
+
+
+<!-- ACTIONS -->
+
+<div class="action-panel">
+
+  <div class="action-title">
+    🎮 Parent Actions
+  </div>
+
+  <div class="actions">
+
+    <button class="btn-add" onclick="addRow()">
+      ➕ Add Attendance
+    </button>
+
+    <button class="btn-export" onclick="exportCSV()">
+      📤 Export
+    </button>
+
+    <button class="btn-month" onclick="monthlyReport()">
+      📅 Month Report
+    </button>
+
+    <button class="btn-year" onclick="yearlyReport()">
+      📊 Year Report
+    </button>
+
+    <button class="btn-clear" onclick="clearAll()">
+      🗑️ Clear All
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- STATS -->
+
+<div class="stats">
+
+  <div class="stat present-stat">
+
+    <div class="stat-icon">😊</div>
+
+    <div class="stat-number" id="presentCount">0</div>
+
+    <div class="stat-label">Present Days</div>
+
+  </div>
+
+
+  <div class="stat absent-stat">
+
+    <div class="stat-icon">😔</div>
+
+    <div class="stat-number" id="absentCount">0</div>
+
+    <div class="stat-label">Absent Days</div>
+
+  </div>
+
+
+  <div class="stat hours-stat">
+
+    <div class="stat-icon">⏰</div>
+
+    <div class="stat-number" id="totalHours">0</div>
+
+    <div class="stat-label">Total Hours</div>
+
+  </div>
+
+
+  <div class="stat days-stat">
+
+    <div class="stat-icon">📅</div>
+
+    <div class="stat-number" id="totalDays">0</div>
+
+    <div class="stat-label">Total Records</div>
+
+  </div>
+
+</div>
+
+
+<!-- ATTENDANCE -->
+
+<div class="section">
+
+  <div class="section-title">
+    📝 Attendance Records
+  </div>
+
+  <div class="table-wrapper">
+
+    <table id="table">
+
+      <thead>
+
+        <tr>
+          <th>👦 Name</th>
+          <th>📅 Date</th>
+          <th>🟢 Time In</th>
+          <th>🔴 Time Out</th>
+          <th>⏰ Hours</th>
+          <th>💬 Remarks</th>
+          <th>⚙️ Action</th>
+        </tr>
+
+      </thead>
+
+      <tbody></tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+
+<!-- GRAPH -->
+
+<div class="section">
+
+  <div class="section-title">
+    📈 Daily Hours
+  </div>
+
+  <div class="graph-box">
+
+    <canvas id="chart"></canvas>
+
+  </div>
+
+</div>
+
+
+<!-- CALENDAR -->
+
+<div class="section">
+
+  <div class="section-title">
+    📅 My Attendance Calendar
+  </div>
+
+  <div class="calendar-header">
+
+    <button onclick="prevMonth()">◀</button>
+
+    <h2 id="monthLabel"></h2>
+
+    <button onclick="nextMonth()">▶</button>
+
+  </div>
+
+
+  <div class="legend">
+
+    <div class="legend-item legend-present">
+      🟢 Present
+    </div>
+
+    <div class="legend-item legend-absent">
+      🔴 Absent
+    </div>
+
+    <div class="legend-item legend-none">
+      ⚪ No Record
+    </div>
+
+  </div>
+
+
+  <div class="weekdays">
+
+    <div>Sun</div>
+    <div>Mon</div>
+    <div>Tue</div>
+    <div>Wed</div>
+    <div>Thu</div>
+    <div>Fri</div>
+    <div>Sat</div>
+
+  </div>
+
+
+  <div id="calendar" class="calendar"></div>
+
+</div>
+
+
+<!-- REPORT -->
+
+<div id="report" class="report">
+
+  📊 Your attendance report will appear here.
+
+</div>
+
+
+<div class="footer">
+
+  🌟 Great attendance! Keep learning and smiling! 🌟
+
+</div>
+
+</div>
+
+
+<script>
+
+let table=document.querySelector("#table tbody");
+
+let current=new Date();
+
+
+/* =========================
+   TIME
+========================= */
+
+function nowTime(){
+
+  return new Date().toLocaleTimeString();
+
+}
+
+
+function today(){
+
+  return new Date()
+    .toISOString()
+    .split("T")[0];
+
+}
+
+
+/* =========================
+   ADD ROW
+========================= */
+
+function addRow(){
+
+  let row=table.insertRow();
+
+  row.innerHTML=`
+
+    <td contenteditable="true">Name</td>
+
+    <td contenteditable="true">
+      ${today()}
+    </td>
+
+    <td contenteditable="true">
+      ${nowTime()}
+    </td>
+
+    <td contenteditable="true"></td>
+
+    <td>0</td>
+
+    <td contenteditable="true">
+      😊 Good day!
+    </td>
+
+    <td>
+      <button onclick="deleteRow(this)">
+        🗑️ Delete
+      </button>
+    </td>
+
+  `;
+
+  saveData();
+
+  updateAll();
+
+}
+
+
+/* =========================
+   DELETE
+========================= */
+
+function deleteRow(btn){
+
+  if(confirm("Delete this attendance record?")){
+
+    btn.parentElement.parentElement.remove();
+
+    saveData();
+
+    updateAll();
+
+  }
+
+}
+
+
+/* =========================
+   CLEAR
+========================= */
+
+function clearAll(){
+
+  if(confirm("🗑️ Clear ALL attendance records?")){
+
+    localStorage.removeItem("attendanceData");
+
+    table.innerHTML="";
+
+    updateAll();
+
+  }
+
+}
+
+
+/* =========================
+   STORAGE
+========================= */
+
+function saveData(){
+
+  localStorage.setItem(
+    "attendanceData",
+    table.innerHTML
+  );
+
+}
+
+
+function loadData(){
+
+  let data=
+    localStorage.getItem("attendanceData");
+
+  if(data)
+    table.innerHTML=data;
+
+}
+
+
+/* =========================
+   UPDATE ALL
+========================= */
+
+function updateAll(){
+
+  calculateHours();
+
+  updateStats();
+
+  updateGraph();
+
+  generateCalendar();
+
+}
+
+
+/* =========================
+   CALCULATE HOURS
+========================= */
+
+function calculateHours(){
+
+  let rows=table.querySelectorAll("tr");
+
+  rows.forEach(r=>{
+
+    let inTime=
+      r.cells[2]?.innerText.trim();
+
+    let outTime=
+      r.cells[3]?.innerText.trim();
+
+    if(inTime && outTime){
+
+      let start=
+        new Date("1970/01/01 "+inTime);
+
+      let end=
+        new Date("1970/01/01 "+outTime);
+
+      let diff=
+        (end-start)/3600000;
+
+      if(diff<0)
+        diff+=24;
+
+      if(!isNaN(diff)){
+
+        r.cells[4].innerText=
+          diff.toFixed(2);
+
+      }
+
+    }
+
+  });
+
+}
+
+
+/* =========================
+   STATISTICS
+========================= */
+
+function updateStats(){
+
+  let rows=table.querySelectorAll("tr");
+
+  let present=0;
+
+  let absent=0;
+
+  let hours=0;
+
+  rows.forEach(r=>{
+
+    let h=
+      parseFloat(
+        r.cells[4]?.innerText
+      );
+
+    if(!isNaN(h)){
+
+      if(h>0)
+        present++;
+      else
+        absent++;
+
+      hours+=h;
+
+    }
+
+  });
+
+  document.getElementById(
+    "presentCount"
+  ).innerText=present;
+
+  document.getElementById(
+    "absentCount"
+  ).innerText=absent;
+
+  document.getElementById(
+    "totalHours"
+  ).innerText=hours.toFixed(1);
+
+  document.getElementById(
+    "totalDays"
+  ).innerText=rows.length;
+
+}
+
+
+/* =========================
+   EXPORT
+========================= */
+
+function exportCSV(){
+
+  let rows=
+    document.querySelectorAll(
+      "#table tr"
+    );
+
+  let csv=[];
+
+  rows.forEach(r=>{
+
+    let cols=
+      r.querySelectorAll(
+        "td,th"
+      );
+
+    let row=[];
+
+    cols.forEach(c=>{
+
+      let value=
+        c.innerText
+        .replace(/,/g," ");
+
+      row.push(value);
+
+    });
+
+    csv.push(row.join(","));
+
+  });
+
+  let blob=new Blob(
+    [csv.join("\n")],
+    {type:"text/csv"}
+  );
+
+  let a=document.createElement("a");
+
+  a.href=
+    URL.createObjectURL(blob);
+
+  a.download="attendance.csv";
+
+  a.click();
+
+  URL.revokeObjectURL(a.href);
+
+}
+
+
+/* =========================
+   GRAPH
+========================= */
+
+function updateGraph(){
+
+  let labels=[];
+
+  let data=[];
+
+  let rows=
+    table.querySelectorAll("tr");
+
+  rows.forEach(r=>{
+
+    let date=
+      r.cells[1]?.innerText;
+
+    let h=
+      parseFloat(
+        r.cells[4]?.innerText
+      );
+
+    if(date && !isNaN(h)){
+
+      labels.push(date);
+
+      data.push(h);
+
+    }
+
+  });
+
+  drawGraph(labels,data);
+
+}
+
+
+function drawGraph(labels,data){
+
+  let canvas=
+    document.getElementById("chart");
+
+  let ctx=
+    canvas.getContext("2d");
+
+  canvas.width=
+    canvas.clientWidth;
+
+  canvas.height=
+    350;
+
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  if(data.length===0){
+
+    ctx.font="bold 22px Arial";
+
+    ctx.textAlign="center";
+
+    ctx.fillText(
+      "📊 Add attendance to see the graph",
+      canvas.width/2,
+      170
+    );
+
+    ctx.textAlign="left";
+
+    return;
+
+  }
+
+  let max=
+    Math.max(...data,8);
+
+  let margin=45;
+
+  let graphHeight=240;
+
+  let bottom=285;
+
+  for(let i=0;i<=max;i++){
+
+    let y=
+      bottom-
+      (i/max)*graphHeight;
+
+    ctx.strokeStyle="#e5e5e5";
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      margin,
+      y
+    );
+
+    ctx.lineTo(
+      canvas.width-margin,
+      y
+    );
+
+    ctx.stroke();
+
+    ctx.fillStyle="#555";
+
+    ctx.font="14px Arial";
+
+    ctx.fillText(
+      i+"h",
+      8,
+      y+4
+    );
+
+  }
+
+  let width=
+    (canvas.width-margin*2)/
+    data.length;
+
+  data.forEach((v,i)=>{
+
+    let barHeight=
+      (v/max)*graphHeight;
+
+    let x=
+      margin+
+      i*width+
+      8;
+
+    let y=
+      bottom-barHeight;
+
+    ctx.fillStyle="#00b894";
+
+    ctx.fillRect(
+      x,
+      y,
+      Math.max(width-16,8),
+      barHeight
+    );
+
+    ctx.fillStyle="#2d3436";
+
+    ctx.font="bold 14px Arial";
+
+    ctx.fillText(
+      v.toFixed(1),
+      x,
+      y-7
+    );
+
+    ctx.font="12px Arial";
+
+    ctx.fillText(
+      labels[i].slice(5),
+      x,
+      315
+    );
+
+  });
+
+}
+
+
+/* =========================
+   CALENDAR
+========================= */
+
+function generateCalendar(){
+
+  let calendar=
+    document.getElementById(
+      "calendar"
+    );
+
+  calendar.innerHTML="";
+
+  let year=
+    current.getFullYear();
+
+  let month=
+    current.getMonth();
+
+  document.getElementById(
+    "monthLabel"
+  ).innerText=
+    current.toLocaleString(
+      "default",
+      {
+        month:"long",
+        year:"numeric"
+      }
+    );
+
+  let firstDay=
+    new Date(
+      year,
+      month,
+      1
+    ).getDay();
+
+  let daysInMonth=
+    new Date(
+      year,
+      month+1,
+      0
+    ).getDate();
+
+  let status={};
+
+  let rows=
+    table.querySelectorAll("tr");
+
+  rows.forEach(r=>{
+
+    let date=
+      r.cells[1]?.innerText.trim();
+
+    let hours=
+      parseFloat(
+        r.cells[4]?.innerText
+      );
+
+    if(date){
+
+      let d=new Date(date);
+
+      if(
+        d.getMonth()===month &&
+        d.getFullYear()===year
+      ){
+
+        let day=d.getDate();
+
+        if(hours>0)
+          status[day]="present";
+        else
+          status[day]="absent";
+
+      }
+
+    }
+
+  });
+
+
+  /* EMPTY DAYS BEFORE MONTH */
+
+  for(
+    let i=0;
+    i<firstDay;
+    i++
+  ){
+
+    calendar.appendChild(
+      document.createElement("div")
+    );
+
+  }
+
+
+  /* MONTH DAYS */
+
+  for(
+    let i=1;
+    i<=daysInMonth;
+    i++
+  ){
+
+    let div=
+      document.createElement("div");
+
+    div.className="day";
+
+    let date=
+      year+
+      "-"+
+      String(month+1).padStart(2,"0")+
+      "-"+
+      String(i).padStart(2,"0");
+
+
+    if(status[i]==="present")
+      div.classList.add("present");
+
+    if(status[i]==="absent")
+      div.classList.add("absent");
+
+
+    if(date===today())
+      div.classList.add("today");
+
+
+    let icon="⚪";
+
+    if(status[i]==="present")
+      icon="😊";
+
+    if(status[i]==="absent")
+      icon="😔";
+
+
+    div.innerHTML=`
+
+      <div class="day-number">
+        ${i}
+      </div>
+
+      <div class="day-icon">
+        ${icon}
+      </div>
+
+      ${
+        status[i]
+        ?
+        `<div class="day-hours">
+          ${status[i]==="present"
+            ?"Present"
+            :"Absent"}
+        </div>`
+        :
+        `<div class="day-hours">
+          No record
+        </div>`
+      }
+
+    `;
+
+
+    div.onclick=function(){
+
+      openAttendance(date);
+
+    };
+
+
+    calendar.appendChild(div);
+
+  }
+
+}
+
+
+/* =========================
+   OPEN ATTENDANCE
+========================= */
+
+function openAttendance(date){
+
+  let rows=
+    table.querySelectorAll("tr");
+
+  for(let r of rows){
+
+    if(
+      r.cells[1] &&
+      r.cells[1].innerText.trim()===date
+    ){
+
+      r.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+      });
+
+      r.style.background="#fff3b0";
+
+      setTimeout(()=>{
+        r.style.background="";
+      },1500);
+
+      return;
+
+    }
+
+  }
+
+
+  let row=table.insertRow();
+
+  row.innerHTML=`
+
+    <td contenteditable="true">
+      Name
+    </td>
+
+    <td contenteditable="true">
+      ${date}
+    </td>
+
+    <td contenteditable="true">
+      ${nowTime()}
+    </td>
+
+    <td contenteditable="true"></td>
+
+    <td>0</td>
+
+    <td contenteditable="true">
+      😊 Good day!
+    </td>
+
+    <td>
+      <button onclick="deleteRow(this)">
+        🗑️ Delete
+      </button>
+    </td>
+
+  `;
+
+  saveData();
+
+  updateAll();
+
+}
+
+
+/* =========================
+   MONTH NAVIGATION
+========================= */
+
+function prevMonth(){
+
+  current.setMonth(
+    current.getMonth()-1
+  );
+
+  generateCalendar();
+
+}
+
+
+function nextMonth(){
+
+  current.setMonth(
+    current.getMonth()+1
+  );
+
+  generateCalendar();
+
+}
+
+
+/* =========================
+   MONTH REPORT
+========================= */
+
+function monthlyReport(){
+
+  let year=
+    current.getFullYear();
+
+  let month=
+    current.getMonth();
+
+  let total=0;
+
+  let days=0;
+
+  let rows=
+    table.querySelectorAll("tr");
+
+  rows.forEach(r=>{
+
+    let date=
+      r.cells[1]?.innerText;
+
+    let h=
+      parseFloat(
+        r.cells[4]?.innerText
+      );
+
+    if(date && !isNaN(h)){
+
+      let d=new Date(date);
+
+      if(
+        d.getFullYear()===year &&
+        d.getMonth()===month
+      ){
+
+        total+=h;
+
+        days++;
+
+      }
+
+    }
+
+  });
+
+  let avg=
+    days
+    ? total/days
+    : 0;
+
+  document.getElementById(
+    "report"
+  ).innerHTML=`
+
+    <h3>📅 Monthly Report</h3>
+
+    😊 Attendance Records:
+    <b>${days}</b><br>
+
+    ⏰ Total Hours:
+    <b>${total.toFixed(2)}</b><br>
+
+    ⭐ Average Hours:
