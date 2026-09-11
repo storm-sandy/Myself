@@ -3,1538 +3,253 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#6c5ce7">
-<title>🌈 Kids Attendance Dashboard</title>
-
+<meta name="theme-color" content="#4f46e5">
+<title>School Attendance Manager PRO</title>
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
-
-body{
-  margin:0;
-  padding:0;
-  font-family:"Arial Rounded MT Bold","Trebuchet MS",Arial,sans-serif;
-  background:linear-gradient(135deg,#74b9ff,#a29bfe,#fd79a8);
-  color:#2d3436;
-}
-
-/* MAIN APP */
-
-.app{
-  width:96%;
-  max-width:1400px;
-  margin:20px auto;
-}
-
-/* HEADER */
-
-.header{
-  background:rgba(255,255,255,.95);
-  border-radius:35px;
-  padding:28px 20px;
-  text-align:center;
-  box-shadow:0 15px 40px rgba(0,0,0,.18);
-  margin-bottom:20px;
-}
-
-.header .emoji{
-  font-size:65px;
-}
-
-.header h1{
-  margin:5px;
-  font-size:42px;
-  color:#6c5ce7;
-}
-
-.header p{
-  font-size:22px;
-  margin:10px;
-}
-
-/* BUTTON AREA */
-
-.action-panel{
-  background:white;
-  padding:20px;
-  border-radius:30px;
-  box-shadow:0 10px 30px rgba(0,0,0,.12);
-  margin-bottom:20px;
-}
-
-.action-title{
-  font-size:28px;
-  font-weight:bold;
-  margin-bottom:18px;
-  text-align:center;
-}
-
-.actions{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:14px;
-}
-
-button{
-  border:0;
-  border-radius:20px;
-  min-height:68px;
-  padding:14px 18px;
-  font-family:inherit;
-  font-size:19px;
-  font-weight:bold;
-  cursor:pointer;
-  color:white;
-  box-shadow:0 6px 0 rgba(0,0,0,.15);
-  transition:.18s;
-}
-
-button:hover{
-  transform:translateY(-4px) scale(1.02);
-  filter:brightness(1.08);
-}
-
-button:active{
-  transform:translateY(3px);
-  box-shadow:0 2px 0 rgba(0,0,0,.15);
-}
-
-.btn-add{background:#00b894}
-.btn-export{background:#0984e3}
-.btn-month{background:#6c5ce7}
-.btn-year{background:#e17055}
-.btn-clear{background:#d63031}
-
-/* STATS */
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:18px;
-  margin-bottom:20px;
-}
-
-.stat{
-  color:white;
-  border-radius:28px;
-  padding:22px;
-  text-align:center;
-  box-shadow:0 10px 25px rgba(0,0,0,.15);
-  transition:.2s;
-}
-
-.stat:hover{
-  transform:translateY(-7px);
-}
-
-.stat-icon{
-  font-size:48px;
-}
-
-.stat-number{
-  font-size:38px;
-  font-weight:bold;
-}
-
-.stat-label{
-  font-size:20px;
-}
-
-.present-stat{
-  background:linear-gradient(135deg,#00b894,#55efc4);
-}
-
-.absent-stat{
-  background:linear-gradient(135deg,#d63031,#ff7675);
-}
-
-.hours-stat{
-  background:linear-gradient(135deg,#0984e3,#74b9ff);
-}
-
-.days-stat{
-  background:linear-gradient(135deg,#6c5ce7,#a29bfe);
-}
-
-/* SECTION */
-
-.section{
-  background:white;
-  border-radius:30px;
-  padding:22px;
-  margin-bottom:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.12);
-}
-
-.section-title{
-  text-align:center;
-  font-size:30px;
-  margin:5px 0 20px;
-}
-
-/* TABLE */
-
-.table-wrapper{
-  width:100%;
-  overflow-x:auto;
-  border-radius:20px;
-}
-
-table{
-  width:100%;
-  min-width:850px;
-  border-collapse:separate;
-  border-spacing:0;
-  overflow:hidden;
-}
-
-th{
-  background:#6c5ce7;
-  color:white;
-  padding:18px 12px;
-  font-size:19px;
-}
-
-td{
-  padding:17px 12px;
-  text-align:center;
-  font-size:18px;
-  border-bottom:2px solid #eee;
-}
-
-tbody tr{
-  transition:.2s;
-}
-
-tbody tr:hover{
-  background:#f0edff;
-  transform:scale(1.01);
-}
-
-td[contenteditable="true"]{
-  background:#fffdf0;
-  cursor:text;
-  border-radius:8px;
-}
-
-td button{
-  min-height:48px;
-  font-size:16px;
-  background:#d63031;
-}
-
-/* GRAPH */
-
-.graph-box{
-  background:#fafafa;
-  border-radius:25px;
-  padding:15px;
-  overflow:hidden;
-}
-
-canvas{
-  width:100%;
-  height:350px;
-  display:block;
-}
-
-/* CALENDAR */
-
-.calendar-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  background:linear-gradient(135deg,#6c5ce7,#0984e3);
-  padding:15px;
-  border-radius:25px;
-  color:white;
-}
-
-.calendar-header h2{
-  margin:0;
-  font-size:30px;
-  text-align:center;
-}
-
-.calendar-header button{
-  background:white;
-  color:#6c5ce7;
-  min-width:65px;
-}
-
-.weekdays,
-.calendar{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:7px;
-  margin-top:10px;
-}
-
-.weekdays div{
-  background:#dfe6e9;
-  border-radius:12px;
-  padding:14px 5px;
-  text-align:center;
-  font-size:18px;
-  font-weight:bold;
-}
-
-.day{
-  min-height:115px;
-  border:3px solid #dfe6e9;
-  border-radius:18px;
-  padding:8px;
-  text-align:center;
-  font-size:20px;
-  cursor:pointer;
-  background:#fafafa;
-  transition:.2s;
-}
-
-.day:hover{
-  transform:scale(1.04);
-  border-color:#6c5ce7;
-}
-
-.day-number{
-  font-size:25px;
-  font-weight:bold;
-}
-
-.day-icon{
-  font-size:30px;
-  margin-top:8px;
-}
-
-.day-hours{
-  font-size:14px;
-  font-weight:bold;
-  margin-top:4px;
-}
-
-.present{
-  background:#b8f7d0;
-  border-color:#00b894;
-}
-
-.absent{
-  background:#ffd0d0;
-  border-color:#d63031;
-}
-
-.today{
-  box-shadow:0 0 0 5px #fdcb6e;
-}
-
-/* LEGEND */
-
-.legend{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:15px;
-  margin:18px 0;
-}
-
-.legend-item{
-  padding:12px 18px;
-  border-radius:15px;
-  font-size:18px;
-  font-weight:bold;
-}
-
-.legend-present{
-  background:#b8f7d0;
-}
-
-.legend-absent{
-  background:#ffd0d0;
-}
-
-.legend-none{
-  background:#eee;
-}
-
-/* REPORT */
-
-.report{
-  background:linear-gradient(135deg,#fff7d6,#ffeaa7);
-  padding:22px;
-  border-radius:25px;
-  margin-top:20px;
-  text-align:center;
-  font-size:22px;
-  line-height:1.8;
-}
-
-.report h3{
-  font-size:30px;
-  margin-top:0;
-}
-
-/* FOOTER */
-
-.footer{
-  text-align:center;
-  color:white;
-  font-size:20px;
-  font-weight:bold;
-  padding:25px;
-}
-
-/* MOBILE */
-
-@media(max-width:800px){
-
-  .app{
-    width:100%;
-    margin:0;
-  }
-
-  .header{
-    border-radius:0 0 30px 30px;
-  }
-
-  .header h1{
-    font-size:32px;
-  }
-
-  .header p{
-    font-size:19px;
-  }
-
-  .actions{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .actions button:last-child{
-    grid-column:span 2;
-  }
-
-  .stats{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .section,
-  .action-panel{
-    border-radius:25px;
-    margin:10px;
-    padding:15px;
-  }
-
-  .section-title{
-    font-size:26px;
-  }
-
-  .calendar-header h2{
-    font-size:21px;
-  }
-
-  .weekdays,
-  .calendar{
-    gap:3px;
-  }
-
-  .weekdays div{
-    font-size:13px;
-    padding:10px 2px;
-  }
-
-  .day{
-    min-height:75px;
-    padding:4px;
-  }
-
-  .day-number{
-    font-size:18px;
-  }
-
-  .day-icon{
-    font-size:24px;
-  }
-
-  .day-hours{
-    font-size:11px;
-  }
-
-  canvas{
-    height:280px;
-  }
-
-}
-
-@media(max-width:480px){
-
-  .stats{
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-  }
-
-  .stat{
-    padding:15px 8px;
-  }
-
-  .stat-icon{
-    font-size:38px;
-  }
-
-  .stat-number{
-    font-size:30px;
-  }
-
-  .stat-label{
-    font-size:16px;
-  }
-
-  button{
-    font-size:17px;
-  }
-
-}
+:root{--p:#4f46e5;--p2:#7c3aed;--bg:#f4f7ff;--card:#fff;--text:#172033;--muted:#667085;--ok:#16a34a;--bad:#dc2626;--warn:#d97706;--info:#0284c7;--border:#e5e7eb;--shadow:0 12px 35px #1e1b4b18}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,#eef2ff,#f8fafc 45%,#f5f3ff);color:var(--text)}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}
+.hidden{display:none!important}.app{min-height:100vh}.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at top,#c7d2fe,transparent 40%),linear-gradient(135deg,#312e81,#7c3aed)}
+.login-card{width:min(470px,100%);background:#ffffffef;backdrop-filter:blur(18px);border-radius:30px;padding:28px;box-shadow:0 30px 80px #0005}
+.logo{font-size:54px;text-align:center}.login h1{text-align:center;margin:5px 0;font-size:30px}.sub{text-align:center;color:var(--muted);margin-bottom:20px}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:15px 0}.role{padding:13px;border-radius:15px;background:#eef2ff;color:#3730a3;font-weight:800}.role.active{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff}
+.field{margin:10px 0}.field label{display:block;font-weight:800;font-size:13px;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:13px;background:#fff;outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--p);box-shadow:0 0 0 4px #4f46e51a}
+.primary{width:100%;padding:14px;border-radius:14px;color:#fff;background:linear-gradient(135deg,var(--p),var(--p2));font-weight:900;box-shadow:0 8px 20px #4f46e544;transition:.2s}.primary:hover{transform:translateY(-2px);filter:saturate(1.2)}
+.demo{margin-top:14px;background:#f8fafc;border-radius:14px;padding:10px;font-size:12px;text-align:center;color:#475467}
+header.top{position:sticky;top:0;z-index:10;background:#ffffffea;backdrop-filter:blur(15px);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;justify-content:space-between}.brand{font-size:20px;font-weight:950}.brand small{display:block;font-size:11px;color:var(--muted);font-weight:600}
+.actions{display:flex;gap:8px;align-items:center}.btn{padding:10px 13px;border-radius:12px;background:#eef2ff;color:#3730a3;font-weight:800}.btn:hover{transform:translateY(-1px)}.danger{background:#fee2e2;color:#991b1b}.success{background:#dcfce7;color:#166534}.dark{background:#111827;color:#fff}
+.container{max-width:1250px;margin:auto;padding:18px}.hero{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-radius:24px;padding:22px;box-shadow:var(--shadow);position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:-50px;top:-60px;background:#fff2}.hero h2{margin:0 0 4px;font-size:28px}.hero p{margin:0;opacity:.88}
+.tabs{display:flex;gap:8px;overflow:auto;margin:16px 0;padding-bottom:4px}.tab{white-space:nowrap;padding:11px 15px;border-radius:13px;background:#fff;border:1px solid var(--border);font-weight:850;color:#475467}.tab.active{background:#111827;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.stat{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:17px;box-shadow:var(--shadow);transition:.2s}.stat:hover{transform:translateY(-4px)}.stat .ico{font-size:27px}.stat b{display:block;font-size:27px;margin-top:4px}.stat span{color:var(--muted);font-size:13px;font-weight:700}
+.card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:18px;box-shadow:var(--shadow);margin-top:15px}.card h3{margin:0 0 13px}.formgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.formgrid .wide{grid-column:span 2}.row-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.tablewrap{overflow:auto;border-radius:14px;border:1px solid var(--border)}table{width:100%;border-collapse:collapse;min-width:850px}th,td{padding:11px 10px;text-align:left;border-bottom:1px solid var(--border);font-size:13px}th{background:#f8fafc;position:sticky;top:0;z-index:1}tbody tr{transition:.18s}tbody tr:hover{background:#eef2ff;transform:scale(1.002)}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:900}.present{background:#dcfce7;color:#166534}.absent{background:#fee2e2;color:#991b1b}.half{background:#fef3c7;color:#92400e}.leave{background:#e0f2fe;color:#075985}
+.kids{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.student{padding:16px;border:1px solid var(--border);border-radius:18px;background:linear-gradient(135deg,#fff,#f8fafc);cursor:pointer;transition:.2s}.student:hover{transform:translateY(-4px);box-shadow:var(--shadow)}.avatar{width:50px;height:50px;border-radius:15px;display:grid;place-items:center;background:#ede9fe;font-size:25px;float:left;margin-right:11px}.student h4{margin:3px 0}.student small{color:var(--muted)}
+.progress{height:10px;background:#e5e7eb;border-radius:20px;overflow:hidden;margin-top:10px}.progress i{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#16a34a);border-radius:20px}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.day{min-height:62px;background:#f8fafc;border-radius:10px;padding:6px;font-size:11px;border:1px solid #eef2f7}.day b{font-size:12px}.day.presentday{background:#dcfce7}.day.absentday{background:#fee2e2}.day.halfday{background:#fef3c7}.day.leaveday{background:#e0f2fe}.dow{font-weight:900;text-align:center;padding:7px;color:#667085}
+.report{background:#fff;padding:28px;border:1px solid #ddd;max-width:850px;margin:auto}.report h1{text-align:center}.report .school{text-align:center;color:#667085}.reportgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.reportbox{border:1px solid #ddd;padding:12px;text-align:center;border-radius:10px}.reportbox b{display:block;font-size:23px}
+.toast{position:fixed;right:15px;bottom:15px;background:#111827;color:#fff;padding:12px 16px;border-radius:13px;box-shadow:0 10px 30px #0004;z-index:99;display:none}
+.modal{position:fixed;inset:0;background:#0008;z-index:50;display:grid;place-items:center;padding:15px}.modalbox{background:#fff;width:min(700px,100%);max-height:92vh;overflow:auto;border-radius:22px;padding:20px}.close{float:right;background:#f1f5f9;border-radius:10px;padding:8px}
+.note{background:#fffbeb;border:1px solid #fde68a;padding:10px;border-radius:12px;font-size:12px;color:#854d0e}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.formgrid{grid-template-columns:repeat(2,1fr)}.formgrid .wide{grid-column:span 2}.hero h2{font-size:23px}}
+@media(max-width:600px){header.top{padding:10px}.brand{font-size:16px}.container{padding:10px}.grid{grid-template-columns:repeat(2,1fr);gap:8px}.stat{padding:12px}.stat b{font-size:22px}.formgrid{grid-template-columns:1fr}.formgrid .wide{grid-column:auto}.actions .btn span{display:none}.calendar .day{min-height:54px}.reportgrid{grid-template-columns:repeat(2,1fr)}}
+@media print{body{background:#fff}.no-print,.top,.tabs,.hero,.card:not(.printable),button{display:none!important}.container{padding:0}.report{border:0;box-shadow:none;max-width:none}.printable{display:block!important}}
 </style>
 </head>
-
 <body>
-
-<div class="app">
-
-<!-- HEADER -->
-
-<div class="header">
-
-  <div class="emoji">🌈📚👧👦</div>
-
-  <h1>My Attendance</h1>
-
-  <p>⭐ Come to school • Learn • Have fun! ⭐</p>
-
-</div>
-
-
-<!-- ACTIONS -->
-
-<div class="action-panel">
-
-  <div class="action-title">
-    🎮 Parent Actions
-  </div>
-
-  <div class="actions">
-
-    <button class="btn-add" onclick="addRow()">
-      ➕ Add Attendance
-    </button>
-
-    <button class="btn-export" onclick="exportCSV()">
-      📤 Export
-    </button>
-
-    <button class="btn-month" onclick="monthlyReport()">
-      📅 Month Report
-    </button>
-
-    <button class="btn-year" onclick="yearlyReport()">
-      📊 Year Report
-    </button>
-
-    <button class="btn-clear" onclick="clearAll()">
-      🗑️ Clear All
-    </button>
-
-  </div>
-
-</div>
-
-
-<!-- STATS -->
-
-<div class="stats">
-
-  <div class="stat present-stat">
-
-    <div class="stat-icon">😊</div>
-
-    <div class="stat-number" id="presentCount">0</div>
-
-    <div class="stat-label">Present Days</div>
-
-  </div>
-
-
-  <div class="stat absent-stat">
-
-    <div class="stat-icon">😔</div>
-
-    <div class="stat-number" id="absentCount">0</div>
-
-    <div class="stat-label">Absent Days</div>
-
-  </div>
-
-
-  <div class="stat hours-stat">
-
-    <div class="stat-icon">⏰</div>
-
-    <div class="stat-number" id="totalHours">0</div>
-
-    <div class="stat-label">Total Hours</div>
-
-  </div>
-
-
-  <div class="stat days-stat">
-
-    <div class="stat-icon">📅</div>
-
-    <div class="stat-number" id="totalDays">0</div>
-
-    <div class="stat-label">Total Records</div>
-
-  </div>
-
-</div>
-
-
-<!-- ATTENDANCE -->
-
-<div class="section">
-
-  <div class="section-title">
-    📝 Attendance Records
-  </div>
-
-  <div class="table-wrapper">
-
-    <table id="table">
-
-      <thead>
-
-        <tr>
-          <th>👦 Name</th>
-          <th>📅 Date</th>
-          <th>🟢 Time In</th>
-          <th>🔴 Time Out</th>
-          <th>⏰ Hours</th>
-          <th>💬 Remarks</th>
-          <th>⚙️ Action</th>
-        </tr>
-
-      </thead>
-
-      <tbody></tbody>
-
-    </table>
-
-  </div>
-
-</div>
-
-
-<!-- GRAPH -->
-
-<div class="section">
-
-  <div class="section-title">
-    📈 Daily Hours
-  </div>
-
-  <div class="graph-box">
-
-    <canvas id="chart"></canvas>
-
-  </div>
-
-</div>
-
-
-<!-- CALENDAR -->
-
-<div class="section">
-
-  <div class="section-title">
-    📅 My Attendance Calendar
-  </div>
-
-  <div class="calendar-header">
-
-    <button onclick="prevMonth()">◀</button>
-
-    <h2 id="monthLabel"></h2>
-
-    <button onclick="nextMonth()">▶</button>
-
-  </div>
-
-
-  <div class="legend">
-
-    <div class="legend-item legend-present">
-      🟢 Present
+<div id="login" class="login">
+  <div class="login-card">
+    <div class="logo">🏫</div><h1>School Attendance PRO</h1>
+    <div class="sub">Attendance • Homework • Reports • Parent Portal</div>
+    <div class="roles">
+      <button class="role active" data-role="admin">🔐 Admin</button>
+      <button class="role" data-role="teacher">👩‍🏫 Teacher</button>
+      <button class="role" data-role="parent">👨‍👩‍👧 Parent</button>
     </div>
-
-    <div class="legend-item legend-absent">
-      🔴 Absent
-    </div>
-
-    <div class="legend-item legend-none">
-      ⚪ No Record
-    </div>
-
+    <div id="loginFields"></div>
+    <button class="primary" onclick="login()">🚀 Login</button>
+    <div class="demo">Demo: Admin PIN <b>1234</b> • Teacher <b>teacher / 1234</b> • Parent <b>parent1 / 1234</b></div>
   </div>
-
-
-  <div class="weekdays">
-
-    <div>Sun</div>
-    <div>Mon</div>
-    <div>Tue</div>
-    <div>Wed</div>
-    <div>Thu</div>
-    <div>Fri</div>
-    <div>Sat</div>
-
-  </div>
-
-
-  <div id="calendar" class="calendar"></div>
-
 </div>
 
-
-<!-- REPORT -->
-
-<div id="report" class="report">
-
-  📊 Your attendance report will appear here.
-
+<div id="app" class="app hidden">
+<header class="top">
+  <div class="brand">🏫 <span id="schoolTitle">School Attendance PRO</span><small id="roleLabel"></small></div>
+  <div class="actions"><button class="btn" onclick="backup()">💾 <span>Backup</span></button><button class="btn danger" onclick="logout()">🚪 <span>Logout</span></button></div>
+</header>
+<main class="container">
+  <section class="hero"><h2 id="welcome">Welcome</h2><p id="heroSub">Manage school attendance easily.</p></section>
+  <div id="tabs" class="tabs"></div>
+  <section id="content"></section>
+</main>
 </div>
 
-
-<div class="footer">
-
-  🌟 Great attendance! Keep learning and smiling! 🌟
-
-</div>
-
-</div>
-
+<div id="modal" class="modal hidden"><div class="modalbox"><button class="close" onclick="closeModal()">✕</button><div id="modalContent"></div></div></div>
+<div id="toast" class="toast"></div>
+<input id="restoreFile" type="file" accept=".json" hidden>
 
 <script>
+const KEY="schoolAttendancePro_v3";
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const today=()=>new Date().toISOString().slice(0,10);
+const month=()=>today().slice(0,7);
+let db=load(), session=null, role="admin", activeTab="dashboard";
 
-let table=document.querySelector("#table tbody");
-
-let current=new Date();
-
-
-/* =========================
-   TIME
-========================= */
-
-function nowTime(){
-
-  return new Date().toLocaleTimeString();
-
+function seed(){
+ return {
+  settings:{school:"Sunrise Public School",className:"First Class",division:"A",teacher:"Class Teacher"},
+  adminPin:"1234",
+  teachers:[{id:"t1",name:"Class Teacher",username:"teacher",pin:"1234"}],
+  students:[
+   {id:"s1",name:"Aarav Sharma",roll:"1",className:"First Class",division:"A",parentName:"Parent One",parentPhone:"",parentUser:"parent1",parentPin:"1234"},
+   {id:"s2",name:"Anaya Patil",roll:"2",className:"First Class",division:"A",parentName:"Parent Two",parentPhone:"",parentUser:"parent2",parentPin:"1234"}
+  ],
+  attendance:[], homework:[], remarks:[]
+ };
 }
-
-
-function today(){
-
-  return new Date()
-    .toISOString()
-    .split("T")[0];
-
+function load(){try{let x=JSON.parse(localStorage.getItem(KEY));return x&&x.students?x:seed()}catch(e){return seed()}}
+function save(){localStorage.setItem(KEY,JSON.stringify(db))}
+function toast(s){let t=document.getElementById("toast");t.textContent=s;t.style.display="block";setTimeout(()=>t.style.display="none",2200)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function fmt(d){if(!d)return"";let [y,m,day]=d.split("-");return `${day}-${m}-${y}`}
+function pct(n,d){return d?Math.round(n/d*100):0}
+function student(id){return db.students.find(s=>s.id===id)}
+function attFor(sid,date){return db.attendance.find(a=>a.studentId===sid&&a.date===date)}
+function stats(sid,start,end){
+ let arr=db.attendance.filter(a=>a.studentId===sid&&a.date>=start&&a.date<=end);
+ return {present:arr.filter(a=>a.status==="Present").length,absent:arr.filter(a=>a.status==="Absent").length,half:arr.filter(a=>a.status==="Half Day").length,leave:arr.filter(a=>a.status==="Leave").length,total:arr.length};
 }
-
-
-/* =========================
-   ADD ROW
-========================= */
-
-function addRow(){
-
-  let row=table.insertRow();
-
-  row.innerHTML=`
-
-    <td contenteditable="true">Name</td>
-
-    <td contenteditable="true">
-      ${today()}
-    </td>
-
-    <td contenteditable="true">
-      ${nowTime()}
-    </td>
-
-    <td contenteditable="true"></td>
-
-    <td>0</td>
-
-    <td contenteditable="true">
-      😊 Good day!
-    </td>
-
-    <td>
-      <button onclick="deleteRow(this)">
-        🗑️ Delete
-      </button>
-    </td>
-
-  `;
-
-  saveData();
-
-  updateAll();
-
+function monthRange(m){let [y,mo]=m.split("-");let last=new Date(+y,+mo,0).getDate();return [`${y}-${mo}-01`,`${y}-${mo}-${String(last).padStart(2,"0")}`]}
+function currentUserName(){if(role==="admin")return"Administrator";if(role==="teacher")return session.name;return student(session.studentId)?.name||"Parent"}
+function setRole(r){role=r;document.querySelectorAll(".role").forEach(x=>x.classList.toggle("active",x.dataset.role===r));renderLoginFields()}
+function renderLoginFields(){
+ let f=document.getElementById("loginFields");
+ if(role==="admin")f.innerHTML=`<div class="field"><label>Admin PIN</label><input id="loginPin" type="password" inputmode="numeric" placeholder="Enter admin PIN"></div>`;
+ if(role==="teacher")f.innerHTML=`<div class="field"><label>Username</label><input id="loginUser" placeholder="teacher"></div><div class="field"><label>PIN / Password</label><input id="loginPin" type="password" placeholder="1234"></div>`;
+ if(role==="parent")f.innerHTML=`<div class="field"><label>Parent Username</label><input id="loginUser" placeholder="parent1"></div><div class="field"><label>PIN / Password</label><input id="loginPin" type="password" placeholder="1234"></div>`;
 }
+document.querySelectorAll(".role").forEach(b=>b.onclick=()=>setRole(b.dataset.role));
+renderLoginFields();
 
-
-/* =========================
-   DELETE
-========================= */
-
-function deleteRow(btn){
-
-  if(confirm("Delete this attendance record?")){
-
-    btn.parentElement.parentElement.remove();
-
-    saveData();
-
-    updateAll();
-
-  }
-
+function login(){
+ let pin=document.getElementById("loginPin")?.value||"", user=document.getElementById("loginUser")?.value.trim()||"";
+ if(role==="admin"&&pin===db.adminPin){session={name:"Administrator"};start()}
+ else if(role==="teacher"){let t=db.teachers.find(x=>x.username===user&&x.pin===pin);if(t){session=t;start()}else toast("Invalid teacher login")}
+ else if(role==="parent"){let s=db.students.find(x=>x.parentUser===user&&x.parentPin===pin);if(s){session={studentId:s.id,name:s.parentName||s.name};start()}else toast("Invalid parent login")}
+ else toast("Invalid admin PIN")
 }
-
-
-/* =========================
-   CLEAR
-========================= */
-
-function clearAll(){
-
-  if(confirm("🗑️ Clear ALL attendance records?")){
-
-    localStorage.removeItem("attendanceData");
-
-    table.innerHTML="";
-
-    updateAll();
-
-  }
-
+function start(){document.getElementById("login").classList.add("hidden");document.getElementById("app").classList.remove("hidden");document.getElementById("schoolTitle").textContent=db.settings.school;document.getElementById("roleLabel").textContent=role.toUpperCase();activeTab=role==="parent"?"mychild":"dashboard";render()}
+function logout(){session=null;document.getElementById("app").classList.add("hidden");document.getElementById("login").classList.remove("hidden");document.getElementById("loginPin").value="";document.getElementById("loginUser")?.value&&(document.getElementById("loginUser").value="")}
+function tabs(){
+ let a=role==="admin"?[
+ ["dashboard","📊 Dashboard"],["students","👧 Students"],["attendance","📝 Attendance"],["reports","📈 Reports"],["teachers","👩‍🏫 Teachers"],["settings","⚙️ Settings"],["backup","💾 Backup"]
+ ]:role==="teacher"?[
+ ["dashboard","📊 Dashboard"],["attendance","📝 Attendance"],["students","👧 Students"],["reports","📈 Reports"]
+ ]:[["mychild","👦 My Child"],["calendar","📅 Calendar"],["reportcard","🏆 Report Card"]];
+ return a;
 }
+function render(){document.getElementById("tabs").innerHTML=tabs().map(x=>`<button class="tab ${activeTab===x[0]?"active":""}" onclick="activeTab='${x[0]}';render()">${x[1]}</button>`).join("");document.getElementById("welcome").textContent=`Hello, ${currentUserName()} 👋`;document.getElementById("heroSub").textContent=role==="parent"?"View your child's attendance, homework and report card.":"Manage attendance, students and school reports.";document.getElementById("content").innerHTML=views[activeTab]();}
 
+const views={
+ dashboard(){
+  let all=db.students.length, start=`${new Date().getFullYear()}-01-01`,end=`${new Date().getFullYear()}-12-31`;
+  let arr=db.attendance.filter(a=>a.date>=start&&a.date<=end), p=arr.filter(a=>a.status==="Present").length;
+  return `<div class="grid">
+   <div class="stat"><div class="ico">👧</div><b>${all}</b><span>Total Students</span></div>
+   <div class="stat"><div class="ico">🟢</div><b>${arr.filter(a=>a.status==="Present").length}</b><span>Present Records</span></div>
+   <div class="stat"><div class="ico">🔴</div><b>${arr.filter(a=>a.status==="Absent").length}</b><span>Absent Records</span></div>
+   <div class="stat"><div class="ico">📊</div><b>${pct(p,arr.length)}%</b><span>Overall Attendance</span></div>
+  </div>
+  <div class="card"><h3>🏆 Attendance Leaderboard</h3><div class="kids">${db.students.map(s=>{let z=stats(s,start,end);return `<div class="student" onclick="openStudent('${s.id}')"><div class="avatar">🧒</div><h4>${esc(s.name)}</h4><small>Roll ${esc(s.roll)} • ${esc(s.className)}-${esc(s.division)}</small><div class="progress"><i style="width:${pct(z.present,z.total)}%"></i></div><b>${pct(z.present,z.total)}%</b> attendance</div>`}).join("")}</div></div>`;
+ },
+ students(){
+  return `<div class="card"><h3>👧 Student Management</h3><div class="formgrid">
+   <div class="field"><label>Name</label><input id="sn"></div><div class="field"><label>Roll No.</label><input id="sr"></div>
+   <div class="field"><label>Class</label><input id="sc" value="${esc(db.settings.className)}"></div><div class="field"><label>Division</label><input id="sd" value="${esc(db.settings.division)}"></div>
+   <div class="field"><label>Parent Name</label><input id="sp"></div><div class="field"><label>Parent Phone</label><input id="sphone"></div>
+   <div class="field"><label>Parent Username</label><input id="su" placeholder="parent3"></div><div class="field"><label>Parent PIN</label><input id="spi" value="1234"></div>
+  </div><div class="row-actions"><button class="btn success" onclick="addStudent()">➕ Add Student</button></div></div>
+  <div class="card"><h3>Student List (${db.students.length})</h3><div class="tablewrap"><table><thead><tr><th>Roll</th><th>Name</th><th>Class</th><th>Parent</th><th>Parent Login</th><th>Action</th></tr></thead><tbody>${db.students.map(s=>`<tr><td>${esc(s.roll)}</td><td><b>${esc(s.name)}</b></td><td>${esc(s.className)}-${esc(s.division)}</td><td>${esc(s.parentName)}</td><td>${esc(s.parentUser)}</td><td><button class="btn" onclick="editStudent('${s.id}')">✏️</button> <button class="btn danger" onclick="deleteStudent('${s.id}')">🗑️</button></td></tr>`).join("")}</tbody></table></div></div>`;
+ },
+ attendance(){
+  let d=today();
+  return `<div class="card"><h3>📝 Mark Attendance</h3><div class="formgrid">
+   <div class="field"><label>Date</label><input id="adate" type="date" value="${d}"></div>
+   <div class="field"><label>Student</label><select id="asid">${db.students.map(s=>`<option value="${s.id}">${esc(s.roll)} - ${esc(s.name)}</option>`).join("")}</select></div>
+   <div class="field"><label>Status</label><select id="astatus"><option>Present</option><option>Absent</option><option>Half Day</option><option>Leave</option></select></div>
+   <div class="field"><label>Time In</label><input id="tin" type="time"></div><div class="field"><label>Time Out</label><input id="tout" type="time"></div>
+   <div class="field"><label>Homework</label><select id="hw"><option>Completed</option><option>Partial</option><option>Not Done</option></select></div>
+   <div class="field wide"><label>Teacher Remark</label><input id="arem" placeholder="Good work / late / absent reason..."></div>
+  </div><div class="row-actions"><button class="btn success" onclick="saveAttendance()">💾 Save Attendance</button><button class="btn" onclick="markAllPresent()">🟢 Mark All Present</button></div></div>
+  <div class="card"><h3>📋 Attendance Records</h3><div class="formgrid"><div class="field"><label>Month</label><input id="filterMonth" type="month" value="${month()}" onchange="renderAttendanceTable()"></div><div class="field"><label>Student</label><select id="filterStudent" onchange="renderAttendanceTable()"><option value="">All Students</option>${db.students.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join("")}</select></div></div><div id="attTable"></div></div>`;
+ },
+ reports(){
+  let m=month(); return `<div class="card"><h3>📈 Monthly Class Report</h3><div class="formgrid"><div class="field"><label>Month</label><input id="rm" type="month" value="${m}" onchange="renderReportTable()"></div></div><div id="reportTable"></div></div><div class="card"><h3>📅 Yearly Summary</h3><div id="yearTable"></div></div>`;
+ },
+ teachers(){
+  return `<div class="card"><h3>👩‍🏫 Teacher Management</h3><div class="formgrid"><div class="field"><label>Name</label><input id="tn"></div><div class="field"><label>Username</label><input id="tu"></div><div class="field"><label>PIN</label><input id="tp" value="1234"></div></div><div class="row-actions"><button class="btn success" onclick="addTeacher()">➕ Add Teacher</button></div></div><div class="card"><div class="tablewrap"><table><thead><tr><th>Name</th><th>Username</th><th>Action</th></tr></thead><tbody>${db.teachers.map(t=>`<tr><td>${esc(t.name)}</td><td>${esc(t.username)}</td><td><button class="btn danger" onclick="deleteTeacher('${t.id}')">🗑️</button></td></tr>`).join("")}</tbody></table></div></div>`;
+ },
+ settings(){
+  return `<div class="card"><h3>⚙️ School Settings</h3><div class="formgrid"><div class="field wide"><label>School Name</label><input id="setSchool" value="${esc(db.settings.school)}"></div><div class="field"><label>Default Class</label><input id="setClass" value="${esc(db.settings.className)}"></div><div class="field"><label>Division</label><input id="setDiv" value="${esc(db.settings.division)}"></div><div class="field"><label>Teacher</label><input id="setTeacher" value="${esc(db.settings.teacher)}"></div><div class="field"><label>New Admin PIN</label><input id="setPin" type="password" placeholder="Leave blank to keep current"></div></div><div class="row-actions"><button class="btn success" onclick="saveSettings()">💾 Save Settings</button></div></div><div class="card"><h3>🔒 Security Note</h3><div class="note">This is a single-file offline application. Credentials are stored in browser storage and are suitable for a prototype/small offline tool, not production-grade authentication.</div></div>`;
+ },
+ backup(){
+  return `<div class="card"><h3>💾 Backup & Restore</h3><p>Keep a JSON backup regularly, especially before clearing browser data.</p><div class="row-actions"><button class="btn success" onclick="backup()">⬇️ Download JSON Backup</button><button class="btn" onclick="document.getElementById('restoreFile').click()">⬆️ Restore JSON</button><button class="btn" onclick="exportCSV()">📄 Export Attendance CSV</button></div><div class="note" style="margin-top:12px">Browser storage normally persists across sessions for the same origin. For directly opened file URLs, browser behavior can vary, so JSON backup is recommended.</div></div><div class="card"><h3>🧹 Danger Zone</h3><button class="btn danger" onclick="clearAll()">Delete All Application Data</button></div>`;
+ },
+ mychild(){
+  let s=student(session.studentId), [a,b]=monthRange(month()), z=stats(s.id,a,b);
+  return `<div class="card"><h3>👦 ${esc(s.name)}</h3><p>Roll ${esc(s.roll)} • ${esc(s.className)}-${esc(s.division)} • Parent: ${esc(s.parentName)}</p><div class="grid"><div class="stat"><b>${pct(z.present,z.total)}%</b><span>Attendance</span></div><div class="stat"><b>${z.present}</b><span>Present</span></div><div class="stat"><b>${z.absent}</b><span>Absent</span></div><div class="stat"><b>${z.half}</b><span>Half Day</span></div></div></div><div class="card"><h3>📚 Recent Homework & Remarks</h3>${recentStudent(s.id)}</div>`;
+ },
+ calendar(){
+  let s=student(session.studentId), m=month();return `<div class="card"><h3>📅 Attendance Calendar - ${m}</h3>${calendarHTML(s.id,m)}</div>`;
+ },
+ reportcard(){
+  return `<div class="card printable"><div id="reportCard"></div></div><div class="row-actions no-print"><button class="primary" style="width:auto" onclick="window.print()">🖨️ Print / Save as PDF</button></div>`;
+ }
+};
 
-/* =========================
-   STORAGE
-========================= */
-
-function saveData(){
-
-  localStorage.setItem(
-    "attendanceData",
-    table.innerHTML
-  );
-
+function recentStudent(id){
+ let rows=db.attendance.filter(a=>a.studentId===id).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,10);
+ if(!rows.length)return"<p>No attendance records yet.</p>";
+ return `<div class="tablewrap"><table><thead><tr><th>Date</th><th>Status</th><th>Homework</th><th>Remark</th></tr></thead><tbody>${rows.map(a=>`<tr><td>${fmt(a.date)}</td><td><span class="badge ${a.status==='Present'?'present':a.status==='Absent'?'absent':a.status==='Half Day'?'half':'leave'}">${a.status}</span></td><td>${esc(a.homework||"-")}</td><td>${esc(a.remark||"-")}</td></tr>`).join("")}</tbody></table></div>`;
 }
-
-
-function loadData(){
-
-  let data=
-    localStorage.getItem("attendanceData");
-
-  if(data)
-    table.innerHTML=data;
-
+function calendarHTML(id,m){
+ let [y,mo]=m.split("-").map(Number), first=new Date(y,mo-1,1), days=new Date(y,mo,0).getDate(), html=`<div class="calendar">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(x=>`<div class="dow">${x}</div>`).join("")}`;
+ for(let i=0;i<first.getDay();i++)html+=`<div></div>`;
+ for(let d=1;d<=days;d++){let date=`${y}-${String(mo).padStart(2,"0")}-${String(d).padStart(2,"0")}`,a=attFor(id,date),cl=a?(a.status==="Present"?"presentday":a.status==="Absent"?"absentday":a.status==="Half Day"?"halfday":"leaveday"):"";html+=`<div class="day ${cl}"><b>${d}</b><br>${a?esc(a.status):"—"}</div>`}
+ return html+"</div>";
 }
-
-
-/* =========================
-   UPDATE ALL
-========================= */
-
-function updateAll(){
-
-  calculateHours();
-
-  updateStats();
-
-  updateGraph();
-
-  generateCalendar();
-
+function saveAttendance(){
+ let sid=asid.value,date=adate.value,a={id:uid(),studentId:sid,date,status:astatus.value,timeIn:tin.value,timeOut:tout.value,homework:hw.value,remark:arem.value};
+ let old=attFor(sid,date);if(old){Object.assign(old,a);a.id=old.id}else db.attendance.push(a);save();toast("Attendance saved");renderAttendanceTable();
 }
-
-
-/* =========================
-   CALCULATE HOURS
-========================= */
-
-function calculateHours(){
-
-  let rows=table.querySelectorAll("tr");
-
-  rows.forEach(r=>{
-
-    let inTime=
-      r.cells[2]?.innerText.trim();
-
-    let outTime=
-      r.cells[3]?.innerText.trim();
-
-    if(inTime && outTime){
-
-      let start=
-        new Date("1970/01/01 "+inTime);
-
-      let end=
-        new Date("1970/01/01 "+outTime);
-
-      let diff=
-        (end-start)/3600000;
-
-      if(diff<0)
-        diff+=24;
-
-      if(!isNaN(diff)){
-
-        r.cells[4].innerText=
-          diff.toFixed(2);
-
-      }
-
-    }
-
-  });
-
+function markAllPresent(){let d=adate.value||today();db.students.forEach(s=>{let a=attFor(s.id,d);if(a)a.status="Present";else db.attendance.push({id:uid(),studentId:s.id,date:d,status:"Present",timeIn:"",timeOut:"",homework:"Completed",remark:""})});save();toast("All students marked Present");renderAttendanceTable()}
+function renderAttendanceTable(){
+ let m=document.getElementById("filterMonth")?.value||month(),sid=document.getElementById("filterStudent")?.value||"",box=document.getElementById("attTable");if(!box)return;
+ let rows=db.attendance.filter(a=>a.date.startsWith(m)&&(!sid||a.studentId===sid)).sort((a,b)=>b.date.localeCompare(a.date));
+ box.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Date</th><th>Roll</th><th>Student</th><th>Status</th><th>In</th><th>Out</th><th>Homework</th><th>Remark</th><th>Action</th></tr></thead><tbody>${rows.map(a=>{let s=student(a.studentId);return `<tr><td>${fmt(a.date)}</td><td>${esc(s?.roll)}</td><td>${esc(s?.name)}</td><td><span class="badge ${a.status==='Present'?'present':a.status==='Absent'?'absent':a.status==='Half Day'?'half':'leave'}">${a.status}</span></td><td>${a.timeIn||"-"}</td><td>${a.timeOut||"-"}</td><td>${esc(a.homework||"-")}</td><td>${esc(a.remark||"-")}</td><td><button class="btn danger" onclick="deleteAtt('${a.id}')">🗑️</button></td></tr>`}).join("")}</tbody></table></div>`;
 }
-
-
-/* =========================
-   STATISTICS
-========================= */
-
-function updateStats(){
-
-  let rows=table.querySelectorAll("tr");
-
-  let present=0;
-
-  let absent=0;
-
-  let hours=0;
-
-  rows.forEach(r=>{
-
-    let h=
-      parseFloat(
-        r.cells[4]?.innerText
-      );
-
-    if(!isNaN(h)){
-
-      if(h>0)
-        present++;
-      else
-        absent++;
-
-      hours+=h;
-
-    }
-
-  });
-
-  document.getElementById(
-    "presentCount"
-  ).innerText=present;
-
-  document.getElementById(
-    "absentCount"
-  ).innerText=absent;
-
-  document.getElementById(
-    "totalHours"
-  ).innerText=hours.toFixed(1);
-
-  document.getElementById(
-    "totalDays"
-  ).innerText=rows.length;
-
+function deleteAtt(id){if(confirm("Delete this record?")){db.attendance=db.attendance.filter(a=>a.id!==id);save();renderAttendanceTable();}}
+function renderReportTable(){
+ let m=document.getElementById("rm")?.value||month(),[a,b]=monthRange(m),box=document.getElementById("reportTable");if(!box)return;
+ box.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Roll</th><th>Student</th><th>Present</th><th>Absent</th><th>Half</th><th>Leave</th><th>Total</th><th>%</th><th>Report</th></tr></thead><tbody>${db.students.map(s=>{let z=stats(s.id,a,b);return `<tr><td>${esc(s.roll)}</td><td>${esc(s.name)}</td><td>${z.present}</td><td>${z.absent}</td><td>${z.half}</td><td>${z.leave}</td><td>${z.total}</td><td><b>${pct(z.present,z.total)}%</b></td><td><button class="btn" onclick="showReport('${s.id}','${m}')">🏆</button></td></tr>`}).join("")}</tbody></table></div>`;
+ renderYearTable();
 }
-
-
-/* =========================
-   EXPORT
-========================= */
-
-function exportCSV(){
-
-  let rows=
-    document.querySelectorAll(
-      "#table tr"
-    );
-
-  let csv=[];
-
-  rows.forEach(r=>{
-
-    let cols=
-      r.querySelectorAll(
-        "td,th"
-      );
-
-    let row=[];
-
-    cols.forEach(c=>{
-
-      let value=
-        c.innerText
-        .replace(/,/g," ");
-
-      row.push(value);
-
-    });
-
-    csv.push(row.join(","));
-
-  });
-
-  let blob=new Blob(
-    [csv.join("\n")],
-    {type:"text/csv"}
-  );
-
-  let a=document.createElement("a");
-
-  a.href=
-    URL.createObjectURL(blob);
-
-  a.download="attendance.csv";
-
-  a.click();
-
-  URL.revokeObjectURL(a.href);
-
+function renderYearTable(){
+ let y=new Date().getFullYear(),box=document.getElementById("yearTable");if(!box)return;
+ box.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Student</th>${Array.from({length:12},(_,i)=>`<th>${i+1}</th>`).join("")}<th>Year %</th></tr></thead><tbody>${db.students.map(s=>{let vals=Array.from({length:12},(_,i)=>{let m=`${y}-${String(i+1).padStart(2,"0")}`,z=stats(s.id,...monthRange(m));return pct(z.present,z.total)});let z=stats(s.id,`${y}-01-01`,`${y}-12-31`);return `<tr><td>${esc(s.name)}</td>${vals.map(v=>`<td>${v}%</td>`).join("")}<td><b>${pct(z.present,z.total)}%</b></td></tr>`}).join("")}</tbody></table></div>`;
 }
-
-
-/* =========================
-   GRAPH
-========================= */
-
-function updateGraph(){
-
-  let labels=[];
-
-  let data=[];
-
-  let rows=
-    table.querySelectorAll("tr");
-
-  rows.forEach(r=>{
-
-    let date=
-      r.cells[1]?.innerText;
-
-    let h=
-      parseFloat(
-        r.cells[4]?.innerText
-      );
-
-    if(date && !isNaN(h)){
-
-      labels.push(date);
-
-      data.push(h);
-
-    }
-
-  });
-
-  drawGraph(labels,data);
-
+function openStudent(id){if(role==="parent")return;showReport(id,month())}
+function showReport(id,m){
+ let s=student(id),[a,b]=monthRange(m),z=stats(id,a,b);
+ document.getElementById("modalContent").innerHTML=`<div class="report"><h1>🏫 ${esc(db.settings.school)}</h1><div class="school">Monthly Student Report Card</div><hr><p><b>Student:</b> ${esc(s.name)} &nbsp; <b>Roll:</b> ${esc(s.roll)} &nbsp; <b>Class:</b> ${esc(s.className)}-${esc(s.division)}</p><p><b>Month:</b> ${m}</p><div class="reportgrid"><div class="reportbox"><b>${pct(z.present,z.total)}%</b>Attendance</div><div class="reportbox"><b>${z.present}</b>Present</div><div class="reportbox"><b>${z.absent}</b>Absent</div><div class="reportbox"><b>${z.half}</b>Half Day</div></div>${recentStudent(id)}<p style="margin-top:35px">Teacher Signature: ____________________</p></div><div class="row-actions"><button class="primary" style="width:auto" onclick="window.print()">🖨️ Print / Save as PDF</button></div>`;
+ document.getElementById("modal").classList.remove("hidden");
 }
-
-
-function drawGraph(labels,data){
-
-  let canvas=
-    document.getElementById("chart");
-
-  let ctx=
-    canvas.getContext("2d");
-
-  canvas.width=
-    canvas.clientWidth;
-
-  canvas.height=
-    350;
-
-  ctx.clearRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
-
-  if(data.length===0){
-
-    ctx.font="bold 22px Arial";
-
-    ctx.textAlign="center";
-
-    ctx.fillText(
-      "📊 Add attendance to see the graph",
-      canvas.width/2,
-      170
-    );
-
-    ctx.textAlign="left";
-
-    return;
-
-  }
-
-  let max=
-    Math.max(...data,8);
-
-  let margin=45;
-
-  let graphHeight=240;
-
-  let bottom=285;
-
-  for(let i=0;i<=max;i++){
-
-    let y=
-      bottom-
-      (i/max)*graphHeight;
-
-    ctx.strokeStyle="#e5e5e5";
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      margin,
-      y
-    );
-
-    ctx.lineTo(
-      canvas.width-margin,
-      y
-    );
-
-    ctx.stroke();
-
-    ctx.fillStyle="#555";
-
-    ctx.font="14px Arial";
-
-    ctx.fillText(
-      i+"h",
-      8,
-      y+4
-    );
-
-  }
-
-  let width=
-    (canvas.width-margin*2)/
-    data.length;
-
-  data.forEach((v,i)=>{
-
-    let barHeight=
-      (v/max)*graphHeight;
-
-    let x=
-      margin+
-      i*width+
-      8;
-
-    let y=
-      bottom-barHeight;
-
-    ctx.fillStyle="#00b894";
-
-    ctx.fillRect(
-      x,
-      y,
-      Math.max(width-16,8),
-      barHeight
-    );
-
-    ctx.fillStyle="#2d3436";
-
-    ctx.font="bold 14px Arial";
-
-    ctx.fillText(
-      v.toFixed(1),
-      x,
-      y-7
-    );
-
-    ctx.font="12px Arial";
-
-    ctx.fillText(
-      labels[i].slice(5),
-      x,
-      315
-    );
-
-  });
-
+function closeModal(){document.getElementById("modal").classList.add("hidden")}
+function renderReportCard(){
+ let s=student(session.studentId),m=month(),[a,b]=monthRange(m),z=stats(s.id,a,b);
+ document.getElementById("reportCard").innerHTML=`<div class="report"><h1>🏫 ${esc(db.settings.school)}</h1><div class="school">MONTHLY REPORT CARD</div><hr><p><b>Student:</b> ${esc(s.name)} &nbsp; <b>Roll:</b> ${esc(s.roll)}</p><p><b>Class:</b> ${esc(s.className)}-${esc(s.division)} &nbsp; <b>Month:</b> ${m}</p><div class="reportgrid"><div class="reportbox"><b>${pct(z.present,z.total)}%</b>Attendance</div><div class="reportbox"><b>${z.present}</b>Present</div><div class="reportbox"><b>${z.absent}</b>Absent</div><div class="reportbox"><b>${z.half}</b>Half Day</div></div>${recentStudent(s.id)}<p style="margin-top:45px"><b>Class Teacher:</b> ____________________</p><p><b>Parent Signature:</b> ____________________</p></div>`;
 }
-
-
-/* =========================
-   CALENDAR
-========================= */
-
-function generateCalendar(){
-
-  let calendar=
-    document.getElementById(
-      "calendar"
-    );
-
-  calendar.innerHTML="";
-
-  let year=
-    current.getFullYear();
-
-  let month=
-    current.getMonth();
-
-  document.getElementById(
-    "monthLabel"
-  ).innerText=
-    current.toLocaleString(
-      "default",
-      {
-        month:"long",
-        year:"numeric"
-      }
-    );
-
-  let firstDay=
-    new Date(
-      year,
-      month,
-      1
-    ).getDay();
-
-  let daysInMonth=
-    new Date(
-      year,
-      month+1,
-      0
-    ).getDate();
-
-  let status={};
-
-  let rows=
-    table.querySelectorAll("tr");
-
-  rows.forEach(r=>{
-
-    let date=
-      r.cells[1]?.innerText.trim();
-
-    let hours=
-      parseFloat(
-        r.cells[4]?.innerText
-      );
-
-    if(date){
-
-      let d=new Date(date);
-
-      if(
-        d.getMonth()===month &&
-        d.getFullYear()===year
-      ){
-
-        let day=d.getDate();
-
-        if(hours>0)
-          status[day]="present";
-        else
-          status[day]="absent";
-
-      }
-
-    }
-
-  });
-
-
-  /* EMPTY DAYS BEFORE MONTH */
-
-  for(
-    let i=0;
-    i<firstDay;
-    i++
-  ){
-
-    calendar.appendChild(
-      document.createElement("div")
-    );
-
-  }
-
-
-  /* MONTH DAYS */
-
-  for(
-    let i=1;
-    i<=daysInMonth;
-    i++
-  ){
-
-    let div=
-      document.createElement("div");
-
-    div.className="day";
-
-    let date=
-      year+
-      "-"+
-      String(month+1).padStart(2,"0")+
-      "-"+
-      String(i).padStart(2,"0");
-
-
-    if(status[i]==="present")
-      div.classList.add("present");
-
-    if(status[i]==="absent")
-      div.classList.add("absent");
-
-
-    if(date===today())
-      div.classList.add("today");
-
-
-    let icon="⚪";
-
-    if(status[i]==="present")
-      icon="😊";
-
-    if(status[i]==="absent")
-      icon="😔";
-
-
-    div.innerHTML=`
-
-      <div class="day-number">
-        ${i}
-      </div>
-
-      <div class="day-icon">
-        ${icon}
-      </div>
-
-      ${
-        status[i]
-        ?
-        `<div class="day-hours">
-          ${status[i]==="present"
-            ?"Present"
-            :"Absent"}
-        </div>`
-        :
-        `<div class="day-hours">
-          No record
-        </div>`
-      }
-
-    `;
-
-
-    div.onclick=function(){
-
-      openAttendance(date);
-
-    };
-
-
-    calendar.appendChild(div);
-
-  }
-
+function addStudent(){
+ let n=sn.value.trim();if(!n)return toast("Enter student name");db.students.push({id:uid(),name:n,roll:sr.value.trim(),className:sc.value.trim(),division:sd.value.trim(),parentName:sp.value.trim(),parentPhone:sphone.value.trim(),parentUser:su.value.trim()||"parent"+(db.students.length+1),parentPin:spi.value||"1234"});save();toast("Student added");render();
 }
-
-
-/* =========================
-   OPEN ATTENDANCE
-========================= */
-
-function openAttendance(date){
-
-  let rows=
-    table.querySelectorAll("tr");
-
-  for(let r of rows){
-
-    if(
-      r.cells[1] &&
-      r.cells[1].innerText.trim()===date
-    ){
-
-      r.scrollIntoView({
-        behavior:"smooth",
-        block:"center"
-      });
-
-      r.style.background="#fff3b0";
-
-      setTimeout(()=>{
-        r.style.background="";
-      },1500);
-
-      return;
-
-    }
-
-  }
-
-
-  let row=table.insertRow();
-
-  row.innerHTML=`
-
-    <td contenteditable="true">
-      Name
-    </td>
-
-    <td contenteditable="true">
-      ${date}
-    </td>
-
-    <td contenteditable="true">
-      ${nowTime()}
-    </td>
-
-    <td contenteditable="true"></td>
-
-    <td>0</td>
-
-    <td contenteditable="true">
-      😊 Good day!
-    </td>
-
-    <td>
-      <button onclick="deleteRow(this)">
-        🗑️ Delete
-      </button>
-    </td>
-
-  `;
-
-  saveData();
-
-  updateAll();
-
+function editStudent(id){
+ let s=student(id);document.getElementById("modalContent").innerHTML=`<h3>✏️ Edit Student</h3><div class="formgrid"><div class="field"><label>Name</label><input id="en" value="${esc(s.name)}"></div><div class="field"><label>Roll</label><input id="er" value="${esc(s.roll)}"></div><div class="field"><label>Class</label><input id="ec" value="${esc(s.className)}"></div><div class="field"><label>Division</label><input id="ed" value="${esc(s.division)}"></div><div class="field"><label>Parent</label><input id="ep" value="${esc(s.parentName)}"></div><div class="field"><label>Parent User</label><input id="eu" value="${esc(s.parentUser)}"></div><div class="field"><label>Parent PIN</label><input id="epi" value="${esc(s.parentPin)}"></div></div><button class="primary" onclick="updateStudent('${id}')">Save Changes</button>`;document.getElementById("modal").classList.remove("hidden");
 }
-
-
-/* =========================
-   MONTH NAVIGATION
-========================= */
-
-function prevMonth(){
-
-  current.setMonth(
-    current.getMonth()-1
-  );
-
-  generateCalendar();
-
+function updateStudent(id){let s=student(id);Object.assign(s,{name:en.value.trim(),roll:er.value.trim(),className:ec.value.trim(),division:ed.value.trim(),parentName:ep.value.trim(),parentUser:eu.value.trim(),parentPin:epi.value});save();closeModal();render()}
+function deleteStudent(id){if(confirm("Delete student and attendance records?")){db.students=db.students.filter(s=>s.id!==id);db.attendance=db.attendance.filter(a=>a.studentId!==id);save();render()}}
+function addTeacher(){if(!tn.value.trim()||!tu.value.trim())return toast("Name and username required");db.teachers.push({id:uid(),name:tn.value.trim(),username:tu.value.trim(),pin:tp.value||"1234"});save();render()}
+function deleteTeacher(id){if(confirm("Delete teacher?")){db.teachers=db.teachers.filter(t=>t.id!==id);save();render()}}
+function saveSettings(){db.settings.school=setSchool.value.trim()||db.settings.school;db.settings.className=setClass.value.trim();db.settings.division=setDiv.value.trim();db.settings.teacher=setTeacher.value.trim();if(setPin.value.trim())db.adminPin=setPin.value.trim();save();document.getElementById("schoolTitle").textContent=db.settings.school;toast("Settings saved");render()}
+function backup(){let blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="school-attendance-backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+document.getElementById("restoreFile").addEventListener("change",e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x.students||!x.attendance)throw Error();db=x;save();toast("Backup restored");render()}catch(err){toast("Invalid backup file")}};r.readAsText(f)});
+function exportCSV(){let rows=[["Date","Roll","Student","Status","Time In","Time Out","Homework","Remark"],...db.attendance.map(a=>{let s=student(a.studentId);return[a.date,s?.roll,s?.name,a.status,a.timeIn,a.timeOut,a.homework,a.remark]})];let csv=rows.map(r=>r.map(x=>`"${String(x??"").replace(/"/g,'""')}"`).join(",")).join("\n"),blob=new Blob([csv],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="attendance.csv";a.click()}
+function clearAll(){if(confirm("This will delete ALL students, teachers and attendance data. Continue?")){db=seed();save();logout()}}
+function initAfterRender(){
+ if(activeTab==="attendance"){renderAttendanceTable()}
+ if(activeTab==="reports"){renderReportTable()}
+ if(activeTab==="reportcard"){renderReportCard()}
 }
-
-
-function nextMonth(){
-
-  current.setMonth(
-    current.getMonth()+1
-  );
-
-  generateCalendar();
-
-}
-
-
-/* =========================
-   MONTH REPORT
-========================= */
-
-function monthlyReport(){
-
-  let year=
-    current.getFullYear();
-
-  let month=
-    current.getMonth();
-
-  let total=0;
-
-  let days=0;
-
-  let rows=
-    table.querySelectorAll("tr");
-
-  rows.forEach(r=>{
-
-    let date=
-      r.cells[1]?.innerText;
-
-    let h=
-      parseFloat(
-        r.cells[4]?.innerText
-      );
-
-    if(date && !isNaN(h)){
-
-      let d=new Date(date);
-
-      if(
-        d.getFullYear()===year &&
-        d.getMonth()===month
-      ){
-
-        total+=h;
-
-        days++;
-
-      }
-
-    }
-
-  });
-
-  let avg=
-    days
-    ? total/days
-    : 0;
-
-  document.getElementById(
-    "report"
-  ).innerHTML=`
-
-    <h3>📅 Monthly Report</h3>
-
-    😊 Attendance Records:
-    <b>${days}</b><br>
-
-    ⏰ Total Hours:
-    <b>${total.toFixed(2)}</b><br>
-
-    ⭐ Average Hours:
+const oldRender=render;render=function(){oldRender();setTimeout(initAfterRender,0)}
+</script>
+</body>
+</html>
