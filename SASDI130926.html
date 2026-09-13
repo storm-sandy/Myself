@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>SAS Data Integration - 100 Interview Questions</title>
+<style>
+:root{
+  --bg:#eef2ff;--card:#fff;--text:#172033;--muted:#667085;--accent:#315efb;
+  --accent2:#7c3aed;--border:#dbe2f0;--good:#087f5b;--scenario:#fff7ed;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#eef2ff,#f8fafc);
+color:var(--text);line-height:1.55}
+header{position:sticky;top:0;z-index:20;background:rgba(11,16,32,.96);color:#fff;padding:18px 14px;box-shadow:0 4px 20px #0002}
+h1{margin:0;font-size:clamp(23px,6vw,38px)}
+.sub{color:#cbd5e1;margin-top:5px}
+.wrap{max-width:1100px;margin:auto;padding:14px}
+.toolbar{display:grid;grid-template-columns:1fr auto auto;gap:9px;margin:14px 0}
+input,select,button{font:inherit;border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff}
+input:focus,select:focus{outline:3px solid #315efb22;border-color:var(--accent)}
+button{cursor:pointer;font-weight:700;background:var(--accent);color:white;border:0}
+button.alt{background:#475569}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.stat{background:var(--card);border:1px solid var(--border);padding:10px 14px;border-radius:12px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;margin:12px 0;overflow:hidden;box-shadow:0 5px 18px #1720330a}
+.qhead{padding:15px;display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.num{min-width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800}
+.q{font-weight:800;flex:1}
+.tag{font-size:12px;border-radius:20px;padding:5px 9px;background:#eef2ff;color:#3046a3;white-space:nowrap}
+.answer{display:none;border-top:1px solid var(--border);padding:15px 17px 18px;background:#fbfcff}
+.card.open .answer{display:block}
+.answer b{color:var(--good)}
+.scenario{background:var(--scenario);border-left:4px solid #f59e0b;padding:11px 13px;border-radius:8px;margin:10px 0}
+.scenario strong{color:#a34d00}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.empty{text-align:center;padding:35px;color:var(--muted)}
+footer{text-align:center;padding:30px;color:var(--muted)}
+@media(max-width:650px){
+ .toolbar{grid-template-columns:1fr 1fr}
+ .toolbar input{grid-column:1/-1}
+ .tag{display:none}
+ .qhead{padding:13px}
+}
+</style>
+</head>
+<body>
+<header>
+<div class="wrap">
+<h1>📊 SAS Data Integration Interview Master</h1>
+<div class="sub">100 questions • Answers • ETL • SAS DI Studio • Production • BFSI scenarios</div>
+</div>
+</header>
+
+<main class="wrap">
+<div class="toolbar">
+<input id="search" placeholder="🔎 Search question, answer, scenario..." oninput="render()">
+<select id="cat" onchange="render()"><option value="">All categories</option></select>
+<button onclick="toggleAll()">Expand / Collapse</button>
+</div>
+<div class="stats">
+<div class="stat">Total: <b id="total">100</b></div>
+<div class="stat">Shown: <b id="shown">100</b></div>
+<div class="stat">Scenario: <b id="sc">40+</b></div>
+</div>
+<div id="list"></div>
+</main>
+<footer>SAS Data Integration interview preparation • Use the scenarios to explain your approach step-by-step.</footer>
+
+<script>
+const data = [
+["SAS DI Studio","What is SAS Data Integration Studio?","It is a metadata-driven ETL development tool used to design jobs that extract, transform and load data. Jobs are represented as metadata and can be scheduled or deployed through SAS scheduling/management components."],
+["SAS DI Studio","What are the main components of an ETL job in SAS DI Studio?","Typical components are source tables, transformations, mappings, lookups, joins, filters, target tables, job controls, parameters and scheduling/deployment metadata."],
+["SAS DI Studio","What is metadata in SAS DI Studio?","Metadata describes libraries, tables, columns, transformations, jobs, servers and other SAS objects. DI Studio uses metadata so developers can build and manage ETL flows consistently."],
+["SAS DI Studio","What is a SAS DI Studio job?","A job is a metadata object containing a process flow of transformations and tables. It can generate SAS code and can be executed interactively or by a scheduler."],
+["SAS DI Studio","What is a transformation?","A transformation is a reusable or generated processing step that performs an ETL operation such as SQL join, lookup, filter, sort, aggregation or table loader."],
+["SAS DI Studio","What is a Table Loader transformation?","It loads rows into a target table using configured load options such as append, replace or update/insert behavior, depending on the target and configuration."],
+["SAS DI Studio","What is a source-to-target mapping?","It defines how source columns and business rules map to target columns, including expressions, conversions, filters and transformations."],
+["SAS DI Studio","What is the difference between metadata and physical data?","Metadata describes the data and processing objects; physical data is the actual content stored in SAS tables, databases, files or other sources."],
+["SAS DI Studio","Why use DI Studio instead of writing only Base SAS code?","DI Studio provides graphical ETL design, metadata management, reusable transformations, impact analysis, standardization and easier maintenance of enterprise ETL processes."],
+["SAS DI Studio","What is impact analysis?","Impact analysis identifies objects that depend on or are affected by a metadata object, helping assess changes before modifying tables, columns or jobs."],
+
+["ETL Fundamentals","What are the three main stages of ETL?","Extract obtains data from sources, Transform applies cleansing/business rules, and Load writes the processed data to the target."],
+["ETL Fundamentals","What is ELT?","ELT extracts and loads data first, then performs transformations inside the target platform, often using database processing power."],
+["ETL Fundamentals","What is full load?","A full load processes the complete source dataset and usually replaces or rebuilds the target. It is simple but can be expensive for large tables."],
+["ETL Fundamentals","What is incremental load?","Incremental load processes only new or changed records since a previous successful run, reducing processing time and source/target workload."],
+["ETL Fundamentals","How can you identify incremental records?","Common methods include last-update timestamps, sequence IDs, CDC mechanisms, source transaction logs, audit columns or control tables."],
+["ETL Fundamentals","What is CDC?","Change Data Capture identifies inserts, updates and deletes occurring in a source so downstream ETL can process only the changes."],
+["ETL Fundamentals","What is data cleansing?","It includes removing duplicates, standardizing formats, validating values, handling missing data and correcting or rejecting invalid records."],
+["ETL Fundamentals","What is data validation?","Validation checks whether records meet structural, domain, referential and business-rule requirements before loading."],
+["ETL Fundamentals","What is an ETL control table?","A control table stores operational information such as job status, batch ID, start/end time, source counts, target counts and last successful watermark."],
+["ETL Fundamentals","What is an audit table?","An audit table records operational or data-quality information that helps trace what happened during an ETL run."],
+
+["Transformations","What does a SQL Join transformation do?","It combines rows from multiple inputs based on join keys and can implement inner, left, right or full join logic."],
+["Transformations","When would you use a Lookup transformation?","Use it when each incoming row needs values from a reference dataset, such as converting a product code into a product description."],
+["Transformations","Lookup vs Join: what is the difference?","A lookup is commonly used for row-level reference enrichment, while a join combines datasets more generally and may produce multiple matching rows."],
+["Transformations","What is an Expression transformation?","It creates derived columns or applies functions, conversions and conditional expressions to incoming data."],
+["Transformations","How do you implement conditional logic?","Use CASE/IF-style expressions or conditional transformations to implement business rules and derive target values."],
+["Transformations","What is aggregation in ETL?","Aggregation groups rows and calculates measures such as SUM, COUNT, AVG, MIN and MAX."],
+["Transformations","Why is sorting important in SAS ETL?","Many SAS procedures and BY-group operations require properly sorted or indexed data; sorting can also support efficient merge processing."],
+["Transformations","What is a SAS DATA step merge?","It combines SAS datasets by common BY variables. Correct sorting/indexing and BY-group understanding are essential."],
+["Transformations","How do you remove duplicates?","Use PROC SORT NODUPKEY/NODUPRECS where appropriate, SQL DISTINCT, aggregation, or business-key logic depending on the definition of a duplicate."],
+["Transformations","How do you handle null values?","Define business rules first, then use COALESCE, conditional logic, default values, validation/rejection or source correction as appropriate."],
+
+["SAS SQL & Base SAS","What is PROC SQL used for in DI work?","It is commonly used for joins, filtering, aggregation, inserts, updates, deletes, metadata-driven SQL generation and database pushdown."],
+["SAS SQL & Base SAS","What is the difference between WHERE and HAVING?","WHERE filters rows before aggregation; HAVING filters groups after aggregation."],
+["SAS SQL & Base SAS","What is a DATA step MERGE risk?","If BY keys are not unique on both sides, a merge can create results that differ from a relational many-to-many join. Business keys must be understood before using MERGE."],
+["SAS SQL & Base SAS","What is the RETAIN statement?","RETAIN prevents variables from being reset to missing at the beginning of each DATA-step iteration and can preserve values across rows."],
+["SAS SQL & Base SAS","What is FIRST.variable and LAST.variable?","They are automatic BY-group indicators used to detect the first and last observation of each BY group."],
+["SAS SQL & Base SAS","What is the SAS log used for?","It records generated notes, warnings, errors, procedure messages, timing and other execution information useful for debugging and support."],
+["SAS SQL & Base SAS","What is _N_?","It is the automatic DATA-step iteration counter."],
+["SAS SQL & Base SAS","What is the difference between character and numeric variables?","Character variables store text; numeric variables store numbers used for calculations. Explicit conversions should be used when moving between types."],
+["SAS SQL & Base SAS","What is a SAS macro variable?","A macro variable stores text that can be resolved during code generation, useful for parameters such as dates, paths and environment names."],
+["SAS SQL & Base SAS","What is macro quoting?","Macro quoting masks special characters from macro processing so values can be safely interpreted when generating SAS code."],
+
+["Database & Connectivity","How does SAS connect to databases?","Depending on the environment, SAS can use LIBNAME engines, explicit SQL pass-through, ODBC, JDBC-related integrations and database-specific SAS/ACCESS interfaces."],
+["Database & Connectivity","What is SQL pass-through?","It sends SQL directly to the database, allowing the database optimizer to execute supported operations instead of processing everything in SAS."],
+["Database & Connectivity","What is pushdown optimization?","It attempts to execute transformations in the database where possible, reducing data movement and using database processing power."],
+["Database & Connectivity","Why can pushdown improve performance?","Moving filtering, joins and aggregation to the database can reduce network traffic and SAS-side processing, especially for large tables."],
+["Database & Connectivity","What is a LIBNAME statement?","It assigns a libref to a data source, allowing SAS programs to reference tables through a consistent two-level naming convention."],
+["Database & Connectivity","How do you handle database credentials securely?","Use approved metadata authentication, authentication domains, managed credentials or enterprise secret-management practices rather than hard-coding passwords."],
+["Database & Connectivity","What is connection pooling?","It reuses database connections rather than repeatedly opening and closing them, reducing connection overhead where supported by the architecture."],
+["Database & Connectivity","How do you load a very large database table?","Use bulk-loading facilities where appropriate, partitioning/parallelism when supported, pushdown filtering, appropriate indexes and controlled batch sizes."],
+["Database & Connectivity","What causes database deadlocks?","Concurrent transactions can wait on each other's locks. Consistent transaction ordering, shorter transactions and suitable database design help reduce deadlocks."],
+["Database & Connectivity","How would you troubleshoot a database connection failure?","Check server availability, credentials, authentication domain, network/DNS, port, database listener, SAS/ACCESS configuration and recent infrastructure changes; then review SAS logs."],
+
+["Performance","How do you improve SAS DI job performance?","Filter early, select only required columns, push processing to the database when beneficial, avoid unnecessary sorts, optimize joins/lookups and use appropriate indexes/partitioning."],
+["Performance","What is early filtering?","Apply restrictive filters as close to the source as possible so fewer rows travel through downstream transformations."],
+["Performance","Why should you avoid SELECT *?","It reads and moves columns that may not be required, increasing I/O, memory and network usage."],
+["Performance","How do indexes help?","Indexes can speed selective retrieval and some joins/lookups, but they also consume storage and maintenance resources, so they should be used selectively."],
+["Performance","What is an expensive sort?","Sorting large datasets can consume substantial CPU, memory and disk I/O. Avoid repeated sorts and design flows to minimize unnecessary ordering."],
+["Performance","How can you optimize a lookup?","Reduce lookup columns, filter reference data, use suitable keys/indexes, avoid repeated expensive lookups and consider hash/reference-table strategies where appropriate."],
+["Performance","What is partitioning?","Partitioning divides large database data into manageable pieces, potentially improving parallel processing and partition pruning."],
+["Performance","How do you identify a performance bottleneck?","Compare step-level timings, row counts, CPU/I/O behavior, database execution plans, SAS logs and resource utilization to find the dominant operation."],
+["Performance","What is parallel processing in ETL?","Independent jobs or transformations run concurrently to reduce elapsed time, provided source, target and infrastructure can safely support the concurrency."],
+["Performance","Why can more parallel jobs make performance worse?","They may compete for CPU, memory, disk, database connections, locks or I/O bandwidth, creating contention."],
+
+["Error Handling","How do you handle rejected records?","Route invalid rows to a reject/error table with reason codes, batch ID and relevant source information, while allowing valid records to continue when business requirements permit."],
+["Error Handling","What is restartability?","A restartable job can resume from a safe point without corrupting or duplicating data after a failure."],
+["Error Handling","How do you prevent duplicate loads after a restart?","Use batch/control IDs, staging tables, merge/upsert logic, transaction boundaries and idempotent processing rules."],
+["Error Handling","What is idempotent ETL?","Running the same batch more than once produces the same intended final state rather than duplicate or inconsistent results."],
+["Error Handling","How do you handle bad source data?","Validate it, quarantine/reject invalid rows with reason codes, notify stakeholders when needed and continue only according to defined business rules."],
+["Error Handling","How do you monitor ETL failures?","Use scheduler status, SAS logs, control/audit tables, alerts and operational dashboards or enterprise monitoring tools."],
+["Error Handling","What is a data-quality framework?","It is a repeatable set of rules and controls for completeness, validity, uniqueness, consistency, accuracy and referential integrity."],
+["Error Handling","How do you handle a target load failure after staging succeeds?","Preserve the staging batch, record failure status, investigate the target issue, then restart from the controlled staging point rather than extracting everything again."],
+["Error Handling","How do you distinguish a warning from a fatal error?","Review return codes, SAS log messages and business validation results. A warning may allow completion, while a fatal error should fail the job or batch according to standards."],
+["Error Handling","What information should an error log contain?","Job name, batch ID, timestamp, source/target, step, error message, record/key where appropriate, environment and remediation status."],
+
+["SCD & Data Warehouse","What is a Slowly Changing Dimension?","An SCD manages changes to dimension attributes over time while preserving the history required by the business."],
+["SCD & Data Warehouse","Explain SCD Type 1.","Type 1 overwrites the old attribute value, so historical values are not retained."],
+["SCD & Data Warehouse","Explain SCD Type 2.","Type 2 creates a new dimension row for a changed business entity and typically uses effective dates, expiry dates and/or a current-row flag."],
+["SCD & Data Warehouse","Explain SCD Type 3.","Type 3 stores limited history, commonly by keeping current and previous attribute values in separate columns."],
+["SCD & Data Warehouse","What is a surrogate key?","A warehouse-generated key used to identify a dimension row independently of the source business/natural key."],
+["SCD & Data Warehouse","Natural key vs surrogate key?","A natural key comes from the business/source domain; a surrogate key is generated by the warehouse and remains stable even when source attributes change."],
+["SCD & Data Warehouse","What is a fact table?","A fact table stores measurable business events, usually linked to dimensions through keys."],
+["SCD & Data Warehouse","What is a dimension table?","A dimension stores descriptive attributes used to analyze facts, such as customer, product, branch or date."],
+["SCD & Data Warehouse","What is a staging area?","A temporary or persistent landing layer where source data is loaded before cleansing, transformation and warehouse loading."],
+["SCD & Data Warehouse","What is a conformed dimension?","A dimension with consistent definitions and keys that can be shared across multiple fact tables or business processes."],
+
+["Scheduling & Production","How are SAS DI jobs scheduled?","They can be deployed and scheduled through SAS scheduling infrastructure or enterprise schedulers, depending on the organization’s architecture."],
+["Scheduling & Production","What is job dependency?","It defines execution order, such as loading customer data before running a transaction fact job that depends on customer keys."],
+["Scheduling & Production","What is a batch window?","The agreed period during which scheduled processing must complete, often between source availability and downstream reporting deadlines."],
+["Scheduling & Production","How do you handle a missed batch window?","Assess downstream impact, identify the bottleneck, communicate ETA, prioritize critical dependencies and recover using approved restart/reprocessing procedures."],
+["Scheduling & Production","What is SLA in ETL?","A Service Level Agreement defines expected availability, completion time, quality and support commitments for a data process."],
+["Scheduling & Production","What should you check before deploying a DI job?","Validate metadata, source/target mappings, parameters, credentials, dependencies, error handling, performance, test results and deployment documentation."],
+["Scheduling & Production","What is environment promotion?","Moving tested ETL metadata/code/configuration from development to test/UAT and then production through controlled release procedures."],
+["Scheduling & Production","How do you manage DEV/TEST/PROD differences?","Use parameterization, environment-specific configuration, metadata libraries and controlled deployment rather than hard-coded paths or credentials."],
+["Scheduling & Production","How do you perform production support for a failed ETL job?","Check scheduler status and SAS log, identify failing step, validate source/target availability, determine data impact, fix or recover safely, rerun and document RCA."],
+["Scheduling & Production","What is RCA?","Root Cause Analysis identifies the underlying reason for a failure rather than only fixing its immediate symptom."],
+
+["Scenario","Scenario: A daily customer file suddenly contains 30% fewer records. What do you do?","First compare source counts with historical thresholds. Check file arrival/completeness, source control totals, format changes and upstream status. Do not blindly load. Quarantine or stop the batch if the quality threshold is breached, alert the owner and resume after confirmation."],
+["Scenario","Scenario: A DI job runs successfully but the target count is lower than expected. How do you investigate?","Compare counts at each transformation, inspect filters and joins, check rejected rows, null keys and duplicate handling. Identify the exact step where rows disappear and reconcile source-to-target counts."],
+["Scenario","Scenario: A job that normally takes 20 minutes now takes 3 hours. What is your approach?","Compare today's row counts and execution plan with the baseline. Check database statistics, indexes, changed SQL, joins, sorts, source volume, network and resource contention. Isolate the slow step before changing code."],
+["Scenario","Scenario: Customer records are duplicated in the target after rerunning a failed batch. How would you fix it?","Identify the batch boundary and duplicate business keys. Remove/reconcile only the affected batch if approved, then implement idempotent loading using batch control, merge/upsert logic or a staging-to-target transaction strategy."],
+["Scenario","Scenario: Source has duplicate customer IDs. What should ETL do?","Do not assume which row is correct. Apply an agreed survivorship rule such as latest update timestamp, source priority or reject-all duplicates. Record rejected/selected rows for audit."],
+["Scenario","Scenario: A lookup returns no match for 5% of transactions. What do you do?","Check key format, whitespace, case, data type and timing of dimension loads. Determine whether unknown members are valid. Route unresolved records according to business rules and quantify the impact."],
+["Scenario","Scenario: Business asks to overwrite customer address history. Which SCD type?","If history is not required, Type 1 is appropriate. If historical reporting must preserve the old address, Type 2 is usually appropriate."],
+["Scenario","Scenario: A Type 2 dimension creates two current rows for the same customer. How do you troubleshoot?","Check uniqueness of source keys, effective-date logic, concurrent runs and merge conditions. Reconcile the affected customer, close the incorrect current row and add a uniqueness/control check."],
+["Scenario","Scenario: A database table is locked and the ETL job fails. What do you do?","Check blocking sessions and transaction status with the DBA, identify the owning process, assess whether it is safe to wait/terminate, then rerun only after the lock is cleared. Do not kill sessions without authorization."],
+["Scenario","Scenario: Source column changes from numeric to character. What happens?","Mappings may fail or generate conversion warnings/errors. Confirm the source change, update metadata and conversion logic, validate historical compatibility and test downstream targets before production deployment."],
+["Scenario","Scenario: A source file arrives with an extra column. How would you handle it?","Assess whether the format is contractually allowed. If the parser/mapping is resilient, ignore unused columns; otherwise update metadata after impact analysis and regression testing."],
+["Scenario","Scenario: A source file arrives with a missing mandatory column. What should happen?","Fail or quarantine the batch because continuing can produce incomplete data. Log the missing column, notify the source owner and preserve the file for investigation."],
+["Scenario","Scenario: ETL receives 10 million rows but only 10,000 are needed. How do you optimize?","Push the filter to the source/database, select only required columns, avoid unnecessary sorts and move processing close to the data when safe."],
+["Scenario","Scenario: A join unexpectedly multiplies rows. What is the likely cause?","A one-to-many or many-to-many relationship exists when the design expected one-to-one. Profile duplicate join keys and define the correct business rule before changing the join."],
+["Scenario","Scenario: A nightly job misses its SLA because of database CPU usage. What do you check?","Check the SQL execution plan, concurrent workloads, indexes/statistics, pushed-down transformations and database resource usage. Coordinate with DBAs and reschedule or tune according to workload policy."],
+["Scenario","Scenario: One bad record causes the entire load to fail. How can design improve?","Separate validation from loading, route bad records to a reject table, use controlled transactions and define whether partial success is permitted."],
+["Scenario","Scenario: Production job fails but DEV works. What do you compare?","Compare metadata versions, parameters, credentials, libraries, paths, database permissions, source data shape, environment variables and deployed code. Environment differences are often the cause."],
+["Scenario","Scenario: A scheduler says job succeeded, but the target table is empty. What do you check?","Review scheduler return status and SAS log, generated code, target library, load mode, commit behavior and whether the job wrote to an unexpected environment/table."],
+["Scenario","Scenario: A business user reports one transaction is missing. How do you trace it?","Trace the transaction using its business key through source, staging, validation/reject tables, joins, transformations and target. Use batch ID and timestamps to establish lineage."],
+["Scenario","Scenario: Source sends deletes, but target has no delete records. How do you implement it?","Confirm whether the target needs physical deletes or logical deletion. Use CDC/delete indicators or source change feeds and update the target according to warehouse retention rules."],
+["Scenario","Scenario: You need to load only today's changes but the source timestamp is unreliable. What alternatives exist?","Use a reliable CDC mechanism, source sequence/version, transaction log, control table, snapshot comparison or source-provided change indicator after confirming availability."],
+["Scenario","Scenario: An overnight ETL job must be restartable from the failed step. How do you design it?","Use independent stages, persistent staging, batch IDs, checkpoints/control tables and idempotent transformations so completed stages are not unnecessarily repeated."],
+["Scenario","Scenario: A target table has 100 million rows and an UPDATE is extremely slow. What can you consider?","Review indexes and predicates, partitioning, batch updates, merge strategy, database execution plan and whether rebuilding/loading a replacement table is more efficient for the workload."],
+["Scenario","Scenario: A data-quality rule says account number must be unique. How would you implement it?","Profile duplicates, enforce a unique business rule where appropriate, route duplicate rows to a DQ exception table and report counts by batch/source."],
+["Scenario","Scenario: Two upstream jobs finish at different times and downstream should start only when both succeed. How do you design this?","Use scheduler dependencies/flow conditions so the downstream job starts only after both successful predecessors; record dependency status for operational visibility."],
+["Scenario","Scenario: A file has mixed date formats. What do you do?","Profile the values, define accepted formats, parse using explicit logic, reject ambiguous values and report the affected rows rather than relying on implicit conversion."],
+["Scenario","Scenario: A target has unexpected NULL customer keys. How do you investigate?","Check source nulls, lookup failures, join conditions, conversion errors and default/unknown-member logic. Trace sample records upstream to the first point where the key became null."],
+["Scenario","Scenario: A business wants a report by historical branch, but branch changes overwrite the dimension. What is wrong?","Type 1 history has removed the previous branch value. If historical reporting is required, redesign the relevant dimension using Type 2 or another approved history strategy."],
+["Scenario","Scenario: You need to process multiple independent source files in parallel. What should you consider?","Check file independence, source capacity, target contention, CPU/memory, database connections, scheduler limits and downstream dependencies before enabling parallelism."],
+["Scenario","Scenario: An ETL job creates large temporary WORK tables and runs out of disk. What do you check?","Review unnecessary columns, repeated sorts, intermediate table sizes, join strategy, filtering, WORK allocation and whether transformations can be pushed to the database."],
+["Scenario","Scenario: A database join is slow in SAS but fast when executed directly in the database. Why?","SAS may be pulling large datasets across the network instead of pushing the join down. Review SQL generation, LIBNAME options, explicit pass-through and pushdown eligibility."],
+["Scenario","Scenario: A source system changes a code from '001' to '1'. The lookup stops matching. What is your fix?","Standardize key representation consistently, preserving leading zeros where business semantics require them. Validate data types, formats and lookup keys on both sides."],
+["Scenario","Scenario: A production batch loaded half the records before failing. What is your recovery plan?","Determine transaction and load mode behavior, identify exactly what committed, reconcile target counts, roll back or remove the affected batch if approved, then rerun idempotently."],
+["Scenario","Scenario: Business requests a new target column. What is your process?","Perform impact analysis, update metadata/mapping, modify transformation logic, test source-to-target reconciliation, regression test downstream dependencies and promote through change control."],
+["Scenario","Scenario: An ETL job is producing SAS conversion notes for millions of rows. Why is this dangerous?","It can hide genuine data-quality issues and degrade performance. Identify the offending conversion, explicitly convert types and validate invalid values before loading."],
+["Scenario","Scenario: A scheduler reruns a job automatically after timeout while the first run is still active. What risk exists?","Concurrent runs can duplicate data, lock targets and corrupt batch control. Use concurrency controls, unique batch IDs and scheduler policies that prevent overlapping executions."],
+["Scenario","Scenario: You inherit a poorly documented DI environment. How do you understand it?","Start with metadata/job inventory, dependencies, schedules, source-target lineage, control tables and logs. Build documentation while tracing critical production flows."],
+["Scenario","Scenario: A critical BFSI transaction feed contains invalid account numbers. Should you load all records?","Follow the agreed business/DQ policy. Usually valid records can be processed while invalid records are quarantined with reason codes, unless the batch must be atomic for regulatory or financial integrity."],
+["Scenario","Scenario: A financial amount differs between source and target by 0.01. What do you investigate?","Check numeric precision, decimal definitions, rounding rules, currency conversion and aggregation order. Align the technical representation with the approved financial calculation rule."],
+["Scenario","Scenario: An overnight banking ETL has a strict reconciliation requirement. What controls would you add?","Capture source/target counts, monetary totals, batch IDs, rejected counts, duplicate counts and control totals; fail or alert when tolerances are exceeded."],
+["Scenario","Scenario: A customer privacy field should not appear in a downstream target. What do you do?","Remove it from mappings and intermediate outputs where possible, review lineage/access controls and ensure the target contains only approved data elements."],
+["Scenario","Scenario: A downstream report is wrong after a successful ETL run. How do you determine whether ETL caused it?","Compare report inputs and refresh timing, reconcile target data with source/control totals, inspect recent ETL changes and trace representative records through lineage."],
+["Scenario","Scenario: You need to explain a complex ETL failure to a client. What communication approach works?","State impact, affected batches/data, current containment, root cause, recovery ETA, permanent fix and prevention steps. Avoid unexplained technical jargon and provide measurable status."],
+["Scenario","Scenario: A job succeeds but rejects 20% of rows. Is it successful?","Technically it may have completed, but business success depends on defined quality thresholds. Treat abnormal reject volume as an operational/DQ exception and alert accordingly."],
+["Scenario","Scenario: A lookup reference table is updated during ETL execution. What risk exists?","Different rows may see different reference versions. Use controlled snapshots, transaction isolation or versioned reference data when consistency is required."],
+["Scenario","Scenario: Source and target time zones differ. How do you avoid date/time errors?","Define a canonical timezone, store timestamps consistently where appropriate, convert explicitly and test daylight-saving boundaries for systems that observe DST."],
+["Scenario","Scenario: You need to compare today's source snapshot with yesterday's to identify changes. How can you do it?","Use business-key comparison plus hash/checksum or attribute comparison, while considering inserts, updates and deletes and the volume/performance impact."],
+["Scenario","Scenario: A job's generated SQL is different after a metadata change. What should you do?","Review the generated code, compare metadata and transformation properties, test the changed SQL and verify pushdown/semantics before production."],
+["Scenario","Scenario: A production fix is urgent. Should you edit the job directly in PROD?","Normally no. Follow emergency-change procedures, preserve version history, test the fix as far as possible, document approval and back-port the permanent fix through controlled promotion."],
+["Scenario","Scenario: How would you design a reusable framework for 50 similar ETL jobs?","Standardize parameter handling, logging, control tables, validation, error routing, naming, restartability and reusable transformations/macros. Keep business-specific rules configurable."],
+["Scenario","Scenario: How do you prove an ETL job is correct before production?","Use source-to-target reconciliation, positive/negative tests, boundary cases, duplicate/null tests, performance tests, restart tests and business/UAT validation."],
+["Scenario","Scenario: A client asks why a batch was delayed. What evidence do you provide?","Provide scheduler timestamps, dependency completion times, source arrival time, step-level execution metrics, failure/retry history and the final recovery time."],
+["Scenario","Scenario: A job uses a hard-coded file path that differs across environments. How would you improve it?","Parameterize environment-specific paths and resolve them through controlled configuration or metadata rather than embedding absolute paths in job logic."],
+["Scenario","Scenario: A table contains sensitive financial data and developers need test data. What is safer?","Use masked, anonymized or synthetic data according to organizational policy rather than copying production sensitive values into development."],
+["Scenario","Scenario: A batch contains 5 million rows and validation is slow. What would you optimize first?","Measure the validation step, push simple checks to the database/source where appropriate, process only needed columns, use set-based logic and avoid repeated row-by-row operations."],
+["Scenario","Scenario: How would you handle a late-arriving dimension record?","Use an approved unknown/inferred member strategy, then backfill or update the fact relationship when the real dimension row becomes available."],
+["Scenario","Scenario: A fact arrives before its customer dimension. What can happen?","The fact may fail referential integrity or receive an unknown surrogate key. A controlled late-arriving-dimension process is needed."],
+["Scenario","Scenario: A source sends the same file twice with different filenames. How do you prevent double processing?","Use file content/control identifiers, source batch IDs, checksums or business-date/file manifests and record processed-file status."],
+["Scenario","Scenario: How would you design an ETL process for monthly regulatory reporting?","Prioritize reproducibility, immutable input snapshots, detailed audit trails, reconciliation, controlled business rules, versioned code and evidence of approvals/testing."],
+["Scenario","Scenario: A transformation uses an inner join and unexpectedly drops customers. What should you consider?","Determine whether unmatched customers are expected. If they must be retained, a left join or explicit unknown-key strategy may be required."],
+["Scenario","Scenario: A job fails intermittently with no code change. What could cause it?","Investigate source timing, data volume, locks, resource contention, network/database availability, scheduler concurrency and nondeterministic data conditions."],
+["Scenario","Scenario: A client asks for a faster solution but accuracy cannot be compromised. What do you prioritize?","Measure first, then optimize I/O, filtering, pushdown, joins, indexes and parallelism while retaining reconciliation and quality controls. Never remove critical validation merely for speed."],
+["Scenario","Scenario: What would you include in a daily ETL health dashboard?","Job status, SLA status, duration trend, source/target counts, reject counts, reconciliation status, failures, retries, data freshness and critical dependency status."],
+["Scenario","Scenario: How do you handle an upstream schema change without breaking production?","Use schema monitoring/contract checks, validate incoming structure before processing, alert on incompatible changes and manage approved changes through impact analysis and deployment."],
+["Scenario","Scenario: A job has many nested transformations and is hard to support. How would you improve maintainability?","Simplify the flow, modularize reusable logic, use meaningful names, parameterize configuration, document business rules and separate staging, validation and loading responsibilities."],
+["Scenario","Scenario: A bank transaction is loaded twice due to retry. What control should catch it?","A unique business transaction identifier plus idempotent merge/upsert or duplicate detection should prevent a second logical transaction from being inserted."],
+["Scenario","Scenario","How would you answer a senior interviewer asking: 'What is your ETL philosophy?'","Build reliable, observable, restartable and idempotent pipelines; validate at boundaries; minimize data movement; use the right engine for processing; preserve auditability; and design for operational support, not just successful development runs."]
+];
+
+const list=document.getElementById("list"), search=document.getElementById("search"), cat=document.getElementById("cat");
+const cats=[...new Set(data.map(x=>x[0]))];
+cats.forEach(c=>cat.insertAdjacentHTML("beforeend",`<option>${c}</option>`));
+
+function render(){
+ const term=search.value.toLowerCase(), cv=cat.value;
+ const rows=data.filter(x=>(!cv||x[0]===cv)&&(!term||x.join(" ").toLowerCase().includes(term)));
+ document.getElementById("shown").textContent=rows.length;
+ list.innerHTML=rows.length?rows.map((x,i)=>{
+   const original=data.indexOf(x)+1;
+   const isScenario=x[0]==="Scenario";
+   return `<article class="card" onclick="this.classList.toggle('open')">
+    <div class="qhead"><span class="num">${original}</span><span class="q">${x[1]}</span><span class="tag">${x[0]}</span></div>
+    <div class="answer"><div><b>Answer:</b> ${x[2]}</div>${isScenario?'<div class="scenario"><strong>Interview tip:</strong> Explain your approach in this order: impact → investigation → root cause → recovery → prevention.</div>':''}</div>
+   </article>`;
+ }).join(""):`<div class="empty">No matching questions found.</div>`;
+}
+let expanded=false;
+function toggleAll(){
+ expanded=!expanded;
+ document.querySelectorAll(".card").forEach(c=>expanded?c.classList.add("open"):c.classList.remove("open"));
+}
+render();
+</script>
+</body>
+</html>
