@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#2563eb">
+<title>Spoken English Master Guide</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f7fb;
+    color:#172033;
+    line-height:1.6;
+}
+header{
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:white;
+    padding:28px 18px;
+    text-align:center;
+    position:sticky;
+    top:0;
+    z-index:20;
+}
+header h1{margin:0;font-size:28px}
+header p{margin:6px 0 0;opacity:.9}
+.container{max-width:1200px;margin:auto;padding:15px}
+
+.search{
+    width:100%;
+    padding:15px;
+    border:0;
+    border-radius:14px;
+    box-shadow:0 3px 15px #0001;
+    font-size:16px;
+    margin-bottom:15px;
+}
+
+.nav{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:8px;
+}
+.nav button{
+    white-space:nowrap;
+    border:0;
+    padding:10px 15px;
+    border-radius:20px;
+    background:white;
+    cursor:pointer;
+    box-shadow:0 2px 8px #0001;
+}
+.nav button:hover,.nav button.active{
+    background:#2563eb;
+    color:white;
+}
+
+.category{
+    background:white;
+    border-radius:18px;
+    margin:15px 0;
+    padding:20px;
+    box-shadow:0 5px 20px #00000010;
+}
+.category h2{
+    margin-top:0;
+    color:#2563eb;
+    border-bottom:2px solid #eef2ff;
+    padding-bottom:10px;
+}
+.lesson{
+    border:1px solid #e5e7eb;
+    border-radius:14px;
+    margin:12px 0;
+    overflow:hidden;
+}
+.lesson-title{
+    padding:14px;
+    background:#f8fafc;
+    font-weight:bold;
+    cursor:pointer;
+}
+.lesson-body{
+    display:none;
+    padding:15px;
+}
+.lesson.open .lesson-body{display:block}
+
+.example{
+    background:#eff6ff;
+    padding:12px;
+    border-left:4px solid #2563eb;
+    border-radius:8px;
+    margin:10px 0;
+}
+.good{
+    background:#ecfdf5;
+    border-left:4px solid #10b981;
+    padding:12px;
+    border-radius:8px;
+}
+.warning{
+    background:#fff7ed;
+    border-left:4px solid #f97316;
+    padding:12px;
+    border-radius:8px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin:12px 0;
+}
+th,td{
+    padding:10px;
+    border:1px solid #ddd;
+    text-align:left;
+}
+th{background:#eef2ff}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:12px;
+}
+.card{
+    padding:18px;
+    border-radius:15px;
+    background:#fff;
+    box-shadow:0 3px 12px #0001;
+}
+.card b{color:#2563eb}
+
+.practice{
+    background:#111827;
+    color:white;
+    padding:20px;
+    border-radius:16px;
+}
+.practice input{
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    border-radius:8px;
+    border:0;
+}
+.btn{
+    border:0;
+    padding:11px 16px;
+    border-radius:10px;
+    cursor:pointer;
+    background:#2563eb;
+    color:white;
+}
+.score{
+    font-size:20px;
+    font-weight:bold;
+    margin-top:10px;
+}
+.progress{
+    height:12px;
+    background:#e5e7eb;
+    border-radius:20px;
+    overflow:hidden;
+}
+.progress div{
+    height:100%;
+    width:0%;
+    background:#10b981;
+}
+
+footer{
+    text-align:center;
+    padding:30px;
+    color:#667085;
+}
+
+@media(max-width:600px){
+    header h1{font-size:23px}
+    .container{padding:10px}
+    .category{padding:15px}
+    table{font-size:13px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🗣️ Spoken English Master Guide</h1>
+<p>Speak • Understand • Think • Respond • Communicate</p>
+</header>
+
+<div class="container">
+
+<input id="search" class="search"
+placeholder="🔎 Search lessons, grammar, conversation, vocabulary...">
+
+<div class="nav">
+<button onclick="showCategory('all')" class="active">All</button>
+<button onclick="showCategory('beginner')">🌱 Beginner</button>
+<button onclick="showCategory('grammar')">📘 Grammar</button>
+<button onclick="showCategory('conversation')">💬 Conversation</button>
+<button onclick="showCategory('vocabulary')">📚 Vocabulary</button>
+<button onclick="showCategory('pronunciation')">🗣️ Pronunciation</button>
+<button onclick="showCategory('work')">💼 Workplace</button>
+<button onclick="showCategory('interview')">🎯 Interview</button>
+<button onclick="showCategory('advanced')">🚀 Advanced</button>
+<button onclick="showCategory('practice')">📝 Practice</button>
+</div>
+
+<!-- ROADMAP -->
+<section class="category">
+<h2>🎯 Complete Learning Roadmap</h2>
+
+<div class="cards">
+<div class="card"><b>Level 1</b><br>Basic words and sentences</div>
+<div class="card"><b>Level 2</b><br>Daily conversation</div>
+<div class="card"><b>Level 3</b><br>Grammar and sentence formation</div>
+<div class="card"><b>Level 4</b><br>Fluent conversation</div>
+<div class="card"><b>Level 5</b><br>Workplace English</div>
+<div class="card"><b>Level 6</b><br>Advanced communication</div>
+</div>
+
+<p><b>Golden Rule:</b> Do not only study English. Use English every day.</p>
+
+<div class="good">
+<strong>Daily Formula:</strong><br>
+15 min Listening + 15 min Reading + 15 min Speaking + 15 min Vocabulary + 15 min Thinking in English.
+</div>
+</section>
+
+
+<!-- BEGINNER -->
+<section class="category" data-category="beginner">
+
+<h2>🌱 1. Beginner English</h2>
+
+<div class="lesson">
+<div class="lesson-title">1.1 Greetings</div>
+<div class="lesson-body">
+
+<table>
+<tr><th>Expression</th><th>Use</th></tr>
+<tr><td>Hello</td><td>General greeting</td></tr>
+<tr><td>Hi</td><td>Informal greeting</td></tr>
+<tr><td>Good morning</td><td>Morning</td></tr>
+<tr><td>Good afternoon</td><td>Afternoon</td></tr>
+<tr><td>Good evening</td><td>Evening</td></tr>
+<tr><td>How are you?</td><td>Asking about someone</td></tr>
+<tr><td>Nice to meet you.</td><td>First meeting</td></tr>
+<tr><td>How have you been?</td><td>Someone you haven't met recently</td></tr>
+</table>
+
+<div class="example">
+<b>Conversation:</b><br>
+A: Good morning! How are you?<br>
+B: Good morning! I'm fine, thank you. How about you?<br>
+A: I'm doing well.
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">1.2 Introducing Yourself</div>
+<div class="lesson-body">
+
+<p>Use this structure:</p>
+
+<div class="example">
+Hello, my name is Rahul.<br>
+I am from Mumbai.<br>
+I work as a software professional.<br>
+I have several years of experience in IT.<br>
+I enjoy learning new technologies.<br>
+In my free time, I like reading and spending time with my family.
+</div>
+
+<p>Practice introducing yourself without memorizing every word.</p>
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">1.3 Basic Questions</div>
+<div class="lesson-body">
+
+<table>
+<tr><th>Question</th><th>Example Answer</th></tr>
+<tr><td>What is your name?</td><td>My name is Rahul.</td></tr>
+<tr><td>Where are you from?</td><td>I am from Mumbai.</td></tr>
+<tr><td>What do you do?</td><td>I work in IT.</td></tr>
+<tr><td>Where do you live?</td><td>I live in Mumbai.</td></tr>
+<tr><td>What do you like?</td><td>I like reading.</td></tr>
+<tr><td>What are you doing?</td><td>I am working.</td></tr>
+</table>
+
+</div>
+</div>
+
+</section>
+
+
+<!-- GRAMMAR -->
+<section class="category" data-category="grammar">
+
+<h2>📘 2. Grammar for Speaking</h2>
+
+<div class="lesson">
+<div class="lesson-title">2.1 Sentence Structure</div>
+<div class="lesson-body">
+
+<p><b>Basic structure:</b></p>
+
+<div class="example">
+Subject + Verb + Object
+<br><br>
+I + eat + food.<br>
+She + reads + books.<br>
+They + play + cricket.
+</div>
+
+<p>For speaking, first become comfortable with simple structures.</p>
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">2.2 Tenses</div>
+<div class="lesson-body">
+
+<table>
+<tr><th>Tense</th><th>Example</th></tr>
+<tr><td>Present Simple</td><td>I work every day.</td></tr>
+<tr><td>Present Continuous</td><td>I am working now.</td></tr>
+<tr><td>Past Simple</td><td>I worked yesterday.</td></tr>
+<tr><td>Past Continuous</td><td>I was working at 5 PM.</td></tr>
+<tr><td>Present Perfect</td><td>I have completed the work.</td></tr>
+<tr><td>Future</td><td>I will complete it tomorrow.</td></tr>
+<tr><td>Going to</td><td>I am going to attend the meeting.</td></tr>
+</table>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">2.3 Modal Verbs</div>
+<div class="lesson-body">
+
+<table>
+<tr><th>Word</th><th>Example</th></tr>
+<tr><td>Can</td><td>I can help you.</td></tr>
+<tr><td>Could</td><td>Could you help me?</td></tr>
+<tr><td>May</td><td>May I come in?</td></tr>
+<tr><td>Should</td><td>You should practice daily.</td></tr>
+<tr><td>Must</td><td>You must follow the rules.</td></tr>
+<tr><td>Would</td><td>Would you like some tea?</td></tr>
+</table>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">2.4 Question Formation</div>
+<div class="lesson-body">
+
+<div class="example">
+Do you work here?<br>
+Does he live here?<br>
+Did you call me?<br>
+Are you ready?<br>
+Is she coming?<br>
+Have you finished?<br>
+Will you join us?
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">2.5 Common Grammar Mistakes</div>
+<div class="lesson-body">
+
+<table>
+<tr><th>Incorrect</th><th>Correct</th></tr>
+<tr><td>He don't know.</td><td>He doesn't know.</td></tr>
+<tr><td>I am agree.</td><td>I agree.</td></tr>
+<tr><td>She is having a car.</td><td>She has a car.</td></tr>
+<tr><td>Discuss about it.</td><td>Discuss it.</td></tr>
+<tr><td>Return back.</td><td>Return.</td></tr>
+<tr><td>I didn't went.</td><td>I didn't go.</td></tr>
+<tr><td>He is senior than me.</td><td>He is senior to me.</td></tr>
+</table>
+
+</div>
+</div>
+
+</section>
+
+
+<!-- CONVERSATION -->
+<section class="category" data-category="conversation">
+
+<h2>💬 3. Daily Conversation</h2>
+
+<div class="lesson">
+<div class="lesson-title">3.1 At Home</div>
+<div class="lesson-body">
+
+<div class="example">
+Wake up.<br>
+Please get ready.<br>
+Breakfast is ready.<br>
+Where are you going?<br>
+I'll be back soon.<br>
+Please switch off the light.<br>
+Don't forget your keys.<br>
+Let's have dinner.
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">3.2 Shopping</div>
+<div class="lesson-body">
+
+<div class="example">
+How much does this cost?<br>
+Do you have another size?<br>
+Can I see another one?<br>
+Is there any discount?<br>
+I'll take this one.<br>
+Can I pay by card?<br>
+Could you give me a bill?
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">3.3 Restaurant</div>
+<div class="lesson-body">
+
+<div class="example">
+Can I see the menu?<br>
+I'd like to order this.<br>
+Could you make it less spicy?<br>
+Can I have some water?<br>
+Could we get the bill, please?<br>
+Everything was delicious.
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">3.4 Telephone Conversation</div>
+<div class="lesson-body">
+
+<div class="example">
+Hello, may I speak to Mr. Sharma?<br>
+Who is calling, please?<br>
+Could you hold for a moment?<br>
+I'll call you back.<br>
+The line is breaking up.<br>
+Could you repeat that?<br>
+I'll get back to you shortly.
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">3.5 Asking for Directions</div>
+<div class="lesson-body">
+
+<div class="example">
+Excuse me, could you tell me how to get to the station?<br>
+Is it far from here?<br>
+Should I take a left or a right?<br>
+Is there a landmark nearby?
+</div>
+
+</div>
+</div>
+
+</section>
+
+
+<!-- VOCABULARY -->
+<section class="category" data-category="vocabulary">
+
+<h2>📚 4. Vocabulary Builder</h2>
+
+<div class="cards">
+
+<div class="card">
+<b>Important</b><br>
+essential, significant, critical
+</div>
+
+<div class="card">
+<b>Good</b><br>
+excellent, useful, effective, impressive
+</div>
+
+<div class="card">
+<b>Bad</b><br>
+poor, difficult, ineffective, disappointing
+</div>
+
+<div class="card">
+<b>Help</b><br>
+assist, support, guide
+</div>
+
+<div class="card">
+<b>Start</b><br>
+begin, initiate, launch
+</div>
+
+<div class="card">
+<b>End</b><br>
+finish, complete, conclude
+</div>
+
+<div class="card">
+<b>Tell</b><br>
+inform, explain, mention
+</div>
+
+<div class="card">
+<b>Ask</b><br>
+request, inquire, question
+</div>
+
+</div>
+
+<div class="lesson">
+<div class="lesson-title">4.1 Useful Phrasal Verbs</div>
+<div class="lesson-body">
+
+<table>
+<tr><th>Phrasal Verb</th><th>Meaning</th><th>Example</th></tr>
+<tr><td>Find out</td><td>Discover</td><td>I'll find out.</td></tr>
+<tr><td>Look into</td><td>Investigate</td><td>I'll look into the issue.</td></tr>
+<tr><td>Follow up</td><td>Check again</td><td>I'll follow up tomorrow.</td></tr>
+<tr><td>Carry on</td><td>Continue</td><td>Please carry on.</td></tr>
+<tr><td>Bring up</td><td>Mention</td><td>He brought up an important point.</td></tr>
+<tr><td>Set up</td><td>Arrange</td><td>Let's set up a meeting.</td></tr>
+<tr><td>Take over</td><td>Assume responsibility</td><td>I'll take over this task.</td></tr>
+</table>
+
+</div>
+</div>
+
+</section>
+
+
+<!-- PRONUNCIATION -->
+<section class="category" data-category="pronunciation">
+
+<h2>🗣️ 5. Pronunciation & Fluency</h2>
+
+<div class="lesson">
+<div class="lesson-title">5.1 Focus on Sounds</div>
+<div class="lesson-body">
+
+<p>Practice difficult sound pairs:</p>
+
+<div class="example">
+ship / sheep<br>
+live / leave<br>
+full / fool<br>
+fan / van<br>
+rice / rise<br>
+thin / tin<br>
+then / den
+</div>
+
+<p>Record yourself and compare your pronunciation with a reliable English audio source.</p>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">5.2 Word Stress</div>
+<div class="lesson-body">
+
+<p>English is stress-timed. Pay attention to the important syllable in longer words.</p>
+
+<div class="example">
+TAble<br>
+DOCtor<br>
+PREsent — noun<br>
+preSENT — verb
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">5.3 Speaking Fluency Technique</div>
+<div class="lesson-body">
+
+<ol>
+<li>Listen to one sentence.</li>
+<li>Pause.</li>
+<li>Repeat it.</li>
+<li>Record yourself.</li>
+<li>Compare.</li>
+<li>Repeat 3–5 times.</li>
+</ol>
+
+<p>This is commonly called <b>shadowing</b>.</p>
+
+</div>
+</div>
+
+</section>
+
+
+<!-- WORKPLACE -->
+<section class="category" data-category="work">
+
+<h2>💼 6. Workplace English</h2>
+
+<div class="lesson">
+<div class="lesson-title">6.1 Meetings</div>
+<div class="lesson-body">
+
+<div class="example">
+Let's get started.<br>
+Shall we begin?<br>
+I'd like to add something.<br>
+Could you please clarify that?<br>
+I agree with you.<br>
+I see your point.<br>
+I have a slightly different view.<br>
+Let's discuss this further.<br>
+Can we take this offline?<br>
+Let's move to the next topic.
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">6.2 Giving Updates</div>
+<div class="lesson-body">
+
+<div class="example">
+Here's a quick update.<br>
+The task is currently in progress.<br>
+We have completed the first phase.<br>
+We are currently investigating the issue.<br>
+We expect to complete it by tomorrow.<br>
+There are no major blockers at the moment.
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">6.3 Handling Problems</div>
+<div class="lesson-body">
+
+<div class="example">
+Let me understand the issue first.<br>
+I'll investigate this.<br>
+I'll check the logs and get back to you.<br>
+We have identified the root cause.<br>
+We are working on a solution.<br>
+I'll keep you updated.<br>
+We have a temporary workaround.
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">6.4 Client Communication</div>
+<div class="lesson-body">
+
+<div class="example">
+Thank you for bringing this to our attention.<br>
+Let me check this with the team.<br>
+I understand your concern.<br>
+We'll investigate and provide an update.<br>
+Could you please share the relevant details?<br>
+We'll make sure this is addressed.
+</div>
+
+</div>
+</div>
+
+</section>
+
+
+<!-- INTERVIEW -->
+<section class="category" data-category="interview">
+
+<h2>🎯 7. Interview English</h2>
+
+<div class="lesson">
+<div class="lesson-title">7.1 Tell Me About Yourself</div>
+<div class="lesson-body">
+
+<div class="example">
+Thank you for giving me this opportunity.
+
+I have experience in software development and data-related projects.
+My key strengths are problem solving, SQL, programming and team collaboration.
+
+In my current role, I work on understanding requirements, developing solutions,
+troubleshooting issues and communicating with stakeholders.
+
+I am now looking for an opportunity where I can use my experience and continue
+to grow professionally.
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">7.2 Strengths</div>
+<div class="lesson-body">
+
+<div class="example">
+One of my key strengths is problem solving.<br>
+I am comfortable working under deadlines.<br>
+I communicate clearly with team members.<br>
+I take ownership of my responsibilities.
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">7.3 Weakness</div>
+<div class="lesson-body">
+
+<div class="example">
+Earlier, I sometimes spent too much time perfecting small details.
+I have been improving this by prioritizing tasks based on business impact
+and deadlines.
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">7.4 Scenario Answer Framework</div>
+<div class="lesson-body">
+
+<p>Use <b>STAR</b>:</p>
+
+<div class="cards">
+<div class="card"><b>S — Situation</b><br>What happened?</div>
+<div class="card"><b>T — Task</b><br>What was your responsibility?</div>
+<div class="card"><b>A — Action</b><br>What did you do?</div>
+<div class="card"><b>R — Result</b><br>What happened finally?</div>
+</div>
+
+</div>
+</div>
+
+</section>
+
+
+<!-- ADVANCED -->
+<section class="category" data-category="advanced">
+
+<h2>🚀 8. Advanced Spoken English</h2>
+
+<div class="lesson">
+<div class="lesson-title">8.1 Expressing Opinions</div>
+<div class="lesson-body">
+
+<div class="example">
+In my opinion...<br>
+From my perspective...<br>
+As far as I can see...<br>
+I believe that...<br>
+I tend to think that...<br>
+There are two sides to this issue.
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">8.2 Agreeing & Disagreeing Politely</div>
+<div class="lesson-body">
+
+<div class="good">
+I completely agree.<br>
+That's a good point.<br>
+I agree to some extent.<br>
+I see your point, but...<br>
+I have a different perspective.<br>
+I'm not entirely convinced by that.
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">8.3 Buying Time While Speaking</div>
+<div class="lesson-body">
+
+<div class="example">
+That's an interesting question.<br>
+Let me think about that for a moment.<br>
+If I understand the question correctly...<br>
+What I'd like to say is...<br>
+Let me put it another way...
+</div>
+
+</div>
+</div>
+
+<div class="lesson">
+<div class="lesson-title">8.4 Storytelling</div>
+<div class="lesson-body">
+
+<p>Use this structure:</p>
+
+<div class="example">
+First...<br>
+Then...<br>
+After that...<br>
+Meanwhile...<br>
+Eventually...<br>
+Finally...
+</div>
+
+</div>
+</div>
+
+</section>
+
+
+<!-- SITUATIONS -->
+<section class="category">
+
+<h2>🌎 9. Real-Life Situations</h2>
+
+<div class="cards">
+
+<div class="card">
+<b>🏠 Home</b><br>
+Family conversation, instructions, requests
+</div>
+
+<div class="card">
+<b>🏢 Office</b><br>
+Meetings, calls, updates, discussions
+</div>
+
+<div class="card">
+<b>✈️ Airport</b><br>
+Check-in, security, boarding
+</div>
+
+<div class="card">
+<b>🏨 Hotel</b><br>
+Booking, check-in, complaints
+</div>
+
+<div class="card">
+<b>🏥 Hospital</b><br>
+Appointments, symptoms, questions
+</div>
+
+<div class="card">
+<b>🛍️ Shopping</b><br>
+Prices, sizes, returns
+</div>
+
+<div class="card">
+<b>🍽️ Restaurant</b><br>
+Ordering, requests, payment
+</div>
+
+<div class="card">
+<b>📞 Phone</b><br>
+Calling, leaving messages
+</div>
+
+</div>
+</section>
+
+
+<!-- DAILY PLAN -->
+<section class="category">
+
+<h2>📅 30-Day Spoken English Plan</h2>
+
+<table>
+<tr><th>Days</th><th>Focus</th></tr>
+<tr><td>1–3</td><td>Greetings + introductions</td></tr>
+<tr><td>4–6</td><td>Basic sentences</td></tr>
+<tr><td>7–9</td><td>Present tense</td></tr>
+<tr><td>10–12</td><td>Past + future</td></tr>
+<tr><td>13–15</td><td>Questions</td></tr>
+<tr><td>16–18</td><td>Daily conversation</td></tr>
+<tr><td>19–21</td><td>Vocabulary + phrasal verbs</td></tr>
+<tr><td>22–24</td><td>Workplace English</td></tr>
+<tr><td>25–27</td><td>Storytelling + opinions</td></tr>
+<tr><td>28</td><td>Interview practice</td></tr>
+<tr><td>29</td><td>One-minute speaking</td></tr>
+<tr><td>30</td><td>Full conversation test</td></tr>
+</table>
+
+</section>
+
+
+<!-- THINKING -->
+<section class="category">
+
+<h2>🧠 10. Think in English</h2>
+
+<p>Do not translate every sentence from your native language.</p>
+
+<div class="example">
+Look around and describe what you see:<br><br>
+"I am sitting in my room."<br>
+"The fan is running."<br>
+"I have a meeting at ten."<br>
+"I need to finish this task."<br>
+"I am feeling tired today."
+</div>
+
+<p>Start with simple thoughts and gradually make them more complex.</p>
+
+</section>
+
+
+<!-- SPEAKING RULES -->
+<section class="category">
+
+<h2>⭐ 11. Fluency Rules</h2>
+
+<ol>
+<li>Speak every day.</li>
+<li>Do not wait for perfect grammar.</li>
+<li>Learn phrases, not only individual words.</li>
+<li>Listen to natural English.</li>
+<li>Repeat sentences aloud.</li>
+<li>Record yourself.</li>
+<li>Learn from mistakes.</li>
+<li>Use English in real situations.</li>
+<li>Think in English for a few minutes every day.</li>
+<li>Focus on clarity rather than an artificial accent.</li>
+</ol>
+
+<div class="warning">
+<b>Important:</b> Fluency does not mean speaking very fast.
+Fluency means expressing your ideas clearly, naturally and confidently.
+</div>
+
+</section>
+
+
+<!-- PRACTICE -->
+<section class="category" data-category="practice">
+
+<h2>📝 12. Speaking Practice</h2>
+
+<div class="practice">
+
+<h3>One-Minute Speaking Challenge</h3>
+
+<p>Choose a topic and speak for one minute.</p>
+
+<div class="cards">
+<div class="card">My Family</div>
+<div class="card">My Job</div>
+<div class="card">My City</div>
+<div class="card">My Daily Routine</div>
+<div class="card">My Hobby</div>
+<div class="card">My Childhood</div>
+<div class="card">My Future Goal</div>
+<div class="card">A Recent Experience</div>
+</div>
+
+<br>
+
+<button class="btn" onclick="randomTopic()">🎲 Random Topic</button>
+<p id="topic"></p>
+
+</div>
+
+</section>
+
+
+<!-- SELF ASSESSMENT -->
+<section class="category">
+
+<h2>📊 Self Assessment</h2>
+
+<table>
+<tr><th>Skill</th><th>Score 1–5</th></tr>
+<tr><td>Listening</td><td>_____</td></tr>
+<tr><td>Vocabulary</td><td>_____</td></tr>
+<tr><td>Grammar</td><td>_____</td></tr>
+<tr><td>Pronunciation</td><td>_____</td></tr>
+<tr><td>Speaking</td><td>_____</td></tr>
+<tr><td>Confidence</td><td>_____</td></tr>
+</table>
+
+<div class="progress">
+<div id="progressBar"></div>
+</div>
+
+<br>
+
+<button class="btn" onclick="calculateProgress()">
+Calculate Progress
+</button>
+
+<p id="progressText"></p>
+
+</section>
+
+
+<!-- MASTER PHRASES -->
+<section class="category">
+
+<h2>🏆 50 Essential Speaking Phrases</h2>
+
+<div class="cards">
+
+<div class="card">1. Let me check.</div>
+<div class="card">2. I'll get back to you.</div>
+<div class="card">3. Could you repeat that?</div>
+<div class="card">4. I didn't quite understand.</div>
+<div class="card">5. Could you explain that?</div>
+<div class="card">6. Give me a moment.</div>
+<div class="card">7. That sounds good.</div>
+<div class="card">8. I agree.</div>
+<div class="card">9. I don't think so.</div>
+<div class="card">10. I understand.</div>
+<div class="card">11. That's a good point.</div>
+<div class="card">12. Let me clarify.</div>
+<div class="card">13. As far as I know...</div>
+<div class="card">14. In my opinion...</div>
+<div class="card">15. As I mentioned earlier...</div>
+<div class="card">16. For example...</div>
+<div class="card">17. On the other hand...</div>
+<div class="card">18. In that case...</div>
+<div class="card">19. It depends.</div>
+<div class="card">20. I'm not sure.</div>
+<div class="card">21. I'll find out.</div>
+<div class="card">22. I'll look into it.</div>
+<div class="card">23. I'll follow up.</div>
+<div class="card">24. Please keep me posted.</div>
+<div class="card">25. Thanks for letting me know.</div>
+<div class="card">26. I appreciate it.</div>
+<div class="card">27. No problem.</div>
+<div class="card">28. That's fine with me.</div>
+<div class="card">29. I completely agree.</div>
+<div class="card">30. I see your point.</div>
+<div class="card">31. Could you clarify?</div>
+<div class="card">32. What do you mean?</div>
+<div class="card">33. What do you suggest?</div>
+<div class="card">34. What are the next steps?</div>
+<div class="card">35. Let's discuss it.</div>
+<div class="card">36. Let's move forward.</div>
+<div class="card">37. Let's keep it simple.</div>
+<div class="card">38. We need more information.</div>
+<div class="card">39. We are working on it.</div>
+<div class="card">40. The issue has been resolved.</div>
+<div class="card">41. I'll take care of it.</div>
+<div class="card">42. I'll handle it.</div>
+<div class="card">43. I'll keep you updated.</div>
+<div class="card">44. Please let me know.</div>
+<div class="card">45. Feel free to ask.</div>
+<div class="card">46. That's all for now.</div>
+<div class="card">47. Let's stay in touch.</div>
+<div class="card">48. Have a great day.</div>
+<div class="card">49. See you soon.</div>
+<div class="card">50. Take care.</div>
+
+</div>
+</section>
+
+
+<!-- FINAL GUIDE -->
+<section class="category">
+
+<h2>🌟 Your Daily English Routine</h2>
+
+<div class="example">
+<b>Morning — 10 minutes</b><br>
+Think in English and describe your plans.
+</div>
+
+<div class="example">
+<b>Afternoon — 15 minutes</b><br>
+Learn 5 new words and make sentences.
+</div>
+
+<div class="example">
+<b>Evening — 20 minutes</b><br>
+Listen to English and repeat sentences.
+</div>
+
+<div class="example">
+<b>Night — 10 minutes</b><br>
+Speak about your day for one minute.
+</div>
+
+<h3>Remember:</h3>
+
+<p>
+<strong>Listen → Understand → Repeat → Speak → Record → Correct → Repeat.</strong>
+</p>
+
+<p>
+Your goal is not perfect English on day one.
+Your goal is to become a little more confident every day.
+</p>
+
+</section>
+
+</div>
+
+<footer>
+Spoken English Master Guide • Learn Daily • Speak Confidently
+</footer>
+
+
+<script>
+
+/* ACCORDION */
+document.querySelectorAll(".lesson-title").forEach(title=>{
+    title.addEventListener("click",()=>{
+        title.parentElement.classList.toggle("open");
+    });
+});
+
+
+/* CATEGORY FILTER */
+function showCategory(cat){
+
+    document.querySelectorAll(".nav button")
+    .forEach(b=>b.classList.remove("active"));
+
+    event.target.classList.add("active");
+
+    document.querySelectorAll(".category").forEach(section=>{
+
+        if(cat==="all"){
+            section.style.display="";
+        }
+        else if(section.dataset.category===cat){
+            section.style.display="";
+        }
+        else{
+            section.style.display="none";
+        }
+
+    });
+}
+
+
+/* SEARCH */
+document.getElementById("search").addEventListener("input",function(){
+
+    let q=this.value.toLowerCase();
+
+    document.querySelectorAll(".category").forEach(section=>{
+
+        if(!q){
+            section.style.display="";
+            return;
+        }
+
+        let text=section.innerText.toLowerCase();
+
+        section.style.display=text.includes(q) ? "" : "none";
+    });
+
+});
+
+
+/* RANDOM TOPIC */
+function randomTopic(){
+
+    let topics=[
+        "My Family",
+        "My Daily Routine",
+        "My Job",
+        "My City",
+        "My Best Friend",
+        "My Childhood",
+        "My Favourite Food",
+        "My Hobby",
+        "My Future Goal",
+        "A Memorable Day",
+        "A Recent Experience",
+        "My Morning Routine",
+        "Why I Want to Learn English",
+        "Technology in Daily Life",
+        "My Favourite Movie"
+    ];
+
+    let topic=topics[Math.floor(Math.random()*topics.length)];
+
+    document.getElementById("topic").innerHTML=
+        "<strong>🎤 Speak for 1 minute about:</strong><br><br>"+topic;
+}
+
+
+/* PROGRESS */
+function calculateProgress(){
+
+    let score=prompt(
+        "Enter your total self-assessment score out of 30:"
+    );
+
+    score=Number(score);
+
+    if(!score || score<0 || score>30){
+        alert("Please enter a number from 0 to 30.");
+        return;
+    }
+
+    let percent=Math.round(score/30*100);
+
+    document.getElementById("progressBar").style.width=percent+"%";
+
+    document.getElementById("progressText").innerText=
+        "Your English progress score: "+percent+"%";
+}
+
+
+/* OPEN FIRST LESSON */
+document.querySelector(".lesson").classList.add("open");
+
+</script>
+
+</body>
+</html>
