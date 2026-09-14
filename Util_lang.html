@@ -1,215 +1,1017 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html lang="en">
 <head>
-<meta charset="UTF-8">
-<link rel="stylesheet" href="style.css">
-<title>Sanskar Dashboard</title>
-<style>
-body{
-font-family:Arial;
-margin:0;
-transition:0.3s;
+<meta charset="UTF-8"><meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>Swayam Sanskar Dashboard</title><style>
+
+/* =========================================================
+   SWAYAM SANSKAR DASHBOARD
+   Mobile + Desktop
+   ========================================================= */
+
+*{
+    box-sizing:border-box;
 }
 
-/* HEADER */
+:root{
+
+    --green:#138a4b;
+    --green-dark:#086b38;
+    --green-light:#e8f7ef;
+
+    --bg:#f4f7f5;
+    --card:#ffffff;
+    --text:#17231c;
+    --muted:#66736b;
+
+    --shadow:
+        0 8px 24px rgba(0,0,0,.10);
+
+}
+
+body{
+
+    margin:0;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:var(--bg);
+    color:var(--text);
+
+    transition:
+        background .3s,
+        color .3s;
+
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
 
 .header{
-padding:0px;
-display:flex;
-justify-content:space-between;
-align-items:center;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--green),
+            var(--green-dark)
+        );
+
+    color:white;
+
+    padding:
+        12px
+        15px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+
+    box-shadow:
+        0 4px 14px rgba(0,0,0,.18);
+
 }
 
-/* GRID */
+.header h2{
+
+    margin:0;
+
+    font-size:21px;
+
+    letter-spacing:.3px;
+
+}
+
+.header-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+}
+
+.theme-select{
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:
+        9px
+        10px;
+
+    font-size:14px;
+
+    background:white;
+
+    color:#222;
+
+    outline:none;
+
+}
+
+
+/* =========================================================
+   CLOCK BAR
+   ========================================================= */
+
+.clock-bar{
+
+    background:var(--card);
+
+    padding:10px 15px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    flex-wrap:wrap;
+
+    gap:8px;
+
+    box-shadow:
+        0 2px 8px rgba(0,0,0,.06);
+
+    font-size:14px;
+
+    color:var(--muted);
+
+}
+
+.clock-item{
+
+    background:
+        var(--green-light);
+
+    color:
+        var(--green-dark);
+
+    padding:
+        7px
+        11px;
+
+    border-radius:10px;
+
+    font-weight:bold;
+
+}
+
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+.main{
+
+    padding:18px;
+
+    max-width:1100px;
+
+    margin:auto;
+
+}
+
+
+/* =========================================================
+   INTRO
+   ========================================================= */
+
+.intro{
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--green-light),
+            var(--card)
+        );
+
+    border-radius:18px;
+
+    padding:18px;
+
+    margin-bottom:18px;
+
+    box-shadow:var(--shadow);
+
+    border-left:
+        5px solid var(--green);
+
+}
+
+.intro h1{
+
+    margin:
+        0 0 7px 0;
+
+    font-size:24px;
+
+}
+
+.intro p{
+
+    margin:0;
+
+    color:var(--muted);
+
+    font-size:15px;
+
+    line-height:1.5;
+
+}
+
+
+/* =========================================================
+   GRID
+   ========================================================= */
 
 .list-grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:15px;
-padding:15px;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                250px,
+                1fr
+            )
+        );
+
+    gap:18px;
+
 }
 
-/* CARD */
+
+/* =========================================================
+   CARD
+   ========================================================= */
 
 .card{
-padding:15px;
-border-radius:8px;
-box-shadow:0 2px 6px rgba(0,0,0,0.2);
+
+    background:var(--card);
+
+    padding:20px;
+
+    border-radius:18px;
+
+    box-shadow:var(--shadow);
+
+    transition:
+        transform .2s,
+        box-shadow .2s;
+
 }
 
-/* LIST */
+.card:hover{
 
-ul{
-padding-left:18px;
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 14px 30px rgba(0,0,0,.15);
+
 }
 
-li{
-margin:6px 0;
-cursor:pointer;
+.card-title{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-bottom:14px;
+
 }
 
-/* THEMES */
+.card-icon{
 
-.light{
-background:#f4f6f9;
-color:#000;
+    width:46px;
+
+    height:46px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:14px;
+
+    background:
+        var(--green-light);
+
+    font-size:25px;
+
 }
 
-.light .header{
-background:#1e88e5;
-color:white;
-}
+.card h3{
 
-.light .card{
-background:white;
-}
+    margin:0;
 
+    font-size:19px;
 
-.dark{
-background:#1e1e1e;
-color:white;
-a:link {
-  color:white;
-}
-}
-}
-
-.dark .header{
-background:#000;
-}
-
-.dark .card{
-background:#2b2b2b;
 }
 
 
-.blue{
-background:#e3f2fd;
-color:#000;
+/* =========================================================
+   APP LINK
+   ========================================================= */
+
+.app-link{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    text-decoration:none;
+
+    background:
+        #f7faf8;
+
+    color:var(--text);
+
+    padding:13px;
+
+    margin-top:10px;
+
+    border-radius:12px;
+
+    border:
+        1px solid rgba(19,138,75,.12);
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    transition:
+        .2s;
+
 }
 
-.blue .header{
-background:#1565c0;
-color:white;
+.app-link:hover{
+
+    background:
+        var(--green-light);
+
+    color:
+        var(--green-dark);
+
+    transform:
+        translateX(5px);
+
 }
 
-.blue .card{
-background:white;
-}
-/* link color */
-a:link {
-  color: black;
-}
+.app-link:active{
 
-a:visited {
-  color: purple;
+    transform:
+        scale(.97);
+
 }
 
-a:hover {
-  color: red;
+
+/* =========================================================
+   INFORMATION
+   ========================================================= */
+
+.info-card{
+
+    margin-top:20px;
+
+    background:var(--card);
+
+    border-radius:18px;
+
+    padding:18px;
+
+    box-shadow:var(--shadow);
+
 }
 
-a:active {
-  color: green;
+.info-card h3{
+
+    margin-top:0;
+
 }
-</style>
 
-</head>
+.info-card li{
 
-<body class="light">
+    margin:
+        9px 0;
 
-<!-- HEADER -->
+    line-height:1.4;
 
-<div class="header">
-<h2>Swayam Vihar Upakarana</h2>
-<select onchange="changeTheme(this.value)">
+    color:var(--muted);
 
-<option value="light">Light Theme</option>
-<option value="dark">Dark Theme</option>
-<option value="blue">Blue Theme</option>
+}
 
-</select>
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.footer{
+
+    text-align:center;
+
+    padding:
+        20px 10px;
+
+    color:var(--muted);
+
+    font-size:13px;
+
+}
+
+
+/* =========================================================
+   DARK THEME
+   ========================================================= */
+
+body.dark{
+
+    --bg:#101513;
+
+    --card:#1c2420;
+
+    --text:#f2f6f3;
+
+    --muted:#b7c4bd;
+
+    --green-light:#213d2e;
+
+}
+
+body.dark .app-link{
+
+    background:#26302b;
+
+    color:#f2f6f3;
+
+}
+
+body.dark .app-link:hover{
+
+    background:#304a3a;
+
+}
+
+body.dark .clock-item{
+
+    background:#213d2e;
+
+    color:#a9e0bd;
+
+}
+
+
+/* =========================================================
+   BLUE THEME
+   ========================================================= */
+
+body.blue{
+
+    --green:#1565c0;
+
+    --green-dark:#0d47a1;
+
+    --green-light:#e3f2fd;
+
+    --bg:#eef6fd;
+
+    --card:#ffffff;
+
+    --text:#17202a;
+
+}
+
+body.blue .app-link:hover{
+
+    color:#0d47a1;
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:600px){
+
+    .header{
+
+        padding:11px;
+
+    }
+
+    .header h2{
+
+        font-size:18px;
+
+    }
+
+    .main{
+
+        padding:12px;
+
+    }
+
+    .intro{
+
+        padding:15px;
+
+    }
+
+    .intro h1{
+
+        font-size:21px;
+
+    }
+
+    .card{
+
+        padding:16px;
+
+    }
+
+    .list-grid{
+
+        grid-template-columns:1fr;
+
+        gap:14px;
+
+    }
+
+    .clock-bar{
+
+        font-size:12px;
+
+    }
+
+    .clock-item{
+
+        padding:6px 8px;
+
+    }
+
+    .app-link{
+
+        min-height:50px;
+
+        font-size:16px;
+
+    }
+
+}
+
+
+/* =========================================================
+   TOUCH DEVICES
+   ========================================================= */
+
+@media(hover:none){
+
+    .card:hover{
+
+        transform:none;
+
+    }
+
+    .app-link:hover{
+
+        transform:none;
+
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media(prefers-reduced-motion:reduce){
+
+    *{
+
+        transition:none !important;
+
+    }
+
+}
+
+</style></head><body class="light"><!-- =======================================================
+     HEADER
+     ======================================================= --><header class="header"><h2>
+    🌿 Swayam Vihar
+</h2>
+
+<div class="header-right">
+
+    <select
+        class="theme-select"
+        onchange="changeTheme(this.value)"
+        aria-label="Select theme">
+
+        <option value="light">
+            ☀️ Light Theme
+        </option>
+
+        <option value="dark">
+            🌙 Dark Theme
+        </option>
+
+        <option value="blue">
+            💙 Blue Theme
+        </option>
+
+    </select>
+
 </div>
-<div class="header">
-<span id="mdate"></span>|
-<span id="mtime12"></span>|
-<span id="mtime24"></span>|
-</div>
 
-<!-- GRID -->
+</header><!-- =======================================================
+     CLOCK
+     ======================================================= --><div class="clock-bar"><span
+    class="clock-item"
+    id="mdate">
+    📅 Loading...
+</span>
 
-<div class="list-grid">
+<span
+    class="clock-item"
+    id="mtime12">
+    🕐 Loading...
+</span>
 
-<div class="card">
-<h3>Sanskar Dashboard</h3>
-<ul>
-<li><a href="#">Sanskar</a></li>
+<span
+    class="clock-item"
+    id="mtime24">
+    🕑 Loading...
+</span>
 
-</ul>
-</div>
+</div><!-- =======================================================
+     MAIN
+     ======================================================= --><main class="main"><!-- INTRO -->
+
+<section class="intro">
+
+    <h1>
+        🌿 Sanskar Dashboard
+    </h1>
+
+    <p>
+        Manage your Sanskar and personal development
+        activities from one place.
+    </p>
+
+</section>
 
 
+<!-- ===================================================
+     GRID
+     =================================================== -->
+
+<section class="list-grid">
 
 
+    <!-- SANSKAR -->
+
+    <div class="card">
+
+        <div class="card-title">
+
+            <div class="card-icon">
+                🌱
+            </div>
+
+            <h3>
+                Sanskar
+            </h3>
+
+        </div>
 
 
+        <a
+            class="app-link"
+            href="Sanskar.html"
+            onclick="openSwayamPage(event,this.href)">
+
+            🪷
+            <span>
+                Sanskar Manager
+            </span>
+
+        </a>
+
+    </div>
 
 
-</div>
+</section>
 
-<ul>
-<li>Kindly export data on weekly basis.</li>
-<li>Chart Builder can be used for Basic Analysis with exported data.</li>
-<li>This app has Auto Update Feature Activated on refresh.</li>
-</ul>
 
-<script>
+<!-- ===================================================
+     INFORMATION
+     =================================================== -->
 
-/* CHANGE THEME */
+<section class="info-card">
+
+    <h3>
+        💡 Important Information
+    </h3>
+
+    <ul>
+
+        <li>
+            Kindly export your important data on a
+            weekly basis.
+        </li>
+
+        <li>
+            Chart Builder can be used for basic
+            analysis with exported data.
+        </li>
+
+        <li>
+            This app has Auto Update functionality
+            activated on refresh.
+        </li>
+
+    </ul>
+
+</section>
+
+</main><!-- =======================================================
+     FOOTER
+     ======================================================= --><footer class="footer">Swayam • Personal Governance Simplified
+
+</footer><script>
+
+/* =========================================================
+   SWAYAM PARENT NAVIGATION
+   ========================================================= */
+
+function openSwayamPage(event,url){
+
+    event.preventDefault();
+
+    try{
+
+        /*
+         * When this page is loaded inside the
+         * Swayam main iframe, open the requested
+         * page in the parent's center iframe.
+         */
+
+        if(
+            window.parent &&
+            window.parent !== window
+        ){
+
+            var frame =
+                window.parent.document
+                .getElementById(
+                    "swayamFrame"
+                );
+
+
+            if(frame){
+
+                frame.src = url;
+
+
+                /*
+                 * Remember selected page
+                 */
+
+                try{
+
+                    window.parent.localStorage
+                    .setItem(
+                        "swayam_selected_page",
+                        url.split("/").pop()
+                    );
+
+                }catch(e){}
+
+
+                /*
+                 * Update active Swayam menu
+                 */
+
+                var menuLinks =
+                    window.parent.document
+                    .querySelectorAll(
+                        ".menu-button"
+                    );
+
+
+                for(
+                    var i=0;
+                    i<menuLinks.length;
+                    i++
+                ){
+
+                    menuLinks[i]
+                    .classList
+                    .remove("active");
+
+                }
+
+
+                for(
+                    var j=0;
+                    j<menuLinks.length;
+                    j++
+                ){
+
+                    var menuHref =
+                        menuLinks[j]
+                        .getAttribute("href");
+
+
+                    if(
+                        menuHref &&
+                        menuHref
+                        .split("/")
+                        .pop()
+                        ===
+                        url
+                        .split("/")
+                        .pop()
+                    ){
+
+                        menuLinks[j]
+                        .classList
+                        .add("active");
+
+
+                        try{
+
+                            menuLinks[j]
+                            .scrollIntoView({
+                                behavior:"smooth",
+                                block:"nearest",
+                                inline:"center"
+                            });
+
+                        }catch(e){}
+
+
+                        break;
+
+                    }
+
+                }
+
+
+                return;
+
+            }
+
+        }
+
+    }
+    catch(error){
+
+        console.log(
+            "Swayam navigation error:",
+            error
+        );
+
+    }
+
+
+    /*
+     * Normal browser fallback
+     */
+
+    window.location.href = url;
+
+}
+
+
+/* =========================================================
+   THEME
+   ========================================================= */
 
 function changeTheme(theme){
 
-document.body.className=theme;
+    document.body.className = theme;
 
-localStorage.setItem("theme",theme);
-
-}
-
-
-/* LOAD SAVED THEME */
-
-let savedTheme=localStorage.getItem("theme");
-
-if(savedTheme){
-
-document.body.className=savedTheme;
+    localStorage.setItem(
+        "swayam_sanskar_theme",
+        theme
+    );
 
 }
-/* CLOCK */
+
+
+/* =========================================================
+   LOAD SAVED THEME
+   ========================================================= */
+
+(function(){
+
+    var savedTheme =
+        localStorage.getItem(
+            "swayam_sanskar_theme"
+        );
+
+
+    if(savedTheme){
+
+        document.body.className =
+            savedTheme;
+
+    }
+
+})();
+
+
+/* =========================================================
+   CLOCK
+   ========================================================= */
 
 function updateClock(){
 
-let now=new Date();
+    var now = new Date();
 
-mtime24.innerHTML=now.toLocaleTimeString();
-mtime12.innerHTML=
-now.toLocaleTimeString('en-IN',{
-hour: '2-digit',
-minute: '2-digit',
-second: '2-digit',
-hour12: true
-});
 
-mdate.innerHTML=now.toLocaleDateString("en-IN", {
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric"
-});
+    document.getElementById(
+        "mtime24"
+    ).innerHTML =
+        "🕑 " +
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:false
+            }
+        );
+
+
+    document.getElementById(
+        "mtime12"
+    ).innerHTML =
+        "🕐 " +
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:true
+            }
+        );
+
+
+    document.getElementById(
+        "mdate"
+    ).innerHTML =
+        "📅 " +
+        now.toLocaleDateString(
+            "en-IN",
+            {
+                weekday:"long",
+                year:"numeric",
+                month:"long",
+                day:"numeric"
+            }
+        );
 
 }
 
-setInterval(updateClock,1000);
-</script>
-</body>
+
+/* Initial clock */
+
+updateClock();
+
+
+/* Update every second */
+
+setInterval(
+    updateClock,
+    1000
+);
+
+</script></body>
 </html>
