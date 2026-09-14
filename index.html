@@ -1,26 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+viewport-fit=cover">
 
-<head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width,
-               initial-scale=1.0,
-               maximum-scale=1.0,
-               viewport-fit=cover">
-
-<meta name="theme-color" content="#4CAF50">
-
-<title>Swayam PWA</title>
-
-<style>
+<meta name="theme-color" content="#4CAF50"><title>Swayam PWA</title><style>
 
 /* =========================================================
    SWAYAM PWA
-   SPCK COMPATIBLE
-   RESPONSIVE MOBILE + DESKTOP
+   MENU ALWAYS VISIBLE
+   PAGE OPENS IN CENTER
+   SPCK FRIENDLY
 ========================================================= */
 
 *{
@@ -32,7 +22,7 @@
 html,
 body{
     width:100%;
-    min-height:100%;
+    height:100%;
 }
 
 body{
@@ -45,9 +35,11 @@ body{
         Arial,
         sans-serif;
 
-    background:#f4f6f8;
+    background:#f3f6f4;
 
     color:#222;
+
+    overflow:hidden;
 }
 
 
@@ -57,13 +49,9 @@ body{
 
 .header{
 
-    position:sticky;
-
-    top:0;
-
-    z-index:1000;
-
     height:58px;
+
+    width:100%;
 
     display:flex;
 
@@ -78,12 +66,16 @@ body{
     background:
         linear-gradient(
             135deg,
-            #43a047,
+            #2e7d32,
             #66bb6a
         );
 
     box-shadow:
-        0 2px 8px rgba(0,0,0,.2);
+        0 2px 8px rgba(0,0,0,.25);
+
+    position:relative;
+
+    z-index:1000;
 }
 
 .title{
@@ -97,8 +89,6 @@ body{
     font-size:18px;
 
     font-weight:700;
-
-    white-space:nowrap;
 }
 
 .version{
@@ -117,7 +107,7 @@ body{
 
     font-size:11px;
 
-    padding:6px 8px;
+    padding:6px 9px;
 
     border-radius:8px;
 
@@ -129,49 +119,52 @@ body{
 
 
 /* =========================================================
-   DESKTOP LAYOUT
+   MAIN APPLICATION
 ========================================================= */
 
 .app{
 
-    display:flex;
-
     width:100%;
-
-    min-height:
-        calc(100vh - 58px);
-}
-
-
-/* =========================================================
-   SIDEBAR
-========================================================= */
-
-.menu{
-
-    width:220px;
-
-    min-width:220px;
 
     height:
         calc(100vh - 58px);
 
-    position:sticky;
+    display:flex;
 
-    top:58px;
-
-    overflow-y:auto;
-
-    padding:8px;
-
-    background:#fff;
-
-    border-right:1px solid #ddd;
+    overflow:hidden;
 }
 
 
 /* =========================================================
-   MENU BUTTON
+   LEFT MENU
+========================================================= */
+
+.menu{
+
+    width:225px;
+
+    min-width:225px;
+
+    height:100%;
+
+    background:#ffffff;
+
+    border-right:1px solid #dcdcdc;
+
+    padding:8px;
+
+    overflow-y:auto;
+
+    overflow-x:hidden;
+
+    scrollbar-width:thin;
+
+    z-index:500;
+}
+
+
+/* =========================================================
+   MENU ITEMS
 ========================================================= */
 
 .menu-button{
@@ -182,7 +175,7 @@ body{
 
     width:100%;
 
-    min-height:46px;
+    min-height:45px;
 
     padding:9px 12px;
 
@@ -190,9 +183,9 @@ body{
 
     border-left:4px solid transparent;
 
-    border-radius:8px;
+    border-radius:9px;
 
-    background:#fff;
+    background:#ffffff;
 
     color:#333;
 
@@ -202,10 +195,12 @@ body{
 
     font-weight:500;
 
+    cursor:pointer;
+
     transition:
-        background .2s,
-        color .2s,
-        transform .1s;
+        background .2s ease,
+        color .2s ease,
+        transform .15s ease;
 }
 
 
@@ -221,23 +216,13 @@ body{
 }
 
 
-/* Keyboard focus */
-
-.menu-button:focus{
-
-    outline:3px solid #2e7d32;
-
-    outline-offset:2px;
-}
-
-
 /* Active */
 
 .menu-button.active{
 
     background:#e8f5e9;
 
-    color:#2e7d32;
+    color:#1b5e20;
 
     border-left-color:#4CAF50;
 
@@ -246,7 +231,7 @@ body{
 
 
 /* =========================================================
-   HOME CONTENT
+   CENTER AREA
 ========================================================= */
 
 .content{
@@ -255,66 +240,119 @@ body{
 
     min-width:0;
 
-    min-height:
-        calc(100vh - 58px);
+    height:100%;
 
-    padding:30px;
+    background:#f5f7f6;
 
-    background:
-        linear-gradient(
-            135deg,
-            #f8fff8,
-            #ffffff
-        );
+    overflow:hidden;
+
+    position:relative;
 }
 
 
 /* =========================================================
-   DASHBOARD
+   IFRAME
 ========================================================= */
 
-.dashboard{
+.page-frame{
+
+    width:100%;
+
+    height:100%;
+
+    display:block;
+
+    border:none;
+
+    background:white;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.loading{
+
+    position:absolute;
+
+    top:50%;
+
+    left:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    padding:15px 22px;
+
+    border-radius:12px;
+
+    background:white;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,.15);
+
+    color:#2e7d32;
+
+    font-weight:600;
+
+    z-index:10;
+
+    display:none;
+}
+
+
+/* =========================================================
+   HOME PAGE
+========================================================= */
+
+.home-screen{
+
+    width:100%;
+
+    height:100%;
+
+    overflow:auto;
+
+    padding:25px;
+}
+
+.home-card{
 
     max-width:1000px;
 
     margin:0 auto;
-}
 
-.hero{
-
-    padding:40px 20px;
-
-    text-align:center;
+    background:white;
 
     border-radius:20px;
 
-    background:#fff;
+    padding:45px 20px;
+
+    text-align:center;
 
     box-shadow:
         0 5px 25px rgba(0,0,0,.08);
 }
 
-.hero-icon{
+.home-icon{
 
     font-size:65px;
 
     margin-bottom:15px;
 }
 
-.hero h1{
+.home-card h1{
 
     color:#2e7d32;
 
-    margin-bottom:10px;
+    font-size:
+        clamp(25px,4vw,40px);
 
-    font-size:clamp(
-        24px,
-        4vw,
-        38px
-    );
+    margin-bottom:10px;
 }
 
-.hero p{
+.home-card p{
 
     color:#666;
 
@@ -323,33 +361,30 @@ body{
     line-height:1.6;
 }
 
-
-/* =========================================================
-   QUICK CARDS
-========================================================= */
-
-.cards{
+.quick-grid{
 
     display:grid;
 
     grid-template-columns:
         repeat(
             auto-fit,
-            minmax(180px,1fr)
+            minmax(170px,1fr)
         );
 
     gap:15px;
 
-    margin-top:20px;
+    max-width:1000px;
+
+    margin:20px auto 0;
 }
 
-.card{
+.quick-card{
 
-    padding:20px;
+    background:white;
 
     border-radius:15px;
 
-    background:#fff;
+    padding:20px;
 
     text-align:center;
 
@@ -360,32 +395,33 @@ body{
         transform .2s;
 }
 
-.card:hover{
+.quick-card:hover{
 
-    transform:translateY(-3px);
+    transform:
+        translateY(-4px);
 }
 
-.card-icon{
+.quick-icon{
 
     font-size:32px;
 
     margin-bottom:8px;
 }
 
-.card-title{
+.quick-title{
 
     font-weight:700;
 
     color:#333;
 }
 
-.card-text{
-
-    margin-top:5px;
+.quick-text{
 
     font-size:12px;
 
     color:#777;
+
+    margin-top:5px;
 }
 
 
@@ -394,6 +430,12 @@ body{
 ========================================================= */
 
 @media(max-width:768px){
+
+    body{
+
+        overflow:hidden;
+    }
+
 
     .header{
 
@@ -417,20 +459,18 @@ body{
 
     .app{
 
-        display:block;
-
-        min-height:
+        height:
             calc(100vh - 54px);
+
+        display:block;
     }
 
 
-    /* Horizontal menu */
+    /* ---------------------------------------------
+       MOBILE MENU ALWAYS VISIBLE
+    --------------------------------------------- */
 
     .menu{
-
-        position:sticky;
-
-        top:54px;
 
         width:100%;
 
@@ -456,11 +496,13 @@ body{
 
         border-bottom:1px solid #ddd;
 
-        z-index:900;
-
         scrollbar-width:none;
 
         -webkit-overflow-scrolling:touch;
+
+        position:relative;
+
+        z-index:500;
     }
 
     .menu::-webkit-scrollbar{
@@ -497,6 +539,12 @@ body{
     }
 
 
+    .menu-button:hover{
+
+        transform:none;
+    }
+
+
     .menu-button.active{
 
         border-left:0;
@@ -505,24 +553,26 @@ body{
     }
 
 
+    /* ---------------------------------------------
+       CENTER PAGE
+    --------------------------------------------- */
+
     .content{
 
-        min-height:
+        width:100%;
+
+        height:
             calc(100vh - 110px);
 
-        padding:15px;
+        overflow:hidden;
     }
 
 
-    .hero{
+    .page-frame{
 
-        padding:30px 15px;
-    }
+        width:100%;
 
-
-    .hero-icon{
-
-        font-size:50px;
+        height:100%;
     }
 
 }
@@ -541,15 +591,13 @@ body{
 
     .app{
 
-        min-height:
+        height:
             calc(100vh - 50px);
     }
 
     .menu{
 
-        top:50px;
-
-        height:50px;
+        height:52px;
     }
 
     .menu-button{
@@ -565,8 +613,10 @@ body{
 
     .content{
 
-        padding:10px;
+        height:
+            calc(100vh - 102px);
     }
+
 }
 
 
@@ -580,20 +630,19 @@ body{
     .app{
 
         display:flex;
-    }
-
-    .menu{
-
-        position:sticky;
-
-        top:0;
-
-        width:150px;
-
-        min-width:150px;
 
         height:
             calc(100vh - 48px);
+    }
+
+
+    .menu{
+
+        width:155px;
+
+        min-width:155px;
+
+        height:100%;
 
         display:block;
 
@@ -607,6 +656,7 @@ body{
 
         padding:5px;
     }
+
 
     .menu-button{
 
@@ -625,6 +675,7 @@ body{
         border-left:3px solid transparent;
     }
 
+
     .menu-button.active{
 
         border-left-color:#4CAF50;
@@ -632,10 +683,14 @@ body{
         border-bottom:0;
     }
 
+
     .content{
 
-        padding:15px;
+        width:auto;
+
+        height:100%;
     }
+
 }
 
 
@@ -659,335 +714,247 @@ body{
         font-size:15px;
     }
 
-    .content{
-
-        padding:40px;
-    }
 }
 
-</style>
 
-</head>
+/* =========================================================
+   IFRAME ERROR STYLE
+========================================================= */
 
+iframe{
 
-<body>
+    background:#fff;
+}
 
-
-<!-- =======================================================
+</style></head><body><!-- =======================================================
      HEADER
-======================================================= -->
+======================================================= --><header class="header"><div class="title">
 
-<header class="header">
+    ⛱️ Swayam
 
-    <div class="title">
+    <span class="version">
+        v1.0
+    </span>
 
-        ⛱️ Swayam
+</div>
 
-        <span class="version">
-            v1.0
-        </span>
 
-    </div>
+<div
+    class="clock"
+    id="clock">
+
+    Loading...
+
+</div>
+
+</header><!-- =======================================================
+     APPLICATION
+======================================================= --><div class="app"><!-- ===================================================
+     MENU - ALWAYS VISIBLE
+==================================================== -->
+
+<nav
+    class="menu"
+    id="menu"
+    aria-label="Swayam Navigation">
+
+
+    <a
+        href="home-content.html"
+        class="menu-button active"
+        target="swayamFrame">
+
+        🏠 Home
+
+    </a>
+
+
+    <a
+        href="Util_smart.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        ⌚ Watch
+
+    </a>
+
+
+    <a
+        href="cal.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        📅 Calendar
+
+    </a>
+
+
+    <a
+        href="Util_karya.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        💼 Work
+
+    </a>
+
+
+    <a
+        href="Util_laxmi.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        💰 Home Finance
+
+    </a>
+
+
+    <a
+        href="Util_yog.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🙏 Fitness
+
+    </a>
+
+
+    <a
+        href="Util_upkarna.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🛠️ Utility
+
+    </a>
+
+
+    <a
+        href="Util_chitra.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🖼️ Image
+
+    </a>
+
+
+    <a
+        href="Util_sutra.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        📐 Formula
+
+    </a>
+
+
+    <a
+        href="Util_awpl.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🌐 Business
+
+    </a>
+
+
+    <a
+        href="Util_lang.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🌐 Languages
+
+    </a>
+
+
+    <a
+        href="Util_sanskar.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🙏 Ethics
+
+    </a>
+
+
+    <a
+        href="Util_ranjan.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🎮 Relax
+
+    </a>
+
+
+    <a
+        href="medical.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🏥 Medical
+
+    </a>
+
+
+    <a
+        href="emergency.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🚨 Emergency
+
+    </a>
+
+
+    <a
+        href="note2.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        📝 Notes
+
+    </a>
+
+
+</nav>
+
+
+
+<!-- ===================================================
+     CENTER CONTENT
+==================================================== -->
+
+<main class="content">
 
 
     <div
-        class="clock"
-        id="clock">
+        class="loading"
+        id="loading">
 
         Loading...
 
     </div>
 
-</header>
 
+    <iframe
+        id="swayamFrame"
+        name="swayamFrame"
+        class="page-frame"
+        src="home-content.html"
+        title="Swayam Application Content">
 
+    </iframe>
 
-<!-- =======================================================
-     APPLICATION
-======================================================= -->
 
-<div class="app">
+</main>
 
-
-    <!-- ===================================================
-         MENU
-    ==================================================== -->
-
-    <nav
-        class="menu"
-        aria-label="Swayam Navigation">
-
-
-        <a
-            href="index.html"
-            class="menu-button active">
-
-            🏠 Home
-
-        </a>
-
-
-        <a
-            href="Util_smart.html"
-            class="menu-button">
-
-            ⌚ Watch
-
-        </a>
-
-
-        <a
-            href="cal.html"
-            class="menu-button">
-
-            📅 Calendar
-
-        </a>
-
-
-        <a
-            href="Util_karya.html"
-            class="menu-button">
-
-            💼 Work
-
-        </a>
-
-
-        <a
-            href="Util_laxmi.html"
-            class="menu-button">
-
-            💰 Home Finance
-
-        </a>
-
-
-        <a
-            href="Util_yog.html"
-            class="menu-button">
-
-            🙏 Fitness
-
-        </a>
-
-
-        <a
-            href="Util_upkarna.html"
-            class="menu-button">
-
-            🛠️ Utility
-
-        </a>
-
-
-        <a
-            href="Util_chitra.html"
-            class="menu-button">
-
-            🖼️ Image
-
-        </a>
-
-
-        <a
-            href="Util_sutra.html"
-            class="menu-button">
-
-            📐 Formula
-
-        </a>
-
-
-        <a
-            href="Util_awpl.html"
-            class="menu-button">
-
-            🌐 Business
-
-        </a>
-
-
-        <a
-            href="Util_lang.html"
-            class="menu-button">
-
-            🌐 Languages
-
-        </a>
-
-
-        <a
-            href="Util_sanskar.html"
-            class="menu-button">
-
-            🙏 Ethics
-
-        </a>
-
-
-        <a
-            href="Util_ranjan.html"
-            class="menu-button">
-
-            🎮 Relax
-
-        </a>
-
-
-        <a
-            href="medical.html"
-            class="menu-button">
-
-            🏥 Medical
-
-        </a>
-
-
-        <a
-            href="emergency.html"
-            class="menu-button">
-
-            🚨 Emergency
-
-        </a>
-
-
-        <a
-            href="note2.html"
-            class="menu-button">
-
-            📝 Notes
-
-        </a>
-
-
-    </nav>
-
-
-
-    <!-- ===================================================
-         DASHBOARD
-    ==================================================== -->
-
-    <main class="content">
-
-        <div class="dashboard">
-
-
-            <section class="hero">
-
-                <div class="hero-icon">
-                    ⛱️
-                </div>
-
-                <h1>
-                    Swayam PWA
-                </h1>
-
-                <p>
-                    Personal Governance Simplified
-                </p>
-
-                <p style="
-                    margin-top:10px;
-                    font-size:13px;
-                    color:#888;
-                ">
-
-                    Select an application
-                    from the menu.
-
-                </p>
-
-            </section>
-
-
-            <section class="cards">
-
-
-                <div class="card">
-
-                    <div class="card-icon">
-                        📅
-                    </div>
-
-                    <div class="card-title">
-                        Calendar
-                    </div>
-
-                    <div class="card-text">
-                        Manage your schedule
-                    </div>
-
-                </div>
-
-
-                <div class="card">
-
-                    <div class="card-icon">
-                        💼
-                    </div>
-
-                    <div class="card-title">
-                        Work
-                    </div>
-
-                    <div class="card-text">
-                        Manage your work
-                    </div>
-
-                </div>
-
-
-                <div class="card">
-
-                    <div class="card-icon">
-                        📝
-                    </div>
-
-                    <div class="card-title">
-                        Notes
-                    </div>
-
-                    <div class="card-text">
-                        Keep important notes
-                    </div>
-
-                </div>
-
-
-                <div class="card">
-
-                    <div class="card-icon">
-                        🛠️
-                    </div>
-
-                    <div class="card-title">
-                        Utilities
-                    </div>
-
-                    <div class="card-text">
-                        Useful tools
-                    </div>
-
-                </div>
-
-
-            </section>
-
-        </div>
-
-    </main>
-
-</div>
-
-
-
-<script>
+</div><script>
 
 /* =========================================================
-   CLOCK
+   LIVE CLOCK
 ========================================================= */
 
 function updateClock(){
@@ -996,11 +963,15 @@ function updateClock(){
         document.getElementById("clock");
 
     if(!clock){
+
         return;
+
     }
+
 
     var now =
         new Date();
+
 
     var date =
         now.toLocaleDateString(
@@ -1012,6 +983,7 @@ function updateClock(){
             }
         );
 
+
     var time =
         now.toLocaleTimeString(
             "en-IN",
@@ -1022,12 +994,15 @@ function updateClock(){
             }
         );
 
+
     clock.textContent =
         date + " | " + time;
+
 }
 
 
 updateClock();
+
 
 setInterval(
     updateClock,
@@ -1036,51 +1011,83 @@ setInterval(
 
 
 /* =========================================================
-   ACTIVE MENU
+   MENU ACTIVE STATE
 ========================================================= */
 
-var links =
+var menuLinks =
     document.querySelectorAll(
         ".menu-button"
     );
 
 
 for(
-    var i=0;
-    i<links.length;
+    var i = 0;
+    i < menuLinks.length;
     i++
 ){
 
-    links[i].addEventListener(
+    menuLinks[i].addEventListener(
         "click",
         function(){
 
+            /*
+             * Remove active from all menu items
+             */
+
             for(
-                var j=0;
-                j<links.length;
+                var j = 0;
+                j < menuLinks.length;
                 j++
             ){
 
-                links[j]
+                menuLinks[j]
                     .classList
                     .remove("active");
 
             }
 
+
+            /*
+             * Highlight selected item
+             */
+
             this.classList.add(
                 "active"
             );
 
+
+            /*
+             * Save selected page
+             */
+
             try{
 
                 localStorage.setItem(
-                    "swayam_page",
+                    "swayam_selected_page",
                     this.getAttribute(
                         "href"
                     )
                 );
 
-            }catch(e){}
+            }
+            catch(e){}
+
+
+            /*
+             * On mobile, automatically
+             * bring selected menu into view
+             */
+
+            try{
+
+                this.scrollIntoView({
+                    behavior:"smooth",
+                    block:"nearest",
+                    inline:"center"
+                });
+
+            }
+            catch(e){}
 
         }
     );
@@ -1089,46 +1096,64 @@ for(
 
 
 /* =========================================================
-   RESTORE LAST SELECTION
+   IFRAME LOADING
 ========================================================= */
 
-try{
+var frame =
+    document.getElementById(
+        "swayamFrame"
+    );
 
-    var saved =
-        localStorage.getItem(
-            "swayam_page"
-        );
+var loading =
+    document.getElementById(
+        "loading"
+    );
 
-    if(saved){
 
-        for(
-            var k=0;
-            k<links.length;
-            k++
-        ){
+frame.addEventListener(
+    "load",
+    function(){
 
-            if(
-                links[k].getAttribute(
-                    "href"
-                ) === saved
-            ){
-
-                links[k]
-                    .classList
-                    .add("active");
-
-                break;
-
-            }
-
-        }
+        loading.style.display =
+            "none";
 
     }
-
-}catch(e){}
-
-</script>
+);
 
 
-</body>
-</html>
+frame.addEventListener(
+    "loadstart",
+    function(){
+
+        loading.style.display =
+            "block";
+
+    }
+);
+
+
+/* =========================================================
+   SAVE CURRENT PAGE
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function(){
+
+        try{
+
+            /*
+             * Current iframe URL is not always
+             * accessible for local files because
+             * of browser security restrictions.
+             *
+             * Menu click already stores it.
+             */
+
+        }
+        catch(e){}
+
+    }
+);
+
+</script></body></html>
