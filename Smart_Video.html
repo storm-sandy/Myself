@@ -1,241 +1,734 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Ultimate Folder Video Player</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111">
+<title>Ultimate Folder Video Player</title><style>
+*{box-sizing:border-box}
 
-<style>
 body{
-background:#111;
-color:white;
-font-family:Arial;
-margin:0;
+    margin:0;
+    background:#0d0d0f;
+    color:white;
+    font-family:Arial,sans-serif;
 }
 
 header{
-background:#000;
-padding:10px;
-text-align:center;
+    background:#000;
+    text-align:center;
+    padding:14px;
+}
+
+header h2{
+    margin:0 0 5px;
+}
+
+header small{
+    color:#aaa;
 }
 
 video{
-width:100%;
-height:40vh;
-background:black;
+    width:100%;
+    height:40vh;
+    min-height:220px;
+    display:block;
+    background:#000;
+    object-fit:contain;
+}
+
+.now{
+    padding:10px;
+    background:#191919;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
 }
 
 .controls{
-padding:10px;
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-background:#222;
+    padding:12px;
+    background:#222;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
 }
 
-button,input,select{
-padding:8px;
-border:none;
-border-radius:6px;
+button,
+select,
+input{
+    border:0;
+    border-radius:8px;
+    padding:10px;
+    font-size:14px;
+}
+
+button{
+    background:#333;
+    color:white;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#555;
+}
+
+.folderBtn{
+    background:#1976d2;
+    font-weight:bold;
+}
+
+.folderBtn:hover{
+    background:#2196f3;
+}
+
+#folder{
+    display:none;
+}
+
+.search{
+    flex:1;
+    min-width:180px;
+    background:white;
+    color:#111;
+}
+
+.info{
+    padding:9px 12px;
+    color:#aaa;
+    background:#111;
+    border-bottom:1px solid #333;
 }
 
 #playlist{
-height:50vh;
-overflow:auto;
-background:#111;
+    height:45vh;
+    overflow-y:auto;
 }
 
 .item{
-padding:8px;
-border-bottom:1px solid #333;
-cursor:pointer;
+    padding:13px;
+    border-bottom:1px solid #292929;
+    cursor:pointer;
 }
 
 .item:hover{
-background:#333;
+    background:#292929;
 }
 
-.active{
-background:#555;
+.item.active{
+    background:#383838;
+    border-left:4px solid #4caf50;
 }
 
-</style>
-</head>
+.name{
+    font-weight:bold;
+}
 
-<body>
+.path{
+    font-size:12px;
+    color:#888;
+    margin-top:4px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
 
-<header>
-<h2>Ultimate Folder Video Player</h2>
-</header>
+.empty{
+    text-align:center;
+    color:#777;
+    padding:50px 20px;
+}
 
-<video id="player" controls></video>
+@media(max-width:600px){
 
-<div class="controls">
+    header h2{
+        font-size:19px;
+    }
 
-<input type="file" id="folder" webkitdirectory multiple>
+    video{
+        height:34vh;
+    }
 
-<input type="text" id="search" placeholder="Search video">
+    button,
+    select{
+        font-size:13px;
+        padding:9px;
+    }
 
-<button onclick="shuffle()">Shuffle</button>
-<button onclick="repeat()">Repeat</button>
+    #playlist{
+        height:48vh;
+    }
+}
+</style></head><body><header>
+    <h2>🎬 Ultimate Folder Video Player</h2>
+    <small>Play videos directly from a selected folder</small>
+</header><video id="player" controls playsinline></video>
 
-<label>Speed</label>
+<div class="now">
+    ▶️ <b>Now Playing:</b>
+    <span id="nowPlaying">Select a video folder</span>
+</div><div class="controls"><!-- REAL FOLDER PICKER -->
+<input
+    type="file"
+    id="folder"
+    webkitdirectory
+    directory
+    multiple
+    accept="video/*">
+
+<button
+    class="folderBtn"
+    id="selectFolder">
+    📁 Select Video Folder
+</button>
+
+
+<button onclick="previousVideo()">⏮ Previous</button>
+
+<button onclick="nextVideo()">Next ⏭</button>
+
+<button onclick="shuffle()">🔀 Shuffle</button>
+
+<button onclick="toggleRepeat()" id="repeatBtn">
+    🔁 Repeat Off
+</button>
+
 <select id="speed">
-<option value="0.5">0.5x</option>
-<option value="1" selected>1x</option>
-<option value="1.5">1.5x</option>
-<option value="2">2x</option>
+    <option value=".5">0.5×</option>
+    <option value=".75">0.75×</option>
+    <option value="1" selected>1×</option>
+    <option value="1.25">1.25×</option>
+    <option value="1.5">1.5×</option>
+    <option value="2">2×</option>
 </select>
 
-<button onclick="fullscreen()">Fullscreen</button>
+<button onclick="fullScreen()">⛶ Fullscreen</button>
 
-</div>
+<input
+    class="search"
+    type="text"
+    id="search"
+    placeholder="🔎 Search videos...">
 
-<div id="playlist"></div>
+</div><div class="info">
+    <span id="count">0 videos</span>
+    &nbsp; • &nbsp;
+    <span id="status">No folder selected</span>
+</div><div id="playlist">
+    <div class="empty">
+        📁<br><br>
+        Tap <b>“Select Video Folder”</b><br>
+        to choose a folder containing videos.
+    </div>
+</div><script>
 
-<script>
+let videos = [];
+let current = -1;
+let repeatMode = false;
+let objectURL = null;
 
-let videos=[]
-let current=0
-let repeatMode=false
+const folder = document.getElementById("folder");
+const selectFolder = document.getElementById("selectFolder");
+const player = document.getElementById("player");
+const playlist = document.getElementById("playlist");
+const nowPlaying = document.getElementById("nowPlaying");
+const count = document.getElementById("count");
+const status = document.getElementById("status");
+const search = document.getElementById("search");
+const speed = document.getElementById("speed");
+const repeatBtn = document.getElementById("repeatBtn");
 
-const player=document.getElementById("player")
-const playlist=document.getElementById("playlist")
 
-document.getElementById("folder").addEventListener("change",function(e){
+/* =====================================================
+   OPEN FOLDER PICKER
+===================================================== */
 
-videos=[]
+selectFolder.addEventListener("click", function(){
 
-for(let file of e.target.files){
+    folder.click();
 
-if(file.type.startsWith("video") ||
-file.name.match(/\.(mp4|mkv|webm|mov|avi|m4v|3gp)$/i)){
+});
 
-videos.push(file)
 
-}
+/* =====================================================
+   FOLDER SELECTED
+===================================================== */
 
-}
+folder.addEventListener("change", function(e){
 
-render()
+    const files = Array.from(e.target.files || []);
 
-})
+    videos = files.filter(function(file){
+
+        return (
+            file.type.startsWith("video/") ||
+            /\.(mp4|webm|mov|m4v|3gp|mkv|avi|mpeg|mpg|ogv)$/i
+            .test(file.name)
+        );
+
+    });
+
+    videos.sort(function(a,b){
+
+        return (
+            (a.webkitRelativePath || a.name)
+            .localeCompare(
+                b.webkitRelativePath || b.name,
+                undefined,
+                {
+                    numeric:true,
+                    sensitivity:"base"
+                }
+            )
+        );
+
+    });
+
+    current = -1;
+
+    updateCount();
+    render();
+
+    if(videos.length){
+
+        status.textContent =
+            "Folder loaded successfully";
+
+        play(0);
+
+    }else{
+
+        status.textContent =
+            "No video files found";
+
+    }
+
+});
+
+
+/* =====================================================
+   RENDER
+===================================================== */
 
 function render(){
 
-playlist.innerHTML=""
+    playlist.innerHTML = "";
 
-videos.forEach((file,i)=>{
+    if(!videos.length){
 
-let div=document.createElement("div")
-div.className="item"
-div.innerHTML=file.name
+        playlist.innerHTML = `
+            <div class="empty">
+                📁<br><br>
+                No videos found.
+            </div>
+        `;
 
-div.onclick=()=>play(i)
+        return;
+    }
 
-playlist.appendChild(div)
+    videos.forEach(function(file,index){
 
-})
+        const item =
+            document.createElement("div");
+
+        item.className = "item";
+
+        item.dataset.index = index;
+
+        const path =
+            file.webkitRelativePath ||
+            file.name;
+
+        item.innerHTML = `
+            <div class="name">
+                ${escapeHTML(file.name)}
+            </div>
+
+            <div class="path">
+                📂 ${escapeHTML(path)}
+            </div>
+        `;
+
+        item.onclick = function(){
+
+            play(index);
+
+        };
+
+        playlist.appendChild(item);
+
+    });
+
+    highlight();
 
 }
 
-function play(i){
 
-current=i
+/* =====================================================
+   PLAY
+===================================================== */
 
-let url=URL.createObjectURL(videos[i])
+function play(index){
 
-player.src=url
+    if(!videos[index]) return;
 
-highlight()
+    current = index;
+
+    if(objectURL){
+
+        URL.revokeObjectURL(objectURL);
+
+    }
+
+    objectURL =
+        URL.createObjectURL(videos[index]);
+
+    player.src = objectURL;
+
+    player.playbackRate =
+        Number(speed.value);
+
+    nowPlaying.textContent =
+        videos[index].name;
+
+    status.textContent =
+        "Playing " +
+        (current + 1) +
+        " of " +
+        videos.length;
+
+    highlight();
 
 }
+
+
+/* =====================================================
+   HIGHLIGHT
+===================================================== */
 
 function highlight(){
 
-document.querySelectorAll(".item").forEach((el,i)=>{
+    document
+        .querySelectorAll(".item")
+        .forEach(function(item,index){
 
-el.classList.toggle("active",i===current)
+            item.classList.toggle(
+                "active",
+                index === current
+            );
 
-})
+        });
 
-}
+    const active =
+        document.querySelector(".item.active");
 
-player.onended=()=>{
+    if(active){
 
-if(repeatMode){
+        active.scrollIntoView({
+            behavior:"smooth",
+            block:"nearest"
+        });
 
-play(current)
-
-}else{
-
-current++
-
-if(current<videos.length){
-
-play(current)
-
-}
-
-}
+    }
 
 }
 
-document.getElementById("speed").onchange=function(){
 
-player.playbackRate=this.value
+/* =====================================================
+   NEXT
+===================================================== */
+
+function nextVideo(){
+
+    if(!videos.length) return;
+
+    let next = current + 1;
+
+    if(next >= videos.length){
+
+        next = 0;
+
+    }
+
+    play(next);
+
+    player.play().catch(function(){});
 
 }
+
+
+/* =====================================================
+   PREVIOUS
+===================================================== */
+
+function previousVideo(){
+
+    if(!videos.length) return;
+
+    let prev = current - 1;
+
+    if(prev < 0){
+
+        prev = videos.length - 1;
+
+    }
+
+    play(prev);
+
+    player.play().catch(function(){});
+
+}
+
+
+/* =====================================================
+   AUTO NEXT
+===================================================== */
+
+player.addEventListener("ended",function(){
+
+    if(!videos.length) return;
+
+    if(repeatMode){
+
+        player.currentTime = 0;
+
+        player.play().catch(function(){});
+
+        return;
+
+    }
+
+    if(current < videos.length - 1){
+
+        play(current + 1);
+
+        player.play().catch(function(){});
+
+    }else{
+
+        status.textContent =
+            "Playlist completed";
+
+    }
+
+});
+
+
+/* =====================================================
+   REPEAT
+===================================================== */
+
+function toggleRepeat(){
+
+    repeatMode = !repeatMode;
+
+    repeatBtn.textContent =
+        repeatMode
+        ? "🔁 Repeat On"
+        : "🔁 Repeat Off";
+
+}
+
+
+/* =====================================================
+   SHUFFLE
+===================================================== */
 
 function shuffle(){
 
-videos.sort(()=>Math.random()-0.5)
+    if(videos.length < 2) return;
 
-render()
+    const playing =
+        videos[current];
 
-}
+    for(
+        let i = videos.length - 1;
+        i > 0;
+        i--
+    ){
 
-function repeat(){
+        const j =
+            Math.floor(Math.random() * (i + 1));
 
-repeatMode=!repeatMode
-alert("Repeat: "+repeatMode)
+        [videos[i],videos[j]] =
+        [videos[j],videos[i]];
 
-}
+    }
 
-function fullscreen(){
+    current =
+        videos.indexOf(playing);
 
-player.requestFullscreen()
+    render();
 
-}
-
-document.getElementById("search").addEventListener("input",function(){
-
-let s=this.value.toLowerCase()
-
-document.querySelectorAll(".item").forEach(el=>{
-
-el.style.display=el.innerText.toLowerCase().includes(s)?"block":"none"
-
-})
-
-})
-
-document.addEventListener("keydown",e=>{
-
-if(e.code==="Space"){
-
-e.preventDefault()
-
-if(player.paused) player.play()
-else player.pause()
+    status.textContent =
+        "Playlist shuffled";
 
 }
 
-if(e.code==="ArrowRight") player.currentTime+=10
-if(e.code==="ArrowLeft") player.currentTime-=10
 
-})
+/* =====================================================
+   SPEED
+===================================================== */
 
-</script>
+speed.addEventListener("change",function(){
 
-</body>
+    player.playbackRate =
+        Number(this.value);
+
+});
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+search.addEventListener("input",function(){
+
+    const value =
+        this.value.toLowerCase().trim();
+
+    document
+        .querySelectorAll(".item")
+        .forEach(function(item){
+
+            const index =
+                Number(item.dataset.index);
+
+            const file =
+                videos[index];
+
+            const text =
+                (
+                    file.name +
+                    " " +
+                    (file.webkitRelativePath || "")
+                ).toLowerCase();
+
+            item.style.display =
+                text.includes(value)
+                ? ""
+                : "none";
+
+        });
+
+});
+
+
+/* =====================================================
+   FULLSCREEN
+===================================================== */
+
+function fullScreen(){
+
+    if(document.fullscreenElement){
+
+        document.exitFullscreen();
+
+        return;
+
+    }
+
+    if(player.requestFullscreen){
+
+        player.requestFullscreen();
+
+    }else if(player.webkitEnterFullscreen){
+
+        player.webkitEnterFullscreen();
+
+    }
+
+}
+
+
+/* =====================================================
+   COUNT
+===================================================== */
+
+function updateCount(){
+
+    count.textContent =
+        videos.length +
+        (
+            videos.length === 1
+            ? " video"
+            : " videos"
+        );
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(value){
+
+    const div =
+        document.createElement("div");
+
+    div.textContent = value;
+
+    return div.innerHTML;
+
+}
+
+
+/* =====================================================
+   KEYBOARD
+===================================================== */
+
+document.addEventListener("keydown",function(e){
+
+    if(
+        document.activeElement.tagName === "INPUT" ||
+        document.activeElement.tagName === "SELECT"
+    ){
+
+        return;
+
+    }
+
+    if(e.code === "Space"){
+
+        e.preventDefault();
+
+        if(player.paused){
+
+            player.play().catch(function(){});
+
+        }else{
+
+            player.pause();
+
+        }
+
+    }
+
+    if(e.code === "ArrowRight"){
+
+        player.currentTime += 10;
+
+    }
+
+    if(e.code === "ArrowLeft"){
+
+        player.currentTime -= 10;
+
+    }
+
+});
+
+
+/* =====================================================
+   ERROR
+===================================================== */
+
+player.addEventListener("error",function(){
+
+    status.textContent =
+        "Video format/codec is not supported by this browser.";
+
+});
+
+
+</script></body>
 </html>
