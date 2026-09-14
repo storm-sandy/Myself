@@ -1,285 +1,1777 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<link rel="stylesheet" href="style.css">
-<title> All in One Utilities Dashboard</title>
-<style>
-body{
-font-family:Arial;
-margin:0;
-transition:0.3s;
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>All in One Utilities Dashboard</title><style>
+
+/* =========================================================
+   SWAYAM ALL-IN-ONE UTILITIES
+   ========================================================= */
+
+*{
+    box-sizing:border-box;
 }
 
-/* HEADER */
+:root{
+
+    --primary:#138a4b;
+    --primary-dark:#086b38;
+    --primary-soft:#e8f7ef;
+
+    --bg:#f4f7f5;
+    --card:#ffffff;
+    --text:#17231c;
+    --muted:#66736b;
+
+    --border:#dce7e0;
+
+    --shadow:
+        0 8px 24px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+body{
+
+    margin:0;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    transition:
+        background .3s,
+        color .3s;
+
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
 
 .header{
-padding:0px;
-display:flex;
-justify-content:space-between;
-align-items:center;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--primary-dark)
+        );
+
+    color:white;
+
+    padding:
+        12px 15px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+
+    box-shadow:
+        0 4px 14px rgba(0,0,0,.18);
+
 }
 
-/* GRID */
+.header h2{
 
-.list-grid{
-display:grid;
-grid-template-columns:repeat(1,1fr);
-gap:15px;
-padding:15px;
+    margin:0;
+
+    font-size:21px;
+
+    letter-spacing:.3px;
+
 }
 
-/* CARD */
+.theme-select{
 
-.card{
-padding:15px;
-border-radius:8px;
-box-shadow:0 2px 6px rgba(0,0,0,0.2);
-}
+    border:none;
 
-/* LIST */
+    outline:none;
 
-ul{
-padding-left:18px;
-}
+    border-radius:10px;
 
-li{
-margin:6px 0;
-cursor:pointer;
-}
+    padding:
+        9px 10px;
 
-/* THEMES */
+    font-size:14px;
 
-.light{
-background:#f4f6f9;
-color:#000;
-}
+    background:white;
 
-.light .header{
-background:#1e88e5;
-color:white;
-}
+    color:#222;
 
-.light .card{
-background:white;
-}
-
-
-.dark{
-background:#1e1e1e;
-color:white;
-a:link {
-  color:white;
-}
-}
-}
-
-.dark .header{
-background:#000;
-}
-
-.dark .card{
-background:#2b2b2b;
 }
 
 
-.blue{
-background:#e3f2fd;
-color:#000;
+/* =========================================================
+   CLOCK
+   ========================================================= */
+
+.clock-bar{
+
+    background:var(--card);
+
+    padding:
+        10px 15px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    flex-wrap:wrap;
+
+    gap:8px;
+
+    box-shadow:
+        0 2px 8px rgba(0,0,0,.06);
+
 }
 
-.blue .header{
-background:#1565c0;
-color:white;
+.clock-item{
+
+    background:var(--primary-soft);
+
+    color:var(--primary-dark);
+
+    padding:
+        7px 11px;
+
+    border-radius:10px;
+
+    font-size:14px;
+
+    font-weight:bold;
+
 }
 
-.blue .card{
-background:white;
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+.main{
+
+    max-width:1400px;
+
+    margin:auto;
+
+    padding:18px;
+
 }
-/* link color */
-a:link {
-  color: black;
+
+
+/* =========================================================
+   INTRO
+   ========================================================= */
+
+.intro{
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary-soft),
+            var(--card)
+        );
+
+    border-left:
+        5px solid var(--primary);
+
+    border-radius:18px;
+
+    padding:18px;
+
+    margin-bottom:18px;
+
+    box-shadow:var(--shadow);
+
 }
 
-a:visited {
-  color: purple;
+.intro h1{
+
+    margin:
+        0 0 7px;
+
+    font-size:25px;
+
 }
 
-a:hover {
-  color: red;
+.intro p{
+
+    margin:0;
+
+    color:var(--muted);
+
+    line-height:1.5;
+
 }
 
-a:active {
-  color: green;
+
+/* =========================================================
+   TOOLBAR
+   ========================================================= */
+
+.toolbar{
+
+    background:var(--card);
+
+    padding:15px;
+
+    border-radius:18px;
+
+    box-shadow:var(--shadow);
+
+    margin-bottom:18px;
+
+    display:flex;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+
+    align-items:center;
+
 }
-</style>
 
-</head>
+.search-box{
 
-<body class="light">
+    flex:
+        1 1 250px;
 
-<!-- HEADER -->
+    min-width:200px;
 
-<div class="header">
-<h2>All in One Utility Dashboard.</h2>
-<select onchange="changeTheme(this.value)">
+    padding:
+        12px 14px;
 
-<option value="light">Light Theme</option>
-<option value="dark">Dark Theme</option>
-<option value="blue">Blue Theme</option>
+    border:
+        1px solid var(--border);
+
+    border-radius:12px;
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    font-size:15px;
+
+    outline:none;
+
+}
+
+.search-box:focus{
+
+    border-color:
+        var(--primary);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(19,138,75,.12);
+
+}
+
+.category-select{
+
+    flex:
+        0 1 220px;
+
+    padding:
+        12px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:12px;
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    font-size:15px;
+
+    outline:none;
+
+}
+
+.result-count{
+
+    padding:
+        10px 13px;
+
+    background:
+        var(--primary-soft);
+
+    color:
+        var(--primary-dark);
+
+    border-radius:10px;
+
+    font-weight:bold;
+
+    white-space:nowrap;
+
+}
+
+
+/* =========================================================
+   TABLE CARD
+   ========================================================= */
+
+.table-card{
+
+    background:var(--card);
+
+    border-radius:18px;
+
+    box-shadow:var(--shadow);
+
+    overflow:hidden;
+
+}
+
+
+/* =========================================================
+   TABLE WRAPPER
+   ========================================================= */
+
+.table-wrapper{
+
+    width:100%;
+
+    overflow-x:auto;
+
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.utility-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    min-width:750px;
+
+}
+
+.utility-table th{
+
+    background:
+        var(--primary);
+
+    color:white;
+
+    padding:
+        13px 12px;
+
+    text-align:left;
+
+    font-size:14px;
+
+    position:sticky;
+
+    top:0;
+
+    z-index:2;
+
+}
+
+.utility-table td{
+
+    padding:
+        12px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    font-size:14px;
+
+}
+
+.utility-table tbody tr{
+
+    transition:
+        background .2s,
+        transform .2s;
+
+}
+
+.utility-table tbody tr:hover{
+
+    background:
+        var(--primary-soft);
+
+}
+
+.item-name{
+
+    font-weight:bold;
+
+}
+
+.type-badge,
+.category-badge{
+
+    display:inline-block;
+
+    padding:
+        5px 9px;
+
+    border-radius:20px;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+}
+
+.type-badge{
+
+    background:
+        #eef2f0;
+
+    color:
+        var(--text);
+
+}
+
+.category-badge{
+
+    background:
+        var(--primary-soft);
+
+    color:
+        var(--primary-dark);
+
+}
+
+
+/* =========================================================
+   OPEN BUTTON
+   ========================================================= */
+
+.open-btn{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:5px;
+
+    text-decoration:none;
+
+    background:
+        var(--primary);
+
+    color:white !important;
+
+    padding:
+        8px 13px;
+
+    border-radius:9px;
+
+    font-size:13px;
+
+    font-weight:bold;
+
+    transition:
+        .2s;
+
+}
+
+.open-btn:hover{
+
+    background:
+        var(--primary-dark);
+
+    transform:
+        translateY(-1px);
+
+}
+
+.open-btn:active{
+
+    transform:
+        scale(.95);
+
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty{
+
+    display:none;
+
+    padding:35px;
+
+    text-align:center;
+
+    color:var(--muted);
+
+}
+
+.empty-icon{
+
+    font-size:42px;
+
+    margin-bottom:8px;
+
+}
+
+
+/* =========================================================
+   INFORMATION
+   ========================================================= */
+
+.info-card{
+
+    margin-top:20px;
+
+    background:var(--card);
+
+    border-radius:18px;
+
+    padding:18px;
+
+    box-shadow:var(--shadow);
+
+}
+
+.info-card h3{
+
+    margin-top:0;
+
+}
+
+.info-card li{
+
+    margin:
+        9px 0;
+
+    color:var(--muted);
+
+    line-height:1.45;
+
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.footer{
+
+    text-align:center;
+
+    padding:
+        20px 10px;
+
+    color:var(--muted);
+
+    font-size:13px;
+
+}
+
+
+/* =========================================================
+   DARK THEME
+   ========================================================= */
+
+body.dark{
+
+    --bg:#101513;
+
+    --card:#1c2420;
+
+    --text:#f2f6f3;
+
+    --muted:#b7c4bd;
+
+    --border:#35423b;
+
+    --primary-soft:#213d2e;
+
+}
+
+body.dark .search-box,
+body.dark .category-select{
+
+    background:#26302b;
+
+    color:#f2f6f3;
+
+}
+
+body.dark .type-badge{
+
+    background:#303b35;
+
+    color:#f2f6f3;
+
+}
+
+body.dark .utility-table tbody tr:hover{
+
+    background:#213d2e;
+
+}
+
+
+/* =========================================================
+   BLUE THEME
+   ========================================================= */
+
+body.blue{
+
+    --primary:#1565c0;
+
+    --primary-dark:#0d47a1;
+
+    --primary-soft:#e3f2fd;
+
+    --bg:#eef6fd;
+
+    --card:#ffffff;
+
+    --text:#17202a;
+
+    --muted:#5f6b75;
+
+    --border:#d5e4f0;
+
+}
+
+body.blue .category-badge{
+
+    color:#0d47a1;
+
+}
+
+
+/* =========================================================
+   MOBILE CARD MODE
+   ========================================================= */
+
+@media(max-width:700px){
+
+    .header{
+
+        padding:11px;
+
+    }
+
+    .header h2{
+
+        font-size:18px;
+
+    }
+
+    .main{
+
+        padding:12px;
+
+    }
+
+    .intro{
+
+        padding:15px;
+
+    }
+
+    .intro h1{
+
+        font-size:21px;
+
+    }
+
+    .toolbar{
+
+        padding:12px;
+
+    }
+
+    .search-box,
+    .category-select{
+
+        width:100%;
+
+        flex:1 1 100%;
+
+    }
+
+    .result-count{
+
+        width:100%;
+
+        text-align:center;
+
+    }
+
+    .table-card{
+
+        border-radius:15px;
+
+    }
+
+    .utility-table{
+
+        min-width:680px;
+
+    }
+
+    .clock-item{
+
+        font-size:12px;
+
+        padding:6px 8px;
+
+    }
+
+}
+
+
+/* =========================================================
+   TOUCH
+   ========================================================= */
+
+@media(hover:none){
+
+    .utility-table tbody tr:hover{
+
+        background:transparent;
+
+    }
+
+    .open-btn:hover{
+
+        transform:none;
+
+    }
+
+}
+
+</style></head><body class="light"><!-- =======================================================
+     HEADER
+     ======================================================= --><header class="header"><h2>
+    🧰 All-in-One Utilities
+</h2>
+
+<select
+    id="themeSelector"
+    class="theme-select"
+    onchange="changeTheme(this.value)">
+
+    <option value="light">
+        ☀️ Light Theme
+    </option>
+
+    <option value="dark">
+        🌙 Dark Theme
+    </option>
+
+    <option value="blue">
+        💙 Blue Theme
+    </option>
 
 </select>
+
+</header><!-- =======================================================
+     CLOCK
+     ======================================================= --><div class="clock-bar"><span
+    id="mdate"
+    class="clock-item">
+    📅 Loading...
+</span>
+
+<span
+    id="mtime12"
+    class="clock-item">
+    🕐 Loading...
+</span>
+
+<span
+    id="mtime24"
+    class="clock-item">
+    🕑 Loading...
+</span>
+
+</div><!-- =======================================================
+     MAIN
+     ======================================================= --><main class="main"><section class="intro"><h1>
+    🧰 All-in-One Utilities Dashboard
+</h1>
+
+<p>
+    Access your finance, fitness, games, home,
+    image, office, smart tools and utility applications
+    from one central dashboard.
+</p>
+
+</section><!-- =======================================================
+     SEARCH / FILTER
+     ======================================================= --><section class="toolbar"><input
+    type="search"
+    id="searchBox"
+    class="search-box"
+    placeholder="🔎 Search utility, category or type..."
+    oninput="filterUtilities()">
+
+
+<select
+    id="categoryFilter"
+    class="category-select"
+    onchange="filterUtilities()">
+
+    <option value="all">
+        📂 All Categories
+    </option>
+
+    <option value="Finance">
+        💰 Finance
+    </option>
+
+    <option value="Fitness">
+        💪 Fitness
+    </option>
+
+    <option value="Game">
+        🎮 Game
+    </option>
+
+    <option value="Home">
+        🏠 Home
+    </option>
+
+    <option value="Image">
+        🖼️ Image
+    </option>
+
+    <option value="Main">
+        🏠 Main
+    </option>
+
+    <option value="Manoranjan">
+        🎭 Manoranjan
+    </option>
+
+    <option value="Office">
+        💼 Office
+    </option>
+
+    <option value="Smart">
+        ⌚ Smart
+    </option>
+
+    <option value="Tools">
+        🛠️ Tools
+    </option>
+
+    <option value="Travel">
+        ✈️ Travel
+    </option>
+
+    <option value="Utility">
+        🧰 Utility
+    </option>
+
+</select>
+
+
+<span
+    id="resultCount"
+    class="result-count">
+    0 Utilities
+</span>
+
+</section><!-- =======================================================
+     TABLE
+     ======================================================= --><section class="table-card"><div class="table-wrapper"><table
+    class="utility-table"
+    id="utilityTable"><thead><tr><th>
+    Item
+</th>
+
+<th>
+    Type
+</th>
+
+<th>
+    Category
+</th>
+
+<th>
+    Link
+</th>
+
+<th>
+    Last Updated
+</th>
+
+</tr></thead><tbody><!-- =====================================================
+     FINANCE
+     ===================================================== --><tr data-category="Finance"><td class="item-name">
+🛒 Shopping
+</td><td>
+<span class="type-badge">Web</span>
+</td><td>
+<span class="category-badge">Finance</span>
+</td><td>
+<a
+href="Shopping.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Finance"><td class="item-name">
+💳 Spend Level 0
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Finance</span></td><td>
+<a href="Spend_level0.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Finance"><td class="item-name">
+💳 Spend Level 1
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Finance</span></td><td>
+<a href="Spend_level1.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Finance"><td class="item-name">
+💳 Spend Level 2
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Finance</span></td><td>
+<a href="Spend_level2.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Finance"><td class="item-name">
+📊 Credeb
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Finance</span></td><td>
+<a href="credeb.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><!-- =====================================================
+     FITNESS
+     ===================================================== --><tr data-category="Fitness"><td class="item-name">
+💪 Fitness
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Fitness</span></td><td>
+<a href="fitness.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Fitness"><td class="item-name">
+🍎 Food Log
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Fitness</span></td><td>
+<a href="foodlog.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><!-- =====================================================
+     GAMES
+     ===================================================== --><tr data-category="Game"><td class="item-name">
+🧱 Bricks Game
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Game</span></td><td>
+<a href="Game_Bricks.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Game"><td class="item-name">
+🐍 Snake Game
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Game</span></td><td>
+<a href="Game_Snake.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Game"><td class="item-name">
+⭕ Tic Tac Toe
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Game</span></td><td>
+<a href="Game_tctcto.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><!-- =====================================================
+     HOME
+     ===================================================== --><tr data-category="Home"><td class="item-name">
+📋 Task Level 1
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Home</span></td><td>
+<a href="Task_level1.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Home"><td class="item-name">
+📋 Task Level 2
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Home</span></td><td>
+<a href="Task_level2.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Home"><td class="item-name">
+📋 Task Level 3
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Home</span></td><td>
+<a href="Task_level3.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Home"><td class="item-name">
+🎂 DOB
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Home</span></td><td>
+<a href="dob.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Home"><td class="item-name">
+👨‍👩‍👦 Family
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Home</span></td><td>
+<a href="family.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Home"><td class="item-name">
+🔥 LPG
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Home</span></td><td>
+<a href="lpg.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Home"><td class="item-name">
+🏆 Reward
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Home</span></td><td>
+<a href="reward.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><!-- =====================================================
+     IMAGE
+     ===================================================== --><tr data-category="Image"><td class="item-name">
+📷 Cam PDF
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Image</span></td><td>
+<a href="Smart_CamPDF.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Image"><td class="item-name">
+🖼️ Image Edit
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Image</span></td><td>
+<a href="imgedit.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Image"><td class="item-name">
+📄 PDF Merge
+</td><td><span class="type-badge">Web</span></td><td><span class="category-badge">Image</span></td><td>
+<a href="pdfmerge.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><!-- =====================================================
+     MAIN
+     ===================================================== --><tr data-category="Main"><td class="item-name">👥 Contacts</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Main</span></td><td>
+<a href="Contacts.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Main"><td class="item-name">📜 App JS</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Main</span></td><td>
+<a href="app.js"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Main"><td class="item-name">📅 Booking</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Main</span></td><td>
+<a href="booking.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Main"><td class="item-name">📞 Contact</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Main</span></td><td>
+<a href="contact.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Main"><td class="item-name">🖼️ Icon</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Main</span></td><td>
+<a href="icon.png"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Main"><td class="item-name">🏠 Index</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Main</span></td><td>
+<a href="index.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Main"><td class="item-name">🏠 Index2</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Main</span></td><td>
+<a href="index2.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Main"><td class="item-name">📱 Manifest</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Main</span></td><td>
+<a href="manifest.json"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Main"><td class="item-name">⚙️ Service Worker</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Main</span></td><td>
+<a href="service-worker.js"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Main"><td class="item-name">⚙️ Service</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Main</span></td><td>
+<a href="service.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Main"><td class="item-name">🎨 Style</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Main</span></td><td>
+<a href="style.css"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><!-- =====================================================
+     MANORANJAN
+     ===================================================== --><tr data-category="Manoranjan"><td class="item-name">🎉 Greetings</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Manoranjan</span></td><td>
+<a href="Greetings.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Manoranjan"><td class="item-name">😂 Jokes</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Manoranjan</span></td><td>
+<a href="Jokes.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Manoranjan"><td class="item-name">🧩 Puzzle</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Manoranjan</span></td><td>
+<a href="Puzzle.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><!-- =====================================================
+     OFFICE
+     ===================================================== --><tr data-category="Office"><td class="item-name">📋 Attendance</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Office</span></td><td>
+<a href="Attendence.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Office"><td class="item-name">💼 Office Tracker</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Office</span></td><td>
+<a href="officetracker.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><!-- =====================================================
+     SMART
+     ===================================================== --><tr data-category="Smart"><td class="item-name">⌚ Smart Watch</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Smart</span></td><td>
+<a href="SmartWatch.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Smart"><td class="item-name">🎧 Smart Audio</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Smart</span></td><td>
+<a href="Smart_Audio.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Smart"><td class="item-name">🧮 Smart Calc</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Smart</span></td><td>
+<a href="Smart_Calc.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Smart"><td class="item-name">🎬 Smart Video</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Smart</span></td><td>
+<a href="Smart_Video.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><!-- =====================================================
+     TOOLS
+     ===================================================== --><tr data-category="Tools"><td class="item-name">📊 Pivot Chart</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Tools</span></td><td>
+<a href="PivotChart.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><!-- =====================================================
+     TRAVEL
+     ===================================================== --><tr data-category="Travel"><td class="item-name">✈️ Travel Level 1</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Travel</span></td><td>
+<a href="Travel_level1.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><!-- =====================================================
+     UTILITY
+     ===================================================== --><tr data-category="Utility"><td class="item-name">🖼️ Chitra</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Utility</span></td><td>
+<a href="Util_chitra.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Utility"><td class="item-name">💼 Karya</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Utility</span></td><td>
+<a href="Util_karya.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Utility"><td class="item-name">🎭 Ranjan</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Utility</span></td><td>
+<a href="Util_ranjan.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Utility"><td class="item-name">🌿 Sanskar</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Utility</span></td><td>
+<a href="Util_sanskar.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Utility"><td class="item-name">🌐 Sarvam</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Utility</span></td><td>
+<a href="Util_sarvam.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Utility"><td class="item-name">📐 Sutra</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Utility</span></td><td>
+<a href="Util_sutra.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Utility"><td class="item-name">🌱 Swayam</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Utility</span></td><td>
+<a href="Util_swyam.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr><tr data-category="Utility"><td class="item-name">🧰 Upkarana</td>
+<td><span class="type-badge">Web</span></td>
+<td><span class="category-badge">Utility</span></td><td>
+<a href="Util_upkarna.html"
+class="open-btn"
+onclick="openSwayamPage(event,this.href)">
+🚀 Open
+</a>
+</td><td>-</td></tr></tbody></table><div
+    id="emptyState"
+    class="empty"><div class="empty-icon">
+    🔍
 </div>
-<div class="header">
-<span id="mdate"></span>|
-<span id="mtime12"></span>|
-<span id="mtime24"></span>|
-</div>
 
-<!-- GRID -->
-<div class="list-grid">
-<table>
-<tr>
-    <th>Item</th>
-    <th>Type</th>
-    <th>Category</th>
-    <th>Link</th>
-    <th>Last Updated</th>
-</tr>
+<strong>
+    No utility found
+</strong>
 
-<!-- Finance -->
-<tr><td>Shopping</td><td>Web</td><td>Finance</td><td><a href="Shopping.html" target="_blank">Open</a></td><td>-</td></tr>
-<tr><td>Spend Level 0</td><td>Web</td><td>Finance</td><td><a href="Spend_level0.html">Open</a></td><td>-</td></tr>
-<tr><td>Spend Level 1</td><td>Web</td><td>Finance</td><td><a href="Spend_level1.html">Open</a></td><td>-</td></tr>
-<tr><td>Spend Level 2</td><td>Web</td><td>Finance</td><td><a href="Spend_level2.html">Open</a></td><td>-</td></tr>
-<tr><td>Credeb</td><td>Web</td><td>Finance</td><td><a href="credeb.html">Open</a></td><td>-</td></tr>
+<br>
 
-<!-- Fitness -->
-<tr><td>Fitness</td><td>Web</td><td>Fitness</td><td><a href="fitness.html">Open</a></td><td>-</td></tr>
-<tr><td>Food Log</td><td>Web</td><td>Fitness</td><td><a href="foodlog.html">Open</a></td><td>-</td></tr>
+Try another search or category.
 
-<!-- Game -->
-<tr><td>Bricks Game</td><td>Web</td><td>Game</td><td><a href="Game_Bricks.html">Open</a></td><td>-</td></tr>
-<tr><td>Snake Game</td><td>Web</td><td>Game</td><td><a href="Game_Snake.html">Open</a></td><td>-</td></tr>
-<tr><td>Tic Tac Toe</td><td>Web</td><td>Game</td><td><a href="Game_tctcto.html">Open</a></td><td>-</td></tr>
+</div></div></section><!-- =======================================================
+     INFORMATION
+     ======================================================= --><section class="info-card"><h3>
+    💡 Dashboard Information
+</h3><ul><li>
+    Use the search box to quickly find any utility.
+</li><li>
+    Select a category to display only related utilities.
+</li><li>
+    Click <b>Open</b> to launch the selected utility
+    in the Swayam center area.
+</li><li>
+    Important data should be exported regularly
+    from individual applications.
+</li><li>
+    Chart Builder can be used for basic analysis
+    of exported data.
+</li></ul></section></main><!-- =======================================================
+     FOOTER
+     ======================================================= --><footer class="footer">Swayam • Personal Governance Simplified
 
-<!-- Home -->
-<tr><td>Task Level 1</td><td>Web</td><td>Home</td><td><a href="Task_level1.html">Open</a></td><td>-</td></tr>
-<tr><td>Task Level 2</td><td>Web</td><td>Home</td><td><a href="Task_level2.html">Open</a></td><td>-</td></tr>
-<tr><td>Task Level 3</td><td>Web</td><td>Home</td><td><a href="Task_level3.html">Open</a></td><td>-</td></tr>
-<tr><td>DOB</td><td>Web</td><td>Home</td><td><a href="dob.html">Open</a></td><td>-</td></tr>
-<tr><td>Family</td><td>Web</td><td>Home</td><td><a href="family.html">Open</a></td><td>-</td></tr>
-<tr><td>LPG</td><td>Web</td><td>Home</td><td><a href="lpg.html">Open</a></td><td>-</td></tr>
-<tr><td>Reward</td><td>Web</td><td>Home</td><td><a href="reward.html">Open</a></td><td>-</td></tr>
+</footer><script>
 
-<!-- Image -->
-<tr><td>Cam PDF</td><td>Web</td><td>Image</td><td><a href="Smart_CamPDF.html">Open</a></td><td>-</td></tr>
-<tr><td>Image Edit</td><td>Web</td><td>Image</td><td><a href="imgedit.html">Open</a></td><td>-</td></tr>
-<tr><td>PDF Merge</td><td>Web</td><td>Image</td><td><a href="pdfmerge.html">Open</a></td><td>-</td></tr>
+/* =========================================================
+   SWAYAM CENTER NAVIGATION
+   ========================================================= */
 
-<!-- Main -->
-<tr><td>Contacts</td><td>Web</td><td>Main</td><td><a href="Contacts.html">Open</a></td><td>-</td></tr>
-<tr><td>App JS</td><td>Web</td><td>Main</td><td><a href="app.js">Open</a></td><td>-</td></tr>
-<tr><td>Booking</td><td>Web</td><td>Main</td><td><a href="booking.html">Open</a></td><td>-</td></tr>
-<tr><td>Contact</td><td>Web</td><td>Main</td><td><a href="contact.html">Open</a></td><td>-</td></tr>
-<tr><td>Icon</td><td>Web</td><td>Main</td><td><a href="icon.png">Open</a></td><td>-</td></tr>
-<tr><td>Index</td><td>Web</td><td>Main</td><td><a href="index.html">Open</a></td><td>-</td></tr>
-<tr><td>Index2</td><td>Web</td><td>Main</td><td><a href="index2.html">Open</a></td><td>-</td></tr>
-<tr><td>Manifest</td><td>Web</td><td>Main</td><td><a href="manifest.json">Open</a></td><td>-</td></tr>
-<tr><td>Service Worker</td><td>Web</td><td>Main</td><td><a href="service-worker.js">Open</a></td><td>-</td></tr>
-<tr><td>Service</td><td>Web</td><td>Main</td><td><a href="service.html">Open</a></td><td>-</td></tr>
-<tr><td>Style</td><td>Web</td><td>Main</td><td><a href="style.css">Open</a></td><td>-</td></tr>
+function openSwayamPage(event,url){
 
-<!-- Manoranjan -->
-<tr><td>Greetings</td><td>Web</td><td>Manoranjan</td><td><a href="Greetings.html">Open</a></td><td>-</td></tr>
-<tr><td>Jokes</td><td>Web</td><td>Manoranjan</td><td><a href="Jokes.html">Open</a></td><td>-</td></tr>
-<tr><td>Puzzle</td><td>Web</td><td>Manoranjan</td><td><a href="Puzzle.html">Open</a></td><td>-</td></tr>
+    event.preventDefault();
 
-<!-- Office -->
-<tr><td>Attendance</td><td>Web</td><td>Office</td><td><a href="Attendence.html">Open</a></td><td>-</td></tr>
-<tr><td>Office Tracker</td><td>Web</td><td>Office</td><td><a href="officetracker.html">Open</a></td><td>-</td></tr>
+    try{
 
-<!-- Smart -->
-<tr><td>Smart Watch</td><td>Web</td><td>Smart</td><td><a href="SmartWatch.html">Open</a></td><td>-</td></tr>
-<tr><td>Smart Audio</td><td>Web</td><td>Smart</td><td><a href="Smart_Audio.html">Open</a></td><td>-</td></tr>
-<tr><td>Smart Calc</td><td>Web</td><td>Smart</td><td><a href="Smart_Calc.html">Open</a></td><td>-</td></tr>
-<tr><td>Smart Video</td><td>Web</td><td>Smart</td><td><a href="Smart_Video.html">Open</a></td><td>-</td></tr>
+        if(
+            window.parent &&
+            window.parent !== window
+        ){
 
-<!-- Tools / Others -->
-<tr><td>Pivot Chart</td><td>Web</td><td>Tools</td><td><a href="PivotChart.html">Open</a></td><td>-</td></tr>
-<tr><td>Travel Level 1</td><td>Web</td><td>Travel</td><td><a href="Travel_level1.html">Open</a></td><td>-</td></tr>
-
-<!-- Utility -->
-<tr><td>Chitra</td><td>Web</td><td>Utility</td><td><a href="Util_chitra.html">Open</a></td><td>-</td></tr>
-<tr><td>Karya</td><td>Web</td><td>Utility</td><td><a href="Util_karya.html">Open</a></td><td>-</td></tr>
-<tr><td>Ranjan</td><td>Web</td><td>Utility</td><td><a href="Util_ranjan.html">Open</a></td><td>-</td></tr>
-<tr><td>Sanskar</td><td>Web</td><td>Utility</td><td><a href="Util_sanskar.html">Open</a></td><td>-</td></tr>
-<tr><td>Sarvam</td><td>Web</td><td>Utility</td><td><a href="Util_sarvam.html">Open</a></td><td>-</td></tr>
-<tr><td>Sutra</td><td>Web</td><td>Utility</td><td><a href="Util_sutra.html">Open</a></td><td>-</td></tr>
-<tr><td>Swyam</td><td>Web</td><td>Utility</td><td><a href="Util_swyam.html">Open</a></td><td>-</td></tr>
-<tr><td>Upkarna</td><td>Web</td><td>Utility</td><td><a href="Util_upkarna.html">Open</a></td><td>-</td></tr>
-
-</table>
+            var frame =
+                window.parent.document
+                .getElementById(
+                    "swayamFrame"
+                );
 
 
+            if(frame){
 
-        
-
-
-</div>
+                frame.src = url;
 
 
+                /*
+                 * Remember selected page.
+                 */
+
+                try{
+
+                    window.parent.localStorage.setItem(
+                        "swayam_selected_page",
+                        url.split("/").pop()
+                    );
+
+                }
+                catch(e){}
 
 
+                /*
+                 * Remove active status.
+                 */
+
+                var menuLinks =
+                    window.parent.document
+                    .querySelectorAll(
+                        ".menu-button"
+                    );
 
 
-<script>
+                for(
+                    var i=0;
+                    i<menuLinks.length;
+                    i++
+                ){
 
-/* CHANGE THEME */
+                    menuLinks[i]
+                    .classList
+                    .remove("active");
+
+                }
+
+
+                /*
+                 * Find matching parent menu.
+                 */
+
+                for(
+                    var j=0;
+                    j<menuLinks.length;
+                    j++
+                ){
+
+                    var menuHref =
+                        menuLinks[j]
+                        .getAttribute("href");
+
+
+                    if(
+                        menuHref &&
+                        menuHref
+                        .split("/")
+                        .pop()
+                        ===
+                        url
+                        .split("/")
+                        .pop()
+                    ){
+
+                        menuLinks[j]
+                        .classList
+                        .add("active");
+
+
+                        try{
+
+                            menuLinks[j]
+                            .scrollIntoView({
+                                behavior:"smooth",
+                                block:"nearest",
+                                inline:"center"
+                            });
+
+                        }
+                        catch(e){}
+
+
+                        break;
+
+                    }
+
+                }
+
+
+                return;
+
+            }
+
+        }
+
+    }
+    catch(error){
+
+        console.log(
+            "Swayam navigation error:",
+            error
+        );
+
+    }
+
+
+    /*
+     * Fallback if page is opened directly.
+     */
+
+    window.location.href = url;
+
+}
+
+
+/* =========================================================
+   SEARCH + CATEGORY FILTER
+   ========================================================= */
+
+function filterUtilities(){
+
+    var search =
+        document
+        .getElementById(
+            "searchBox"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    var category =
+        document
+        .getElementById(
+            "categoryFilter"
+        )
+        .value;
+
+
+    var rows =
+        document
+        .querySelectorAll(
+            "#utilityTable tbody tr"
+        );
+
+
+    var visible = 0;
+
+
+    for(
+        var i=0;
+        i<rows.length;
+        i++
+    ){
+
+        var row =
+            rows[i];
+
+
+        var text =
+            row
+            .innerText
+            .toLowerCase();
+
+
+        var rowCategory =
+            row
+            .getAttribute(
+                "data-category"
+            );
+
+
+        var searchMatch =
+            !search ||
+            text.indexOf(search) !== -1;
+
+
+        var categoryMatch =
+            category === "all" ||
+            rowCategory === category;
+
+
+        if(
+            searchMatch &&
+            categoryMatch
+        ){
+
+            row.style.display = "";
+
+            visible++;
+
+        }
+        else{
+
+            row.style.display =
+                "none";
+
+        }
+
+    }
+
+
+    document
+    .getElementById(
+        "resultCount"
+    )
+    .innerHTML =
+        "📊 " +
+        visible +
+        " Utilities";
+
+
+    document
+    .getElementById(
+        "emptyState"
+    )
+    .style.display =
+        visible === 0
+        ? "block"
+        : "none";
+
+}
+
+
+/* =========================================================
+   THEME
+   ========================================================= */
 
 function changeTheme(theme){
 
-document.body.className=theme;
-
-localStorage.setItem("theme",theme);
-
-}
+    document.body.className =
+        theme;
 
 
-/* LOAD SAVED THEME */
-
-let savedTheme=localStorage.getItem("theme");
-
-if(savedTheme){
-
-document.body.className=savedTheme;
+    localStorage.setItem(
+        "swayam_all_utilities_theme",
+        theme
+    );
 
 }
-/* CLOCK */
+
+
+/* =========================================================
+   LOAD THEME
+   ========================================================= */
+
+(function(){
+
+    var savedTheme =
+        localStorage.getItem(
+            "swayam_all_utilities_theme"
+        );
+
+
+    if(savedTheme){
+
+        document.body.className =
+            savedTheme;
+
+
+        var selector =
+            document.getElementById(
+                "themeSelector"
+            );
+
+
+        if(selector){
+
+            selector.value =
+                savedTheme;
+
+        }
+
+    }
+
+})();
+
+
+/* =========================================================
+   CLOCK
+   ========================================================= */
 
 function updateClock(){
 
-let now=new Date();
+    var now =
+        new Date();
 
-mtime24.innerHTML=now.toLocaleTimeString();
-mtime12.innerHTML=
-now.toLocaleTimeString('en-IN',{
-hour: '2-digit',
-minute: '2-digit',
-second: '2-digit',
-hour12: true
-});
 
-mdate.innerHTML=now.toLocaleDateString("en-IN", {
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric"
-});
+    document.getElementById(
+        "mdate"
+    ).innerHTML =
+        "📅 " +
+        now.toLocaleDateString(
+            "en-IN",
+            {
+                weekday:"long",
+                year:"numeric",
+                month:"long",
+                day:"numeric"
+            }
+        );
+
+
+    document.getElementById(
+        "mtime12"
+    ).innerHTML =
+        "🕐 " +
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:true
+            }
+        );
+
+
+    document.getElementById(
+        "mtime24"
+    ).innerHTML =
+        "🕑 " +
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:false
+            }
+        );
 
 }
 
-setInterval(updateClock,1000);
-</script>
-</body>
-</html>
+
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+updateClock();
+
+setInterval(
+    updateClock,
+    1000
+);
+
+
+/* Show all records initially */
+
+filterUtilities();
+
+</script></body></html>
