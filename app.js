@@ -1,17 +1,48 @@
-// 1. Register the Service Worker safely on load
+// 1. Register Service Worker
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js")
-      .then(registration => {
-        console.log("[PWA] Service Worker registered with scope:", registration.scope);
+      .then(() => {
+        console.log("[PWA] Service Worker registered successfully.");
+        
+        // 2. AUTOMATIC BACKGROUND CACHER (No clicking needed!)
+        // This automatically scans your app for all local links and caches them instantly on startup
+        setTimeout(autoCacheAllFiles, 1000);
       })
-      .catch(error => {
-        console.error("[PWA] Service Worker registration failed:", error);
-      });
+      .catch(err => console.error("[PWA] Registration failed:", err));
   });
 }
 
-// 2. Listen for update messages from the Service Worker
+function autoCacheAllFiles() {
+  // Collect all local pages, scripts, styles, and links present in your app
+  const filesToCache = new Set([
+    "./",
+    "./index.html",
+    "./style.css",
+    "./app.js",
+    "./manifest.json"
+  ]);
+
+  // Automatically find every single link or page referenced in your HTML elements
+  document.querySelectorAll("a[href], link[href], script[src]").forEach(el => {
+    let url = el.getAttribute("href") || el.getAttribute("src");
+    if (url && !url.startsWith("http") && !url.startsWith("data:") && !url.startsWith("#")) {
+      if (!url.startsWith("./") && !url.startsWith("/")) {
+        url = "./" + url;
+      }
+      filesToCache.add(url);
+    }
+  });
+
+  // Silently fetch every discovered file so the Service Worker catches and saves them all
+  filesToCache.forEach(file => {
+    fetch(file)
+      .then(() => console.log(`[PWA Auto-Cache] Cached: ${file}`))
+      .catch(() => {}); // Ignore if already cached or missing
+  });
+}
+
+// 3. UI Update Banner Listeners
 navigator.serviceWorker?.addEventListener('message', event => {
   if (event.data && event.data.type === 'UPDATE_READY') {
     const banner = document.getElementById('updateBanner');
@@ -19,27 +50,6 @@ navigator.serviceWorker?.addEventListener('message', event => {
   }
 });
 
-// 3. Handle the update button click
 document.getElementById('updateBtn')?.addEventListener('click', () => {
   window.location.reload();
-});
-
-// 4. Automatically pre-cache all core pages and assets on initial app load
-window.addEventListener("load", () => {
-  if ('serviceWorker' in navigator) {
-    // Add every page, stylesheet, script, or asset you want guaranteed offline support for
-    const allKnownFiles = [
-      "./",
-      "./index.html",
-      "./style.css",
-      "./app.js",
-      "./manifest.json"
-      // Add any additional pages/files here (e.g., "./other-page.html", "./settings.html")
-    ];
-
-    // Silently fetch each file so the service worker's universal fetch handler captures and caches them instantly
-    allKnownFiles.forEach(url => {
-      fetch(url).catch(() => {});
-    });
-  }
 });
