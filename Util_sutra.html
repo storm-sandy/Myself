@@ -1,212 +1,1493 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<link rel="stylesheet" href="style.css">
-<title>Sutra Kaksha</title>
+
+<meta
+    name="viewport"
+    content="width=device-width,
+    initial-scale=1.0,
+    maximum-scale=1.0,
+    user-scalable=no"
+>
+
+<meta name="theme-color" content="#16a34a">
+
+<title>Swayam - Sutra Kaksha</title>
+
 <style>
-body{
-font-family:Arial;
-margin:0;
-transition:0.3s;
+
+/* =========================================================
+   SWAYAM SUTRA KAKSHA
+========================================================= */
+
+*{
+    box-sizing:border-box;
 }
 
-/* HEADER */
+html,
+body{
+    margin:0;
+    padding:0;
+    min-height:100%;
+
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+
+    transition:
+        background .3s ease,
+        color .3s ease;
+}
+
+
+/* =========================================================
+   THEMES
+========================================================= */
+
+body.light{
+
+    --bg:#f3f7f4;
+
+    --header1:#16a34a;
+    --header2:#15803d;
+
+    --card:#ffffff;
+
+    --text:#172017;
+
+    --muted:#607060;
+
+    --border:#dce9df;
+
+    --shadow:
+        0 8px 24px rgba(0,0,0,.10);
+
+    --soft:#eaf7ee;
+
+    --link:#15803d;
+
+}
+
+
+body.dark{
+
+    --bg:#101412;
+
+    --header1:#166534;
+    --header2:#14532d;
+
+    --card:#1b241e;
+
+    --text:#f2f7f3;
+
+    --muted:#b8c7bb;
+
+    --border:#2d3b31;
+
+    --shadow:
+        0 8px 24px rgba(0,0,0,.35);
+
+    --soft:#1d3224;
+
+    --link:#86efac;
+
+}
+
+
+body.blue{
+
+    --bg:#eef7ff;
+
+    --header1:#15803d;
+    --header2:#166534;
+
+    --card:#ffffff;
+
+    --text:#142019;
+
+    --muted:#5f7065;
+
+    --border:#d6e8dc;
+
+    --shadow:
+        0 8px 24px rgba(0,0,0,.10);
+
+    --soft:#e7f6ed;
+
+    --link:#166534;
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
 
 .header{
-padding:0px;
-display:flex;
-justify-content:space-between;
-align-items:center;
+
+    width:100%;
+
+    padding:
+        14px 16px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--header1),
+            var(--header2)
+        );
+
+    color:white;
+
+    box-shadow:
+        0 4px 14px rgba(0,0,0,.18);
+
+    position:relative;
+
+    z-index:2;
+
 }
 
-/* GRID */
+
+.header-title{
+
+    min-width:0;
+
+}
+
+
+.header-title h2{
+
+    margin:0;
+
+    font-size:
+        clamp(
+            20px,
+            5vw,
+            28px
+        );
+
+    font-weight:800;
+
+    letter-spacing:.2px;
+
+}
+
+
+.header-title small{
+
+    display:block;
+
+    margin-top:3px;
+
+    font-size:12px;
+
+    opacity:.9;
+
+}
+
+
+/* =========================================================
+   THEME SELECTOR
+========================================================= */
+
+.theme-select{
+
+    border:
+        1px solid
+        rgba(255,255,255,.35);
+
+    border-radius:12px;
+
+    padding:
+        9px 10px;
+
+    background:
+        rgba(255,255,255,.16);
+
+    color:white;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    outline:none;
+
+    cursor:pointer;
+
+}
+
+
+.theme-select option{
+
+    color:#111;
+
+    background:white;
+
+}
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+.clock-panel{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                150px,
+                1fr
+            )
+        );
+
+    gap:10px;
+
+    padding:
+        14px 16px;
+
+}
+
+
+.clock-card{
+
+    background:
+        var(--card);
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:16px;
+
+    padding:
+        12px 14px;
+
+    box-shadow:
+        var(--shadow);
+
+    text-align:center;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.clock-card:hover{
+
+    transform:
+        translateY(-2px);
+
+}
+
+
+.clock-label{
+
+    display:block;
+
+    color:
+        var(--muted);
+
+    font-size:11px;
+
+    font-weight:800;
+
+    text-transform:uppercase;
+
+    letter-spacing:.8px;
+
+}
+
+
+.clock-value{
+
+    display:block;
+
+    margin-top:4px;
+
+    color:
+        var(--text);
+
+    font-size:15px;
+
+    font-weight:750;
+
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.intro{
+
+    margin:
+        0 16px 14px;
+
+    padding:16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--soft),
+            var(--card)
+        );
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:18px;
+
+    box-shadow:
+        var(--shadow);
+
+}
+
+
+.intro h3{
+
+    margin:
+        0 0 6px;
+
+    font-size:20px;
+
+    color:
+        var(--text);
+
+}
+
+
+.intro p{
+
+    margin:0;
+
+    color:
+        var(--muted);
+
+    line-height:1.55;
+
+    font-size:14px;
+
+}
+
+
+/* =========================================================
+   GRID
+========================================================= */
 
 .list-grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:15px;
-padding:15px;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                260px,
+                1fr
+            )
+        );
+
+    gap:16px;
+
+    padding:
+        0 16px
+        16px;
+
 }
 
-/* CARD */
+
+/* =========================================================
+   CARD
+========================================================= */
 
 .card{
-padding:15px;
-border-radius:8px;
-box-shadow:0 2px 6px rgba(0,0,0,0.2);
-}
 
-/* LIST */
+    background:
+        var(--card);
 
-ul{
-padding-left:18px;
-}
+    border:
+        1px solid
+        var(--border);
 
-li{
-margin:6px 0;
-cursor:pointer;
-}
+    border-radius:20px;
 
-/* THEMES */
+    padding:18px;
 
-.light{
-background:#f4f6f9;
-color:#000;
-}
+    box-shadow:
+        var(--shadow);
 
-.light .header{
-background:#1e88e5;
-color:white;
-}
+    transition:
+        transform .22s ease,
+        box-shadow .22s ease;
 
-.light .card{
-background:white;
 }
 
 
-.dark{
-background:#1e1e1e;
-color:white;
-a:link {
-  color:white;
-}
-}
-}
+.card:hover{
 
-.dark .header{
-background:#000;
-}
+    transform:
+        translateY(-4px);
 
-.dark .card{
-background:#2b2b2b;
+    box-shadow:
+        0 14px 30px
+        rgba(0,0,0,.14);
+
 }
 
 
-.blue{
-background:#e3f2fd;
-color:#000;
+/* =========================================================
+   CARD ICON
+========================================================= */
+
+.card-icon{
+
+    width:56px;
+
+    height:56px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:17px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--header1),
+            var(--header2)
+        );
+
+    color:white;
+
+    font-size:28px;
+
+    margin-bottom:12px;
+
+    box-shadow:
+        0 7px 16px
+        rgba(22,163,74,.22);
+
 }
 
-.blue .header{
-background:#1565c0;
-color:white;
+
+.card h3{
+
+    margin:
+        0 0 8px;
+
+    color:
+        var(--text);
+
+    font-size:20px;
+
 }
 
-.blue .card{
-background:white;
-}
-/* link color */
-a:link {
-  color: black;
+
+.card-description{
+
+    margin:
+        0 0 14px;
+
+    color:
+        var(--muted);
+
+    font-size:13px;
+
+    line-height:1.5;
+
 }
 
-a:visited {
-  color: purple;
+
+/* =========================================================
+   MATH LINKS
+========================================================= */
+
+.math-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                150px,
+                1fr
+            )
+        );
+
+    gap:10px;
+
 }
 
-a:hover {
-  color: red;
+
+.math-link{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:8px;
+
+    min-height:52px;
+
+    padding:
+        12px 13px;
+
+    background:
+        var(--soft);
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:14px;
+
+    color:
+        var(--link);
+
+    text-decoration:none;
+
+    font-size:14px;
+
+    font-weight:750;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+
+    -webkit-tap-highlight-color:
+        transparent;
+
 }
 
-a:active {
-  color: green;
+
+.math-link:hover{
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 6px 15px
+        rgba(0,0,0,.10);
+
 }
+
+
+.math-link:active{
+
+    transform:
+        scale(.97);
+
+}
+
+
+.math-icon{
+
+    font-size:20px;
+
+    flex-shrink:0;
+
+}
+
+
+.math-name{
+
+    flex:1;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.info-footer{
+
+    margin:
+        0 16px
+        18px;
+
+    padding:13px;
+
+    text-align:center;
+
+    border-radius:14px;
+
+    background:
+        var(--card);
+
+    border:
+        1px solid
+        var(--border);
+
+    color:
+        var(--muted);
+
+    font-size:12px;
+
+    box-shadow:
+        0 5px 15px
+        rgba(0,0,0,.06);
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:600px){
+
+    .header{
+
+        padding:12px;
+
+    }
+
+
+    .header-title h2{
+
+        font-size:20px;
+
+    }
+
+
+    .theme-select{
+
+        max-width:110px;
+
+        font-size:12px;
+
+        padding:8px;
+
+    }
+
+
+    .clock-panel{
+
+        grid-template-columns:
+            1fr 1fr;
+
+        padding:12px;
+
+    }
+
+
+    .clock-card{
+
+        padding:10px;
+
+    }
+
+
+    .clock-value{
+
+        font-size:13px;
+
+    }
+
+
+    .intro{
+
+        margin:
+            0 12px 12px;
+
+        padding:14px;
+
+    }
+
+
+    .list-grid{
+
+        grid-template-columns:
+            1fr;
+
+        padding:
+            0 12px
+            12px;
+
+        gap:12px;
+
+    }
+
+
+    .card{
+
+        padding:16px;
+
+    }
+
+
+    .math-grid{
+
+        grid-template-columns:
+            1fr 1fr;
+
+    }
+
+
+    .math-link{
+
+        min-height:56px;
+
+        font-size:14px;
+
+    }
+
+
+    .info-footer{
+
+        margin:
+            0 12px
+            15px;
+
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL SCREEN
+========================================================= */
+
+@media(max-width:360px){
+
+    .clock-panel{
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .math-grid{
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .header{
+
+        align-items:
+            flex-start;
+
+    }
+
+
+    .header-title h2{
+
+        font-size:18px;
+
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media(prefers-reduced-motion:reduce){
+
+    *{
+
+        transition:none !important;
+
+    }
+
+}
+
 </style>
 
 </head>
 
+
 <body class="light">
 
-<!-- HEADER -->
 
-<div class="header">
-<h2>Sutra Kaksha</h2>
-<select onchange="changeTheme(this.value)">
+<!-- =======================================================
+     HEADER
+======================================================= -->
 
-<option value="light">Light Theme</option>
-<option value="dark">Dark Theme</option>
-<option value="blue">Blue Theme</option>
+<header class="header">
 
-</select>
-</div>
-<div class="header">
-<span id="mdate"></span>|
-<span id="mtime12"></span>|
-<span id="mtime24"></span>|
-</div>
+    <div class="header-title">
 
-<!-- GRID -->
+        <h2>
+            📐 Sutra Kaksha
+        </h2>
 
-<div class="list-grid">
+        <small>
+            Swayam • Knowledge & Learning
+        </small>
 
-<div class="card">
-<h3>Ganita Sutra - Maths</h3>
-<ul>
-<li><a href="math_geo.html">Geometry</a></li>
-<li><a href="math_alg.html">Algebra</a></li>
-<li><a href="math_log.html">Logarithms</a></li>
-<li><a href="math_trig.html">Trignometry</a></li>
-<li><a href="math_der.html">Derivatives</a></li>
-<li><a href="math_lim.html">Limits</a></li>
-<li><a href="math_oth.html">Others</a></li>
-</ul>
-</div>
+    </div>
 
 
+    <select
+        id="themeSelector"
+        class="theme-select"
+        onchange="changeTheme(this.value)"
+    >
+
+        <option value="light">
+            ☀️ Light
+        </option>
+
+        <option value="dark">
+            🌙 Dark
+        </option>
+
+        <option value="blue">
+            💧 Blue
+        </option>
+
+    </select>
+
+</header>
 
 
+<!-- =======================================================
+     CLOCK
+======================================================= -->
+
+<section class="clock-panel">
+
+    <div class="clock-card">
+
+        <span class="clock-label">
+            Date
+        </span>
+
+        <span
+            id="mdate"
+            class="clock-value"
+        >
+            --
+        </span>
+
+    </div>
 
 
-</div>
+    <div class="clock-card">
+
+        <span class="clock-label">
+            12 Hour
+        </span>
+
+        <span
+            id="mtime12"
+            class="clock-value"
+        >
+            --
+        </span>
+
+    </div>
+
+
+    <div class="clock-card">
+
+        <span class="clock-label">
+            24 Hour
+        </span>
+
+        <span
+            id="mtime24"
+            class="clock-value"
+        >
+            --
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     INTRO
+======================================================= -->
+
+<section class="intro">
+
+    <h3>
+        🧠 Ganita Sutra
+    </h3>
+
+    <p>
+        Your mathematics learning space for
+        geometry, algebra, logarithms, trigonometry,
+        derivatives, limits and other mathematical
+        topics.
+    </p>
+
+</section>
+
+
+<!-- =======================================================
+     MAIN GRID
+======================================================= -->
+
+<main class="list-grid">
+
+
+    <!-- ===================================================
+         GANITA SUTRA
+    ==================================================== -->
+
+    <section class="card">
+
+        <div class="card-icon">
+            🔢
+        </div>
+
+
+        <h3>
+            Ganita Sutra - Maths
+        </h3>
+
+
+        <p class="card-description">
+            Select a mathematical topic to open
+            the corresponding learning tool.
+        </p>
+
+
+        <div class="math-grid">
+
+
+            <!-- GEOMETRY -->
+
+            <a
+                class="math-link"
+                href="math_geo.html"
+                onclick="openSwayamPage(event,this.href)"
+            >
+
+                <span class="math-icon">
+                    📐
+                </span>
+
+                <span class="math-name">
+                    Geometry
+                </span>
+
+                <span>
+                    →
+                </span>
+
+            </a>
+
+
+            <!-- ALGEBRA -->
+
+            <a
+                class="math-link"
+                href="math_alg.html"
+                onclick="openSwayamPage(event,this.href)"
+            >
+
+                <span class="math-icon">
+                    ➗
+                </span>
+
+                <span class="math-name">
+                    Algebra
+                </span>
+
+                <span>
+                    →
+                </span>
+
+            </a>
+
+
+            <!-- LOGARITHMS -->
+
+            <a
+                class="math-link"
+                href="math_log.html"
+                onclick="openSwayamPage(event,this.href)"
+            >
+
+                <span class="math-icon">
+                    🔢
+                </span>
+
+                <span class="math-name">
+                    Logarithms
+                </span>
+
+                <span>
+                    →
+                </span>
+
+            </a>
+
+
+            <!-- TRIGONOMETRY -->
+
+            <a
+                class="math-link"
+                href="math_trig.html"
+                onclick="openSwayamPage(event,this.href)"
+            >
+
+                <span class="math-icon">
+                    📊
+                </span>
+
+                <span class="math-name">
+                    Trigonometry
+                </span>
+
+                <span>
+                    →
+                </span>
+
+            </a>
+
+
+            <!-- DERIVATIVES -->
+
+            <a
+                class="math-link"
+                href="math_der.html"
+                onclick="openSwayamPage(event,this.href)"
+            >
+
+                <span class="math-icon">
+                    📈
+                </span>
+
+                <span class="math-name">
+                    Derivatives
+                </span>
+
+                <span>
+                    →
+                </span>
+
+            </a>
+
+
+            <!-- LIMITS -->
+
+            <a
+                class="math-link"
+                href="math_lim.html"
+                onclick="openSwayamPage(event,this.href)"
+            >
+
+                <span class="math-icon">
+                    ∞
+                </span>
+
+                <span class="math-name">
+                    Limits
+                </span>
+
+                <span>
+                    →
+                </span>
+
+            </a>
+
+
+            <!-- OTHERS -->
+
+            <a
+                class="math-link"
+                href="math_oth.html"
+                onclick="openSwayamPage(event,this.href)"
+            >
+
+                <span class="math-icon">
+                    🧮
+                </span>
+
+                <span class="math-name">
+                    Others
+                </span>
+
+                <span>
+                    →
+                </span>
+
+            </a>
+
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<!-- =======================================================
+     FOOTER
+======================================================= -->
+
+<footer class="info-footer">
+
+    💚 Swayam Sutra Kaksha
+    • Personal Governance Simplified
+
+</footer>
+
 
 <script>
 
-/* CHANGE THEME */
+/* =========================================================
+   SWAYAM CENTER-AREA NAVIGATION
+========================================================= */
+
+function openSwayamPage(event,url){
+
+    event.preventDefault();
+
+
+    try{
+
+        /*
+         * If running inside the Swayam iframe,
+         * load the selected Maths page into
+         * the parent iframe.
+         */
+
+        if(
+            window.parent &&
+            window.parent !== window
+        ){
+
+            var frame =
+                window.parent.document
+                .getElementById(
+                    "swayamFrame"
+                );
+
+
+            if(frame){
+
+                frame.src = url;
+
+
+                /*
+                 * Remember selected page.
+                 */
+
+                try{
+
+                    window.parent.localStorage
+                    .setItem(
+                        "swayam_selected_page",
+                        url.split("/").pop()
+                    );
+
+                }catch(e){}
+
+
+                /*
+                 * Remove active state from
+                 * all parent Swayam menu buttons.
+                 */
+
+                var menuLinks =
+                    window.parent.document
+                    .querySelectorAll(
+                        ".menu-button"
+                    );
+
+
+                for(
+                    var i=0;
+                    i<menuLinks.length;
+                    i++
+                ){
+
+                    menuLinks[i]
+                    .classList
+                    .remove(
+                        "active"
+                    );
+
+                }
+
+
+                /*
+                 * Highlight the matching
+                 * parent menu button.
+                 */
+
+                for(
+                    var j=0;
+                    j<menuLinks.length;
+                    j++
+                ){
+
+                    var menuHref =
+                        menuLinks[j]
+                        .getAttribute(
+                            "href"
+                        );
+
+
+                    if(
+                        menuHref &&
+                        menuHref
+                        .split("/")
+                        .pop()
+                        ===
+                        url
+                        .split("/")
+                        .pop()
+                    ){
+
+                        menuLinks[j]
+                        .classList
+                        .add(
+                            "active"
+                        );
+
+
+                        try{
+
+                            menuLinks[j]
+                            .scrollIntoView({
+
+                                behavior:
+                                    "smooth",
+
+                                block:
+                                    "nearest",
+
+                                inline:
+                                    "center"
+
+                            });
+
+                        }catch(e){}
+
+
+                        break;
+
+                    }
+
+                }
+
+
+                return;
+
+            }
+
+        }
+
+    }
+    catch(error){
+
+        console.log(
+            "Swayam navigation error:",
+            error
+        );
+
+    }
+
+
+    /*
+     * Standalone fallback.
+     */
+
+    window.location.href = url;
+
+}
+
+
+/* =========================================================
+   THEME
+========================================================= */
 
 function changeTheme(theme){
 
-document.body.className=theme;
+    if(
+        theme !== "light" &&
+        theme !== "dark" &&
+        theme !== "blue"
+    ){
 
-localStorage.setItem("theme",theme);
+        theme = "light";
+
+    }
+
+
+    document.body.className =
+        theme;
+
+
+    localStorage.setItem(
+        "swayam_sutra_theme",
+        theme
+    );
 
 }
 
 
-/* LOAD SAVED THEME */
+/* =========================================================
+   LOAD SAVED THEME
+========================================================= */
 
-let savedTheme=localStorage.getItem("theme");
+(function(){
 
-if(savedTheme){
+    var savedTheme =
+        localStorage.getItem(
+            "swayam_sutra_theme"
+        );
 
-document.body.className=savedTheme;
 
-}
-/* CLOCK */
+    if(
+        savedTheme === "light" ||
+        savedTheme === "dark" ||
+        savedTheme === "blue"
+    ){
+
+        document.body.className =
+            savedTheme;
+
+
+        document.getElementById(
+            "themeSelector"
+        ).value =
+            savedTheme;
+
+    }
+
+})();
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
 
 function updateClock(){
 
-let now=new Date();
+    var now =
+        new Date();
 
-mtime24.innerHTML=now.toLocaleTimeString();
-mtime12.innerHTML=
-now.toLocaleTimeString('en-IN',{
-hour: '2-digit',
-minute: '2-digit',
-second: '2-digit',
-hour12: true
-});
 
-mdate.innerHTML=now.toLocaleDateString("en-IN", {
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric"
-});
+    var dateElement =
+        document.getElementById(
+            "mdate"
+        );
+
+
+    var time12Element =
+        document.getElementById(
+            "mtime12"
+        );
+
+
+    var time24Element =
+        document.getElementById(
+            "mtime24"
+        );
+
+
+    if(dateElement){
+
+        dateElement.textContent =
+            now.toLocaleDateString(
+                "en-IN",
+                {
+                    weekday:"short",
+                    year:"numeric",
+                    month:"short",
+                    day:"numeric"
+                }
+            );
+
+    }
+
+
+    if(time12Element){
+
+        time12Element.textContent =
+            now.toLocaleTimeString(
+                "en-IN",
+                {
+                    hour:"2-digit",
+                    minute:"2-digit",
+                    second:"2-digit",
+                    hour12:true
+                }
+            );
+
+    }
+
+
+    if(time24Element){
+
+        time24Element.textContent =
+            now.toLocaleTimeString(
+                "en-IN",
+                {
+                    hour:"2-digit",
+                    minute:"2-digit",
+                    second:"2-digit",
+                    hour12:false
+                }
+            );
+
+    }
 
 }
 
-setInterval(updateClock,1000);
+
+/* =========================================================
+   START CLOCK
+========================================================= */
+
+updateClock();
+
+setInterval(
+    updateClock,
+    1000
+);
+
 </script>
+
 </body>
 </html>
