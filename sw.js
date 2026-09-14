@@ -1,55 +1,53 @@
-const CACHE_NAME = "mynotes-runtime-v6";
+const CACHE_NAME = "mynotes-everything-v1";
 
-
-// List the files you want guaranteed offline immediately
-const INITIAL_ASSETS = [
-  "./",
-  "./index.html",
-  "./style.css",
-  "./app.js",
-  "./manifest.json"
-];
-
-// 1. Install: Cache core shell immediately
+// 1. Install Event: Skip waiting to activate immediately
 self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(INITIAL_ASSETS);
-    }).then(() => self.skipWaiting())
-  );
+  self.skipWaiting();
 });
 
-// 2. Activate: Clean up old versions
+// 2. Activate Event: Clean up old caches and take control of all open windows/tabs instantly
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys => {
+    caches.keys().then(cacheNames => {
       return Promise.all(
-        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+        cacheNames.map(cache => {
+          if (cache !== CACHE_NAME) {
+            console.log("[Service Worker] Deleting old cache:", cache);
+            return caches.delete(cache);
+          }
+        })
       );
     }).then(() => self.clients.claim())
   );
 });
 
-// 3. Fetch: Stale-While-Revalidate (Instant load from cache, updates changed files in background)
+// 3. Fetch Event: Universal Stale-While-Revalidate Catch-All
 self.addEventListener("fetch", event => {
+  // Only handle standard GET requests
   if (event.request.method !== "GET") return;
 
   event.respondWith(
     caches.open(CACHE_NAME).then(cache => {
       return cache.match(event.request).then(cachedResponse => {
-        // Fetch from network in the background to check for updates
-        const fetchPromise = fetch(event.request).then(networkResponse => {
-          if (networkResponse && networkResponse.status === 200) {
-            // Only update cache if the file changed (handled by browser network stack & cache put)
-            cache.put(event.request, networkResponse.clone());
-          }
-          return networkResponse;
-        }).catch(() => {
-          // Network failed, ignore so cachedResponse can handle it
-        });
+        
+        // Background network request to check for updates and cache newly encountered files automatically
+        const backgroundFetch = fetch(event.request)
+          .then(networkResponse => {
+            // Cache valid 200 responses or cross-origin opaque responses
+            if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
+              cache.put(event.request, networkResponse.clone());
+            }
+            return networkResponse;
+          })
+          .catch(() => {
+            // If offline and not in cache, fallback to index.html for single-page app navigations
+            if (event.request.mode === "navigate") {
+              return cache.match("./index.html");
+            }
+          });
 
-        // Return cached response instantly if available, otherwise wait for network
-        return cachedResponse || fetchPromise;
+        // Return cached version instantly if available; otherwise wait for the network response
+        return cachedResponse || backgroundFetch;
       });
     })
   );
