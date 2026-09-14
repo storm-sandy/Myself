@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Swayam PWA</title>
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
@@ -18,6 +18,7 @@
         display: flex;
         flex-direction: column;
         height: 100vh;
+        height: 100dvh; /* Handles mobile browser viewport sizing correctly */
         overflow: hidden;
         background-color: #f8f9fa;
     }
@@ -25,58 +26,64 @@
     /* Top Frame: Company / App Name & Clock */
     .top-header {
         height: 50px;
+        min-height: 50px;
         background: #4CAF50;
         color: white;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 20px;
+        padding: 0 15px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         z-index: 100;
     }
 
     .app-title {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: bold;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
+        white-space: nowrap;
     }
 
     .app-version {
-        font-size: 12px;
+        font-size: 11px;
         font-weight: normal;
         opacity: 0.9;
     }
 
     .header-clock {
-        font-size: 13px;
+        font-size: 12px;
         background: rgba(255, 255, 255, 0.2);
-        padding: 4px 10px;
+        padding: 4px 8px;
         border-radius: 4px;
+        white-space: nowrap;
     }
 
     /* Main Container Layout (Left Frame + Center Frame) */
     .app-container {
         display: flex;
         flex: 1;
+        width: 100vw;
         height: calc(100vh - 50px);
+        height: calc(100dvh - 50px);
         overflow: hidden;
     }
 
-    /* Left Frame: Set to 10% width with auto text wrapping */
+    /* Left Frame: Fluid Desktop, Responsive Mobile Toggle/Drawer */
     .left-menu {
-        flex: 0 0 10%;
-        min-width: 120px;
+        flex: 0 0 15%; /* Allocated 15% width on desktop for comfort */
+        min-width: 130px;
         background: #ffffff;
         border-right: 1px solid #ddd;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
         height: 100%;
-        padding: 10px 0;
+        padding: 8px 0;
     }
 
     .menu-item {
-        padding: 10px 12px;
+        padding: 10px 10px;
         font-size: 12px;
         color: #333;
         cursor: pointer;
@@ -104,6 +111,7 @@
         flex: 1;
         background: #ffffff;
         height: 100%;
+        min-width: 0; /* Prevents flexbox overflow bugs */
     }
 
     .content-frame {
@@ -113,18 +121,38 @@
         background: #fff;
     }
 
-    /* Responsive Mobile Adjustments */
+    /* Responsive Mobile Adjustments (Smartphones & Small Tablets) */
     @media (max-width: 768px) {
         .app-container {
             flex-direction: column;
         }
         .left-menu {
-            flex: 0 0 35vh;
+            flex: 0 0 32vh; /* Compact top menu panel on mobile */
             width: 100%;
-            min-width: unset;
+            min-width: 100%;
+            border-right: none;
+            border-bottom: 2px solid #ddd;
+            display: flex;
+            flex-direction: row; /* Horizontal scrollable bar or grid layout on mobile */
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding: 0;
+        }
+        .menu-item {
+            flex: 0 0 auto;
+            border-left: none;
+            border-bottom: 4px solid transparent;
+            padding: 12px 14px;
+            font-size: 13px;
+        }
+        .menu-item.active {
+            border-left: none;
+            border-bottom-color: #4CAF50;
         }
         .center-screen {
-            height: 65vh;
+            height: calc(68vh - 50px);
+            flex: 1;
         }
     }
 </style>
@@ -143,7 +171,11 @@ setInterval(updateClock, 1000);
 function loadPage(url, element) {
     document.getElementById('displayFrame').src = url;
     document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-    if(element) element.classList.add('active');
+    if(element) {
+        element.classList.add('active');
+        // Smoothly scroll active item into view on mobile screens
+        element.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
 }
 </script>
 </head>
@@ -152,42 +184,42 @@ function loadPage(url, element) {
 <!-- TOP FRAME: App Name & Info -->
 <header class="top-header">
     <div class="app-title">
-        ⛱️ Swayam <span class="app-version">v0.1 (winterbird)</span>
+        ⛱️ Swayam <span class="app-version">v0.1</span>
     </div>
     <div class="header-clock" id="headerClock">
         Loading...
     </div>
 </header>
 
-<!-- APPLICATION STRUCTURE: Left Menu (~10%) + Center Screen -->
+<!-- APPLICATION STRUCTURE: Responsive Sidebar + Center Screen -->
 <div class="app-container">
     
-    <!-- LEFT FRAME: Menu List -->
+    <!-- LEFT FRAME / MOBILE TRAY MENU -->
     <nav class="left-menu">
-        <div class="menu-item active" onclick="loadPage('home-content.html', this)">🏠 Home / मुख्य पृष्ठ</div>
-        <div class="menu-item" onclick="loadPage('Util_smart.html', this)">⌚ Smart Watch</div>
-        <div class="menu-item" onclick="loadPage('cal.html', this)">⌚ Smart Calendar</div>
+        <div class="menu-item active" onclick="loadPage('home-content.html', this)">🏠 Home</div>
+        <div class="menu-item" onclick="loadPage('Util_smart.html', this)">⌚ Watch</div>
+        <div class="menu-item" onclick="loadPage('cal.html', this)">⌚ Calendar</div>
         <div class="menu-item" onclick="loadPage('Util_karya.html', this)">💼 Work</div>
         <div class="menu-item" onclick="loadPage('Util_laxmi.html', this)">🏠 Home</div>
-        <div class="menu-item" onclick="loadPage('Util_yog.html', this)">🙏 Fitness / योग</div>
+        <div class="menu-item" onclick="loadPage('Util_yog.html', this)">🙏 Fitness</div>
         <div class="menu-item" onclick="loadPage('Util_upkarna.html', this)">🛠️ Utility</div>
         <div class="menu-item" onclick="loadPage('Util_chitra.html', this)">🖼️ Image</div>
         <div class="menu-item" onclick="loadPage('Util_sutra.html', this)">📐 Formula</div>
-        <div class="menu-item" onclick="loadPage('Util_awpl.html', this)">🌐 Health Business</div>
+        <div class="menu-item" onclick="loadPage('Util_awpl.html', this)">🌐 Business</div>
         <div class="menu-item" onclick="loadPage('Util_lang.html', this)">🌐 Languages</div>
-        <div class="menu-item" onclick="loadPage('Util_sanskar.html', this)">🙏 Ethics / संस्कार</div>
-        <div class="menu-item" onclick="loadPage('Util_ranjan.html', this)">🎮 Chill & Relax</div>
-        <div class="menu-item" onclick="loadPage('medical.html', this)">🙏 Medical Note</div>
-        <div class="menu-item" onclick="loadPage('emergency.html', this)">🙏 Emergency Note</div>
-        <div class="menu-item" onclick="loadPage('note2.html', this)">🌐 Quick Notes</div>
+        <div class="menu-item" onclick="loadPage('Util_sanskar.html', this)">🙏 Ethics</div>
+        <div class="menu-item" onclick="loadPage('Util_ranjan.html', this)">🎮 Relax</div>
+        <div class="menu-item" onclick="loadPage('medical.html', this)">🙏 Medical</div>
+        <div class="menu-item" onclick="loadPage('emergency.html', this)">🙏 Emergency</div>
+        <div class="menu-item" onclick="loadPage('note2.html', this)">🌐 Notes</div>
     </nav>
 
     <!-- CENTER FRAME: Dynamic Content Area -->
     <main class="center-screen">
         <iframe id="displayFrame" name="displayFrame" class="content-frame" srcdoc="
-            <div style='font-family:sans-serif; padding:50px; text-align:center; color:#555;'>
+            <div style='font-family:sans-serif; padding:40px; text-align:center; color:#555;'>
                 <h2 style='color:#4CAF50; margin-bottom:10px;'>⛱️ Swayam PWA Dashboard</h2>
-                <p>Click any option on the left menu to display the page content here instantly.</p>
+                <p>Click any option on the menu to display the page content here instantly.</p>
             </div>
         "></iframe>
     </main>
