@@ -11,3 +11,20 @@ if ("serviceWorker" in navigator) {
     window.location.reload();
   });
 
+// Add this inside your main app.js or index.html script block to auto-fetch all pages/assets on load
+window.addEventListener("load", () => {
+  if ('serviceWorker' in navigator) {
+    const allKnownFiles = [
+      "./index.html",
+      "./other-page.html",
+      "./settings.html",
+      "./images/hero.jpg"
+      // Add any other files or pages you want cached automatically
+    ];
+
+    allKnownFiles.forEach(url => {
+      fetch(url).catch(() => {}); // Silently requests and triggers the SW cache
+    });
+  }
+});
+
