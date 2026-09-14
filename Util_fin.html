@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Griha Prabandhan - Swayam</title>
+
+<style>
+
+/* =========================================================
+   SWAYAM FINANCE DASHBOARD
+   CENTER AREA / IFRAME COMPATIBLE
+========================================================= */
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    transition:0.3s;
+    min-height:100vh;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header{
+    padding:12px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+
+    background:linear-gradient(
+        135deg,
+        #00a86b,
+        #008f5a
+    );
+
+    color:white;
+    box-shadow:0 3px 10px rgba(0,0,0,0.18);
+}
+
+.header h2{
+    margin:0;
+    font-size:22px;
+}
+
+.header select{
+    padding:9px 12px;
+    border:none;
+    border-radius:10px;
+    font-size:14px;
+    cursor:pointer;
+    outline:none;
+}
+
+/* =========================================================
+   DATE / CLOCK
+========================================================= */
+
+.clock-bar{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    padding:12px;
+}
+
+.clock-box{
+    padding:12px;
+    border-radius:14px;
+    text-align:center;
+    font-size:14px;
+    font-weight:bold;
+
+    background:rgba(255,255,255,0.75);
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.10);
+
+    backdrop-filter:blur(8px);
+}
+
+.clock-label{
+    display:block;
+    font-size:11px;
+    opacity:0.7;
+    margin-bottom:5px;
+    text-transform:uppercase;
+}
+
+.clock-value{
+    display:block;
+    font-size:15px;
+}
+
+/* =========================================================
+   MAIN GRID
+========================================================= */
+
+.list-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fit,minmax(230px,1fr));
+
+    gap:15px;
+
+    padding:15px;
+}
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.card{
+    padding:18px;
+
+    border-radius:18px;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,0.12);
+
+    transition:
+        transform 0.25s,
+        box-shadow 0.25s;
+
+    position:relative;
+    overflow:hidden;
+}
+
+.card::before{
+    content:"";
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:4px;
+
+    background:linear-gradient(
+        90deg,
+        #00a86b,
+        #00d084
+    );
+}
+
+.card:hover{
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,0.18);
+}
+
+.card h3{
+    margin:4px 0 15px 0;
+    font-size:18px;
+}
+
+/* =========================================================
+   LIST
+========================================================= */
+
+ul{
+    padding:0;
+    margin:0;
+    list-style:none;
+}
+
+li{
+    margin:8px 0;
+}
+
+/* =========================================================
+   APP LINKS
+========================================================= */
+
+.app-link{
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    width:100%;
+
+    padding:12px 14px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    font-size:15px;
+    font-weight:bold;
+
+    transition:
+        background 0.2s,
+        transform 0.2s,
+        box-shadow 0.2s;
+
+    cursor:pointer;
+}
+
+.app-icon{
+    width:34px;
+    height:34px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:10px;
+
+    font-size:18px;
+
+    background:rgba(0,168,107,0.12);
+
+    flex-shrink:0;
+}
+
+.app-link:hover{
+    transform:translateX(4px);
+
+    background:rgba(0,168,107,0.12);
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,0.10);
+}
+
+.app-link:active{
+    transform:scale(0.97);
+}
+
+/* =========================================================
+   THEMES
+========================================================= */
+
+/* LIGHT */
+
+.light{
+    background:#f3f7f5;
+    color:#17231e;
+}
+
+.light .card{
+    background:rgba(255,255,255,0.95);
+}
+
+.light .clock-box{
+    color:#17231e;
+}
+
+.light .app-link{
+    color:#126b4b;
+}
+
+
+/* DARK */
+
+.dark{
+    background:#101513;
+    color:#ffffff;
+}
+
+.dark .header{
+    background:linear-gradient(
+        135deg,
+        #063d2c,
+        #001f16
+    );
+}
+
+.dark .card{
+    background:#1b2521;
+    box-shadow:
+        0 5px 18px rgba(0,0,0,0.40);
+}
+
+.dark .clock-box{
+    background:#1b2521;
+    color:white;
+}
+
+.dark .app-link{
+    color:#8ff0c5;
+}
+
+.dark .app-link:hover{
+    background:#263a32;
+}
+
+.dark .app-icon{
+    background:rgba(0,220,145,0.14);
+}
+
+
+/* BLUE */
+
+.blue{
+    background:#eaf4ff;
+    color:#122033;
+}
+
+.blue .header{
+    background:linear-gradient(
+        135deg,
+        #1976d2,
+        #1255a0
+    );
+}
+
+.blue .card{
+    background:white;
+}
+
+.blue .clock-box{
+    background:white;
+}
+
+.blue .app-link{
+    color:#1565c0;
+}
+
+.blue .app-icon{
+    background:rgba(25,118,210,0.12);
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.info{
+    margin:0 15px 15px 15px;
+
+    padding:12px;
+
+    border-radius:14px;
+
+    text-align:center;
+
+    font-size:13px;
+
+    opacity:0.75;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px){
+
+    .header{
+        padding:12px;
+    }
+
+    .header h2{
+        font-size:18px;
+    }
+
+    .clock-bar{
+        grid-template-columns:1fr;
+    }
+
+    .list-grid{
+        grid-template-columns:1fr;
+        padding:12px;
+    }
+
+    .card{
+        padding:16px;
+    }
+
+    .app-link{
+        font-size:16px;
+        padding:13px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media(max-width:400px){
+
+    .header{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .header select{
+        width:100%;
+    }
+
+    .clock-value{
+        font-size:14px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body class="light">
+
+
+<!-- =======================================================
+     HEADER
+======================================================= -->
+
+<div class="header">
+
+    <h2>🏠 Griha Prabandhan</h2>
+
+    <select
+        id="themeSelector"
+        onchange="changeTheme(this.value)">
+
+        <option value="light">
+            ☀️ Light Theme
+        </option>
+
+        <option value="dark">
+            🌙 Dark Theme
+        </option>
+
+        <option value="blue">
+            💙 Blue Theme
+        </option>
+
+    </select>
+
+</div>
+
+
+<!-- =======================================================
+     CLOCK
+======================================================= -->
+
+<div class="clock-bar">
+
+    <div class="clock-box">
+
+        <span class="clock-label">
+            📅 Date
+        </span>
+
+        <span
+            class="clock-value"
+            id="mdate">
+        </span>
+
+    </div>
+
+
+    <div class="clock-box">
+
+        <span class="clock-label">
+            🕐 12 Hour
+        </span>
+
+        <span
+            class="clock-value"
+            id="mtime12">
+        </span>
+
+    </div>
+
+
+    <div class="clock-box">
+
+        <span class="clock-label">
+            ⏱️ 24 Hour
+        </span>
+
+        <span
+            class="clock-value"
+            id="mtime24">
+        </span>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     DASHBOARD
+======================================================= -->
+
+<div class="list-grid">
+
+<!-- FINANCE -->
+
+    <div class="card">
+
+        <h3>💰 Finance Manager</h3>
+
+        <ul>
+
+            <li>
+
+                <a
+                    class="app-link"
+                    href="Aug26_fin.html"
+                    onclick="openSwayamPage(event,this.href)">
+
+                    <span class="app-icon">
+                        💰
+                    </span>
+
+                    <span>
+                        Finance
+                    </span>
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </div>
+
+
+  
+    <!-- APPLIANCES -->
+
+    <div class="card">
+
+        <h3>🔌 Home Appliances & Electronics</h3>
+
+        <ul>
+
+            <li>
+
+                <a
+                    class="app-link"
+                    href="Aug26_ele.html"
+                    onclick="openSwayamPage(event,this.href)">
+
+                    <span class="app-icon">
+                        🔌
+                    </span>
+
+                    <span>
+                        Appliances & Gadgets
+                    </span>
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </div>
+
+
+    <!-- ENTERTAINMENT -->
+
+    <div class="card">
+
+        <h3>🎬 Entertainment</h3>
+
+        <ul>
+
+            <li>
+
+                <a
+                    class="app-link"
+                    href="Aug26_ent.html"
+                    onclick="openSwayamPage(event,this.href)">
+
+                    <span class="app-icon">
+                        🎬
+                    </span>
+
+                    <span>
+                        Entertainment
+                    </span>
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </div>
+
+
+    <!-- MEDICAL -->
+
+    <div class="card">
+
+        <h3>🏥 Medical Tracker</h3>
+
+        <ul>
+
+            <li>
+
+                <a
+                    class="app-link"
+                    href="Aug26_med.html"
+                    onclick="openSwayamPage(event,this.href)">
+
+                    <span class="app-icon">
+                        🏥
+                    </span>
+
+                    <span>
+                        Medicals
+                    </span>
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </div>
+
+
+</div>
+
+
+<!-- =======================================================
+     INFORMATION
+======================================================= -->
+
+<div class="info">
+
+    🏠 <b>Dhan Prabandhan</b> —
+    Manage Finance,Appliances, Entertainment and Medical records
+    from Swayam.
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   THEME
+========================================================= */
+
+function changeTheme(theme){
+
+    document.body.className = theme;
+
+    localStorage.setItem(
+        "swayam_home_theme",
+        theme
+    );
+
+}
+
+
+/* =========================================================
+   LOAD SAVED THEME
+========================================================= */
+
+let savedTheme =
+    localStorage.getItem(
+        "swayam_home_theme"
+    );
+
+if(savedTheme){
+
+    document.body.className =
+        savedTheme;
+
+    document.getElementById(
+        "themeSelector"
+    ).value = savedTheme;
+
+}
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+function updateClock(){
+
+    let now = new Date();
+
+
+    document.getElementById(
+        "mtime24"
+    ).innerHTML =
+        now.toLocaleTimeString(
+            "en-IN"
+        );
+
+
+    document.getElementById(
+        "mtime12"
+    ).innerHTML =
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:true
+            }
+        );
+
+
+    document.getElementById(
+        "mdate"
+    ).innerHTML =
+        now.toLocaleDateString(
+            "en-IN",
+            {
+                weekday:"long",
+                year:"numeric",
+                month:"long",
+                day:"numeric"
+            }
+        );
+
+}
+
+
+updateClock();
+
+setInterval(
+    updateClock,
+    1000
+);
+
+
+/* =========================================================
+   SWAYAM PARENT NAVIGATION
+
+   Opens the selected page in the main
+   Swayam iframe while keeping the
+   Swayam menu visible.
+========================================================= */
+
+function openSwayamPage(event,url){
+
+    event.preventDefault();
+
+
+    try{
+
+        /*
+         * Check whether this page
+         * is running inside Swayam.
+         */
+
+        if(
+            window.parent &&
+            window.parent !== window
+        ){
+
+            /*
+             * Find Swayam's main iframe.
+             */
+
+            var frame =
+                window.parent.document
+                .getElementById(
+                    "swayamFrame"
+                );
+
+
+            if(frame){
+
+                /*
+                 * Load selected page
+                 * into center area.
+                 */
+
+                frame.src = url;
+
+
+                /*
+                 * Save selected page.
+                 */
+
+                try{
+
+                    window.parent.localStorage
+                    .setItem(
+                        "swayam_selected_page",
+                        url.split("/").pop()
+                    );
+
+                }catch(e){}
+
+
+                /*
+                 * Update Swayam menu
+                 * active state.
+                 */
+
+                var menuLinks =
+                    window.parent.document
+                    .querySelectorAll(
+                        ".menu-button"
+                    );
+
+
+                for(
+                    var i=0;
+                    i<menuLinks.length;
+                    i++
+                ){
+
+                    menuLinks[i]
+                    .classList
+                    .remove("active");
+
+                }
+
+
+                /*
+                 * Try to activate
+                 * matching parent menu.
+                 */
+
+                for(
+                    var j=0;
+                    j<menuLinks.length;
+                    j++
+                ){
+
+                    var menuHref =
+                        menuLinks[j]
+                        .getAttribute("href");
+
+
+                    if(
+                        menuHref &&
+                        menuHref
+                        .split("/")
+                        .pop()
+                        ===
+                        url
+                        .split("/")
+                        .pop()
+                    ){
+
+                        menuLinks[j]
+                        .classList
+                        .add("active");
+
+                        try{
+
+                            menuLinks[j]
+                            .scrollIntoView({
+                                behavior:"smooth",
+                                block:"nearest",
+                                inline:"center"
+                            });
+
+                        }catch(e){}
+
+                        break;
+
+                    }
+
+                }
+
+                return;
+
+            }
+
+        }
+
+    }
+
+    catch(error){
+
+        console.log(
+            "Swayam parent navigation error:",
+            error
+        );
+
+    }
+
+
+    /*
+     * Normal browser fallback.
+     */
+
+    window.location.href = url;
+
+}
+
+</script>
+
+
+</body>
+</html>
