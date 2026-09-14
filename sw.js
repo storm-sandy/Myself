@@ -1,5 +1,6 @@
 const CACHE_NAME = "mynotes-runtime-v6";
 
+
 // List the files you want guaranteed offline immediately
 const INITIAL_ASSETS = [
   "./",
