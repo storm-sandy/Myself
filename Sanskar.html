@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Sanskars, Ethics & Cultural Festival Guide</title>
+    <style>
+        :root {
+            --primary: #d97706;
+            --primary-dark: #b45309;
+            --secondary: #fffbeb;
+            --text-dark: #1f2937;
+            --text-light: #4b5563;
+            --bg-color: #f9fafb;
+            --card-bg: #ffffff;
+            --accent: #991b1b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+            color: white;
+            padding: 2.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Enhanced Navigation Controls */
+        nav.toc {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        nav.toc h2 {
+            margin-bottom: 1rem;
+            color: var(--accent);
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.3rem;
+        }
+
+        .nav-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .dropdown-wrapper {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .dropdown-wrapper label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 0.3rem;
+        }
+
+        .dropdown-wrapper select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            background-color: var(--secondary);
+            color: var(--text-dark);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .dropdown-wrapper select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--secondary);
+            color: var(--text-light);
+            border: 1px solid #e5e7eb;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .toc-grid a {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            background: var(--secondary);
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            display: block;
+            border-left: 3px solid var(--primary);
+        }
+
+        .toc-grid a:hover {
+            background: var(--primary);
+            color: white;
+            padding-left: 1.2rem;
+        }
+
+        /* Section Styling with Category Attribute for Filtering */
+        section {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        section.hidden {
+            display: none;
+        }
+
+        h2.section-title {
+            color: var(--accent);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+
+        .category-desc {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        ol {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.8rem;
+            font-size: 1.02rem;
+        }
+
+        li strong {
+            color: var(--primary-dark);
+        }
+
+        .festival-guide {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .festival-guide {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .guide-box {
+            background: var(--secondary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .guide-box h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: var(--text-dark);
+            color: white;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Indian Sanskars, Ethics & Cultural Festival Guide</h1>
+        <p>A comprehensive compendium of 200 Indian ethics, values, and guidelines for cultural celebrations.</p>
+    </header>
+
+    <div class="container">
+
+        <!-- Enhanced Table of Contents & Selection Panel -->
+        <nav class="toc">
+            <h2>Category Selection & Navigation</h2>
+            
+            <div class="nav-controls">
+                <!-- Dropdown Selection Option -->
+                <div class="dropdown-wrapper">
+                    <label for="categoryDropdown">Jump directly to a category:</label>
+                    <select id="categoryDropdown" onchange="navigateToCategory(this.value)">
+                        <option value="all">-- View All Categories (Default) --</option>
+                        <option value="cat1">1. Personal Ethics & Character (1-25)</option>
+                        <option value="cat2">2. Family & Relationships (26-50)</option>
+                        <option value="cat3">3. Social Responsibility (51-75)</option>
+                        <option value="cat4">4. Spiritual & Inner Growth (76-100)</option>
+                        <option value="cat5">5. Environmental & Nature (101-125)</option>
+                        <option value="cat6">6. Professional & Work Ethics (126-150)</option>
+                        <option value="cat7">7. Food & Health Ethics (151-175)</option>
+                        <option value="cat8">8. Communication & Speech (176-200)</option>
+                        <option value="festival">9. Cultural Festival Guide</option>
+                    </select>
+                </div>
+
+                <!-- Filter Quick Buttons -->
+                <div>
+                    <label style="display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.3rem;">Display Filter:</label>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="filterSections('all', this)">Show All</button>
+                        <button class="filter-btn" onclick="filterSections('ethics', this)">Ethics Only (1-8)</button>
+                        <button class="filter-btn" onclick="filterSections('festival', this)">Festival Guide</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toc-grid">
+                <a href="#cat1">1. Personal Ethics & Character</a>
+                <a href="#cat2">2. Family & Relationships</a>
+                <a href="#cat3">3. Social Responsibility</a>
+                <a href="#cat4">4. Spiritual & Inner Growth</a>
+                <a href="#cat5">5. Environmental & Nature</a>
+                <a href="#cat6">6. Professional & Work Ethics</a>
+                <a href="#cat7">7. Food & Health Ethics</a>
+                <a href="#cat8">8. Communication & Speech</a>
+                <a href="#festival">9. Cultural Festival Guide</a>
+            </div>
+        </nav>
+
+        <!-- Category 1 -->
+        <section id="cat1" data-type="ethics">
+            <h2 class="section-title">1. Personal Ethics & Character (Aachara & Swabhava)</h2>
+            <p class="category-desc">Core moral principles focusing on individual integrity, self-discipline, and personal purity.</p>
+            <ol>
+                <li><strong>Satya (Truthfulness):</strong> Always speaking and living the truth without deceit.</li>
+                <li><strong>Ahimsa (Non-violence):</strong> Refraining from causing harm to any living being mentally or physically.</li>
+                <li><strong>Saucha (Purity):</strong> Maintaining cleanliness of both body and mind.</li>
+                <li><strong>Santosha (Contentment):</strong> Finding peace and satisfaction with what one naturally possesses.</li>
+                <li><strong>Tapas (Austerity):</strong> Practicing self-discipline, endurance, and focused willpower.</li>
+                <li><strong>Swadhyaya (Self-study):</strong> Continuous reading of scriptures and introspective self-reflection.</li>
+                <li><strong>Ishvara Pranidhana (Surrender):</strong> Dedicating actions and ego to a higher divine source.</li>
+                <li><strong>Asteya (Non-stealing):</strong> Not taking what belongs to others or coveting their assets.</li>
+                <li><strong>Brahmacharya (Self-restraint):</strong> Channeling vital energy positively and practicing moderation.</li>
+                <li><strong>Aparigraha (Non-possessiveness):</strong> Avoiding greed and hoarding more than necessary.</li>
+                <li><strong>Viveka (Discrimination):</strong> The ability to distinguish between right and wrong, transient and eternal.</li>
+                <li><strong>Vairagya (Detachment):</strong> Not letting temporary material outcomes dictate inner peace.</li>
+                <li><strong>Kshama (Forgiveness):</strong> Letting go of resentment and pardoning past offenses.</li>
+                <li><strong>Daya (Compassion):</strong> Empathizing with the suffering of others and taking action to alleviate it.</li>
+                <li><strong>Arjava (Straightforwardness):</strong> Eliminating hypocrisy; matching thoughts, words, and actions.</li>
+                <li><strong>Dhriti (Fortitude):</strong> Maintaining mental resilience and courage during adversity.</li>
+                <li><strong>Hri (Modesty/Humility):</strong> Avoiding arrogance, pride, and haughty behavior.</li>
+                <li><strong>Tejas (Inner Radiance):</strong> Cultivating spiritual brightness through righteous living.</li>
+                <li><strong>Acrod (Freedom from Anger):</strong> Maintaining composure and emotional stability under provocation.</li>
+                <li><strong>Abhaya (Fearlessness):</strong> Cultivating courage rooted in truth and righteousness (Dharma).</li>
+                <li><strong>Nishkamata (Selflessness):</strong> Acting without being overly obsessed with personal rewards.</li>
+                <li><strong>Vinaya (Humility/Elegance):</strong> Respectful attitude toward everyone, especially elders and teachers.</li>
+                <li><strong>Samyama (Self-control):</strong> Regulating senses, thoughts, and physical impulses.</li>
+                <li><strong>Sthirata (Steadfastness):</strong> Remaining steady and goal-oriented regardless of distractions.</li>
+                <li><strong>Anasakti (Unattached action):</strong> Performing duties purely for their intrinsic value.</li>
+            </ol>
+        </section>
+
+        <!-- Category 2 -->
+        <section id="cat2" data-type="ethics">
+            <h2 class="section-title">2. Family & Relationships (Kutumba & Sambandha Dharma)</h2>
+            <p class="category-desc">Ethics governing domestic harmony, honoring elders, and maintaining sacred familial bonds.</p>
+            <ol start="26">
+                <li><strong>Matru Devo Bhava:</strong> Reverencing and respecting mother as a living divinity.</li>
+                <li><strong>Pitru Devo Bhava:</strong> Honoring and caring for father as a pillar of guidance.</li>
+                <li><strong>Acharya Devo Bhava:</strong> Treating teachers and mentors with supreme respect.</li>
+                <li><strong>Atithi Devo Bhava:</strong> Treating guests with the utmost respect and hospitality.</li>
+                <li><strong>Shraddha (Filial Piety):</strong> Fulfilling duties toward ancestors with reverence and gratitude.</li>
+                <li><strong>Parivara Sneha (Familial Affection):</strong> Fostering warmth, trust, and love among relatives.</li>
+                <li><strong>Bhratri Bhava (Sibling Harmony):</strong> Cultivating protective and supportive ties with brothers and sisters.</li>
+                <li><strong>Dampatya Prema (Spousal Respect):</strong> Mutual loyalty, respect, and partnership in marriage.</li>
+                <li><strong>Sneha (Friendship):</strong> Maintaining lifelong loyalty, trust, and support among friends.</li>
+                <li><strong>Santhana Vatsalya (Parental Love):</strong> Nurturing children with unconditional love combined with moral guidance.</li>
+                <li><strong>Kula Dharma (Family Tradition):</strong> Upholding positive ancestral values and customs.</li>
+                <li><strong>Kula Samrakshana (Protecting Lineage):</strong> Safeguarding family dignity and moral integrity.</li>
+                <li><strong>Samarpana (Dedication to Family):</strong> Willingness to make mutual sacrifices for collective welfare.</li>
+                <li><strong>Kshantibhava (Patience in Relationships):</strong> Tolerating minor domestic frictions with grace.</li>
+                <li><strong>Kritajnata (Gratitude):</strong> Acknowledging support received from family members regularly.</li>
+                <li><strong>Vivaha Pavitrata (Sanctity of Marriage):</strong> Upholding the sacred vows and spiritual partnership of wedlock.</li>
+                <li><strong>Balika Samrakshana (Protection of Youth):</strong> Providing a secure, nurturing environment for younger members.</li>
+                <li><strong>Jyeshtha Adara (Respect for Elders):</strong> Seeking blessings and guidance from senior family members.</li>
+                <li><strong>Grihastha Dharma (Householder Duties):</strong> Fulfilling economic and social duties responsibly.</li>
+                <li><strong>Shanti Sthapana (Peace-making):</strong> Acting as a mediator during family disputes.</li>
+                <li><strong>Saubhagyata (Sharing Joy):</strong> Celebrating family milestones and festivals collectively.</li>
+                <li><strong>Dukha Bhagi (Sharing Sorrow):</strong> Standing shoulder-to-shoulder during family crises.</li>
+                <li><strong>Anuraga (Deep Affection):</strong> Cultivating emotional warmth that binds generations together.</li>
+                <li><strong>Ghar ki Laxmi (Honoring Women):</strong> Treating female family members with high dignity and respect.</li>
+                <li><strong>Ubhaya Sambandha (Mutual Trust):</strong> Ensuring absolute transparency and reliance within relationships.</li>
+            </ol>
+        </section>
+
+        <!-- Category 3 -->
+        <section id="cat3" data-type="ethics">
+            <h2 class="section-title">3. Social Responsibility & Civic Duty (Samaja Dharma)</h2>
+            <p class="category-desc">Ethics that govern interactions with the broader community, upholding justice and social harmony.</p>
+            <ol start="51">
+                <li><strong>Lokasamraksana (Public Welfare):</strong> Working toward the betterment and safety of society.</li>
+                <li><strong>Seva (Selfless Service):</strong> Volunteering time and resources to help those in need.</li>
+                <li><strong>Dana (Charity):</strong> Sharing wealth, food, or knowledge with less fortunate individuals.</li>
+                <li><strong>Paropakara (Altruism):</strong> Living for the benefit of others without expecting returns.</li>
+                <li><strong>Nnyaya (Justice):</strong> Promoting fair treatment and honesty in public dealings.</li>
+                <li><strong>Abhaya Pradana (Providing Security):</strong> Ensuring the vulnerable feel safe in the community.</li>
+                <li><strong>Ahimsatmak Vyahar (Non-harmful Conduct):</strong> Promoting social peace rather than conflict.</li>
+                <li><strong>Samaja Sneha (Social Harmony):</strong> Living amicably across diverse backgrounds and beliefs.</li>
+                <li><strong>Nishkalanka Vyavahara (Spotless Integrity):</strong> Maintaining transparency in civic and financial matters.</li>
+                <li><strong>Rina Shodhana (Repaying Debts):</strong> Acknowledging and discharging debts to society (Samaja Rina).</li>
+                <li><strong>Loka Kalyana (Universal Well-being):</strong> Praying and working for the health of the entire world.</li>
+                <li><strong>Nigama Dharma (Community Rules):</strong> Respecting local civic laws and cultural traditions.</li>
+                <li><strong>Shiksha Dana (Sharing Knowledge):</strong> Educating others or providing skill training freely.</li>
+                <li><strong>Arogya Seva (Healthcare Support):</strong> Assisting the sick and supporting public health drives.</li>
+                <li><strong>Annadana (Food Distribution):</strong> Providing meals to the hungry and destitute.</li>
+                <li><strong>Vriksha Ropana (Tree Planting):</strong> Participating in green initiatives for community benefit.</li>
+                <li><strong>Jala Samrakshana (Water Conservation):</strong> Protecting community water sources from pollution.</li>
+                <li><strong>Satyagraha (Standing for Truth):</strong> Non-violent resistance against injustice or corruption.</li>
+                <li><strong>Sadachara (Good Conduct):</strong> Behaving in a manner that inspires trust and respect publicly.</li>
+                <li><strong>Atithi Satkara (Community Hospitality):</strong> Welcoming travelers and visitors with grace.</li>
+                <li><strong>Vada Samyam (Constructive Dialogue):</strong> Engaging in civil discussions rather than toxic arguments.</li>
+                <li><strong>Vridha Seva (Elder Care):</strong> Supporting elderly citizens within the community.</li>
+                <li><strong>Nari Sammana (Respect for Women):</strong> Ensuring safety, equality, and dignity for women in public spaces.</li>
+                <li><strong>Bala Kalyana (Child Welfare):</strong> Protecting child rights, education, and health.</li>
+                <li><strong>Vishvasa (Public Trust):</strong> Acting as a reliable, trustworthy pillar of the community.</li>
+            </ol>
+        </section>
+
+        <!-- Category 4 -->
+        <section id="cat4" data-type="ethics">
+            <h2 class="section-title">4. Spiritual & Inner Growth (Adhyatma & Sadhana)</h2>
+            <p class="category-desc">Practices and values aimed at self-realization, inner peace, and divine connection.</p>
+            <ol start="76">
+                <li><strong>Bhakti (Devotion):</strong> Cultivating profound love and surrender toward the Divine.</li>
+                <li><strong>Jnana (Wisdom):</strong> Seeking ultimate Truth and understanding the nature of reality.</li>
+                <li><strong>Karma Yoga (Path of Action):</strong> Performing duties efficiently as a form of worship.</li>
+                <li><strong>Dhyana (Meditation):</strong> Calming the fluctuations of the mind to experience inner stillness.</li>
+                <li><strong>Pranayama (Breath Regulation):</strong> Controlling vital life force to steady body and mind.</li>
+                <li><strong>Japa (Repetition of Mantra):</strong> Chanting sacred syllables to focus concentration.</li>
+                <li><strong>Kirtana (Devotional Singing):</strong> Expressing spiritual joy through music and lyrics.</li>
+                <li><strong>Tirtha Yatra (Pilgrimage):</strong> Traveling to sacred energy centers for spiritual renewal.</li>
+                <li><strong>Satsang (Company of Truth):</strong> Seeking association with wise and spiritually elevated souls.</li>
+                <li><strong>Vairagya Bhava (Dispassion):</strong> Recognizing the impermanence of material objects.</li>
+                <li><strong>Antarmukhi (Introversion):</strong> Turning attention inward rather than relying on external validation.</li>
+                <li><strong>Nishtha (Steadfast Devotion):</strong> Remaining firm in spiritual practice and beliefs.</li>
+                <li><strong>Samskara Shuddhi (Cleansing Impressions):</strong> Purifying sub-conscious patterns of behavior.</li>
+                <li><strong>Ishvara Bhakti (Love for God):</strong> Seeing the Divine in all forms and manifestations.</li>
+                <li><strong>Atma Jnana (Self-Knowledge):</strong> Realizing the true immortal nature of the soul.</li>
+                <li><strong>Veda Parayana (Scriptural Study):</strong> Reading sacred texts to glean timeless wisdom.</li>
+                <li><strong>Pooja (Ritual Worship):</strong> Expressing gratitude to the Divine through symbolic offerings.</li>
+                <li><strong>Homa/Yajna (Sacrificial Fire):</strong> Offering oblations to invoke positive cosmic energies.</li>
+                <li><strong>Shraddha (Faith):</strong> Having trust in spiritual laws and higher cosmic order.</li>
+                <li><strong>Moksha Chintana (Focus on Liberation):</strong> Aspiring for ultimate freedom from the cycle of suffering.</li>
+                <li><strong>Guru Bhakti (Reverence for Guru):</strong> Respecting and following the transformative guidance of a mentor.</li>
+                <li><strong>Samadhi (Superconscious State):</strong> Achieving complete integration of individual mind with the cosmos.</li>
+                <li><strong>Ananda (Bliss):</strong> Experiencing the uncaused joy of the inner spirit.</li>
+                <li><strong>Sarvabhuta Hite Rata (Loving All):</strong> Desiring the spiritual and physical well-being of all beings.</li>
+                <li><strong>Divya Drishti (Divine Vision):</strong> Perceiving the sacred underlying thread connecting everything.</li>
+            </ol>
+        </section>
+
+        <!-- Category 5 -->
+        <section id="cat5" data-type="ethics">
+            <h2 class="section-title">5. Environmental & Nature Ethics (Prakriti & Vasudha Dharma)</h2>
+            <p class="category-desc">Ethics that honor Mother Earth, animals, trees, and elements as sacred entities.</p>
+            <ol start="101">
+                <li><strong>Vasudhaiva Kutumbakam:</strong> Viewing the entire Earth and its life forms as one family.</li>
+                <li><strong>Bhumi Puja (Reverence for Earth):</strong> Treating soil and land with respect, avoiding contamination.</li>
+                <li><strong>Vriksha Puja (Tree Worship):</strong> Protecting sacred trees like Banyan, Peepal, and Tulsi.</li>
+                <li><strong>Jala Seva (Water Respect):</strong> Treating rivers (Ganga, Yamuna, etc.) as sacred life-givers.</li>
+                <li><strong>Agni Namaskara (Honoring Fire):</strong> Treating fire with respect as a sacred transformative element.</li>
+                <li><strong>Vayu Samrakshana (Protecting Air):</strong> Keeping the atmosphere clean and free of excessive pollution.</li>
+                <li><strong>Pashu Daya (Animal Compassion):</strong> Showing kindness, feeding, and protecting animals.</li>
+                <li><strong>Go Seva (Protection of Cows):</strong> Honoring and caring for cows as symbols of maternal nourishment.</li>
+                <li><strong>Pakshi Poshan (Feeding Birds):</strong> Leaving grains and water out for birds daily.</li>
+                <li><strong>Vanasamrakshana (Forest Conservation):</strong> Protecting wild habitats and discouraging deforestation.</li>
+                <li><strong>Ahimsa in Diet (Plant-based Ethics):</strong> Choosing sustainable, vegetarian lifestyles to minimize harm.</li>
+                <li><strong>Prakriti Anukula Jeevana (Eco-friendly Living):</strong> Aligning lifestyle with natural cycles.</li>
+                <li><strong>Nishprapancha Bhava (Minimal Consumption):</strong> Using resources only to the extent necessary.</li>
+                <li><strong>Ritu Samvartana (Seasonal Harmony):</strong> Adapting diet and activities according to seasonal shifts.</li>
+                <li><strong>Bhoomi Shanti (Healing the Earth):</strong> Participating in restoration and cleanup of natural spaces.</li>
+                <li><strong>Nadi Swachhata (River Cleanliness):</strong> Preventing waste dumping into water bodies.</li>
+                <li><strong>Prani Matra Daya (Compassion to All Creatures):</strong> Respecting insects, reptiles, and wild animals.</li>
+                <li><strong>Surya Namaskara (Honoring the Sun):</strong> Acknowledging the Sun as the primary source of life energy.</li>
+                <li><strong>Prakriti Vandana (Gratitude to Nature):</strong> Offering thanks for natural bounties like rain and crops.</li>
+                <li><strong>Ahara Shuddhi (Pure Food Source):</strong> Sourcing food ethically without exploiting nature.</li>
+                <li><strong>Dhwani Niyantrana (Noise Control):</strong> Respecting the acoustic peace of natural environments.</li>
+                <li><strong>Sthavara Jangama Daya (All-inclusive Kindness):</strong> Protecting both stationary (plants) and moving (animals) life.</li>
+                <li><strong>Kshama Prakriti (Apologizing to Earth):</strong> Seeking forgiveness from Earth for daily footprint impacts.</li>
+                <li><strong>Pancha Mahabhuta Samatva (Elemental Balance):</strong> Maintaining harmony among earth, water, fire, air, and ether.</li>
+                <li><strong>Loka Susthira (Sustainable Living):</strong> Ensuring future generations inherit a thriving planet.</li>
+            </ol>
+        </section>
+
+        <!-- Category 6 -->
+        <section id="cat6" data-type="ethics">
+            <h2 class="section-title">6. Professional & Work Ethics (Karma & Vyavasaaya Dharma)</h2>
+            <p class="category-desc">Ethics guiding professional integrity, craftsmanship, leadership, and honest enterprise.</p>
+            <ol start="126">
+                <li><strong>Karma Suddhi (Purity of Work):</strong> Executing professional duties with utmost dedication and excellence.</li>
+                <li><strong>Daksha (Competence):</strong> Striving for skill mastery and continuous professional improvement.</li>
+                <li><strong>Satya Vyavahara (Honest Business):</strong> Practicing fairness, transparent pricing, and truth in trade.</li>
+                <li><strong>Shatru-mukta Spardha (Fair Competition):</strong> Competing ethically without sabotaging peers.</li>
+                <li><strong>Karmachari Adara (Respect for Workers):</strong> Treating subordinates and labor with dignity and fair pay.</li>
+                <li><strong>Nishkapatata (Transparency):</strong> Avoiding hidden clauses, fraud, and financial deception.</li>
+                <li><strong>Samaya Palana (Punctuality):</strong> Respecting deadlines and valuing other people's time.</li>
+                <li><strong>Uttardayitva (Accountability):</strong> Taking full responsibility for professional outcomes and failures.</li>
+                <li><strong>Vandya Udyama (Dignity of Labor):</strong> Respecting all forms of honest physical and mental work.</li>
+                <li><strong>Gopya Rakshana (Confidentiality):</strong> Safeguarding trade secrets and private client information.</li>
+                <li><strong>Vritta Dharma (Code of Profession):</strong> Adhering strictly to the ethical charter of one's occupation.</li>
+                <li><strong>Netrutva Dharma (Ethical Leadership):</strong> Leading by inspiring, protecting, and mentoring teams.</li>
+                <li><strong>Bala-Vriddhi (Growth Mindset):</strong> Cultivating innovation while staying rooted in sound ethics.</li>
+                <li><strong>Alobha (Absence of Greed):</strong> Rejecting bribes, corruption, and unethical windfalls.</li>
+                <li><strong>Shrama Saphalyam (Rewarding Effort):</strong> Ensuring fair compensation for hard work.</li>
+                <li><strong>Kala Upayoga (Productive Time Management):</strong> Utilizing work hours efficiently and honestly.</li>
+                <li><strong>Vichakshana (Prudence):</strong> Making wise financial and strategic risk assessments.</li>
+                <li><strong>Seva Bhava in Business (Customer-Centricity):</strong> Serving customers as honored guests.</li>
+                <li><strong>Anurakta Karmachari (Loyalty):</strong> Being loyal and dedicated to the organization one serves.</li>
+                <li><strong>Nishpakshata (Impartiality):</strong> Making hiring and promotion decisions purely on merit.</li>
+                <li><strong>Sthira Buddhi (Emotional Resilience at Work):</strong> Maintaining cool under high-pressure project deadlines.</li>
+                <li><strong>Vatavaran Nirmana (Positive Workplace Culture):</strong> Fostering collaboration over workplace toxicity.</li>
+                <li><strong>Kshama in Leadership:</strong> Correcting mistakes of team members with constructive guidance.</li>
+                <li><strong>Pragya (Wisdom in Strategy):</strong> Balancing short-term profits with long-term ethical sustainability.</li>
+                <li><strong>Karma Phala Tyaga (Detachment from Ego):</strong> Taking pride in work without becoming arrogant over success.</li>
+            </ol>
+        </section>
+
+        <!-- Category 7 -->
+        <section id="cat7" data-type="ethics">
+            <h2 class="section-title">7. Food & Health Ethics (Ahara & Swasthya Dharma)</h2>
+            <p class="category-desc">Ethics concerning mindful eating, physical wellness, and purity of nourishment.</p>
+            <ol start="151">
+                <li><strong>Ahara Shuddhi (Purity of Diet):</strong> Consuming fresh, wholesome, and vegetarian/sattvic food when possible.</li>
+                <li><strong>Bhojana Mantra (Prayer Before Eating):</strong> Expressing gratitude to the Divine and nature before meals.</li>
+                <li><strong>Mita Ahara (Moderate Eating):</strong> Eating only until the stomach is two-thirds full (Hara Prapthi).</li>
+                <li><strong>Sattvic Ahara (Pure Foods):</strong> Favoring foods that promote calmness, clarity, and vitality.</li>
+                <li><strong>Nishedha Ahara (Avoiding Harmful Foods):</strong> Refraining from food that harms body or mind.</li>
+                <li><strong>Annarpanam (Sharing Food):</strong> Offering food to guests and the needy before consuming.</li>
+                <li><strong>Akrodha Bhojane (Peaceful Eating):</strong> Avoiding arguments or stress while having meals.</li>
+                <li><strong>Prana Shakti Poshan (Nurturing Life Force):</strong> Eating fresh food loaded with natural vitality.</li>
+                <li><strong>Jala Pana Vidhi (Mindful Drinking):</strong> Sipping water slowly with awareness rather than gulping.</li>
+                <li><strong>Upavasa (Fasting):</strong> Observing periodic fasts for physical cleansing and spiritual focus.</li>
+                <li><strong>Kayika Arogya (Physical Wellness):</strong> Maintaining body health through exercise, yoga, and rest.</li>
+                <li><strong>Manasika Swasthya (Mental Health):</strong> Protecting mental peace through meditation and positive associations.</li>
+                <li><strong>Nidra Niyantrana (Balanced Sleep):</strong> Getting adequate rest to rejuvenate body and mind.</li>
+                <li><strong>Aushadha Maryada (Proper Medication):</strong> Using medicines responsibly without abuse.</li>
+                <li><strong>Sharira Shoucha (Body Hygiene):</strong> Daily bathing, dental care, and maintaining physical cleanliness.</li>
+                <li><strong>Vata-Pitta-Kapha Samya (Dosha Balance):</strong> Maintaining physiological equilibrium through lifestyle.</li>
+                <li><strong>Kshudhartha Seva (Feeding the Hungry):</strong> Ensuring no one in the vicinity goes to bed starving.</li>
+                <li><strong>Bhojana Samaya Nishedha (Mindful Timing):</strong> Eating at regular hours aligned with digestion cycles.</li>
+                <li><strong>Paaka Kala Pavitrata (Clean Cooking):</strong> Preparing meals with a clean mind and cheerful disposition.</li>
+                <li><strong>Ahara Parinama (Digestive Awareness):</strong> Being mindful of how different foods affect body energy.</li>
+                <li><strong>Madya Tyaga (Avoiding Intoxicants):</strong> Refraining from alcohol, drugs, and substances that cloud judgment.</li>
+                <li><strong>Vridha Arogya (Senior Care):</strong> Providing special nutritional and health care to elders.</li>
+                <li><strong>Garbhini Seva (Prenatal Care):</strong> Ensuring expectant mothers receive pure food and positive environments.</li>
+                <li><strong>Balya Poshan (Child Nutrition):</strong> Providing wholesome, natural diets for growing children.</li>
+                <li><strong>Sarira Samrakshana (Body as Temple):</strong> Treating the physical body as a sacred instrument for righteous action.</li>
+            </ol>
+        </section>
+
+        <!-- Category 8 -->
+        <section id="cat8" data-type="ethics">
+            <h2 class="section-title">8. Communication & Speech Ethics (Vak & Sambhashana Dharma)</h2>
+            <p class="category-desc">Ethics governing truthful, kind, purposeful, and constructive verbal expression.</p>
+            <ol start="176">
+                <li><strong>Satyam Bruyat (Speak the Truth):</strong> Always speaking facts with clarity and honesty.</li>
+                <li><strong>Priyam Bruyat (Speak Pleasantly):</strong> Delivering truth with sweetness, avoiding harsh delivery.</li>
+                <li><strong>Na Bruyat Satyam Apriyam (Do Not Speak Unpleasant Truth):</strong> Avoiding truths intended solely to hurt.</li>
+                <li><strong>Mitabhashana (Measured Speech):</strong> Speaking concisely and avoiding excessive chatter.</li>
+                <li><strong>Madhura Vak (Sweet Words):</strong> Using polite, affectionate, and respectful language.</li>
+                <li><strong>Aparusha (Non-harshness):</strong> Refraining from using abusive, insulting, or foul language.</li>
+                <li><strong>Mithya Tyaga (Avoiding Lying):</strong> Never resorting to fabrication, cheating, or gossip.</li>
+                <li><strong>Vak Suddhi (Purity of Speech):</strong> Keeping words clean, uplifting, and inspiring.</li>
+                <li><strong>Anu-shravana (Active Listening):</strong> Patiently listening to others before formulating a response.</li>
+                <li><strong>Vivada Nirasa (Avoiding Arguments):</strong> Stepping back from toxic, ego-driven verbal battles.</li>
+                <li><strong>Samaya Ucita Vak (Contextual Speech):</strong> Speaking appropriate words suitable to time and place.</li>
+                <li><strong>Stuti (Appreciation):</strong> Generously praising the good qualities and achievements of others.</li>
+                <li><strong>Ninda Tyaga (Avoiding Slander):</strong> Refraining from backbiting, rumors, and character assassination.</li>
+                <li><strong>Pratigya Palana (Keeping Word):</strong> Honoring verbal commitments and promises made to others.</li>
+                <li><strong>Shanta Sambhashana (Calm Communication):</strong> Speaking in a composed, soothing tone even under stress.</li>
+                <li><strong>Gopya Rakshana in Speech (Discretion):</strong> Keeping confidential information safe from loose talk.</li>
+                <li><strong>Bodha Prada Vak (Educational Speech):</strong> Using words to teach, guide, and uplift listeners.</li>
+                <li><strong>Ahimsatmak Vak (Non-violent Speech):</strong> Ensuring words do not inflict emotional trauma on anyone.</li>
+                <li><strong>Vinamra Sambhashana (Humble Dialogue):</strong> Speaking without arrogance or condescension.</li>
+                <li><strong>Satya-Pratishtha (Truthful Reputation):</strong> Cultivating an image where one's word is deeply trusted.</li>
+                <li><strong>Nishkapat Vachana (Transparent Expression):</strong> Communicating intentions clearly without hidden agendas.</li>
+                <li><strong>Kritajna Vachana (Expressing Gratitude):</strong> Verbally thanking helpers, mentors, and family members.</li>
+                <li><strong>Paroksha Ninda Varjana (No Gossiping Behind Backs):</strong> Refraining from speaking ill of absent people.</li>
+                <li><strong>Mouna Vrata (Observing Silence):</strong> Practicing scheduled periods of silence for mental rejuvenation.</li>
+                <li><strong>Loka Mangala Vak (Beneficial Speech):</strong> Ensuring words contribute to the peace and joy of society.</li>
+            </ol>
+        </section>
+
+        <!-- Category 9: Festival Guide -->
+        <section id="festival" data-type="festival">
+            <h2 class="section-title">9. Cultural Festival Guide: What to Wear & How to Behave</h2>
+            <p class="category-desc">Practical guidelines for participating respectfully, gracefully, and joyfully in traditional Indian festivals (Diwali, Navratri, Pongal/Sankranti, Ganesh Chaturthi, weddings, etc.).</p>
+
+            <div class="festival-guide">
+                <!-- What to Wear -->
+                <div class="guide-box">
+                    <h3>What to Wear (Vastra Vidhi)</h3>
+                    <ul style="padding-left: 1.2rem;">
+                        <li><strong>Embrace Traditional Attire:</strong> Wear ethnic wear such as Kurta-Pajamas, Sherwanis, Dhotis for men; and Sarees, Salwar Kameez, Lehengas, or Anarkalis for women.</li>
+                        <li><strong>Choose Auspicious Colors:</strong> Opt for vibrant, festive colors like red, yellow, orange, royal blue, green, and gold. Avoid wearing black or pure white to joyous celebrations, as these are traditionally reserved for solemn occasions in many regions.</li>
+                        <li><strong>Modesty & Grace:</strong> Ensure clothing is respectful and modest, fitting the spiritual or family-oriented ambiance of festival venues and temples.</li>
+                        <li><strong>Traditional Jewelry & Accents:</strong> Complement outfits with subtle traditional ornaments (jhumkas, bangles, necklaces) and festive stoles (dupattas).</li>
+                        <li><strong>Footwear Etiquette:</strong> Wear slip-on traditional footwear (Kolhapuris, Mojaris, Juttis) since shoes must frequently be removed before entering temples, prayer rooms (puja mandir), or homes.</li>
+                    </ul>
+                </div>
+
+                <!-- How to Behave -->
+                <div class="guide-box">
+                    <h3>How to Behave (Achara & Shishtachaara)</h3>
+                    <ul style="padding-left: 1.2rem;">
+                        <li><strong>Pranam (Seek Blessings):</strong> Touch the feet of parents, elders, and gurus as a mark of deep respect when meeting them during festivals.</li>
+                        <li><strong>Atithi & Guest Manners:</strong> Greet guests warmly with "Namaste" or "Namaskar" with folded hands. Offer sweets, water, and prasad immediately.</li>
+                        <li><strong>Temple & Puja Decorum:</strong> Maintain silence or low whispers in sacred spaces. Participate respectfully in aartis and rituals without disrupting others.</li>
+                        <li><strong>Mindful Celebration:</strong> Celebrate eco-friendly festivals. Avoid excessive noise pollution, waste generation, or cruelty to animals (e.g., during firework displays).</li>
+                        <li><strong>Sharing & Generosity (Vatana):</strong> Share festive sweets (mithai) and gifts with neighbors, friends, and service workers to spread community joy.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Indian Sanskar, Ethics & Cultural Festival Guide. Preserving heritage through righteous living (Dharma).</p>
+    </footer>
+
+    <!-- JavaScript for Category Selection & Filtering -->
+    <script>
+        // Dropdown Navigation Function
+        function navigateToCategory(targetId) {
+            if (targetId === "all") {
+                // Show all sections
+                const sections = document.querySelectorAll("section");
+                sections.forEach(sec => sec.classList.remove("hidden"));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            // Hide everything or just jump? Here we scroll to the chosen element cleanly
+            const element = document.getElementById(targetId);
+            if (element) {
+                // Ensure section is visible if filtered
+                element.classList.remove("hidden");
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Filter Sections Function (Show All / Ethics Only / Festival Guide)
+        function filterSections(type, btnElement) {
+            // Update active button state
+            document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+            btnElement.classList.add("active");
+
+            // Reset dropdown to all when filtering via buttons
+            document.getElementById("categoryDropdown").value = "all";
+
+            const sections = document.querySelectorAll("section");
+            sections.forEach(sec => {
+                const secType = sec.getAttribute("data-type");
+                if (type === "all") {
+                    sec.classList.remove("hidden");
+                } else if (secType === type) {
+                    sec.classList.remove("hidden");
+                } else {
+                    sec.classList.add("hidden");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
