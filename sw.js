@@ -1,4 +1,4 @@
-const CACHE_NAME = "mynotes-runtime-v4";
+const CACHE_NAME = "mynotes-runtime-v5";
 
 const CORE_ASSETS = [
   "./",
@@ -11,43 +11,55 @@ const CORE_ASSETS = [
   "./vendor/sql-wasm.wasm"
 ];
 
-// 1. Install Event: Pre-cache core assets AND automatically extract/cache all links inside index.html
+// 1. Install Event: Pre-cache core assets AND automatically extract/cache links from index.html
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async cache => {
-      // Step A: Cache primary core files
-      await Promise.all(
-        CORE_ASSETS.map(url => cache.add(url).catch(err => console.warn(`[SW] Failed core cache: ${url}`, err)))
-      );
+      // Step A: Cache primary core files safely one by one
+      for (const url of CORE_ASSETS) {
+        try {
+          await cache.add(url);
+        } catch (err) {
+          console.warn(`[SW] Failed core cache for: ${url}`, err);
+        }
+      }
 
-      // Step B: Fetch index.html and dynamically parse all local href/src links
+      // Step B: Fetch index.html and dynamically parse local href/src links
       try {
         const response = await fetch("./index.html");
         const htmlText = await response.text();
 
-        // Extract all attributes using href="..." or src="..."
-        const matches = htmlText.matchAll(/(?:href|src)=["']([^"']+)["']/g);
-        const discoveredUrls = [];
+        const matches = htmlText.matchAll(/(?:href|src)=["']([^"'#]+)["']/g);
+        const discoveredUrls = new Set();
 
         for (const match of matches) {
-          let url = match[1];
-          // Keep only local relative links (ignore external links, anchors, or scripts like data URIs)
-          if (!url.startsWith("http") && !url.startsWith("data:") && !url.startsWith("#") && !url.startsWith("mailto:")) {
-            if (!url.startsWith("./") && !url.startsWith("/")) {
-              url = "./" + url;
-            }
-            discoveredUrls.push(url);
+          let rawUrl = match[1].trim();
+
+          // Filter out external links, data URIs, mailto, etc.
+          if (
+            !rawUrl.startsWith("http://") &&
+            !rawUrl.startsWith("https://") &&
+            !rawUrl.startsWith("data:") &&
+            !rawUrl.startsWith("mailto:") &&
+            !rawUrl.startsWith("javascript:")
+          ) {
+            // Normalize relative paths against the root scope
+            let cleanUrl = rawUrl.startsWith("/") ? "." + rawUrl : (rawUrl.startsWith("./") ? rawUrl : "./" + rawUrl);
+            discoveredUrls.add(cleanUrl);
           }
         }
 
-        // Deduplicate links
-        const uniqueUrls = [...new Set(discoveredUrls)];
+        const uniqueUrls = [...discoveredUrls];
         console.log("[Service Worker] Auto-discovered links from index.html:", uniqueUrls);
 
         // Cache discovered links individually
-        await Promise.all(
-          uniqueUrls.map(url => cache.add(url).catch(err => console.warn(`[SW] Skipped uncacheable link: ${url}`, err)))
-        );
+        for (const url of uniqueUrls) {
+          try {
+            await cache.add(url);
+          } catch (err) {
+            console.warn(`[SW] Skipped uncacheable link: ${url}`, err);
+          }
+        }
       } catch (error) {
         console.warn("[Service Worker] Could not parse index.html links during install:", error);
       }
@@ -71,7 +83,7 @@ self.addEventListener("activate", event => {
   );
 });
 
-// 3. Fetch Event: Cache-First with Dynamic Runtime Caching & Offline Fallback
+// 3. Fetch Event: Cache-First with Dynamic Runtime Caching & Offline Navigation Fallback
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
 
@@ -83,6 +95,7 @@ self.addEventListener("fetch", event => {
 
       return fetch(event.request)
         .then(networkResponse => {
+          // Do not cache bad responses or non-GET-compatible types unless opaque
           if (!networkResponse || (networkResponse.status !== 200 && networkResponse.type !== 'opaque')) {
             return networkResponse;
           }
@@ -95,7 +108,7 @@ self.addEventListener("fetch", event => {
           return networkResponse;
         })
         .catch(() => {
-          // Fallback to index.html for navigation when offline
+          // Fallback to index.html for navigation requests when offline
           if (event.request.mode === "navigate") {
             return caches.match("./index.html");
           }
@@ -103,4 +116,3 @@ self.addEventListener("fetch", event => {
     })
   );
 });
- 
