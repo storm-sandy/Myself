@@ -53,3 +53,4 @@ navigator.serviceWorker?.addEventListener('message', event => {
 document.getElementById('updateBtn')?.addEventListener('click', () => {
   window.location.reload();
 });
+ 
