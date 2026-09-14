@@ -1461,4 +1461,189 @@ function openSwayamPage(event,url){
                     j++
                 ){
 
-                    var menuHre
+                    var menuHref =
+                        menuLinks[j]
+                        .getAttribute("href");
+
+
+                    if(
+                        menuHref &&
+                        menuHref
+                        .split("/")
+                        .pop()
+                        ===
+                        url
+                        .split("/")
+                        .pop()
+                    ){
+
+                        menuLinks[j]
+                        .classList
+                        .add("active");
+
+
+                        try{
+
+                            menuLinks[j]
+                            .scrollIntoView({
+                                behavior:"smooth",
+                                block:"nearest",
+                                inline:"center"
+                            });
+
+                        }
+                        catch(e){}
+
+
+                        break;
+
+                    }
+
+                }
+
+
+                return;
+
+            }
+
+        }
+
+    }
+    catch(error){
+
+        console.log(
+            "Swayam navigation error:",
+            error
+        );
+
+    }
+
+
+    /*
+     * Direct-open fallback.
+     */
+
+    window.location.href = url;
+
+}
+
+
+/* =========================================================
+   THEME
+   ========================================================= */
+
+function changeTheme(theme){
+
+    document.body.className =
+        theme;
+
+
+    localStorage.setItem(
+        "swayam_home_theme",
+        theme
+    );
+
+}
+
+
+/* =========================================================
+   LOAD SAVED THEME
+   ========================================================= */
+
+(function(){
+
+    var savedTheme =
+        localStorage.getItem(
+            "swayam_home_theme"
+        );
+
+
+    if(savedTheme){
+
+        document.body.className =
+            savedTheme;
+
+
+        var selector =
+            document.getElementById(
+                "themeSelector"
+            );
+
+
+        if(selector){
+
+            selector.value =
+                savedTheme;
+
+        }
+
+    }
+
+})();
+
+
+/* =========================================================
+   CLOCK
+   ========================================================= */
+
+function updateClock(){
+
+    var now =
+        new Date();
+
+
+    document.getElementById(
+        "date"
+    ).innerHTML =
+        "📅 " +
+        now.toLocaleDateString(
+            "en-IN",
+            {
+                weekday:"long",
+                year:"numeric",
+                month:"long",
+                day:"numeric"
+            }
+        );
+
+
+    document.getElementById(
+        "time12"
+    ).innerHTML =
+        "🕐 " +
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:true
+            }
+        );
+
+
+    document.getElementById(
+        "time24"
+    ).innerHTML =
+        "🕑 " +
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:false
+            }
+        );
+
+}
+
+
+updateClock();
+
+setInterval(
+    updateClock,
+    1000
+);
+
+</script></body></html>
