@@ -1,218 +1,1356 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<link rel="stylesheet" href="style.css">
-<title>Utilities Dashboard</title>
+
+<meta
+    name="viewport"
+    content="width=device-width,
+    initial-scale=1.0,
+    maximum-scale=1.0,
+    user-scalable=no"
+>
+
+<meta name="theme-color" content="#16a34a">
+
+<title>Swayam - Upakarana Kaksha</title>
+
 <style>
-body{
-font-family:Arial;
-margin:0;
-transition:0.3s;
+
+/* =========================================================
+   SWAYAM UPKARANA KAKSHA
+========================================================= */
+
+*{
+    box-sizing:border-box;
 }
 
-/* HEADER */
+html,
+body{
+    margin:0;
+    padding:0;
+    min-height:100%;
+
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+}
+
+body{
+    transition:
+        background .3s ease,
+        color .3s ease;
+}
+
+/* =========================================================
+   THEMES
+========================================================= */
+
+body.light{
+
+    --bg:#f3f7f4;
+
+    --header1:#16a34a;
+    --header2:#15803d;
+
+    --card:#ffffff;
+
+    --text:#172017;
+
+    --muted:#607060;
+
+    --border:#dce9df;
+
+    --shadow:
+        0 8px 24px rgba(0,0,0,.10);
+
+    --soft:#eaf7ee;
+
+    --link:#15803d;
+
+}
+
+
+body.dark{
+
+    --bg:#101412;
+
+    --header1:#166534;
+    --header2:#14532d;
+
+    --card:#1b241e;
+
+    --text:#f2f7f3;
+
+    --muted:#b8c7bb;
+
+    --border:#2d3b31;
+
+    --shadow:
+        0 8px 24px rgba(0,0,0,.35);
+
+    --soft:#1d3224;
+
+    --link:#86efac;
+
+}
+
+
+body.blue{
+
+    --bg:#eef7ff;
+
+    --header1:#15803d;
+    --header2:#166534;
+
+    --card:#ffffff;
+
+    --text:#142019;
+
+    --muted:#5f7065;
+
+    --border:#d6e8dc;
+
+    --shadow:
+        0 8px 24px rgba(0,0,0,.10);
+
+    --soft:#e7f6ed;
+
+    --link:#166534;
+
+}
+
+
+body{
+    background:var(--bg);
+    color:var(--text);
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
 
 .header{
-padding:0px;
-display:flex;
-justify-content:space-between;
-align-items:center;
+
+    width:100%;
+
+    padding:
+        14px 16px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--header1),
+            var(--header2)
+        );
+
+    color:white;
+
+    box-shadow:
+        0 4px 14px rgba(0,0,0,.18);
+
+    position:relative;
+
+    z-index:2;
 }
 
-/* GRID */
+
+.header-title{
+
+    min-width:0;
+
+}
+
+
+.header-title h2{
+
+    margin:0;
+
+    font-size:
+        clamp(
+            20px,
+            5vw,
+            28px
+        );
+
+    font-weight:800;
+
+    letter-spacing:.2px;
+
+}
+
+
+.header-title small{
+
+    display:block;
+
+    margin-top:3px;
+
+    font-size:12px;
+
+    opacity:.9;
+
+}
+
+
+/* =========================================================
+   THEME SELECTOR
+========================================================= */
+
+.theme-select{
+
+    border:
+        1px solid
+        rgba(255,255,255,.35);
+
+    border-radius:12px;
+
+    padding:
+        9px 10px;
+
+    background:
+        rgba(255,255,255,.16);
+
+    color:white;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    outline:none;
+
+    cursor:pointer;
+
+}
+
+
+.theme-select option{
+
+    color:#111;
+
+    background:white;
+
+}
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+.clock-panel{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                150px,
+                1fr
+            )
+        );
+
+    gap:10px;
+
+    padding:
+        14px 16px;
+
+}
+
+
+.clock-card{
+
+    background:
+        var(--card);
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:16px;
+
+    padding:
+        12px 14px;
+
+    box-shadow:
+        var(--shadow);
+
+    text-align:center;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.clock-card:hover{
+
+    transform:
+        translateY(-2px);
+
+}
+
+
+.clock-label{
+
+    display:block;
+
+    color:
+        var(--muted);
+
+    font-size:11px;
+
+    font-weight:800;
+
+    text-transform:uppercase;
+
+    letter-spacing:.8px;
+
+}
+
+
+.clock-value{
+
+    display:block;
+
+    margin-top:4px;
+
+    color:
+        var(--text);
+
+    font-size:15px;
+
+    font-weight:750;
+
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.intro{
+
+    margin:
+        0 16px 14px;
+
+    padding:16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--soft),
+            var(--card)
+        );
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:18px;
+
+    box-shadow:
+        var(--shadow);
+
+}
+
+
+.intro h3{
+
+    margin:
+        0 0 6px;
+
+    font-size:20px;
+
+    color:
+        var(--text);
+
+}
+
+
+.intro p{
+
+    margin:0;
+
+    color:
+        var(--muted);
+
+    line-height:1.55;
+
+    font-size:14px;
+
+}
+
+
+/* =========================================================
+   GRID
+========================================================= */
 
 .list-grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:15px;
-padding:15px;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                240px,
+                1fr
+            )
+        );
+
+    gap:16px;
+
+    padding:
+        0 16px
+        16px;
+
 }
 
-/* CARD */
+
+/* =========================================================
+   CARD
+========================================================= */
 
 .card{
-padding:15px;
-border-radius:8px;
-box-shadow:0 2px 6px rgba(0,0,0,0.2);
-}
 
-/* LIST */
+    background:
+        var(--card);
 
-ul{
-padding-left:18px;
-}
+    border:
+        1px solid
+        var(--border);
 
-li{
-margin:6px 0;
-cursor:pointer;
-}
+    border-radius:20px;
 
-/* THEMES */
+    padding:18px;
 
-.light{
-background:#f4f6f9;
-color:#000;
-}
+    box-shadow:
+        var(--shadow);
 
-.light .header{
-background:#1e88e5;
-color:white;
-}
+    transition:
+        transform .22s ease,
+        box-shadow .22s ease,
+        border-color .22s ease;
 
-.light .card{
-background:white;
+    overflow:hidden;
+
 }
 
 
-.dark{
-background:#1e1e1e;
-color:white;
-a:link {
-  color:white;
-}
-}
-}
+.card:hover{
 
-.dark .header{
-background:#000;
-}
+    transform:
+        translateY(-4px);
 
-.dark .card{
-background:#2b2b2b;
+    box-shadow:
+        0 14px 30px
+        rgba(0,0,0,.14);
+
 }
 
 
-.blue{
-background:#e3f2fd;
-color:#000;
+.card-icon{
+
+    width:54px;
+
+    height:54px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--header1),
+            var(--header2)
+        );
+
+    color:white;
+
+    font-size:27px;
+
+    margin-bottom:12px;
+
+    box-shadow:
+        0 7px 16px
+        rgba(22,163,74,.22);
+
 }
 
-.blue .header{
-background:#1565c0;
-color:white;
+
+.card h3{
+
+    margin:
+        0 0 10px;
+
+    color:
+        var(--text);
+
+    font-size:19px;
+
 }
 
-.blue .card{
-background:white;
-}
-/* link color */
-a:link {
-  color: black;
+
+.card-description{
+
+    margin:
+        0 0 14px;
+
+    color:
+        var(--muted);
+
+    font-size:13px;
+
+    line-height:1.5;
+
 }
 
-a:visited {
-  color: purple;
+
+/* =========================================================
+   APP LINK
+========================================================= */
+
+.app-link{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+    padding:
+        13px 14px;
+
+    margin-top:8px;
+
+    background:
+        var(--soft);
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:14px;
+
+    color:
+        var(--link);
+
+    text-decoration:none;
+
+    font-size:15px;
+
+    font-weight:750;
+
+    transition:
+        transform .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+
+    -webkit-tap-highlight-color:
+        transparent;
+
 }
 
-a:hover {
-  color: red;
+
+.app-link:hover{
+
+    transform:
+        translateX(3px);
+
+    box-shadow:
+        0 5px 14px
+        rgba(0,0,0,.10);
+
 }
 
-a:active {
-  color: green;
+
+.app-link:active{
+
+    transform:
+        scale(.98);
+
 }
+
+
+.arrow{
+
+    font-size:20px;
+
+    flex-shrink:0;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.info-footer{
+
+    margin:
+        0 16px
+        18px;
+
+    padding:13px;
+
+    text-align:center;
+
+    border-radius:14px;
+
+    background:
+        var(--card);
+
+    border:
+        1px solid
+        var(--border);
+
+    color:
+        var(--muted);
+
+    font-size:12px;
+
+    box-shadow:
+        0 5px 15px
+        rgba(0,0,0,.06);
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:600px){
+
+    .header{
+
+        padding:
+            12px;
+
+    }
+
+
+    .header-title h2{
+
+        font-size:20px;
+
+    }
+
+
+    .theme-select{
+
+        max-width:110px;
+
+        font-size:12px;
+
+        padding:8px;
+
+    }
+
+
+    .clock-panel{
+
+        grid-template-columns:
+            1fr 1fr;
+
+        padding:
+            12px;
+
+    }
+
+
+    .clock-card{
+
+        padding:10px;
+
+    }
+
+
+    .clock-value{
+
+        font-size:13px;
+
+    }
+
+
+    .intro{
+
+        margin:
+            0 12px 12px;
+
+        padding:14px;
+
+    }
+
+
+    .list-grid{
+
+        grid-template-columns:
+            1fr;
+
+        padding:
+            0 12px
+            12px;
+
+        gap:12px;
+
+    }
+
+
+    .card{
+
+        padding:16px;
+
+    }
+
+
+    .info-footer{
+
+        margin:
+            0 12px
+            15px;
+
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL SCREEN
+========================================================= */
+
+@media(max-width:360px){
+
+    .clock-panel{
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .header{
+
+        align-items:
+            flex-start;
+
+    }
+
+
+    .header-title h2{
+
+        font-size:18px;
+
+    }
+
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+@media(prefers-reduced-motion:reduce){
+
+    *{
+
+        transition:none !important;
+
+    }
+
+}
+
 </style>
 
 </head>
 
+
 <body class="light">
 
-<!-- HEADER -->
 
-<div class="header">
-<h2>Upakarana Kashka</h2>
+<!-- =======================================================
+     HEADER
+======================================================= -->
 
-<select onchange="changeTheme(this.value)">
-<option value="light">Light Theme</option>
-<option value="dark">Dark Theme</option>
-<option value="blue">Blue Theme</option>
-</select>
+<header class="header">
 
-</div>
-<div class="header">
-<span id="mdate"></span>|
-<span id="mtime12"></span>|
-<span id="mtime24"></span>|
-</div>
+    <div class="header-title">
 
-<!-- GRID -->
+        <h2>
+            🧰 Upakarana Kaksha
+        </h2>
 
-<div class="list-grid">
+        <small>
+            Swayam • Smart Utilities & Management
+        </small>
 
-<div class="card">
-<h3>Smart Utilities</h3>
-<ul>
-<li><a href="PivotChart.html">Chart Builder</a></li>
-</ul>
-</div>
-
-<div class="card">
-<h3>Apps Management</h3>
-<ul>
-<li><a href="awpl_app.html">Apps Tracker</a></li>
-</ul>
-</div>
+    </div>
 
 
-<div class="card">
-<h3>Project Management</h3>
-<ul>
-<li><a href="awpl_prj.html">Project Tracker</a></li>
-</ul>
-</div>
+    <select
+        id="themeSelector"
+        class="theme-select"
+        onchange="changeTheme(this.value)"
+    >
+
+        <option value="light">
+            ☀️ Light
+        </option>
+
+        <option value="dark">
+            🌙 Dark
+        </option>
+
+        <option value="blue">
+            💧 Blue
+        </option>
+
+    </select>
+
+</header>
 
 
-</div>
+<!-- =======================================================
+     CLOCK
+======================================================= -->
+
+<section class="clock-panel">
+
+    <div class="clock-card">
+
+        <span class="clock-label">
+            Date
+        </span>
+
+        <span
+            id="mdate"
+            class="clock-value"
+        >
+            --
+        </span>
+
+    </div>
+
+
+    <div class="clock-card">
+
+        <span class="clock-label">
+            12 Hour
+        </span>
+
+        <span
+            id="mtime12"
+            class="clock-value"
+        >
+            --
+        </span>
+
+    </div>
+
+
+    <div class="clock-card">
+
+        <span class="clock-label">
+            24 Hour
+        </span>
+
+        <span
+            id="mtime24"
+            class="clock-value"
+        >
+            --
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     INTRO
+======================================================= -->
+
+<section class="intro">
+
+    <h3>
+        🧰 Smart Tools & Management
+    </h3>
+
+    <p>
+        Access your smart utilities, application
+        management tools and project management
+        tools from one central dashboard.
+    </p>
+
+</section>
+
+
+<!-- =======================================================
+     UTILITIES GRID
+======================================================= -->
+
+<main class="list-grid">
+
+
+    <!-- SMART UTILITIES -->
+
+    <section class="card">
+
+        <div class="card-icon">
+            📊
+        </div>
+
+        <h3>
+            Smart Utilities
+        </h3>
+
+        <p class="card-description">
+            Create and work with charts and
+            visual data using the Chart Builder.
+        </p>
+
+        <a
+            class="app-link"
+            href="PivotChart.html"
+            onclick="openSwayamPage(event,this.href)"
+        >
+
+            <span>
+                📊 Chart Builder
+            </span>
+
+            <span class="arrow">
+                →
+            </span>
+
+        </a>
+
+    </section>
+
+
+    <!-- APPS MANAGEMENT -->
+
+    <section class="card">
+
+        <div class="card-icon">
+            📱
+        </div>
+
+        <h3>
+            Apps Management
+        </h3>
+
+        <p class="card-description">
+            Maintain and organize your application
+            information with the Apps Tracker.
+        </p>
+
+        <a
+            class="app-link"
+            href="awpl_app.html"
+            onclick="openSwayamPage(event,this.href)"
+        >
+
+            <span>
+                📱 Apps Tracker
+            </span>
+
+            <span class="arrow">
+                →
+            </span>
+
+        </a>
+
+    </section>
+
+
+    <!-- PROJECT MANAGEMENT -->
+
+    <section class="card">
+
+        <div class="card-icon">
+            📋
+        </div>
+
+        <h3>
+            Project Management
+        </h3>
+
+        <p class="card-description">
+            Track your projects, activities and
+            project-related information.
+        </p>
+
+        <a
+            class="app-link"
+            href="awpl_prj.html"
+            onclick="openSwayamPage(event,this.href)"
+        >
+
+            <span>
+                📋 Project Tracker
+            </span>
+
+            <span class="arrow">
+                →
+            </span>
+
+        </a>
+
+    </section>
+
+
+</main>
+
+
+<!-- =======================================================
+     FOOTER
+======================================================= -->
+
+<footer class="info-footer">
+
+    💚 Swayam Upakarana Kaksha
+    • Personal Governance Simplified
+
+</footer>
 
 
 <script>
 
-/* CHANGE THEME */
+/* =========================================================
+   SWAYAM CENTER-AREA NAVIGATION
+========================================================= */
+
+function openSwayamPage(event,url){
+
+    event.preventDefault();
+
+    try{
+
+        /*
+         * If this dashboard is running inside
+         * the main Swayam iframe, load the
+         * selected page into that iframe.
+         */
+
+        if(
+            window.parent &&
+            window.parent !== window
+        ){
+
+            var frame =
+                window.parent.document
+                .getElementById(
+                    "swayamFrame"
+                );
+
+
+            if(frame){
+
+                frame.src = url;
+
+
+                /*
+                 * Remember selected page
+                 */
+
+                try{
+
+                    window.parent.localStorage
+                    .setItem(
+                        "swayam_selected_page",
+                        url.split("/").pop()
+                    );
+
+                }catch(e){}
+
+
+                /*
+                 * Highlight matching
+                 * Swayam menu item
+                 */
+
+                var menuLinks =
+                    window.parent.document
+                    .querySelectorAll(
+                        ".menu-button"
+                    );
+
+
+                for(
+                    var i=0;
+                    i<menuLinks.length;
+                    i++
+                ){
+
+                    menuLinks[i]
+                    .classList
+                    .remove(
+                        "active"
+                    );
+
+                }
+
+
+                for(
+                    var j=0;
+                    j<menuLinks.length;
+                    j++
+                ){
+
+                    var menuHref =
+                        menuLinks[j]
+                        .getAttribute(
+                            "href"
+                        );
+
+
+                    if(
+                        menuHref &&
+                        menuHref
+                        .split("/")
+                        .pop()
+                        ===
+                        url
+                        .split("/")
+                        .pop()
+                    ){
+
+                        menuLinks[j]
+                        .classList
+                        .add(
+                            "active"
+                        );
+
+
+                        try{
+
+                            menuLinks[j]
+                            .scrollIntoView({
+
+                                behavior:
+                                    "smooth",
+
+                                block:
+                                    "nearest",
+
+                                inline:
+                                    "center"
+
+                            });
+
+                        }catch(e){}
+
+
+                        break;
+
+                    }
+
+                }
+
+
+                return;
+
+            }
+
+        }
+
+    }
+    catch(error){
+
+        console.log(
+            "Swayam navigation error:",
+            error
+        );
+
+    }
+
+
+    /*
+     * Standalone fallback.
+     */
+
+    window.location.href = url;
+
+}
+
+
+/* =========================================================
+   THEME
+========================================================= */
 
 function changeTheme(theme){
 
-document.body.className=theme;
+    if(
+        theme !== "light" &&
+        theme !== "dark" &&
+        theme !== "blue"
+    ){
 
-localStorage.setItem("theme",theme);
+        theme = "light";
+
+    }
+
+
+    document.body.className =
+        theme;
+
+
+    localStorage.setItem(
+        "swayam_upakarana_theme",
+        theme
+    );
 
 }
 
 
-/* LOAD SAVED THEME */
+/* =========================================================
+   LOAD SAVED THEME
+========================================================= */
 
-let savedTheme=localStorage.getItem("theme");
+(function(){
 
-if(savedTheme){
+    var savedTheme =
+        localStorage.getItem(
+            "swayam_upakarana_theme"
+        );
 
-document.body.className=savedTheme;
 
-}
-/* CLOCK */
+    if(
+        savedTheme === "light" ||
+        savedTheme === "dark" ||
+        savedTheme === "blue"
+    ){
+
+        document.body.className =
+            savedTheme;
+
+
+        document.getElementById(
+            "themeSelector"
+        ).value =
+            savedTheme;
+
+    }
+
+})();
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
 
 function updateClock(){
 
-let now=new Date();
+    var now =
+        new Date();
 
-mtime24.innerHTML=now.toLocaleTimeString();
-mtime12.innerHTML=
-now.toLocaleTimeString('en-IN',{
-hour: '2-digit',
-minute: '2-digit',
-second: '2-digit',
-hour12: true
-});
 
-mdate.innerHTML=now.toLocaleDateString("en-IN", {
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric"
-});
+    var dateElement =
+        document.getElementById(
+            "mdate"
+        );
+
+
+    var time12Element =
+        document.getElementById(
+            "mtime12"
+        );
+
+
+    var time24Element =
+        document.getElementById(
+            "mtime24"
+        );
+
+
+    if(dateElement){
+
+        dateElement.textContent =
+            now.toLocaleDateString(
+                "en-IN",
+                {
+                    weekday:"short",
+                    year:"numeric",
+                    month:"short",
+                    day:"numeric"
+                }
+            );
+
+    }
+
+
+    if(time12Element){
+
+        time12Element.textContent =
+            now.toLocaleTimeString(
+                "en-IN",
+                {
+                    hour:"2-digit",
+                    minute:"2-digit",
+                    second:"2-digit",
+                    hour12:true
+                }
+            );
+
+    }
+
+
+    if(time24Element){
+
+        time24Element.textContent =
+            now.toLocaleTimeString(
+                "en-IN",
+                {
+                    hour:"2-digit",
+                    minute:"2-digit",
+                    second:"2-digit",
+                    hour12:false
+                }
+            );
+
+    }
 
 }
 
-setInterval(updateClock,1000);
+
+/*
+ * Start immediately.
+ */
+
+updateClock();
+
+
+setInterval(
+    updateClock,
+    1000
+);
+
 </script>
+
 </body>
 </html>
