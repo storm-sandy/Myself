@@ -1,4 +1,4 @@
-const CACHE_NAME = "mynotes-foolproof-v1";
+const CACHE_NAME = "mynotes-foolproof-v2";
 
 // Install & activate instantly
 self.addEventListener("install", event => {
