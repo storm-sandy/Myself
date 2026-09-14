@@ -1,207 +1,304 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<link rel="stylesheet" href="style.css"> <link rel="manifest"         href="manifest.json">
- <header class="header">
- </header>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swayam PWA</title>
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
 <style>
-table {
-        width: 100%;
-        border-collapse: collapse;
-        background: #fff;
-        font-size: 40px;
-        font-weight: bold;
+    /* Reset & Dashboard Split Layout */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
     }
 
-    th, td {
-        padding: 12px;
-        border: 1px solid #ddd;
+    body {
+        font-family: system-ui, -apple-system, sans-serif;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+        background-color: #f4f7f6;
     }
 
-    th {
+    /* Left Sidebar Navigation */
+    .sidebar {
+        width: 320px;
+        background: #ffffff;
+        border-right: 1px solid #ddd;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+    }
+
+    .sidebar-header {
+        padding: 20px;
         background: #4CAF50;
         color: white;
-        text-align: left;
+        text-align: center;
     }
 
-    /* Hover effect (mouse in/out) */
-    tr:hover {
-        background-color: #f2f2f2;
+    .sidebar-header h1 {
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+
+    .sidebar-header h5 {
+        font-size: 12px;
+        font-weight: normal;
+        opacity: 0.9;
+    }
+
+    .clock-box {
+        padding: 10px 15px;
+        background: #e8f5e9;
+        font-size: 13px;
+        text-align: center;
+        border-bottom: 1px solid #c8e6c9;
+        color: #2e7d32;
+    }
+
+    .menu-list {
+        flex: 1;
+        overflow-y: auto;
+        list-style: none;
+        padding: 10px;
+    }
+
+    .menu-item {
+        padding: 12px 15px;
+        margin-bottom: 6px;
+        border-radius: 6px;
         cursor: pointer;
+        transition: background 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid transparent;
     }
 
-    /* Right align Kaksha column */
-    td:last-child {
-        text-align: right;
+    .menu-item:hover {
+        background-color: #f1f8e9;
+        border-color: #c8e6c9;
     }
 
+    .menu-item.active {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .menu-title {
+        font-weight: bold;
+        font-size: 15px;
+    }
+
+    .menu-desc {
+        font-size: 13px;
+        opacity: 0.8;
+    }
+
+    /* Main Content Screen (Middle/Right) */
+    .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background: #ffffff;
+    }
+
+    .content-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+        background: #fff;
+    }
+
+    /* Welcome / Default View inside Content Area */
+    .welcome-screen {
+        padding: 40px;
+        overflow-y: auto;
+        height: 100%;
+    }
+
+    .welcome-screen h2 {
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .card {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        margin-top: 20px;
+    }
+
+    .card ul {
+        margin-left: 20px;
+        margin-top: 10px;
+    }
+
+    .card li {
+        margin-bottom: 6px;
+    }
+
+    /* Mobile Responsive View */
+    @media (max-width: 768px) {
+        body {
+            flex-direction: column;
+        }
+        .sidebar {
+            width: 100%;
+            height: 40vh;
+        }
+        .main-content {
+            height: 60vh;
+        }
+    }
 </style>
 
-
 <script>
-
-/* CLOCK */
-
 function updateClock(){
-
-let now=new Date();
-
-mtime24.innerHTML=now.toLocaleTimeString();
-mtime12.innerHTML=
-now.toLocaleTimeString('en-IN',{
-hour: '2-digit',
-minute: '2-digit',
-second: '2-digit',
-hour12: true
-});
-
-mdate.innerHTML=now.toLocaleDateString("en-IN", {
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric"
-});
-
+    let now = new Date();
+    if(typeof mtime24 !== 'undefined' && mtime24) mtime24.innerHTML = now.toLocaleTimeString();
+    if(typeof mtime12 !== 'undefined' && mtime12) mtime12.innerHTML = now.toLocaleTimeString('en-IN',{ hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+    if(typeof mdate !== 'undefined' && mdate) mdate.innerHTML = now.toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
 }
+setInterval(updateClock, 1000);
 
-setInterval(updateClock,1000);
+// Function to load pages into the middle screen frame without reloading the left menu
+function loadPage(url, element) {
+    document.getElementById('displayFrame').src = url;
+    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+    if(element) element.classList.add('active');
+}
 </script>
-
 </head>
-<body>
-<section class="section">
-<h1 style="text-align:center;">⛱️ Swayam.</h1>
-<h5 style="text-align:center;">Version 0.1 (winterbird),Fast and better UI. </h5>
+<body onload="updateClock()">
 
-<div class="header">
-<span id="mdate"></span>,
-<span id="mtime12"></span>,
-<span id="mtime24"></span>
-</div>
-<table>
+<!-- LEFT SIDEBAR NAVIGATION MENU -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h1>⛱️ Swayam</h1>
+        <h5>Version 0.1 (winterbird)</h5>
+    </div>
+    
+    <div class="clock-box">
+        <span id="mdate"></span> | <span id="mtime12"></span>
+    </div>
 
-    <tr>
-        <th>App Name</th>
-        <th>App Description</th>
-        <th>Last updated</th>
-    </tr>
-
-<tr onclick="window.location='Util_smart.html'">
-        <td>Smart Watch</td>
-        <td>⌚ समय नियोजन</td>
-        <td>Aug 2026</td>
-</tr>
-
-<tr onclick="window.location='cal.html'">
-        <td>Smart Calender</td>
-        <td>⌚ कालनिर्णय</td>
-        <td>Aug 2026</td>
-</tr>
-
-<tr onclick="window.location='Util_karya.html'">
-        <td>Work</td>
-        <td>💼 कार्य</td>
-<td>Aug 2026</td>
-</tr>
-
-<tr onclick="window.location='Util_laxmi.html'">
-        <td>Home</td>
-        <td>🏠 गृहस्थ</td>
-        <td>Aug 2026</td>
-</tr>
-
-<tr onclick="window.location='Util_yog.html'">
-        <td>Fitness</td>
-        <td>🙏 योग / स्वास्थ्य</td>
-        <td>Aug 2026</td>
-</tr>
-
-<tr onclick="window.location='Util_upkarna.html'">
-        <td>Utility</td>
-        <td>🛠️ उपकरण</td>
-<td>Aug 2026</td>
-</tr>
-
-<tr onclick="window.location='Util_chitra.html'">
-        <td>Image</td>
-        <td>🖼️ चित्र</td>
-<td>Aug 2026</td>
-</tr>
-
-<tr onclick="window.location='Util_sutra.html'">
-        <td>Formula</td>
-        <td>📐 सूत्र</td>
-<td>Aug 2026</td>
-</tr>
-
-<tr onclick="window.location='Util_awpl.html'">
-<td>Health Business</td>       
-<td>🌐 स्वास्थ्य व्यापार / आरोग्य व्यवसाय</td>      
-<td>Aug 2026</td>
-</tr>
-
-<tr onclick="window.location='Util_lang.html'">
-        <td>Languages</td>
-        <td>🌐 भाषा</td>
-<td>Aug 2026</td>
-</tr>
-
-<tr onclick="window.location='Util_sanskar.html'">
-        <td>Ethics</td>
-        <td>🙏 संस्कार</td>
-<td>Aug 2026</td>
-</tr>
-
-<tr onclick="window.location='Util_ranjan.html'">
-        <td>Chill & Relax</td>
-        <td>🎮 मनोरंजन</td>
-<td>Aug 2026</td>
-</tr>
-
-<tr onclick="window.location='medical.html'">
-<td>Medical Note</td>       
-<td>🙏 चिकित्सा</td>      
-<td>Aug 2026</td>
-</tr>
-
-<tr onclick="window.location='emergency.html'">
-<td>Emergency Note</td>       
-<td>🙏 अति-आवश्यक / आपात्कालीन</td>      
-<td>Aug 2026</td>
-</tr>
-
-<tr onclick="window.location='note2.html'">
-<td>Quick Notes</td>       
-<td>🌐 संक्षिप्तलेखः</td>      
-<td>Aug 2026</td>
-</tr>
-
-</table>
-
-</section>
-
-<div class="card">
-<h3>Note.</h3>
-<ul>
-<li>It's a PWA category app</li>
-<li>It's running on Secure Https</li> 
-<li>App's code is in Github and free to use.</li>
-<li>Data stay in User's mobile Only.</li>
-<li>Automatic update of change/feature.</li>
-<li>Export and import of data available.</li>
-<li>Data is LOST on cleaning browser.</li>
-</ul>
+    <ul class="menu-list">
+        <li class="menu-item active" onclick="loadPage('home-content.html', this)">
+            <div>
+                <div class="menu-title">Home / Dashboard</div>
+                <div class="menu-desc">🏠 मुख्य पृष्ठ</div>
+            </div>
+        </li>
+        <li class="menu-item" onclick="loadPage('Util_smart.html', this)">
+            <div>
+                <div class="menu-title">Smart Watch</div>
+                <div class="menu-desc">⌚ समय नियोजन</div>
+            </div>
+        </li>
+        <li class="menu-item" onclick="loadPage('cal.html', this)">
+            <div>
+                <div class="menu-title">Smart Calendar</div>
+                <div class="menu-desc">⌚ कालनिर्णय</div>
+            </div>
+        </li>
+        <li class="menu-item" onclick="loadPage('Util_karya.html', this)">
+            <div>
+                <div class="menu-title">Work</div>
+                <div class="menu-desc">💼 कार्य</div>
+            </div>
+        </li>
+        <li class="menu-item" onclick="loadPage('Util_laxmi.html', this)">
+            <div>
+                <div class="menu-title">Home</div>
+                <div class="menu-desc">🏠 गृहस्थ</div>
+            </div>
+        </li>
+        <li class="menu-item" onclick="loadPage('Util_yog.html', this)">
+            <div>
+                <div class="menu-title">Fitness</div>
+                <div class="menu-desc">🙏 योग / स्वास्थ्य</div>
+            </div>
+        </li>
+        <li class="menu-item" onclick="loadPage('Util_upkarna.html', this)">
+            <div>
+                <div class="menu-title">Utility</div>
+                <div class="menu-desc">🛠️ उपकरण</div>
+            </div>
+        </li>
+        <li class="menu-item" onclick="loadPage('Util_chitra.html', this)">
+            <div>
+                <div class="menu-title">Image</div>
+                <div class="menu-desc">🖼️ चित्र</div>
+            </div>
+        </li>
+        <li class="menu-item" onclick="loadPage('Util_sutra.html', this)">
+            <div>
+                <div class="menu-title">Formula</div>
+                <div class="menu-desc">📐 सूत्र</div>
+            </div>
+        </li>
+        <li class="menu-item" onclick="loadPage('Util_awpl.html', this)">
+            <div>
+                <div class="menu-title">Health Business</div>
+                <div class="menu-desc">🌐 स्वास्थ्य व्यापार</div>
+            </div>
+        </li>
+        <li class="menu-item" onclick="loadPage('Util_lang.html', this)">
+            <div>
+                <div class="menu-title">Languages</div>
+                <div class="menu-desc">🌐 भाषा</div>
+            </div>
+        </li>
+        <li class="menu-item" onclick="loadPage('Util_sanskar.html', this)">
+            <div>
+                <div class="menu-title">Ethics</div>
+                <div class="menu-desc">🙏 संस्कार</div>
+            </div>
+        </li>
+        <li class="menu-item" onclick="loadPage('Util_ranjan.html', this)">
+            <div>
+                <div class="menu-title">Chill & Relax</div>
+                <div class="menu-desc">🎮 मनोरंजन</div>
+            </div>
+        </li>
+        <li class="menu-item" onclick="loadPage('medical.html', this)">
+            <div>
+                <div class="menu-title">Medical Note</div>
+                <div class="menu-desc">🙏 चिकित्सा</div>
+            </div>
+        </li>
+        <li class="menu-item" onclick="loadPage('emergency.html', this)">
+            <div>
+                <div class="menu-title">Emergency Note</div>
+                <div class="menu-desc">🙏 आपात्कालीन</div>
+            </div>
+        </li>
+        <li class="menu-item" onclick="loadPage('note2.html', this)">
+            <div>
+                <div class="menu-title">Quick Notes</div>
+                <div class="menu-desc">🌐 संक्षिप्तलेखः</div>
+            </div>
+        </li>
+    </ul>
 </div>
 
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-  <a class="active" href=index.html>Home</a>
-  <a href=service.html>Service</a>
-  <a href=booking.html>Bookings</a>
-  <a href=contact.html>About Us</a>
-</nav>
-  <script src="app.js"></script>
-  </body>
-</html>
+<!-- MAIN CONTENT SCREEN (Middle frame changes dynamically) -->
+<div class="main-content">
+    <iframe id="displayFrame" name="displayFrame" class="content-frame" srcdoc="
+        <div style='font-family:sans-serif; padding:40px; text-align:center;'>
+            <h2>Welcome to Swayam Dashboard</h2>
+            <p>Select any option from the left menu to load it instantly in this frame.</p>
+        </div>
+    "></iframe>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
