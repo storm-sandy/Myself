@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
 <style>
-    /* Reset & Dashboard Split Layout */
     * {
         box-sizing: border-box;
         margin: 0;
@@ -17,95 +16,94 @@
     body {
         font-family: system-ui, -apple-system, sans-serif;
         display: flex;
-        height: 100vh;
-        overflow: hidden;
-        background-color: #f4f7f6;
-    }
-
-    /* Left Sidebar Navigation */
-    .sidebar {
-        width: 320px;
-        background: #ffffff;
-        border-right: 1px solid #ddd;
-        display: flex;
         flex-direction: column;
         height: 100vh;
-        box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+        overflow: hidden;
+        background-color: #f8f9fa;
     }
 
-    .sidebar-header {
-        padding: 20px;
+    /* Top Frame: Company / App Name & Clock */
+    .top-header {
+        height: 50px;
         background: #4CAF50;
         color: white;
-        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        z-index: 100;
     }
 
-    .sidebar-header h1 {
-        font-size: 24px;
-        margin-bottom: 5px;
+    .app-title {
+        font-size: 18px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
-    .sidebar-header h5 {
+    .app-version {
         font-size: 12px;
         font-weight: normal;
         opacity: 0.9;
     }
 
-    .clock-box {
-        padding: 10px 15px;
-        background: #e8f5e9;
+    .header-clock {
         font-size: 13px;
-        text-align: center;
-        border-bottom: 1px solid #c8e6c9;
-        color: #2e7d32;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 4px 10px;
+        border-radius: 4px;
     }
 
-    .menu-list {
+    /* Main Container Layout (Left Frame + Center Frame) */
+    .app-container {
+        display: flex;
         flex: 1;
+        height: calc(100vh - 50px);
+        overflow: hidden;
+    }
+
+    /* Left Frame: Set to 10% width with auto text wrapping */
+    .left-menu {
+        flex: 0 0 10%;
+        min-width: 120px;
+        background: #ffffff;
+        border-right: 1px solid #ddd;
         overflow-y: auto;
-        list-style: none;
-        padding: 10px;
+        height: 100%;
+        padding: 10px 0;
     }
 
     .menu-item {
-        padding: 12px 15px;
-        margin-bottom: 6px;
-        border-radius: 6px;
+        padding: 10px 12px;
+        font-size: 12px;
+        color: #333;
         cursor: pointer;
-        transition: background 0.2s;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border: 1px solid transparent;
+        border-left: 4px solid transparent;
+        transition: background 0.15s, color 0.15s;
+        user-select: none;
+        word-break: break-word;
+        line-height: 1.3;
     }
 
     .menu-item:hover {
         background-color: #f1f8e9;
-        border-color: #c8e6c9;
+        color: #2e7d32;
     }
 
     .menu-item.active {
-        background-color: #4CAF50;
-        color: white;
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border-left-color: #4CAF50;
+        font-weight: 600;
     }
 
-    .menu-title {
-        font-weight: bold;
-        font-size: 15px;
-    }
-
-    .menu-desc {
-        font-size: 13px;
-        opacity: 0.8;
-    }
-
-    /* Main Content Screen (Middle/Right) */
-    .main-content {
+    /* Center Frame: Dynamic Content Viewer */
+    .center-screen {
         flex: 1;
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
         background: #ffffff;
+        height: 100%;
     }
 
     .content-frame {
@@ -115,46 +113,18 @@
         background: #fff;
     }
 
-    /* Welcome / Default View inside Content Area */
-    .welcome-screen {
-        padding: 40px;
-        overflow-y: auto;
-        height: 100%;
-    }
-
-    .welcome-screen h2 {
-        color: #333;
-        margin-bottom: 15px;
-    }
-
-    .card {
-        background: #f9f9f9;
-        padding: 20px;
-        border-radius: 8px;
-        border: 1px solid #e0e0e0;
-        margin-top: 20px;
-    }
-
-    .card ul {
-        margin-left: 20px;
-        margin-top: 10px;
-    }
-
-    .card li {
-        margin-bottom: 6px;
-    }
-
-    /* Mobile Responsive View */
+    /* Responsive Mobile Adjustments */
     @media (max-width: 768px) {
-        body {
+        .app-container {
             flex-direction: column;
         }
-        .sidebar {
+        .left-menu {
+            flex: 0 0 35vh;
             width: 100%;
-            height: 40vh;
+            min-width: unset;
         }
-        .main-content {
-            height: 60vh;
+        .center-screen {
+            height: 65vh;
         }
     }
 </style>
@@ -162,13 +132,14 @@
 <script>
 function updateClock(){
     let now = new Date();
-    if(typeof mtime24 !== 'undefined' && mtime24) mtime24.innerHTML = now.toLocaleTimeString();
-    if(typeof mtime12 !== 'undefined' && mtime12) mtime12.innerHTML = now.toLocaleTimeString('en-IN',{ hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-    if(typeof mdate !== 'undefined' && mdate) mdate.innerHTML = now.toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+    const clockEl = document.getElementById('headerClock');
+    if(clockEl) {
+        clockEl.innerHTML = now.toLocaleDateString("en-IN", { weekday: "short", month: "short", day: "numeric" }) + " | " + 
+                            now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+    }
 }
 setInterval(updateClock, 1000);
 
-// Function to load pages into the middle screen frame without reloading the left menu
 function loadPage(url, element) {
     document.getElementById('displayFrame').src = url;
     document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
@@ -178,125 +149,49 @@ function loadPage(url, element) {
 </head>
 <body onload="updateClock()">
 
-<!-- LEFT SIDEBAR NAVIGATION MENU -->
-<div class="sidebar">
-    <div class="sidebar-header">
-        <h1>⛱️ Swayam</h1>
-        <h5>Version 0.1 (winterbird)</h5>
+<!-- TOP FRAME: App Name & Info -->
+<header class="top-header">
+    <div class="app-title">
+        ⛱️ Swayam <span class="app-version">v0.1 (winterbird)</span>
     </div>
+    <div class="header-clock" id="headerClock">
+        Loading...
+    </div>
+</header>
+
+<!-- APPLICATION STRUCTURE: Left Menu (~10%) + Center Screen -->
+<div class="app-container">
     
-    <div class="clock-box">
-        <span id="mdate"></span> | <span id="mtime12"></span>
-    </div>
+    <!-- LEFT FRAME: Menu List -->
+    <nav class="left-menu">
+        <div class="menu-item active" onclick="loadPage('home-content.html', this)">🏠 Home / मुख्य पृष्ठ</div>
+        <div class="menu-item" onclick="loadPage('Util_smart.html', this)">⌚ Smart Watch</div>
+        <div class="menu-item" onclick="loadPage('cal.html', this)">⌚ Smart Calendar</div>
+        <div class="menu-item" onclick="loadPage('Util_karya.html', this)">💼 Work</div>
+        <div class="menu-item" onclick="loadPage('Util_laxmi.html', this)">🏠 Home</div>
+        <div class="menu-item" onclick="loadPage('Util_yog.html', this)">🙏 Fitness / योग</div>
+        <div class="menu-item" onclick="loadPage('Util_upkarna.html', this)">🛠️ Utility</div>
+        <div class="menu-item" onclick="loadPage('Util_chitra.html', this)">🖼️ Image</div>
+        <div class="menu-item" onclick="loadPage('Util_sutra.html', this)">📐 Formula</div>
+        <div class="menu-item" onclick="loadPage('Util_awpl.html', this)">🌐 Health Business</div>
+        <div class="menu-item" onclick="loadPage('Util_lang.html', this)">🌐 Languages</div>
+        <div class="menu-item" onclick="loadPage('Util_sanskar.html', this)">🙏 Ethics / संस्कार</div>
+        <div class="menu-item" onclick="loadPage('Util_ranjan.html', this)">🎮 Chill & Relax</div>
+        <div class="menu-item" onclick="loadPage('medical.html', this)">🙏 Medical Note</div>
+        <div class="menu-item" onclick="loadPage('emergency.html', this)">🙏 Emergency Note</div>
+        <div class="menu-item" onclick="loadPage('note2.html', this)">🌐 Quick Notes</div>
+    </nav>
 
-    <ul class="menu-list">
-        <li class="menu-item active" onclick="loadPage('home-content.html', this)">
-            <div>
-                <div class="menu-title">Home / Dashboard</div>
-                <div class="menu-desc">🏠 मुख्य पृष्ठ</div>
+    <!-- CENTER FRAME: Dynamic Content Area -->
+    <main class="center-screen">
+        <iframe id="displayFrame" name="displayFrame" class="content-frame" srcdoc="
+            <div style='font-family:sans-serif; padding:50px; text-align:center; color:#555;'>
+                <h2 style='color:#4CAF50; margin-bottom:10px;'>⛱️ Swayam PWA Dashboard</h2>
+                <p>Click any option on the left menu to display the page content here instantly.</p>
             </div>
-        </li>
-        <li class="menu-item" onclick="loadPage('Util_smart.html', this)">
-            <div>
-                <div class="menu-title">Smart Watch</div>
-                <div class="menu-desc">⌚ समय नियोजन</div>
-            </div>
-        </li>
-        <li class="menu-item" onclick="loadPage('cal.html', this)">
-            <div>
-                <div class="menu-title">Smart Calendar</div>
-                <div class="menu-desc">⌚ कालनिर्णय</div>
-            </div>
-        </li>
-        <li class="menu-item" onclick="loadPage('Util_karya.html', this)">
-            <div>
-                <div class="menu-title">Work</div>
-                <div class="menu-desc">💼 कार्य</div>
-            </div>
-        </li>
-        <li class="menu-item" onclick="loadPage('Util_laxmi.html', this)">
-            <div>
-                <div class="menu-title">Home</div>
-                <div class="menu-desc">🏠 गृहस्थ</div>
-            </div>
-        </li>
-        <li class="menu-item" onclick="loadPage('Util_yog.html', this)">
-            <div>
-                <div class="menu-title">Fitness</div>
-                <div class="menu-desc">🙏 योग / स्वास्थ्य</div>
-            </div>
-        </li>
-        <li class="menu-item" onclick="loadPage('Util_upkarna.html', this)">
-            <div>
-                <div class="menu-title">Utility</div>
-                <div class="menu-desc">🛠️ उपकरण</div>
-            </div>
-        </li>
-        <li class="menu-item" onclick="loadPage('Util_chitra.html', this)">
-            <div>
-                <div class="menu-title">Image</div>
-                <div class="menu-desc">🖼️ चित्र</div>
-            </div>
-        </li>
-        <li class="menu-item" onclick="loadPage('Util_sutra.html', this)">
-            <div>
-                <div class="menu-title">Formula</div>
-                <div class="menu-desc">📐 सूत्र</div>
-            </div>
-        </li>
-        <li class="menu-item" onclick="loadPage('Util_awpl.html', this)">
-            <div>
-                <div class="menu-title">Health Business</div>
-                <div class="menu-desc">🌐 स्वास्थ्य व्यापार</div>
-            </div>
-        </li>
-        <li class="menu-item" onclick="loadPage('Util_lang.html', this)">
-            <div>
-                <div class="menu-title">Languages</div>
-                <div class="menu-desc">🌐 भाषा</div>
-            </div>
-        </li>
-        <li class="menu-item" onclick="loadPage('Util_sanskar.html', this)">
-            <div>
-                <div class="menu-title">Ethics</div>
-                <div class="menu-desc">🙏 संस्कार</div>
-            </div>
-        </li>
-        <li class="menu-item" onclick="loadPage('Util_ranjan.html', this)">
-            <div>
-                <div class="menu-title">Chill & Relax</div>
-                <div class="menu-desc">🎮 मनोरंजन</div>
-            </div>
-        </li>
-        <li class="menu-item" onclick="loadPage('medical.html', this)">
-            <div>
-                <div class="menu-title">Medical Note</div>
-                <div class="menu-desc">🙏 चिकित्सा</div>
-            </div>
-        </li>
-        <li class="menu-item" onclick="loadPage('emergency.html', this)">
-            <div>
-                <div class="menu-title">Emergency Note</div>
-                <div class="menu-desc">🙏 आपात्कालीन</div>
-            </div>
-        </li>
-        <li class="menu-item" onclick="loadPage('note2.html', this)">
-            <div>
-                <div class="menu-title">Quick Notes</div>
-                <div class="menu-desc">🌐 संक्षिप्तलेखः</div>
-            </div>
-        </li>
-    </ul>
-</div>
+        "></iframe>
+    </main>
 
-<!-- MAIN CONTENT SCREEN (Middle frame changes dynamically) -->
-<div class="main-content">
-    <iframe id="displayFrame" name="displayFrame" class="content-frame" srcdoc="
-        <div style='font-family:sans-serif; padding:40px; text-align:center;'>
-            <h2>Welcome to Swayam Dashboard</h2>
-            <p>Select any option from the left menu to load it instantly in this frame.</p>
-        </div>
-    "></iframe>
 </div>
 
 <script src="app.js"></script>
