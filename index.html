@@ -1,231 +1,1385 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0,
+               viewport-fit=cover">
+
+<meta name="theme-color" content="#4CAF50">
+
 <title>Swayam PWA</title>
-<link rel="stylesheet" href="style.css">
-<link rel="manifest" href="manifest.json">
+
 <style>
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
+
+/* =========================================================
+   SWAYAM PWA
+   SINGLE HTML FILE
+   MOBILE + TABLET + DESKTOP
+========================================================= */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+    height:100dvh;
+    overflow:hidden;
+}
+
+body{
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:#f5f7f8;
+    color:#222;
+
+    display:flex;
+    flex-direction:column;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.top-header{
+
+    height:58px;
+    min-height:58px;
+
+    background:
+        linear-gradient(135deg,#43a047,#66bb6a);
+
+    color:white;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:
+        0
+        max(12px,env(safe-area-inset-right))
+        0
+        max(12px,env(safe-area-inset-left));
+
+    box-shadow:
+        0 2px 8px rgba(0,0,0,.18);
+
+    position:relative;
+    z-index:1000;
+}
+
+
+/* Application title */
+
+.app-title{
+
+    display:flex;
+    align-items:center;
+
+    gap:7px;
+
+    font-size:clamp(15px,2vw,20px);
+
+    font-weight:700;
+
+    white-space:nowrap;
+}
+
+.app-version{
+
+    font-size:11px;
+
+    background:rgba(255,255,255,.18);
+
+    padding:3px 7px;
+
+    border-radius:10px;
+
+    font-weight:500;
+}
+
+
+/* Clock */
+
+.header-clock{
+
+    font-size:clamp(10px,1.4vw,13px);
+
+    background:rgba(255,255,255,.18);
+
+    padding:6px 9px;
+
+    border-radius:8px;
+
+    white-space:nowrap;
+
+    backdrop-filter:blur(5px);
+}
+
+
+/* =========================================================
+   MAIN APPLICATION
+========================================================= */
+
+.app-container{
+
+    display:flex;
+
+    width:100%;
+
+    height:calc(100dvh - 58px);
+
+    min-height:0;
+
+    overflow:hidden;
+}
+
+
+/* =========================================================
+   DESKTOP MENU
+========================================================= */
+
+.left-menu{
+
+    width:220px;
+    min-width:220px;
+
+    height:100%;
+
+    background:#ffffff;
+
+    border-right:1px solid #ddd;
+
+    overflow-y:auto;
+    overflow-x:hidden;
+
+    padding:8px 6px;
+
+    scrollbar-width:thin;
+
+    -webkit-overflow-scrolling:touch;
+}
+
+
+/* =========================================================
+   ACCESSIBLE BUTTON
+========================================================= */
+
+.menu-item{
+
+    appearance:none;
+    -webkit-appearance:none;
+
+    display:flex;
+    align-items:center;
+
+    width:100%;
+
+    min-height:44px;
+
+    padding:9px 12px;
+
+    margin:0 0 3px 0;
+
+    background:transparent;
+
+    border:0;
+
+    border-left:4px solid transparent;
+
+    border-radius:7px;
+
+    color:#333;
+
+    font-family:inherit;
+
+    font-size:14px;
+
+    font-weight:400;
+
+    text-align:left;
+
+    cursor:pointer;
+
+    user-select:none;
+
+    -webkit-tap-highlight-color:transparent;
+
+    transition:
+        background-color .2s ease,
+        color .2s ease,
+        border-color .2s ease,
+        transform .15s ease;
+}
+
+
+/* Mouse hover */
+
+.menu-item:hover{
+
+    background:#f1f8e9;
+
+    color:#2e7d32;
+
+    transform:translateX(2px);
+}
+
+
+/* Keyboard focus */
+
+.menu-item:focus-visible{
+
+    outline:3px solid #2e7d32;
+
+    outline-offset:2px;
+}
+
+
+/* Active */
+
+.menu-item.active{
+
+    background:#e8f5e9;
+
+    color:#2e7d32;
+
+    border-left-color:#4CAF50;
+
+    font-weight:700;
+}
+
+
+/* Press */
+
+.menu-item:active{
+
+    transform:scale(.98);
+}
+
+
+/* =========================================================
+   CENTER CONTENT
+========================================================= */
+
+.center-screen{
+
+    flex:1;
+
+    min-width:0;
+    min-height:0;
+
+    height:100%;
+
+    background:white;
+
+    overflow:hidden;
+}
+
+.content-frame{
+
+    display:block;
+
+    width:100%;
+    height:100%;
+
+    border:none;
+
+    background:white;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (min-width:769px) and (max-width:1100px){
+
+    .left-menu{
+
+        width:180px;
+        min-width:180px;
     }
 
-    body {
-        font-family: system-ui, -apple-system, sans-serif;
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        height: 100dvh; /* Handles mobile browser viewport sizing correctly */
-        overflow: hidden;
-        background-color: #f8f9fa;
+    .menu-item{
+
+        font-size:13px;
+
+        padding:9px 10px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE PORTRAIT
+========================================================= */
+
+@media (max-width:768px){
+
+    .top-header{
+
+        height:54px;
+        min-height:54px;
+
+        padding:0 10px;
     }
 
-    /* Top Frame: Company / App Name & Clock */
-    .top-header {
-        height: 50px;
-        min-height: 50px;
-        background: #4CAF50;
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 15px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        z-index: 100;
+    .app-title{
+
+        font-size:15px;
     }
 
-    .app-title {
-        font-size: 16px;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        white-space: nowrap;
+    .header-clock{
+
+        font-size:10px;
+
+        padding:5px 6px;
     }
 
-    .app-version {
-        font-size: 11px;
-        font-weight: normal;
-        opacity: 0.9;
+
+    .app-container{
+
+        flex-direction:column;
+
+        height:calc(100dvh - 54px);
     }
 
-    .header-clock {
-        font-size: 12px;
-        background: rgba(255, 255, 255, 0.2);
-        padding: 4px 8px;
-        border-radius: 4px;
-        white-space: nowrap;
+
+    /* Mobile horizontal menu */
+
+    .left-menu{
+
+        width:100%;
+        min-width:100%;
+
+        height:52px;
+        min-height:52px;
+
+        flex:0 0 52px;
+
+        display:flex;
+
+        flex-direction:row;
+
+        align-items:center;
+
+        gap:4px;
+
+        padding:4px;
+
+        overflow-x:auto;
+        overflow-y:hidden;
+
+        white-space:nowrap;
+
+        border-right:none;
+
+        border-bottom:1px solid #ddd;
+
+        scrollbar-width:none;
+
+        -webkit-overflow-scrolling:touch;
     }
 
-    /* Main Container Layout (Left Frame + Center Frame) */
-    .app-container {
-        display: flex;
-        flex: 1;
-        width: 100vw;
-        height: calc(100vh - 50px);
-        height: calc(100dvh - 50px);
-        overflow: hidden;
+
+    .left-menu::-webkit-scrollbar{
+
+        display:none;
     }
 
-    /* Left Frame: Fluid Desktop, Responsive Mobile Toggle/Drawer */
-    .left-menu {
-        flex: 0 0 15%; /* Allocated 15% width on desktop for comfort */
-        min-width: 130px;
-        background: #ffffff;
-        border-right: 1px solid #ddd;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        height: 100%;
-        padding: 8px 0;
+
+    /* Mobile buttons */
+
+    .menu-item{
+
+        flex:0 0 auto;
+
+        width:auto;
+
+        height:42px;
+        min-height:42px;
+
+        margin:0;
+
+        padding:0 13px;
+
+        justify-content:center;
+
+        border:0;
+
+        border-bottom:3px solid transparent;
+
+        border-radius:8px;
+
+        font-size:13px;
+
+        white-space:nowrap;
     }
 
-    .menu-item {
-        padding: 10px 10px;
-        font-size: 12px;
-        color: #333;
-        cursor: pointer;
-        border-left: 4px solid transparent;
-        transition: background 0.15s, color 0.15s;
-        user-select: none;
-        word-break: break-word;
-        line-height: 1.3;
+
+    .menu-item:hover{
+
+        transform:none;
     }
 
-    .menu-item:hover {
-        background-color: #f1f8e9;
-        color: #2e7d32;
+
+    .menu-item.active{
+
+        border-left:0;
+
+        border-bottom-color:#4CAF50;
+
+        background:#e8f5e9;
     }
 
-    .menu-item.active {
-        background-color: #e8f5e9;
-        color: #2e7d32;
-        border-left-color: #4CAF50;
-        font-weight: 600;
+
+    .menu-item:focus-visible{
+
+        outline:2px solid #2e7d32;
+
+        outline-offset:-2px;
     }
 
-    /* Center Frame: Dynamic Content Viewer */
-    .center-screen {
-        flex: 1;
-        background: #ffffff;
-        height: 100%;
-        min-width: 0; /* Prevents flexbox overflow bugs */
+
+    /* Content */
+
+    .center-screen{
+
+        width:100%;
+
+        height:auto;
+
+        flex:1;
+
+        min-height:0;
     }
 
-    .content-frame {
-        width: 100%;
-        height: 100%;
-        border: none;
-        background: #fff;
+    .content-frame{
+
+        width:100%;
+        height:100%;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width:400px){
+
+    .top-header{
+
+        height:50px;
+        min-height:50px;
     }
 
-    /* Responsive Mobile Adjustments (Smartphones & Small Tablets) */
-    @media (max-width: 768px) {
-        .app-container {
-            flex-direction: column;
-        }
-        .left-menu {
-            flex: 0 0 32vh; /* Compact top menu panel on mobile */
-            width: 100%;
-            min-width: 100%;
-            border-right: none;
-            border-bottom: 2px solid #ddd;
-            display: flex;
-            flex-direction: row; /* Horizontal scrollable bar or grid layout on mobile */
-            overflow-x: auto;
-            overflow-y: hidden;
-            white-space: nowrap;
-            padding: 0;
-        }
-        .menu-item {
-            flex: 0 0 auto;
-            border-left: none;
-            border-bottom: 4px solid transparent;
-            padding: 12px 14px;
-            font-size: 13px;
-        }
-        .menu-item.active {
-            border-left: none;
-            border-bottom-color: #4CAF50;
-        }
-        .center-screen {
-            height: calc(68vh - 50px);
-            flex: 1;
-        }
+    .app-container{
+
+        height:calc(100dvh - 50px);
     }
+
+    .app-title{
+
+        font-size:14px;
+    }
+
+    .app-version{
+
+        font-size:9px;
+    }
+
+    .header-clock{
+
+        font-size:9px;
+
+        padding:4px 5px;
+    }
+
+    .left-menu{
+
+        height:48px;
+        min-height:48px;
+
+        flex-basis:48px;
+    }
+
+    .menu-item{
+
+        height:38px;
+        min-height:38px;
+
+        padding:0 10px;
+
+        font-size:12px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE LANDSCAPE
+========================================================= */
+
+@media (max-width:768px)
+       and (orientation:landscape){
+
+    .top-header{
+
+        height:48px;
+        min-height:48px;
+    }
+
+    .app-container{
+
+        height:calc(100dvh - 48px);
+
+        flex-direction:row;
+    }
+
+    .left-menu{
+
+        width:150px;
+        min-width:150px;
+
+        height:100%;
+
+        flex:0 0 150px;
+
+        display:block;
+
+        overflow-y:auto;
+        overflow-x:hidden;
+
+        border-right:1px solid #ddd;
+
+        border-bottom:none;
+
+        padding:5px;
+    }
+
+    .menu-item{
+
+        width:100%;
+
+        height:40px;
+
+        min-height:40px;
+
+        justify-content:flex-start;
+
+        border:0;
+
+        border-left:3px solid transparent;
+
+        font-size:12px;
+    }
+
+    .menu-item.active{
+
+        border-left-color:#4CAF50;
+
+        border-bottom:0;
+    }
+}
+
+
+/* =========================================================
+   LARGE DESKTOP
+========================================================= */
+
+@media (min-width:1400px){
+
+    .left-menu{
+
+        width:250px;
+
+        min-width:250px;
+    }
+
+    .menu-item{
+
+        min-height:46px;
+
+        font-size:15px;
+
+        padding:10px 14px;
+    }
+}
+
+
+/* =========================================================
+   TOUCH DEVICE IMPROVEMENT
+========================================================= */
+
+@media (hover:none){
+
+    .menu-item:hover{
+
+        transform:none;
+    }
+
+    .menu-item:active{
+
+        background:#e8f5e9;
+
+        transform:scale(.97);
+    }
+}
+
+
+/* =========================================================
+   DARK SYSTEM MODE
+========================================================= */
+
+@media (prefers-color-scheme:dark){
+
+    body{
+
+        background:#121212;
+    }
+
+    .left-menu{
+
+        background:#1e1e1e;
+
+        border-color:#333;
+    }
+
+    .menu-item{
+
+        color:#ddd;
+    }
+
+    .menu-item:hover{
+
+        background:#263326;
+
+        color:#81c784;
+    }
+
+    .menu-item.active{
+
+        background:#1b351e;
+
+        color:#81c784;
+    }
+
+    .center-screen{
+
+        background:#181818;
+    }
+
+    .content-frame{
+
+        background:#181818;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion:reduce){
+
+    *{
+
+        scroll-behavior:auto !important;
+
+        transition:none !important;
+
+        animation:none !important;
+    }
+}
+
 </style>
 
-<script>
-function updateClock(){
-    let now = new Date();
-    const clockEl = document.getElementById('headerClock');
-    if(clockEl) {
-        clockEl.innerHTML = now.toLocaleDateString("en-IN", { weekday: "short", month: "short", day: "numeric" }) + " | " + 
-                            now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
-    }
-}
-setInterval(updateClock, 1000);
-
-function loadPage(url, element) {
-    document.getElementById('displayFrame').src = url;
-    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-    if(element) {
-        element.classList.add('active');
-        // Smoothly scroll active item into view on mobile screens
-        element.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    }
-}
-</script>
 </head>
-<body onload="updateClock()">
 
-<!-- TOP FRAME: App Name & Info -->
+
+<body>
+
+
+<!-- =======================================================
+     HEADER
+======================================================= -->
+
 <header class="top-header">
+
     <div class="app-title">
-        ⛱️ Swayam <span class="app-version">v0.1</span>
+
+        ⛱️ Swayam
+
+        <span class="app-version">
+            v0.1
+        </span>
+
     </div>
-    <div class="header-clock" id="headerClock">
+
+
+    <div
+        class="header-clock"
+        id="headerClock">
+
         Loading...
+
     </div>
+
 </header>
 
-<!-- APPLICATION STRUCTURE: Responsive Sidebar + Center Screen -->
+
+
+<!-- =======================================================
+     APPLICATION CONTAINER
+======================================================= -->
+
 <div class="app-container">
-    
-    <!-- LEFT FRAME / MOBILE TRAY MENU -->
-    <nav class="left-menu">
-        <div class="menu-item active" onclick="loadPage('home-content.html', this)">🏠 Home</div>
-        <div class="menu-item" onclick="loadPage('Util_smart.html', this)">⌚ Watch</div>
-        <div class="menu-item" onclick="loadPage('cal.html', this)">⌚ Calendar</div>
-        <div class="menu-item" onclick="loadPage('Util_karya.html', this)">💼 Work</div>
-        <div class="menu-item" onclick="loadPage('Util_laxmi.html', this)">🏠 Home</div>
-        <div class="menu-item" onclick="loadPage('Util_yog.html', this)">🙏 Fitness</div>
-        <div class="menu-item" onclick="loadPage('Util_upkarna.html', this)">🛠️ Utility</div>
-        <div class="menu-item" onclick="loadPage('Util_chitra.html', this)">🖼️ Image</div>
-        <div class="menu-item" onclick="loadPage('Util_sutra.html', this)">📐 Formula</div>
-        <div class="menu-item" onclick="loadPage('Util_awpl.html', this)">🌐 Business</div>
-        <div class="menu-item" onclick="loadPage('Util_lang.html', this)">🌐 Languages</div>
-        <div class="menu-item" onclick="loadPage('Util_sanskar.html', this)">🙏 Ethics</div>
-        <div class="menu-item" onclick="loadPage('Util_ranjan.html', this)">🎮 Relax</div>
-        <div class="menu-item" onclick="loadPage('medical.html', this)">🙏 Medical</div>
-        <div class="menu-item" onclick="loadPage('emergency.html', this)">🙏 Emergency</div>
-        <div class="menu-item" onclick="loadPage('note2.html', this)">🌐 Notes</div>
+
+
+    <!-- ===================================================
+         ACCESSIBLE MENU
+    ==================================================== -->
+
+    <nav
+        class="left-menu"
+        aria-label="Swayam application navigation">
+
+
+        <button
+            type="button"
+            class="menu-item active"
+            aria-current="page"
+            data-page="home-content.html">
+
+            🏠 Home
+
+        </button>
+
+
+        <button
+            type="button"
+            class="menu-item"
+            data-page="Util_smart.html">
+
+            ⌚ Watch
+
+        </button>
+
+
+        <button
+            type="button"
+            class="menu-item"
+            data-page="cal.html">
+
+            📅 Calendar
+
+        </button>
+
+
+        <button
+            type="button"
+            class="menu-item"
+            data-page="Util_karya.html">
+
+            💼 Work
+
+        </button>
+
+
+        <button
+            type="button"
+            class="menu-item"
+            data-page="Util_laxmi.html">
+
+            💰 Home Finance
+
+        </button>
+
+
+        <button
+            type="button"
+            class="menu-item"
+            data-page="Util_yog.html">
+
+            🙏 Fitness
+
+        </button>
+
+
+        <button
+            type="button"
+            class="menu-item"
+            data-page="Util_upkarna.html">
+
+            🛠️ Utility
+
+        </button>
+
+
+        <button
+            type="button"
+            class="menu-item"
+            data-page="Util_chitra.html">
+
+            🖼️ Image
+
+        </button>
+
+
+        <button
+            type="button"
+            class="menu-item"
+            data-page="Util_sutra.html">
+
+            📐 Formula
+
+        </button>
+
+
+        <button
+            type="button"
+            class="menu-item"
+            data-page="Util_awpl.html">
+
+            🌐 Business
+
+        </button>
+
+
+        <button
+            type="button"
+            class="menu-item"
+            data-page="Util_lang.html">
+
+            🌐 Languages
+
+        </button>
+
+
+        <button
+            type="button"
+            class="menu-item"
+            data-page="Util_sanskar.html">
+
+            🙏 Ethics
+
+        </button>
+
+
+        <button
+            type="button"
+            class="menu-item"
+            data-page="Util_ranjan.html">
+
+            🎮 Relax
+
+        </button>
+
+
+        <button
+            type="button"
+            class="menu-item"
+            data-page="medical.html">
+
+            🏥 Medical
+
+        </button>
+
+
+        <button
+            type="button"
+            class="menu-item"
+            data-page="emergency.html">
+
+            🚨 Emergency
+
+        </button>
+
+
+        <button
+            type="button"
+            class="menu-item"
+            data-page="note2.html">
+
+            📝 Notes
+
+        </button>
+
+
     </nav>
 
-    <!-- CENTER FRAME: Dynamic Content Area -->
+
+
+    <!-- ===================================================
+         CONTENT AREA
+    ==================================================== -->
+
     <main class="center-screen">
-        <iframe id="displayFrame" name="displayFrame" class="content-frame" srcdoc="
-            <div style='font-family:sans-serif; padding:40px; text-align:center; color:#555;'>
-                <h2 style='color:#4CAF50; margin-bottom:10px;'>⛱️ Swayam PWA Dashboard</h2>
-                <p>Click any option on the menu to display the page content here instantly.</p>
-            </div>
-        "></iframe>
+
+        <iframe
+            id="displayFrame"
+            name="displayFrame"
+            class="content-frame"
+            title="Swayam Application Content"
+            srcdoc="
+
+                <div style='
+                    font-family:system-ui,
+                    -apple-system,
+                    sans-serif;
+
+                    min-height:100vh;
+
+                    display:flex;
+
+                    align-items:center;
+
+                    justify-content:center;
+
+                    text-align:center;
+
+                    padding:30px;
+
+                    color:#555;
+                '>
+
+                    <div>
+
+                        <div style='
+                            font-size:60px;
+                            margin-bottom:15px;
+                        '>
+                            ⛱️
+                        </div>
+
+                        <h2 style='
+                            color:#4CAF50;
+                            margin-bottom:12px;
+                        '>
+                            Swayam PWA
+                        </h2>
+
+                        <p>
+                            Select an application
+                            from the menu.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            ">
+        </iframe>
+
     </main>
 
 </div>
 
-<script src="app.js"></script>
+
+
+<script>
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+function updateClock(){
+
+    const clock =
+        document.getElementById(
+            "headerClock"
+        );
+
+    if(!clock) return;
+
+    const now =
+        new Date();
+
+    const date =
+        now.toLocaleDateString(
+            "en-IN",
+            {
+                weekday:"short",
+                month:"short",
+                day:"numeric"
+            }
+        );
+
+    const time =
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit",
+                hour12:true
+            }
+        );
+
+    clock.textContent =
+        date + " | " + time;
+}
+
+
+/* Start clock */
+
+updateClock();
+
+setInterval(
+    updateClock,
+    1000
+);
+
+
+/* =========================================================
+   MENU SYSTEM
+========================================================= */
+
+const menuButtons =
+    document.querySelectorAll(
+        ".menu-item"
+    );
+
+const displayFrame =
+    document.getElementById(
+        "displayFrame"
+    );
+
+
+/* =========================================================
+   OPEN PAGE
+========================================================= */
+
+function openPage(
+    page,
+    selectedButton,
+    savePage = true
+){
+
+    if(!displayFrame) return;
+
+
+    /* Load iframe */
+
+    displayFrame.src = page;
+
+
+    /* Update buttons */
+
+    menuButtons.forEach(
+        function(button){
+
+            button.classList.remove(
+                "active"
+            );
+
+            button.removeAttribute(
+                "aria-current"
+            );
+
+        }
+    );
+
+
+    /* Selected button */
+
+    if(selectedButton){
+
+        selectedButton.classList.add(
+            "active"
+        );
+
+        selectedButton.setAttribute(
+            "aria-current",
+            "page"
+        );
+
+
+        /* Keep selected item visible */
+
+        if(
+            window.innerWidth <= 768
+        ){
+
+            selectedButton.scrollIntoView({
+                behavior:"smooth",
+                inline:"center",
+                block:"nearest"
+            });
+
+        }
+
+    }
+
+
+    /* Save last page */
+
+    if(savePage){
+
+        try{
+
+            localStorage.setItem(
+                "swayam_last_page",
+                page
+            );
+
+        }catch(error){
+
+            console.log(
+                "LocalStorage unavailable"
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   BUTTON CLICK
+========================================================= */
+
+menuButtons.forEach(
+    function(button){
+
+        button.addEventListener(
+            "click",
+            function(){
+
+                const page =
+                    button.dataset.page;
+
+                openPage(
+                    page,
+                    button,
+                    true
+                );
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================================
+   KEYBOARD NAVIGATION
+   Arrow Up / Down / Left / Right
+========================================================= */
+
+menuButtons.forEach(
+    function(button,index){
+
+        button.addEventListener(
+            "keydown",
+            function(event){
+
+                let newIndex =
+                    index;
+
+
+                /* Next */
+
+                if(
+                    event.key === "ArrowDown" ||
+                    event.key === "ArrowRight"
+                ){
+
+                    newIndex =
+                        (index + 1)
+                        %
+                        menuButtons.length;
+
+                }
+
+
+                /* Previous */
+
+                else if(
+                    event.key === "ArrowUp" ||
+                    event.key === "ArrowLeft"
+                ){
+
+                    newIndex =
+                        (index - 1 +
+                        menuButtons.length)
+                        %
+                        menuButtons.length;
+
+                }
+
+
+                /* Home */
+
+                else if(
+                    event.key === "Home"
+                ){
+
+                    newIndex = 0;
+
+                }
+
+
+                /* End */
+
+                else if(
+                    event.key === "End"
+                ){
+
+                    newIndex =
+                        menuButtons.length - 1;
+
+                }
+
+
+                else{
+
+                    return;
+
+                }
+
+
+                event.preventDefault();
+
+
+                const target =
+                    menuButtons[newIndex];
+
+                target.focus();
+
+
+                target.scrollIntoView({
+                    behavior:"smooth",
+                    block:"nearest",
+                    inline:"nearest"
+                });
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================================
+   RESTORE LAST PAGE
+========================================================= */
+
+function restoreLastPage(){
+
+    let savedPage = null;
+
+    try{
+
+        savedPage =
+            localStorage.getItem(
+                "swayam_last_page"
+            );
+
+    }catch(error){
+
+        savedPage = null;
+
+    }
+
+
+    /* Nothing saved */
+
+    if(!savedPage){
+
+        return;
+
+    }
+
+
+    /* Find matching button */
+
+    let foundButton = null;
+
+    menuButtons.forEach(
+        function(button){
+
+            if(
+                button.dataset.page ===
+                savedPage
+            ){
+
+                foundButton = button;
+
+            }
+
+        }
+    );
+
+
+    /* Restore */
+
+    if(foundButton){
+
+        openPage(
+            savedPage,
+            foundButton,
+            false
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+window.addEventListener(
+    "load",
+    function(){
+
+        updateClock();
+
+        setTimeout(
+            restoreLastPage,
+            100
+        );
+
+    }
+);
+
+
+/* =========================================================
+   HANDLE RESIZE
+========================================================= */
+
+window.addEventListener(
+    "resize",
+    function(){
+
+        /*
+         * Prevent layout problems when
+         * Android changes viewport size.
+         */
+
+        document.body.style.height =
+            window.innerHeight + "px";
+
+    }
+);
+
+</script>
+
 </body>
 </html>
