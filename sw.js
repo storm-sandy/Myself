@@ -1,18 +1,74 @@
-const CACHE_NAME = "mynotes-everything-v1";
+const CACHE_NAME = "mynotes-auto-crawl-v1";
 
-// 1. Install Event: Skip waiting to activate immediately
+const CORE_ASSETS = [
+  "./",
+  "./index.html",
+  "./manifest.json"
+];
+
+// 1. Install Event: Automatically crawl index.html and cache every discovered asset
 self.addEventListener("install", event => {
-  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(async cache => {
+      // Step A: Cache absolute core essentials first
+      for (const asset of CORE_ASSETS) {
+        try {
+          await cache.add(asset);
+        } catch (e) {
+          console.warn("[SW] Could not cache core asset:", asset);
+        }
+      }
+
+      // Step B: Automatically fetch index.html and parse all local links
+      try {
+        const response = await fetch("./index.html");
+        const htmlText = await response.text();
+
+        // Extract all href="..." and src="..." values
+        const matches = htmlText.matchAll(/(?:href|src)=["']([^"'#]+)["']/g);
+        const discoveredUrls = new Set();
+
+        for (const match of matches) {
+          let rawUrl = match[1].trim();
+
+          // Filter out external websites, data streams, and mail links
+          if (
+            !rawUrl.startsWith("http://") &&
+            !rawUrl.startsWith("https://") &&
+            !rawUrl.startsWith("data:") &&
+            !rawUrl.startsWith("mailto:") &&
+            !rawUrl.startsWith("javascript:")
+          ) {
+            let cleanUrl = rawUrl.startsWith("/") ? "." + rawUrl : (rawUrl.startsWith("./") ? rawUrl : "./" + rawUrl);
+            discoveredUrls.add(cleanUrl);
+          }
+        }
+
+        console.log("[Service Worker] Automatically discovered and caching files from index.html:", [...discoveredUrls]);
+
+        // Step C: Cache every single discovered file automatically
+        for (const url of discoveredUrls) {
+          try {
+            await cache.add(url);
+          } catch (err) {
+            console.warn(`[SW] Skipped uncacheable link: ${url}`, err);
+          }
+        }
+      } catch (error) {
+        console.warn("[Service Worker] Auto-crawl failed:", error);
+      }
+    }).then(() => self.skipWaiting())
+  );
 });
 
-// 2. Activate Event: Clean up old caches and take control of all open windows/tabs instantly
+// 2. Activate Event: Clean up old caches and take control instantly
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cache => {
           if (cache !== CACHE_NAME) {
-            console.log("[Service Worker] Deleting old cache:", cache);
+            console.log("[Service Worker] Deleting outdated cache:", cache);
             return caches.delete(cache);
           }
         })
@@ -21,32 +77,27 @@ self.addEventListener("activate", event => {
   );
 });
 
-// 3. Fetch Event: Universal Stale-While-Revalidate Catch-All
+// 3. Fetch Event: Stale-While-Revalidate Catch-All for any runtime requests
 self.addEventListener("fetch", event => {
-  // Only handle standard GET requests
   if (event.request.method !== "GET") return;
 
   event.respondWith(
     caches.open(CACHE_NAME).then(cache => {
       return cache.match(event.request).then(cachedResponse => {
         
-        // Background network request to check for updates and cache newly encountered files automatically
         const backgroundFetch = fetch(event.request)
           .then(networkResponse => {
-            // Cache valid 200 responses or cross-origin opaque responses
             if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
               cache.put(event.request, networkResponse.clone());
             }
             return networkResponse;
           })
           .catch(() => {
-            // If offline and not in cache, fallback to index.html for single-page app navigations
             if (event.request.mode === "navigate") {
               return cache.match("./index.html");
             }
           });
 
-        // Return cached version instantly if available; otherwise wait for the network response
         return cachedResponse || backgroundFetch;
       });
     })
