@@ -9,7 +9,6 @@
       content="width=device-width,
                initial-scale=1.0,
                maximum-scale=1.0,
-               user-scalable=no,
                viewport-fit=cover">
 
 <meta name="theme-color" content="#4CAF50">
@@ -19,7 +18,9 @@
 <style>
 
 /* =========================================================
-   RESET
+   SWAYAM PWA
+   SPCK COMPATIBLE
+   RESPONSIVE MOBILE + DESKTOP
 ========================================================= */
 
 *{
@@ -30,12 +31,8 @@
 
 html,
 body{
-
     width:100%;
-    height:100%;
-    height:100dvh;
-
-    overflow:hidden;
+    min-height:100%;
 }
 
 body{
@@ -48,10 +45,9 @@ body{
         Arial,
         sans-serif;
 
-    background:#f4f6f7;
+    background:#f4f6f8;
 
-    display:flex;
-    flex-direction:column;
+    color:#222;
 }
 
 
@@ -59,16 +55,23 @@ body{
    HEADER
 ========================================================= */
 
-.top-header{
+.header{
 
-    height:56px;
-    min-height:56px;
+    position:sticky;
+
+    top:0;
+
+    z-index:1000;
+
+    height:58px;
 
     display:flex;
+
     align-items:center;
+
     justify-content:space-between;
 
-    padding:0 12px;
+    padding:0 14px;
 
     color:white;
 
@@ -80,25 +83,25 @@ body{
         );
 
     box-shadow:
-        0 2px 8px rgba(0,0,0,.18);
-
-    z-index:1000;
+        0 2px 8px rgba(0,0,0,.2);
 }
 
-.app-title{
+.title{
 
     display:flex;
+
     align-items:center;
 
     gap:7px;
 
     font-size:18px;
+
     font-weight:700;
 
     white-space:nowrap;
 }
 
-.app-version{
+.version{
 
     font-size:10px;
 
@@ -107,10 +110,10 @@ body{
     border-radius:10px;
 
     background:
-        rgba(255,255,255,.20);
+        rgba(255,255,255,.2);
 }
 
-.header-clock{
+.clock{
 
     font-size:11px;
 
@@ -118,65 +121,60 @@ body{
 
     border-radius:8px;
 
-    white-space:nowrap;
-
     background:
         rgba(255,255,255,.18);
+
+    white-space:nowrap;
 }
 
 
 /* =========================================================
-   MAIN CONTAINER
+   DESKTOP LAYOUT
 ========================================================= */
 
-.app-container{
+.app{
 
     display:flex;
 
     width:100%;
 
-    height:calc(100dvh - 56px);
-
-    min-height:0;
-
-    overflow:hidden;
+    min-height:
+        calc(100vh - 58px);
 }
 
 
 /* =========================================================
-   MENU
+   SIDEBAR
 ========================================================= */
 
-.left-menu{
+.menu{
 
     width:220px;
+
     min-width:220px;
 
-    height:100%;
+    height:
+        calc(100vh - 58px);
 
-    padding:8px 6px;
+    position:sticky;
 
-    background:#ffffff;
-
-    border-right:1px solid #ddd;
+    top:58px;
 
     overflow-y:auto;
-    overflow-x:hidden;
 
-    scrollbar-width:thin;
+    padding:8px;
 
-    -webkit-overflow-scrolling:touch;
+    background:#fff;
+
+    border-right:1px solid #ddd;
 }
 
 
 /* =========================================================
-   ACCESSIBLE BUTTON
+   MENU BUTTON
 ========================================================= */
 
-.menu-item{
-
-    appearance:none;
-    -webkit-appearance:none;
+.menu-button{
 
     display:flex;
 
@@ -184,47 +182,36 @@ body{
 
     width:100%;
 
-    min-height:44px;
+    min-height:46px;
 
     padding:9px 12px;
 
     margin-bottom:4px;
 
-    background:transparent;
-
-    color:#333;
-
-    border:0;
-
     border-left:4px solid transparent;
 
     border-radius:8px;
 
-    font-family:inherit;
+    background:#fff;
+
+    color:#333;
+
+    text-decoration:none;
 
     font-size:14px;
 
-    text-align:left;
-
-    cursor:pointer;
-
-    touch-action:manipulation;
-
-    user-select:none;
-
-    -webkit-tap-highlight-color:transparent;
+    font-weight:500;
 
     transition:
         background .2s,
         color .2s,
-        border .2s,
         transform .1s;
 }
 
 
 /* Hover */
 
-.menu-item:hover{
+.menu-button:hover{
 
     background:#f1f8e9;
 
@@ -234,9 +221,19 @@ body{
 }
 
 
+/* Keyboard focus */
+
+.menu-button:focus{
+
+    outline:3px solid #2e7d32;
+
+    outline-offset:2px;
+}
+
+
 /* Active */
 
-.menu-item.active{
+.menu-button.active{
 
     background:#e8f5e9;
 
@@ -248,52 +245,147 @@ body{
 }
 
 
-/* Keyboard focus */
-
-.menu-item:focus-visible{
-
-    outline:3px solid #2e7d32;
-
-    outline-offset:2px;
-}
-
-
-/* Touch */
-
-.menu-item:active{
-
-    transform:scale(.97);
-}
-
-
 /* =========================================================
-   CENTER
+   HOME CONTENT
 ========================================================= */
 
-.center-screen{
+.content{
 
     flex:1;
 
     min-width:0;
-    min-height:0;
 
-    height:100%;
+    min-height:
+        calc(100vh - 58px);
 
-    background:white;
+    padding:30px;
 
-    overflow:hidden;
+    background:
+        linear-gradient(
+            135deg,
+            #f8fff8,
+            #ffffff
+        );
 }
 
-.content-frame{
 
-    display:block;
+/* =========================================================
+   DASHBOARD
+========================================================= */
 
-    width:100%;
-    height:100%;
+.dashboard{
 
-    border:0;
+    max-width:1000px;
 
-    background:white;
+    margin:0 auto;
+}
+
+.hero{
+
+    padding:40px 20px;
+
+    text-align:center;
+
+    border-radius:20px;
+
+    background:#fff;
+
+    box-shadow:
+        0 5px 25px rgba(0,0,0,.08);
+}
+
+.hero-icon{
+
+    font-size:65px;
+
+    margin-bottom:15px;
+}
+
+.hero h1{
+
+    color:#2e7d32;
+
+    margin-bottom:10px;
+
+    font-size:clamp(
+        24px,
+        4vw,
+        38px
+    );
+}
+
+.hero p{
+
+    color:#666;
+
+    font-size:16px;
+
+    line-height:1.6;
+}
+
+
+/* =========================================================
+   QUICK CARDS
+========================================================= */
+
+.cards{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(180px,1fr)
+        );
+
+    gap:15px;
+
+    margin-top:20px;
+}
+
+.card{
+
+    padding:20px;
+
+    border-radius:15px;
+
+    background:#fff;
+
+    text-align:center;
+
+    box-shadow:
+        0 3px 15px rgba(0,0,0,.07);
+
+    transition:
+        transform .2s;
+}
+
+.card:hover{
+
+    transform:translateY(-3px);
+}
+
+.card-icon{
+
+    font-size:32px;
+
+    margin-bottom:8px;
+}
+
+.card-title{
+
+    font-weight:700;
+
+    color:#333;
+}
+
+.card-text{
+
+    margin-top:5px;
+
+    font-size:12px;
+
+    color:#777;
 }
 
 
@@ -303,20 +395,19 @@ body{
 
 @media(max-width:768px){
 
-    .top-header{
+    .header{
 
         height:54px;
-        min-height:54px;
 
         padding:0 9px;
     }
 
-    .app-title{
+    .title{
 
         font-size:15px;
     }
 
-    .header-clock{
+    .clock{
 
         font-size:9px;
 
@@ -324,29 +415,30 @@ body{
     }
 
 
-    .app-container{
+    .app{
 
-        flex-direction:column;
+        display:block;
 
-        height:calc(100dvh - 54px);
+        min-height:
+            calc(100vh - 54px);
     }
 
 
-    /* Horizontal mobile menu */
+    /* Horizontal menu */
 
-    .left-menu{
+    .menu{
+
+        position:sticky;
+
+        top:54px;
 
         width:100%;
+
         min-width:100%;
 
-        height:54px;
-        min-height:54px;
-
-        flex:0 0 54px;
+        height:56px;
 
         display:flex;
-
-        flex-direction:row;
 
         align-items:center;
 
@@ -355,6 +447,7 @@ body{
         padding:5px;
 
         overflow-x:auto;
+
         overflow-y:hidden;
 
         white-space:nowrap;
@@ -363,23 +456,30 @@ body{
 
         border-bottom:1px solid #ddd;
 
+        z-index:900;
+
         scrollbar-width:none;
+
+        -webkit-overflow-scrolling:touch;
     }
 
-    .left-menu::-webkit-scrollbar{
+    .menu::-webkit-scrollbar{
 
         display:none;
     }
 
 
-    .menu-item{
+    .menu-button{
 
         flex:0 0 auto;
 
         width:auto;
 
-        height:42px;
-        min-height:42px;
+        min-width:max-content;
+
+        height:44px;
+
+        min-height:44px;
 
         margin:0;
 
@@ -394,65 +494,79 @@ body{
         border-radius:8px;
 
         font-size:13px;
-
-        white-space:nowrap;
     }
 
-    .menu-item.active{
+
+    .menu-button.active{
 
         border-left:0;
 
         border-bottom-color:#4CAF50;
     }
 
+
+    .content{
+
+        min-height:
+            calc(100vh - 110px);
+
+        padding:15px;
+    }
+
+
+    .hero{
+
+        padding:30px 15px;
+    }
+
+
+    .hero-icon{
+
+        font-size:50px;
+    }
+
 }
 
 
 /* =========================================================
-   SMALL PHONE
+   SMALL MOBILE
 ========================================================= */
 
 @media(max-width:400px){
 
-    .top-header{
+    .header{
 
         height:50px;
-        min-height:50px;
     }
 
-    .app-container{
+    .app{
 
-        height:calc(100dvh - 50px);
+        min-height:
+            calc(100vh - 50px);
     }
 
-    .app-title{
+    .menu{
 
-        font-size:14px;
+        top:50px;
+
+        height:50px;
     }
 
-    .header-clock{
+    .menu-button{
 
-        font-size:8px;
-    }
+        height:40px;
 
-    .left-menu{
-
-        height:48px;
-        min-height:48px;
-
-        flex-basis:48px;
-    }
-
-    .menu-item{
-
-        height:38px;
-        min-height:38px;
+        min-height:40px;
 
         padding:0 10px;
 
         font-size:12px;
     }
 
+    .content{
+
+        padding:10px;
+    }
 }
 
 
@@ -463,53 +577,64 @@ body{
 @media(max-width:768px)
        and (orientation:landscape){
 
-    .app-container{
+    .app{
 
-        flex-direction:row;
-
-        height:calc(100dvh - 50px);
+        display:flex;
     }
 
-    .left-menu{
+    .menu{
 
-        width:155px;
-        min-width:155px;
+        position:sticky;
 
-        height:100%;
+        top:0;
 
-        flex:0 0 155px;
+        width:150px;
+
+        min-width:150px;
+
+        height:
+            calc(100vh - 48px);
 
         display:block;
 
-        overflow-y:auto;
         overflow-x:hidden;
+
+        overflow-y:auto;
 
         border-right:1px solid #ddd;
 
         border-bottom:0;
+
+        padding:5px;
     }
 
-    .menu-item{
+    .menu-button{
 
         width:100%;
 
         height:40px;
+
         min-height:40px;
 
         justify-content:flex-start;
 
+        font-size:12px;
+
         border:0;
 
         border-left:3px solid transparent;
-
-        font-size:12px;
     }
 
-    .menu-item.active{
+    .menu-button.active{
 
         border-left-color:#4CAF50;
 
         border-bottom:0;
+    }
+
+    .content{
+
+        padding:15px;
     }
 }
 
@@ -520,17 +645,23 @@ body{
 
 @media(min-width:1400px){
 
-    .left-menu{
+    .menu{
 
         width:250px;
+
         min-width:250px;
     }
 
-    .menu-item{
+    .menu-button{
 
-        min-height:46px;
+        min-height:48px;
 
         font-size:15px;
+    }
+
+    .content{
+
+        padding:40px;
     }
 }
 
@@ -546,21 +677,22 @@ body{
      HEADER
 ======================================================= -->
 
-<header class="top-header">
+<header class="header">
 
-    <div class="app-title">
+    <div class="title">
 
         ⛱️ Swayam
 
-        <span class="app-version">
-            v0.2
+        <span class="version">
+            v1.0
         </span>
 
     </div>
 
+
     <div
-        class="header-clock"
-        id="headerClock">
+        class="clock"
+        id="clock">
 
         Loading...
 
@@ -574,233 +706,279 @@ body{
      APPLICATION
 ======================================================= -->
 
-<div class="app-container">
+<div class="app">
 
 
-<!-- =======================================================
-     MENU
-======================================================= -->
+    <!-- ===================================================
+         MENU
+    ==================================================== -->
 
-<nav
-    class="left-menu"
-    aria-label="Swayam Navigation">
+    <nav
+        class="menu"
+        aria-label="Swayam Navigation">
 
 
-    <button
-        type="button"
-        class="menu-item active"
-        aria-current="page"
-        onclick="loadPage('home-content.html',this)">
+        <a
+            href="home-content.html"
+            class="menu-button active">
 
-        🏠 Home
+            🏠 Home
 
-    </button>
+        </a>
 
 
-    <button
-        type="button"
-        class="menu-item"
-        onclick="loadPage('Util_smart.html',this)">
+        <a
+            href="Util_smart.html"
+            class="menu-button">
 
-        ⌚ Watch
+            ⌚ Watch
 
-    </button>
+        </a>
 
 
-    <button
-        type="button"
-        class="menu-item"
-        onclick="loadPage('cal.html',this)">
+        <a
+            href="cal.html"
+            class="menu-button">
 
-        📅 Calendar
+            📅 Calendar
 
-    </button>
+        </a>
 
 
-    <button
-        type="button"
-        class="menu-item"
-        onclick="loadPage('Util_karya.html',this)">
+        <a
+            href="Util_karya.html"
+            class="menu-button">
 
-        💼 Work
+            💼 Work
 
-    </button>
+        </a>
 
 
-    <button
-        type="button"
-        class="menu-item"
-        onclick="loadPage('Util_laxmi.html',this)">
+        <a
+            href="Util_laxmi.html"
+            class="menu-button">
 
-        💰 Home Finance
+            💰 Home Finance
 
-    </button>
+        </a>
 
 
-    <button
-        type="button"
-        class="menu-item"
-        onclick="loadPage('Util_yog.html',this)">
+        <a
+            href="Util_yog.html"
+            class="menu-button">
 
-        🙏 Fitness
+            🙏 Fitness
 
-    </button>
+        </a>
 
 
-    <button
-        type="button"
-        class="menu-item"
-        onclick="loadPage('Util_upkarna.html',this)">
+        <a
+            href="Util_upkarna.html"
+            class="menu-button">
 
-        🛠️ Utility
+            🛠️ Utility
 
-    </button>
+        </a>
 
 
-    <button
-        type="button"
-        class="menu-item"
-        onclick="loadPage('Util_chitra.html',this)">
+        <a
+            href="Util_chitra.html"
+            class="menu-button">
 
-        🖼️ Image
+            🖼️ Image
 
-    </button>
+        </a>
 
 
-    <button
-        type="button"
-        class="menu-item"
-        onclick="loadPage('Util_sutra.html',this)">
+        <a
+            href="Util_sutra.html"
+            class="menu-button">
 
-        📐 Formula
+            📐 Formula
 
-    </button>
+        </a>
 
 
-    <button
-        type="button"
-        class="menu-item"
-        onclick="loadPage('Util_awpl.html',this)">
+        <a
+            href="Util_awpl.html"
+            class="menu-button">
 
-        🌐 Business
+            🌐 Business
 
-    </button>
+        </a>
 
 
-    <button
-        type="button"
-        class="menu-item"
-        onclick="loadPage('Util_lang.html',this)">
+        <a
+            href="Util_lang.html"
+            class="menu-button">
 
-        🌐 Languages
+            🌐 Languages
 
-    </button>
+        </a>
 
 
-    <button
-        type="button"
-        class="menu-item"
-        onclick="loadPage('Util_sanskar.html',this)">
+        <a
+            href="Util_sanskar.html"
+            class="menu-button">
 
-        🙏 Ethics
+            🙏 Ethics
 
-    </button>
+        </a>
 
 
-    <button
-        type="button"
-        class="menu-item"
-        onclick="loadPage('Util_ranjan.html',this)">
+        <a
+            href="Util_ranjan.html"
+            class="menu-button">
 
-        🎮 Relax
+            🎮 Relax
 
-    </button>
+        </a>
 
 
-    <button
-        type="button"
-        class="menu-item"
-        onclick="loadPage('medical.html',this)">
+        <a
+            href="medical.html"
+            class="menu-button">
 
-        🏥 Medical
+            🏥 Medical
 
-    </button>
+        </a>
 
 
-    <button
-        type="button"
-        class="menu-item"
-        onclick="loadPage('emergency.html',this)">
+        <a
+            href="emergency.html"
+            class="menu-button">
 
-        🚨 Emergency
+            🚨 Emergency
 
-    </button>
+        </a>
 
 
-    <button
-        type="button"
-        class="menu-item"
-        onclick="loadPage('note2.html',this)">
+        <a
+            href="note2.html"
+            class="menu-button">
 
-        📝 Notes
+            📝 Notes
 
-    </button>
+        </a>
 
 
-</nav>
+    </nav>
 
 
 
-<!-- =======================================================
-     CENTER
-======================================================= -->
+    <!-- ===================================================
+         DASHBOARD
+    ==================================================== -->
 
-<main class="center-screen">
+    <main class="content">
 
-    <iframe
-        id="displayFrame"
-        class="content-frame"
-        name="displayFrame"
-        title="Swayam Application Content"
+        <div class="dashboard">
 
-        srcdoc="
-        <html>
-        <body style='
-            margin:0;
-            font-family:system-ui;
-            background:#f8f9fa;
-            min-height:100vh;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            text-align:center;
-            color:#555;
-        '>
 
-        <div>
+            <section class="hero">
 
-            <div style='font-size:60px'>
-                ⛱️
-            </div>
+                <div class="hero-icon">
+                    ⛱️
+                </div>
 
-            <h2 style='color:#4CAF50'>
-                Swayam PWA
-            </h2>
+                <h1>
+                    Swayam PWA
+                </h1>
 
-            <p>
-                Select an option from the menu.
-            </p>
+                <p>
+                    Personal Governance Simplified
+                </p>
+
+                <p style="
+                    margin-top:10px;
+                    font-size:13px;
+                    color:#888;
+                ">
+
+                    Select an application
+                    from the menu.
+
+                </p>
+
+            </section>
+
+
+            <section class="cards">
+
+
+                <div class="card">
+
+                    <div class="card-icon">
+                        📅
+                    </div>
+
+                    <div class="card-title">
+                        Calendar
+                    </div>
+
+                    <div class="card-text">
+                        Manage your schedule
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-icon">
+                        💼
+                    </div>
+
+                    <div class="card-title">
+                        Work
+                    </div>
+
+                    <div class="card-text">
+                        Manage your work
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-icon">
+                        📝
+                    </div>
+
+                    <div class="card-title">
+                        Notes
+                    </div>
+
+                    <div class="card-text">
+                        Keep important notes
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-icon">
+                        🛠️
+                    </div>
+
+                    <div class="card-title">
+                        Utilities
+                    </div>
+
+                    <div class="card-text">
+                        Useful tools
+                    </div>
+
+                </div>
+
+
+            </section>
 
         </div>
 
-        </body>
-        </html>
-        ">
-
-    </iframe>
-
-</main>
-
+    </main>
 
 </div>
 
@@ -814,16 +992,17 @@ body{
 
 function updateClock(){
 
-    const clock =
-        document.getElementById(
-            "headerClock"
-        );
+    var clock =
+        document.getElementById("clock");
 
-    if(!clock) return;
+    if(!clock){
+        return;
+    }
 
-    const now = new Date();
+    var now =
+        new Date();
 
-    const date =
+    var date =
         now.toLocaleDateString(
             "en-IN",
             {
@@ -833,7 +1012,7 @@ function updateClock(){
             }
         );
 
-    const time =
+    var time =
         now.toLocaleTimeString(
             "en-IN",
             {
@@ -857,226 +1036,99 @@ setInterval(
 
 
 /* =========================================================
-   LOAD PAGE
+   ACTIVE MENU
 ========================================================= */
 
-function loadPage(url,button){
-
-    console.log(
-        "Opening:",
-        url
+var links =
+    document.querySelectorAll(
+        ".menu-button"
     );
 
 
-    const frame =
-        document.getElementById(
-            "displayFrame"
-        );
+for(
+    var i=0;
+    i<links.length;
+    i++
+){
 
+    links[i].addEventListener(
+        "click",
+        function(){
 
-    /* Safety check */
+            for(
+                var j=0;
+                j<links.length;
+                j++
+            ){
 
-    if(!frame){
+                links[j]
+                    .classList
+                    .remove("active");
 
-        alert(
-            "Content frame not found."
-        );
+            }
 
-        return;
-    }
-
-
-    /* =====================================================
-       UPDATE ACTIVE BUTTON
-    ===================================================== */
-
-    const buttons =
-        document.querySelectorAll(
-            ".menu-item"
-        );
-
-
-    buttons.forEach(
-        function(btn){
-
-            btn.classList.remove(
+            this.classList.add(
                 "active"
             );
 
-            btn.removeAttribute(
-                "aria-current"
-            );
+            try{
+
+                localStorage.setItem(
+                    "swayam_page",
+                    this.getAttribute(
+                        "href"
+                    )
+                );
+
+            }catch(e){}
 
         }
     );
-
-
-    if(button){
-
-        button.classList.add(
-            "active"
-        );
-
-        button.setAttribute(
-            "aria-current",
-            "page"
-        );
-
-    }
-
-
-    /* =====================================================
-       LOAD PAGE
-    ===================================================== */
-
-    frame.src = url;
-
-
-    /* =====================================================
-       SAVE LAST PAGE
-    ===================================================== */
-
-    try{
-
-        localStorage.setItem(
-            "swayam_last_page",
-            url
-        );
-
-    }
-    catch(error){
-
-        console.log(
-            "LocalStorage unavailable"
-        );
-
-    }
-
-
-    /* =====================================================
-       MOBILE SCROLL
-    ===================================================== */
-
-    if(
-        window.innerWidth <= 768 &&
-        button
-    ){
-
-        button.scrollIntoView({
-
-            behavior:"smooth",
-
-            inline:"center",
-
-            block:"nearest"
-
-        });
-
-    }
 
 }
 
 
 /* =========================================================
-   IFRAME ERROR DETECTION
+   RESTORE LAST SELECTION
 ========================================================= */
 
-document
-    .getElementById("displayFrame")
-    .addEventListener(
-        "load",
-        function(){
+try{
 
-            console.log(
-                "Iframe loaded:",
-                this.src
-            );
+    var saved =
+        localStorage.getItem(
+            "swayam_page"
+        );
 
-        }
-    );
-
-
-/* =========================================================
-   RESTORE LAST PAGE
-========================================================= */
-
-window.addEventListener(
-    "load",
-    function(){
-
-        let lastPage = null;
-
-
-        try{
-
-            lastPage =
-                localStorage.getItem(
-                    "swayam_last_page"
-                );
-
-        }
-        catch(error){
-
-            lastPage = null;
-
-        }
-
-
-        if(!lastPage){
-
-            return;
-
-        }
-
-
-        const buttons =
-            document.querySelectorAll(
-                ".menu-item"
-            );
-
+    if(saved){
 
         for(
-            let i=0;
-            i<buttons.length;
-            i++
+            var k=0;
+            k<links.length;
+            k++
         ){
 
-            const button =
-                buttons[i];
-
-
-            /*
-             * Extract the page from
-             * onclick attribute.
-             */
-
-            const action =
-                button.getAttribute(
-                    "onclick"
-                );
-
-
             if(
-                action &&
-                action.includes(
-                    "'" + lastPage + "'"
-                )
+                links[k].getAttribute(
+                    "href"
+                ) === saved
             ){
 
-                loadPage(
-                    lastPage,
-                    button
-                );
+                links[k]
+                    .classList
+                    .add("active");
 
                 break;
+
             }
 
         }
 
     }
-);
+
+}catch(e){}
 
 </script>
+
 
 </body>
 </html>
