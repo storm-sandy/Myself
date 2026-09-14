@@ -1,4 +1,4 @@
-const CACHE_NAME = "mynotes-v1";
+const CACHE_NAME = "mynotes-v2";
 
 const urlsToCache = [
   "./",
