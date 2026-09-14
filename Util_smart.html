@@ -1,224 +1,1065 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<link rel="stylesheet" href="style.css">
-<title>Smart Watch Dashboard</title>
-<style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0">
+
+<meta name="theme-color" content="#2e7d32"><title>Smart Watch</title><style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,
 body{
-font-family:Arial;
-margin:0;
-transition:0.3s;
+    width:100%;
+    min-height:100%;
 }
 
-/* HEADER */
+body{
 
-.header{
-padding:0px;
-display:flex;
-justify-content:space-between;
-align-items:center;
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8fff8,
+            #ffffff
+        );
+
+    color:#222;
+
+    transition:.3s;
 }
 
-/* GRID */
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.module-header{
+
+    padding:14px 18px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:12px;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #43a047,
+            #66bb6a
+        );
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,.15);
+
+    position:sticky;
+
+    top:0;
+
+    z-index:10;
+}
+
+.title-area{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+}
+
+.watch-icon{
+
+    font-size:30px;
+}
+
+.title-area h1{
+
+    font-size:
+        clamp(20px,3vw,30px);
+}
+
+.subtitle{
+
+    font-size:11px;
+
+    opacity:.85;
+}
+
+
+/* =========================================================
+   THEME
+========================================================= */
+
+.theme-box select{
+
+    min-height:36px;
+
+    padding:6px 10px;
+
+    border:0;
+
+    border-radius:8px;
+
+    background:white;
+
+    color:#222;
+
+    cursor:pointer;
+}
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+.clock-panel{
+
+    margin:15px;
+
+    padding:14px;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:10px;
+
+    background:white;
+
+    border-radius:15px;
+
+    box-shadow:
+        0 3px 15px rgba(0,0,0,.08);
+}
+
+.time-box{
+
+    padding:10px;
+
+    text-align:center;
+
+    border-radius:10px;
+
+    background:#f1f8e9;
+}
+
+.time-label{
+
+    display:block;
+
+    font-size:10px;
+
+    color:#777;
+
+    text-transform:uppercase;
+}
+
+.time-value{
+
+    display:block;
+
+    margin-top:4px;
+
+    color:#2e7d32;
+
+    font-size:
+        clamp(12px,2vw,17px);
+
+    font-weight:700;
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
 
 .list-grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:15px;
-padding:15px;
-}
 
-/* CARD */
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                230px,
+                1fr
+            )
+        );
+
+    gap:15px;
+
+    padding:
+        0 15px 15px;
+}
 
 .card{
-padding:15px;
-border-radius:8px;
-box-shadow:0 2px 6px rgba(0,0,0,0.2);
+
+    padding:18px;
+
+    border-radius:16px;
+
+    background:white;
+
+    box-shadow:
+        0 3px 15px rgba(0,0,0,.08);
+
+    transition:.2s;
 }
 
-/* LIST */
+.card:hover{
 
-ul{
-padding-left:18px;
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 7px 20px rgba(0,0,0,.12);
 }
 
-li{
-margin:6px 0;
-cursor:pointer;
+.card-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-bottom:10px;
+
+    padding-bottom:10px;
+
+    border-bottom:1px solid #e5e5e5;
 }
 
-/* THEMES */
+.card-icon{
 
-.light{
-background:#f4f6f9;
-color:#000;
+    font-size:27px;
 }
 
-.light .header{
-background:#1e88e5;
-color:white;
-}
+.card h2{
 
-.light .card{
-background:white;
-}
+    color:#2e7d32;
 
-
-.dark{
-background:#1e1e1e;
-color:white;
-a:link {
-  color:white;
-}
-}
-}
-
-.dark .header{
-background:#000;
-}
-
-.dark .card{
-background:#2b2b2b;
+    font-size:18px;
 }
 
 
-.blue{
-background:#e3f2fd;
-color:#000;
+/* =========================================================
+   LINKS
+========================================================= */
+
+.card ul{
+
+    list-style:none;
 }
 
-.blue .header{
-background:#1565c0;
-color:white;
+.card li{
+
+    margin:5px 0;
 }
 
-.blue .card{
-background:white;
+.card a{
+
+    display:flex;
+
+    align-items:center;
+
+    min-height:44px;
+
+    padding:9px 11px;
+
+    border-radius:9px;
+
+    color:#333;
+
+    text-decoration:none;
+
+    font-size:14px;
+
+    font-weight:500;
+
+    cursor:pointer;
+
+    transition:.2s;
 }
-/* link color */
-a:link {
-  color: black;
+
+.card a:hover{
+
+    background:#e8f5e9;
+
+    color:#2e7d32;
+
+    transform:
+        translateX(3px);
 }
 
-a:visited {
-  color: purple;
+
+/* =========================================================
+   INFO
+========================================================= */
+
+.info-box{
+
+    margin:
+        0 15px 15px;
+
+    padding:13px 15px;
+
+    border-radius:12px;
+
+    background:#e8f5e9;
+
+    color:#2e7d32;
+
+    font-size:12px;
 }
 
-a:hover {
-  color: red;
+
+/* =========================================================
+   DARK
+========================================================= */
+
+body.dark{
+
+    background:#181818;
+
+    color:#eee;
 }
 
-a:active {
-  color: green;
+body.dark .module-header{
+
+    background:
+        linear-gradient(
+            135deg,
+            #1b5e20,
+            #2e7d32
+        );
 }
-</style>
 
-</head>
+body.dark .clock-panel,
+body.dark .card{
 
-<body class="light">
+    background:#252525;
+}
 
-<!-- HEADER -->
+body.dark .time-box{
 
-<div class="header">
-<h2>Smart Watch</h2>
-<select onchange="changeTheme(this.value)">
+    background:#303030;
+}
 
-<option value="light">Light Theme</option>
-<option value="dark">Dark Theme</option>
-<option value="blue">Blue Theme</option>
+body.dark .time-label{
 
-</select>
+    color:#aaa;
+}
+
+body.dark .time-value{
+
+    color:#81c784;
+}
+
+body.dark .card-header{
+
+    border-bottom-color:#444;
+}
+
+body.dark .card h2{
+
+    color:#81c784;
+}
+
+body.dark .card a{
+
+    color:#eee;
+}
+
+body.dark .card a:hover{
+
+    background:#303030;
+
+    color:#81c784;
+}
+
+body.dark .info-box{
+
+    background:#263d27;
+
+    color:#a5d6a7;
+}
+
+
+/* =========================================================
+   BLUE
+========================================================= */
+
+body.blue{
+
+    background:
+        linear-gradient(
+            135deg,
+            #eef7ff,
+            #ffffff
+        );
+}
+
+body.blue .module-header{
+
+    background:
+        linear-gradient(
+            135deg,
+            #1565c0,
+            #42a5f5
+        );
+}
+
+body.blue .time-box{
+
+    background:#e3f2fd;
+}
+
+body.blue .time-value{
+
+    color:#1565c0;
+}
+
+body.blue .card h2{
+
+    color:#1565c0;
+}
+
+body.blue .card a:hover{
+
+    background:#e3f2fd;
+
+    color:#1565c0;
+}
+
+body.blue .info-box{
+
+    background:#e3f2fd;
+
+    color:#1565c0;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px){
+
+    .module-header{
+
+        padding:11px;
+
+    }
+
+    .watch-icon{
+
+        font-size:24px;
+    }
+
+    .title-area h1{
+
+        font-size:19px;
+    }
+
+    .subtitle{
+
+        font-size:9px;
+    }
+
+    .theme-box select{
+
+        font-size:11px;
+
+        min-height:34px;
+    }
+
+    .clock-panel{
+
+        margin:10px;
+
+        padding:8px;
+
+        gap:6px;
+    }
+
+    .time-box{
+
+        padding:8px 4px;
+    }
+
+    .time-label{
+
+        font-size:8px;
+    }
+
+    .time-value{
+
+        font-size:11px;
+    }
+
+    .list-grid{
+
+        grid-template-columns:1fr;
+
+        padding:
+            0 10px 10px;
+
+        gap:10px;
+    }
+
+    .card{
+
+        padding:14px;
+    }
+
+    .card a{
+
+        min-height:44px;
+
+        font-size:14px;
+    }
+
+    .info-box{
+
+        margin:
+            0 10px 10px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media(max-width:400px){
+
+    .clock-panel{
+
+        grid-template-columns:1fr;
+    }
+
+}
+
+
+/* =========================================================
+   LANDSCAPE
+========================================================= */
+
+@media(max-width:700px)
+       and (orientation:landscape){
+
+    .list-grid{
+
+        grid-template-columns:
+            repeat(3,1fr);
+    }
+
+    .card a{
+
+        font-size:12px;
+
+        min-height:36px;
+    }
+
+}
+
+</style></head><body class="light"><!-- =======================================================
+     HEADER
+======================================================= --><header class="module-header"><div class="title-area">
+
+    <div class="watch-icon">
+        ⌚
+    </div>
+
+    <div>
+
+        <h1>
+            Smart Watch
+        </h1>
+
+        <div class="subtitle">
+            Swayam Smart Utilities
+        </div>
+
+    </div>
+
 </div>
-<div class="header">
-<span id="mdate"></span>|
-<span id="mtime12"></span>|
-<span id="mtime24"></span>|
-</div>
-
-<!-- GRID -->
-<div class="list-grid">
-<div class="card">
-<h3>Utilities</h3>
-<ul>
-<li><a href="Smart_Cal.html">Calender</a></li>
-<li><a href="Smart_Calc.html">Calculator</a></li>
-<li><a href="Smart_notes.html">Mini Notes</a></li>
-<li><a href="note2.html">Smart Notes</a></li>
-</ul>
-</div>
-<div class="card">
-<h3>Studio</h3>
-<ul>
-<li><a href="Smart_Audio.html">Audio Player</a></li>
-<li><a href="Smart_Video.html">Video Player</a></li>
-</ul>
-</div>
-
-<div class="card">
-<h3>Smartwatch</h3>
-<li><a href="Aug26_clock.html">Alarm Clock</a></li>
-<li><a href="Smart_watch.html">Watch</a></li>
-<li><a href="Smart_sensor.html">Sensor</a></li>
-<li><a href="Smart_zone.html">Zone</a></li>
-</ul>
-</div>
 
 
+<div class="theme-box">
+
+    <select
+        id="themeSelect"
+        onchange="changeTheme(this.value)">
+
+        <option value="light">
+            Light
+        </option>
+
+        <option value="dark">
+            Dark
+        </option>
+
+        <option value="blue">
+            Blue
+        </option>
+
+    </select>
 
 </div>
 
-<ul>
-<li>This app has Auto Update Feature Activated on refresh.</li>
-</ul>
+</header><!-- =======================================================
+     CLOCK
+======================================================= --><section class="clock-panel"><div class="time-box">
 
-<script>
+    <span class="time-label">
+        Date
+    </span>
 
-/* CHANGE THEME */
+    <span
+        class="time-value"
+        id="mdate">
+        --
+    </span>
+
+</div>
+
+
+<div class="time-box">
+
+    <span class="time-label">
+        12 Hour
+    </span>
+
+    <span
+        class="time-value"
+        id="mtime12">
+        --
+    </span>
+
+</div>
+
+
+<div class="time-box">
+
+    <span class="time-label">
+        24 Hour
+    </span>
+
+    <span
+        class="time-value"
+        id="mtime24">
+        --
+    </span>
+
+</div>
+
+</section><!-- =======================================================
+     CARDS
+======================================================= --><main class="list-grid"><!-- UTILITIES -->
+
+<section class="card">
+
+    <div class="card-header">
+
+        <div class="card-icon">
+            🧰
+        </div>
+
+        <h2>
+            Utilities
+        </h2>
+
+    </div>
+
+
+    <ul>
+
+        <li>
+            <a href="Smart_Cal.html"
+               onclick="openSwayamPage(event,this.href)">
+                📅 Calendar
+            </a>
+        </li>
+
+        <li>
+            <a href="Smart_Calc.html"
+               onclick="openSwayamPage(event,this.href)">
+                🧮 Calculator
+            </a>
+        </li>
+
+        <li>
+            <a href="Smart_notes.html"
+               onclick="openSwayamPage(event,this.href)">
+                📝 Mini Notes
+            </a>
+        </li>
+
+        <li>
+            <a href="note2.html"
+               onclick="openSwayamPage(event,this.href)">
+                📒 Smart Notes
+            </a>
+        </li>
+
+    </ul>
+
+</section>
+
+
+
+<!-- STUDIO -->
+
+<section class="card">
+
+    <div class="card-header">
+
+        <div class="card-icon">
+            🎬
+        </div>
+
+        <h2>
+            Studio
+        </h2>
+
+    </div>
+
+
+    <ul>
+
+        <li>
+            <a href="Smart_Audio.html"
+               onclick="openSwayamPage(event,this.href)">
+                🎵 Audio Player
+            </a>
+        </li>
+
+        <li>
+            <a href="Smart_Video.html"
+               onclick="openSwayamPage(event,this.href)">
+                🎬 Video Player
+            </a>
+        </li>
+
+    </ul>
+
+</section>
+
+
+
+<!-- SMARTWATCH -->
+
+<section class="card">
+
+    <div class="card-header">
+
+        <div class="card-icon">
+            ⌚
+        </div>
+
+        <h2>
+            Smartwatch
+        </h2>
+
+    </div>
+
+
+    <ul>
+
+        <li>
+            <a href="Aug26_clock.html"
+               onclick="openSwayamPage(event,this.href)">
+                ⏰ Alarm Clock
+            </a>
+        </li>
+
+        <li>
+            <a href="Smart_watch.html"
+               onclick="openSwayamPage(event,this.href)">
+                ⌚ Watch
+            </a>
+        </li>
+
+        <li>
+            <a href="Smart_sensor.html"
+               onclick="openSwayamPage(event,this.href)">
+                📡 Sensor
+            </a>
+        </li>
+
+        <li>
+            <a href="Smart_zone.html"
+               onclick="openSwayamPage(event,this.href)">
+                🌐 Zone
+            </a>
+        </li>
+
+    </ul>
+
+</section>
+
+</main><div class="info-box">ℹ️
+Select any utility to open it in the
+Swayam center area.
+
+</div><script>
+
+/* =========================================================
+   OPEN PAGE IN PARENT SWAYAM CENTER
+========================================================= */
+
+function openSwayamPage(event,url){
+
+    event.preventDefault();
+
+
+    /*
+     * We are inside the Swayam iframe.
+     *
+     * window.parent = Swayam index page
+     */
+
+    try{
+
+        if(
+            window.parent &&
+            window.parent !== window
+        ){
+
+            var frame =
+                window.parent.document
+                .getElementById(
+                    "swayamFrame"
+                );
+
+
+            if(frame){
+
+                frame.src = url;
+
+
+                /*
+                 * Tell parent to update
+                 * the menu selection.
+                 */
+
+                var menuLinks =
+                    window.parent.document
+                    .querySelectorAll(
+                        ".menu-button"
+                    );
+
+
+                for(
+                    var i=0;
+                    i<menuLinks.length;
+                    i++
+                ){
+
+                    menuLinks[i]
+                        .classList
+                        .remove("active");
+
+                }
+
+
+                /*
+                 * Find matching Swayam menu.
+                 */
+
+                for(
+                    var j=0;
+                    j<menuLinks.length;
+                    j++
+                ){
+
+                    if(
+                        menuLinks[j]
+                        .getAttribute("href")
+                        === url.split("/").pop()
+                    ){
+
+                        menuLinks[j]
+                            .classList
+                            .add("active");
+
+                        try{
+
+                            menuLinks[j]
+                                .scrollIntoView({
+                                    behavior:"smooth",
+                                    block:"nearest",
+                                    inline:"center"
+                                });
+
+                        }catch(e){}
+
+                        break;
+
+                    }
+
+                }
+
+
+                /*
+                 * Save page.
+                 */
+
+                try{
+
+                    window.parent.localStorage
+                    .setItem(
+                        "swayam_selected_page",
+                        url.split("/").pop()
+                    );
+
+                }catch(e){}
+
+
+                return;
+
+            }
+
+        }
+
+    }
+    catch(error){
+
+        console.log(
+            "Parent navigation error:",
+            error
+        );
+
+    }
+
+
+    /*
+     * Fallback if this page is opened
+     * directly instead of inside Swayam.
+     */
+
+    window.location.href = url;
+
+}
+
+
+/* =========================================================
+   THEME
+========================================================= */
 
 function changeTheme(theme){
 
-document.body.className=theme;
+    document.body.className =
+        theme;
 
-localStorage.setItem("theme",theme);
+    localStorage.setItem(
+        "swayam_watch_theme",
+        theme
+    );
 
 }
 
 
-/* LOAD SAVED THEME */
+var savedTheme =
+    localStorage.getItem(
+        "swayam_watch_theme"
+    );
 
-let savedTheme=localStorage.getItem("theme");
 
 if(savedTheme){
 
-document.body.className=savedTheme;
+    document.body.className =
+        savedTheme;
+
+    document.getElementById(
+        "themeSelect"
+    ).value =
+        savedTheme;
 
 }
-/* CLOCK */
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
 
 function updateClock(){
 
-let now=new Date();
+    var now =
+        new Date();
 
-mtime24.innerHTML=now.toLocaleTimeString();
-mtime12.innerHTML=
-now.toLocaleTimeString('en-IN',{
-hour: '2-digit',
-minute: '2-digit',
-second: '2-digit',
-hour12: true
-});
 
-mdate.innerHTML=now.toLocaleDateString("en-IN", {
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric"
-});
+    document.getElementById(
+        "mtime24"
+    ).textContent =
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:false
+            }
+        );
+
+
+    document.getElementById(
+        "mtime12"
+    ).textContent =
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:true
+            }
+        );
+
+
+    document.getElementById(
+        "mdate"
+    ).textContent =
+        now.toLocaleDateString(
+            "en-IN",
+            {
+                weekday:"long",
+                year:"numeric",
+                month:"long",
+                day:"numeric"
+            }
+        );
 
 }
 
-setInterval(updateClock,1000);
-</script>
-</body>
-</html>
+
+updateClock();
+
+
+setInterval(
+    updateClock,
+    1000
+);
+
+</script></body></html>
