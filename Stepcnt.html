@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Web Pedometer</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.3);
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Circular Progress Ring */
+        .progress-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+            width: 220px;
+            height: 220px;
+        }
+
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform-origin: 50% 50%;
+        }
+
+        .progress-content {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #step-count {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1;
+        }
+
+        .step-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.75rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .stat-title {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+            text-transform: uppercase;
+        }
+
+        /* Controls */
+        .controls {
+            width: 100%;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        button {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        #btn-toggle {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        #btn-toggle.active {
+            background: #ef4444;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        #btn-reset {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        #permission-msg {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Live Pedometer</h1>
+
+        <!-- Circular Progress -->
+        <div class="progress-container">
+            <svg class="progress-ring" width="220" height="220">
+                <circle stroke="rgba(255, 255, 255, 0.05)" stroke-width="12" fill="transparent" r="95" cx="110" cy="110"/>
+                <circle id="progress-ring-circle" class="progress-ring__circle" stroke="var(--primary)" stroke-width="12" stroke-linecap="round" fill="transparent" r="95" cx="110" cy="110"/>
+            </svg>
+            <div class="progress-content">
+                <span id="step-count">0</span>
+                <span class="step-label">/ <span id="goal-display">10,000</span> steps</span>
+            </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="distance-val">0.00</div>
+                <div class="stat-title">Km</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="calories-val">0</div>
+                <div class="stat-title">Kcal</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="pace-val">0</div>
+                <div class="stat-title">Steps/Min</div>
+            </div>
+        </div>
+
+        <div id="permission-msg">Sensor access required for tracking</div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button id="btn-toggle">Start Tracking</button>
+            <button id="btn-reset">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        let steps = 0;
+        let goal = 10000;
+        let isTracking = false;
+        let lastUpdate = 0;
+        
+        // Step Detection Algorithm Constants (Peak Detection)
+        let threshold = 11.2; // Acceleration threshold magnitude (m/s^2)
+        let lastMagnitude = 0;
+        let isPeak = false;
+        let stepHistory = []; // For calculating cadence (steps/min)
+
+        // User Metrics Estimates
+        const strideLengthMeters = 0.75; // Average stride length
+        const avgCaloriesPerStep = 0.04;
+
+        // DOM Elements
+        const stepCountEl = document.getElementById('step-count');
+        const goalDisplayEl = document.getElementById('goal-display');
+        const distanceValEl = document.getElementById('distance-val');
+        const caloriesValEl = document.getElementById('calories-val');
+        const paceValEl = document.getElementById('pace-val');
+        const btnToggle = document.getElementById('btn-toggle');
+        const btnReset = document.getElementById('btn-reset');
+        const permissionMsg = document.getElementById('permission-msg');
+        const circle = document.getElementById('progress-ring-circle');
+
+        // Setup SVG Circle Progress
+        const radius = circle.r.baseVal.value;
+        const circumference = radius * 2 * Math.PI;
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        circle.style.strokeDashoffset = circumference;
+
+        function setProgress(percent) {
+            const offset = circumference - (percent / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        function updateUI() {
+            stepCountEl.textContent = steps;
+            goalDisplayEl.textContent = goal;
+            
+            const distanceKm = (steps * strideLengthMeters) / 1000;
+            distanceValEl.textContent = distanceKm.toFixed(2);
+            
+            const calories = Math.floor(steps * avgCaloriesPerStep);
+            caloriesValEl.textContent = calories;
+
+            const progressPercent = Math.min((steps / goal) * 100, 100);
+            setProgress(progressPercent);
+
+            // Calculate Cadence (steps in last 5 seconds * 12)
+            const now = Date.now();
+            stepHistory = stepHistory.filter(timestamp => now - timestamp < 5000);
+            const cadence = stepHistory.length * 12; 
+            paceValEl.textContent = cadence;
+        }
+
+        // Motion Event Handler
+        function handleMotion(event) {
+            if (!isTracking) return;
+
+            const acc = event.accelerationIncludingGravity;
+            if (!acc || acc.x === null) return;
+
+            // Calculate total acceleration magnitude vector
+            const magnitude = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
+            
+            // Simple peak detection filter with a debounce time window
+            const currentTime = Date.now();
+            if (magnitude > threshold && lastMagnitude <= threshold && (currentTime - lastUpdate > 300)) {
+                steps++;
+                stepHistory.push(currentTime);
+                lastUpdate = currentTime;
+                updateUI();
+                saveState();
+            }
+            lastMagnitude = magnitude;
+        }
+
+        // Permissions Handling for iOS / Modern Android
+        async function requestSensors() {
+            if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+                try {
+                    const response = await DeviceMotionEvent.requestPermission();
+                    if (response === 'granted') {
+                        startTrackingEngine();
+                    } else {
+                        permissionMsg.textContent = "Permission denied for sensors.";
+                    }
+                } catch (e) {
+                    console.error(e);
+                    permissionMsg.textContent = "Error requesting motion permissions.";
+                }
+            } else {
+                // Standard non-iOS environments or older devices
+                startTrackingEngine();
+            }
+        }
+
+        function startTrackingEngine() {
+            isTracking = true;
+            btnToggle.textContent = "Stop Tracking";
+            btnToggle.classList.add("active");
+            permissionMsg.textContent = "Tracking active. Keep phone with you.";
+            window.addEventListener('devicemotion', handleMotion);
+        }
+
+        function stopTrackingEngine() {
+            isTracking = false;
+            btnToggle.textContent = "Start Tracking";
+            btnToggle.classList.remove("active");
+            permissionMsg.textContent = "Tracking paused.";
+            window.removeEventListener('devicemotion', handleMotion);
+        }
+
+        // Event Listeners
+        btnToggle.addEventListener('click', () => {
+            if (!isTracking) {
+                requestSensors();
+            } else {
+                stopTrackingEngine();
+            }
+        });
+
+        btnReset.addEventListener('click', () => {
+            if (confirm("Reset current step count?")) {
+                steps = 0;
+                stepHistory = [];
+                updateUI();
+                saveState();
+            }
+        });
+
+        // Local Storage Persistence
+        function saveState() {
+            localStorage.setItem('pedometer_steps', steps);
+            localStorage.setItem('pedometer_date', new Date().toDateString());
+        }
+
+        function loadState() {
+            const savedDate = localStorage.getItem('pedometer_date');
+            const currentDate = new Date().toDateString();
+            
+            if (savedDate === currentDate) {
+                const savedSteps = localStorage.getItem('pedometer_steps');
+                if (savedSteps) {
+                    steps = parseInt(savedSteps, 10);
+                }
+            } else {
+                // Reset daily automatically on a new day
+                localStorage.setItem('pedometer_steps', 0);
+                localStorage.setItem('pedometer_date', currentDate);
+            }
+            updateUI();
+        }
+
+        // Initialize on load
+        loadState();
+    </script>
+</body>
+</html>
