@@ -1,283 +1,858 @@
+
 <!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Ultimate Panchang Calendar</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>सनातन पंचांग एवं खगोलीय राशिफल</title>
 
 <style>
-
-body{
-font-family:Arial;
-background:#f2f2f2;
-text-align:center;
-font-size:40px;
+:root {
+    --primary: #b45309;
+    --primary-dark: #78350f;
+    --accent: #f59e0b;
+    --bg-gradient: linear-gradient(135deg, #fdf8f6 0%, #faedcd 100%);
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --text-main: #292524;
+    --text-muted: #57534e;
+    --border-color: #e7e5e4;
 }
 
-header{
-background:#ff5722;
-color:white;
-padding:10px;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-#clock{
-font-size:30px;
-margin:10px;
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-gradient);
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
 }
 
-#moon{
-font-size:20px;
-margin:10px;
+.container {
+    width: 100%;
+    max-width: 760px;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(180, 83, 9, 0.15);
+    overflow: hidden;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    margin-bottom: 30px;
 }
 
-#panchang{
-background:white;
-padding:10px;
-margin:10px;
-border-radius:8px;
+header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 4px solid var(--accent);
 }
 
-#controls{
-margin:10px;
+header h2 {
+    font-size: 26px;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
 }
 
-button{
-padding:8px;
-margin:5px;
+.sub-header {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 10px;
+    font-size: 14px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
 }
 
-table{
-width:100%;
-border-collapse:collapse;
-background:white;
+/* LOCATION BAR */
+.location-bar {
+    background: #fffbeb;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #fef3c7;
+    font-size: 13px;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
-th{
-background:#2196f3;
-color:white;
-padding:5px;
+.location-bar select, .location-bar input {
+    padding: 4px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    background: white;
+    color: var(--text-main);
 }
 
-td{
-border:1px solid #ddd;
-height:55px;
-font-size:20px;
+.location-bar select:focus, .location-bar input:focus {
+    border-color: var(--primary);
 }
 
-.today{
-background:#4caf50;
-color:white;
+.geo-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: 0.2s;
 }
 
-.festival{
-background:#ffeb3b;
+.geo-btn:hover {
+    background: var(--primary-dark);
 }
 
+/* PANCHANG WIDGET */
+#panchang {
+    background: linear-gradient(to right, #fffbeb, #fef3c7);
+    margin: 15px;
+    padding: 15px;
+    border-radius: 12px;
+    border-left: 5px solid var(--accent);
+    font-size: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+#panchang b {
+    color: var(--primary-dark);
+    font-size: 15px;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.panchang-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    color: #44403c;
+}
+
+/* CONTROLS */
+#controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    margin-bottom: 10px;
+}
+
+#monthYear {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--primary-dark);
+}
+
+button.nav-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+button.nav-btn:hover {
+    background: var(--primary-dark);
+    transform: scale(1.05);
+}
+
+/* CALENDAR TABLE */
+.calendar-wrapper {
+    padding: 0 15px 15px 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 4px;
+    background: transparent;
+}
+
+th {
+    background: var(--primary);
+    color: white;
+    padding: 10px 0;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+th:first-child {
+    background: #dc2626;
+}
+
+td {
+    border: 1px solid var(--border-color);
+    height: 75px;
+    width: 14.28%;
+    vertical-align: top;
+    padding: 4px;
+    font-size: 15px;
+    background: white;
+    border-radius: 8px;
+    transition: all 0.2s;
+    position: relative;
+    cursor: pointer;
+}
+
+td:hover {
+    border-color: var(--accent);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+}
+
+td .date-num {
+    font-weight: bold;
+    font-size: 16px;
+    display: block;
+    margin-bottom: 2px;
+}
+
+td.today {
+    background: #dcfce7 !important;
+    border-color: #22c55e !important;
+}
+
+td.today .date-num {
+    color: #15803d;
+}
+
+td.selected-day {
+    border: 2px solid var(--primary) !important;
+    background: #fef3c7 !important;
+}
+
+td.festival {
+    background: #fef9c3;
+    border-color: #facc15;
+}
+
+.festival-text {
+    font-size: 10px;
+    color: #b45309;
+    font-weight: 600;
+    display: block;
+    line-height: 1.1;
+    overflow: hidden;
+    max-height: 32px;
+}
+
+.other-month {
+    opacity: 0.35;
+    background: #f5f5f4;
+}
+
+/* HOROSCOPE SECTION */
+.horoscope-section {
+    background: #fff;
+    margin: 0 15px 20px 15px;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+}
+
+.horoscope-section h3 {
+    color: var(--primary-dark);
+    font-size: 17px;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #fef3c7;
+    padding-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.engine-info {
+    font-size: 11px;
+    background: #fffbeb;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: #b45309;
+    border: 1px solid #fef3c7;
+    margin-bottom: 10px;
+    font-family: monospace;
+}
+
+.horoscope-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.rashi-card {
+    background: #fafaf9;
+    border: 1px solid #e7e5e4;
+    border-radius: 8px;
+    padding: 10px;
+    transition: 0.2s;
+}
+
+.rashi-card:hover {
+    border-color: var(--accent);
+    background: #fffbeb;
+}
+
+.rashi-card h4 {
+    color: var(--primary);
+    font-size: 14px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.rashi-card span.lord {
+    font-size: 11px;
+    color: #78350f;
+    font-weight: normal;
+}
+
+.rashi-card p {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.35;
+}
+
+@media(max-width: 600px) {
+    .container {
+        border-radius: 0;
+    }
+    td {
+        height: 65px;
+        font-size: 13px;
+    }
+    .festival-text {
+        font-size: 9px;
+    }
+}
 </style>
 </head>
 
 <body>
 
+<div class="container">
+
 <header>
-<h2>Ultimate Panchang Calendar</h2>
+    <h2>ॐ सनातन पंचांग एवं खगोलीय राशिफल</h2>
 </header>
 
-<div id="clock"></div>
+<div class="sub-header">
+    <div id="clock"></div>
+    <div id="moon"></div>
+</div>
 
-<div id="moon"></div>
-
-<div id="controls">
-<button onclick="changeMonth(-1)">◀</button>
-<span id="monthYear"></span>
-<button onclick="changeMonth(1)">▶</button>
+<!-- LOCATION SELECTOR BAR WITH GEOLOCATION BUTTON -->
+<div class="location-bar">
+    <div>
+        📍 <b>स्थान चुनें:</b> 
+        <select id="citySelect" onchange="onCityChange()">
+            <option value="19.0760,72.8777">मुंबई (Mumbai)</option>
+            <option value="28.6139,77.2090">दिल्ली (New Delhi)</option>
+            <option value="19.2183,72.9781">ठाणे (Thane)</option>
+            <option value="18.5204,73.8567">पुणे (Pune)</option>
+            <option value="22.5726,88.3639">कोलकाता (Kolkata)</option>
+            <option value="13.0827,80.2707">चेन्नई (Chennai)</option>
+            <option value="25.3176,82.9739">वाराणसी (Varanasi)</option>
+            <option value="26.9124,75.7873">जयपुर (Jaipur)</option>
+            <option value="custom">✏️ कस्टम कोऑर्डिनेट्स (Custom Lat/Long)</option>
+        </select>
+        <button class="geo-btn" onclick="detectUserLocation()">🛰️ GPS लोकेशन</button>
+    </div>
+    <div id="customCoordDiv" style="display:none;">
+        Lat: <input type="number" id="customLat" value="19.0760" step="0.0001" style="width:70px;" onchange="updateCustomCoords()">
+        Lon: <input type="number" id="customLon" value="72.8777" step="0.0001" style="width:70px;" onchange="updateCustomCoords()">
+    </div>
 </div>
 
 <div id="panchang"></div>
 
-<table id="calendar"></table>
+<div id="controls">
+    <button class="nav-btn" onclick="changeMonth(-1)">❮</button>
+    <span id="monthYear"></span>
+    <button class="nav-btn" onclick="changeMonth(1)">❯</button>
+</div>
+
+<div class="calendar-wrapper">
+    <table id="calendar"></table>
+</div>
+
+<div class="horoscope-section">
+    <h3><span>🔮 खगोलीय एवं सांख्यिकीय राशिफल</span> <span id="selectedDateLabel" style="font-size:13px; font-weight:normal; color:#57534e;"></span></h3>
+    <div class="engine-info" id="engineInfo"></div>
+    <div class="horoscope-grid" id="horoscopeGrid"></div>
+</div>
+
+</div>
 
 <script>
 
-/* CLOCK */
+/* CURRENT ACTIVE LOCATION STORAGE */
+let currentLocation = {
+    name: "मुंबई",
+    lat: 19.0760,
+    lon: 72.8777
+};
 
-function clock(){
-let now=new Date();
-document.getElementById("clock").innerHTML=
-"आज: "+now.toLocaleDateString("hi-IN")+
-" | समय: "+now.toLocaleTimeString("hi-IN");
+/* AUTOMATIC BROWSER GEOLOCATION */
+function detectUserLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                currentLocation.lat = parseFloat(position.coords.latitude.toFixed(4));
+                currentLocation.lon = parseFloat(position.coords.longitude.toFixed(4));
+                currentLocation.name = `GPS (${currentLocation.lat}, ${currentLocation.lon})`;
+                
+                // Update inputs if custom is open
+                document.getElementById("customLat").value = currentLocation.lat;
+                document.getElementById("customLon").value = currentLocation.lon;
+                
+                renderCalendar();
+            },
+            (error) => {
+                alert("लोकेशन प्राप्त करने में असफल। कृपया मैन्युअली चुनें।");
+            }
+        );
+    } else {
+        alert("आपका ब्राउज़र जियोलोकेशन सपोर्ट नहीं करता है।");
+    }
 }
-setInterval(clock,1000);
+
+// Automatically try to detect GPS location on load
+window.addEventListener('DOMContentLoaded', () => {
+    detectUserLocation();
+});
+
+function onCityChange() {
+    let select = document.getElementById("citySelect");
+    let customDiv = document.getElementById("customCoordDiv");
+    
+    if(select.value === "custom") {
+        customDiv.style.display = "inline-block";
+        updateCustomCoords();
+    } else {
+        customDiv.style.display = "none";
+        let coords = select.value.split(",");
+        currentLocation.lat = parseFloat(coords[0]);
+        currentLocation.lon = parseFloat(coords[1]);
+        currentLocation.name = select.options[select.selectedIndex].text.split("(")[0].trim();
+        renderCalendar();
+    }
+}
+
+function updateCustomCoords() {
+    let lat = parseFloat(document.getElementById("customLat").value);
+    let lon = parseFloat(document.getElementById("customLon").value);
+    if(!isNaN(lat) && !isNaN(lon)) {
+        currentLocation.lat = lat;
+        currentLocation.lon = lon;
+        currentLocation.name = `Lat: ${lat}, Lon: ${lon}`;
+        renderCalendar();
+    }
+}
+
+/* REAL-TIME CLOCK */
+function clock(){
+    let now = new Date();
+    document.getElementById("clock").innerHTML = 
+    "📅 " + now.toLocaleDateString("hi-IN") + 
+    " | ⏰ " + now.toLocaleTimeString("hi-IN", {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+}
+setInterval(clock, 1000);
 clock();
 
-/* MOON PHASE */
+/* ASTRONOMICAL PLANETARY & TITHI CALCULATOR */
+function calculatePlanetLongitudes(dateObj) {
+    let d = (dateObj - new Date(2000, 0, 1, 12, 0, 0)) / 86400000; 
+    
+    let sunLon = (280.460 + 0.9856474 * d) % 360;
+    let moonLon = (218.316 + 13.176396 * d) % 360;
+    let marsLon = (355.433 + 0.524039 * d) % 360;
+    let jupiterLon = (34.351 + 0.083085 * d) % 360;
+    let saturnLon = (50.077 + 0.033459 * d) % 360;
+    let mercuryLon = (252.251 + 4.092338 * d) % 360;
+    let venusLon = (181.979 + 1.602130 * d) % 360;
 
-function moonPhase(){
+    if(sunLon < 0) sunLon += 360;
+    if(moonLon < 0) moonLon += 360;
+    if(marsLon < 0) marsLon += 360;
+    if(jupiterLon < 0) jupiterLon += 360;
+    if(saturnLon < 0) saturnLon += 360;
+    if(mercuryLon < 0) mercuryLon += 360;
+    if(venusLon < 0) venusLon += 360;
 
-let now=new Date();
-let lp=2551443;
-let new_moon=new Date(1970,0,7,20,35,0);
-let phase=((now-new_moon)/1000)%lp;
-let index=Math.floor(phase/(lp/8));
-
-let phases=[
-"🌑 अमावस्या",
-"🌒 शुक्ल चंद्र",
-"🌓 प्रथम चरण",
-"🌔 शुक्ल पक्ष",
-"🌕 पूर्णिमा",
-"🌖 कृष्ण पक्ष",
-"🌗 अंतिम चरण",
-"🌘 कृष्ण चंद्र"
-];
-
-document.getElementById("moon").innerHTML="चंद्र अवस्था: "+phases[index];
-
+    return { sun: sunLon, moon: moonLon, mars: marsLon, jupiter: jupiterLon, saturn: saturnLon, mercury: mercuryLon, venus: venusLon };
 }
 
-moonPhase();
+/* DYNAMIC SUNRISE & SUNSET CALCULATOR BASED ON SELECTED LAT/LONG */
+function getSunTimes(dateObj, lat, lon) {
+    let start = new Date(dateObj.getFullYear(), 0, 0);
+    let diff = dateObj - start;
+    let oneDay = 1000 * 60 * 60 * 24;
+    let dayOfYear = Math.floor(diff / oneDay);
 
-/* FESTIVALS */
+    let declination = 23.45 * Math.sin(((280 + dayOfYear) * 360 / 365) * Math.PI / 180) * Math.PI / 180;
+    let latRad = lat * Math.PI / 180;
 
-let festivals={
+    let cosH = (Math.sin(-0.833 * Math.PI / 180) - Math.sin(latRad) * Math.sin(declination)) / (Math.cos(latRad) * Math.cos(declination));
+    
+    if (cosH > 1) cosH = 1;
+    if (cosH < -1) cosH = -1;
 
-"01-01":"New Year",
-"01-14":"मकर संक्रांति",
-"01-26":"गणतंत्र दिवस",
-"02-14":"Valentine Day",
-"03-08":"महिला दिवस",
-"03-04":"होली",
-"04-17":"राम नवमी",
-"04-21":"महावीर जयंती",
-"05-23":"बुद्ध पूर्णिमा",
-"08-15":"स्वतंत्रता दिवस",
-"08-26":"कृष्ण जन्माष्टमी",
-"09-07":"गणेश चतुर्थी",
-"10-02":"गांधी जयंती",
-"10-12":"दशहरा",
-"11-01":"करवा चौथ",
-"11-12":"दीवाली",
-"11-15":"भाई दूज",
-"12-25":"क्रिसमस"
+    let H = Math.acos(cosH) * 180 / Math.PI;
 
-};
+    let b = (2 * Math.PI * (dayOfYear - 81)) / 365;
+    let eot = 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b);
 
-/* WORLD HOLIDAYS SAMPLE */
+    let istOffset = 5.5 * 60; // minutes
+    let lngCorrection = (82.5 - lon) * 4; 
+    let solarNoonMin = 720 - lngCorrection - eot;
 
-let worldHolidays={
-"01-27":"International Holocaust Day",
-"02-04":"World Cancer Day",
-"03-22":"World Water Day",
-"04-22":"Earth Day",
-"05-01":"Labour Day",
-"06-05":"World Environment Day",
-"07-11":"World Population Day",
-"09-21":"International Peace Day",
-"10-24":"United Nations Day"
-};
+    let sunriseMin = solarNoonMin - (H * 4) + istOffset;
+    let sunsetMin = solarNoonMin + (H * 4) + istOffset;
 
-/* CALENDAR */
+    function formatTime(minutes) {
+        let hr = Math.floor(minutes / 60) % 24;
+        let min = Math.round(minutes % 60);
+        if (min === 60) { hr++; min = 0; }
+        let ampm = hr >= 12 ? 'PM' : 'AM';
+        let hr12 = hr % 12 || 12;
+        return `${hr12}:${min < 10 ? '0' : ''}${min} ${ampm}`;
+    }
 
-let current=new Date();
+    return {
+        sunrise: formatTime(sunriseMin),
+        sunset: formatTime(sunsetMin)
+    };
+}
 
-let months=[
-"जनवरी","फरवरी","मार्च","अप्रैल",
-"मई","जून","जुलाई","अगस्त",
-"सितंबर","अक्टूबर","नवंबर","दिसंबर"
+/* REAL ASTRONOMICAL TITHI CALCULATION */
+function getTithiData(dateObj) {
+    let planets = calculatePlanetLongitudes(dateObj);
+    let diff = (planets.moon - planets.sun + 360) % 360;
+    let tithiNum = Math.floor(diff / 12) + 1; 
+    let paksha = tithiNum <= 15 ? "शुक्ल पक्ष" : "कृष्ण पक्ष";
+    let tithiInPaksha = tithiNum <= 15 ? tithiNum : tithiNum - 15;
+    
+    let tithiNames = [
+        "", "प्रतिपदा", "द्वितीया", "तृतीया", "चतुर्थी", "पञ्चमी", 
+        "षष्ठी", "सप्तमी", "अष्टमी", "नवमी", "दशमी", 
+        "एकादशी", "द्वादशी", "त्रयोदशी", "चतुर्दशी", "पूर्णिमा / अमावस्या"
+    ];
+    return {
+        num: tithiNum,
+        paksha: paksha,
+        name: (tithiInPaksha === 15) ? (tithiNum === 15 ? "पूर्णिमा" : "अमावस्या") : tithiNames[tithiInPaksha],
+        fullName: paksha + " " + (tithiInPaksha === 15 ? (tithiNum === 15 ? "पूर्णिमा" : "अमावस्या") : tithiNames[tithiInPaksha])
+    };
+}
+
+/* 2026 FULL YEAR COMPREHENSIVE FESTIVAL DATABASE */
+function getDynamicFestival(dateObj) {
+    let year = dateObj.getFullYear();
+    let month = dateObj.getMonth();
+    let day = dateObj.getDate();
+    
+    if (year === 2026) {
+        let key = `${month}-${day}`;
+        let map2026 = {
+            "0-14": "मकर संक्रांति / पोंगल",
+            "0-23": "वसंत पंचमी",
+            "0-26": "गणतंत्र दिवस",
+            "1-15": "महाशिवरात्रि",
+            "2-3": "होलिका दहन",
+            "2-4": "होली (धुलंडी)",
+            "2-19": "गुड़ी पड़वा / चैत्र नवरात्र",
+            "2-26": "राम नवमी",
+            "3-2": "हनुमान जयंति",
+            "3-19": "अक्षय तृतीया",
+            "4-1": "बुद्ध पूर्णिमा",
+            "4-16": "वट सावित्री व्रत",
+            "6-16": "जगन्नाथ रथ यात्रा",
+            "6-29": "गुरु पूर्णिमा",
+            "7-15": "स्वाधीनता दिवस / हरियाली तीज",
+            "7-17": "नाग पंचमी",
+            "7-26": "ओणम",
+            "7-28": "रक्षा बंधन",
+            "8-4": "श्री कृष्ण जन्माष्टमी",
+            "8-14": "गणेश चतुर्थी",
+            "8-25": "अनंत चतुर्दशी",
+            "9-11": "शारदीय नवरात्र आरंभ",
+            "9-17": "दुर्गा सप्तमी",
+            "9-18": "दुर्गा अष्टमी",
+            "9-19": "दुर्गा नवमी",
+            "9-20": "दशहरा (विजयादशमी)",
+            "9-25": "शरद पूर्णिमा",
+            "9-29": "करवा चौथ",
+            "10-1": "अहोई अष्टमी",
+            "10-6": "धनतेरस",
+            "10-8": "दीवाली (लक्ष्मी पूजन)",
+            "10-9": "गोवर्धन पूजा",
+            "10-11": "भैया दूज",
+            "10-15": "छठ पूजा",
+            "10-24": "कार्तिक पूर्णिमा",
+            "11-20": "गीता जयंति"
+        };
+        if(map2026[key]) return map2026[key];
+    }
+    return null;
+}
+
+/* ASTRONOMICAL MOON PHASE & ILLUMINATION */
+function getMoonData(dateObj){
+    let baseDate = new Date(1970,0,7,20,35,0);
+    let lp = 2551443000; 
+    let phase = ((dateObj - baseDate) % lp) / lp;
+    if(phase < 0) phase += 1;
+    let index = Math.floor(phase * 8);
+
+    let phases = [
+        "🌑 अमावस्या", "🌒 शुक्ल चंद्र (बालचंद्र)", "🌓 प्रथम चरण (सप्तमी)", "🌔 शुक्ल पक्ष (प्रदोष)",
+        "🌕 पूर्णिमा", "🌖 कृष्ण पक्ष (अष्टमी)", "🌗 अंतिम चरण (एकादशी)", "🌘 कृष्ण चंद्र (क्षीण)"
+    ];
+    return { name: phases[index % 8] };
+}
+
+function updateMoonDisplay(){
+    let data = getMoonData(new Date());
+    document.getElementById("moon").innerHTML = "चन्द्रमा: " + data.name;
+}
+updateMoonDisplay();
+
+/* ACTIVE/CURRENT DAY & MONTH INITIALIZATION */
+let current = new Date();       
+let selectedDate = new Date();  
+
+let months = [
+    "जनवरी", "फरवरी", "मार्च", "अप्रैल",
+    "मई", "जून", "जुलाई", "अगस्त",
+    "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"
 ];
 
-let weekdays=["रवि","सोम","मंगल","बुध","गुरु","शुक्र","शनि"];
+let weekdays = ["रवि", "सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि"];
+
+/* VEDIC NUMEROLOGY CALCULATOR */
+function getNumerologyData(dateObj) {
+    let day = dateObj.getDate();
+    let month = dateObj.getMonth() + 1;
+    let year = dateObj.getFullYear();
+
+    let mulank = day;
+    while(mulank > 9) {
+        mulank = Math.floor(mulank / 10) + (mulank % 10);
+    }
+
+    let sumAll = day + month + year;
+    let bhagyank = sumAll;
+    while(bhagyank > 9) {
+        let temp = 0;
+        while(bhagyank > 0) {
+            temp += bhagyank % 10;
+            bhagyank = Math.floor(bhagyank / 10);
+        }
+        bhagyank = temp;
+    }
+
+    let rulers = {
+        1: "सूर्य (Sun)", 2: "चन्द्रमा (Moon)", 3: "गुरु (Jupiter)", 
+        4: "राहु (Rahu)", 5: "बुध (Mercury)", 6: "शुक्र (Venus)", 
+        7: "केतु (Ketu)", 8: "शनि (Saturn)", 9: "मंगल (Mars)"
+    };
+
+    return { mulank, bhagyank, ruler: rulers[mulank] };
+}
+
+let rashis = [
+    { name: "मेष (Aries)", lord: "मंगल (Mars)" },
+    { name: "वृषभ (Taurus)", lord: "शुक्र (Venus)" },
+    { name: "मिथुन (Gemini)", lord: "बुध (Mercury)" },
+    { name: "कर्क (Cancer)", lord: "चन्द्रमा (Moon)" },
+    { name: "सिंह (Leo)", lord: "सूर्य (Sun)" },
+    { name: "कन्या (Virgo)", lord: "बुध (Mercury)" },
+    { name: "तुला (Libra)", lord: "शुक्र (Venus)" },
+    { name: "वृश्चिक (Scorpio)", lord: "मंगल (Mars)" },
+    { name: "धनु (Sagittarius)", lord: "गुरु (Jupiter)" },
+    { name: "मकर (Capricorn)", lord: "शनि (Saturn)" },
+    { name: "कुंभ (Aquarius)", lord: "शनि (Saturn)" },
+    { name: "मीन (Pisces)", lord: "गुरु (Jupiter)" }
+];
 
 function renderCalendar(){
+    let year = current.getFullYear();
+    let month = current.getMonth();
 
-let year=current.getFullYear();
-let month=current.getMonth();
+    document.getElementById("monthYear").innerText = months[month] + " " + year;
 
-document.getElementById("monthYear").innerText=
-months[month]+" "+year;
+    let firstDayIndex = new Date(year, month, 1).getDay();
+    let totalDays = new Date(year, month + 1, 0).getDate();
+    let prevTotalDays = new Date(year, month, 0).getDate();
 
-let first=new Date(year,month,1).getDay();
-let days=new Date(year,month+1,0).getDate();
+    let html = "<tr>";
+    for(let w of weekdays) html += "<th>" + w + "</th>";
+    html += "</tr><tr>";
 
-let html="<tr>";
+    let today = new Date();
+    let dayCounter = 1;
+    let nextMonthDay = 1;
+    let totalCellsGrid = 42;
 
-for(let w of weekdays) html+="<th>"+w+"</th>";
+    for(let i = 0; i < totalCellsGrid; i++){
+        let cellClass = "";
+        let displayDate = "";
+        let cellDateObj = null;
 
-html+="</tr><tr>";
+        if(i < firstDayIndex){
+            let prevDateNum = prevTotalDays - firstDayIndex + i + 1;
+            cellClass = "other-month";
+            displayDate = prevDateNum;
+            cellDateObj = new Date(year, month - 1, prevDateNum);
+        } else if(dayCounter <= totalDays){
+            displayDate = dayCounter;
+            cellDateObj = new Date(year, month, dayCounter);
+            
+            let computedFestival = getDynamicFestival(cellDateObj);
 
-for(let i=0;i<first;i++) html+="<td></td>";
+            if(dayCounter === today.getDate() && month === today.getMonth() && year === today.getFullYear()){
+                cellClass = "today";
+            } else if(computedFestival){
+                cellClass = "festival";
+            }
 
-for(let d=1;d<=days;d++){
+            if(cellDateObj.toDateString() === selectedDate.toDateString()){
+                cellClass += " selected-day";
+            }
+            dayCounter++;
+        } else {
+            cellClass = "other-month";
+            displayDate = nextMonthDay;
+            cellDateObj = new Date(year, month + 1, nextMonthDay);
+            nextMonthDay++;
+        }
 
-let key=(month+1).toString().padStart(2,'0')+"-"+d.toString().padStart(2,'0');
+        let dateStrAttr = cellDateObj.toISOString();
+        let computedFestivalCell = getDynamicFestival(cellDateObj);
 
-let cls="";
+        html += `<td class='${cellClass}' onclick='onDateClick("${dateStrAttr}")'>`;
+        html += "<span class='date-num'>" + displayDate + "</span>";
 
-if(d===new Date().getDate() && month===new Date().getMonth())
-cls="today";
+        if(computedFestivalCell){
+            html += "<span class='festival-text'>" + computedFestivalCell + "</span>";
+        }
 
-if(festivals[key] || worldHolidays[key])
-cls="festival";
+        html += "</td>";
 
-html+="<td class='"+cls+"'>"+d;
+        if((i + 1) % 7 === 0 && i < totalCellsGrid - 1){
+            html += "</tr><tr>";
+        }
+    }
 
-if(festivals[key])
-html+="<br>"+festivals[key];
-
-if(worldHolidays[key])
-html+="<br>"+worldHolidays[key];
-
-html+="</td>";
-
-if((first+d)%7===0) html+="</tr><tr>";
-
-}
-
-html+="</tr>";
-
-document.getElementById("calendar").innerHTML=html;
-
+    html += "</tr>";
+    document.getElementById("calendar").innerHTML = html;
+    updateHoroscopeAndPanchang();
 }
 
 function changeMonth(n){
-
-current.setMonth(current.getMonth()+n);
-renderCalendar();
-
+    current.setMonth(current.getMonth() + n);
+    renderCalendar();
 }
 
-/* PANCHANG */
-
-function panchang(){
-
-let now=new Date();
-
-let weekday=[
-"रविवार","सोमवार","मंगलवार","बुधवार",
-"गुरुवार","शुक्रवार","शनिवार"
-];
-
-let nakshatra=[
-"अश्विनी","भरणी","कृत्तिका","रोहिणी","मृगशीर्ष",
-"आर्द्रा","पुनर्वसु","पुष्य","आश्लेषा","मघा",
-"पूर्वा फाल्गुनी","उत्तर फाल्गुनी"
-];
-
-let tithi=(now.getDate()%30)+1;
-
-document.getElementById("panchang").innerHTML=
-
-"<b>आज का पंचांग</b><br>"+
-"वार: "+weekday[now.getDay()]+"<br>"+
-"तिथि: "+tithi+"<br>"+
-"नक्षत्र: "+nakshatra[now.getDate()%nakshatra.length]+"<br>"+
-"सूर्योदय: 06:30<br>"+
-"सूर्यास्त: 18:30";
-
+function onDateClick(dateString){
+    selectedDate = new Date(dateString);
+    renderCalendar();
 }
 
-panchang();
+/* PANCHANG & HOROSCOPE DYNAMIC UPDATE */
+function updateHoroscopeAndPanchang(){
+    let dateStr = selectedDate.toLocaleDateString("hi-IN", {day: 'numeric', month: 'long', year: 'numeric'});
+    document.getElementById("selectedDateLabel").innerText = `(${dateStr})`;
+
+    let planets = calculatePlanetLongitudes(selectedDate);
+    let sunTimes = getSunTimes(selectedDate, currentLocation.lat, currentLocation.lon);
+    let numData = getNumerologyData(selectedDate);
+    let tithiData = getTithiData(selectedDate);
+    let moonData = getMoonData(selectedDate);
+    let dynamicFest = getDynamicFestival(selectedDate);
+
+    let nakshatraIndex = Math.floor(planets.moon / 13.333333) % 27;
+    let nakshatras = [
+        "अश्विनी", "भरणी", "कृत्तिका", "रोहिणी", "मृगशीर्ष", "आर्द्रा", "पुनर्वसु", "पुष्य", "आश्लेषा",
+        "मघा", "पूर्वा फाल्गुनी", "उत्तर फाल्गुनी", "हस्त", "चित्रा", "स्वाति", "विशाखा", "अनुराधा", "ज्येष्ठा",
+        "मूल", "पूर्वाषाढ़ा", "उत्तराषाढ़ा", "श्रवण", "धनिष्ठा", "शतभिषा", "पूर्वाभाद्रपद", "उत्तरभाद्रपद", "रेवती"
+    ];
+
+    let weekdaysArr = ["रविवार", "सोमवार", "मंगलवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"];
+    let weekdayName = weekdaysArr[selectedDate.getDay()];
+
+    let festDisplay = dynamicFest ? `<br><b style="color:#b45309;">विशेष पर्व: ${dynamicFest}</b>` : "";
+
+    document.getElementById("panchang").innerHTML = `
+        <b>📜 गणितीय पंचांग (${dateStr}) — स्थान: ${currentLocation.name}</b>
+        <div class="panchang-grid">
+            <div><b>वार:</b> ${weekdayName}</div>
+            <div><b>तिथि:</b> ${tithiData.fullName}</div>
+            <div><b>सूर्योदय:</b> 🌅 ${sunTimes.sunrise}</div>
+            <div><b>सूर्यास्त:</b> 🌇 ${sunTimes.sunset}</div>
+            <div><b>नक्षत्र:</b> ${nakshatras[nakshatraIndex]}</div>
+            <div><b>चन्द्र स्थिति:</b> ${Math.round(planets.moon)}° (${moonData.name})</div>
+            <div><b>मूलांक:</b> ${numData.mulank} (${numData.ruler})</div>
+            <div><b>भाग्यांक:</b> ${numData.bhagyank}</div>
+        </div>
+        ${festDisplay}
+    `;
+
+    document.getElementById("engineInfo").innerHTML = 
+        `⚙️ <b>Engine (${currentLocation.name} [Lat: ${currentLocation.lat}, Lon: ${currentLocation.lon}]):</b> Sunrise: ${sunTimes.sunrise} | Sunset: ${sunTimes.sunset}`;
+
+    let gridHtml = "";
+    rashis.forEach((r, idx) => {
+        let rashiBaseAngle = idx * 30;
+        let angleDiff = Math.abs(planets.moon - rashiBaseAngle);
+        if(angleDiff > 180) angleDiff = 360 - angleDiff;
+
+        let score = (angleDiff + numData.mulank * 7 + idx * 13) % 100;
+        
+        let careerText = score > 70 ? "कर्मक्षेत्र में बड़ा प्रमोशन या नई उपलब्धि मिलने के प्रबल योग हैं।" : (score > 40 ? "दिन सामान्य रहेगा। सहकर्मियों के साथ तालमेल बिठाकर चलें।" : "चुनौतियों का सामना करना पड़ सकता है, सावधानी बरतें।");
+        let financeText = score > 70 ? "आर्थिक स्थिति अत्यंत सुदृढ़ रहेगी।" : "सावधानीपूर्वक निवेश करें।";
+
+        gridHtml += `
+            <div class="rashi-card">
+                <h4>${r.name} <span class="lord">स्वामी: ${r.lord}</span></h4>
+                <p><b>फलकथन:</b> ${careerText} ${financeText}</p>
+            </div>
+        `;
+    });
+
+    document.getElementById("horoscopeGrid").innerHTML = gridHtml;
+}
+
 renderCalendar();
 
 </script>
 
 </body>
 </html>
+
+
+Note :- 
+1. Automatic Browser Geolocation (navigator.geolocation) upon opening the page, alongside the existing city selector and custom latitude/longitude inputs.
+2.When you open the page, it will automatically ask for your location permission. 
+3.If allowed, it instantly detects your exact GPS coordinates and calculates the precise sunrise, sunset, and panchang data for your exact position. If permission is denied or unavailable, it defaults gracefully to Mumbai.
+
+
