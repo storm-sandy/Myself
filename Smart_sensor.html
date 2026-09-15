@@ -1,216 +1,426 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sensor Dashboard</title>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate Sensor Dashboard</title>
 <style>
-body{
-font-family:Arial;
-background:#111;
-color:#fff;
-text-align:center;
+:root {
+  --bg-color: #090d16;
+  --card-bg: #111827;
+  --accent: #38bdf8;
+  --accent-glow: rgba(56, 189, 248, 0.25);
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --border-color: #1f2937;
+  --danger: #f43f5e;
+  --success: #4ade80;
 }
 
-.box{
-border:1px solid #444;
-margin:10px;
-padding:15px;
-border-radius:10px;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-#compass{
-width:200px;
-height:200px;
-margin:auto;
-border:6px solid white;
-border-radius:50%;
-position:relative;
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
 
-#needle{
-width:4px;
-height:90px;
-background:red;
-position:absolute;
-top:10px;
-left:98px;
-transform-origin:bottom;
+header {
+  background: rgba(17, 24, 39, 0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 16px;
+  text-align: center;
 }
 
-.big{
-font-size:35px;
+header h2 {
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  color: var(--accent);
+  margin-bottom: 8px;
+  text-transform: uppercase;
 }
 
-.small{
-font-size:14px;
-color:#aaa;
+.tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  justify-content: center;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-btn {
+  background: var(--border-color);
+  border: none;
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.25s ease;
+}
+
+.tab-btn:hover {
+  color: var(--text-main);
+  background: #374151;
+}
+
+.tab-btn.active {
+  background: var(--accent);
+  color: #000;
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.tab-content {
+  display: none;
+  width: 100%;
+  max-width: 480px;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.box {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  text-align: center;
+}
+
+.box h3 {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.big {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--accent);
+  text-shadow: 0 0 10px var(--accent-glow);
+}
+
+.unit {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-weight: normal;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.grid-2 div {
+  background: rgba(0,0,0,0.2);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+.grid-2 span {
+  color: var(--accent);
+  font-weight: 600;
+  float: right;
+}
+
+#gps-status {
+  font-size: 0.85rem;
+  padding: 8px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.3);
+  color: var(--text-muted);
+}
+
+#compass {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 12px auto;
+  border: 3px solid var(--accent);
+  border-radius: 50%;
+  position: relative;
+  box-shadow: inset 0 0 15px var(--accent-glow), 0 0 15px var(--accent-glow);
+}
+
+#needle {
+  width: 4px;
+  height: 74px;
+  background: var(--danger);
+  position: absolute;
+  top: 6px;
+  left: 70px;
+  transform-origin: bottom center;
+  box-shadow: 0 0 8px var(--danger);
+  border-radius: 2px;
+}
+
+#direction {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: var(--accent);
+  margin-top: 4px;
 }
 </style>
 </head>
 
 <body>
 
-<h2>Ultimate Sensor Dashboard</h2>
+<header>
+  <h2>Sensor Dashboard</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(event, 'tab-overview')">Overview</button>
+    <button class="tab-btn" onclick="switchTab(event, 'tab-gps')">GPS & Speed</button>
+    <button class="tab-btn" onclick="switchTab(event, 'tab-motion')">Motion</button>
+    <button class="tab-btn" onclick="switchTab(event, 'tab-compass')">Compass</button>
+  </div>
+</header>
 
-<div class="box">
-<div id="clock"></div>
-</div>
+<main>
+  <!-- OVERVIEW TAB -->
+  <div id="tab-overview" class="tab-content active">
+    <div class="box">
+      <h3>Current Time</h3>
+      <div class="big" id="clock" style="font-size: 2.6rem;">00:00:00</div>
+    </div>
+    <div class="box">
+      <h3>Quick Status</h3>
+      <div class="grid-2" style="margin-top:0;">
+        <div>Speed: <span id="ov-speed">0.0</span></div>
+        <div>Distance: <span id="ov-dist">0.000</span></div>
+        <div>Heading: <span id="ov-heading">--</span></div>
+        <div>Accuracy: <span id="ov-acc">--</span></div>
+      </div>
+    </div>
+  </div>
 
-<div class="box">
-<h3>Compass</h3>
-<div id="compass">
-<div id="needle"></div>
-</div>
-<div class="big" id="direction">--</div>
-</div>
+  <!-- GPS & SPEED TAB -->
+  <div id="tab-gps" class="tab-content">
+    <div class="box">
+      <h3>GPS Status</h3>
+      <div id="gps-status">Initializing GPS sensor...</div>
+    </div>
+    <div class="box">
+      <h3>Speedometer</h3>
+      <div class="big"><span id="speed">0.0</span> <span class="unit">km/h</span></div>
+    </div>
+    <div class="box">
+      <h3>Odometer (Filtered)</h3>
+      <div class="big"><span id="distance">0.000</span> <span class="unit">km</span></div>
+    </div>
+    <div class="box">
+      <h3>GPS Coordinates & Stats</h3>
+      <div class="grid-2">
+        <div>Lat: <span id="lat">-</span></div>
+        <div>Lon: <span id="lon">-</span></div>
+        <div>Alt: <span id="alt">-</span></div>
+        <div>Acc: <span id="acc">-</span></div>
+      </div>
+    </div>
+  </div>
 
-<div class="box">
-<h3>Speedometer</h3>
-<div class="big"><span id="speed">0</span> km/h</div>
-</div>
+  <!-- MOTION TAB -->
+  <div id="tab-motion" class="tab-content">
+    <div class="box">
+      <h3>Accelerometer (g-force)</h3>
+      <div class="grid-2">
+        <div>X: <span id="ax">0.00</span></div>
+        <div>Y: <span id="ay">0.00</span></div>
+        <div>Z: <span id="az">0.00</span></div>
+      </div>
+    </div>
+    <div class="box">
+      <h3>Gyroscope</h3>
+      <div class="grid-2">
+        <div>Alpha: <span id="ga">0.0</span>°</div>
+        <div>Beta: <span id="gb">0.0</span>°</div>
+        <div>Gamma: <span id="gg">0.0</span>°</div>
+      </div>
+    </div>
+  </div>
 
-<div class="box">
-<h3>Odometer</h3>
-<div class="big"><span id="distance">0</span> km</div>
-</div>
-
-<div class="box">
-<h3>GPS</h3>
-<div>Lat: <span id="lat">-</span></div>
-<div>Lon: <span id="lon">-</span></div>
-<div>Altitude: <span id="alt">-</span></div>
-<div>Accuracy: <span id="acc">-</span></div>
-</div>
-
-<div class="box">
-<h3>Accelerometer</h3>
-<div>X: <span id="ax">0</span></div>
-<div>Y: <span id="ay">0</span></div>
-<div>Z: <span id="az">0</span></div>
-</div>
-
-<div class="box">
-<h3>Gyroscope</h3>
-<div>Alpha: <span id="ga">0</span></div>
-<div>Beta: <span id="gb">0</span></div>
-<div>Gamma: <span id="gg">0</span></div>
-</div>
+  <!-- COMPASS TAB -->
+  <div id="tab-compass" class="tab-content">
+    <div class="box">
+      <h3>Precision Compass</h3>
+      <div id="compass">
+        <div id="needle"></div>
+      </div>
+      <div id="direction">--</div>
+    </div>
+  </div>
+</main>
 
 <script>
-
-function getDirection(deg){
-
-if(deg>=337.5||deg<22.5) return "North";
-if(deg<67.5) return "North-East";
-if(deg<112.5) return "East";
-if(deg<157.5) return "South-East";
-if(deg<202.5) return "South";
-if(deg<247.5) return "South-West";
-if(deg<292.5) return "West";
-return "North-West";
-
+function switchTab(evt, tabId) {
+  let contents = document.getElementsByClassName("tab-content");
+  for (let c of contents) c.classList.remove("active");
+  let buttons = document.getElementsByClassName("tab-btn");
+  for (let b of buttons) b.classList.remove("active");
+  document.getElementById(tabId).classList.add("active");
+  evt.currentTarget.classList.add("active");
 }
 
-window.addEventListener("deviceorientation",e=>{
+setInterval(() => {
+  document.getElementById("clock").innerText = new Date().toLocaleTimeString();
+}, 1000);
 
-let heading=e.alpha;
-
-document.getElementById("needle").style.transform=
-"rotate("+heading+"deg)";
-
-document.getElementById("direction").innerText=
-getDirection(heading)+" ("+Math.round(heading)+"°)";
-
-});
-
-let lastLat=null;
-let lastLon=null;
-let distance=0;
-
-navigator.geolocation.watchPosition(pos=>{
-
-let lat=pos.coords.latitude;
-let lon=pos.coords.longitude;
-
-document.getElementById("lat").innerText=lat;
-document.getElementById("lon").innerText=lon;
-document.getElementById("alt").innerText=pos.coords.altitude;
-document.getElementById("acc").innerText=pos.coords.accuracy+" m";
-
-let speed=pos.coords.speed;
-
-if(speed){
-document.getElementById("speed").innerText=
-(speed*3.6).toFixed(1);
+function getDirection(deg) {
+  if (deg >= 337.5 || deg < 22.5) return "North";
+  if (deg < 67.5) return "North-East";
+  if (deg < 112.5) return "East";
+  if (deg < 157.5) return "South-East";
+  if (deg < 202.5) return "South";
+  if (deg < 247.5) return "South-West";
+  if (deg < 292.5) return "West";
+  return "North-West";
 }
 
-if(lastLat){
+let smoothedHeading = 0;
+window.addEventListener("deviceorientation", e => {
+  if (e.alpha !== null) {
+    let heading = e.alpha;
+    smoothedHeading += (heading - smoothedHeading) * 0.3;
+    document.getElementById("needle").style.transform = `rotate(${smoothedHeading}deg)`;
+    document.getElementById("direction").innerText = `${getDirection(smoothedHeading)} (${Math.round(smoothedHeading)}°)`;
+    document.getElementById("ov-heading").innerText = Math.round(smoothedHeading) + "°";
+  }
+});
 
-let R=6371;
+/* GPS LOGIC WITH SECURE CONTEXT AND ERROR HANDLING */
+let lastLat = null;
+let lastLon = null;
+let distance = 0;
+const statusEl = document.getElementById("gps-status");
 
-let dLat=(lat-lastLat)*Math.PI/180;
-let dLon=(lon-lastLon)*Math.PI/180;
+if (!window.isSecureContext) {
+  statusEl.innerText = "⚠️ Error: GPS requires HTTPS or Localhost!";
+  statusEl.style.color = "var(--danger)";
+} else if (!navigator.geolocation) {
+  statusEl.innerText = "⚠️ Error: Geolocation is not supported by your browser.";
+  statusEl.style.color = "var(--danger)";
+} else {
+  statusEl.innerText = "Acquiring GPS fix... (Ensure location permission is allowed)";
+  
+  navigator.geolocation.watchPosition(pos => {
+    statusEl.innerText = "✅ GPS Active & Connected";
+    statusEl.style.color = "var(--success)";
 
-let a=Math.sin(dLat/2)*Math.sin(dLat/2)+
-Math.cos(lastLat*Math.PI/180)*
-Math.cos(lat*Math.PI/180)*
-Math.sin(dLon/2)*Math.sin(dLon/2);
+    let lat = pos.coords.latitude;
+    let lon = pos.coords.longitude;
+    let alt = pos.coords.altitude;
+    let acc = pos.coords.accuracy;
 
-let c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+    document.getElementById("lat").innerText = lat.toFixed(5);
+    document.getElementById("lon").innerText = lon.toFixed(5);
+    document.getElementById("alt").innerText = alt !== null ? alt.toFixed(1) + " m" : "N/A";
+    document.getElementById("acc").innerText = acc.toFixed(1) + " m";
+    document.getElementById("ov-acc").innerText = acc.toFixed(1) + "m";
 
-distance+=R*c;
+    let speed = pos.coords.speed;
+    let speedKmH = speed !== null && speed >= 0 ? speed * 3.6 : 0;
+    document.getElementById("speed").innerText = speedKmH.toFixed(1);
+    document.getElementById("ov-speed").innerText = speedKmH.toFixed(1) + " km/h";
 
-document.getElementById("distance").innerText=
-distance.toFixed(3);
+    if (lastLat !== null && lastLon !== null) {
+      let R = 6371; 
+      let dLat = (lat - lastLat) * Math.PI / 180;
+      let dLon = (lon - lastLon) * Math.PI / 180;
 
+      let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lastLat * Math.PI / 180) * Math.cos(lat * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      let deltaDist = R * c;
+
+      if (deltaDist > 0.003 && acc < 35) {
+        distance += deltaDist;
+        lastLat = lat;
+        lastLon = lon;
+      }
+    } else {
+      lastLat = lat;
+      lastLon = lon;
+    }
+
+    document.getElementById("distance").innerText = distance.toFixed(3);
+    document.getElementById("ov-dist").innerText = distance.toFixed(3) + " km";
+  }, err => {
+    let errorMsg = "GPS Error: ";
+    if (err.code === 1) errorMsg += "Permission denied by user.";
+    else if (err.code === 2) errorMsg += "Position unavailable / no signal.";
+    else if (err.code === 3) errorMsg += "Request timed out.";
+    else errorMsg += err.message;
+
+    statusEl.innerText = "⚠️ " + errorMsg;
+    statusEl.style.color = "var(--danger)";
+  }, { enableHighAccuracy: true, maximumAge: 1000, timeout: 10000 });
 }
 
-lastLat=lat;
-lastLon=lon;
-
+let axF = 0, ayF = 0, azF = 0;
+window.addEventListener("devicemotion", e => {
+  if (e.accelerationIncludingGravity) {
+    let ax = e.accelerationIncludingGravity.x || 0;
+    let ay = e.accelerationIncludingGravity.y || 0;
+    let az = e.accelerationIncludingGravity.z || 0;
+    axF += (ax - axF) * 0.2;
+    ayF += (ay - ayF) * 0.2;
+    azF += (az - azF) * 0.2;
+    document.getElementById("ax").innerText = axF.toFixed(2);
+    document.getElementById("ay").innerText = ayF.toFixed(2);
+    document.getElementById("az").innerText = azF.toFixed(2);
+  }
 });
 
-window.addEventListener("devicemotion",e=>{
-
-if(e.accelerationIncludingGravity){
-
-document.getElementById("ax").innerText=
-e.accelerationIncludingGravity.x.toFixed(2);
-
-document.getElementById("ay").innerText=
-e.accelerationIncludingGravity.y.toFixed(2);
-
-document.getElementById("az").innerText=
-e.accelerationIncludingGravity.z.toFixed(2);
-
-}
-
+window.addEventListener("deviceorientation", e => {
+  if(e.alpha !== null) {
+    document.getElementById("ga").innerText = (e.alpha || 0).toFixed(1);
+    document.getElementById("gb").innerText = (e.beta || 0).toFixed(1);
+    document.getElementById("gg").innerText = (e.gamma || 0).toFixed(1);
+  }
 });
-
-window.addEventListener("deviceorientation",e=>{
-
-document.getElementById("ga").innerText=
-e.alpha.toFixed(1);
-
-document.getElementById("gb").innerText=
-e.beta.toFixed(1);
-
-document.getElementById("gg").innerText=
-e.gamma.toFixed(1);
-
-});
-
-setInterval(()=>{
-
-let d=new Date();
-
-document.getElementById("clock").innerHTML=
-d.toLocaleTimeString();
-
-},1000);
-
 </script>
 
 </body>
 </html>
+
