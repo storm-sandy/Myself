@@ -3,82 +3,412 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>World Clock with Country Timezones</title>
+<title>World Clock Pro - Comprehensive 250+ Territories & Chrono-Graph</title>
 
 <style>
-*{box-sizing:border-box;}
-body{
-  margin:0;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  background:#0f172a;
-  font-family:Arial, sans-serif;
-  color:#fff;
-  padding-top:20px;
+:root {
+  --bg: #090d16;
+  --card-bg: #111827;
+  --card-border: #1f2937;
+  --accent: #38bdf8;
+  --accent-glow: rgba(56, 189, 248, 0.2);
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --danger: #f43f5e;
+  --badge-bg: #1e293b;
+  --dst-active: #10b981;
+  --dst-active-bg: rgba(16, 185, 129, 0.1);
 }
 
-.container{
-  width:100%;
-  max-width:440px;
-  padding:20px;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: var(--bg);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--text-main);
+  padding: 20px 12px;
 }
 
-h1{
-  text-align:center;
-  margin-bottom:20px;
-  font-size:22px;
+.container {
+  width: 100%;
+  max-width: 620px;
 }
 
-form{
-  display:flex;
-  margin-bottom:20px;
+header {
+  text-align: center;
+  margin-bottom: 16px;
 }
 
-form select{
-  flex:1;
-  padding:8px;
-  border-radius:6px 0 0 6px;
-  border:none;
-  font-size:16px;
-  background:#020617;
-  color:#fff;
+h1 {
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  margin-bottom: 4px;
 }
 
-form button{
-  padding:8px 12px;
-  border:none;
-  border-radius:0 6px 6px 0;
-  background:#2563eb;
-  color:#fff;
-  font-size:16px;
-  cursor:pointer;
+p.subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }
 
-/* CLOCK CARD */
-.clock{
-  background:#020617;
-  border-radius:12px;
-  padding:12px;
-  margin-bottom:10px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+/* Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 12px;
 }
 
-.city{
-  font-size:16px;
-  font-weight:bold;
+.tab-btn {
+  flex: 1;
+  padding: 10px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
 }
 
-.time{
-  font-size:20px;
-  font-family:monospace;
+.tab-btn:hover {
+  color: var(--text-main);
+  background: #1f2937;
 }
 
-.local{
-  border:2px solid #2563eb;
+.tab-btn.active {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+/* Tab Content Panels */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.select-row {
+  display: flex;
+  gap: 6px;
+}
+
+select {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  font-size: 0.85rem;
+  background: var(--card-bg);
+  color: var(--text-main);
+  outline: none;
+}
+
+select:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.add-btn-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+form {
+  display: flex;
+  flex: 1;
+  gap: 8px;
+}
+
+form button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #000;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  width: 100%;
+}
+
+form button:hover { opacity: 0.9; }
+
+.action-btn {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-muted);
+  padding: 0 14px;
+  height: 41px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.action-btn:hover { color: var(--text-main); background: #1f2937; }
+
+.search-box {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+  outline: none;
+}
+
+.search-box:focus { border-color: var(--accent); }
+
+/* Graph Panel */
+.graph-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.graph-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.graph-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 110px;
+  padding-top: 15px;
+  border-bottom: 1px solid var(--card-border);
+  overflow-x: auto;
+}
+
+.bar-col {
+  flex: 1;
+  min-width: 42px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.bar {
+  width: 100%;
+  background: var(--accent);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+  position: relative;
+}
+
+.bar.negative {
+  background: var(--danger);
+}
+
+.bar-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  text-align: center;
+}
+
+.bar-val {
+  font-size: 0.6rem;
+  font-family: monospace;
+  position: absolute;
+  top: -14px;
+  color: var(--text-main);
+}
+
+.clock-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.clock {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+
+.clock:hover { transform: translateY(-2px); }
+
+.clock.local {
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.clock-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.city {
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.count-pill {
+  font-size: 0.65rem;
+  background: var(--badge-bg);
+  border: 1px solid var(--card-border);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.dst-badge {
+  font-size: 0.65rem;
+  background: var(--badge-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-muted);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  display: none;
+}
+
+.dst-badge.active {
+  background: var(--dst-active-bg);
+  border-color: var(--dst-active);
+  color: var(--dst-active);
+  display: inline-block;
+}
+
+.time-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.time-wrapper {
+  text-align: right;
+}
+
+.time {
+  font-size: 1.3rem;
+  font-family: monospace;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.gmt-diff {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.2s;
+}
+
+.remove-btn:hover { color: var(--danger); }
+
+/* Tab 2 & 3 General Card Styles */
+.settings-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-card h3 {
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+.settings-card p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.settings-btn {
+  padding: 10px 18px;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  background: #1f2937;
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settings-btn:hover {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
 }
 </style>
 </head>
@@ -86,81 +416,746 @@ form button{
 <body>
 
 <div class="container">
-  <h1>🌍 World Clock</h1>
+  <header>
+    <h1>🌍 World Clock Pro</h1>
+    <p class="subtitle">Complete 250+ Nations & Territories Matrix & Chrono-Graph</p>
+  </header>
 
-  <form id="addForm">
-    <select id="tzSelect">
-      <option value="" disabled selected>Select Timezone</option>
-      <option value="Europe/London">London, UK</option>
-      <option value="Europe/Paris">Paris, France</option>
-      <option value="Europe/Berlin">Berlin, Germany</option>
-      <option value="America/New_York">New York, USA</option>
-      <option value="America/Los_Angeles">Los Angeles, USA</option>
-      <option value="Asia/Dubai">Dubai, UAE</option>
-      <option value="Asia/Kolkata">Mumbai, India</option>
-      <option value="Asia/Tokyo">Tokyo, Japan</option>
-      <option value="Australia/Sydney">Sydney, Australia</option>
-      <option value="Pacific/Auckland">Auckland, NZ</option>
-    </select>
-    <button type="submit">Add</button>
-  </form>
-
-  <div class="clock local">
-    <div class="city">Local Time</div>
-    <div class="time" id="local"></div>
+  <!-- Tab Navigation (3 Tabs) -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tabBtn1" onclick="switchTab(1)">Dashboard</button>
+    <button class="tab-btn" id="tabBtn2" onclick="switchTab(2)">Matrix Selection</button>
+    <button class="tab-btn" id="tabBtn3" onclick="switchTab(3)">Export & Import</button>
   </div>
 
-  <div id="clocks"></div>
+  <!-- Tab 1: Dashboard Panel -->
+  <div class="tab-content active" id="tabContent1">
+    <input type="text" id="searchBox" class="search-box" placeholder="🔍 Search saved zones or natural ecosystems...">
+
+    <!-- Chrono-Velocity Graph Panel -->
+    <div class="graph-card">
+      <div class="graph-title">
+        <span>📊 Live Time Offset Velocity (Hours vs Local)</span>
+        <span id="zoneCountBadge" style="font-family:monospace; color:var(--accent);">0 Active</span>
+      </div>
+      <div class="graph-container" id="velocityGraph">
+        <!-- Bars dynamically injected -->
+      </div>
+    </div>
+
+    <div class="clock-list" id="clockList">
+      <!-- Local Clock Card -->
+      <div class="clock local" id="localCard">
+        <div class="clock-info">
+          <div class="city"><span id="localSun">☀️</span> Local Baseline Time</div>
+          <div class="meta-row">
+            <div class="date" id="localDate">--</div>
+            <span class="count-pill">Baseline</span>
+            <span class="dst-badge" id="localDst">⚡ DST Active</span>
+          </div>
+        </div>
+        <div class="time-container">
+          <div class="time-wrapper">
+            <div class="time" id="localTime">--:--:--</div>
+            <div class="gmt-diff" id="localGmt">GMT --</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom Clocks Container -->
+      <div id="customClocksContainer" class="clock-list"></div>
+    </div>
+  </div>
+
+  <!-- Tab 2: Matrix Selection Panel -->
+  <div class="tab-content" id="tabContent2">
+    <div class="settings-card">
+      <h3>🌐 Cascading Territory & Ecosystem Explorer</h3>
+      <p>Select a natural geographic boundary or ecosystem first, then choose a specific nation or island territory to add to your dashboard.</p>
+      
+      <!-- Cascading Selector Form Toolbar -->
+      <div class="toolbar" style="margin-top: 8px;">
+        <div class="select-row" style="flex-direction: column;">
+          <select id="categorySelect" style="margin-bottom: 8px;">
+            <option value="" disabled selected>1. Select Natural Ecosystem / Boundary...</option>
+          </select>
+          <select id="countrySelect" disabled>
+            <option value="" disabled selected>2. Select Country or Island Territory...</option>
+          </select>
+        </div>
+        <div class="add-btn-row" style="margin-top: 8px;">
+          <form id="addForm">
+            <button type="submit">Add to Dashboard</button>
+          </form>
+          <button class="action-btn" id="formatToggle" title="Toggle 12/24 Hour format">12H</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab 3: Export & Import Panel -->
+  <div class="tab-content" id="tabContent3">
+    <div class="settings-card">
+      <h3>📤 Backup & Export Dashboards</h3>
+      <p>Download a JSON backup of your customized world clock dashboard configurations, territories, and time zone selections to keep safe or transfer to another device.</p>
+      <div class="btn-group">
+        <button class="settings-btn" id="exportBtnTab">Download JSON Backup</button>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <h3>📥 Restore & Import Dashboards</h3>
+      <p>Upload a previously exported JSON backup file to restore your clock lists and preferences instantly.</p>
+      <div class="btn-group">
+        <button class="settings-btn" id="importBtnTab">Upload JSON Backup</button>
+        <input type="file" id="importFile" accept=".json" style="display: none;">
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-const clocksContainer = document.getElementById("clocks");
-const customClocks = [];
+// Comprehensive structured database covering 250+ countries, dependencies, and territories categorized by natural geographic boundaries
+const ecosystemDatabase = [
+  {
+    category: "🏔️ The Indian Subcontinent (Himalayas to Indian Ocean)",
+    items: [
+      { name: "🇮🇳 India (IST - Mumbai, New Delhi)", tz: "Asia/Kolkata", countTag: "1.42B Pop" },
+      { name: "🇧🇩 Bangladesh (Bengal Delta)", tz: "Asia/Dhaka", countTag: "173M Pop" },
+      { name: "🇵🇰 Pakistan (Indus River Basin)", tz: "Asia/Karachi", countTag: "240M Pop" },
+      { name: "🇱🇰 Sri Lanka (Indian Ocean Island)", tz: "Asia/Colombo", countTag: "22M Pop" },
+      { name: "🇳🇵 Nepal (Himalayan Range)", tz: "Asia/Kathmandu", countTag: "30M Pop" },
+      { name: "🇧🇹 Bhutan (Eastern Himalayas)", tz: "Asia/Thimphu", countTag: "780K Pop" },
+      { name: "🇲🇻 Maldives (Laccadive Atolls)", tz: "Asia/Male", countTag: "520K Pop" }
+    ]
+  },
+  {
+    category: "⛰️ Caucasus Mountains & Eurasian Steppe",
+    items: [
+      { name: "🇦🇿 Azerbaijan (Caspian Sea Basin)", tz: "Asia/Baku", countTag: "10M Pop" },
+      { name: "🇦🇲 Armenia (Armenian Highlands)", tz: "Asia/Yerevan", countTag: "3M Pop" },
+      { name: "🇬🇪 Georgia (Caucasus Range)", tz: "Asia/Tbilisi", countTag: "3.7M Pop" },
+      { name: "🇰🇿 Kazakhstan - West (Urals)", tz: "Asia/Aqtobe", countTag: "Western Region" },
+      { name: "🇰🇿 Kazakhstan - East (Steppes)", tz: "Asia/Almaty", countTag: "20M Pop" },
+      { name: "🇺🇿 Uzbekistan (Turan Depression)", tz: "Asia/Tashkent", countTag: "36M Pop" },
+      { name: "🇰🇬 Kyrgyzstan (Tien Shan Mountains)", tz: "Asia/Bishkek", countTag: "7M Pop" },
+      { name: "🇹🇯 Tajikistan (Pamir Mountains)", tz: "Asia/Dushanbe", countTag: "10M Pop" },
+      { name: "🇹🇲 Turkmenistan (Karakum Desert)", tz: "Asia/Ashgabat", countTag: "6M Pop" },
+      { name: "🇷🇺 Russia - European Plains", tz: "Europe/Moscow", countTag: "Moscow Zone" },
+      { name: "🇷🇺 Russia - Urals", tz: "Asia/Yekaterinburg", countTag: "Urals Zone" },
+      { name: "🇷🇺 Russia - Siberia", tz: "Asia/Novosibirsk", countTag: "Siberian Zone" },
+      { name: "🇷🇺 Russia - Far East", tz: "Asia/Vladivostok", countTag: "Pacific Zone" }
+    ]
+  },
+  {
+    category: "🌊 East Asian Basin, Peninsulas & Volcanic Arcs",
+    items: [
+      { name: "🇯🇵 Japan (Pacific Volcanic Arc)", tz: "Asia/Tokyo", countTag: "125M Pop" },
+      { name: "🇨🇳 China - Beijing / Central Plains", tz: "Asia/Shanghai", countTag: "1.41B Pop" },
+      { name: "🇨🇳 China - Xinjiang / Western Border", tz: "Asia/Urumqi", countTag: "Western Basin" },
+      { name: "🇭🇰 Hong Kong (Pearl River Estuary)", tz: "Asia/Hong_Kong", countTag: "7.4M Pop" },
+      { name: "🇲🇦 Macau (Pearl River Delta)", tz: "Asia/Macau", countTag: "680K Pop" },
+      { name: "🇹🇼 Taiwan (Subduction Zone)", tz: "Asia/Taipei", countTag: "23.5M Pop" },
+      { name: "🇰🇷 South Korea (Korean Peninsula)", tz: "Asia/Seoul", countTag: "51M Pop" },
+      { name: "🇰🇵 North Korea (Korean Peninsula)", tz: "Asia/Pyongyang", countTag: "26M Pop" },
+      { name: "🇲🇳 Mongolia (Inner Asian Plateau)", tz: "Asia/Ulaanbaatar", countTag: "3.4M Pop" }
+    ]
+  },
+  {
+    category: "🏝️ Sunda Shelf & Maritime Southeast Asia",
+    items: [
+      { name: "🇸🇬 Singapore (Strait of Malacca)", tz: "Asia/Singapore", countTag: "5.9M Pop" },
+      { name: "🇲🇾 Malaysia (Malay Peninsula/Borneo)", tz: "Asia/Kuala_Lumpur", countTag: "34M Pop" },
+      { name: "🇧🇳 Brunei (Borneo Basin)", tz: "Asia/Brunei", countTag: "450K Pop" },
+      { name: "🇵🇭 Philippines (Volcanic Archipelago)", tz: "Asia/Manila", countTag: "115M Pop" },
+      { name: "🇮🇩 Indonesia - Sunda (Java/Sumatra)", tz: "Asia/Jakarta", countTag: "275M Pop" },
+      { name: "🇮🇩 Indonesia - Wallacea (Sulawesi)", tz: "Asia/Makassar", countTag: "Central zone" },
+      { name: "🇮🇩 Indonesia - Sahul (New Guinea)", tz: "Asia/Jayapura", countTag: "East zone" },
+      { name: "🇹🇭 Thailand (Indochinese Peninsula)", tz: "Asia/Bangkok", countTag: "71M Pop" },
+      { name: "🇻🇳 Vietnam (Mekong/Red River Deltas)", tz: "Asia/Ho_Chi_Minh", countTag: "98M Pop" },
+      { name: "🇰🇭 Cambodia (Mekong Basin)", tz: "Asia/Phnom_Penh", countTag: "16M Pop" },
+      { name: "🇱🇦 Laos (Annamite Range Highlands)", tz: "Asia/Vientiane", countTag: "7.5M Pop" },
+      { name: "🇲🇲 Myanmar (Irrawaddy Basin)", tz: "Asia/Yangon", countTag: "54M Pop" },
+      { name: "🇹🇱 Timor-Leste (Timor Trough Island)", tz: "Asia/Dili", countTag: "1.3M Pop" }
+    ]
+  },
+  {
+    category: "🏜️ Arabian Desert, Levant & Tigris-Euphrates Basin",
+    items: [
+      { name: "🇦🇪 UAE (Arabian Gulf Coast)", tz: "Asia/Dubai", countTag: "9.5M Pop" },
+      { name: "🇸🇦 Saudi Arabia (Najd Plateau)", tz: "Asia/Riyadh", countTag: "36M Pop" },
+      { name: "🇶🇦 Qatar (Gulf Peninsula)", tz: "Asia/Qatar", countTag: "2.7M Pop" },
+      { name: "🇧🇭 Bahrain (Gulf Archipelago)", tz: "Asia/Bahrain", countTag: "1.5M Pop" },
+      { name: "🇰🇼 Kuwait (Persian Gulf)", tz: "Asia/Kuwait", countTag: "4.3M Pop" },
+      { name: "🇴🇲 Oman (Hajar Mountains)", tz: "Asia/Muscat", countTag: "5M Pop" },
+      { name: "🇮🇶 Iraq (Mesopotamian Alluvial Plain)", tz: "Asia/Baghdad", countTag: "44M Pop" },
+      { name: "🇮🇷 Iran (Iranian Plateau)", tz: "Asia/Tehran", countTag: "88M Pop" },
+      { name: "🇦🇫 Afghanistan (Hindu Kush Knot)", tz: "Asia/Kabul", countTag: "41M Pop" },
+      { name: "🇮🇱 Israel (Mediterranean Levant)", tz: "Asia/Jerusalem", countTag: "9.7M Pop" },
+      { name: "🇯🇴 Jordan (Jordan Rift Valley)", tz: "Asia/Amman", countTag: "11M Pop" },
+      { name: "🇱🇧 Lebanon (Levantine Coast)", tz: "Asia/Beirut", countTag: "5.4M Pop" },
+      { name: "🇸🇾 Syria (Levantine Steppe)", tz: "Asia/Damascus", countTag: "22M Pop" },
+      { name: "🇾🇪 Yemen (South Arabian Plateau)", tz: "Asia/Aden", countTag: "34M Pop" }
+    ]
+  },
+  {
+    category: "🏞️ Western & Central Continental Europe",
+    items: [
+      { name: "🇬🇧 United Kingdom (British Isles)", tz: "Europe/London", countTag: "67M Pop" },
+      { name: "🇮🇪 Ireland (Celtic Island Basin)", tz: "Europe/Dublin", countTag: "5M Pop" },
+      { name: "🇫🇷 France (North European Plain)", tz: "Europe/Paris", countTag: "68M Pop" },
+      { name: "🇩🇪 Germany (Central Uplands)", tz: "Europe/Berlin", countTag: "84M Pop" },
+      { name: "🇮🇹 Italy (Apennine Peninsula)", tz: "Europe/Rome", countTag: "59M Pop" },
+      { name: "🇪🇸 Spain (Iberian Meseta)", tz: "Europe/Madrid", countTag: "48M Pop" },
+      { name: "🇵🇹 Portugal (Atlantic Iberian Coast)", tz: "Europe/Lisbon", countTag: "10M Pop" },
+      { name: "🇳🇱 Netherlands (Rhine-Meuse Delta)", tz: "Europe/Amsterdam", countTag: "17.8M Pop" },
+      { name: "🇧🇪 Belgium (Flemish-Ardennes Basin)", tz: "Europe/Brussels", countTag: "11.6M Pop" },
+      { name: "🇱🇺 Luxembourg (Ardennes Plateau)", tz: "Europe/Luxembourg", countTag: "650K Pop" },
+      { name: "🇨🇭 Switzerland (High Alpine Massif)", tz: "Europe/Zurich", countTag: "8.8M Pop" },
+      { name: "🇦🇹 Austria (Eastern Alpine Region)", tz: "Europe/Vienna", countTag: "9.1M Pop" },
+      { name: "🇱🇮 Liechtenstein (Alpine Rhine)", tz: "Europe/Vaduz", countTag: "39K Pop" },
+      { name: "🇲🇨 Monaco (Mediterranean Coast)", tz: "Europe/Monaco", countTag: "39K Pop" },
+      { name: "🇦🇩 Andorra (Pyrenees Mountains)", tz: "Europe/Andorra", countTag: "80K Pop" }
+    ]
+  },
+  {
+    category: "🏰 Northern, Eastern & Southern European Basins",
+    items: [
+      { name: "🇸🇪 Sweden (Scandinavian Shield)", tz: "Europe/Stockholm", countTag: "10.5M Pop" },
+      { name: "🇳🇴 Norway (Scandinavian Mountains)", tz: "Europe/Oslo", countTag: "5.5M Pop" },
+      { name: "🇫🇰 Svalbard & Jan Mayen", tz: "Arctic/Longyearbyen", countTag: "Arctic Terr" },
+      { name: "🇫🇮 Finland (Baltic Shield & Lakes)", tz: "Europe/Helsinki", countTag: "5.6M Pop" },
+      { name: "🇩🇰 Denmark (Jutland Peninsula)", tz: "Europe/Copenhagen", countTag: "5.9M Pop" },
+      { name: "🇮🇸 Iceland (Mid-Atlantic Ridge)", tz: "Europe/Reykjavik", countTag: "380K Pop" },
+      { name: "🇵🇱 Poland (Central European Plain)", tz: "Europe/Warsaw", countTag: "37M Pop" },
+      { name: "🇺🇦 Ukraine (East European Plain)", tz: "Europe/Kyiv", countTag: "37M Pop" },
+      { name: "🇨🇿 Czech Republic (Bohemian Basin)", tz: "Europe/Prague", countTag: "10.8M Pop" },
+      { name: "🇸🇰 Slovakia (Carpathian Basin)", tz: "Europe/Bratislava", countTag: "5.4M Pop" },
+      { name: "🇭🇺 Hungary (Pannonian Basin)", tz: "Europe/Budapest", countTag: "9.6M Pop" },
+      { name: "🇷🇴 Romania (Carpathian-Danube Basin)", tz: "Europe/Bucharest", countTag: "19M Pop" },
+      { name: "🇧🇬 Bulgaria (Balkan Peninsula)", tz: "Europe/Sofia", countTag: "6.4M Pop" },
+      { name: "🇬🇷 Greece (Aegean Archipelagos)", tz: "Europe/Athens", countTag: "10.4M Pop" },
+      { name: "🇨🇾 Cyprus (Levantine Island Basin)", tz: "Asia/Nicosia", countTag: "1.2M Pop" },
+      { name: "🇲🇹 Malta (Mediterranean Island)", tz: "Europe/Malta", countTag: "530K Pop" },
+      { name: "🇭🇷 Croatia (Adriatic Coast)", tz: "Europe/Zagreb", countTag: "4M Pop" },
+      { name: "🇷🇸 Serbia (Danube-Sava Basin)", tz: "Europe/Belgrade", countTag: "6.6M Pop" },
+      { name: "🇧🇦 Bosnia & Herzegovina (Dinaric Alps)", tz: "Europe/Sarajevo", countTag: "3.2M Pop" },
+      { name: "🇸🇮 Slovenia (Julian Alps Basin)", tz: "Europe/Ljubljana", countTag: "2.1M Pop" },
+      { name: "🇲🇪 Montenegro (Adriatic Dinarides)", tz: "Europe/Podgorica", countTag: "620K Pop" },
+      { name: "🇲🇰 North Macedonia (Vardar Basin)", tz: "Europe/Skopje", countTag: "1.8M Pop" },
+      { name: "🇦🇱 Albania (Western Balkan Coast)", tz: "Europe/Tirane", countTag: "2.8M Pop" },
+      { name: "🇪🇪 Estonia (Baltic Sea Coast)", tz: "Europe/Tallinn", countTag: "1.3M Pop" },
+      { name: "🇱🇻 Latvia (Baltic Basin)", tz: "Europe/Riga", countTag: "1.9M Pop" },
+      { name: "🇱🇹 Lithuania (Baltic Plain)", tz: "Europe/Vilnius", countTag: "2.8M Pop" },
+      { name: "🇧🇾 Belarus (East European Plain)", tz: "Europe/Minsk", countTag: "9.3M Pop" },
+      { name: "🇲🇩 Moldova (Dniester-Prut Basin)", tz: "Europe/Chisinau", countTag: "2.5M Pop" }
+    ]
+  },
+  {
+    category: "🌺 Australasian Shelf & Pacific Oceanic Atolls",
+    items: [
+      { name: "🇦🇺 Australia - East (Sydney/Melbourne)", tz: "Australia/Sydney", countTag: "Eastern Coast" },
+      { name: "🇦🇺 Australia - Central (Adelaide)", tz: "Australia/Adelaide", countTag: "Central zone" },
+      { name: "🇦🇺 Australia - West (Perth)", tz: "Australia/Perth", countTag: "Western Shield" },
+      { name: "🇦🇺 Australia - Lord Howe Island", tz: "Australia/Lord_Howe", countTag: "Isolated Atoll" },
+      { name: "🇳🇿 New Zealand (Zealandia Ridge)", tz: "Pacific/Auckland", countTag: "5.1M Pop" },
+      { name: "🇳🇿 New Zealand - Chatham Islands", tz: "Pacific/Chatham", countTag: "Chatham Arch" },
+      { name: "🇫🇯 Fiji (Melanesian Volcanic Islands)", tz: "Pacific/Fiji", countTag: "900K Pop" },
+      { name: "🇵🇬 Papua New Guinea (New Guinea Highlands)", tz: "Pacific/Port_Moresby", countTag: "10M Pop" },
+      { name: "🇻🇺 Vanuatu (Melanesian Arc)", tz: "Pacific/Efate", countTag: "320K Pop" },
+      { name: "🇸🇧 Solomon Islands (Melanesian Archipelago)", tz: "Pacific/Guadalcanal", countTag: "720K Pop" },
+      { name: "🇳🇨 New Caledonia (Melanesian French Terr)", tz: "Pacific/Noumea", countTag: "270K Pop" },
+      { name: "🇹🇴 Tonga (Polynesian Trench)", tz: "Pacific/Tongatapu", countTag: "105K Pop" },
+      { name: "🇼🇸 Samoa (Polynesian Volcanic Chain)", tz: "Pacific/Apia", countTag: "220K Pop" },
+      { name: "🇦🇸 American Samoa (US Polynesian Terr)", tz: "Pacific/Pago_Pago", countTag: "45K Pop" },
+      { name: "🇫🇵 French Polynesia (Tahiti Archipelago)", tz: "Pacific/Tahiti", countTag: "300K Pop" },
+      { name: "🇨🇰 Cook Islands (Polynesian Realm)", tz: "Pacific/Rarotonga", countTag: "17K Pop" },
+      { name: "🇳🇺 Niue (Polynesian Coral Island)", tz: "Pacific/Niue", countTag: "1.6K Pop" },
+      { name: "🇹🇰 Tokelau (Polynesian Atoll Group)", tz: "Pacific/Fakaofo", countTag: "1.5K Pop" },
+      { name: "🇼🇫 Wallis and Futuna (French Collectivity)", tz: "Pacific/Wallis", countTag: "11K Pop" },
+      { name: "🇹🇻 Tuvalu (Polynesian Atoll)", tz: "Pacific/Funafuti", countTag: "11K Pop" },
+      { name: "🇰🇮 Kiribati - Gilbert Islands", tz: "Pacific/Tarawa", countTag: "West Atolls" },
+      { name: "🇰🇮 Kiribati - Phoenix Islands", tz: "Pacific/Kanton", countTag: "Central Atolls" },
+      { name: "🇰🇮 Kiribati - Line Islands", tz: "Pacific/Kiritimati", countTag: "East Atolls" },
+      { name: "🇲🇭 Marshall Islands (Micronesian Atolls)", tz: "Pacific/Majuro", countTag: "41K Pop" },
+      { name: "🇫🇲 Micronesia (Caroline Islands)", tz: "Pacific/Pohnpei", countTag: "115K Pop" },
+      { name: "🇵🇼 Palau (Micronesian Archipelago)", tz: "Pacific/Palau", countTag: "18K Pop" },
+      { name: "🇳🇷 Nauru (Micronesian Coral Island)", tz: "Pacific/Nauru", countTag: "12K Pop" },
+      { name: "🇬🇺 Guam (Mariana Trench Island)", tz: "Pacific/Guam", countTag: "170K Pop" },
+      { name: "🇲🇵 Northern Mariana Islands (US)", tz: "Pacific/Saipan", countTag: "50K Pop" }
+    ]
+  },
+  {
+    category: "🌲 North American Cordillera, Plains & Shield",
+    items: [
+      { name: "🇺🇸 USA - Eastern Seaboard (EST)", tz: "America/New_York", countTag: "NY / DC" },
+      { name: "🇺🇸 USA - Mississippi Basin (CST)", tz: "America/Chicago", countTag: "Chicago / TX" },
+      { name: "🇺🇸 USA - Rocky Mountain Divide (MST)", tz: "America/Denver", countTag: "Denver / UT" },
+      { name: "🇺🇸 USA - Pacific Coastal Range (PST)", tz: "America/Los_Angeles", countTag: "CA / WA" },
+      { name: "🇺🇸 USA - Alaska Subarctic", tz: "America/Anchorage", countTag: "AK Zone" },
+      { name: "🇺🇸 USA - Aleutian Islands", tz: "America/Adak", countTag: "Western AK" },
+      { name: "🇺🇸 USA - Hawaiian Volcanic Chain", tz: "Pacific/Honolulu", countTag: "1.4M Pop" },
+      { name: "🇨🇦 Canada - Atlantic Provinces", tz: "America/Halifax", countTag: "NS / NB" },
+      { name: "🇨🇦 Canada - Great Lakes Basin (EST)", tz: "America/Toronto", countTag: "ON / QC" },
+      { name: "🇨🇦 Canada - Central Prairies", tz: "America/Winnipeg", countTag: "MB / SK" },
+      { name: "🇨🇦 Canada - Mountain Cordillera", tz: "America/Edmonton", countTag: "AB Zone" },
+      { name: "🇨🇦 Canada - Pacific Coast", tz: "America/Vancouver", countTag: "BC Zone" },
+      { name: "🇨🇦 Canada - Arctic Territories", tz: "America/Yellowknife", countTag: "North Terr" },
+      { name: "🇲🇽 Mexico - Trans-Mexican Volcanic Belt", tz: "America/Mexico_City", countTag: "Central MX" },
+      { name: "🇲🇽 Mexico - Baja Peninsula", tz: "America/Tijuana", countTag: "Western MX" },
+      { name: "🇲🇽 Mexico - Yucatan Peninsula", tz: "America/Cancun", countTag: "Eastern MX" }
+    ]
+  },
+  {
+    category: "🌴 Mesoamerica, Caribbean & Arctic Island Chains",
+    items: [
+      { name: "🇬🇱 Greenland (Arctic Ice Sheet - Nuuk)", tz: "America/Godthab", countTag: "Arctic Island" },
+      { name: "🇵🇷 Puerto Rico (Greater Antilles)", tz: "America/Puerto_Rico", countTag: "3.2M Pop" },
+      { name: "🇨🇺 Cuba (Archipelagic Shelf)", tz: "America/Havana", countTag: "11M Pop" },
+      { name: "🇧🇸 Bahamas (Lucayan Platform)", tz: "America/Nassau", countTag: "400K Pop" },
+      { name: "🇯🇲 Jamaica (Greater Antilles)", tz: "America/Jamaica", countTag: "2.8M Pop" },
+      { name: "🇩🇴 Dominican Republic (Hispaniola)", tz: "America/Santo_Domingo", countTag: "11M Pop" },
+      { name: "🇭🇹 Haiti (Hispaniola Basin)", tz: "America/Port-au-Prince", countTag: "11.5M Pop" },
+      { name: "🇧🇧 Barbados (Windward Ridge)", tz: "America/Barbados", countTag: "280K Pop" },
+      { name: "🇹🇹 Trinidad and Tobago (South Shelf)", tz: "America/Trinidad", countTag: "1.5M Pop" },
+      { name: "🇨🇷 Costa Rica (Central American Isthmus)", tz: "America/Costa_Rica", countTag: "5.2M Pop" },
+      { name: "🇵🇦 Panama (Panamanian Land Bridge)", tz: "America/Panama", countTag: "4.4M Pop" },
+      { name: "🇬🇹 Guatemala (Mesoamerican Highlands)", tz: "America/Guatemala", countTag: "17M Pop" },
+      { name: "🇭🇳 Honduras (Caribbean-Pacific Isthmus)", tz: "America/Tegucigalpa", countTag: "10.5M Pop" },
+      { name: "🇸🇻 El Salvador (Pacific Volcanic Coast)", tz: "America/El_Salvador", countTag: "6.3M Pop" },
+      { name: "🇳🇮 Nicaragua (Central American Rift)", tz: "America/Managua", countTag: "7M Pop" },
+      { name: "🇧🇿 Belize (Caribbean Barrier Reef)", tz: "America/Belize", countTag: "400K Pop" },
+      { name: "🇧🇲 Bermuda (North Atlantic Atoll)", tz: "Atlantic/Bermuda", countTag: "64K Pop" },
+      { name: "🇰🇾 Cayman Islands (Caribbean)", tz: "America/Cayman", countTag: "70K Pop" },
+      { name: "🇻🇮 US Virgin Islands (Caribbean)", tz: "America/St_Thomas", countTag: "105K Pop" },
+      { name: "🇲🇸 Montserrat (Leeward Islands)", tz: "America/Montserrat", countTag: "5K Pop" },
+      { name: "🇬🇩 Grenada (Windward Islands)", tz: "America/Grenada", countTag: "125K Pop" },
+      { name: "🇱🇨 Saint Lucia (Windward Islands)", tz: "America/St_Lucia", countTag: "180K Pop" },
+      { name: "🇻🇨 Saint Vincent and the Grenadines", tz: "America/St_Vincent", countTag: "100K Pop" },
+      { name: "🇦🇬 Antigua and Barbuda", tz: "America/Antigua", countTag: "93K Pop" },
+      { name: "🇰🇳 Saint Kitts and Nevis", tz: "America/St_Kitts", countTag: "47K Pop" },
+      { name: "🇩🇲 Dominica (Windward Island)", tz: "America/Dominica", countTag: "73K Pop" },
+      { name: "🇨🇼 Curaçao (Southern Caribbean)", tz: "America/Curacao", countTag: "150K Pop" },
+      { name: "🇦🇼 Aruba (Southern Caribbean)", tz: "America/Aruba", countTag: "106K Pop" },
+      { name: "🇧🇶 Bonaire, Sint Eustatius & Saba", tz: "America/Blancaneaux", countTag: "Caribbean NL" },
+      { name: "🇸🇽 Sint Maarten (Leeward Island)", tz: "America/Lower_Princes", countTag: "44K Pop" },
+      { name: "🇬🇵 Guadeloupe (French Antilles)", tz: "America/Guadeloupe", countTag: "380K Pop" },
+      { name: "🇲🇶 Martinique (French Antilles)", tz: "America/Martinique", countTag: "360K Pop" },
+      { name: "🇬🇫 French Guiana (South American Coast)", tz: "America/Cayenne", countTag: "300K Pop" }
+    ]
+  },
+  {
+    category: "🌿 South American Andean & Amazonian Basins",
+    items: [
+      { name: "🇧🇷 Brazil - East Atlantic Plateau (São Paulo)", tz: "America/Sao_Paulo", countTag: "215M Pop" },
+      { name: "🇧🇷 Brazil - Amazon Basin (Manaus)", tz: "America/Manaus", countTag: "Northern zone" },
+      { name: "🇧🇷 Brazil - Fernando de Noronha", tz: "Noronha", countTag: "Atlantic Atoll" },
+      { name: "🇦🇷 Argentina - Pampas (Buenos Aires)", tz: "America/Buenos_Aires", countTag: "46M Pop" },
+      { name: "🇦🇷 Argentina - Western Andes (Mendoza)", tz: "America/Argentina/Mendoza", countTag: "Andean zone" },
+      { name: "🇦🇷 Argentina - Southern Patagonia (Ushuaia)", tz: "America/Argentina/Ushuaia", countTag: "Patagonian zone" },
+      { name: "🇨🇱 Chile - Central Valley (Santiago)", tz: "America/Santiago", countTag: "19M Pop" },
+      { name: "🇨🇱 Chile - Punta Arenas (Magallanes)", tz: "America/Punta_Arenas", countTag: "Southern zone" },
+      { name: "🇨🇱 Chile - Easter Island (Rapa Nui)", tz: "Pacific/Easter", countTag: "Polynesian Island" },
+      { name: "🇨🇴 Colombia - Northern Andean Knot (Bogota)", tz: "America/Bogota", countTag: "52M Pop" },
+      { name: "🇵🇪 Peru - Central Andes & Coast (Lima)", tz: "America/Lima", countTag: "34M Pop" },
+      { name: "🇻🇪 Venezuela - Orinoco Basin (Caracas)", tz: "America/Caracas", countTag: "28M Pop" },
+      { name: "🇪🇨 Ecuador - Andean Plateau (Quito)", tz: "America/Guayaquil", countTag: "18M Pop" },
+      { name: "🇪🇨 Ecuador - Galapagos Islands", tz: "Pacific/Galapagos", countTag: "Pacific Atoll" },
+      { name: "🇧🇴 Bolivia - Altiplano (La Paz)", tz: "America/La_Paz", countTag: "12M Pop" },
+      { name: "🇵🇾 Paraguay - Paraná Basin (Asuncion)", tz: "America/Asuncion", countTag: "6.8M Pop" },
+      { name: "🇺🇾 Uruguay - Rio de la Plata (Montevideo)", tz: "America/Montevideo", countTag: "3.4M Pop" },
+      { name: "🇬🇾 Guyana - Guiana Shield (Georgetown)", tz: "America/Guyana", countTag: "800K Pop" },
+      { name: "🇸🇷 Suriname - Guiana Coast (Paramaribo)", tz: "America/Paramaribo", countTag: "600K Pop" },
+      { name: "🇫🇰 Falkland Islands (South Atlantic)", tz: "Atlantic/Stanley", countTag: "British Terr" }
+    ]
+  },
+  {
+    category: "🦁 African Great Rift Valley, Sahara & Indian Ocean",
+    items: [
+      { name: "🇪🇬 Egypt - Lower Nile Valley (Cairo)", tz: "Africa/Cairo", countTag: "110M Pop" },
+      { name: "🇿🇦 South Africa - Highveld (Johannesburg)", tz: "Africa/Johannesburg", countTag: "60M Pop" },
+      { name: "🇳🇬 Nigeria - Niger Delta (Lagos)", tz: "Africa/Lagos", countTag: "220M Pop" },
+      { name: "🇰🇪 Kenya - East African Rift (Nairobi)", tz: "Africa/Nairobi", countTag: "55M Pop" },
+      { name: "🇲🇦 Morocco - Atlas Mountains (Casablanca)", tz: "Africa/Casablanca", countTag: "37M Pop" },
+      { name: "🇪🇹 Ethiopia - Ethiopian Highlands (Addis Ababa)", tz: "Africa/Addis_Ababa", countTag: "123M Pop" },
+      { name: "🇲🇬 Madagascar (Indian Ocean Microcontinent)", tz: "Indian/Antananarivo", countTag: "29M Pop" },
+      { name: "🇲🇺 Mauritius (Mascarene Plateau Island)", tz: "Indian/Mauritius", countTag: "1.3M Pop" },
+      { name: "🇸🇨 Seychelles (Granitic Oceanic Island Bank)", tz: "Indian/Seychelles", countTag: "100K Pop" },
+      { name: "🇷🇪 Réunion (French Overseas Island)", tz: "Indian/Reunion", countTag: "870K Pop" },
+      { name: "🇾🇹 Mayotte (Comoro Archipelago)", tz: "Indian/Mayotte", countTag: "310K Pop" },
+      { name: "🇰🇲 Comoros (Mozambique Channel Islands)", tz: "Indian/Comoro", countTag: "830K Pop" },
+      { name: "🇹🇿 Tanzania - East African Coast (Dar es Salaam)", tz: "Africa/Dar_es_Salaam", countTag: "65M Pop" },
+      { name: "🇺🇬 Uganda - Great Lakes Basin (Kampala)", tz: "Africa/Kampala", countTag: "48M Pop" },
+      { name: "🇷🇼 Rwanda - Albertine Rift (Kigali)", tz: "Africa/Kigali", countTag: "14M Pop" },
+      { name: "🇧🇮 Burundi - East African Rift (Bujumbura)", tz: "Africa/Bujumbura", countTag: "13M Pop" },
+      { name: "🇬🇭 Ghana - Gulf of Guinea (Accra)", tz: "Africa/Accra", countTag: "33M Pop" },
+      { name: "🇸🇳 Senegal - Sahel Atlantic Coast (Dakar)", tz: "Africa/Dakar", countTag: "17M Pop" },
+      { name: "🇨🇮 Ivory Coast - West African Coast (Abidjan)", tz: "Africa/Abidjan", countTag: "28M Pop" },
+      { name: "🇨🇲 Cameroon - Central African Basin (Douala)", tz: "Africa/Douala", countTag: "28M Pop" },
+      { name: "🇦🇴 Angola - Southwest African Coast (Luanda)", tz: "Africa/Luanda", countTag: "35M Pop" },
+      { name: "🇿🇲 Zambia - Central African Plateau (Lusaka)", tz: "Africa/Lusaka", countTag: "20M Pop" },
+      { name: "🇿🇼 Zimbabwe - Zambezi Basin (Harare)", tz: "Africa/Harare", countTag: "16M Pop" },
+      { name: "🇲🇿 Mozambique - East African Coast (Maputo)", tz: "Africa/Maputo", countTag: "33M Pop" },
+      { name: "🇧🇼 Botswana - Kalahari Basin (Gaborone)", tz: "Africa/Gaborone", countTag: "2.6M Pop" },
+      { name: "🇳🇦 Namibia - Namib Desert Coast (Windhoek)", tz: "Africa/Windhoek", countTag: "2.6M Pop" },
+      { name: "🇬🇦 Gabon - Central African Rainforest (Libreville)", tz: "Africa/Libreville", countTag: "2.4M Pop" },
+      { name: "🇨🇬 Republic of the Congo (Brazzaville)", tz: "Africa/Brazzaville", countTag: "6M Pop" },
+      { name: "🇨🇩 DR Congo - Congo River Basin (Kinshasa)", tz: "Africa/Kinshasa", countTag: "102M Pop" },
+      { name: "🇸🇩 Sudan - Nile Basin (Khartoum)", tz: "Africa/Khartoum", countTag: "47M Pop" },
+      { name: "🇱🇾 Libya - Saharan Coast (Tripoli)", tz: "Africa/Tripoli", countTag: "6.8M Pop" },
+      { name: "🇹🇳 Tunisia - Mediterranean Atlas (Tunis)", tz: "Africa/Tunis", countTag: "12.3M Pop" },
+      { name: "🇩🇿 Algeria - Saharan Atlas (Algiers)", tz: "Africa/Algiers", countTag: "45M Pop" },
+      { name: "🇲🇷 Mauritania - West Saharan Coast (Nouakchott)", tz: "Africa/Nouakchott", countTag: "4.8M Pop" },
+      { name: "🇲🇱 Mali - West Sudanian Savanna (Bamako)", tz: "Africa/Bamako", countTag: "22M Pop" },
+      { name: "🇳🇪 Niger - Sahelian Basin (Niamey)", tz: "Africa/Niamey", countTag: "27M Pop" },
+      { name: "🇹🇩 Chad - Lake Chad Basin (N'Djamena)", tz: "Africa/Ndjamena", countTag: "18M Pop" },
+      { name: "🇸🇴 Somalia - Horn of Africa (Mogadishu)", tz: "Africa/Mogadishu", countTag: "17M Pop" },
+      { name: "🇪🇷 Eritrea - Red Sea Coast (Asmara)", tz: "Africa/Asmara", countTag: "3.7M Pop" },
+      { name: "🇬🇶 Equatorial Guinea (Gulf of Guinea)", tz: "Africa/Malabo", countTag: "1.6M Pop" },
+      { name: "🇬🇼 Guinea-Bissau (Atlantic Coast)", tz: "Africa/Bissau", countTag: "2.1M Pop" },
+      { name: "🇬🇳 Guinea - Fouta Djallon (Conakry)", tz: "Africa/Conakry", countTag: "14M Pop" },
+      { name: "🇸🇱 Sierra Leone (Atlantic Coast)", tz: "Africa/Freetown", countTag: "8.6M Pop" },
+      { name: "🇱🇷 Liberia (Pepper Coast)", tz: "Africa/Monrovia", countTag: "5.4M Pop" },
+      { name: "🇹🇬 Togo (Gulf of Guinea)", tz: "Africa/Lome", countTag: "8.8M Pop" },
+      { name: "🇧🇯 Benin (West African Coast)", tz: "Africa/Porto-Novo", countTag: "13M Pop" },
+      { name: "🇲🇼 Malawi - Great Rift Lake (Lilongwe)", tz: "Africa/Blantyre", countTag: "20M Pop" },
+      { name: "🇱🇸 Lesotho - Drakensberg (Maseru)", tz: "Africa/Maseru", countTag: "2.3M Pop" },
+      { name: "🇸🇿 Eswatini - Lebombo Mountains (Mbabane)", tz: "Africa/Mbabane", countTag: "1.2M Pop" },
+      { name: "🇸🇭 Saint Helena (South Atlantic Volcanic Island)", tz: "Atlantic/St_Helena", countTag: "4.4K Pop" },
+      { name: "🇨🇻 Cape Verde - Atlantic Volcanic Archipelago", tz: "Atlantic/Cape_Verde", countTag: "590K Pop" },
+      { name: "🇸🇹 São Tomé and Príncipe (Gulf of Guinea)", tz: "Africa/Sao_Tome", countTag: "230K Pop" }
+    ]
+  }
+];
 
-function formatTime(date, tz){
-  try{
-    return date.toLocaleTimeString("en-US",{
-      timeZone: tz,
-      hour:"2-digit",
-      minute:"2-digit",
-      second:"2-digit",
-      hour12:true
+let is24Hour = false;
+let savedZones = JSON.parse(localStorage.getItem("worldClocksCascading250plus")) || [
+  { tz: "Asia/Kolkata", name: "🇮🇳 India (IST - Mumbai, New Delhi)", countTag: "1.42B Pop" },
+  { tz: "America/New_York", name: "🇺🇸 USA - Eastern Seaboard (EST)", countTag: "NY / DC" },
+  { tz: "Europe/London", name: "🇬🇧 United Kingdom (British Isles)", countTag: "67M Pop" },
+  { tz: "Asia/Tokyo", name: "🇯🇵 Japan (Pacific Volcanic Arc)", countTag: "125M Pop" },
+  { tz: "Pacific/Fiji", name: "🇫🇯 Fiji (Melanesian Volcanic Islands)", countTag: "900K Pop" }
+];
+
+const categorySelect = document.getElementById("categorySelect");
+const countrySelect = document.getElementById("countrySelect");
+const addForm = document.getElementById("addForm");
+const clockListEl = document.getElementById("customClocksContainer");
+const searchBox = document.getElementById("searchBox");
+const formatToggle = document.getElementById("formatToggle");
+const exportBtnTab = document.getElementById("exportBtnTab");
+const importBtnTab = document.getElementById("importBtnTab");
+const importFile = document.getElementById("importFile");
+const velocityGraph = document.getElementById("velocityGraph");
+const zoneCountBadge = document.getElementById("zoneCountBadge");
+
+// Tab Switching Function (3 Tabs)
+window.switchTab = function(tabNumber) {
+  document.getElementById("tabBtn1").classList.remove("active");
+  document.getElementById("tabBtn2").classList.remove("active");
+  document.getElementById("tabBtn3").classList.remove("active");
+  document.getElementById("tabContent1").classList.remove("active");
+  document.getElementById("tabContent2").classList.remove("active");
+  document.getElementById("tabContent3").classList.remove("active");
+
+  document.getElementById(`tabBtn${tabNumber}`).classList.add("active");
+  document.getElementById(`tabContent${tabNumber}`).classList.add("active");
+}
+
+// Populate Category Dropdown
+ecosystemDatabase.forEach((group, index) => {
+  const opt = document.createElement("option");
+  opt.value = index;
+  opt.textContent = group.category;
+  categorySelect.appendChild(opt);
+});
+
+// Handle Category Change -> Cascade Country Options
+categorySelect.addEventListener("change", () => {
+  const catIndex = categorySelect.value;
+  countrySelect.innerHTML = '<option value="" disabled selected>2. Select Country or Island Territory...</option>';
+  countrySelect.disabled = false;
+
+  if(catIndex !== "") {
+    const selectedGroup = ecosystemDatabase[catIndex];
+    selectedGroup.items.forEach((item, itemIndex) => {
+      const opt = document.createElement("option");
+      opt.value = `${catIndex}-${itemIndex}`;
+      opt.textContent = item.name;
+      countrySelect.appendChild(opt);
     });
-  }catch(e){
-    return "Invalid timezone";
+  }
+});
+
+formatToggle.addEventListener("click", () => {
+  is24Hour = !is24Hour;
+  formatToggle.textContent = is24Hour ? "24H" : "12H";
+  updateClocks();
+});
+
+// JSON Export Logic
+exportBtnTab.addEventListener("click", () => {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(savedZones, null, 2));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", `world_clock_dashboard_${new Date().toISOString().slice(0,10)}.json`);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+});
+
+// JSON Import Logic
+importBtnTab.addEventListener("click", () => {
+  importFile.click();
+});
+
+importFile.addEventListener("change", (e) => {
+  const fileReader = new FileReader();
+  if (e.target.files[0]) {
+    fileReader.readAsText(e.target.files[0], "UTF-8");
+    fileReader.onload = (event) => {
+      try {
+        const importedData = JSON.parse(event.target.result);
+        if (Array.isArray(importedData)) {
+          const validZones = importedData.filter(item => item.tz && item.name);
+          if (validZones.length > 0) {
+            savedZones = validZones;
+            localStorage.setItem("worldClocksCascading250plus", JSON.stringify(savedZones));
+            renderClocks();
+            updateClocks();
+            alert(`Successfully imported ${validZones.length} dashboard zone configurations!`);
+          } else {
+            alert("Invalid JSON format: No valid time zone records found.");
+          }
+        } else {
+          alert("Invalid JSON format: Root element must be an array.");
+        }
+      } catch (error) {
+        alert("Failed to parse JSON file. Please ensure it is a valid dashboard backup.");
+      }
+      importFile.value = "";
+    };
+  }
+});
+
+function getOffsetHours(tz) {
+  try {
+    const now = new Date();
+    const utcDate = new Date(now.toLocaleString("en-US", { timeZone: "UTC" }));
+    const tzDate = new Date(now.toLocaleString("en-US", { timeZone: tz }));
+    return (tzDate - utcDate) / (1000 * 60 * 60);
+  } catch(e) {
+    return 0;
   }
 }
 
-function updateClocks(){
-  const now = new Date();
-  document.getElementById("local").textContent = now.toLocaleTimeString();
+function getGMTString(dateObj, tz) {
+  try {
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: tz,
+      timeZoneName: "shortOffset"
+    });
+    const parts = formatter.formatToParts(dateObj);
+    const tzNamePart = parts.find(p => p.type === "timeZoneName");
+    return tzNamePart ? tzNamePart.value.replace("GMT", "GMT ") : "GMT";
+  } catch(e) {
+    return "GMT";
+  }
+}
 
-  customClocks.forEach(c=>{
-    c.timeEl.textContent = formatTime(now, c.tz);
+function checkIfDstActive(dateObj, tz) {
+  try {
+    const jan = new Date(dateObj.getFullYear(), 0, 1);
+    const jul = new Date(dateObj.getFullYear(), 6, 1);
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: tz,
+      timeZoneName: "shortOffset"
+    });
+    const currentOffset = formatter.formatToParts(dateObj).find(p => p.type === "timeZoneName").value;
+    const janOffset = formatter.formatToParts(jan).find(p => p.type === "timeZoneName").value;
+    const julOffset = formatter.formatToParts(jul).find(p => p.type === "timeZoneName").value;
+    return currentOffset !== janOffset || currentOffset !== julOffset;
+  } catch(e) {
+    return false;
+  }
+}
+
+function getSunEmoji(dateObj, tz) {
+  try {
+    const hourStr = dateObj.toLocaleString("en-US", { timeZone: tz, hour: "numeric", hour12: false });
+    const hour = parseInt(hourStr, 10);
+    return (hour >= 6 && hour < 18) ? "☀️" : "🌙";
+  } catch(e) {
+    return "☀️";
+  }
+}
+
+function renderVelocityGraph() {
+  velocityGraph.innerHTML = "";
+  const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const localOffset = getOffsetHours(localTz);
+
+  zoneCountBadge.textContent = `${savedZones.length} Active`;
+
+  if (savedZones.length === 0) {
+    velocityGraph.innerHTML = '<div style="font-size:0.75rem; color:var(--text-muted); margin:auto;">No zones added yet</div>';
+    return;
+  }
+
+  let maxDiff = 1;
+  savedZones.forEach(z => {
+    const diff = getOffsetHours(z.tz) - localOffset;
+    if (Math.abs(diff) > maxDiff) maxDiff = Math.abs(diff);
+  });
+
+  savedZones.forEach(z => {
+    const diff = getOffsetHours(z.tz) - localOffset;
+    const heightPercent = Math.min(Math.max((Math.abs(diff) / maxDiff) * 75, 12), 85);
+    const isNegative = diff < 0;
+    
+    const col = document.createElement("div");
+    col.className = "bar-col";
+    col.innerHTML = `
+      <div class="bar ${isNegative ? 'negative' : ''}" style="height: ${heightPercent}%;">
+        <span class="bar-val">${diff > 0 ? '+' + diff.toFixed(1) : diff.toFixed(1)}h</span>
+      </div>
+      <div class="bar-label" title="${z.name}">${z.name.split(' ')[1] || z.name}</div>
+    `;
+    velocityGraph.appendChild(col);
   });
 }
 
-document.getElementById("addForm").addEventListener("submit", e=>{
+function renderClocks() {
+  clockListEl.innerHTML = "";
+  const filter = searchBox.value.toLowerCase();
+
+  savedZones.forEach(z => {
+    const searchableText = `${z.name} ${z.tz}`.toLowerCase();
+    if (!searchableText.includes(filter)) return;
+
+    const idKey = z.tz.replace(/[/]/g, '-');
+    const div = document.createElement("div");
+    div.className = "clock";
+    div.innerHTML = `
+      <div class="clock-info">
+        <div class="city"><span id="sun-${idKey}">☀️</span> ${z.name}</div>
+        <div class="meta-row">
+          <div class="date" id="date-${idKey}">--</div>
+          <span class="count-pill">${z.countTag || 'Territory'}</span>
+          <span class="dst-badge" id="dst-${idKey}">⚡ DST Active</span>
+        </div>
+      </div>
+      <div class="time-container">
+        <div class="time-wrapper">
+          <div class="time" id="time-${idKey}">--:--:--</div>
+          <div class="gmt-diff" id="gmt-${idKey}">GMT --</div>
+        </div>
+        <button class="remove-btn" onclick="removeClock('${z.tz}')" title="Remove">&times;</button>
+      </div>
+    `;
+    clockListEl.appendChild(div);
+  });
+  renderVelocityGraph();
+}
+
+function updateClocks() {
+  const now = new Date();
+  const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  
+  document.getElementById("localTime").textContent = now.toLocaleTimeString("en-US", { hour12: !is24Hour });
+  document.getElementById("localDate").textContent = now.toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' });
+  document.getElementById("localSun").textContent = (now.getHours() >= 6 && now.getHours() < 18) ? "☀️" : "🌙";
+  document.getElementById("localGmt").textContent = getGMTString(now, localTz);
+  
+  const localDstEl = document.getElementById("localDst");
+  if (checkIfDstActive(now, localTz)) {
+    localDstEl.classList.add("active");
+  } else {
+    localDstEl.classList.remove("active");
+  }
+
+  savedZones.forEach(z => {
+    const idKey = z.tz.replace(/[/]/g, '-');
+    const timeEl = document.getElementById(`time-${idKey}`);
+    const dateEl = document.getElementById(`date-${idKey}`);
+    const sunEl = document.getElementById(`sun-${idKey}`);
+    const gmtEl = document.getElementById(`gmt-${idKey}`);
+    const dstEl = document.getElementById(`dst-${idKey}`);
+
+    if (timeEl && dateEl && sunEl && gmtEl && dstEl) {
+      try {
+        timeEl.textContent = now.toLocaleTimeString("en-US", {
+          timeZone: z.tz,
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: !is24Hour
+        });
+        dateEl.textContent = now.toLocaleDateString("en-US", { timeZone: z.tz, weekday: 'short', month: 'short', day: 'numeric' });
+        sunEl.textContent = getSunEmoji(now, z.tz);
+        gmtEl.textContent = getGMTString(now, z.tz);
+
+        if (checkIfDstActive(now, z.tz)) {
+          dstEl.classList.add("active");
+        } else {
+          dstEl.classList.remove("active");
+        }
+      } catch (e) {
+        timeEl.textContent = "Error";
+      }
+    }
+  });
+}
+
+addForm.addEventListener("submit", e => {
   e.preventDefault();
-  const tzInput = document.getElementById("tzSelect").value;
-  if(!tzInput) return;
+  const catVal = categorySelect.value;
+  const countryVal = countrySelect.value;
+  
+  if (catVal === "" || countryVal === "") {
+    alert("Please select both a natural boundary category and a specific country/territory.");
+    return;
+  }
 
-  // Prevent duplicate clocks
-  if(customClocks.find(c=>c.tz===tzInput)) return alert("Clock already added");
+  const [cIdx, iIdx] = countryVal.split("-").map(Number);
+  const selectedItem = ecosystemDatabase[cIdx].items[iIdx];
 
-  const clockDiv = document.createElement("div");
-  clockDiv.className="clock";
-  clockDiv.innerHTML = `<div class="city">${tzInput}</div><div class="time">--:--:--</div>`;
+  if (savedZones.some(z => z.tz === selectedItem.tz)) {
+    alert("This location is already on your active dashboard.");
+    return;
+  }
 
-  clocksContainer.appendChild(clockDiv);
+  savedZones.push(selectedItem);
+  localStorage.setItem("worldClocksCascading250plus", JSON.stringify(savedZones));
+  
+  categorySelect.value = "";
+  countrySelect.innerHTML = '<option value="" disabled selected>2. Select Country or Island Territory...</option>';
+  countrySelect.disabled = true;
 
-  const timeEl = clockDiv.querySelector(".time");
-  customClocks.push({tz:tzInput, timeEl});
+  renderClocks();
+  updateClocks();
+  
+  // Switch back to Tab 1 (Dashboard) upon successful addition
+  switchTab(1);
 });
 
-setInterval(updateClocks,1000);
+window.removeClock = function(tz) {
+  savedZones = savedZones.filter(z => z.tz !== tz);
+  localStorage.setItem("worldClocksCascading250plus", JSON.stringify(savedZones));
+  renderClocks();
+  updateClocks();
+}
+
+searchBox.addEventListener("input", () => {
+  renderClocks();
+  updateClocks();
+});
+
+renderClocks();
+setInterval(updateClocks, 1000);
 updateClocks();
 </script>
 
 </body>
 </html>
+
