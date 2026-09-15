@@ -51,21 +51,22 @@ header h2 {
 
 .tabs {
   display: flex;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
   overflow-x: auto;
   padding-bottom: 4px;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
 }
 
 .tabs::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  display: none;
 }
 
 .tab-btn {
   background: var(--border-color);
   border: none;
   color: var(--text-muted);
-  padding: 8px 14px;
+  padding: 8px 20px;
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 600;
@@ -131,7 +132,7 @@ main {
 }
 
 .big {
-  font-size: 2.8rem;
+  font-size: 2.5rem;
   font-weight: 800;
   color: var(--accent);
   text-shadow: 0 0 10px var(--accent-glow);
@@ -139,7 +140,7 @@ main {
 }
 
 #date {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--text-muted);
 }
 
@@ -206,29 +207,6 @@ button.secondary-btn:hover {
   color: var(--text-muted);
 }
 
-/* Compass Widget */
-#compassDial {
-  width: 140px;
-  height: 140px;
-  border: 3px solid var(--accent);
-  border-radius: 50%;
-  margin: 0 auto 12px auto;
-  position: relative;
-  box-shadow: inset 0 0 15px var(--accent-glow), 0 0 15px var(--accent-glow);
-}
-
-#needle {
-  width: 4px;
-  height: 70px;
-  background: var(--danger);
-  position: absolute;
-  top: 0;
-  left: 65px;
-  transform-origin: bottom center;
-  box-shadow: 0 0 8px var(--danger);
-}
-
-/* Utility specific layouts */
 .row-btns {
   display: flex;
   justify-content: center;
@@ -236,13 +214,7 @@ button.secondary-btn:hover {
   margin-top: 8px;
 }
 
-#battery {
-  font-size: 2rem;
-  font-weight: bold;
-  color: var(--accent);
-}
-
-#speed, #steps, #timerDisplay, #moon {
+#stopwatch, #timerDisplay {
   font-size: 2.2rem;
   font-weight: bold;
   color: var(--text-main);
@@ -256,29 +228,19 @@ button.secondary-btn:hover {
 <header>
   <h2>Smartwatch OS</h2>
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab(event, 'tab-home')">Home</button>
-    <button class="tab-btn" onclick="switchTab(event, 'tab-clock')">Clock</button>
-    <button class="tab-btn" onclick="switchTab(event, 'tab-fitness')">Fitness</button>
-    <button class="tab-btn" onclick="switchTab(event, 'tab-tools')">Tools</button>
+    <button class="tab-btn active" onclick="switchTab(event, 'tab-clock')">Clock</button>
     <button class="tab-btn" onclick="switchTab(event, 'tab-media')">Media</button>
   </div>
 </header>
 
 <main>
-  <!-- HOME TAB -->
-  <div id="tab-home" class="tab-content active">
-    <div class="card">
-      <div class="big" id="homeClock">00:00:00</div>
-      <div id="homeDate">Loading...</div>
-    </div>
-    <div class="card">
-      <h3>Battery Status</h3>
-      <div id="battery">--%</div>
-    </div>
-  </div>
-
   <!-- CLOCK TAB -->
-  <div id="tab-clock" class="tab-content">
+  <div id="tab-clock" class="tab-content active">
+    <div class="card">
+      <div class="big" id="clock">00:00:00</div>
+      <div id="date">Loading...</div>
+    </div>
+
     <div class="card">
       <h3>Alarm Manager</h3>
       <input type="time" id="alarmTime">
@@ -305,36 +267,6 @@ button.secondary-btn:hover {
         <div id="timerDisplay">0</div>
         <button class="action-btn" onclick="startTimer()">Start Timer</button>
       </div>
-    </div>
-  </div>
-
-  <!-- FITNESS TAB -->
-  <div id="tab-fitness" class="tab-content">
-    <div class="card">
-      <h3>Step Counter</h3>
-      <div id="steps">0</div>
-      <button class="secondary-btn" onclick="resetSteps()">Reset Steps</button>
-    </div>
-
-    <div class="card">
-      <h3>GPS Speedometer</h3>
-      <div id="speed">0.0 km/h</div>
-    </div>
-  </div>
-
-  <!-- TOOLS TAB -->
-  <div id="tab-tools" class="tab-content">
-    <div class="card">
-      <h3>Graphical Compass</h3>
-      <div id="compassDial">
-        <div id="needle"></div>
-      </div>
-      <div id="direction" style="font-weight: bold; color: var(--accent);">0°</div>
-    </div>
-
-    <div class="card">
-      <h3>Moon Phase</h3>
-      <div id="moon">--</div>
     </div>
   </div>
 
@@ -370,16 +302,14 @@ function switchTab(evt, tabId) {
   evt.currentTarget.classList.add("active");
 }
 
-/* CLOCK & HOME UPDATE */
+/* CLOCK UPDATE */
 function updateClock(){
   let now = new Date();
   let timeStr = now.toLocaleTimeString();
   let dateStr = now.toDateString();
 
   if(document.getElementById("clock")) document.getElementById("clock").innerText = timeStr;
-  if(document.getElementById("homeClock")) document.getElementById("homeClock").innerText = timeStr;
   if(document.getElementById("date")) document.getElementById("date").innerText = dateStr;
-  if(document.getElementById("homeDate")) document.getElementById("homeDate").innerText = dateStr;
 }
 setInterval(updateClock, 1000);
 updateClock();
@@ -457,70 +387,6 @@ function startTimer(){
   }, 1000);
 }
 
-/* MOON PHASE */
-function moonPhase(){
-  let lp = 2551443;
-  let now = new Date();
-  let new_moon = new Date(1970,0,7,20,35,0);
-  let phase = ((now - new_moon) / 1000) % lp;
-  let days = Math.floor(phase / (24 * 3600));
-  document.getElementById("moon").innerText = "Lunar Day " + days;
-}
-moonPhase();
-
-/* BATTERY */
-if(navigator.getBattery){
-  navigator.getBattery().then(function(battery){
-    function updateBattery(){
-      document.getElementById("battery").innerText = Math.round(battery.level * 100) + "%";
-    }
-    updateBattery();
-    battery.addEventListener("levelchange", updateBattery);
-  });
-} else {
-  document.getElementById("battery").innerText = "N/A";
-}
-
-/* GRAPHICAL COMPASS */
-window.addEventListener("deviceorientation", function(e){
-  let dir = e.alpha || 0;
-  let needle = document.getElementById("needle");
-  let direction = document.getElementById("direction");
-  if(needle && direction) {
-    needle.style.transform = "rotate(" + dir + "deg)";
-    direction.innerText = Math.round(dir) + "°";
-  }
-});
-
-/* GPS SPEED */
-if(navigator.geolocation){
-  navigator.geolocation.watchPosition(function(pos){
-    let speed = pos.coords.speed;
-    if(speed == null) speed = 0;
-    speed = speed * 3.6;
-    document.getElementById("speed").innerText = speed.toFixed(1) + " km/h";
-  }, function(err){
-    // Handle error or ignore silently if GPS unavailable
-  });
-}
-
-/* STEP COUNTER */
-let steps = 0;
-window.addEventListener("devicemotion", function(e){
-  if(!e.accelerationIncludingGravity) return;
-  let acc = e.accelerationIncludingGravity;
-  let total = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
-  if(total > 25){
-    steps++;
-    document.getElementById("steps").innerText = steps;
-  }
-});
-
-function resetSteps(){
-  steps = 0;
-  document.getElementById("steps").innerText = 0;
-}
-
 /* MUSIC PLAYER */
 let player = document.getElementById("audioPlayer");
 document.getElementById("musicFile").addEventListener("change", function(){
@@ -547,3 +413,4 @@ function stopMusic(){
 
 </body>
 </html>
+
