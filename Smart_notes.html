@@ -1,33 +1,260 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PWA IndexedDB CRUD</title>
+<title>Smart Daily Notes PWA</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
 <style>
+:root {
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --bg: #0f172a;
+  --card-bg: #1e293b;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  --font-family: system-ui, -apple-system, sans-serif;
+}
 
-body { font-family: Arial; padding: 10px; background:#f5f5f5;font-size: 40px; }
-textarea, input, button { width:100%; margin:5px 0; padding:8px; }
-.note { background:#fff; padding:10px; margin:8px 0; border-radius:5px; }
-.btn { display:flex; gap:5px; }
-button { cursor:pointer; }
+body {
+  font-family: var(--font-family);
+  background: var(--bg);
+  color: var(--text);
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: var(--primary);
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+input, select, textarea, button {
+  width: 100%;
+  margin: 6px 0 12px 0;
+  padding: 10px 12px;
+  background: #0f172a;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.row > div {
+  flex: 1;
+}
+
+button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+button:hover {
+  background: var(--primary-hover);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button.secondary {
+  background: #334155;
+  color: var(--text);
+}
+
+button.secondary:hover {
+  background: #475569;
+}
+
+.note-item {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 14px;
+  margin: 10px 0;
+  border-radius: 10px;
+  position: relative;
+  transition: transform 0.2s;
+}
+
+.note-item:hover {
+  border-color: var(--primary);
+}
+
+.note-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(99, 102, 241, 0.2);
+  color: var(--primary);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.note-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.note-text {
+  white-space: pre-wrap;
+  margin: 8px 0 12px 0;
+}
+
+.btn-group {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-group button {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.customiser {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.color-option {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.color-option.active {
+  border-color: #fff;
+}
 </style>
 </head>
 
 <body>
 
-<h3>📒 Daily Notes (IndexedDB)</h3>
+<h2>📒 Daily Notes Manager</h2>
 
-<input type="date" id="date">
-<textarea id="text" placeholder="Write note..."></textarea>
-<button onclick="addNote()">➕ Save</button>
+<!-- Settings & Customisation Card -->
+<div class="card">
+  <label>🎨 Theme Customisation</label>
+  <div class="customiser">
+    <span style="font-size: 0.85rem; color: var(--text-muted);">Accent:</span>
+    <div class="color-option" style="background:#6366f1;" onclick="setTheme('#6366f1', '#4f46e5')"></div>
+    <div class="color-option" style="background:#10b981;" onclick="setTheme('#10b981', '#059669')"></div>
+    <div class="color-option" style="background:#ec4899;" onclick="setTheme('#ec4899', '#db2777')"></div>
+    <div class="color-option" style="background:#f59e0b;" onclick="setTheme('#f59e0b', '#d97706')"></div>
+    <div class="color-option" style="background:#06b6d4;" onclick="setTheme('#06b6d4', '#0891b2')"></div>
+    
+    <span style="margin-left:auto; font-size: 0.85rem; color: var(--text-muted);">Font:</span>
+    <select id="fontSelect" style="width: auto; margin:0; padding:6px;" onchange="setFont(this.value)">
+      <option value="system-ui, sans-serif">Modern Sans</option>
+      <option value="'Georgia', serif">Serif</option>
+      <option value="'Courier New', monospace">Monospace</option>
+    </select>
+  </div>
+</div>
 
-<hr>
+<!-- Note Creation / Edit Card -->
+<div class="card">
+  <label id="formTitle">Create New Note</label>
+  <div class="row">
+    <div>
+      <label>Date</label>
+      <input type="date" id="date">
+    </div>
+    <div>
+      <label>Category</label>
+      <select id="category">
+        <option value="Work">💼 Work</option>
+        <option value="Personal">🏡 Personal</option>
+        <option value="Ideas">💡 Ideas</option>
+        <option value="Finance">💰 Finance</option>
+        <option value="Health">❤️ Health</option>
+      </select>
+    </div>
+  </div>
+  <label>Note Content</label>
+  <textarea id="text" placeholder="Write your note here..."></textarea>
+  <div class="row">
+    <button onclick="addNote()" id="saveBtn">➕ Save Note</button>
+    <button class="secondary" onclick="resetForm()" id="cancelBtn" style="display:none;">Cancel</button>
+  </div>
+</div>
 
-<input type="date" id="searchDate">
-<button onclick="searchByDate()">🔍 Search</button>
-<button onclick="loadNotes()">♻ Load All</button>
+<!-- Search & Filter Card -->
+<div class="card">
+  <label>Filter & Search</label>
+  <div class="row">
+    <input type="date" id="searchDate">
+    <select id="searchCategory" onchange="filterByCategory()">
+      <option value="">All Categories</option>
+      <option value="Work">💼 Work</option>
+      <option value="Personal">🏡 Personal</option>
+      <option value="Ideas">💡 Ideas</option>
+      <option value="Finance">💰 Finance</option>
+      <option value="Health">❤️ Health</option>
+    </select>
+  </div>
+  <div class="row">
+    <button onclick="searchByDate()">🔍 Search Date</button>
+    <button class="secondary" onclick="loadNotes()">♻ Reset / Load All</button>
+  </div>
+</div>
 
 <div id="notes"></div>
 
@@ -35,35 +262,49 @@ button { cursor:pointer; }
 let db;
 let editId = null;
 
-const request = indexedDB.open("pwaNotesDB", 1);
+// Initialise IndexedDB with version 2 to support category indexing
+const request = indexedDB.open("pwaNotesDB", 2);
 
 request.onupgradeneeded = e => {
   db = e.target.result;
-  const store = db.createObjectStore("notes", {
-    keyPath: "id",
-    autoIncrement: true
-  });
-  store.createIndex("date", "date", { unique: false });
+  let store;
+  if (!db.objectStoreNames.contains("notes")) {
+    store = db.createObjectStore("notes", { keyPath: "id", autoIncrement: true });
+  } else {
+    store = e.target.transaction.objectStore("notes");
+  }
+  if (!store.indexNames.contains("date")) {
+    store.createIndex("date", "date", { unique: false });
+  }
+  if (!store.indexNames.contains("category")) {
+    store.createIndex("category", "category", { unique: false });
+  }
 };
 
 request.onsuccess = e => {
   db = e.target.result;
   loadNotes();
+  loadPreferences();
 };
 
+// Set default date to today
+document.getElementById('date').valueAsDate = new Date();
+
 function addNote() {
-  const text = document.getElementById("text").value;
+  const text = document.getElementById("text").value.trim();
   const date = document.getElementById("date").value;
-  if (!text || !date) return alert("Fill all fields");
+  const category = document.getElementById("category").value;
+  
+  if (!text || !date) return alert("Please fill in all required fields.");
 
   const tx = db.transaction("notes", "readwrite");
   const store = tx.objectStore("notes");
 
   if (editId) {
-    store.put({ id: editId, text, date });
-    editId = null;
+    store.put({ id: editId, text, date, category });
+    resetForm();
   } else {
-    store.add({ text, date });
+    store.add({ text, date, category });
   }
 
   tx.oncomplete = () => {
@@ -82,26 +323,49 @@ function display(data) {
   const div = document.getElementById("notes");
   div.innerHTML = "";
 
+  if (data.length === 0) {
+    div.innerHTML = `<div class="card" style="text-align:center; color: var(--text-muted);">No notes found.</div>`;
+    return;
+  }
+
   data.reverse().forEach(n => {
     div.innerHTML += `
-      <div class="note">
-        <b>${n.date}</b>
-        <p>${n.text}</p>
-        <div class="btn">
-          <button onclick="editNote(${n.id}, '${n.text}', '${n.date}')">✏</button>
-          <button onclick="deleteNote(${n.id})">❌</button>
+      <div class="note-item">
+        <div class="note-header">
+          <span class="badge">${n.category || 'General'}</span>
+          <span class="note-date">📅 ${n.date}</span>
+        </div>
+        <div class="note-text">${escapeHtml(n.text)}</div>
+        <div class="btn-group">
+          <button class="secondary" onclick="editNote(${n.id}, \`${escapeQuotes(n.text)}\`, '${n.date}', '${n.category}')">✏ Edit</button>
+          <button class="secondary" style="background:#7f1d1d; color:#fca5a5;" onclick="deleteNote(${n.id})">❌ Delete</button>
         </div>
       </div>`;
   });
 }
 
-function editNote(id, text, date) {
+function editNote(id, text, date, category) {
   editId = id;
   document.getElementById("text").value = text;
   document.getElementById("date").value = date;
+  document.getElementById("category").value = category || "Work";
+  document.getElementById("formTitle").innerText = "✏ Edit Note #" + id;
+  document.getElementById("saveBtn").innerText = "💾 Update Note";
+  document.getElementById("cancelBtn").style.display = "block";
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetForm() {
+  editId = null;
+  document.getElementById("text").value = "";
+  document.getElementById("date").valueAsDate = new Date();
+  document.getElementById("formTitle").innerText = "Create New Note";
+  document.getElementById("saveBtn").innerText = "➕ Save Note";
+  document.getElementById("cancelBtn").style.display = "none";
 }
 
 function deleteNote(id) {
+  if (!confirm("Are you sure you want to delete this note?")) return;
   const tx = db.transaction("notes", "readwrite");
   tx.objectStore("notes").delete(id);
   tx.oncomplete = loadNotes;
@@ -109,7 +373,7 @@ function deleteNote(id) {
 
 function searchByDate() {
   const date = document.getElementById("searchDate").value;
-  if (!date) return;
+  if (!date) return alert("Please select a date to search.");
 
   const tx = db.transaction("notes", "readonly");
   const index = tx.objectStore("notes").index("date");
@@ -124,6 +388,60 @@ function searchByDate() {
       display(result);
     }
   };
+}
+
+function filterByCategory() {
+  const category = document.getElementById("searchCategory").value;
+  if (!category) return loadNotes();
+
+  const tx = db.transaction("notes", "readonly");
+  const index = tx.objectStore("notes").index("category");
+
+  const result = [];
+  index.openCursor(IDBKeyRange.only(category)).onsuccess = e => {
+    const cursor = e.target.result;
+    if (cursor) {
+      result.push(cursor.value);
+      cursor.continue();
+    } else {
+      display(result);
+    }
+  };
+}
+
+// Customisation Handlers
+function setTheme(primary, hover) {
+  document.documentElement.style.setProperty('--primary', primary);
+  document.documentElement.style.setProperty('--primary-hover', hover);
+  localStorage.setItem('themePrimary', primary);
+  localStorage.setItem('themeHover', hover);
+}
+
+function setFont(fontFamily) {
+  document.documentElement.style.setProperty('--font-family', fontFamily);
+  localStorage.setItem('fontFamily', fontFamily);
+  document.getElementById('fontSelect').value = fontFamily;
+}
+
+function loadPreferences() {
+  const savedPrimary = localStorage.getItem('themePrimary');
+  const savedHover = localStorage.getItem('themeHover');
+  const savedFont = localStorage.getItem('fontFamily');
+
+  if (savedPrimary && savedHover) {
+    setTheme(savedPrimary, savedHover);
+  }
+  if (savedFont) {
+    setFont(savedFont);
+  }
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function escapeQuotes(str) {
+  return str.replace(/`/g, "\\`").replace(/'/g, "\\'");
 }
 </script>
 
