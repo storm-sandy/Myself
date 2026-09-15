@@ -6,145 +6,210 @@
 <title>Calculator Pro</title>
 
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
+:root {
+    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --calc-bg: rgba(255, 255, 255, 0.85);
+    --display-bg: #f8fafc;
+    --display-text: #0f172a;
+    --btn-bg: #ffffff;
+    --btn-text: #334155;
+    --btn-hover: #f1f5f9;
+    --btn-active: #e2e8f0;
+    --btn-accent: #3b82f6;
+    --btn-accent-text: #ffffff;
+    --btn-accent-hover: #2563eb;
+    --btn-special: #f1f5f9;
+    --btn-special-text: #64748b;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    --history-bg: #f8fafc;
+    --history-text: #64748b;
 }
 
-body{
-font-family:Arial,sans-serif;
-background:#e0e0e0;
-display:flex;
-justify-content:center;
-align-items:center;
-min-height:100vh;
-padding:10px;
+[data-theme="dark"] {
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    --calc-bg: rgba(30, 41, 59, 0.85);
+    --display-bg: #0f172a;
+    --display-text: #f8fafc;
+    --btn-bg: #334155;
+    --btn-text: #f1f5f9;
+    --btn-hover: #475569;
+    --btn-active: #1e293b;
+    --btn-accent: #3b82f6;
+    --btn-accent-text: #ffffff;
+    --btn-accent-hover: #2563eb;
+    --btn-special: #1e293b;
+    --btn-special-text: #94a3b8;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+    --history-bg: #0f172a;
+    --history-text: #94a3b8;
 }
 
-.calculator{
-background:#bdbdbd;
-padding:15px;
-border-radius:12px;
-width:100%;
-max-width:500px;
-min-height:95vh;
-box-shadow:0 4px 10px rgba(0,0,0,0.3);
-display:flex;
-flex-direction:column;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-#display{
-width:100%;
-height:70px;
-font-size:28px;
-text-align:right;
-padding:10px;
-border:none;
-border-radius:6px;
-background:#f5f5f5;
-margin-bottom:10px;
-outline:none;
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-gradient);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 15px;
+    transition: background 0.3s ease;
 }
 
-.controls{
-text-align:center;
-margin-bottom:10px;
-display:flex;
-flex-wrap:wrap;
-gap:8px;
-justify-content:center;
+.calculator {
+    background: var(--calc-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 20px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
-.grid{
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:8px;
-flex-grow:1;
+#display {
+    width: 100%;
+    height: 75px;
+    font-size: 32px;
+    font-weight: 500;
+    text-align: right;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: var(--display-bg);
+    color: var(--display-text);
+    margin-bottom: 15px;
+    outline: none;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
-button{
-height:60px;
-font-size:18px;
-border:none;
-border-radius:8px;
-background:#616161;
-color:white;
-cursor:pointer;
-transition:0.15s;
+.controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    justify-content: space-between;
 }
 
-button:hover{
-background:#424242;
+.controls button {
+    flex: 1;
+    height: 38px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    background: var(--btn-special);
+    color: var(--btn-special-text);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-button:active{
-transform:scale(0.95);
+.controls button:hover {
+    background: var(--btn-hover);
 }
 
-.history{
-background:white;
-height:120px;
-overflow:auto;
-margin-top:10px;
-font-size:14px;
-padding:8px;
-border-radius:6px;
+.grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    flex-grow: 1;
 }
 
-.scientific{
-display:none;
+button {
+    height: 52px;
+    font-size: 16px;
+    font-weight: 500;
+    border: none;
+    border-radius: 10px;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    transition: all 0.15s ease;
 }
 
-@media(max-width:600px){
-
-body{
-padding:0;
+button:hover {
+    background: var(--btn-hover);
 }
 
-.calculator{
-width:100vw;
-height:100vh;
-max-width:none;
-border-radius:0;
-padding:12px;
+button:active {
+    transform: scale(0.94);
 }
 
-button{
-height:58px;
-font-size:17px;
+/* Accent operators */
+button[onclick*="/"], button[onclick*="*"], button[onclick*="-"], button[onclick*="+"], button[onclick*="calculate"] {
+    background: var(--btn-accent);
+    color: var(--btn-accent-text);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
 }
 
-#display{
-font-size:30px;
-height:75px;
+button[onclick*="/"]:hover, button[onclick*="*"]:hover, button[onclick*="-"]:hover, button[onclick*="+"]:hover, button[onclick*="calculate"]:hover {
+    background: var(--btn-accent-hover);
 }
 
-.history{
-height:100px;
+.history {
+    background: var(--history-bg);
+    color: var(--history-text);
+    height: 90px;
+    overflow: auto;
+    margin-top: 15px;
+    font-size: 13px;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
+.scientific {
+    display: none;
 }
 
+@media(max-width: 480px) {
+    body {
+        padding: 0;
+    }
+    .calculator {
+        width: 100vw;
+        height: 100vh;
+        max-width: none;
+        border-radius: 0;
+        padding: 15px;
+        justify-content: flex-end;
+    }
+    button {
+        height: 56px;
+        font-size: 17px;
+    }
+    #display {
+        font-size: 36px;
+        height: 85px;
+    }
+}
 </style>
 
 </head>
 
 <body>
 
-<div class="calculator">
+<div class="calculator" id="calcContainer">
 
 <div class="controls">
-
-<button onclick="setMode('simple')">Simple</button>
-<button onclick="setMode('scientific')">Scientific</button>
-<button onclick="toggleAngle()" id="angleBtn">DEG</button>
-<button onclick="toggleTheme()">Theme</button>
-
+    <button onclick="setMode('simple')">Simple</button>
+    <button onclick="setMode('scientific')">Scientific</button>
+    <button onclick="toggleAngle()" id="angleBtn">DEG</button>
+    <button onclick="toggleTheme()" id="themeBtn">Theme</button>
 </div>
 
-<input id="display" readonly>
+<input id="display" readonly placeholder="0">
 
 <div class="grid">
 
@@ -170,7 +235,7 @@ height:100px;
 <button onclick="press('5')">5</button>
 <button onclick="press('6')">6</button>
 <button onclick="press('*')">×</button>
-<button onclick="clearDisplay()">C</button>
+<button onclick="clearDisplay()" style="background: #ef4444; color: white;">C</button>
 
 <button onclick="press('1')">1</button>
 <button onclick="press('2')">2</button>
@@ -198,212 +263,172 @@ height:100px;
 
 <script>
 
-let display=document.getElementById("display");
-let historyBox=document.getElementById("history");
-let angleBtn=document.getElementById("angleBtn");
+let display = document.getElementById("display");
+let historyBox = document.getElementById("history");
+let angleBtn = document.getElementById("angleBtn");
 
-let degreeMode=true;
-let memory=0;
-let history=[];
+let degreeMode = true;
+let memory = 0;
+let history = [];
 
 /* BASIC */
 
 function press(val){
-display.value+=val;
+    display.value += val;
 }
 
 function clearDisplay(){
-display.value="";
+    display.value = "";
 }
 
 function backspace(){
-display.value=display.value.slice(0,-1);
+    display.value = display.value.slice(0, -1);
 }
 
 function calculate(){
-
-try{
-
-let result=Function('"use strict"; return (' + display.value + ')')();
-
-addHistory(display.value+" = "+result);
-
-display.value=result;
-
-}
-catch(err){
-console.log(err);
-display.value="Invalid";
-}
-
+    try{
+        let result = Function('"use strict"; return (' + display.value + ')')();
+        addHistory(display.value + " = " + result);
+        display.value = result;
+    }
+    catch(err){
+        display.value = "Invalid";
+    }
 }
 
 function addHistory(entry){
-
-history.unshift(entry);
-
-if(history.length>10){
-history.pop();
-}
-
-historyBox.innerHTML=history.join("<br>");
-
+    history.unshift(entry);
+    if(history.length > 10){
+        history.pop();
+    }
+    historyBox.innerHTML = history.join("<br>");
 }
 
 function percent(){
-display.value=parseFloat(display.value)/100;
+    display.value = parseFloat(display.value) / 100;
 }
 
 function square(){
-display.value=parseFloat(display.value)*parseFloat(display.value);
+    display.value = parseFloat(display.value) * parseFloat(display.value);
 }
 
 /* FACTORIAL */
 
 function factorial(){
-
-let n=parseInt(display.value);
-
-if(n<0 || isNaN(n)){
-display.value="Error";
-return;
-}
-
-let result=1;
-
-for(let i=1;i<=n;i++){
-result*=i;
-}
-
-display.value=result;
-
+    let n = parseInt(display.value);
+    if(n < 0 || isNaN(n)){
+        display.value = "Error";
+        return;
+    }
+    let result = 1;
+    for(let i = 1; i <= n; i++){
+        result *= i;
+    }
+    display.value = result;
 }
 
 /* MEMORY */
 
 function memoryAdd(){
-memory += parseFloat(display.value)||0;
+    memory += parseFloat(display.value) || 0;
 }
 
 function memoryRecall(){
-display.value=memory;
+    display.value = memory;
 }
 
 function memoryClear(){
-memory=0;
+    memory = 0;
 }
 
 /* ANGLE MODE */
 
 function toggleAngle(){
-
-degreeMode=!degreeMode;
-
-angleBtn.innerText=degreeMode?"DEG":"RAD";
-
+    degreeMode = !degreeMode;
+    angleBtn.innerText = degreeMode ? "DEG" : "RAD";
 }
 
 function toRad(x){
-return degreeMode?x*Math.PI/180:x;
+    return degreeMode ? x * Math.PI / 180 : x;
 }
 
 function fromRad(x){
-return degreeMode?x*180/Math.PI:x;
+    return degreeMode ? x * 180 / Math.PI : x;
 }
 
 /* TRIG */
 
 function sinFunc(){
-display.value=Math.sin(toRad(parseFloat(display.value)));
+    display.value = Math.sin(toRad(parseFloat(display.value)));
 }
 
 function cosFunc(){
-display.value=Math.cos(toRad(parseFloat(display.value)));
+    display.value = Math.cos(toRad(parseFloat(display.value)));
 }
 
 function tanFunc(){
-display.value=Math.tan(toRad(parseFloat(display.value)));
+    display.value = Math.tan(toRad(parseFloat(display.value)));
 }
 
 function asinFunc(){
-display.value=fromRad(Math.asin(parseFloat(display.value)));
+    display.value = fromRad(Math.asin(parseFloat(display.value)));
 }
 
 function acosFunc(){
-display.value=fromRad(Math.acos(parseFloat(display.value)));
+    display.value = fromRad(Math.acos(parseFloat(display.value)));
 }
 
 function atanFunc(){
-display.value=fromRad(Math.atan(parseFloat(display.value)));
+    display.value = fromRad(Math.atan(parseFloat(display.value)));
 }
 
 /* OTHER */
 
 function logFunc(){
-display.value=Math.log10(display.value);
+    display.value = Math.log10(display.value);
 }
 
 function sqrtFunc(){
-display.value=Math.sqrt(display.value);
+    display.value = Math.sqrt(display.value);
 }
 
 /* MODE */
 
 function setMode(mode){
-
-let sci=document.querySelectorAll(".scientific");
-
-sci.forEach(btn=>{
-btn.style.display=(mode==="scientific")?"block":"none";
-});
-
+    let sci = document.querySelectorAll(".scientific");
+    sci.forEach(btn => {
+        btn.style.display = (mode === "scientific") ? "block" : "none";
+    });
 }
 
 setMode("simple");
 
 /* THEME */
 
-let dark=false;
-
 function toggleTheme(){
-
-if(!dark){
-
-document.body.style.background="#121212";
-document.querySelector(".calculator").style.background="#1e1e1e";
-
-}
-else{
-
-document.body.style.background="#e0e0e0";
-document.querySelector(".calculator").style.background="#bdbdbd";
-
-}
-
-dark=!dark;
-
+    const html = document.documentElement;
+    if(html.getAttribute("data-theme") === "dark"){
+        html.removeAttribute("data-theme");
+    } else {
+        html.setAttribute("data-theme", "dark");
+    }
 }
 
 /* KEYBOARD SUPPORT */
 
-document.addEventListener("keydown",function(e){
-
-if("0123456789+-*/.".includes(e.key)){
-display.value+=e.key;
-}
-
-if(e.key==="Enter"){
-calculate();
-}
-
-if(e.key==="Backspace"){
-backspace();
-}
-
-if(e.key==="Escape"){
-clearDisplay();
-}
-
+document.addEventListener("keydown", function(e){
+    if("0123456789+-*/.".includes(e.key)){
+        display.value += e.key;
+    }
+    if(e.key === "Enter"){
+        calculate();
+    }
+    if(e.key === "Backspace"){
+        backspace();
+    }
+    if(e.key === "Escape"){
+        clearDisplay();
+    }
 });
 
 </script>
