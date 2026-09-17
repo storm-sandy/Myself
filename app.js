@@ -21,7 +21,8 @@ function autoCacheAllFiles() {
     "./home.html",
     "./style.css",
     "./app.js",
-    "./manifest.json"
+    "./manifest.json",
+    "./icon.png"
   ]);
 
   // Automatically find every single link or page referenced in your HTML elements
