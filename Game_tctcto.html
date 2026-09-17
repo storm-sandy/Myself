@@ -1,176 +1,602 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tic Tac Toe Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ultimate Tic Tac Toe Tournament Arena</title>
 
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{
-font-family:Arial;
-text-align:center;
-background:green;
-color:white;
+* {
+    box-sizing: border-box;
+    transition: background 0.3s, color 0.3s;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.board{
-display:grid;
-grid-template-columns:repeat(3,100px);
-gap:10px;
-justify-content:center;
-margin-top:20px;
+:root {
+    --bg-gradient: linear-gradient(135deg, #6849ff, #00d2ff);
+    --container-bg: rgba(255, 255, 255, 0.12);
+    --text-color: white;
+    --cell-bg: rgba(255, 255, 255, 0.2);
+    --cell-hover: rgba(255, 255, 255, 0.4);
+    --btn-bg: #ffa502;
+    --btn-hover: #ff7f50;
+    --card-bg: white;
+    --card-text: #333;
 }
 
-.cell{
-width:100px;
-height:100px;
-background:#222;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:40px;
-border-radius:10px;
-cursor:pointer;
+body.theme-neon {
+    --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    --container-bg: rgba(0, 0, 0, 0.6);
+    --text-color: #00ffcc;
+    --cell-bg: #1a1a2e;
+    --cell-hover: #16213e;
+    --btn-bg: #e94560;
+    --btn-hover: #ff6b6b;
+    --card-bg: #16213e;
+    --card-text: #00ffcc;
 }
 
-#status{
-margin-top:20px;
-font-size:22px;
+body.theme-light {
+    --bg-gradient: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    --container-bg: rgba(255, 255, 255, 0.85);
+    --text-color: #2c3e50;
+    --cell-bg: #ffffff;
+    --cell-hover: #e0e6ed;
+    --btn-bg: #3498db;
+    --btn-hover: #2980b9;
+    --card-bg: #ffffff;
+    --card-text: #2c3e50;
 }
 
-button{
-margin-top:15px;
-padding:10px 20px;
-font-size:18px;
-border:none;
-border-radius:8px;
+body.theme-cyberpunk {
+    --bg-gradient: linear-gradient(135deg, #f72585, #7209b7, #3a0ca3);
+    --container-bg: rgba(0, 0, 0, 0.5);
+    --text-color: #4cc9f0;
+    --cell-bg: #210b2c;
+    --cell-hover: #3c096c;
+    --btn-bg: #4cc9f0;
+    --btn-hover: #4361ee;
+    --card-bg: #210b2c;
+    --card-text: #4cc9f0;
 }
 
-canvas{
-background:white;
-margin-top:30px;
+body.theme-midnight {
+    --bg-gradient: linear-gradient(135deg, #141414, #2b2b2b);
+    --container-bg: rgba(30, 30, 30, 0.8);
+    --text-color: #f1c40f;
+    --cell-bg: #222222;
+    --cell-hover: #333333;
+    --btn-bg: #f39c12;
+    --btn-hover: #e67e22;
+    --card-bg: #1e1e1e;
+    --card-text: #f1c40f;
+}
+
+body {
+    font-family: 'Fredoka', cursive, sans-serif;
+    text-align: center;
+    background: var(--bg-gradient);
+    color: var(--text-color);
+    margin: 0;
+    padding: 15px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.top-bar {
+    width: 100%;
+    max-width: 850px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.sound-toggle {
+    background: var(--card-bg);
+    color: var(--card-text);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+select, button {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 16px;
+}
+
+select {
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: var(--card-bg);
+    color: var(--card-text);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+    font-size: clamp(1.8rem, 5vw, 2.3rem);
+    margin: 5px 0 10px 0;
+    text-shadow: 2px 4px rgba(0,0,0,0.2);
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    background: var(--container-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    max-width: 850px;
+    width: 100%;
+}
+
+@media(min-width: 768px) {
+    .main-container {
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: flex-start;
+        padding: 30px;
+    }
+}
+
+.game-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 340px;
+}
+
+.tournament-setup {
+    margin-bottom: 12px;
+    font-size: 15px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, min(95px, 28vw));
+    grid-template-rows: repeat(3, min(95px, 28vw));
+    gap: 10px;
+    margin-top: 5px;
+    justify-content: center;
+}
+
+.cell {
+    background: var(--cell-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(35px, 10vw, 45px);
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    user-select: none;
+    -webkit-user-select: none;
+    transition: transform 0.15s ease-in-out, background 0.2s;
+}
+
+.cell:active {
+    transform: scale(0.92);
+}
+
+@media(hover: hover) {
+    .cell:hover {
+        background: var(--cell-hover);
+        transform: scale(1.04);
+    }
+}
+
+.cell.x {
+    color: #ff4757;
+    text-shadow: 0 0 10px rgba(255,71,87,0.4);
+}
+
+.cell.o {
+    color: #2ed573;
+    text-shadow: 0 0 10px rgba(46,213,115,0.4);
+}
+
+#status {
+    margin-top: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    min-height: 30px;
+}
+
+.pulse {
+    animation: pulseAnim 0.6s infinite alternate;
+}
+
+@keyframes pulseAnim {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    width: 100%;
+    justify-content: center;
+}
+
+button.action-btn {
+    padding: 12px 18px;
+    font-weight: 600;
+    background: var(--btn-bg);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    touch-action: manipulation;
+}
+
+button.action-btn:active {
+    transform: scale(0.96);
+}
+
+@media(hover: hover) {
+    button.action-btn:hover {
+        background: var(--btn-hover);
+        transform: translateY(-2px);
+    }
+}
+
+.dashboard-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 15px;
+    color: var(--card-text);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 340px;
+}
+
+.dashboard-section h2 {
+    margin-top: 0;
+    font-size: 1.2rem;
+}
+
+.tournament-banner {
+    background: linear-gradient(135deg, #f1c40f, #e67e22);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    width: 100%;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.series-score {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    background: rgba(0,0,0,0.04);
+    padding: 8px 12px;
+    border-radius: 8px;
+    width: 100%;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 280px;
+    margin: auto;
+}
+
+canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 170px !important;
 }
 </style>
 </head>
 
-<body>
+<body class="theme-fun">
 
-<h1>❌⭕ Tic Tac Toe</h1>
-
-<div class="board">
-<div class="cell" onclick="move(this,0)"></div>
-<div class="cell" onclick="move(this,1)"></div>
-<div class="cell" onclick="move(this,2)"></div>
-<div class="cell" onclick="move(this,3)"></div>
-<div class="cell" onclick="move(this,4)"></div>
-<div class="cell" onclick="move(this,5)"></div>
-<div class="cell" onclick="move(this,6)"></div>
-<div class="cell" onclick="move(this,7)"></div>
-<div class="cell" onclick="move(this,8)"></div>
+<div class="top-bar">
+    <button class="sound-toggle" id="soundBtn" onclick="toggleSound()">🔊 Sound: ON</button>
+    <select id="themeSelect" onchange="changeTheme()">
+        <option value="theme-fun">🎨 Fun Theme</option>
+        <option value="theme-neon">⚡ Neon Arcade</option>
+        <option value="theme-cyberpunk">🌆 Cyberpunk</option>
+        <option value="theme-midnight">🌙 Midnight Dark</option>
+        <option value="theme-light">☀️ Clean Light</option>
+    </select>
 </div>
 
-<div id="status">Player X Turn</div>
+<h1>🏆 Tic Tac Toe Tournament Arena</h1>
 
-<button onclick="resetBoard()">Reset Board</button>
+<div class="main-container">
+    <!-- Game Section -->
+    <div class="game-section">
+        <div class="tournament-setup">
+            <label>🏅 Series Format:</label>
+            <select id="targetWins" onchange="resetTournament()">
+                <option value="3">First to 3 (Best of 5)</option>
+                <option value="5" selected>First to 5 (Best of 9)</option>
+                <option value="7">First to 7 (Best of 13)</option>
+            </select>
+        </div>
 
-<h2>📊 Score Dashboard</h2>
-<canvas id="scoreChart"></canvas>
+        <div class="board">
+            <div class="cell" onclick="move(this,0)"></div>
+            <div class="cell" onclick="move(this,1)"></div>
+            <div class="cell" onclick="move(this,2)"></div>
+            <div class="cell" onclick="move(this,3)"></div>
+            <div class="cell" onclick="move(this,4)"></div>
+            <div class="cell" onclick="move(this,5)"></div>
+            <div class="cell" onclick="move(this,6)"></div>
+            <div class="cell" onclick="move(this,7)"></div>
+            <div class="cell" onclick="move(this,8)"></div>
+        </div>
+
+        <div id="status">Player X's Turn</div>
+        
+        <div class="btn-group">
+            <button class="action-btn" onclick="resetBoard()">Next Round</button>
+            <button class="action-btn" onclick="resetTournament()" style="background:#e74c3c;">Reset Series</button>
+        </div>
+    </div>
+
+    <!-- Score Dashboard Section -->
+    <div class="dashboard-section">
+        <h2>📊 Tournament Scorecard</h2>
+        <div class="tournament-banner" id="tournamentBanner">Series in Progress...</div>
+        <div class="series-score" id="seriesScoreText">Series: X (0) - (0) O</div>
+        <div class="chart-container">
+            <canvas id="scoreChart"></canvas>
+        </div>
+    </div>
+</div>
 
 <script>
-
-let board=["","","","","","","","",""]
-let current="X"
-let active=true
-let scoreX=0
-let scoreO=0
+let board = ["","","","","","","","",""]
+let current = "X"
+let active = true
+let scoreX = 0
+let scoreO = 0
+let soundEnabled = true
 let chart
 
-const win=[
-[0,1,2],[3,4,5],[6,7,8],
-[0,3,6],[1,4,7],[2,5,8],
-[0,4,8],[2,4,6]
+const win = [
+    [0,1,2], [3,4,5], [6,7,8],
+    [0,3,6], [1,4,7], [2,5,8],
+    [0,4,8], [2,4,6]
 ]
 
-function move(cell,i){
+// Web Audio API Sound Synthesizer
+let audioCtx = null;
 
-if(board[i]!=="" || !active) return
-
-board[i]=current
-cell.innerHTML=current
-
-checkWinner()
-
-current=current==="X"?"O":"X"
-
-document.getElementById("status").innerHTML="Player "+current+" Turn"
-
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
 }
 
-function checkWinner(){
+function playSound(type) {
+    if (!soundEnabled) return;
+    initAudio();
+    if (!audioCtx) return;
 
-for(let c of win){
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
 
-let a=board[c[0]]
-let b=board[c[1]]
-let d=board[c[2]]
+    let now = audioCtx.currentTime;
 
-if(a && a===b && a===d){
+    if (type === 'click') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.exponentialRampToValueAtTime(600, now + 0.08);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+        osc.start(now);
+        osc.stop(now + 0.08);
+    } 
+    else if (type === 'win') {
+        // Triumphant chord sequence
+        let notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, index) => {
+            let o = audioCtx.createOscillator();
+            let g = audioCtx.createGain();
+            o.connect(g);
+            g.connect(audioCtx.destination);
+            o.type = 'triangle';
+            o.frequency.setValueAtTime(freq, now + index * 0.1);
+            g.gain.setValueAtTime(0.2, now + index * 0.1);
+            g.gain.linearRampToValueAtTime(0.01, now + index * 0.1 + 0.3);
+            o.start(now + index * 0.1);
+            o.stop(now + index * 0.1 + 0.3);
+        });
+    } 
+    else if (type === 'seriesWin') {
+        // Major fanfare sequence
+        let notes = [440, 554.37, 659.25, 880];
+        notes.forEach((freq, index) => {
+            let o = audioCtx.createOscillator();
+            let g = audioCtx.createGain();
+            o.connect(g);
+            g.connect(audioCtx.destination);
+            o.type = 'square';
+            o.frequency.setValueAtTime(freq, now + index * 0.15);
+            g.gain.setValueAtTime(0.15, now + index * 0.15);
+            g.gain.linearRampToValueAtTime(0.01, now + index * 0.15 + 0.4);
+            o.start(now + index * 0.15);
+            o.stop(now + index * 0.15 + 0.4);
+        });
+    }
+    else if (type === 'draw') {
+        // Failure / Neutral downward slide
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.linearRampToValueAtTime(120, now + 0.3);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+    }
+}
 
-active=false
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+    document.getElementById("soundBtn").innerHTML = soundEnabled ? "🔊 Sound: ON" : "🔇 Sound: OFF";
+    if (soundEnabled) playSound('click');
+}
 
-document.getElementById("status").innerHTML="🏆 Player "+a+" Wins!"
+function changeTheme() {
+    let theme = document.getElementById("themeSelect").value;
+    document.body.className = theme;
+}
 
-if(a==="X") scoreX++
-else scoreO++
+function move(cell, i) {
+    if(board[i] !== "" || !active) return
+
+    board[i] = current
+    cell.innerHTML = current
+    cell.classList.add(current.toLowerCase())
+    playSound('click');
+
+    checkWinner()
+
+    if (active) {
+        current = current === "X" ? "O" : "X"
+        document.getElementById("status").innerHTML = "Player " + current + "'s Turn"
+    }
+}
+
+function checkWinner() {
+    let target = parseInt(document.getElementById("targetWins").value)
+
+    for(let c of win) {
+        let a = board[c[0]]
+        let b = board[c[1]]
+        let d = board[c[2]]
+
+        if(a && a === b && a === d) {
+            active = false
+            if(a === "X") scoreX++
+            else scoreO++
+
+            updateSeriesText()
+            drawChart()
+
+            if(scoreX === target || scoreO === target) {
+                document.getElementById("status").innerHTML = "👑 Player " + a + " Crowned Champion!"
+                document.getElementById("status").classList.add("pulse")
+                document.getElementById("tournamentBanner").innerHTML = "🏆 TOURNAMENT FINISHED! 🏆"
+                playSound('seriesWin')
+            } else {
+                document.getElementById("status").innerHTML = "🏆 Round Won by Player " + a + "!"
+                playSound('win')
+            }
+            return
+        }
+    }
+
+    if(!board.includes("")) {
+        active = false
+        document.getElementById("status").innerHTML = "🤝 It's a Draw Round!"
+        playSound('draw')
+    }
+}
+
+function updateSeriesText() {
+    document.getElementById("seriesScoreText").innerHTML = `Series: X (${scoreX}) - (${scoreO}) O`
+}
+
+function resetBoard() {
+    let target = parseInt(document.getElementById("targetWins").value)
+    if(scoreX === target || scoreO === target) {
+        resetTournament()
+        return
+    }
+
+    board = ["","","","","","","","",""]
+    active = true
+    current = "X"
+    document.getElementById("status").classList.remove("pulse")
+
+    document.querySelectorAll(".cell").forEach(c => {
+        c.innerHTML = ""
+        c.classList.remove("x", "o")
+    })
+
+    document.getElementById("status").innerHTML = "Player X's Turn"
+    playSound('click')
+}
+
+function resetTournament() {
+    scoreX = 0
+    scoreO = 0
+    document.getElementById("tournamentBanner").innerHTML = "Series in Progress..."
+    document.getElementById("status").classList.remove("pulse")
+    updateSeriesText()
+    resetBoard()
+    drawChart()
+}
+
+function drawChart() {
+    const ctx = document.getElementById("scoreChart")
+
+    if(chart) chart.destroy()
+
+    chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ["Player X", "Player O"],
+            datasets: [{
+                label: "Series Wins",
+                data: [scoreX, scoreO],
+                backgroundColor: ['#ff4757', '#2ed573'],
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    })
+}
 
 drawChart()
-
-return
-}
-
-}
-
-if(!board.includes("")){
-active=false
-document.getElementById("status").innerHTML="Draw"
-}
-
-}
-
-function resetBoard(){
-
-board=["","","","","","","","",""]
-active=true
-current="X"
-
-document.querySelectorAll(".cell").forEach(c=>c.innerHTML="")
-
-document.getElementById("status").innerHTML="Player X Turn"
-
-}
-
-function drawChart(){
-
-const ctx=document.getElementById("scoreChart")
-
-if(chart) chart.destroy()
-
-chart=new Chart(ctx,{
-type:'bar',
-data:{
-labels:["Player X","Player O"],
-datasets:[{
-label:"Wins",
-data:[scoreX,scoreO]
-}]
-}
-})
-
-}
-
-drawChart()
-
 </script>
 
 </body>
