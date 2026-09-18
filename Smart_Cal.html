@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="hi">
 <head>
@@ -420,22 +419,18 @@ function detectUserLocation() {
                 currentLocation.lon = parseFloat(position.coords.longitude.toFixed(4));
                 currentLocation.name = `GPS (${currentLocation.lat}, ${currentLocation.lon})`;
                 
-                // Update inputs if custom is open
                 document.getElementById("customLat").value = currentLocation.lat;
                 document.getElementById("customLon").value = currentLocation.lon;
                 
                 renderCalendar();
             },
             (error) => {
-                alert("लोकेशन प्राप्त करने में असफल। कृपया मैन्युअली चुनें।");
+                console.log("GPS Location access denied or unavailable.");
             }
         );
-    } else {
-        alert("आपका ब्राउज़र जियोलोकेशन सपोर्ट नहीं करता है।");
     }
 }
 
-// Automatically try to detect GPS location on load
 window.addEventListener('DOMContentLoaded', () => {
     detectUserLocation();
 });
@@ -484,49 +479,55 @@ function calculatePlanetLongitudes(dateObj) {
     
     let sunLon = (280.460 + 0.9856474 * d) % 360;
     let moonLon = (218.316 + 13.176396 * d) % 360;
-    let marsLon = (355.433 + 0.524039 * d) % 360;
-    let jupiterLon = (34.351 + 0.083085 * d) % 360;
-    let saturnLon = (50.077 + 0.033459 * d) % 360;
-    let mercuryLon = (252.251 + 4.092338 * d) % 360;
-    let venusLon = (181.979 + 1.602130 * d) % 360;
 
     if(sunLon < 0) sunLon += 360;
     if(moonLon < 0) moonLon += 360;
-    if(marsLon < 0) marsLon += 360;
-    if(jupiterLon < 0) jupiterLon += 360;
-    if(saturnLon < 0) saturnLon += 360;
-    if(mercuryLon < 0) mercuryLon += 360;
-    if(venusLon < 0) venusLon += 360;
 
-    return { sun: sunLon, moon: moonLon, mars: marsLon, jupiter: jupiterLon, saturn: saturnLon, mercury: mercuryLon, venus: venusLon };
+    return { sun: sunLon, moon: moonLon };
 }
 
-/* DYNAMIC SUNRISE & SUNSET CALCULATOR BASED ON SELECTED LAT/LONG */
+/* HIGHLY ACCURATE SUNRISE & SUNSET SOLAR ALGORITHM BASED ON COORDINATES */
 function getSunTimes(dateObj, lat, lon) {
-    let start = new Date(dateObj.getFullYear(), 0, 0);
-    let diff = dateObj - start;
-    let oneDay = 1000 * 60 * 60 * 24;
-    let dayOfYear = Math.floor(diff / oneDay);
+    let year = dateObj.getFullYear();
+    let startOfYear = new Date(year, 0, 1);
+    let dayOfYear = Math.floor((dateObj - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
 
-    let declination = 23.45 * Math.sin(((280 + dayOfYear) * 360 / 365) * Math.PI / 180) * Math.PI / 180;
-    let latRad = lat * Math.PI / 180;
+    // 1. Fractional year in radians
+    let gamma = (2 * Math.PI / 365) * (dayOfYear - 1 + (dateObj.getHours() - 12) / 24);
 
-    let cosH = (Math.sin(-0.833 * Math.PI / 180) - Math.sin(latRad) * Math.sin(declination)) / (Math.cos(latRad) * Math.cos(declination));
+    // 2. Equation of time (in minutes)
+    let eqtime = 229.18 * (0.000075 + 0.001868 * Math.cos(gamma) - 0.032077 * Math.sin(gamma) - 0.014615 * Math.cos(2 * gamma) - 0.040849 * Math.sin(2 * gamma));
+
+    // 3. Solar declination (in radians)
+    let decl = 0.006918 - 0.399912 * Math.cos(gamma) + 0.070257 * Math.sin(gamma) - 0.006758 * Math.cos(2 * gamma) + 0.000907 * Math.sin(2 * gamma) - 0.002697 * Math.cos(3 * gamma) + 0.00148 * Math.sin(3 * gamma);
+
+    // 4. Hour angle for sunrise/sunset (Zenith = 90.833° for atmospheric refraction and solar disc)
+    let latRad = lat * (Math.PI / 180);
+    let zenith = 90.833 * (Math.PI / 180);
     
-    if (cosH > 1) cosH = 1;
-    if (cosH < -1) cosH = -1;
+    let cosHourAngle = (Math.cos(zenith) / (Math.cos(latRad) * Math.cos(decl))) - (Math.tan(latRad) * Math.tan(decl));
 
-    let H = Math.acos(cosH) * 180 / Math.PI;
+    // Handle polar day/night cases safely
+    if (cosHourAngle > 1) cosHourAngle = 1;
+    if (cosHourAngle < -1) cosHourAngle = -1;
 
-    let b = (2 * Math.PI * (dayOfYear - 81)) / 365;
-    let eot = 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b);
+    let hourAngle = Math.acos(cosHourAngle) * (180 / Math.PI);
 
-    let istOffset = 5.5 * 60; // minutes
-    let lngCorrection = (82.5 - lon) * 4; 
-    let solarNoonMin = 720 - lngCorrection - eot;
+    // 5. Calculate Solar Noon and Sunrise/Sunset in minutes from midnight UTC
+    let solarNoonUTC = (720 - (4 * lon) - eqtime) / 60; // in hours
+    let sunriseUTC = solarNoonUTC - (hourAngle / 15);
+    let sunsetUTC = solarNoonUTC + (hourAngle / 15);
 
-    let sunriseMin = solarNoonMin - (H * 4) + istOffset;
-    let sunsetMin = solarNoonMin + (H * 4) + istOffset;
+    // Convert UTC hours to Indian Standard Time (IST = UTC + 5:30)
+    let istOffset = 5.5; 
+    let sunriseMin = (sunriseUTC + istOffset) * 60;
+    let sunsetMin = (sunsetUTC + istOffset) * 60;
+
+    // Adjust for next/previous day wrap if needed
+    if(sunriseMin < 0) sunriseMin += 1440;
+    if(sunriseMin >= 1440) sunriseMin -= 1440;
+    if(sunsetMin < 0) sunsetMin += 1440;
+    if(sunsetMin >= 1440) sunsetMin -= 1440;
 
     function formatTime(minutes) {
         let hr = Math.floor(minutes / 60) % 24;
@@ -636,7 +637,6 @@ function updateMoonDisplay(){
 }
 updateMoonDisplay();
 
-/* ACTIVE/CURRENT DAY & MONTH INITIALIZATION */
 let current = new Date();       
 let selectedDate = new Date();  
 
@@ -848,11 +848,3 @@ renderCalendar();
 
 </body>
 </html>
-
-
-Note :- 
-1. Automatic Browser Geolocation (navigator.geolocation) upon opening the page, alongside the existing city selector and custom latitude/longitude inputs.
-2.When you open the page, it will automatically ask for your location permission. 
-3.If allowed, it instantly detects your exact GPS coordinates and calculates the precise sunrise, sunset, and panchang data for your exact position. If permission is denied or unavailable, it defaults gracefully to Mumbai.
-
-
