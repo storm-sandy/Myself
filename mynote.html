@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced Web Notepad OS</title>
+
+<style>
+:root {
+    --bg-color: #f8fafc;
+    --panel-bg: #ffffff;
+    --text-color: #1e293b;
+    --border-color: #cbd5e1;
+    --primary-color: #0284c7;
+    --primary-hover: #0369a1;
+    --menu-bg: #f1f5f9;
+    --menu-hover: #e2e8f0;
+    --dropdown-hover-bg: #0284c7;
+    --dropdown-hover-color: #ffffff;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] {
+    --bg-color: #0f172a;
+    --panel-bg: #1e293b;
+    --text-color: #f8fafc;
+    --border-color: #334155;
+    --primary-color: #38bdf8;
+    --primary-hover: #0ea5e9;
+    --menu-bg: #1e293b;
+    --menu-hover: #334155;
+    --dropdown-hover-bg: #38bdf8;
+    --dropdown-hover-color: #0f172a;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    box-sizing: border-box;
+    transition: background 0.3s, color 0.3s;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 0 4px;
+}
+
+h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+/* Professional Menu Bar styling with Roll-over effects */
+.menu-bar {
+    background: var(--menu-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 4px;
+    gap: 2px;
+}
+
+.menu-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.menu-btn {
+    background: transparent;
+    color: var(--text-color);
+    border: none;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* Rollover/Hover effect for top menu headers */
+.menu-dropdown:hover .menu-btn, .menu-btn:hover {
+    background: var(--menu-hover);
+    color: var(--primary-color);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--panel-bg);
+    min-width: 180px;
+    box-shadow: var(--shadow);
+    z-index: 50;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    top: 100%;
+    left: 0;
+    padding: 4px;
+    animation: fadeIn 0.15s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.menu-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content button, .dropdown-content .sub-label {
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: none;
+    color: var(--text-color);
+    padding: 8px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+/* Rollover/Hover effect for dropdown menu items */
+.dropdown-content button:hover {
+    background: var(--dropdown-hover-bg);
+    color: var(--dropdown-hover-color);
+    transform: translateX(2px);
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 4px 0;
+}
+
+/* Toolbar Controls Section */
+.toolbar-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    padding-right: 6px;
+}
+
+.toolbar-controls select {
+    background: var(--panel-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.toolbar-controls select:hover {
+    border-color: var(--primary-color);
+}
+
+.icon-btn {
+    background: var(--panel-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.icon-btn:hover {
+    background: var(--menu-hover);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+input[type="file"] {
+    display: none;
+}
+
+/* Editor Container */
+.editor-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+textarea#notepad {
+    flex: 1;
+    width: 100%;
+    background: var(--panel-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 14px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: none;
+    box-sizing: border-box;
+    outline: none;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* Find & Replace Floating Box */
+.modal-panel {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    padding: 14px;
+    border-radius: 8px;
+    z-index: 100;
+    width: 280px;
+}
+
+.modal-panel input {
+    width: 100%;
+    padding: 7px;
+    margin: 6px 0 10px 0;
+    background: var(--panel-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 0.85rem;
+}
+
+.modal-panel button {
+    padding: 6px 10px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: background 0.15s;
+}
+
+.modal-panel button:hover {
+    background: var(--primary-hover);
+}
+
+/* Status Bar */
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    background: var(--menu-bg);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    color: var(--text-color);
+    opacity: 0.85;
+}
+
+@media(min-width: 768px) {
+    body { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h2>📝 Advanced Notepad OS</h2>
+</header>
+
+<!-- Main Menu Bar -->
+<div class="menu-bar">
+    <!-- File Menu -->
+    <div class="menu-dropdown">
+        <button class="menu-btn">File</button>
+        <div class="dropdown-content">
+            <button onclick="newFile()">New Document</button>
+            <button onclick="document.getElementById('fileInput').click()">Open File...</button>
+            <input type="file" id="fileInput" onchange="openFile(event)">
+            <button onclick="saveFile()">Save File</button>
+            <div class="dropdown-divider"></div>
+            <button onclick="closeFile()">Close File</button>
+        </div>
+    </div>
+
+    <!-- Edit Menu -->
+    <div class="menu-dropdown">
+        <button class="menu-btn">Edit</button>
+        <div class="dropdown-content">
+            <button onclick="triggerUndo()">Undo</button>
+            <button onclick="triggerRedo()">Redo</button>
+            <div class="dropdown-divider"></div>
+            <button onclick="triggerCut()">Cut</button>
+            <button onclick="triggerCopy()">Copy</button>
+            <button onclick="triggerPaste()">Paste</button>
+            <div class="dropdown-divider"></div>
+            <span class="sub-label" style="font-weight:bold; font-size:0.75rem; opacity:0.6; padding: 4px 10px;">Paste Special</span>
+            <button onclick="pasteSpecial('plain')">&nbsp;&nbsp;• Plain Text</button>
+            <button onclick="pasteSpecial('upper')">&nbsp;&nbsp;• UPPERCASE</button>
+            <button onclick="pasteSpecial('lower')">&nbsp;&nbsp;• lowercase</button>
+            <button onclick="pasteSpecial('title')">&nbsp;&nbsp;• Title Case</button>
+            <div class="dropdown-divider"></div>
+            <button onclick="selectAllText()">Select All</button>
+            <button onclick="deleteSelectedText()">Delete</button>
+        </div>
+    </div>
+
+    <!-- Search Menu -->
+    <div class="menu-dropdown">
+        <button class="menu-btn">Search</button>
+        <div class="dropdown-content">
+            <button onclick="toggleFindReplace()">Find & Replace</button>
+        </div>
+    </div>
+
+    <!-- Formatting & Quick Toolbar Items -->
+    <div class="toolbar-controls">
+        <select id="fontFamily" onchange="changeFontFamily()">
+            <option value="'Courier New', Courier, monospace">Monospace</option>
+            <option value="Arial, sans-serif">Arial</option>
+            <option value="'Times New Roman', serif">Times New Roman</option>
+            <option value="Georgia, serif">Georgia</option>
+        </select>
+
+        <select id="fontSize" onchange="changeFontSize()">
+            <option value="12px">12px</option>
+            <option value="14px" selected>14px</option>
+            <option value="16px">16px</option>
+            <option value="18px">18px</option>
+            <option value="20px">20px</option>
+        </select>
+
+        <button class="icon-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌓 Theme</button>
+    </div>
+</div>
+
+<div class="editor-container">
+    <!-- Find & Replace Floating Box -->
+    <div id="findReplaceModal" class="modal-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>Find & Replace</strong>
+            <button onclick="toggleFindReplace()" style="background:transparent; color:var(--text-color); font-weight:bold; padding:2px 6px;">✕</button>
+        </div>
+        <input type="text" id="findText" placeholder="Find...">
+        <input type="text" id="replaceText" placeholder="Replace with...">
+        <div style="display:flex; gap:6px; margin-top: 8px;">
+            <button onclick="findNext()" style="flex:1;">Find Next</button>
+            <button onclick="replaceOne()" style="flex:1;">Replace</button>
+            <button onclick="replaceAll()" style="flex:1; background:#10b981;">All</button>
+        </div>
+    </div>
+
+    <textarea id="notepad" placeholder="Type or paste your notes here..." oninput="recordHistory(); updateStatus();" onkeydown="handleKeydown(event)"></textarea>
+</div>
+
+<div class="status-bar">
+    <span id="wordCount">Words: 0 | Characters: 0</span>
+    <span id="currentFileName">Untitled.txt</span>
+</div>
+
+<script>
+let currentFileNameStr = "Untitled.txt";
+const notepad = document.getElementById("notepad");
+
+// History stack for Custom Undo/Redo Engine
+let historyStack = [""];
+let historyIndex = 0;
+let isInternalChange = false;
+
+function recordHistory() {
+    if (isInternalChange) return;
+    if (historyStack[historyIndex] === notepad.value) return;
+    
+    historyStack = historyStack.slice(0, historyIndex + 1);
+    historyStack.push(notepad.value);
+    historyIndex++;
+}
+
+function triggerUndo() {
+    if (historyIndex > 0) {
+        historyIndex--;
+        isInternalChange = true;
+        notepad.value = historyStack[historyIndex];
+        isInternalChange = false;
+        updateStatus();
+    }
+}
+
+function triggerRedo() {
+    if (historyIndex < historyStack.length - 1) {
+        historyIndex++;
+        isInternalChange = true;
+        notepad.value = historyStack[historyIndex];
+        isInternalChange = false;
+        updateStatus();
+    }
+}
+
+function handleKeydown(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) {
+            triggerRedo();
+        } else {
+            triggerUndo();
+        }
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        e.preventDefault();
+        triggerRedo();
+    }
+}
+
+// Theme Toggle
+function toggleTheme() {
+    let current = document.documentElement.getAttribute("data-theme");
+    if(current === "dark") {
+        document.documentElement.removeAttribute("data-theme");
+        localStorage.setItem("notepadTheme", "light");
+    } else {
+        document.documentElement.setAttribute("data-theme", "dark");
+        localStorage.setItem("notepadTheme", "dark");
+    }
+}
+if(localStorage.getItem("notepadTheme") === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+}
+
+// File Operations
+function newFile() {
+    if(notepad.value.trim() !== "" && !confirm("Discard unsaved changes?")) return;
+    notepad.value = "";
+    currentFileNameStr = "Untitled.txt";
+    document.getElementById("currentFileName").innerText = currentFileNameStr;
+    historyStack = [""];
+    historyIndex = 0;
+    updateStatus();
+}
+
+function openFile(event) {
+    let file = event.target.files[0];
+    if(!file) return;
+    currentFileNameStr = file.name;
+    document.getElementById("currentFileName").innerText = currentFileNameStr;
+    
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        notepad.value = e.target.result;
+        historyStack = [notepad.value];
+        historyIndex = 0;
+        updateStatus();
+    };
+    reader.readAsText(file);
+    event.target.value = "";
+}
+
+function saveFile() {
+    let blob = new Blob([notepad.value], {type: "text/plain;charset=utf-8"});
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = currentFileNameStr;
+    a.click();
+}
+
+function closeFile() {
+    if (notepad.value.trim() !== "" && !confirm("Close current file? Any unsaved changes will be cleared.")) return;
+    notepad.value = "";
+    currentFileNameStr = "No File Open";
+    document.getElementById("currentFileName").innerText = currentFileNameStr;
+    historyStack = [""];
+    historyIndex = 0;
+    updateStatus();
+}
+
+// Cut, Copy, Paste & Paste Special Functions
+async function triggerCut() {
+    let start = notepad.selectionStart;
+    let end = notepad.selectionEnd;
+    let selectedText = notepad.value.substring(start, end);
+    if (!selectedText) return alert("No text selected to cut.");
+    
+    try {
+        await navigator.clipboard.writeText(selectedText);
+        notepad.value = notepad.value.substring(0, start) + notepad.value.substring(end);
+        notepad.setSelectionRange(start, start);
+        recordHistory();
+        updateStatus();
+    } catch (err) {
+        alert("Clipboard write access blocked.");
+    }
+}
+
+async function triggerCopy() {
+    let start = notepad.selectionStart;
+    let end = notepad.selectionEnd;
+    let selectedText = notepad.value.substring(start, end);
+    if (!selectedText) return alert("No text selected to copy.");
+    
+    try {
+        await navigator.clipboard.writeText(selectedText);
+    } catch (err) {
+        alert("Clipboard write access blocked.");
+    }
+}
+
+async function triggerPaste() {
+    try {
+        let text = await navigator.clipboard.readText();
+        insertTextAtCursor(text);
+    } catch (err) {
+        alert("Clipboard permission denied or unavailable. Use Ctrl+V instead.");
+    }
+}
+
+async function pasteSpecial(type) {
+    try {
+        let text = await navigator.clipboard.readText();
+        if (type === 'upper') {
+            text = text.toUpperCase();
+        } else if (type === 'lower') {
+            text = text.toLowerCase();
+        } else if (type === 'title') {
+            text = text.toLowerCase().replace(/(^\w|\s\w)/g, m => m.toUpperCase());
+        }
+        insertTextAtCursor(text);
+    } catch (err) {
+        alert("Clipboard permission denied or unavailable.");
+    }
+}
+
+function insertTextAtCursor(text) {
+    let start = notepad.selectionStart;
+    let end = notepad.selectionEnd;
+    let val = notepad.value;
+    
+    notepad.value = val.substring(0, start) + text + val.substring(end);
+    notepad.selectionStart = notepad.selectionEnd = start + text.length;
+    
+    recordHistory();
+    updateStatus();
+    notepad.focus();
+}
+
+// Edit Actions
+function selectAllText() {
+    notepad.select();
+}
+
+function deleteSelectedText() {
+    let start = notepad.selectionStart;
+    let end = notepad.selectionEnd;
+    if(start !== end) {
+        notepad.value = notepad.value.substring(0, start) + notepad.value.substring(end);
+        notepad.setSelectionRange(start, start);
+    } else {
+        notepad.value = "";
+    }
+    recordHistory();
+    updateStatus();
+}
+
+// Find & Replace Logic
+function toggleFindReplace() {
+    let modal = document.getElementById("findReplaceModal");
+    modal.style.display = modal.style.display === "block" ? "none" : "block";
+}
+
+function findNext() {
+    let query = document.getElementById("findText").value;
+    if(!query) return;
+    let text = notepad.value;
+    let startPos = notepad.selectionEnd;
+    let index = text.indexOf(query, startPos);
+    
+    if(index === -1) {
+        index = text.indexOf(query, 0);
+    }
+    
+    if(index !== -1) {
+        notepad.focus();
+        notepad.setSelectionRange(index, index + query.length);
+    } else {
+        alert("Text not found.");
+    }
+}
+
+function replaceOne() {
+    let query = document.getElementById("findText").value;
+    let replacement = document.getElementById("replaceText").value;
+    let start = notepad.selectionStart;
+    let end = notepad.selectionEnd;
+    
+    let selectedText = notepad.value.substring(start, end);
+    if(selectedText === query) {
+        notepad.value = notepad.value.substring(0, start) + replacement + notepad.value.substring(end);
+        notepad.setSelectionRange(start, start + replacement.length);
+    } else {
+        findNext();
+    }
+    recordHistory();
+    updateStatus();
+}
+
+function replaceAll() {
+    let query = document.getElementById("findText").value;
+    let replacement = document.getElementById("replaceText").value;
+    if(!query) return;
+    
+    let regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+    notepad.value = notepad.value.replace(regex, replacement);
+    recordHistory();
+    updateStatus();
+}
+
+// Formatting
+function changeFontFamily() {
+    let font = document.getElementById("fontFamily").value;
+    notepad.style.fontFamily = font;
+}
+
+function changeFontSize() {
+    let size = document.getElementById("fontSize").value;
+    notepad.style.fontSize = size;
+}
+
+// Status bar counters
+function updateStatus() {
+    let text = notepad.value;
+    let chars = text.length;
+    let words = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+    document.getElementById("wordCount").innerText = `Words: ${words} | Characters: ${chars}`;
+}
+
+updateStatus();
+</script>
+
+</body>
+</html>
