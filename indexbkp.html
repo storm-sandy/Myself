@@ -1,0 +1,1169 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+viewport-fit=cover">
+
+<meta name="theme-color" content="#4CAF50"><title>Swayam PWA</title><style>
+
+/* =========================================================
+   SWAYAM PWA
+   MENU ALWAYS VISIBLE
+   PAGE OPENS IN CENTER
+   SPCK FRIENDLY
+========================================================= */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+}
+
+body{
+
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background:#f3f6f4;
+
+    color:#222;
+
+    overflow:hidden;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header{
+
+    height:58px;
+
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:0 14px;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2e7d32,
+            #66bb6a
+        );
+
+    box-shadow:
+        0 2px 8px rgba(0,0,0,.25);
+
+    position:relative;
+
+    z-index:1000;
+}
+
+.title{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    font-size:18px;
+
+    font-weight:700;
+}
+
+.version{
+
+    font-size:10px;
+
+    padding:3px 7px;
+
+    border-radius:10px;
+
+    background:
+        rgba(255,255,255,.2);
+}
+
+.clock{
+
+    font-size:11px;
+
+    padding:6px 9px;
+
+    border-radius:8px;
+
+    background:
+        rgba(255,255,255,.18);
+
+    white-space:nowrap;
+}
+
+
+/* =========================================================
+   MAIN APPLICATION
+========================================================= */
+
+.app{
+
+    width:100%;
+
+    height:
+        calc(100vh - 58px);
+
+    display:flex;
+
+    overflow:hidden;
+}
+
+
+/* =========================================================
+   LEFT MENU
+========================================================= */
+
+.menu{
+
+    width:225px;
+
+    min-width:225px;
+
+    height:100%;
+
+    background:#ffffff;
+
+    border-right:1px solid #dcdcdc;
+
+    padding:8px;
+
+    overflow-y:auto;
+
+    overflow-x:hidden;
+
+    scrollbar-width:thin;
+
+    z-index:500;
+}
+
+
+/* =========================================================
+   MENU ITEMS
+========================================================= */
+
+.menu-button{
+
+    display:flex;
+
+    align-items:center;
+
+    width:100%;
+
+    min-height:45px;
+
+    padding:9px 12px;
+
+    margin-bottom:4px;
+
+    border-left:4px solid transparent;
+
+    border-radius:9px;
+
+    background:#ffffff;
+
+    color:#333;
+
+    text-decoration:none;
+
+    font-size:14px;
+
+    font-weight:500;
+
+    cursor:pointer;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .15s ease;
+}
+
+
+/* Hover */
+
+.menu-button:hover{
+
+    background:#f1f8e9;
+
+    color:#2e7d32;
+
+    transform:translateX(2px);
+}
+
+
+/* Active */
+
+.menu-button.active{
+
+    background:#e8f5e9;
+
+    color:#1b5e20;
+
+    border-left-color:#4CAF50;
+
+    font-weight:700;
+}
+
+
+/* =========================================================
+   CENTER AREA
+========================================================= */
+
+.content{
+
+    flex:1;
+
+    min-width:0;
+
+    height:100%;
+
+    background:#f5f7f6;
+
+    overflow:hidden;
+
+    position:relative;
+}
+
+
+/* =========================================================
+   IFRAME
+========================================================= */
+
+.page-frame{
+
+    width:100%;
+
+    height:100%;
+
+    display:block;
+
+    border:none;
+
+    background:white;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.loading{
+
+    position:absolute;
+
+    top:50%;
+
+    left:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    padding:15px 22px;
+
+    border-radius:12px;
+
+    background:white;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,.15);
+
+    color:#2e7d32;
+
+    font-weight:600;
+
+    z-index:10;
+
+    display:none;
+}
+
+
+/* =========================================================
+   HOME PAGE
+========================================================= */
+
+.home-screen{
+
+    width:100%;
+
+    height:100%;
+
+    overflow:auto;
+
+    padding:25px;
+}
+
+.home-card{
+
+    max-width:1000px;
+
+    margin:0 auto;
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:45px 20px;
+
+    text-align:center;
+
+    box-shadow:
+        0 5px 25px rgba(0,0,0,.08);
+}
+
+.home-icon{
+
+    font-size:65px;
+
+    margin-bottom:15px;
+}
+
+.home-card h1{
+
+    color:#2e7d32;
+
+    font-size:
+        clamp(25px,4vw,40px);
+
+    margin-bottom:10px;
+}
+
+.home-card p{
+
+    color:#666;
+
+    font-size:16px;
+
+    line-height:1.6;
+}
+
+.quick-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(170px,1fr)
+        );
+
+    gap:15px;
+
+    max-width:1000px;
+
+    margin:20px auto 0;
+}
+
+.quick-card{
+
+    background:white;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    text-align:center;
+
+    box-shadow:
+        0 3px 15px rgba(0,0,0,.07);
+
+    transition:
+        transform .2s;
+}
+
+.quick-card:hover{
+
+    transform:
+        translateY(-4px);
+}
+
+.quick-icon{
+
+    font-size:32px;
+
+    margin-bottom:8px;
+}
+
+.quick-title{
+
+    font-weight:700;
+
+    color:#333;
+}
+
+.quick-text{
+
+    font-size:12px;
+
+    color:#777;
+
+    margin-top:5px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:768px){
+
+    body{
+
+        overflow:hidden;
+    }
+
+
+    .header{
+
+        height:54px;
+
+        padding:0 9px;
+    }
+
+    .title{
+
+        font-size:15px;
+    }
+
+    .clock{
+
+        font-size:9px;
+
+        padding:5px 6px;
+    }
+
+
+    .app{
+
+        height:
+            calc(100vh - 54px);
+
+        display:block;
+    }
+
+
+    /* ---------------------------------------------
+       MOBILE MENU ALWAYS VISIBLE
+    --------------------------------------------- */
+
+    .menu{
+
+        width:100%;
+
+        min-width:100%;
+
+        height:56px;
+
+        display:flex;
+
+        align-items:center;
+
+        gap:4px;
+
+        padding:5px;
+
+        overflow-x:auto;
+
+        overflow-y:hidden;
+
+        white-space:nowrap;
+
+        border-right:0;
+
+        border-bottom:1px solid #ddd;
+
+        scrollbar-width:none;
+
+        -webkit-overflow-scrolling:touch;
+
+        position:relative;
+
+        z-index:500;
+    }
+
+    .menu::-webkit-scrollbar{
+
+        display:none;
+    }
+
+
+    .menu-button{
+
+        flex:0 0 auto;
+
+        width:auto;
+
+        min-width:max-content;
+
+        height:44px;
+
+        min-height:44px;
+
+        margin:0;
+
+        padding:0 13px;
+
+        justify-content:center;
+
+        border:0;
+
+        border-bottom:3px solid transparent;
+
+        border-radius:8px;
+
+        font-size:13px;
+    }
+
+
+    .menu-button:hover{
+
+        transform:none;
+    }
+
+
+    .menu-button.active{
+
+        border-left:0;
+
+        border-bottom-color:#4CAF50;
+    }
+
+
+    /* ---------------------------------------------
+       CENTER PAGE
+    --------------------------------------------- */
+
+    .content{
+
+        width:100%;
+
+        height:
+            calc(100vh - 110px);
+
+        overflow:hidden;
+    }
+
+
+    .page-frame{
+
+        width:100%;
+
+        height:100%;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media(max-width:400px){
+
+    .header{
+
+        height:50px;
+    }
+
+    .app{
+
+        height:
+            calc(100vh - 50px);
+    }
+
+    .menu{
+
+        height:52px;
+    }
+
+    .menu-button{
+
+        height:40px;
+
+        min-height:40px;
+
+        padding:0 10px;
+
+        font-size:12px;
+    }
+
+    .content{
+
+        height:
+            calc(100vh - 102px);
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE LANDSCAPE
+========================================================= */
+
+@media(max-width:768px)
+       and (orientation:landscape){
+
+    .app{
+
+        display:flex;
+
+        height:
+            calc(100vh - 48px);
+    }
+
+
+    .menu{
+
+        width:155px;
+
+        min-width:155px;
+
+        height:100%;
+
+        display:block;
+
+        overflow-x:hidden;
+
+        overflow-y:auto;
+
+        border-right:1px solid #ddd;
+
+        border-bottom:0;
+
+        padding:5px;
+    }
+
+
+    .menu-button{
+
+        width:100%;
+
+        height:40px;
+
+        min-height:40px;
+
+        justify-content:flex-start;
+
+        font-size:12px;
+
+        border:0;
+
+        border-left:3px solid transparent;
+    }
+
+
+    .menu-button.active{
+
+        border-left-color:#4CAF50;
+
+        border-bottom:0;
+    }
+
+
+    .content{
+
+        width:auto;
+
+        height:100%;
+    }
+
+}
+
+
+/* =========================================================
+   LARGE DESKTOP
+========================================================= */
+
+@media(min-width:1400px){
+
+    .menu{
+
+        width:250px;
+
+        min-width:250px;
+    }
+
+    .menu-button{
+
+        min-height:48px;
+
+        font-size:15px;
+    }
+
+}
+
+
+/* =========================================================
+   IFRAME ERROR STYLE
+========================================================= */
+
+iframe{
+
+    background:#fff;
+}
+
+</style></head><body><!-- =======================================================
+     HEADER
+======================================================= --><header class="header"><div class="title">
+
+    🌿 Swayam
+
+    <span class="version">
+        v1.0
+    </span>
+
+</div>
+
+
+<div
+    class="clock"
+    id="clock">
+
+    Loading...
+
+</div>
+
+</header><!-- =======================================================
+     APPLICATION
+======================================================= --><div class="app"><!-- ===================================================
+     MENU - ALWAYS VISIBLE
+==================================================== -->
+
+<nav
+    class="menu"
+    id="menu"
+    aria-label="Swayam Navigation">
+
+
+    <a
+        href="home.html"
+        class="menu-button active"
+        target="swayamFrame">
+
+        🏠 MyNest
+
+    </a>
+
+
+    <a
+        href="Util_smart.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        ⌚ Watch
+
+    </a>
+
+
+    <a
+        href="cal.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        📅 Calendar
+
+    </a>
+
+
+    <a
+        href="Util_karya.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        💼 Work
+
+    </a>
+
+
+    <a
+        href="Util_laxmi.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🏠 Home
+
+    </a>
+
+<a
+        href="Util_fin.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        💰 Finance
+
+    </a>
+
+
+
+    <a
+        href="Util_yog.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🙏 Fitness
+
+    </a>
+
+
+    <a
+        href="Util_upkarna.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🛠️ Utility
+
+    </a>
+
+
+    <a
+        href="Util_chitra.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🖼️ Image
+
+    </a>
+
+
+    <a
+        href="Util_sutra.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        📐 Formula
+
+    </a>
+
+
+    <a
+        href="Util_awpl.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🌐 Business
+
+    </a>
+
+
+    <a
+        href="Util_lang.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🌐 Languages
+
+    </a>
+
+
+    <a
+        href="Util_sanskar.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🙏 Ethics
+
+    </a>
+
+
+    <a
+        href="Util_ranjan.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🎮 Relax
+
+    </a>
+
+
+    <a
+        href="medical.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🏥 Medical
+
+    </a>
+
+
+    <a
+        href="emergency.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        🚨 Emergency
+
+    </a>
+
+
+    <a
+        href="note2.html"
+        class="menu-button"
+        target="swayamFrame">
+
+        📝 Notes
+
+    </a>
+
+
+</nav>
+
+
+
+<!-- ===================================================
+     CENTER CONTENT
+==================================================== -->
+
+<main class="content">
+
+
+    <div
+        class="loading"
+        id="loading">
+
+        Loading...
+
+    </div>
+
+
+    <iframe
+        id="swayamFrame"
+        name="swayamFrame"
+        class="page-frame"
+        src="home.html"
+        title="Swayam Application Content">
+
+    </iframe>
+
+
+</main>
+
+</div><script>
+
+/* =========================================================
+   LIVE CLOCK
+========================================================= */
+
+function updateClock(){
+
+    var clock =
+        document.getElementById("clock");
+
+    if(!clock){
+
+        return;
+
+    }
+
+
+    var now =
+        new Date();
+
+
+    var date =
+        now.toLocaleDateString(
+            "en-IN",
+            {
+                weekday:"short",
+                month:"short",
+                day:"numeric"
+            }
+        );
+
+
+    var time =
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit",
+                hour12:true
+            }
+        );
+
+
+    clock.textContent =
+        date + " | " + time;
+
+}
+
+
+updateClock();
+
+
+setInterval(
+    updateClock,
+    1000
+);
+
+
+/* =========================================================
+   MENU ACTIVE STATE
+========================================================= */
+
+var menuLinks =
+    document.querySelectorAll(
+        ".menu-button"
+    );
+
+
+for(
+    var i = 0;
+    i < menuLinks.length;
+    i++
+){
+
+    menuLinks[i].addEventListener(
+        "click",
+        function(){
+
+            /*
+             * Remove active from all menu items
+             */
+
+            for(
+                var j = 0;
+                j < menuLinks.length;
+                j++
+            ){
+
+                menuLinks[j]
+                    .classList
+                    .remove("active");
+
+            }
+
+
+            /*
+             * Highlight selected item
+             */
+
+            this.classList.add(
+                "active"
+            );
+
+
+            /*
+             * Save selected page
+             */
+
+            try{
+
+                localStorage.setItem(
+                    "swayam_selected_page",
+                    this.getAttribute(
+                        "href"
+                    )
+                );
+
+            }
+            catch(e){}
+
+
+            /*
+             * On mobile, automatically
+             * bring selected menu into view
+             */
+
+            try{
+
+                this.scrollIntoView({
+                    behavior:"smooth",
+                    block:"nearest",
+                    inline:"center"
+                });
+
+            }
+            catch(e){}
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   IFRAME LOADING
+========================================================= */
+
+var frame =
+    document.getElementById(
+        "swayamFrame"
+    );
+
+var loading =
+    document.getElementById(
+        "loading"
+    );
+
+
+frame.addEventListener(
+    "load",
+    function(){
+
+        loading.style.display =
+            "none";
+
+    }
+);
+
+
+frame.addEventListener(
+    "loadstart",
+    function(){
+
+        loading.style.display =
+            "block";
+
+    }
+);
+
+
+/* =========================================================
+   SAVE CURRENT PAGE
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function(){
+
+        try{
+
+            /*
+             * Current iframe URL is not always
+             * accessible for local files because
+             * of browser security restrictions.
+             *
+             * Menu click already stores it.
+             */
+
+        }
+        catch(e){}
+
+    }
+);
+
+</script></body></html>
