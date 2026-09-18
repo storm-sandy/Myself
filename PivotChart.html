@@ -1,454 +1,585 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ultimate Data Dashboard OS</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
-
-body{
-font-family:Arial;
-background:#ececec;
-margin:0;
-padding:20px;
+:root {
+    --bg-color: #f0f2f5;
+    --panel-bg: #ffffff;
+    --text-color: #333333;
+    --border-color: #ccd0d5;
+    --primary-color: #0066cc;
+    --primary-hover: #0052a3;
+    --accent-color: #42b72a;
 }
 
-h2{text-align:center}
-
-.panel{
-background:white;
-padding:15px;
-margin-bottom:15px;
-border-radius:8px;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --panel-bg: #1e1e1e;
+    --text-color: #e0e0e0;
+    --border-color: #333333;
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --accent-color: #22c55e;
 }
 
-textarea{
-width:100%;
-height:120px;
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 10px;
+    transition: background 0.3s, color 0.3s;
 }
 
-select,input,button{
-padding:6px;
-margin:4px;
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 0 5px;
 }
 
-table{
-border-collapse:collapse;
-width:100%;
+h2 {
+    margin: 0;
+    font-size: 1.4rem;
 }
 
-th,td{
-border:1px solid #ccc;
-padding:5px;
-text-align:center;
+.panel {
+    background: var(--panel-bg);
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow-x: auto;
 }
 
-canvas{
-background:white;
-margin-top:20px;
+.controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    align-items: end;
 }
 
+.control-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 3px;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+textarea {
+    width: 100%;
+    height: 90px;
+    box-sizing: border-box;
+    background: var(--panel-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 8px;
+    resize: vertical;
+}
+
+select, input, button {
+    padding: 8px;
+    margin: 2px 0;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--panel-bg);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: var(--primary-hover);
+}
+
+.btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.btn-row button {
+    flex: 1;
+    min-width: 110px;
+}
+
+.table-container {
+    max-height: 350px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.85rem;
+}
+
+th, td {
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+th {
+    background: rgba(0,0,0,0.04);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+[data-theme="dark"] th {
+    background: rgba(255,255,255,0.05);
+}
+
+.canvas-container {
+    position: relative;
+    width: 100%;
+    max-height: 450px;
+}
+
+canvas {
+    background: var(--panel-bg);
+    margin-top: 10px;
+    border-radius: 6px;
+}
+
+/* Desktop layout enhancements */
+@media (min-width: 768px) {
+    body {
+        padding: 20px;
+        max-width: 1400px;
+        margin: auto;
+    }
+    h2 {
+        font-size: 1.8rem;
+    }
+    .panel {
+        padding: 20px;
+    }
+}
 </style>
-
 </head>
 
 <body>
 
-<h2>Ultimate Data Dashboard OS</h2>
+<header>
+    <h2>📊 Ultimate Data Dashboard OS</h2>
+    <button onclick="toggleTheme()" style="width: auto; padding: 6px 12px;">🌓 Theme</button>
+</header>
 
 <div class="panel">
-
-<input type="file" id="fileInput">
-
-<button onclick="loadCSV()">Load Data</button>
-
-<button onclick="saveDashboard()">Save Dashboard</button>
-
-<button onclick="loadDashboard()">Load Dashboard</button>
-
-<button onclick="exportCSV()">Export CSV</button>
-
-<button onclick="exportChart()">Export Chart</button>
-
-<textarea id="csvInput" placeholder="Paste CSV data"></textarea>
-
+    <label for="fileInput">Import Spreadsheet / CSV</label>
+    <input type="file" id="fileInput" accept=".csv, .xlsx, .xls">
+    
+    <textarea id="csvInput" placeholder="Paste CSV data or load a file..."></textarea>
+    
+    <div class="btn-row">
+        <button onclick="loadCSV()">Load Data</button>
+        <button onclick="saveDashboard()">Save State</button>
+        <button onclick="loadDashboard()">Restore State</button>
+        <button onclick="exportCSV()">Export CSV</button>
+        <button onclick="exportChart()">Export Chart</button>
+    </div>
 </div>
 
 <div class="panel">
-
-Group By
-<select id="groupCol"></select>
-
-Sub Group
-<select id="subGroupCol"></select>
-
-Value Columns
-<select id="valueCols" multiple size="5"></select>
-
-Chart Type
-<select id="chartType">
-<option>bar</option>
-<option>line</option>
-<option>pie</option>
-<option>doughnut</option>
-<option>radar</option>
-<option>polarArea</option>
-<option>scatter</option>
-<option>bubble</option>
-</select>
-
-Filter Column
-<select id="filterCol"></select>
-
-Value
-<input id="filterVal">
-
-<button onclick="applyFilter()">Filter</button>
-
-<button onclick="buildChart()">Build Chart</button>
-
-<button onclick="buildPivot()">Pivot Table</button>
-
+    <div class="controls-grid">
+        <div class="control-group">
+            <label>Group By</label>
+            <select id="groupCol"></select>
+        </div>
+        <div class="control-group">
+            <label>Sub Group</label>
+            <select id="subGroupCol"><option value="">-- None --</option></select>
+        </div>
+        <div class="control-group">
+            <label>Value Columns (Multi-select)</label>
+            <select id="valueCols" multiple size="3"></select>
+        </div>
+        <div class="control-group">
+            <label>Chart Type</label>
+            <select id="chartType">
+                <option>bar</option>
+                <option>line</option>
+                <option>pie</option>
+                <option>doughnut</option>
+                <option>radar</option>
+                <option>polarArea</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>Filter Column</label>
+            <select id="filterCol"></select>
+        </div>
+        <div class="control-group">
+            <label>Filter Value</label>
+            <input id="filterVal" placeholder="Filter text...">
+        </div>
+    </div>
+    <div class="btn-row" style="margin-top: 15px;">
+        <button onclick="applyFilter()">Apply Filter</button>
+        <button onclick="resetFilter()" style="background: #6c757d;">Reset Filter</button>
+        <button onclick="buildChart()" style="background: var(--accent-color);">Build Chart</button>
+        <button onclick="buildPivot()">Pivot Table</button>
+    </div>
 </div>
 
 <div class="panel">
-<h3>Statistics</h3>
-<div id="stats"></div>
+    <h3>📈 Statistics</h3>
+    <div id="stats" style="font-size: 0.9rem; line-height: 1.5;">Load data to see metrics.</div>
 </div>
 
 <div class="panel">
-<h3>Pivot Table</h3>
-<table id="pivotTable"></table>
+    <h3>🔲 Pivot Table</h3>
+    <div class="table-container">
+        <table id="pivotTable"></table>
+    </div>
 </div>
 
 <div class="panel">
-<h3>Data Table</h3>
-<table id="dataTable"></table>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="margin:0;">📋 Data Table</h3>
+        <input type="text" id="tableSearch" placeholder="Search table..." onkeyup="searchTable()" style="max-width: 200px; margin:0; padding: 5px;">
+    </div>
+    <div class="table-container">
+        <table id="dataTable"></table>
+    </div>
 </div>
 
-<div class="panel">
-<canvas id="chartCanvas"></canvas>
+<div class="panel canvas-container">
+    <canvas id="chartCanvas"></canvas>
 </div>
 
 <script>
+let rawData = [];
+let filteredData = [];
+let headers = [];
+let chart = null;
 
-let rawData=[]
-let filteredData=[]
-let headers=[]
-let chart
-
-document.getElementById("fileInput").addEventListener("change",function(e){
-
-let file=e.target.files[0]
-
-if(file.name.endsWith(".xlsx")){
-
-let reader=new FileReader()
-
-reader.onload=function(e){
-
-let data=new Uint8Array(e.target.result)
-
-let wb=XLSX.read(data,{type:"array"})
-
-let sheet=wb.Sheets[wb.SheetNames[0]]
-
-let csv=XLSX.utils.sheet_to_csv(sheet)
-
-document.getElementById("csvInput").value=csv
-
+// Theme Toggle Handler
+function toggleTheme() {
+    let currentTheme = document.documentElement.getAttribute("data-theme");
+    let newTheme = currentTheme === "dark" ? "light" : "dark";
+    if (newTheme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+        localStorage.setItem("theme", "dark");
+    } else {
+        document.documentElement.removeAttribute("data-theme");
+        localStorage.setItem("theme", "light");
+    }
 }
 
-reader.readAsArrayBuffer(file)
-
-}else{
-
-let reader=new FileReader()
-
-reader.onload=function(){
-document.getElementById("csvInput").value=reader.result
+// Load saved theme preference on start
+if (localStorage.getItem("theme") === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
 }
 
-reader.readAsText(file)
+document.getElementById("fileInput").addEventListener("change", function(e) {
+    let file = e.target.files[0];
+    if (!file) return;
 
+    let reader = new FileReader();
+    if (file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) {
+        reader.onload = function(e) {
+            let data = new Uint8Array(e.target.result);
+            let wb = XLSX.read(data, {type: "array"});
+            let sheet = wb.Sheets[wb.SheetNames[0]];
+            let csv = XLSX.utils.sheet_to_csv(sheet);
+            document.getElementById("csvInput").value = csv;
+            loadCSV();
+        };
+        reader.readAsArrayBuffer(file);
+    } else {
+        reader.onload = function() {
+            document.getElementById("csvInput").value = reader.result;
+            loadCSV();
+        };
+        reader.readAsText(file);
+    }
+});
+
+function loadCSV() {
+    let csv = document.getElementById("csvInput").value.trim();
+    if (!csv) return alert("Please paste or load valid CSV data.");
+    
+    let rows = csv.split("\n").map(r => r.split(",").map(val => val.trim().replace(/^["'](.+(?=["']))['"]$/, '$1')));
+    headers = rows[0];
+    rawData = rows.slice(1).filter(r => r.length === headers.length && r.some(cell => cell !== ""));
+    filteredData = [...rawData];
+
+    buildSelectors();
+    drawTable(filteredData);
+    alert(`Successfully loaded ${rawData.length} rows.`);
 }
 
-})
+function buildSelectors() {
+    let ids = ["groupCol", "subGroupCol", "filterCol"];
+    ids.forEach((id, index) => {
+        let s = document.getElementById(id);
+        s.innerHTML = index === 1 ? `<option value="">-- None --</option>` : "";
+        headers.forEach((h, i) => {
+            s.innerHTML += `<option value="${i}">${h}</option>`;
+        });
+    });
 
-function loadCSV(){
-
-let csv=document.getElementById("csvInput").value.trim()
-
-let rows=csv.split("\n").map(r=>r.split(","))
-
-headers=rows[0]
-
-rawData=rows.slice(1)
-
-filteredData=[...rawData]
-
-buildSelectors()
-
-drawTable(filteredData)
-
+    let v = document.getElementById("valueCols");
+    v.innerHTML = "";
+    headers.forEach((h, i) => {
+        v.innerHTML += `<option value="${i}">${h}</option>`;
+    });
 }
 
-function buildSelectors(){
-
-let ids=["groupCol","subGroupCol","filterCol"]
-
-ids.forEach(id=>{
-
-let s=document.getElementById(id)
-
-s.innerHTML=""
-
-headers.forEach((h,i)=>{
-s.innerHTML+=`<option value=${i}>${h}</option>`
-})
-
-})
-
-let v=document.getElementById("valueCols")
-v.innerHTML=""
-
-headers.forEach((h,i)=>{
-v.innerHTML+=`<option value=${i}>${h}</option>`
-})
-
+function drawTable(data) {
+    let t = document.getElementById("dataTable");
+    t.innerHTML = "";
+    if (data.length === 0) {
+        t.innerHTML = "<tr><td>No data available</td></tr>";
+        return;
+    }
+    let head = "<tr>" + headers.map(h => "<th>" + h + "</th>").join("") + "</tr>";
+    t.innerHTML += head;
+    
+    let bodyHTML = "";
+    data.forEach(r => {
+        bodyHTML += "<tr>" + r.map(c => "<td>" + c + "</td>").join("") + "</tr>";
+    });
+    t.innerHTML += bodyHTML;
 }
 
-function drawTable(data){
-
-let t=document.getElementById("dataTable")
-
-t.innerHTML=""
-
-let head="<tr>"+headers.map(h=>"<th>"+h+"</th>").join("")+"</tr>"
-
-t.innerHTML+=head
-
-data.forEach(r=>{
-t.innerHTML+="<tr>"+r.map(c=>"<td>"+c+"</td>").join("")+"</tr>"
-})
-
+function searchTable() {
+    let query = document.getElementById("tableSearch").value.toLowerCase();
+    let searched = filteredData.filter(r => r.some(cell => cell.toLowerCase().includes(query)));
+    drawTable(searched);
 }
 
-function applyFilter(){
+function applyFilter() {
+    let col = document.getElementById("filterCol").value;
+    let val = document.getElementById("filterVal").value.toLowerCase();
+    if (col === "") return alert("Select a filter column.");
 
-let col=document.getElementById("filterCol").value
-let val=document.getElementById("filterVal").value
-
-filteredData=rawData.filter(r=>r[col]==val)
-
-drawTable(filteredData)
-
+    filteredData = rawData.filter(r => r[col] && r[col].toLowerCase().includes(val));
+    drawTable(filteredData);
 }
 
-function buildChart(){
-
-let g=document.getElementById("groupCol").value
-let vals=[...document.getElementById("valueCols").selectedOptions].map(o=>o.value)
-let type=document.getElementById("chartType").value
-
-let grouped={}
-
-filteredData.forEach(r=>{
-
-let key=r[g]
-
-if(!grouped[key]){
-
-grouped[key]={}
-
-vals.forEach(v=>grouped[key][v]=0)
-
+function resetFilter() {
+    filteredData = [...rawData];
+    document.getElementById("filterVal").value = "";
+    document.getElementById("tableSearch").value = "";
+    drawTable(filteredData);
 }
 
-vals.forEach(v=>{
+function buildChart() {
+    let g = document.getElementById("groupCol").value;
+    let vals = [...document.getElementById("valueCols").selectedOptions].map(o => o.value);
+    let type = document.getElementById("chartType").value;
 
-grouped[key][v]+=parseFloat(r[v])||0
+    if (g === "" || vals.length === 0) {
+        return alert("Please select a Group By column and at least one Value Column.");
+    }
 
-})
+    let grouped = {};
+    filteredData.forEach(r => {
+        let key = r[g] || "Unknown";
+        if (!grouped[key]) {
+            grouped[key] = {};
+            vals.forEach(v => grouped[key][v] = 0);
+        }
+        vals.forEach(v => {
+            grouped[key][v] += parseFloat(r[v]) || 0;
+        });
+    });
 
-})
+    let labels = Object.keys(grouped);
+    let datasets = [];
+    
+    // Generate distinct color palette
+    let colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6'];
 
-let labels=Object.keys(grouped)
+    vals.forEach((v, index) => {
+        let color = colors[index % colors.length];
+        datasets.push({
+            label: headers[v],
+            data: labels.map(l => grouped[l][v]),
+            backgroundColor: type === 'pie' || type === 'doughnut' || type === 'polarArea' ? colors : color,
+            borderColor: color,
+            borderWidth: 2
+        });
+    });
 
-let datasets=[]
+    if (chart) chart.destroy();
+    
+    let ctx = document.getElementById("chartCanvas").getContext("2d");
+    chart = new Chart(ctx, {
+        type: type,
+        data: { labels: labels, datasets: datasets },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
 
-vals.forEach(v=>{
-
-datasets.push({
-
-label:headers[v],
-
-data:labels.map(l=>grouped[l][v]),
-
-borderWidth:2
-
-})
-
-})
-
-if(chart)chart.destroy()
-
-chart=new Chart(chartCanvas,{
-
-type:type,
-
-data:{labels:labels,datasets:datasets},
-
-options:{responsive:true}
-
-})
-
-calcStats(vals)
-
+    calcStats(vals);
 }
 
-function calcStats(cols){
+function calcStats(cols) {
+    let div = document.getElementById("stats");
+    let html = "";
 
-let div=document.getElementById("stats")
+    cols.forEach(c => {
+        let nums = filteredData.map(r => parseFloat(r[c])).filter(n => !isNaN(n));
+        if (nums.length === 0) return;
 
-let html=""
+        let sum = nums.reduce((a, b) => a + b, 0);
+        let avg = sum / nums.length;
+        let min = Math.min(...nums);
+        let max = Math.max(...nums);
+        nums.sort((a, b) => a - b);
+        let median = nums[Math.floor(nums.length / 2)];
 
-cols.forEach(c=>{
+        html += `<b>${headers[c]}</b>: &nbsp; 
+                 Sum: <b>${sum.toLocaleString()}</b> | 
+                 Avg: <b>${avg.toFixed(2)}</b> | 
+                 Min: <b>${min}</b> | 
+                 Max: <b>${max}</b> | 
+                 Median: <b>${median}</b><br>`;
+    });
 
-let nums=filteredData.map(r=>parseFloat(r[c])).filter(n=>!isNaN(n))
-
-let sum=nums.reduce((a,b)=>a+b,0)
-
-let avg=sum/nums.length
-
-let min=Math.min(...nums)
-
-let max=Math.max(...nums)
-
-nums.sort((a,b)=>a-b)
-
-let median=nums[Math.floor(nums.length/2)]
-
-html+=`<b>${headers[c]}</b> :
-Sum ${sum} |
-Avg ${avg.toFixed(2)} |
-Min ${min} |
-Max ${max} |
-Median ${median}<br>`
-
-})
-
-div.innerHTML=html
-
+    div.innerHTML = html || "No numeric data found for calculations.";
 }
 
-function buildPivot(){
+function buildPivot() {
+    let g = document.getElementById("groupCol").value;
+    let sg = document.getElementById("subGroupCol").value;
+    let vals = [...document.getElementById("valueCols").selectedOptions].map(o => o.value);
 
-let g=document.getElementById("groupCol").value
-let vals=[...document.getElementById("valueCols").selectedOptions].map(o=>o.value)
+    if (g === "" || vals.length === 0) {
+        return alert("Please select a Group By column and Value columns.");
+    }
 
-let table=document.getElementById("pivotTable")
+    let table = document.getElementById("pivotTable");
+    table.innerHTML = "";
 
-table.innerHTML=""
+    let grouped = {};
+    let subGroupKeys = new Set();
 
-let head="<tr><th>"+headers[g]+"</th>"+vals.map(v=>"<th>"+headers[v]+"</th>").join("")+"</tr>"
+    filteredData.forEach(r => {
+        let mainKey = r[g] || "Unknown";
+        let subKey = sg !== "" ? (r[sg] || "Unknown") : "Total";
+        if(sg !== "") subGroupKeys.add(subKey);
 
-table.innerHTML+=head
+        if (!grouped[mainKey]) grouped[mainKey] = {};
+        if (!grouped[mainKey][subKey]) {
+            grouped[mainKey][subKey] = {};
+            vals.forEach(v => grouped[mainKey][subKey][v] = 0);
+        }
 
-let grouped={}
+        vals.forEach(v => {
+            grouped[mainKey][subKey][v] += parseFloat(r[v]) || 0;
+        });
+    });
 
-filteredData.forEach(r=>{
+    let subKeysArr = Array.from(subGroupKeys);
+    
+    // Build Header
+    let head = `<tr><th>${headers[g]}</th>`;
+    if (sg !== "") {
+        subKeysArr.forEach(sk => {
+            vals.forEach(v => {
+                head += `<th>${sk} (${headers[v]})</th>`;
+            });
+        });
+    } else {
+        vals.forEach(v => {
+            head += `<th>${headers[v]}</th>`;
+        });
+    }
+    head += "</tr>";
+    table.innerHTML += head;
 
-let key=r[g]
-
-if(!grouped[key]){
-
-grouped[key]={}
-
-vals.forEach(v=>grouped[key][v]=0)
-
+    // Build Rows
+    Object.keys(grouped).forEach(k => {
+        let row = `<tr><td><b>${k}</b></td>`;
+        if (sg !== "") {
+            subKeysArr.forEach(sk => {
+                vals.forEach(v => {
+                    let val = grouped[k][sk] ? grouped[k][sk][v] || 0 : 0;
+                    row += `<td>${val.toLocaleString()}</td>`;
+                });
+            });
+        } else {
+            vals.forEach(v => {
+                let val = grouped[k]["Total"] ? grouped[k]["Total"][v] || 0 : 0;
+                row += `<td>${val.toLocaleString()}</td>`;
+            });
+        }
+        row += "</tr>";
+        table.innerHTML += row;
+    });
 }
 
-vals.forEach(v=>grouped[key][v]+=parseFloat(r[v])||0)
-
-})
-
-Object.keys(grouped).forEach(k=>{
-
-let row="<tr><td>"+k+"</td>"
-
-vals.forEach(v=>{
-row+="<td>"+grouped[k][v]+"</td>"
-})
-
-row+="</tr>"
-
-table.innerHTML+=row
-
-})
-
+function exportChart() {
+    if(!chart) return alert("No chart generated to export.");
+    let link = document.createElement("a");
+    link.href = document.getElementById("chartCanvas").toDataURL("image/png");
+    link.download = "chart.png";
+    link.click();
 }
 
-function exportChart(){
-
-let link=document.createElement("a")
-
-link.href=chartCanvas.toDataURL()
-
-link.download="chart.png"
-
-link.click()
-
+function exportCSV() {
+    if (filteredData.length === 0) return alert("No data to export.");
+    let csv = headers.join(",") + "\n";
+    filteredData.forEach(r => {
+        csv += r.join(",") + "\n";
+    });
+    let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "exported_data.csv";
+    a.click();
 }
 
-function exportCSV(){
-
-let csv=headers.join(",")+"\n"
-
-filteredData.forEach(r=>{
-
-csv+=r.join(",")+"\n"
-
-})
-
-let blob=new Blob([csv])
-
-let a=document.createElement("a")
-
-a.href=URL.createObjectURL(blob)
-
-a.download="data.csv"
-
-a.click()
-
+function saveDashboard() {
+    let content = document.getElementById("csvInput").value;
+    if (!content) return alert("Nothing to save.");
+    localStorage.setItem("dashboardCSV", content);
+    alert("Dashboard state saved successfully!");
 }
 
-function saveDashboard(){
-
-localStorage.setItem("dashboardCSV",document.getElementById("csvInput").value)
-
-alert("Dashboard saved")
-
+function loadDashboard() {
+    let data = localStorage.getItem("dashboardCSV");
+    if (data) {
+        document.getElementById("csvInput").value = data;
+        loadCSV();
+    } else {
+        alert("No saved session found.");
+    }
 }
-
-function loadDashboard(){
-
-let data=localStorage.getItem("dashboardCSV")
-
-if(data){
-
-document.getElementById("csvInput").value=data
-
-loadCSV()
-
-}
-
-}
-
 </script>
 
 </body>
