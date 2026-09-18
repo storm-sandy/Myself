@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width,
+    initial-scale=1.0,
+    maximum-scale=1.0,
+    user-scalable=no"
+>
+
+<meta name="theme-color" content="#16a34a">
+
+<title>Swayam - Manoranjan Kaksha</title>
+
+<style>
+
+/* =========================================================
+   SWAYAM MANORANJAN KAKSHA
+========================================================= */
+
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+    margin:0;
+    padding:0;
+    min-height:100%;
+
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+
+    transition:
+        background .3s ease,
+        color .3s ease;
+}
+
+
+/* =========================================================
+   THEMES
+========================================================= */
+
+body.light{
+
+    --bg:#f3f7f4;
+
+    --header1:#16a34a;
+    --header2:#15803d;
+
+    --card:#ffffff;
+
+    --text:#172017;
+
+    --muted:#607060;
+
+    --border:#dce9df;
+
+    --shadow:
+        0 8px 24px rgba(0,0,0,.10);
+
+    --soft:#eaf7ee;
+
+    --link:#15803d;
+
+}
+
+
+body.dark{
+
+    --bg:#101412;
+
+    --header1:#166534;
+    --header2:#14532d;
+
+    --card:#1b241e;
+
+    --text:#f2f7f3;
+
+    --muted:#b8c7bb;
+
+    --border:#2d3b31;
+
+    --shadow:
+        0 8px 24px rgba(0,0,0,.35);
+
+    --soft:#1d3224;
+
+    --link:#86efac;
+
+}
+
+
+body.blue{
+
+    --bg:#eef7ff;
+
+    --header1:#15803d;
+    --header2:#166534;
+
+    --card:#ffffff;
+
+    --text:#142019;
+
+    --muted:#5f7065;
+
+    --border:#d6e8dc;
+
+    --shadow:
+        0 8px 24px rgba(0,0,0,.10);
+
+    --soft:#e7f6ed;
+
+    --link:#166534;
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header{
+
+    width:100%;
+
+    padding:
+        14px 16px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--header1),
+            var(--header2)
+        );
+
+    color:white;
+
+    box-shadow:
+        0 4px 14px rgba(0,0,0,.18);
+
+    position:relative;
+
+    z-index:2;
+
+}
+
+
+.header-title{
+
+    min-width:0;
+
+}
+
+
+.header-title h2{
+
+    margin:0;
+
+    font-size:
+        clamp(
+            20px,
+            5vw,
+            28px
+        );
+
+    font-weight:800;
+
+    letter-spacing:.2px;
+
+}
+
+
+.header-title small{
+
+    display:block;
+
+    margin-top:3px;
+
+    font-size:12px;
+
+    opacity:.9;
+
+}
+
+
+/* =========================================================
+   THEME SELECTOR
+========================================================= */
+
+.theme-select{
+
+    border:
+        1px solid
+        rgba(255,255,255,.35);
+
+    border-radius:12px;
+
+    padding:
+        9px 10px;
+
+    background:
+        rgba(255,255,255,.16);
+
+    color:white;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    outline:none;
+
+    cursor:pointer;
+
+}
+
+
+.theme-select option{
+
+    color:#111;
+
+    background:white;
+
+}
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+.clock-panel{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                150px,
+                1fr
+            )
+        );
+
+    gap:10px;
+
+    padding:
+        14px 16px;
+
+}
+
+
+.clock-card{
+
+    background:
+        var(--card);
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:16px;
+
+    padding:
+        12px 14px;
+
+    box-shadow:
+        var(--shadow);
+
+    text-align:center;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.clock-card:hover{
+
+    transform:
+        translateY(-2px);
+
+}
+
+
+.clock-label{
+
+    display:block;
+
+    color:
+        var(--muted);
+
+    font-size:11px;
+
+    font-weight:800;
+
+    text-transform:uppercase;
+
+    letter-spacing:.8px;
+
+}
+
+
+.clock-value{
+
+    display:block;
+
+    margin-top:4px;
+
+    color:
+        var(--text);
+
+    font-size:15px;
+
+    font-weight:750;
+
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.intro{
+
+    margin:
+        0 16px 14px;
+
+    padding:16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--soft),
+            var(--card)
+        );
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:18px;
+
+    box-shadow:
+        var(--shadow);
+
+}
+
+
+.intro h3{
+
+    margin:
+        0 0 6px;
+
+    font-size:20px;
+
+    color:
+        var(--text);
+
+}
+
+
+.intro p{
+
+    margin:0;
+
+    color:
+        var(--muted);
+
+    line-height:1.55;
+
+    font-size:14px;
+
+}
+
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.list-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                260px,
+                1fr
+            )
+        );
+
+    gap:16px;
+
+    padding:
+        0 16px
+        16px;
+
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.card{
+
+    background:
+        var(--card);
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:20px;
+
+    padding:18px;
+
+    box-shadow:
+        var(--shadow);
+
+    transition:
+        transform .22s ease,
+        box-shadow .22s ease;
+
+}
+
+
+.card:hover{
+
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 14px 30px
+        rgba(0,0,0,.14);
+
+}
+
+
+.card-icon{
+
+    width:56px;
+
+    height:56px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:17px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--header1),
+            var(--header2)
+        );
+
+    color:white;
+
+    font-size:28px;
+
+    margin-bottom:12px;
+
+    box-shadow:
+        0 7px 16px
+        rgba(22,163,74,.22);
+
+}
+
+
+.card h3{
+
+    margin:
+        0 0 8px;
+
+    color:
+        var(--text);
+
+    font-size:20px;
+
+}
+
+
+.card-description{
+
+    margin:
+        0 0 14px;
+
+    color:
+        var(--muted);
+
+    font-size:13px;
+
+    line-height:1.5;
+
+}
+
+
+/* =========================================================
+   ENTERTAINMENT LINKS
+========================================================= */
+
+.entertainment-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                150px,
+                1fr
+            )
+        );
+
+    gap:10px;
+
+}
+
+
+.entertainment-link{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:8px;
+
+    min-height:54px;
+
+    padding:
+        12px 13px;
+
+    background:
+        var(--soft);
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:14px;
+
+    color:
+        var(--link);
+
+    text-decoration:none;
+
+    font-size:14px;
+
+    font-weight:750;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+
+    -webkit-tap-highlight-color:
+        transparent;
+
+}
+
+
+.entertainment-link:hover{
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 6px 15px
+        rgba(0,0,0,.10);
+
+}
+
+
+.entertainment-link:active{
+
+    transform:
+        scale(.97);
+
+}
+
+
+.entertainment-icon{
+
+    font-size:21px;
+
+    flex-shrink:0;
+
+}
+
+
+.entertainment-name{
+
+    flex:1;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.info-footer{
+
+    margin:
+        0 16px
+        18px;
+
+    padding:13px;
+
+    text-align:center;
+
+    border-radius:14px;
+
+    background:
+        var(--card);
+
+    border:
+        1px solid
+        var(--border);
+
+    color:
+        var(--muted);
+
+    font-size:12px;
+
+    box-shadow:
+        0 5px 15px
+        rgba(0,0,0,.06);
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:600px){
+
+    .header{
+
+        padding:12px;
+
+    }
+
+
+    .header-title h2{
+
+        font-size:20px;
+
+    }
+
+
+    .theme-select{
+
+        max-width:110px;
+
+        font-size:12px;
+
+        padding:8px;
+
+    }
+
+
+    .clock-panel{
+
+        grid-template-columns:
+            1fr 1fr;
+
+        padding:12px;
+
+    }
+
+
+    .clock-card{
+
+        padding:10px;
+
+    }
+
+
+    .clock-value{
+
+        font-size:13px;
+
+    }
+
+
+    .intro{
+
+        margin:
+            0 12px 12px;
+
+        padding:14px;
+
+    }
+
+
+    .list-grid{
+
+        grid-template-columns:
+            1fr;
+
+        padding:
+            0 12px
+            12px;
+
+        gap:12px;
+
+    }
+
+
+    .card{
+
+        padding:16px;
+
+    }
+
+
+    .entertainment-grid{
+
+        grid-template-columns:
+            1fr 1fr;
+
+    }
+
+
+    .entertainment-link{
+
+        min-height:58px;
+
+    }
+
+
+    .info-footer{
+
+        margin:
+            0 12px
+            15px;
+
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL SCREEN
+========================================================= */
+
+@media(max-width:360px){
+
+    .clock-panel{
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .entertainment-grid{
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .header{
+
+        align-items:
+            flex-start;
+
+    }
+
+
+    .header-title h2{
+
+        font-size:18px;
+
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media(prefers-reduced-motion:reduce){
+
+    *{
+
+        transition:none !important;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body class="light">
+
+
+<!-- =======================================================
+     HEADER
+======================================================= -->
+
+<header class="header">
+
+    <div class="header-title">
+
+        <h2>
+            🎮 Manoranjan Kaksha
+        </h2>
+
+        <small>
+            Swayam • Entertainment & Games
+        </small>
+
+    </div>
+
+
+    <select
+        id="themeSelector"
+        class="theme-select"
+        onchange="changeTheme(this.value)"
+    >
+
+        <option value="light">
+            ☀️ Light
+        </option>
+
+        <option value="dark">
+            🌙 Dark
+        </option>
+
+        <option value="blue">
+            💧 Blue
+        </option>
+
+    </select>
+
+</header>
+
+
+<!-- =======================================================
+     CLOCK
+======================================================= -->
+
+<section class="clock-panel">
+
+    <div class="clock-card">
+
+        <span class="clock-label">
+            Date
+        </span>
+
+        <span
+            id="mdate"
+            class="clock-value"
+        >
+            --
+        </span>
+
+    </div>
+
+
+    <div class="clock-card">
+
+        <span class="clock-label">
+            12 Hour
+        </span>
+
+        <span
+            id="mtime12"
+            class="clock-value"
+        >
+            --
+        </span>
+
+    </div>
+
+
+    <div class="clock-card">
+
+        <span class="clock-label">
+            24 Hour
+        </span>
+
+        <span
+            id="mtime24"
+            class="clock-value"
+        >
+            --
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     INTRO
+======================================================= -->
+
+<section class="intro">
+
+    <h3>
+        🎉 Entertainment Zone
+    </h3>
+
+    <p>
+        Take a break with jokes, greetings and
+        fun games. Select any activity below to
+        open it in the Swayam center area.
+    </p>
+
+</section>
+
+
+<!-- =======================================================
+     MAIN GRID
+======================================================= -->
+
+<main class="list-grid">
+
+
+    <!-- ===================================================
+         BREAKTIME
+    ==================================================== -->
+
+    <section class="card">
+
+        <div class="card-icon">
+            😄
+        </div>
+
+
+        <h3>
+            Breaktime
+        </h3>
+
+
+        <p class="card-description">
+            Enjoy jokes and greetings during
+            your break.
+        </p>
+
+
+        <div class="entertainment-grid">
+
+
+            <!-- JOKES -->
+
+            <a
+                class="entertainment-link"
+                href="Jokes.html"
+                onclick="openSwayamPage(event,this.href)"
+            >
+
+                <span class="entertainment-icon">
+                    😂
+                </span>
+
+                <span class="entertainment-name">
+                    Jokes
+                </span>
+
+                <span>
+                    →
+                </span>
+
+            </a>
+
+
+            <!-- GREETINGS -->
+
+            <a
+                class="entertainment-link"
+                href="Greetings.html"
+                onclick="openSwayamPage(event,this.href)"
+            >
+
+                <span class="entertainment-icon">
+                    👋
+                </span>
+
+                <span class="entertainment-name">
+                    Greetings
+                </span>
+
+                <span>
+                    →
+                </span>
+
+            </a>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         GAMES
+    ==================================================== -->
+
+    <section class="card">
+
+        <div class="card-icon">
+            🎮
+        </div>
+
+
+        <h3>
+            Games
+        </h3>
+
+
+        <p class="card-description">
+            Play simple games for a quick and
+            enjoyable break.
+        </p>
+
+
+        <div class="entertainment-grid">
+
+
+            <!-- TIC TAC TOE -->
+
+            <a
+                class="entertainment-link"
+                href="Game_tctcto.html"
+                onclick="openSwayamPage(event,this.href)"
+            >
+
+                <span class="entertainment-icon">
+                    ❌
+                </span>
+
+                <span class="entertainment-name">
+                    Tic-Tac-Toe
+                </span>
+
+                <span>
+                    →
+                </span>
+
+            </a>
+
+
+            <!-- SNAKE -->
+
+            <a
+                class="entertainment-link"
+                href="Game_Snake.html"
+                onclick="openSwayamPage(event,this.href)"
+            >
+
+                <span class="entertainment-icon">
+                    🐍
+                </span>
+
+                <span class="entertainment-name">
+                    Snake
+                </span>
+
+                <span>
+                    →
+                </span>
+
+            </a>
+
+
+            <!-- BRICKS -->
+
+            <a
+                class="entertainment-link"
+                href="Game_Bricks.html"
+                onclick="openSwayamPage(event,this.href)"
+            >
+
+                <span class="entertainment-icon">
+                    🧱
+                </span>
+
+                <span class="entertainment-name">
+                    Bricks
+                </span>
+
+                <span>
+                    →
+                </span>
+
+            </a>
+
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<!-- =======================================================
+     FOOTER
+======================================================= -->
+
+<footer class="info-footer">
+
+    💚 Swayam Manoranjan Kaksha
+    • Personal Governance Simplified
+
+</footer>
+
+
+<script>
+
+/* =========================================================
+   SWAYAM CENTER-AREA NAVIGATION
+========================================================= */
+
+function openSwayamPage(event,url){
+
+    event.preventDefault();
+
+
+    try{
+
+        /*
+         * If running inside Swayam's iframe,
+         * load the selected entertainment page
+         * into the same center area.
+         */
+
+        if(
+            window.parent &&
+            window.parent !== window
+        ){
+
+            var frame =
+                window.parent.document
+                .getElementById(
+                    "swayamFrame"
+                );
+
+
+            if(frame){
+
+                frame.src = url;
+
+
+                /*
+                 * Remember the selected page.
+                 */
+
+                try{
+
+                    window.parent.localStorage
+                    .setItem(
+                        "swayam_selected_page",
+                        url.split("/").pop()
+                    );
+
+                }catch(e){}
+
+
+                /*
+                 * Remove active state.
+                 */
+
+                var menuLinks =
+                    window.parent.document
+                    .querySelectorAll(
+                        ".menu-button"
+                    );
+
+
+                for(
+                    var i=0;
+                    i<menuLinks.length;
+                    i++
+                ){
+
+                    menuLinks[i]
+                    .classList
+                    .remove(
+                        "active"
+                    );
+
+                }
+
+
+                /*
+                 * Highlight matching
+                 * parent Swayam menu.
+                 */
+
+                for(
+                    var j=0;
+                    j<menuLinks.length;
+                    j++
+                ){
+
+                    var menuHref =
+                        menuLinks[j]
+                        .getAttribute(
+                            "href"
+                        );
+
+
+                    if(
+                        menuHref &&
+                        menuHref
+                        .split("/")
+                        .pop()
+                        ===
+                        url
+                        .split("/")
+                        .pop()
+                    ){
+
+                        menuLinks[j]
+                        .classList
+                        .add(
+                            "active"
+                        );
+
+
+                        try{
+
+                            menuLinks[j]
+                            .scrollIntoView({
+
+                                behavior:
+                                    "smooth",
+
+                                block:
+                                    "nearest",
+
+                                inline:
+                                    "center"
+
+                            });
+
+                        }catch(e){}
+
+
+                        break;
+
+                    }
+
+                }
+
+
+                return;
+
+            }
+
+        }
+
+    }
+    catch(error){
+
+        console.log(
+            "Swayam navigation error:",
+            error
+        );
+
+    }
+
+
+    /*
+     * Standalone fallback.
+     */
+
+    window.location.href = url;
+
+}
+
+
+/* =========================================================
+   THEME
+========================================================= */
+
+function changeTheme(theme){
+
+    if(
+        theme !== "light" &&
+        theme !== "dark" &&
+        theme !== "blue"
+    ){
+
+        theme = "light";
+
+    }
+
+
+    document.body.className =
+        theme;
+
+
+    localStorage.setItem(
+        "swayam_manoranjan_theme",
+        theme
+    );
+
+}
+
+
+/* =========================================================
+   LOAD SAVED THEME
+========================================================= */
+
+(function(){
+
+    var savedTheme =
+        localStorage.getItem(
+            "swayam_manoranjan_theme"
+        );
+
+
+    if(
+        savedTheme === "light" ||
+        savedTheme === "dark" ||
+        savedTheme === "blue"
+    ){
+
+        document.body.className =
+            savedTheme;
+
+
+        document.getElementById(
+            "themeSelector"
+        ).value =
+            savedTheme;
+
+    }
+
+})();
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+function updateClock(){
+
+    var now =
+        new Date();
+
+
+    var dateElement =
+        document.getElementById(
+            "mdate"
+        );
+
+
+    var time12Element =
+        document.getElementById(
+            "mtime12"
+        );
+
+
+    var time24Element =
+        document.getElementById(
+            "mtime24"
+        );
+
+
+    if(dateElement){
+
+        dateElement.textContent =
+            now.toLocaleDateString(
+                "en-IN",
+                {
+                    weekday:"short",
+                    year:"numeric",
+                    month:"short",
+                    day:"numeric"
+                }
+            );
+
+    }
+
+
+    if(time12Element){
+
+        time12Element.textContent =
+            now.toLocaleTimeString(
+                "en-IN",
+                {
+                    hour:"2-digit",
+                    minute:"2-digit",
+                    second:"2-digit",
+                    hour12:true
+                }
+            );
+
+    }
+
+
+    if(time24Element){
+
+        time24Element.textContent =
+            now.toLocaleTimeString(
+                "en-IN",
+                {
+                    hour:"2-digit",
+                    minute:"2-digit",
+                    second:"2-digit",
+                    hour12:false
+                }
+            );
+
+    }
+
+}
+
+
+/* =========================================================
+   START CLOCK
+========================================================= */
+
+updateClock();
+
+setInterval(
+    updateClock,
+    1000
+);
+
+</script>
+
+</body>
+
+</html>
