@@ -1,146 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-
+<!DOCTYPE html><html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width,
-    initial-scale=1.0,
-    maximum-scale=1.0,
-    user-scalable=no"
->
-
-<meta name="theme-color" content="#16a34a">
-
-<title>Swayam - Manoranjan Kaksha</title>
-
-<style>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Swayam Sanskar Dashboard</title><style>
 
 /* =========================================================
-   SWAYAM MANORANJAN KAKSHA
-========================================================= */
+   SWAYAM SANSKAR DASHBOARD
+   ========================================================= */
 
 *{
     box-sizing:border-box;
 }
 
-html,
-body{
-    margin:0;
-    padding:0;
-    min-height:100%;
+:root{
+    --primary:#138a4b;
+    --primary-dark:#086b38;
+    --primary-soft:#e8f7ef;
 
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Arial,
-        sans-serif;
-}
+    --background:#f4f7f5;
+    --card:#ffffff;
+    --text:#17231c;
+    --muted:#66736b;
 
-body{
-    background:var(--bg);
-    color:var(--text);
-
-    transition:
-        background .3s ease,
-        color .3s ease;
+    --shadow:0 8px 24px rgba(0,0,0,.10);
 }
 
 
 /* =========================================================
-   THEMES
-========================================================= */
+   BODY
+   ========================================================= */
 
-body.light{
+body{
 
-    --bg:#f3f7f4;
+    margin:0;
 
-    --header1:#16a34a;
-    --header2:#15803d;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
-    --card:#ffffff;
+    background:var(--background);
 
-    --text:#172017;
+    color:var(--text);
 
-    --muted:#607060;
-
-    --border:#dce9df;
-
-    --shadow:
-        0 8px 24px rgba(0,0,0,.10);
-
-    --soft:#eaf7ee;
-
-    --link:#15803d;
-
-}
-
-
-body.dark{
-
-    --bg:#101412;
-
-    --header1:#166534;
-    --header2:#14532d;
-
-    --card:#1b241e;
-
-    --text:#f2f7f3;
-
-    --muted:#b8c7bb;
-
-    --border:#2d3b31;
-
-    --shadow:
-        0 8px 24px rgba(0,0,0,.35);
-
-    --soft:#1d3224;
-
-    --link:#86efac;
-
-}
-
-
-body.blue{
-
-    --bg:#eef7ff;
-
-    --header1:#15803d;
-    --header2:#166534;
-
-    --card:#ffffff;
-
-    --text:#142019;
-
-    --muted:#5f7065;
-
-    --border:#d6e8dc;
-
-    --shadow:
-        0 8px 24px rgba(0,0,0,.10);
-
-    --soft:#e7f6ed;
-
-    --link:#166534;
+    transition:
+        background .3s,
+        color .3s;
 
 }
 
 
 /* =========================================================
    HEADER
-========================================================= */
+   ========================================================= */
 
 .header{
 
-    width:100%;
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--primary-dark)
+        );
 
-    padding:
-        14px 16px;
+    color:white;
+
+    padding:12px 15px;
 
     display:flex;
 
@@ -148,258 +72,150 @@ body.blue{
 
     align-items:center;
 
-    gap:12px;
+    gap:10px;
 
-    background:
-        linear-gradient(
-            135deg,
-            var(--header1),
-            var(--header2)
-        );
-
-    color:white;
+    flex-wrap:wrap;
 
     box-shadow:
         0 4px 14px rgba(0,0,0,.18);
 
-    position:relative;
-
-    z-index:2;
-
 }
 
-
-.header-title{
-
-    min-width:0;
-
-}
-
-
-.header-title h2{
+.header h2{
 
     margin:0;
 
-    font-size:
-        clamp(
-            20px,
-            5vw,
-            28px
-        );
+    font-size:21px;
 
-    font-weight:800;
-
-    letter-spacing:.2px;
+    letter-spacing:.3px;
 
 }
-
-
-.header-title small{
-
-    display:block;
-
-    margin-top:3px;
-
-    font-size:12px;
-
-    opacity:.9;
-
-}
-
-
-/* =========================================================
-   THEME SELECTOR
-========================================================= */
 
 .theme-select{
 
-    border:
-        1px solid
-        rgba(255,255,255,.35);
-
-    border-radius:12px;
-
-    padding:
-        9px 10px;
-
-    background:
-        rgba(255,255,255,.16);
-
-    color:white;
-
-    font-size:13px;
-
-    font-weight:700;
+    border:none;
 
     outline:none;
 
-    cursor:pointer;
+    border-radius:10px;
 
-}
+    padding:9px 10px;
 
-
-.theme-select option{
-
-    color:#111;
+    font-size:14px;
 
     background:white;
+
+    color:#222;
 
 }
 
 
 /* =========================================================
-   CLOCK
-========================================================= */
+   CLOCK BAR
+   ========================================================= */
 
-.clock-panel{
+.clock-bar{
 
-    display:grid;
+    background:var(--card);
 
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(
-                150px,
-                1fr
-            )
-        );
+    padding:10px 15px;
 
-    gap:10px;
+    display:flex;
 
-    padding:
-        14px 16px;
+    justify-content:center;
 
-}
+    align-items:center;
 
+    flex-wrap:wrap;
 
-.clock-card{
-
-    background:
-        var(--card);
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:16px;
-
-    padding:
-        12px 14px;
+    gap:8px;
 
     box-shadow:
-        var(--shadow);
+        0 2px 8px rgba(0,0,0,.06);
 
-    text-align:center;
+}
 
-    transition:
-        transform .2s ease,
-        box-shadow .2s ease;
+.clock-item{
+
+    background:var(--primary-soft);
+
+    color:var(--primary-dark);
+
+    padding:7px 11px;
+
+    border-radius:10px;
+
+    font-size:14px;
+
+    font-weight:bold;
 
 }
 
 
-.clock-card:hover{
+/* =========================================================
+   MAIN
+   ========================================================= */
 
-    transform:
-        translateY(-2px);
+.main{
 
-}
+    max-width:1100px;
 
+    margin:auto;
 
-.clock-label{
-
-    display:block;
-
-    color:
-        var(--muted);
-
-    font-size:11px;
-
-    font-weight:800;
-
-    text-transform:uppercase;
-
-    letter-spacing:.8px;
-
-}
-
-
-.clock-value{
-
-    display:block;
-
-    margin-top:4px;
-
-    color:
-        var(--text);
-
-    font-size:15px;
-
-    font-weight:750;
+    padding:18px;
 
 }
 
 
 /* =========================================================
    INTRO
-========================================================= */
+   ========================================================= */
 
 .intro{
-
-    margin:
-        0 16px 14px;
-
-    padding:16px;
 
     background:
         linear-gradient(
             135deg,
-            var(--soft),
+            var(--primary-soft),
             var(--card)
         );
 
-    border:
-        1px solid
-        var(--border);
+    border-left:
+        5px solid var(--primary);
 
     border-radius:18px;
 
-    box-shadow:
-        var(--shadow);
+    padding:18px;
+
+    margin-bottom:18px;
+
+    box-shadow:var(--shadow);
 
 }
 
-
-.intro h3{
+.intro h1{
 
     margin:
-        0 0 6px;
+        0 0 7px;
 
-    font-size:20px;
-
-    color:
-        var(--text);
+    font-size:25px;
 
 }
-
 
 .intro p{
 
     margin:0;
 
-    color:
-        var(--muted);
+    color:var(--muted);
 
-    line-height:1.55;
-
-    font-size:14px;
+    line-height:1.5;
 
 }
 
 
 /* =========================================================
    GRID
-========================================================= */
+   ========================================================= */
 
 .list-grid{
 
@@ -409,46 +225,35 @@ body.blue{
         repeat(
             auto-fit,
             minmax(
-                260px,
+                250px,
                 1fr
             )
         );
 
-    gap:16px;
-
-    padding:
-        0 16px
-        16px;
+    gap:18px;
 
 }
 
 
 /* =========================================================
    CARD
-========================================================= */
+   ========================================================= */
 
 .card{
 
-    background:
-        var(--card);
+    background:var(--card);
 
-    border:
-        1px solid
-        var(--border);
+    padding:20px;
 
-    border-radius:20px;
+    border-radius:18px;
 
-    padding:18px;
-
-    box-shadow:
-        var(--shadow);
+    box-shadow:var(--shadow);
 
     transition:
-        transform .22s ease,
-        box-shadow .22s ease;
+        transform .2s,
+        box-shadow .2s;
 
 }
-
 
 .card:hover{
 
@@ -456,288 +261,268 @@ body.blue{
         translateY(-4px);
 
     box-shadow:
-        0 14px 30px
-        rgba(0,0,0,.14);
+        0 14px 30px rgba(0,0,0,.15);
 
 }
 
-
-.card-icon{
-
-    width:56px;
-
-    height:56px;
+.card-header{
 
     display:flex;
 
     align-items:center;
 
-    justify-content:center;
+    gap:12px;
 
-    border-radius:17px;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--header1),
-            var(--header2)
-        );
-
-    color:white;
-
-    font-size:28px;
-
-    margin-bottom:12px;
-
-    box-shadow:
-        0 7px 16px
-        rgba(22,163,74,.22);
+    margin-bottom:15px;
 
 }
 
+.card-icon{
+
+    width:48px;
+
+    height:48px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:var(--primary-soft);
+
+    border-radius:14px;
+
+    font-size:27px;
+
+}
 
 .card h3{
 
-    margin:
-        0 0 8px;
+    margin:0;
 
-    color:
-        var(--text);
-
-    font-size:20px;
-
-}
-
-
-.card-description{
-
-    margin:
-        0 0 14px;
-
-    color:
-        var(--muted);
-
-    font-size:13px;
-
-    line-height:1.5;
+    font-size:19px;
 
 }
 
 
 /* =========================================================
-   ENTERTAINMENT LINKS
-========================================================= */
+   SANSKAR LINK
+   ========================================================= */
 
-.entertainment-grid{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(
-                150px,
-                1fr
-            )
-        );
-
-    gap:10px;
-
-}
-
-
-.entertainment-link{
+.app-link{
 
     display:flex;
 
     align-items:center;
 
-    justify-content:space-between;
-
-    gap:8px;
+    gap:12px;
 
     min-height:54px;
 
-    padding:
-        12px 13px;
+    padding:13px 15px;
 
-    background:
-        var(--soft);
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:14px;
-
-    color:
-        var(--link);
+    border-radius:13px;
 
     text-decoration:none;
 
-    font-size:14px;
+    background:#f7faf8;
 
-    font-weight:750;
+    color:var(--text);
+
+    border:
+        1px solid rgba(19,138,75,.12);
+
+    font-size:17px;
+
+    font-weight:bold;
 
     transition:
-        transform .2s ease,
-        box-shadow .2s ease;
-
-    -webkit-tap-highlight-color:
-        transparent;
+        .2s;
 
 }
 
+.app-link:hover{
 
-.entertainment-link:hover{
+    background:var(--primary-soft);
+
+    color:var(--primary-dark);
 
     transform:
-        translateY(-2px);
+        translateX(5px);
 
-    box-shadow:
-        0 6px 15px
-        rgba(0,0,0,.10);
+}
+
+.app-link:active{
+
+    transform:scale(.97);
 
 }
 
 
-.entertainment-link:active{
+/* =========================================================
+   INFORMATION
+   ========================================================= */
 
-    transform:
-        scale(.97);
+.info-card{
+
+    margin-top:20px;
+
+    background:var(--card);
+
+    border-radius:18px;
+
+    padding:18px;
+
+    box-shadow:var(--shadow);
 
 }
 
+.info-card h3{
 
-.entertainment-icon{
-
-    font-size:21px;
-
-    flex-shrink:0;
+    margin-top:0;
 
 }
 
+.info-card ul{
 
-.entertainment-name{
+    padding-left:22px;
 
-    flex:1;
+    margin-bottom:0;
+
+}
+
+.info-card li{
+
+    margin:9px 0;
+
+    color:var(--muted);
+
+    line-height:1.45;
 
 }
 
 
 /* =========================================================
    FOOTER
-========================================================= */
+   ========================================================= */
 
-.info-footer{
-
-    margin:
-        0 16px
-        18px;
-
-    padding:13px;
+.footer{
 
     text-align:center;
 
-    border-radius:14px;
+    padding:20px 10px;
 
-    background:
-        var(--card);
+    color:var(--muted);
 
-    border:
-        1px solid
-        var(--border);
+    font-size:13px;
 
-    color:
-        var(--muted);
+}
 
-    font-size:12px;
 
-    box-shadow:
-        0 5px 15px
-        rgba(0,0,0,.06);
+/* =========================================================
+   DARK THEME
+   ========================================================= */
+
+body.dark{
+
+    --background:#101513;
+
+    --card:#1c2420;
+
+    --text:#f2f6f3;
+
+    --muted:#b7c4bd;
+
+    --primary-soft:#213d2e;
+
+}
+
+body.dark .app-link{
+
+    background:#26302b;
+
+    color:#f2f6f3;
+
+}
+
+body.dark .app-link:hover{
+
+    background:#304a3a;
+
+}
+
+
+/* =========================================================
+   BLUE THEME
+   ========================================================= */
+
+body.blue{
+
+    --primary:#1565c0;
+
+    --primary-dark:#0d47a1;
+
+    --primary-soft:#e3f2fd;
+
+    --background:#eef6fd;
+
+    --card:#ffffff;
+
+    --text:#17202a;
+
+}
+
+body.blue .app-link:hover{
+
+    color:#0d47a1;
 
 }
 
 
 /* =========================================================
    MOBILE
-========================================================= */
+   ========================================================= */
 
 @media(max-width:600px){
 
     .header{
 
-        padding:12px;
+        padding:11px;
 
     }
 
+    .header h2{
 
-    .header-title h2{
-
-        font-size:20px;
-
-    }
-
-
-    .theme-select{
-
-        max-width:110px;
-
-        font-size:12px;
-
-        padding:8px;
+        font-size:18px;
 
     }
 
-
-    .clock-panel{
-
-        grid-template-columns:
-            1fr 1fr;
+    .main{
 
         padding:12px;
 
     }
-
-
-    .clock-card{
-
-        padding:10px;
-
-    }
-
-
-    .clock-value{
-
-        font-size:13px;
-
-    }
-
 
     .intro{
 
-        margin:
-            0 12px 12px;
-
-        padding:14px;
+        padding:15px;
 
     }
 
+    .intro h1{
+
+        font-size:21px;
+
+    }
 
     .list-grid{
 
-        grid-template-columns:
-            1fr;
+        grid-template-columns:1fr;
 
-        padding:
-            0 12px
-            12px;
-
-        gap:12px;
+        gap:14px;
 
     }
-
 
     .card{
 
@@ -745,27 +530,23 @@ body.blue{
 
     }
 
+    .clock-bar{
 
-    .entertainment-grid{
-
-        grid-template-columns:
-            1fr 1fr;
+        padding:8px;
 
     }
 
+    .clock-item{
 
-    .entertainment-link{
+        font-size:12px;
 
-        min-height:58px;
+        padding:6px 8px;
 
     }
 
+    .app-link{
 
-    .info-footer{
-
-        margin:
-            0 12px
-            15px;
+        font-size:17px;
 
     }
 
@@ -773,397 +554,237 @@ body.blue{
 
 
 /* =========================================================
-   VERY SMALL SCREEN
-========================================================= */
+   TOUCH DEVICES
+   ========================================================= */
 
-@media(max-width:360px){
+@media(hover:none){
 
-    .clock-panel{
+    .card:hover{
 
-        grid-template-columns:
-            1fr;
-
-    }
-
-
-    .entertainment-grid{
-
-        grid-template-columns:
-            1fr;
+        transform:none;
 
     }
 
+    .app-link:hover{
 
-    .header{
-
-        align-items:
-            flex-start;
-
-    }
-
-
-    .header-title h2{
-
-        font-size:18px;
+        transform:none;
 
     }
 
 }
 
-
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
-
-@media(prefers-reduced-motion:reduce){
-
-    *{
-
-        transition:none !important;
-
-    }
-
-}
-
-</style>
-
-</head>
-
-
-<body class="light">
-
-
-<!-- =======================================================
+</style></head><body class="light"><!-- =======================================================
      HEADER
-======================================================= -->
+     ======================================================= --><header class="header"><h2>
+    🌿 Swayam Vihar
+</h2>
 
-<header class="header">
+<select
+    id="themeSelector"
+    class="theme-select"
+    onchange="changeTheme(this.value)">
 
-    <div class="header-title">
+    <option value="light">
+        ☀️ Light Theme
+    </option>
 
-        <h2>
-            🎮 Manoranjan Kaksha
-        </h2>
+    <option value="dark">
+        🌙 Dark Theme
+    </option>
 
-        <small>
-            Swayam • Entertainment & Games
-        </small>
+    <option value="blue">
+        💙 Blue Theme
+    </option>
 
-    </div>
+</select>
 
-
-    <select
-        id="themeSelector"
-        class="theme-select"
-        onchange="changeTheme(this.value)"
-    >
-
-        <option value="light">
-            ☀️ Light
-        </option>
-
-        <option value="dark">
-            🌙 Dark
-        </option>
-
-        <option value="blue">
-            💧 Blue
-        </option>
-
-    </select>
-
-</header>
-
-
-<!-- =======================================================
+</header><!-- =======================================================
      CLOCK
-======================================================= -->
+     ======================================================= --><div class="clock-bar"><span
+    id="mdate"
+    class="clock-item">
+    📅 Loading...
+</span>
 
-<section class="clock-panel">
+<span
+    id="mtime12"
+    class="clock-item">
+    🕐 Loading...
+</span>
 
-    <div class="clock-card">
+<span
+    id="mtime24"
+    class="clock-item">
+    🕑 Loading...
+</span>
 
-        <span class="clock-label">
-            Date
-        </span>
+</div><!-- =======================================================
+     MAIN
+     ======================================================= --><main class="main"><section class="intro">
 
-        <span
-            id="mdate"
-            class="clock-value"
-        >
-            --
-        </span>
-
-    </div>
-
-
-    <div class="clock-card">
-
-        <span class="clock-label">
-            12 Hour
-        </span>
-
-        <span
-            id="mtime12"
-            class="clock-value"
-        >
-            --
-        </span>
-
-    </div>
-
-
-    <div class="clock-card">
-
-        <span class="clock-label">
-            24 Hour
-        </span>
-
-        <span
-            id="mtime24"
-            class="clock-value"
-        >
-            --
-        </span>
-
-    </div>
-
-</section>
-
-
-<!-- =======================================================
-     INTRO
-======================================================= -->
-
-<section class="intro">
-
-    <h3>
-        🎉 Entertainment Zone
-    </h3>
+    <h1>
+        🌿 Sanskar Dashboard
+    </h1>
 
     <p>
-        Take a break with jokes, greetings and
-        fun games. Select any activity below to
-        open it in the Swayam center area.
+        Manage Sanskar, values, personal development
+        and related activities from one place.
     </p>
 
 </section>
 
 
-<!-- =======================================================
-     MAIN GRID
-======================================================= -->
+<!-- ===================================================
+     DASHBOARD
+     =================================================== -->
 
-<main class="list-grid">
-
-
-    <!-- ===================================================
-         BREAKTIME
-    ==================================================== -->
-
-    <section class="card">
-
-        <div class="card-icon">
-            😄
-        </div>
+<section class="list-grid">
 
 
-        <h3>
-            Breaktime
-        </h3>
+    <div class="card">
 
+        <div class="card-header">
 
-        <p class="card-description">
-            Enjoy jokes and greetings during
-            your break.
-        </p>
+            <div class="card-icon">
+                🪷
+            </div>
 
-
-        <div class="entertainment-grid">
-
-
-            <!-- JOKES -->
-
-            <a
-                class="entertainment-link"
-                href="Jokes.html"
-                onclick="openSwayamPage(event,this.href)"
-            >
-
-                <span class="entertainment-icon">
-                    😂
-                </span>
-
-                <span class="entertainment-name">
-                    Jokes
-                </span>
-
-                <span>
-                    →
-                </span>
-
-            </a>
-
-
-            <!-- GREETINGS -->
-
-            <a
-                class="entertainment-link"
-                href="Greetings.html"
-                onclick="openSwayamPage(event,this.href)"
-            >
-
-                <span class="entertainment-icon">
-                    👋
-                </span>
-
-                <span class="entertainment-name">
-                    Greetings
-                </span>
-
-                <span>
-                    →
-                </span>
-
-            </a>
-
+            <h3>
+                Sanskar
+            </h3>
 
         </div>
 
-    </section>
+
+        <a
+            href="Sanskar.html"
+            class="app-link"
+            onclick="openSwayamPage(event,this.href)">
+
+            🌱
+
+            <span>
+                Open Sanskar
+            </span>
+
+            <span style="margin-left:auto;">
+                →
+            </span>
+
+        </a>
+
+<a
+            href="Sanskar.html"
+            class="app-link"
+            onclick="openSwayamPage(event,this.href)">
+
+            🌱
+
+            <span>
+                Open Sanskar
+            </span>
+
+            <span style="margin-left:auto;">
+                →
+            </span>
+
+        </a>
+
+<a
+            href="Sanskar.html"
+            class="app-link"
+            onclick="openSwayamPage(event,this.href)">
+
+            🌱
+
+            <span>
+                Open Sanskar
+            </span>
+
+            <span style="margin-left:auto;">
+                →
+            </span>
+
+        </a>
 
 
-    <!-- ===================================================
-         GAMES
-    ==================================================== -->
-
-    <section class="card">
-
-        <div class="card-icon">
-            🎮
-        </div>
 
 
-        <h3>
-            Games
-        </h3>
 
 
-        <p class="card-description">
-            Play simple games for a quick and
-            enjoyable break.
-        </p>
 
 
-        <div class="entertainment-grid">
+    </div>
 
 
-            <!-- TIC TAC TOE -->
-
-            <a
-                class="entertainment-link"
-                href="Game_tctcto.html"
-                onclick="openSwayamPage(event,this.href)"
-            >
-
-                <span class="entertainment-icon">
-                    ❌
-                </span>
-
-                <span class="entertainment-name">
-                    Tic-Tac-Toe
-                </span>
-
-                <span>
-                    →
-                </span>
-
-            </a>
+</section>
 
 
-            <!-- SNAKE -->
+<!-- ===================================================
+     INFORMATION
+     =================================================== -->
 
-            <a
-                class="entertainment-link"
-                href="Game_Snake.html"
-                onclick="openSwayamPage(event,this.href)"
-            >
+<section class="info-card">
 
-                <span class="entertainment-icon">
-                    🐍
-                </span>
+    <h3>
+        💡 Guiding Lights of Our Culture
+    </h3>
 
-                <span class="entertainment-name">
-                    Snake
-                </span>
+    <ul>
 
-                <span>
-                    →
-                </span>
+        <li>
+Preserving timeless values, nurturing righteous living, and bridging heritage with modern lives. Walk the path of Dharma every day.
+        </li>
 
-            </a>
+        <li>
+Rooted in ancient wisdom, growing towards a mindful future. Vasudhaiva Kutumbakam — The World Is One Family.
+        </li>
 
+        <li>
+Empowering lives through ethical conduct, cultural awareness, and timeless Sanskars. Designed with reverence for tradition.
+        </li>
 
-            <!-- BRICKS -->
+<li>
+Nurturing character, celebrating culture, and inspiring conscious living.
+        </li>
 
-            <a
-                class="entertainment-link"
-                href="Game_Bricks.html"
-                onclick="openSwayamPage(event,this.href)"
-            >
+    </ul>
 
-                <span class="entertainment-icon">
-                    🧱
-                </span>
-
-                <span class="entertainment-name">
-                    Bricks
-                </span>
-
-                <span>
-                    →
-                </span>
-
-            </a>
+</section>
 
 
-        </div>
-
-    </section>
 
 
-</main>
+
+​
+​
+
+​
+
+​
 
 
-<!-- =======================================================
-     FOOTER
-======================================================= -->
-
-<footer class="info-footer">
-
-    💚 Swayam Manoranjan Kaksha
-    • Personal Governance Simplified
-
-</footer>
 
 
-<script>
+
+
+</main><footer class="footer">Swayam • Personal Governance Simplified
+
+</footer><script>
 
 /* =========================================================
-   SWAYAM CENTER-AREA NAVIGATION
-========================================================= */
+   SWAYAM CENTER NAVIGATION
+   ========================================================= */
 
 function openSwayamPage(event,url){
 
     event.preventDefault();
 
-
     try{
 
         /*
-         * If running inside Swayam's iframe,
-         * load the selected entertainment page
-         * into the same center area.
+         * Check whether this page is running
+         * inside the main Swayam iframe.
          */
 
         if(
@@ -1180,26 +801,32 @@ function openSwayamPage(event,url){
 
             if(frame){
 
+                /*
+                 * Open the requested page
+                 * inside the center area.
+                 */
+
                 frame.src = url;
 
 
                 /*
-                 * Remember the selected page.
+                 * Remember the last page.
                  */
 
                 try{
 
-                    window.parent.localStorage
-                    .setItem(
+                    window.parent.localStorage.setItem(
                         "swayam_selected_page",
                         url.split("/").pop()
                     );
 
-                }catch(e){}
+                }
+                catch(e){}
 
 
                 /*
-                 * Remove active state.
+                 * Highlight parent menu item
+                 * if it exists.
                  */
 
                 var menuLinks =
@@ -1217,17 +844,10 @@ function openSwayamPage(event,url){
 
                     menuLinks[i]
                     .classList
-                    .remove(
-                        "active"
-                    );
+                    .remove("active");
 
                 }
 
-
-                /*
-                 * Highlight matching
-                 * parent Swayam menu.
-                 */
 
                 for(
                     var j=0;
@@ -1237,9 +857,7 @@ function openSwayamPage(event,url){
 
                     var menuHref =
                         menuLinks[j]
-                        .getAttribute(
-                            "href"
-                        );
+                        .getAttribute("href");
 
 
                     if(
@@ -1255,28 +873,20 @@ function openSwayamPage(event,url){
 
                         menuLinks[j]
                         .classList
-                        .add(
-                            "active"
-                        );
+                        .add("active");
 
 
                         try{
 
                             menuLinks[j]
                             .scrollIntoView({
-
-                                behavior:
-                                    "smooth",
-
-                                block:
-                                    "nearest",
-
-                                inline:
-                                    "center"
-
+                                behavior:"smooth",
+                                block:"nearest",
+                                inline:"center"
                             });
 
-                        }catch(e){}
+                        }
+                        catch(e){}
 
 
                         break;
@@ -1304,7 +914,7 @@ function openSwayamPage(event,url){
 
 
     /*
-     * Standalone fallback.
+     * Normal browser fallback.
      */
 
     window.location.href = url;
@@ -1314,27 +924,14 @@ function openSwayamPage(event,url){
 
 /* =========================================================
    THEME
-========================================================= */
+   ========================================================= */
 
 function changeTheme(theme){
 
-    if(
-        theme !== "light" &&
-        theme !== "dark" &&
-        theme !== "blue"
-    ){
-
-        theme = "light";
-
-    }
-
-
-    document.body.className =
-        theme;
-
+    document.body.className = theme;
 
     localStorage.setItem(
-        "swayam_manoranjan_theme",
+        "swayam_sanskar_theme",
         theme
     );
 
@@ -1343,30 +940,33 @@ function changeTheme(theme){
 
 /* =========================================================
    LOAD SAVED THEME
-========================================================= */
+   ========================================================= */
 
 (function(){
 
     var savedTheme =
         localStorage.getItem(
-            "swayam_manoranjan_theme"
+            "swayam_sanskar_theme"
         );
 
 
-    if(
-        savedTheme === "light" ||
-        savedTheme === "dark" ||
-        savedTheme === "blue"
-    ){
+    if(savedTheme){
 
         document.body.className =
             savedTheme;
 
+        var selector =
+            document.getElementById(
+                "themeSelector"
+            );
 
-        document.getElementById(
-            "themeSelector"
-        ).value =
-            savedTheme;
+
+        if(selector){
+
+            selector.value =
+                savedTheme;
+
+        }
 
     }
 
@@ -1375,7 +975,7 @@ function changeTheme(theme){
 
 /* =========================================================
    CLOCK
-========================================================= */
+   ========================================================= */
 
 function updateClock(){
 
@@ -1383,87 +983,64 @@ function updateClock(){
         new Date();
 
 
-    var dateElement =
-        document.getElementById(
-            "mdate"
+    document.getElementById(
+        "mdate"
+    ).innerHTML =
+        "📅 " +
+        now.toLocaleDateString(
+            "en-IN",
+            {
+                weekday:"long",
+                year:"numeric",
+                month:"long",
+                day:"numeric"
+            }
         );
 
 
-    var time12Element =
-        document.getElementById(
-            "mtime12"
+    document.getElementById(
+        "mtime12"
+    ).innerHTML =
+        "🕐 " +
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:true
+            }
         );
 
 
-    var time24Element =
-        document.getElementById(
-            "mtime24"
+    document.getElementById(
+        "mtime24"
+    ).innerHTML =
+        "🕑 " +
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:false
+            }
         );
-
-
-    if(dateElement){
-
-        dateElement.textContent =
-            now.toLocaleDateString(
-                "en-IN",
-                {
-                    weekday:"short",
-                    year:"numeric",
-                    month:"short",
-                    day:"numeric"
-                }
-            );
-
-    }
-
-
-    if(time12Element){
-
-        time12Element.textContent =
-            now.toLocaleTimeString(
-                "en-IN",
-                {
-                    hour:"2-digit",
-                    minute:"2-digit",
-                    second:"2-digit",
-                    hour12:true
-                }
-            );
-
-    }
-
-
-    if(time24Element){
-
-        time24Element.textContent =
-            now.toLocaleTimeString(
-                "en-IN",
-                {
-                    hour:"2-digit",
-                    minute:"2-digit",
-                    second:"2-digit",
-                    hour12:false
-                }
-            );
-
-    }
 
 }
 
 
-/* =========================================================
-   START CLOCK
-========================================================= */
+/* Initial clock */
 
 updateClock();
+
+
+/* Every second */
 
 setInterval(
     updateClock,
     1000
 );
 
-</script>
-
-</body>
-
+</script></body>
 </html>
