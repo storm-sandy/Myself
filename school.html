@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2563eb">
+<title>School Management System - SQLite</title>
+<style>
+:root{--p:#2563eb;--p2:#1d4ed8;--bg:#f4f7fb;--card:#fff;--txt:#172033;--muted:#64748b;--line:#dbe3ef;--danger:#dc2626;--ok:#15803d;--shadow:0 8px 26px #17203312}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,Arial,sans-serif}
+header{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,var(--p2),var(--p));color:#fff;padding:13px 16px;box-shadow:var(--shadow)}
+.head{max-width:1500px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-size:21px;font-weight:850}.sub{font-size:12px;opacity:.82}
+.wrap{max-width:1500px;margin:auto;padding:12px}.tabs{display:flex;gap:7px;overflow:auto;padding:2px 0 13px;scrollbar-width:thin}.tab{border:0;background:#fff;color:var(--txt);padding:10px 13px;border-radius:11px;white-space:nowrap;font-weight:750;cursor:pointer;box-shadow:var(--shadow)}.tab.active{background:var(--p);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.stat{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:13px;box-shadow:var(--shadow)}.stat span{font-size:12px;color:var(--muted)}.stat b{display:block;font-size:24px;margin-top:5px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:15px;margin-bottom:13px;box-shadow:var(--shadow)}.panel h2{font-size:17px;margin:0 0 13px}
+.form{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}label{font-size:12px;color:var(--muted);font-weight:750}input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:9px 10px;background:#fff;color:var(--txt);font:inherit}textarea{min-height:75px;resize:vertical}
+.actions,.toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:12px}.toolbar{margin-top:0;margin-bottom:10px}.toolbar input{max-width:340px}
+button{border:0;border-radius:9px;padding:9px 12px;background:#e8eef7;color:var(--txt);font-weight:750;cursor:pointer}button.primary{background:var(--p);color:#fff}button.dark{background:#172033;color:#fff}button.danger{background:#fee2e2;color:#991b1b}button.success{background:#dcfce7;color:#166534}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:9px;border-bottom:1px solid var(--line);font-size:12.5px;text-align:left;vertical-align:top}th{background:#f1f5f9;position:sticky;top:0;z-index:1}tr:hover td{background:#f8fbff}
+.pill{display:inline-block;border-radius:99px;padding:3px 7px;background:#dbeafe;color:#1d4ed8;font-size:10px;font-weight:800}.hidden{display:none!important}.notice{padding:10px 12px;border-radius:10px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;font-size:13px;margin-bottom:11px}
+pre{background:#0b1220;color:#dbeafe;border-radius:10px;padding:13px;overflow:auto;min-height:150px;white-space:pre-wrap}.sqlrow{display:flex;gap:8px}.sqlrow textarea{min-height:130px;font-family:ui-monospace,monospace}
+.quick{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.quick button{padding:14px 8px}.hiddenInput{display:none}footer{text-align:center;color:var(--muted);padding:20px;font-size:11px}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}.form{grid-template-columns:repeat(2,1fr)}.quick{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.wrap{padding:9px}.grid{grid-template-columns:repeat(2,1fr)}.form{grid-template-columns:1fr}.field.full{grid-column:auto}.quick{grid-template-columns:repeat(2,1fr)}.brand{font-size:18px}}
+</style>
+</head>
+<body>
+<header><div class="head"><div><div class="brand">🏫 School Management System</div><div class="sub">Single-file • SQLite • CRUD • Import/Export • Mobile + Desktop</div></div><button style="background:#ffffff22;color:white" onclick="showTab('dashboard')">Dashboard</button></div></header>
+
+<div class="wrap">
+<div class="tabs">
+<button class="tab active" data-tab="dashboard" onclick="showTab('dashboard')">📊 Dashboard</button>
+<button class="tab" data-tab="students" onclick="showTab('students')">🎓 Students</button>
+<button class="tab" data-tab="teachers" onclick="showTab('teachers')">👩‍🏫 Teachers</button>
+<button class="tab" data-tab="classes" onclick="showTab('classes')">🏫 Classes</button>
+<button class="tab" data-tab="attendance" onclick="showTab('attendance')">✅ Attendance</button>
+<button class="tab" data-tab="exams" onclick="showTab('exams')">📝 Exams</button>
+<button class="tab" data-tab="marks" onclick="showTab('marks')">📚 Marks</button>
+<button class="tab" data-tab="fees" onclick="showTab('fees')">💰 Fees</button>
+<button class="tab" data-tab="homework" onclick="showTab('homework')">📖 Homework</button>
+<button class="tab" data-tab="library" onclick="showTab('library')">📕 Library</button>
+<button class="tab" data-tab="transport" onclick="showTab('transport')">🚌 Transport</button>
+<button class="tab" data-tab="users" onclick="showTab('users')">🔐 Users</button>
+<button class="tab" data-tab="sql" onclick="showTab('sql')">🗄️ SQL</button>
+<button class="tab" data-tab="backup" onclick="showTab('backup')">📦 Backup</button>
+</div>
+
+<section id="dashboard" class="page">
+<div class="grid">
+<div class="stat"><span>Students</span><b id="sStudents">0</b></div><div class="stat"><span>Teachers</span><b id="sTeachers">0</b></div><div class="stat"><span>Classes</span><b id="sClasses">0</b></div><div class="stat"><span>Attendance</span><b id="sAttendance">0</b></div><div class="stat"><span>Exams</span><b id="sExams">0</b></div><div class="stat"><span>Fees Collected</span><b id="sFees">₹0</b></div>
+</div>
+<div class="panel" style="margin-top:12px"><h2>Quick Actions</h2><div class="quick">
+<button onclick="newStudent()">🎓 New Student</button><button onclick="newTeacher()">👩‍🏫 New Teacher</button><button onclick="newAttendance()">✅ Attendance</button><button onclick="newMarks()">📚 Enter Marks</button><button onclick="newFee()">💰 Collect Fee</button>
+</div></div>
+<div class="panel"><h2>Recent Student Activity</h2><div id="recent"></div></div>
+</section>
+
+<section id="students" class="page hidden">
+<div class="panel"><h2>Student Registration</h2><div class="form">
+<div class="field"><label>Student ID</label><input id="st_id" readonly></div><div class="field"><label>Admission No *</label><input id="st_admission"></div><div class="field"><label>Full Name *</label><input id="st_name"></div><div class="field"><label>Gender</label><select id="st_gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
+<div class="field"><label>Date of Birth</label><input id="st_dob" type="date"></div><div class="field"><label>Class</label><select id="st_class"></select></div><div class="field"><label>Roll No</label><input id="st_roll" type="number"></div><div class="field"><label>Blood Group</label><select id="st_blood"><option value="">Unknown</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+<div class="field"><label>Father Name</label><input id="st_father"></div><div class="field"><label>Mother Name</label><input id="st_mother"></div><div class="field"><label>Parent Mobile</label><input id="st_mobile"></div><div class="field"><label>Email</label><input id="st_email" type="email"></div>
+<div class="field"><label>City</label><input id="st_city"></div><div class="field full"><label>Address</label><textarea id="st_address"></textarea></div><div class="field full"><label>Medical / Other Notes</label><textarea id="st_notes"></textarea></div>
+</div><div class="actions"><button class="primary" onclick="saveStudent()">💾 Save Student</button><button onclick="clearStudent()">Clear</button></div></div>
+<div class="panel"><div class="toolbar"><input id="studentSearch" placeholder="Search student/admission/class..." oninput="renderStudents()"><button onclick="exportCSV('students')">CSV</button><button onclick="exportJSON('students')">JSON</button></div><div class="tablewrap"><table><thead><tr><th>ID</th><th>Admission</th><th>Name</th><th>Class</th><th>Roll</th><th>Parent</th><th>Mobile</th><th>Actions</th></tr></thead><tbody id="studentRows"></tbody></table></div></div>
+</section>
+
+<section id="teachers" class="page hidden">
+<div class="panel"><h2>Teacher Management</h2><div class="form"><div class="field"><label>Teacher ID</label><input id="t_id" readonly></div><div class="field"><label>Employee No *</label><input id="t_emp"></div><div class="field"><label>Name *</label><input id="t_name"></div><div class="field"><label>Subject</label><input id="t_subject"></div><div class="field"><label>Mobile</label><input id="t_mobile"></div><div class="field"><label>Email</label><input id="t_email"></div><div class="field"><label>Qualification</label><input id="t_qual"></div><div class="field"><label>Joining Date</label><input id="t_join" type="date"></div></div><div class="actions"><button class="primary" onclick="saveTeacher()">💾 Save Teacher</button><button onclick="clearTeacher()">Clear</button></div></div>
+<div class="panel"><div class="toolbar"><input id="teacherSearch" placeholder="Search teacher..." oninput="renderTeachers"><button onclick="exportCSV('teachers')">CSV</button></div><div class="tablewrap"><table><thead><tr><th>ID</th><th>Employee</th><th>Name</th><th>Subject</th><th>Mobile</th><th>Qualification</th><th>Actions</th></tr></thead><tbody id="teacherRows"></tbody></table></div></div>
+</section>
+
+<section id="classes" class="page hidden">
+<div class="panel"><h2>Class / Section Management</h2><div class="form"><div class="field"><label>Class ID</label><input id="c_id" readonly></div><div class="field"><label>Class Name *</label><input id="c_name" placeholder="Grade 5"></div><div class="field"><label>Section</label><input id="c_section" placeholder="A"></div><div class="field"><label>Academic Year</label><input id="c_year" placeholder="2026-27"></div><div class="field"><label>Class Teacher</label><select id="c_teacher"></select></div><div class="field"><label>Room</label><input id="c_room"></div><div class="field"><label>Capacity</label><input id="c_capacity" type="number"></div></div><div class="actions"><button class="primary" onclick="saveClass()">💾 Save Class</button><button onclick="clearClass()">Clear</button></div></div>
+<div class="panel"><div class="tablewrap"><table><thead><tr><th>ID</th><th>Class</th><th>Section</th><th>Year</th><th>Teacher</th><th>Room</th><th>Capacity</th><th>Actions</th></tr></thead><tbody id="classRows"></tbody></table></div></div>
+</section>
+
+<section id="attendance" class="page hidden">
+<div class="panel"><h2>Student Attendance</h2><div class="form"><div class="field"><label>Attendance ID</label><input id="a_id" readonly></div><div class="field"><label>Student</label><select id="a_student"></select></div><div class="field"><label>Date</label><input id="a_date" type="date"></div><div class="field"><label>Status</label><select id="a_status"><option>Present</option><option>Absent</option><option>Late</option><option>Leave</option></select></div><div class="field"><label>Period</label><input id="a_period" placeholder="Full Day"></div><div class="field full"><label>Remarks</label><textarea id="a_remark"></textarea></div></div><div class="actions"><button class="primary" onclick="saveAttendance()">💾 Save Attendance</button><button onclick="clearAttendance()">Clear</button></div></div>
+<div class="panel"><div class="toolbar"><input id="attSearch" placeholder="Search student/date/status..." oninput="renderAttendance"><button onclick="exportCSV('attendance')">CSV</button></div><div class="tablewrap"><table><thead><tr><th>ID</th><th>Date</th><th>Student</th><th>Class</th><th>Status</th><th>Period</th><th>Remark</th><th>Action</th></tr></thead><tbody id="attRows"></tbody></table></div></div>
+</section>
+
+<section id="exams" class="page hidden">
+<div class="panel"><h2>Exam Management</h2><div class="form"><div class="field"><label>Exam ID</label><input id="e_id" readonly></div><div class="field"><label>Exam Name *</label><input id="e_name" placeholder="Unit Test 1"></div><div class="field"><label>Academic Year</label><input id="e_year" placeholder="2026-27"></div><div class="field"><label>Start Date</label><input id="e_start" type="date"></div><div class="field"><label>End Date</label><input id="e_end" type="date"></div><div class="field"><label>Term</label><select id="e_term"><option>Term 1</option><option>Term 2</option><option>Annual</option><option>Unit Test</option></select></div><div class="field full"><label>Notes</label><textarea id="e_notes"></textarea></div></div><div class="actions"><button class="primary" onclick="saveExam()">💾 Save Exam</button><button onclick="clearExam()">Clear</button></div></div>
+<div class="panel"><div class="tablewrap"><table><thead><tr><th>ID</th><th>Exam</th><th>Year</th><th>Term</th><th>Start</th><th>End</th><th>Actions</th></tr></thead><tbody id="examRows"></tbody></table></div></div>
+</section>
+
+<section id="marks" class="page hidden">
+<div class="panel"><h2>Marks / Results</h2><div class="form"><div class="field"><label>Mark ID</label><input id="m_id" readonly></div><div class="field"><label>Exam</label><select id="m_exam"></select></div><div class="field"><label>Student</label><select id="m_student"></select></div><div class="field"><label>Subject</label><input id="m_subject"></div><div class="field"><label>Max Marks</label><input id="m_max" type="number" value="100"></div><div class="field"><label>Marks Obtained</label><input id="m_marks" type="number" step="0.01"></div><div class="field"><label>Grade</label><input id="m_grade"></div><div class="field"><label>Remarks</label><input id="m_remark"></div></div><div class="actions"><button class="primary" onclick="saveMark()">💾 Save Marks</button><button onclick="clearMark()">Clear</button></div></div>
+<div class="panel"><div class="toolbar"><input id="markSearch" placeholder="Search result..." oninput="renderMarks"><button onclick="exportCSV('marks')">CSV</button></div><div class="tablewrap"><table><thead><tr><th>ID</th><th>Exam</th><th>Student</th><th>Subject</th><th>Max</th><th>Obtained</th><th>%</th><th>Grade</th><th>Action</th></tr></thead><tbody id="markRows"></tbody></table></div></div>
+</section>
+
+<section id="fees" class="page hidden">
+<div class="panel"><h2>Fees & Payments</h2><div class="form"><div class="field"><label>Payment ID</label><input id="f_id" readonly></div><div class="field"><label>Student</label><select id="f_student"></select></div><div class="field"><label>Fee Type</label><select id="f_type"><option>Tuition Fee</option><option>Admission Fee</option><option>Exam Fee</option><option>Transport Fee</option><option>Library Fee</option><option>Other</option></select></div><div class="field"><label>Payment Date</label><input id="f_date" type="date"></div><div class="field"><label>Amount ₹</label><input id="f_amount" type="number" min="0" step="0.01"></div><div class="field"><label>Payment Mode</label><select id="f_mode"><option>Cash</option><option>UPI</option><option>Card</option><option>Bank Transfer</option><option>Cheque</option></select></div><div class="field"><label>Receipt No</label><input id="f_receipt"></div><div class="field"><label>Status</label><select id="f_status"><option>Paid</option><option>Partial</option><option>Pending</option></select></div><div class="field full"><label>Notes</label><textarea id="f_notes"></textarea></div></div><div class="actions"><button class="primary" onclick="saveFee()">💾 Save Payment</button><button onclick="clearFee()">Clear</button></div></div>
+<div class="panel"><div class="tablewrap"><table><thead><tr><th>ID</th><th>Date</th><th>Student</th><th>Type</th><th>Amount</th><th>Mode</th><th>Receipt</th><th>Status</th><th>Action</th></tr></thead><tbody id="feeRows"></tbody></table></div></div>
+</section>
+
+<section id="homework" class="page hidden">
+<div class="panel"><h2>Homework / Assignments</h2><div class="form"><div class="field"><label>Homework ID</label><input id="h_id" readonly></div><div class="field"><label>Class</label><select id="h_class"></select></div><div class="field"><label>Teacher</label><select id="h_teacher"></select></div><div class="field"><label>Subject</label><input id="h_subject"></div><div class="field"><label>Assigned Date</label><input id="h_date" type="date"></div><div class="field"><label>Due Date</label><input id="h_due" type="date"></div><div class="field full"><label>Assignment</label><textarea id="h_text"></textarea></div></div><div class="actions"><button class="primary" onclick="saveHomework()">💾 Save Homework</button><button onclick="clearHomework()">Clear</button></div></div>
+<div class="panel"><div class="tablewrap"><table><thead><tr><th>ID</th><th>Class</th><th>Teacher</th><th>Subject</th><th>Assigned</th><th>Due</th><th>Assignment</th><th>Action</th></tr></thead><tbody id="homeRows"></tbody></table></div></div>
+</section>
+
+<section id="library" class="page hidden">
+<div class="panel"><h2>Library Books</h2><div class="form"><div class="field"><label>Book ID</label><input id="l_id" readonly></div><div class="field"><label>ISBN</label><input id="l_isbn"></div><div class="field"><label>Title *</label><input id="l_title"></div><div class="field"><label>Author</label><input id="l_author"></div><div class="field"><label>Category</label><input id="l_category"></div><div class="field"><label>Quantity</label><input id="l_qty" type="number" value="1"></div><div class="field"><label>Available</label><input id="l_avail" type="number" value="1"></div><div class="field"><label>Publisher</label><input id="l_pub"></div></div><div class="actions"><button class="primary" onclick="saveBook()">💾 Save Book</button><button onclick="clearBook()">Clear</button></div></div>
+<div class="panel"><div class="tablewrap"><table><thead><tr><th>ID</th><th>ISBN</th><th>Title</th><th>Author</th><th>Category</th><th>Qty</th><th>Available</th><th>Actions</th></tr></thead><tbody id="bookRows"></tbody></table></div></div>
+</section>
+
+<section id="transport" class="page hidden">
+<div class="panel"><h2>School Transport</h2><div class="form"><div class="field"><label>Route ID</label><input id="tr_id" readonly></div><div class="field"><label>Route Name *</label><input id="tr_route"></div><div class="field"><label>Vehicle No</label><input id="tr_vehicle"></div><div class="field"><label>Driver</label><input id="tr_driver"></div><div class="field"><label>Driver Mobile</label><input id="tr_mobile"></div><div class="field"><label>Pickup Area</label><input id="tr_area"></div><div class="field"><label>Fee ₹</label><input id="tr_fee" type="number"></div></div><div class="actions"><button class="primary" onclick="saveTransport()">💾 Save Route</button><button onclick="clearTransport()">Clear</button></div></div>
+<div class="panel"><div class="tablewrap"><table><thead><tr><th>ID</th><th>Route</th><th>Vehicle</th><th>Driver</th><th>Mobile</th><th>Area</th><th>Fee</th><th>Action</th></tr></thead><tbody id="transportRows"></tbody></table></div></div>
+</section>
+
+<section id="users" class="page hidden">
+<div class="panel"><h2>Users / Roles</h2><div class="form"><div class="field"><label>User ID</label><input id="u_id" readonly></div><div class="field"><label>Username *</label><input id="u_username"></div><div class="field"><label>Name</label><input id="u_name"></div><div class="field"><label>Role</label><select id="u_role"><option>Admin</option><option>Principal</option><option>Teacher</option><option>Accountant</option><option>Reception</option><option>Parent</option></select></div><div class="field"><label>Password</label><input id="u_password" type="password"></div><div class="field"><label>Status</label><select id="u_status"><option>Active</option><option>Inactive</option></select></div></div><div class="actions"><button class="primary" onclick="saveUser()">💾 Save User</button><button onclick="clearUser()">Clear</button></div></div>
+<div class="panel"><div class="tablewrap"><table><thead><tr><th>ID</th><th>Username</th><th>Name</th><th>Role</th><th>Status</th><th>Action</th></tr></thead><tbody id="userRows"></tbody></table></div></div>
+</section>
+
+<section id="sql" class="page hidden">
+<div class="panel"><h2>SQLite SQL Query Console</h2><div class="notice">Run SELECT, INSERT, UPDATE, DELETE, CREATE and other SQLite statements against the local database. Changes are persisted locally.</div><div class="sqlrow"><textarea id="sqlInput">SELECT s.id,s.admission_no,s.name,c.class_name,c.section
+FROM students s LEFT JOIN classes c ON c.id=s.class_id
+ORDER BY s.name;</textarea><button class="primary" onclick="runSQL()">▶ Run</button></div><div id="sqlStatus" class="muted" style="margin:9px 0"></div><pre id="sqlResult"></pre></div>
+<div class="panel"><h2>SQLite Schema</h2><pre id="schema"></pre></div>
+</section>
+
+<section id="backup" class="page hidden">
+<div class="panel"><h2>SQLite / CSV / JSON Backup</h2><div class="notice">The SQLite export is a real database file. JSON backup contains all application tables. CSV export produces one CSV file per table.</div><div class="actions">
+<button class="primary" onclick="exportSQLite()">🗄️ Export SQLite DB</button><button onclick="exportAllJSON()">📦 Export All JSON</button><button onclick="exportAllCSV()">📄 Export All CSV</button>
+<button onclick="document.getElementById('dbFile').click()">📥 Import SQLite</button><input id="dbFile" class="hiddenInput" type="file" accept=".db,.sqlite,.sqlite3" onchange="importSQLite(this.files[0])">
+<button onclick="document.getElementById('jsonFile').click()">📥 Import JSON</button><input id="jsonFile" class="hiddenInput" type="file" accept=".json" onchange="importJSON(this.files[0])">
+</div></div>
+<div class="panel"><h2>Database Information</h2><pre id="dbInfo"></pre></div>
+</section>
+<footer>Local-first school ERP prototype • Make regular backups • For production use, add authentication, server-side authorization, encryption, audit logs and applicable education/privacy compliance.</footer>
+</div>
+
+<script>
+const T=['students','teachers','classes','attendance','exams','marks','fees','homework','library','transport','users'];let db,SQL;
+
+const $=id=>document.getElementById(id), val=id=>$(id).value.trim();
+function esc(x){return String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function now(){return new Date().toISOString().slice(0,10)}
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function b64(bytes){let s='';for(let i=0;i<bytes.length;i+=0x8000)s+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return btoa(s)}
+function bytes(s){const x=atob(s),a=new Uint8Array(x.length);for(let i=0;i<x.length;i++)a[i]=x.charCodeAt(i);return a}
+function q(sql,p=[]){const s=db.prepare(sql);s.bind(p);let r=[];while(s.step())r.push(s.getAsObject());s.free();return r}
+function x(sql,p=[]){const s=db.prepare(sql);s.bind(p);s.step();s.free();persist()}
+function persist(){localStorage.setItem('schoolSQLiteDB',b64(db.export()))}
+function csv(rows){if(!rows.length)return '';const k=Object.keys(rows[0]);return [k.join(','),...rows.map(r=>k.map(z=>`"${String(r[z]??'').replace(/"/g,'""')}"`).join(','))].join('\\n')}
+function select(id,rows,ph,formatter=r=>r.name){$(id).innerHTML=`<option value="">${ph}</option>`+rows.map(r=>`<option value="${r.id}">${esc(formatter(r))}</option>`).join('')}
+
+function schemaInit(){
+x(`CREATE TABLE IF NOT EXISTS teachers(id INTEGER PRIMARY KEY AUTOINCREMENT,employee_no TEXT UNIQUE,name TEXT NOT NULL,subject TEXT,mobile TEXT,email TEXT,qualification TEXT,joining_date TEXT)`);
+x(`CREATE TABLE IF NOT EXISTS classes(id INTEGER PRIMARY KEY AUTOINCREMENT,class_name TEXT NOT NULL,section TEXT,academic_year TEXT,class_teacher_id INTEGER,room TEXT,capacity INTEGER,FOREIGN KEY(class_teacher_id) REFERENCES teachers(id))`);
+x(`CREATE TABLE IF NOT EXISTS students(id INTEGER PRIMARY KEY AUTOINCREMENT,admission_no TEXT UNIQUE NOT NULL,name TEXT NOT NULL,gender TEXT,dob TEXT,class_id INTEGER,roll_no INTEGER,blood_group TEXT,father_name TEXT,mother_name TEXT,parent_mobile TEXT,email TEXT,city TEXT,address TEXT,notes TEXT,FOREIGN KEY(class_id) REFERENCES classes(id))`);
+x(`CREATE TABLE IF NOT EXISTS attendance(id INTEGER PRIMARY KEY AUTOINCREMENT,student_id INTEGER,date TEXT,status TEXT,period TEXT,remark TEXT,UNIQUE(student_id,date,period),FOREIGN KEY(student_id) REFERENCES students(id))`);
+x(`CREATE TABLE IF NOT EXISTS exams(id INTEGER PRIMARY KEY AUTOINCREMENT,exam_name TEXT NOT NULL,academic_year TEXT,start_date TEXT,end_date TEXT,term TEXT,notes TEXT)`);
+x(`CREATE TABLE IF NOT EXISTS marks(id INTEGER PRIMARY KEY AUTOINCREMENT,exam_id INTEGER,student_id INTEGER,subject TEXT,max_marks REAL,marks_obtained REAL,grade TEXT,remark TEXT,FOREIGN KEY(exam_id) REFERENCES exams(id),FOREIGN KEY(student_id) REFERENCES students(id))`);
+x(`CREATE TABLE IF NOT EXISTS fees(id INTEGER PRIMARY KEY AUTOINCREMENT,student_id INTEGER,fee_type TEXT,payment_date TEXT,amount REAL,payment_mode TEXT,receipt_no TEXT,status TEXT,notes TEXT,FOREIGN KEY(student_id) REFERENCES students(id))`);
+x(`CREATE TABLE IF NOT EXISTS homework(id INTEGER PRIMARY KEY AUTOINCREMENT,class_id INTEGER,teacher_id INTEGER,subject TEXT,assigned_date TEXT,due_date TEXT,assignment TEXT,FOREIGN KEY(class_id) REFERENCES classes(id),FOREIGN KEY(teacher_id) REFERENCES teachers(id))`);
+x(`CREATE TABLE IF NOT EXISTS library(id INTEGER PRIMARY KEY AUTOINCREMENT,isbn TEXT,title TEXT NOT NULL,author TEXT,category TEXT,quantity INTEGER,available INTEGER,publisher TEXT)`);
+x(`CREATE TABLE IF NOT EXISTS transport(id INTEGER PRIMARY KEY AUTOINCREMENT,route_name TEXT NOT NULL,vehicle_no TEXT,driver TEXT,driver_mobile TEXT,pickup_area TEXT,fee REAL)`);
+x(`CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT,username TEXT UNIQUE NOT NULL,name TEXT,role TEXT,password TEXT,status TEXT)`);
+}
+
+function showTab(id){document.querySelectorAll('.page').forEach(e=>e.classList.add('hidden'));$(id).classList.remove('hidden');document.querySelectorAll('.tab').forEach(e=>e.classList.toggle('active',e.dataset.tab===id))}
+function refreshSelects(){
+const st=q('SELECT id,name FROM students ORDER BY name'),te=q('SELECT id,name FROM teachers ORDER BY name'),cl=q('SELECT id,class_name,section FROM classes ORDER BY class_name,section'),ex=q('SELECT id,exam_name FROM exams ORDER BY id DESC');
+select('st_class',cl,'Select class',r=>`${r.class_name} - ${r.section||''}`);select('c_teacher',te,'Select teacher');select('a_student',st,'Select student');select('m_student',st,'Select student');select('f_student',st,'Select student');select('m_exam',ex,'Select exam');select('h_class',cl,'Select class',r=>`${r.class_name} - ${r.section||''}`);select('h_teacher',te,'Select teacher')
+}
+function dashboard(){
+$('sStudents').textContent=q('SELECT COUNT(*) c FROM students')[0].c;$('sTeachers').textContent=q('SELECT COUNT(*) c FROM teachers')[0].c;$('sClasses').textContent=q('SELECT COUNT(*) c FROM classes')[0].c;$('sAttendance').textContent=q('SELECT COUNT(*) c FROM attendance')[0].c;$('sExams').textContent=q('SELECT COUNT(*) c FROM exams')[0].c;$('sFees').textContent='₹'+Number(q('SELECT COALESCE(SUM(amount),0)c FROM fees WHERE status!="Pending"')[0].c).toLocaleString('en-IN');
+const r=q(`SELECT s.name,c.class_name,a.date,a.status FROM attendance a JOIN students s ON s.id=a.student_id LEFT JOIN classes c ON c.id=s.class_id ORDER BY a.id DESC LIMIT 10`);
+$('recent').innerHTML=r.length?`<div class="tablewrap"><table><tr><th>Date</th><th>Student</th><th>Class</th><th>Status</th></tr>${r.map(z=>`<tr><td>${esc(z.date)}</td><td>${esc(z.name)}</td><td>${esc(z.class_name)}</td><td><span class="pill">${esc(z.status)}</span></td></tr>`).join('')}</table></div>`:'<span style="color:#64748b">No activity yet.</span>'
+}
+function renderStudents(){let s=(val('studentSearch')||'').toLowerCase();let r=q(`SELECT s.*,c.class_name,c.section FROM students s LEFT JOIN classes c ON c.id=s.class_id ORDER BY s.id DESC`).filter(x=>JSON.stringify(x).toLowerCase().includes(s));$('studentRows').innerHTML=r.map(z=>`<tr><td>${z.id}</td><td>${esc(z.admission_no)}</td><td><b>${esc(z.name)}</b></td><td>${esc(z.class_name)} ${esc(z.section)}</td><td>${z.roll_no||''}</td><td>${esc(z.father_name)}</td><td>${esc(z.parent_mobile)}</td><td><button onclick="editStudent(${z.id})">Edit</button> <button class="danger" onclick="del('students',${z.id})">Delete</button></td></tr>`).join('')}
+function renderTeachers(){let s=(val('teacherSearch')||'').toLowerCase();let r=q('SELECT * FROM teachers ORDER BY id DESC').filter(x=>JSON.stringify(x).toLowerCase().includes(s));$('teacherRows').innerHTML=r.map(z=>`<tr><td>${z.id}</td><td>${esc(z.employee_no)}</td><td><b>${esc(z.name)}</b></td><td>${esc(z.subject)}</td><td>${esc(z.mobile)}</td><td>${esc(z.qualification)}</td><td><button onclick="editTeacher(${z.id})">Edit</button> <button class="danger" onclick="del('teachers',${z.id})">Delete</button></td></tr>`).join('')}
+function renderClasses(){let r=q(`SELECT c.*,t.name teacher FROM classes c LEFT JOIN teachers t ON t.id=c.class_teacher_id ORDER BY c.id DESC`);$('classRows').innerHTML=r.map(z=>`<tr><td>${z.id}</td><td>${esc(z.class_name)}</td><td>${esc(z.section)}</td><td>${esc(z.academic_year)}</td><td>${esc(z.teacher)}</td><td>${esc(z.room)}</td><td>${z.capacity||''}</td><td><button onclick="editClass(${z.id})">Edit</button> <button class="danger" onclick="del('classes',${z.id})">Delete</button></td></tr>`).join('')}
+function renderAttendance(){let s=(val('attSearch')||'').toLowerCase();let r=q(`SELECT a.*,s.name,c.class_name FROM attendance a JOIN students s ON s.id=a.student_id LEFT JOIN classes c ON c.id=s.class_id ORDER BY a.id DESC`).filter(x=>JSON.stringify(x).toLowerCase().includes(s));$('attRows').innerHTML=r.map(z=>`<tr><td>${z.id}</td><td>${esc(z.date)}</td><td>${esc(z.name)}</td><td>${esc(z.class_name)}</td><td>${esc(z.status)}</td><td>${esc(z.period)}</td><td>${esc(z.remark)}</td><td><button onclick="editAttendance(${z.id})">Edit</button> <button class="danger" onclick="del('attendance',${z.id})">Delete</button></td></tr>`).join('')}
+function renderExams(){let r=q('SELECT * FROM exams ORDER BY id DESC');$('examRows').innerHTML=r.map(z=>`<tr><td>${z.id}</td><td>${esc(z.exam_name)}</td><td>${esc(z.academic_year)}</td><td>${esc(z.term)}</td><td>${esc(z.start_date)}</td><td>${esc(z.end_date)}</td><td><button onclick="editExam(${z.id})">Edit</button> <button class="danger" onclick="del('exams',${z.id})">Delete</button></td></tr>`).join('')}
+function renderMarks(){let s=(val('markSearch')||'').toLowerCase();let r=q(`SELECT m.*,e.exam_name,s.name FROM marks m LEFT JOIN exams e ON e.id=m.exam_id LEFT JOIN students s ON s.id=m.student_id ORDER BY m.id DESC`).filter(x=>JSON.stringify(x).toLowerCase().includes(s));$('markRows').innerHTML=r.map(z=>`<tr><td>${z.id}</td><td>${esc(z.exam_name)}</td><td>${esc(z.name)}</td><td>${esc(z.subject)}</td><td>${z.max_marks}</td><td>${z.marks_obtained}</td><td>${z.max_marks?((z.marks_obtained/z.max_marks)*100).toFixed(1):0}%</td><td>${esc(z.grade)}</td><td><button onclick="editMark(${z.id})">Edit</button> <button class="danger" onclick="del('marks',${z.id})">Delete</button></td></tr>`).join('')}
+function renderFees(){let r=q(`SELECT f.*,s.name FROM fees f LEFT JOIN students s ON s.id=f.student_id ORDER BY f.id DESC`);$('feeRows').innerHTML=r.map(z=>`<tr><td>${z.id}</td><td>${esc(z.payment_date)}</td><td>${esc(z.name)}</td><td>${esc(z.fee_type)}</td><td>₹${Number(z.amount||0).toLocaleString('en-IN')}</td><td>${esc(z.payment_mode)}</td><td>${esc(z.receipt_no)}</td><td>${esc(z.status)}</td><td><button onclick="editFee(${z.id})">Edit</button> <button class="danger" onclick="del('fees',${z.id})">Delete</button></td></tr>`).join('')}
+function renderHomework(){let r=q(`SELECT h.*,c.class_name,c.section,t.name teacher FROM homework h LEFT JOIN classes c ON c.id=h.class_id LEFT JOIN teachers t ON t.id=h.teacher_id ORDER BY h.id DESC`);$('homeRows').innerHTML=r.map(z=>`<tr><td>${z.id}</td><td>${esc(z.class_name)} ${esc(z.section)}</td><td>${esc(z.teacher)}</td><td>${esc(z.subject)}</td><td>${esc(z.assigned_date)}</td><td>${esc(z.due_date)}</td><td>${esc(z.assignment)}</td><td><button onclick="editHomework(${z.id})">Edit</button> <button class="danger" onclick="del('homework',${z.id})">Delete</button></td></tr>`).join('')}
+function renderLibrary(){let r=q('SELECT * FROM library ORDER BY id DESC');$('bookRows').innerHTML=r.map(z=>`<tr><td>${z.id}</td><td>${esc(z.isbn)}</td><td>${esc(z.title)}</td><td>${esc(z.author)}</td><td>${esc(z.category)}</td><td>${z.quantity}</td><td>${z.available}</td><td><button onclick="editBook(${z.id})">Edit</button> <button class="danger" onclick="del('library',${z.id})">Delete</button></td></tr>`).join('')}
+function renderTransport(){let r=q('SELECT * FROM transport ORDER BY id DESC');$('transportRows').innerHTML=r.map(z=>`<tr><td>${z.id}</td><td>${esc(z.route_name)}</td><td>${esc(z.vehicle_no)}</td><td>${esc(z.driver)}</td><td>${esc(z.driver_mobile)}</td><td>${esc(z.pickup_area)}</td><td>₹${Number(z.fee||0).toLocaleString('en-IN')}</td><td><button onclick="editTransport(${z.id})">Edit</button> <button class="danger" onclick="del('transport',${z.id})">Delete</button></td></tr>`).join('')}
+function renderUsers(){let r=q('SELECT id,username,name,role,status FROM users ORDER BY id DESC');$('userRows').innerHTML=r.map(z=>`<tr><td>${z.id}</td><td>${esc(z.username)}</td><td>${esc(z.name)}</td><td>${esc(z.role)}</td><td>${esc(z.status)}</td><td><button onclick="editUser(${z.id})">Edit</button> <button class="danger" onclick="del('users',${z.id})">Delete</button></td></tr>`).join('')}
+function allRender(){renderStudents();renderTeachers();renderClasses();renderAttendance();renderExams();renderMarks();renderFees();renderHomework();renderLibrary();renderTransport();renderUsers();refreshSelects();dashboard();schemaView();dbInfo()}
+
+function clearIds(ids){ids.forEach(i=>$(i).value='')}
+function newStudent(){showTab('students');clearStudent()}
+function clearStudent(){clearIds(['st_id','st_admission','st_name','st_dob','st_roll','st_father','st_mother','st_mobile','st_email','st_city','st_address','st_notes']);$('st_gender').value='Male';$('st_blood').value=''}
+function saveStudent(){let id=val('st_id'),a=[val('st_admission'),val('st_name'),val('st_gender'),val('st_dob'),val('st_class')||null,Number(val('st_roll')||0)||null,val('st_blood'),val('st_father'),val('st_mother'),val('st_mobile'),val('st_email'),val('st_city'),val('st_address'),val('st_notes')];if(!a[0]||!a[1])return alert('Admission number and student name are required');try{id?x('UPDATE students SET admission_no=?,name=?,gender=?,dob=?,class_id=?,roll_no=?,blood_group=?,father_name=?,mother_name=?,parent_mobile=?,email=?,city=?,address=?,notes=? WHERE id=?',[...a,id]):x('INSERT INTO students(admission_no,name,gender,dob,class_id,roll_no,blood_group,father_name,mother_name,parent_mobile,email,city,address,notes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',a);clearStudent();allRender()}catch(e){alert(e.message)}}
+function editStudent(id){let r=q('SELECT * FROM students WHERE id=?',[id])[0];showTab('students');Object.entries({st_id:r.id,st_admission:r.admission_no,st_name:r.name,st_gender:r.gender,st_dob:r.dob,st_class:r.class_id,st_roll:r.roll_no,st_blood:r.blood_group,st_father:r.father_name,st_mother:r.mother_name,st_mobile:r.parent_mobile,st_email:r.email,st_city:r.city,st_address:r.address,st_notes:r.notes}).forEach(([i,v])=>$(i).value=v??'')}
+
+function newTeacher(){showTab('teachers');clearTeacher()}
+function clearTeacher(){clearIds(['t_id','t_emp','t_name','t_subject','t_mobile','t_email','t_qual','t_join'])}
+function saveTeacher(){let id=val('t_id'),a=[val('t_emp'),val('t_name'),val('t_subject'),val('t_mobile'),val('t_email'),val('t_qual'),val('t_join')];if(!a[0]||!a[1])return alert('Employee number and name required');try{id?x('UPDATE teachers SET employee_no=?,name=?,subject=?,mobile=?,email=?,qualification=?,joining_date=? WHERE id=?',[...a,id]):x('INSERT INTO teachers(employee_no,name,subject,mobile,email,qualification,joining_date) VALUES(?,?,?,?,?,?,?)',a);clearTeacher();allRender()}catch(e){alert(e.message)}}
+function editTeacher(id){let r=q('SELECT * FROM teachers WHERE id=?',[id])[0];showTab('teachers');Object.entries({t_id:r.id,t_emp:r.employee_no,t_name:r.name,t_subject:r.subject,t_mobile:r.mobile,t_email:r.email,t_qual:r.qualification,t_join:r.joining_date}).forEach(([i,v])=>$(i).value=v??'')}
+
+function clearClass(){clearIds(['c_id','c_name','c_section','c_year','c_room','c_capacity']);$('c_teacher').value=''}
+function saveClass(){let id=val('c_id'),a=[val('c_name'),val('c_section'),val('c_year'),val('c_teacher')||null,val('c_room'),Number(val('c_capacity')||0)||null];if(!a[0])return alert('Class name required');id?x('UPDATE classes SET class_name=?,section=?,academic_year=?,class_teacher_id=?,room=?,capacity=? WHERE id=?',[...a,id]):x('INSERT INTO classes(class_name,section,academic_year,class_teacher_id,room,capacity) VALUES(?,?,?,?,?,?)',a);clearClass();allRender()}
+function editClass(id){let r=q('SELECT * FROM classes WHERE id=?',[id])[0];showTab('classes');Object.entries({c_id:r.id,c_name:r.class_name,c_section:r.section,c_year:r.academic_year,c_teacher:r.class_teacher_id,c_room:r.room,c_capacity:r.capacity}).forEach(([i,v])=>$(i).value=v??'')}
+
+function newAttendance(){showTab('attendance');clearAttendance()}
+function clearAttendance(){clearIds(['a_id','a_student','a_date','a_period','a_remark']);$('a_date').value=now();$('a_status').value='Present'}
+function saveAttendance(){let id=val('a_id'),a=[val('a_student'),val('a_date'),val('a_status'),val('a_period')||'Full Day',val('a_remark')];if(!a[0])return alert('Select student');try{id?x('UPDATE attendance SET student_id=?,date=?,status=?,period=?,remark=? WHERE id=?',[...a,id]):x('INSERT OR REPLACE INTO attendance(student_id,date,status,period,remark) VALUES(?,?,?,?,?)',a);clearAttendance();allRender()}catch(e){alert(e.message)}}
+function editAttendance(id){let r=q('SELECT * FROM attendance WHERE id=?',[id])[0];showTab('attendance');Object.entries({a_id:r.id,a_student:r.student_id,a_date:r.date,a_status:r.status,a_period:r.period,a_remark:r.remark}).forEach(([i,v])=>$(i).value=v??'')}
+
+function clearExam(){clearIds(['e_id','e_name','e_year','e_start','e_end','e_notes']);$('e_term').value='Term 1'}
+function saveExam(){let id=val('e_id'),a=[val('e_name'),val('e_year'),val('e_start'),val('e_end'),val('e_term'),val('e_notes')];if(!a[0])return alert('Exam name required');id?x('UPDATE exams SET exam_name=?,academic_year=?,start_date=?,end_date=?,term=?,notes=? WHERE id=?',[...a,id]):x('INSERT INTO exams(exam_name,academic_year,start_date,end_date,term,notes) VALUES(?,?,?,?,?,?)',a);clearExam();allRender()}
+function editExam(id){let r=q('SELECT * FROM exams WHERE id=?',[id])[0];showTab('exams');Object.entries({e_id:r.id,e_name:r.exam_name,e_year:r.academic_year,e_start:r.start_date,e_end:r.end_date,e_term:r.term,e_notes:r.notes}).forEach(([i,v])=>$(i).value=v??'')}
+
+function newMarks(){showTab('marks');clearMark()}
+function clearMark(){clearIds(['m_id','m_exam','m_student','m_subject','m_marks','m_grade','m_remark']);$('m_max').value=100}
+function saveMark(){let id=val('m_id'),a=[val('m_exam')||null,val('m_student')||null,val('m_subject'),Number(val('m_max')||100),Number(val('m_marks')||0),val('m_grade'),val('m_remark')];if(!a[1]||!a[2])return alert('Student and subject required');id?x('UPDATE marks SET exam_id=?,student_id=?,subject=?,max_marks=?,marks_obtained=?,grade=?,remark=? WHERE id=?',[...a,id]):x('INSERT INTO marks(exam_id,student_id,subject,max_marks,marks_obtained,grade,remark) VALUES(?,?,?,?,?,?,?)',a);clearMark();allRender()}
+function editMark(id){let r=q('SELECT * FROM marks WHERE id=?',[id])[0];showTab('marks');Object.entries({m_id:r.id,m_exam:r.exam_id,m_student:r.student_id,m_subject:r.subject,m_max:r.max_marks,m_marks:r.marks_obtained,m_grade:r.grade,m_remark:r.remark}).forEach(([i,v])=>$(i).value=v??'')}
+
+function newFee(){showTab('fees');clearFee()}
+function clearFee(){clearIds(['f_id','f_student','f_date','f_amount','f_receipt','f_notes']);$('f_date').value=now();$('f_type').value='Tuition Fee';$('f_mode').value='Cash';$('f_status').value='Paid'}
+function saveFee(){let id=val('f_id'),a=[val('f_student')||null,val('f_type'),val('f_date'),Number(val('f_amount')||0),val('f_mode'),val('f_receipt'),val('f_status'),val('f_notes')];if(!a[0]||a[3]<=0)return alert('Student and amount required');id?x('UPDATE fees SET student_id=?,fee_type=?,payment_date=?,amount=?,payment_mode=?,receipt_no=?,status=?,notes=? WHERE id=?',[...a,id]):x('INSERT INTO fees(student_id,fee_type,payment_date,amount,payment_mode,receipt_no,status,notes) VALUES(?,?,?,?,?,?,?,?)',a);clearFee();allRender()}
+function editFee(id){let r=q('SELECT * FROM fees WHERE id=?',[id])[0];showTab('fees');Object.entries({f_id:r.id,f_student:r.student_id,f_type:r.fee_type,f_date:r.payment_date,f_amount:r.amount,f_mode:r.payment_mode,f_receipt:r.receipt_no,f_status:r.status,f_notes:r.notes}).forEach(([i,v])=>$(i).value=v??'')}
+
+function clearHomework(){clearIds(['h_id','h_class','h_teacher','h_subject','h_date','h_due','h_text']);$('h_date').value=now()}
+function saveHomework(){let id=val('h_id'),a=[val('h_class')||null,val('h_teacher')||null,val('h_subject'),val('h_date'),val('h_due'),val('h_text')];if(!a[2]||!a[5])return alert('Subject and assignment required');id?x('UPDATE homework SET class_id=?,teacher_id=?,subject=?,assigned_date=?,due_date=?,assignment=? WHERE id=?',[...a,id]):x('INSERT INTO homework(class_id,teacher_id,subject,assigned_date,due_date,assignment) VALUES(?,?,?,?,?,?)',a);clearHomework();allRender()}
+function editHomework(id){let r=q('SELECT * FROM homework WHERE id=?',[id])[0];showTab('homework');Object.entries({h_id:r.id,h_class:r.class_id,h_teacher:r.teacher_id,h_subject:r.subject,h_date:r.assigned_date,h_due:r.due_date,h_text:r.assignment}).forEach(([i,v])=>$(i).value=v??'')}
+
+function clearBook(){clearIds(['l_id','l_isbn','l_title','l_author','l_category','l_pub']);$('l_qty').value=1;$('l_avail').value=1}
+function saveBook(){let id=val('l_id'),a=[val('l_isbn'),val('l_title'),val('l_author'),val('l_category'),Number(val('l_qty')||0),Number(val('l_avail')||0),val('l_pub')];if(!a[1])return alert('Book title required');id?x('UPDATE library SET isbn=?,title=?,author=?,category=?,quantity=?,available=?,publisher=? WHERE id=?',[...a,id]):x('INSERT INTO library(isbn,title,author,category,quantity,available,publisher) VALUES(?,?,?,?,?,?,?)',a);clearBook();allRender()}
+function editBook(id){let r=q('SELECT * FROM library WHERE id=?',[id])[0];showTab('library');Object.entries({l_id:r.id,l_isbn:r.isbn,l_title:r.title,l_author:r.author,l_category:r.category,l_qty:r.quantity,l_avail:r.available,l_pub:r.publisher}).forEach(([i,v])=>$(i).value=v??'')}
+
+function clearTransport(){clearIds(['tr_id','tr_route','tr_vehicle','tr_driver','tr_mobile','tr_area','tr_fee'])}
+function saveTransport(){let id=val('tr_id'),a=[val('tr_route'),val('tr_vehicle'),val('tr_driver'),val('tr_mobile'),val('tr_area'),Number(val('tr_fee')||0)];if(!a[0])return alert('Route required');id?x('UPDATE transport SET route_name=?,vehicle_no=?,driver=?,driver_mobile=?,pickup_area=?,fee=? WHERE id=?',[...a,id]):x('INSERT INTO transport(route_name,vehicle_no,driver,driver_mobile,pickup_area,fee) VALUES(?,?,?,?,?,?)',a);clearTransport();allRender()}
+function editTransport(id){let r=q('SELECT * FROM transport WHERE id=?',[id])[0];showTab('transport');Object.entries({tr_id:r.id,tr_route:r.route_name,tr_vehicle:r.vehicle_no,tr_driver:r.driver,tr_mobile:r.driver_mobile,tr_area:r.pickup_area,tr_fee:r.fee}).forEach(([i,v])=>$(i).value=v??'')}
+
+function clearUser(){clearIds(['u_id','u_username','u_name','u_password']);$('u_role').value='Admin';$('u_status').value='Active'}
+function saveUser(){let id=val('u_id'),a=[val('u_username'),val('u_name'),val('u_role'),val('u_password'),val('u_status')];if(!a[0])return alert('Username required');try{id?x('UPDATE users SET username=?,name=?,role=?,password=?,status=? WHERE id=?',[...a,id]):x('INSERT INTO users(username,name,role,password,status) VALUES(?,?,?,?,?)',a);clearUser();allRender()}catch(e){alert(e.message)}}
+function editUser(id){let r=q('SELECT * FROM users WHERE id=?',[id])[0];showTab('users');Object.entries({u_id:r.id,u_username:r.username,u_name:r.name,u_role:r.role,u_password:r.password,u_status:r.status}).forEach(([i,v])=>$(i).value=v??'')}
+
+function del(t,id){if(!confirm('Delete this record?'))return;try{x(`DELETE FROM ${t} WHERE id=?`,[id]);allRender()}catch(e){alert('Cannot delete: '+e.message)}}
+function exportCSV(t){dl(new Blob([csv(q(`SELECT * FROM ${t}`))],{type:'text/csv'}),`school_${t}.csv`)}
+function exportJSON(t){dl(new Blob([JSON.stringify(q(`SELECT * FROM ${t}`),null,2)],{type:'application/json'}),`school_${t}.json`)}
+function exportAllJSON(){let o={exported_at:new Date().toISOString()};T.forEach(t=>o[t]=q(`SELECT * FROM ${t}`));dl(new Blob([JSON.stringify(o,null,2)],{type:'application/json'}),'school_management_backup.json')}
+function exportAllCSV(){T.forEach((t,i)=>setTimeout(()=>exportCSV(t),i*250))}
+function exportSQLite(){dl(new Blob([db.export()],{type:'application/x-sqlite3'}),'school_management.db')}
+async function importSQLite(f){if(!f||!confirm('Replace the current local database?'))return;db=new SQL.Database(new Uint8Array(await f.arrayBuffer()));persist();allRender();alert('SQLite database imported successfully.')}
+async function importJSON(f){if(!f)return;try{let o=JSON.parse(await f.text());if(!confirm('Import JSON into current database?'))return;const cols={teachers:['id','employee_no','name','subject','mobile','email','qualification','joining_date'],classes:['id','class_name','section','academic_year','class_teacher_id','room','capacity'],students:['id','admission_no','name','gender','dob','class_id','roll_no','blood_group','father_name','mother_name','parent_mobile','email','city','address','notes'],attendance:['id','student_id','date','status','period','remark'],exams:['id','exam_name','academic_year','start_date','end_date','term','notes'],marks:['id','exam_id','student_id','subject','max_marks','marks_obtained','grade','remark'],fees:['id','student_id','fee_type','payment_date','amount','payment_mode','receipt_no','status','notes'],homework:['id','class_id','teacher_id','subject','assigned_date','due_date','assignment'],library:['id','isbn','title','author','category','quantity','available','publisher'],transport:['id','route_name','vehicle_no','driver','driver_mobile','pickup_area','fee'],users:['id','username','name','role','password','status']};for(const t of T){for(const r of (o[t]||[])){const c=cols[t];const qs=c.map(()=>'?').join(',');x(`INSERT OR REPLACE INTO ${t}(${c.join(',')}) VALUES(${qs})`,c.map(k=>r[k]??null))}}allRender();alert('JSON imported successfully.')}catch(e){alert(e.message)}}
+function runSQL(){try{let sql=val('sqlInput'),s=db.prepare(sql),r=[];while(s.step())r.push(s.getAsObject());s.free();persist();allRender();$('sqlStatus').textContent=`Executed successfully • ${r.length} row(s)`;$('sqlResult').textContent=r.length?JSON.stringify(r,null,2):'Statement executed successfully.'}catch(e){$('sqlStatus').textContent='SQL error';$('sqlResult').textContent=e.message}}
+function schemaView(){$('schema').textContent=q(`SELECT name,sql FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name`).map(r=>r.sql+';').join('\\n\\n')}
+function dbInfo(){$('dbInfo').textContent='SQLite database: school_management.db\\nSize: '+db.export().byteLength.toLocaleString()+' bytes\\nStorage: Browser localStorage\\n\\nRows:\\n'+T.map(t=>`  ${t}: ${q(`SELECT COUNT(*) c FROM ${t}`)[0].c}`).join('\\n')}
+
+async function start(){
+const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/sql-wasm.js';sc.onload=async()=>{SQL=await initSqlJs({locateFile:f=>'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/'+f});let z=localStorage.getItem('schoolSQLiteDB');db=z?new SQL.Database(bytes(z)):new SQL.Database();schemaInit();['a_date','f_date','h_date'].forEach(i=>$(i).value=now());allRender()};sc.onerror=()=>alert('SQLite engine could not be loaded. Open this file with internet access once.');document.head.appendChild(sc)}
+start();
+</script>
+</body>
+</html>
