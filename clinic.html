@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<title>Doctor Patient Manager - SQLite</title>
+<style>
+:root{--p:#0f766e;--p2:#115e59;--bg:#f4f7f8;--card:#fff;--txt:#16323a;--muted:#64748b;--line:#dce5e7;--danger:#dc2626;--ok:#15803d;--shadow:0 8px 28px #0f172a12}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,var(--p2),var(--p));color:white;padding:14px 18px;box-shadow:var(--shadow)}
+.head{max-width:1450px;margin:auto;display:flex;align-items:center;gap:12px;justify-content:space-between}.brand{font-size:21px;font-weight:800}.sub{font-size:12px;opacity:.8}
+.wrap{max-width:1450px;margin:auto;padding:14px}.tabs{display:flex;gap:8px;overflow:auto;margin-bottom:14px}.tab{border:0;border-radius:12px;padding:11px 15px;background:#fff;color:var(--txt);font-weight:700;white-space:nowrap;box-shadow:var(--shadow);cursor:pointer}.tab.active{background:var(--p);color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:var(--shadow)}.stat b{display:block;font-size:27px;margin-top:5px}.stat span{color:var(--muted);font-size:13px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}.panel h2{font-size:17px;margin:0 0 14px}
+.form{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}label{font-size:12px;color:var(--muted);font-weight:700}input,select,textarea{width:100%;border:1px solid #cbd5dc;border-radius:10px;padding:10px;background:white;color:var(--txt);font:inherit}textarea{min-height:80px;resize:vertical}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}button{border:0;border-radius:10px;padding:10px 13px;font-weight:750;cursor:pointer;background:#e7eef0;color:var(--txt)}button.primary{background:var(--p);color:#fff}button.danger{background:#fee2e2;color:#991b1b}button.dark{background:#1e293b;color:#fff}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:850px}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;vertical-align:top}th{background:#f1f5f7;position:sticky;top:0;z-index:1}tr:hover td{background:#f8fbfb}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#e0f2f1;color:#0f766e;font-size:11px;font-weight:800}.muted{color:var(--muted)}.hidden{display:none!important}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.toolbar input{max-width:330px}.toolbar select{max-width:190px}
+.notice{padding:10px 12px;border-radius:10px;background:#ecfeff;border:1px solid #bae6fd;color:#155e75;font-size:13px;margin-bottom:12px}
+pre{background:#0b1220;color:#dbeafe;border-radius:12px;padding:14px;overflow:auto;min-height:180px;white-space:pre-wrap}
+.sqlrow{display:flex;gap:8px}.sqlrow textarea{min-height:120px;font-family:ui-monospace,monospace}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.form{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.wrap{padding:10px}.grid{grid-template-columns:repeat(2,1fr)}.form{grid-template-columns:1fr}.field.full{grid-column:auto}.stat{padding:12px}.stat b{font-size:22px}.head{align-items:flex-start}.brand{font-size:18px}}
+</style>
+</head>
+<body>
+<header><div class="head"><div><div class="brand">🩺 Doctor Patient Manager</div><div class="sub">Single-file clinic management • SQLite • CSV • JSON</div></div><button onclick="showTab('dashboard')" style="background:#ffffff22;color:white">Dashboard</button></div></header>
+
+<div class="wrap">
+<div class="tabs">
+<button class="tab active" data-tab="dashboard" onclick="showTab('dashboard')">📊 Dashboard</button>
+<button class="tab" data-tab="patients" onclick="showTab('patients')">👥 Patients</button>
+<button class="tab" data-tab="doctors" onclick="showTab('doctors')">👨‍⚕️ Doctors</button>
+<button class="tab" data-tab="visits" onclick="showTab('visits')">🩺 Visits</button>
+<button class="tab" data-tab="prescriptions" onclick="showTab('prescriptions')">💊 Prescriptions</button>
+<button class="tab" data-tab="payments" onclick="showTab('payments')">💳 Payments</button>
+<button class="tab" data-tab="sql" onclick="showTab('sql')">🗄️ SQL Console</button>
+<button class="tab" data-tab="backup" onclick="showTab('backup')">📦 Backup/Export</button>
+</div>
+
+<section id="dashboard" class="page">
+<div class="grid">
+<div class="stat"><span>Total Patients</span><b id="sPatients">0</b></div>
+<div class="stat"><span>Doctors</span><b id="sDoctors">0</b></div>
+<div class="stat"><span>Total Visits</span><b id="sVisits">0</b></div>
+<div class="stat"><span>Payments</span><b id="sPayments">₹0</b></div>
+</div>
+<div class="panel" style="margin-top:14px"><h2>Quick Actions</h2><div class="actions">
+<button class="primary" onclick="newPatient()">➕ New Patient</button><button onclick="newVisit()">🩺 New Visit</button><button onclick="newPrescription()">💊 Prescription</button><button onclick="newPayment()">💳 Payment</button>
+</div></div>
+<div class="panel"><h2>Recent Visits</h2><div id="recentVisits"></div></div>
+</section>
+
+<section id="patients" class="page hidden">
+<div class="panel"><h2>Patient Registration</h2>
+<div class="form">
+<div class="field"><label>Patient ID</label><input id="p_id" readonly placeholder="Auto"></div>
+<div class="field"><label>Full Name *</label><input id="p_name"></div>
+<div class="field"><label>Mobile</label><input id="p_mobile" inputmode="tel"></div>
+<div class="field"><label>Date of Birth</label><input id="p_dob" type="date"></div>
+<div class="field"><label>Gender</label><select id="p_gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
+<div class="field"><label>Blood Group</label><select id="p_blood"><option value="">Unknown</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+<div class="field"><label>City</label><input id="p_city"></div>
+<div class="field"><label>Email</label><input id="p_email" type="email"></div>
+<div class="field full"><label>Address</label><textarea id="p_address"></textarea></div>
+<div class="field full"><label>Medical Notes / Allergies</label><textarea id="p_notes"></textarea></div>
+</div><div class="actions"><button class="primary" onclick="savePatient()">💾 Save Patient</button><button onclick="clearPatient()">Clear</button></div></div>
+<div class="panel"><div class="toolbar"><input id="patientSearch" placeholder="Search patient..." oninput="renderPatients()"><button onclick="exportCSV('patients')">CSV</button><button onclick="exportJSON('patients')">JSON</button></div><div class="tablewrap"><table><thead><tr><th>ID</th><th>Name</th><th>Mobile</th><th>DOB</th><th>Gender</th><th>Blood</th><th>City</th><th>Actions</th></tr></thead><tbody id="patientRows"></tbody></table></div></div>
+</section>
+
+<section id="doctors" class="page hidden">
+<div class="panel"><h2>Doctor Registration</h2><div class="form">
+<div class="field"><label>Doctor ID</label><input id="d_id" readonly></div><div class="field"><label>Name *</label><input id="d_name"></div><div class="field"><label>Specialization</label><input id="d_spec" placeholder="General Physician"></div><div class="field"><label>Mobile</label><input id="d_mobile"></div><div class="field"><label>Fee</label><input id="d_fee" type="number" min="0"></div><div class="field"><label>Room</label><input id="d_room"></div></div><div class="actions"><button class="primary" onclick="saveDoctor()">💾 Save Doctor</button><button onclick="clearDoctor()">Clear</button></div></div>
+<div class="panel"><div class="toolbar"><input id="doctorSearch" placeholder="Search doctor..." oninput="renderDoctors"><button onclick="exportCSV('doctors')">CSV</button></div><div class="tablewrap"><table><thead><tr><th>ID</th><th>Name</th><th>Specialization</th><th>Mobile</th><th>Fee</th><th>Room</th><th>Actions</th></tr></thead><tbody id="doctorRows"></tbody></table></div></div>
+</section>
+
+<section id="visits" class="page hidden">
+<div class="panel"><h2>Patient Visit / Consultation</h2><div class="form">
+<div class="field"><label>Visit ID</label><input id="v_id" readonly></div><div class="field"><label>Patient *</label><select id="v_patient"></select></div><div class="field"><label>Doctor *</label><select id="v_doctor"></select></div><div class="field"><label>Date & Time</label><input id="v_date" type="datetime-local"></div><div class="field"><label>Blood Pressure</label><input id="v_bp" placeholder="120/80"></div><div class="field"><label>Weight (kg)</label><input id="v_weight" type="number" step="0.1"></div><div class="field"><label>Temperature</label><input id="v_temp" type="number" step="0.1"></div><div class="field"><label>Diagnosis</label><input id="v_diagnosis"></div><div class="field full"><label>Symptoms / Complaints</label><textarea id="v_symptoms"></textarea></div><div class="field full"><label>Doctor Notes / Treatment Plan</label><textarea id="v_notes"></textarea></div></div><div class="actions"><button class="primary" onclick="saveVisit()">💾 Save Visit</button><button onclick="clearVisit()">Clear</button></div></div>
+<div class="panel"><div class="toolbar"><input id="visitSearch" placeholder="Search patient/diagnosis..." oninput="renderVisits"><button onclick="exportCSV('visits')">CSV</button><button onclick="exportJSON('visits')">JSON</button></div><div class="tablewrap"><table><thead><tr><th>ID</th><th>Date</th><th>Patient</th><th>Doctor</th><th>Diagnosis</th><th>Vitals</th><th>Actions</th></tr></thead><tbody id="visitRows"></tbody></table></div></div>
+</section>
+
+<section id="prescriptions" class="page hidden">
+<div class="panel"><h2>Prescription</h2><div class="form">
+<div class="field"><label>Prescription ID</label><input id="rx_id" readonly></div><div class="field"><label>Patient</label><select id="rx_patient"></select></div><div class="field"><label>Doctor</label><select id="rx_doctor"></select></div><div class="field"><label>Date</label><input id="rx_date" type="date"></div><div class="field"><label>Medicine</label><input id="rx_medicine" placeholder="Medicine name"></div><div class="field"><label>Dosage</label><input id="rx_dosage" placeholder="1 tablet"></div><div class="field"><label>Frequency</label><input id="rx_frequency" placeholder="1-0-1"></div><div class="field"><label>Days</label><input id="rx_days" type="number"></div><div class="field full"><label>Instructions</label><textarea id="rx_instruction"></textarea></div></div><div class="actions"><button class="primary" onclick="saveRx()">💾 Save Prescription</button><button onclick="clearRx()">Clear</button></div></div>
+<div class="panel"><div class="tablewrap"><table><thead><tr><th>ID</th><th>Date</th><th>Patient</th><th>Doctor</th><th>Medicine</th><th>Dosage</th><th>Frequency</th><th>Days</th><th>Action</th></tr></thead><tbody id="rxRows"></tbody></table></div></div>
+</section>
+
+<section id="payments" class="page hidden">
+<div class="panel"><h2>Payment</h2><div class="form">
+<div class="field"><label>Payment ID</label><input id="pay_id" readonly></div><div class="field"><label>Patient</label><select id="pay_patient"></select></div><div class="field"><label>Visit</label><select id="pay_visit"></select></div><div class="field"><label>Date</label><input id="pay_date" type="date"></div><div class="field"><label>Amount ₹</label><input id="pay_amount" type="number" min="0" step="0.01"></div><div class="field"><label>Mode</label><select id="pay_mode"><option>Cash</option><option>UPI</option><option>Card</option><option>Bank Transfer</option></select></div><div class="field full"><label>Notes</label><textarea id="pay_notes"></textarea></div></div><div class="actions"><button class="primary" onclick="savePayment()">💾 Save Payment</button><button onclick="clearPayment()">Clear</button></div></div>
+<div class="panel"><div class="tablewrap"><table><thead><tr><th>ID</th><th>Date</th><th>Patient</th><th>Amount</th><th>Mode</th><th>Notes</th><th>Action</th></tr></thead><tbody id="payRows"></tbody></table></div></div>
+</section>
+
+<section id="sql" class="page hidden">
+<div class="panel"><h2>SQLite SQL Query Console</h2><div class="notice">Run SELECT queries to inspect your local SQLite database. INSERT/UPDATE/DELETE are also supported. The database is stored locally in your browser.</div>
+<div class="sqlrow"><textarea id="sqlInput">SELECT p.id, p.name, p.mobile, COUNT(v.id) AS visits
+FROM patients p LEFT JOIN visits v ON v.patient_id=p.id
+GROUP BY p.id ORDER BY p.name;</textarea><button class="primary" onclick="runSQL()">▶ Run SQL</button></div><div id="sqlStatus" class="muted" style="margin:10px 0"></div><pre id="sqlResult"></pre></div>
+<div class="panel"><h2>Database Tables</h2><pre id="schema"></pre></div>
+</section>
+
+<section id="backup" class="page hidden">
+<div class="panel"><h2>Export / Import</h2><div class="notice">SQLite export creates a real <b>.db</b> file. JSON and CSV exports are generated from the current SQLite database.</div>
+<div class="actions">
+<button class="primary" onclick="exportSQLite()">🗄️ Export SQLite DB</button><button onclick="exportAllJSON()">📦 Export All JSON</button><button onclick="exportAllCSV()">📄 Export All CSV</button><button onclick="document.getElementById('dbFile').click()">📥 Import SQLite DB</button><input id="dbFile" class="hidden" type="file" accept=".db,.sqlite,.sqlite3" onchange="importSQLite(this.files[0])">
+<button onclick="document.getElementById('jsonFile').click()">📥 Import JSON</button><input id="jsonFile" class="hidden" type="file" accept=".json" onchange="importJSON(this.files[0])">
+</div></div>
+<div class="panel"><h2>Database Information</h2><pre id="dbInfo"></pre></div>
+</section>
+<footer>Local-first clinic database • Keep regular backups • This demo is not a substitute for a compliant medical-record system.</footer>
+</div>
+
+<script>
+const state={db:null,SQL:null};
+const tables=['patients','doctors','visits','prescriptions','payments'];
+
+function nowLocal(){const d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}
+function today(){return new Date().toISOString().slice(0,10)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function csv(rows){if(!rows.length)return '';const keys=Object.keys(rows[0]);return [keys.join(','),...rows.map(r=>keys.map(k=>{let x=r[k]??'';x=String(x).replace(/"/g,'""');return `"${x}"`}).join(','))].join('\\n')}
+function query(sql,params=[]){const s=state.db.prepare(sql);s.bind(params);const rows=[];while(s.step())rows.push(s.getAsObject());s.free();return rows}
+function exec(sql,params=[]){const s=state.db.prepare(sql);s.bind(params);s.step();s.free();saveLocal()}
+function saveLocal(){const data=state.db.export();localStorage.setItem('doctorPatientSQLite',bytesToB64(data))}
+function bytesToB64(bytes){let s='';const chunk=0x8000;for(let i=0;i<bytes.length;i+=chunk)s+=String.fromCharCode(...bytes.subarray(i,i+chunk));return btoa(s)}
+function b64ToBytes(b64){const s=atob(b64),a=new Uint8Array(s.length);for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return a}
+function initSchema(){
+exec(`CREATE TABLE IF NOT EXISTS patients(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL,mobile TEXT,dob TEXT,gender TEXT,blood_group TEXT,city TEXT,email TEXT,address TEXT,notes TEXT,created_at TEXT DEFAULT CURRENT_TIMESTAMP)`);
+exec(`CREATE TABLE IF NOT EXISTS doctors(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL,specialization TEXT,mobile TEXT,fee REAL DEFAULT 0,room TEXT,created_at TEXT DEFAULT CURRENT_TIMESTAMP)`);
+exec(`CREATE TABLE IF NOT EXISTS visits(id INTEGER PRIMARY KEY AUTOINCREMENT,patient_id INTEGER NOT NULL,doctor_id INTEGER,visit_date TEXT,symptoms TEXT,bp TEXT,weight REAL,temperature REAL,diagnosis TEXT,notes TEXT,FOREIGN KEY(patient_id) REFERENCES patients(id),FOREIGN KEY(doctor_id) REFERENCES doctors(id))`);
+exec(`CREATE TABLE IF NOT EXISTS prescriptions(id INTEGER PRIMARY KEY AUTOINCREMENT,patient_id INTEGER,doctor_id INTEGER,prescription_date TEXT,medicine TEXT,dosage TEXT,frequency TEXT,days INTEGER,instructions TEXT,FOREIGN KEY(patient_id) REFERENCES patients(id),FOREIGN KEY(doctor_id) REFERENCES doctors(id))`);
+exec(`CREATE TABLE IF NOT EXISTS payments(id INTEGER PRIMARY KEY AUTOINCREMENT,patient_id INTEGER,visit_id INTEGER,payment_date TEXT,amount REAL,mode TEXT,notes TEXT,FOREIGN KEY(patient_id) REFERENCES patients(id),FOREIGN KEY(visit_id) REFERENCES visits(id))`);
+}
+function setVal(id,v){document.getElementById(id).value=v??''}
+function getVal(id){return document.getElementById(id).value.trim()}
+function fillSelect(id,rows,placeholder){const el=document.getElementById(id);el.innerHTML=`<option value="">${placeholder}</option>`+rows.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('')}
+function refreshSelects(){const ps=query('SELECT id,name FROM patients ORDER BY name'),ds=query('SELECT id,name FROM doctors ORDER BY name');['v_patient','rx_patient','pay_patient'].forEach(id=>fillSelect(id,ps,'Select patient'));['v_doctor','rx_doctor'].forEach(id=>fillSelect(id,ds,'Select doctor'));const vs=query(`SELECT v.id,v.visit_date,p.name FROM visits v JOIN patients p ON p.id=v.patient_id ORDER BY v.id DESC`);document.getElementById('pay_visit').innerHTML='<option value="">Select visit</option>'+vs.map(v=>`<option value="${v.id}">#${v.id} ${esc(v.name)} - ${esc((v.visit_date||'').slice(0,16))}</option>`).join('')}
+function refresh(){renderPatients();renderDoctors();renderVisits();renderRx();renderPayments();refreshSelects();dashboard();schema();dbInfo()}
+function dashboard(){document.getElementById('sPatients').textContent=query('SELECT COUNT(*) c FROM patients')[0].c;document.getElementById('sDoctors').textContent=query('SELECT COUNT(*) c FROM doctors')[0].c;document.getElementById('sVisits').textContent=query('SELECT COUNT(*) c FROM visits')[0].c;document.getElementById('sPayments').textContent='₹'+Number(query('SELECT COALESCE(SUM(amount),0) c FROM payments')[0].c).toLocaleString('en-IN');const rows=query(`SELECT v.id,v.visit_date,p.name patient,d.name doctor,v.diagnosis FROM visits v JOIN patients p ON p.id=v.patient_id LEFT JOIN doctors d ON d.id=v.doctor_id ORDER BY v.id DESC LIMIT 8`);document.getElementById('recentVisits').innerHTML=rows.length?`<div class="tablewrap"><table><tr><th>Date</th><th>Patient</th><th>Doctor</th><th>Diagnosis</th></tr>${rows.map(r=>`<tr><td>${esc(r.visit_date)}</td><td>${esc(r.patient)}</td><td>${esc(r.doctor)}</td><td>${esc(r.diagnosis)}</td></tr>`).join('')}</table></div>`:'<span class="muted">No visits yet.</span>'}
+function renderPatients(){const q=(getVal('patientSearch')||'').toLowerCase();const rows=query('SELECT * FROM patients ORDER BY id DESC').filter(r=>JSON.stringify(r).toLowerCase().includes(q));document.getElementById('patientRows').innerHTML=rows.map(r=>`<tr><td>${r.id}</td><td><b>${esc(r.name)}</b></td><td>${esc(r.mobile)}</td><td>${esc(r.dob)}</td><td>${esc(r.gender)}</td><td><span class="pill">${esc(r.blood_group||'')}</span></td><td>${esc(r.city)}</td><td><button onclick="editPatient(${r.id})">Edit</button> <button class="danger" onclick="deleteRow('patients',${r.id})">Delete</button></td></tr>`).join('')}
+function renderDoctors(){const q=(getVal('doctorSearch')||'').toLowerCase();const rows=query('SELECT * FROM doctors ORDER BY id DESC').filter(r=>JSON.stringify(r).toLowerCase().includes(q));document.getElementById('doctorRows').innerHTML=rows.map(r=>`<tr><td>${r.id}</td><td><b>${esc(r.name)}</b></td><td>${esc(r.specialization)}</td><td>${esc(r.mobile)}</td><td>₹${Number(r.fee||0).toLocaleString('en-IN')}</td><td>${esc(r.room)}</td><td><button onclick="editDoctor(${r.id})">Edit</button> <button class="danger" onclick="deleteRow('doctors',${r.id})">Delete</button></td></tr>`).join('')}
+function renderVisits(){const q=(getVal('visitSearch')||'').toLowerCase();const rows=query(`SELECT v.*,p.name patient,d.name doctor FROM visits v JOIN patients p ON p.id=v.patient_id LEFT JOIN doctors d ON d.id=v.doctor_id ORDER BY v.id DESC`).filter(r=>JSON.stringify(r).toLowerCase().includes(q));document.getElementById('visitRows').innerHTML=rows.map(r=>`<tr><td>${r.id}</td><td>${esc(r.visit_date)}</td><td>${esc(r.patient)}</td><td>${esc(r.doctor)}</td><td>${esc(r.diagnosis)}</td><td>BP ${esc(r.bp)}<br>Wt ${esc(r.weight)} kg<br>Temp ${esc(r.temperature)}</td><td><button onclick="editVisit(${r.id})">Edit</button> <button class="danger" onclick="deleteRow('visits',${r.id})">Delete</button></td></tr>`).join('')}
+function renderRx(){const rows=query(`SELECT r.*,p.name patient,d.name doctor FROM prescriptions r LEFT JOIN patients p ON p.id=r.patient_id LEFT JOIN doctors d ON d.id=r.doctor_id ORDER BY r.id DESC`);document.getElementById('rxRows').innerHTML=rows.map(r=>`<tr><td>${r.id}</td><td>${esc(r.prescription_date)}</td><td>${esc(r.patient)}</td><td>${esc(r.doctor)}</td><td>${esc(r.medicine)}</td><td>${esc(r.dosage)}</td><td>${esc(r.frequency)}</td><td>${esc(r.days)}</td><td><button onclick="editRx(${r.id})">Edit</button> <button class="danger" onclick="deleteRow('prescriptions',${r.id})">Delete</button></td></tr>`).join('')}
+function renderPayments(){const rows=query(`SELECT pay.*,p.name patient FROM payments pay LEFT JOIN patients p ON p.id=pay.patient_id ORDER BY pay.id DESC`);document.getElementById('payRows').innerHTML=rows.map(r=>`<tr><td>${r.id}</td><td>${esc(r.payment_date)}</td><td>${esc(r.patient)}</td><td>₹${Number(r.amount||0).toLocaleString('en-IN')}</td><td>${esc(r.mode)}</td><td>${esc(r.notes)}</td><td><button onclick="editPayment(${r.id})">Edit</button> <button class="danger" onclick="deleteRow('payments',${r.id})">Delete</button></td></tr>`).join('')}
+function clearPatient(){['p_id','p_name','p_mobile','p_dob','p_city','p_email','p_address','p_notes'].forEach(x=>setVal(x,''));setVal('p_gender','Male');setVal('p_blood','')}
+function savePatient(){const id=getVal('p_id'),name=getVal('p_name');if(!name)return alert('Patient name is required');const a=[name,getVal('p_mobile'),getVal('p_dob'),getVal('p_gender'),getVal('p_blood'),getVal('p_city'),getVal('p_email'),getVal('p_address'),getVal('p_notes')];if(id)exec('UPDATE patients SET name=?,mobile=?,dob=?,gender=?,blood_group=?,city=?,email=?,address=?,notes=? WHERE id=?',[...a,id]);else exec('INSERT INTO patients(name,mobile,dob,gender,blood_group,city,email,address,notes) VALUES(?,?,?,?,?,?,?,?,?)',a);clearPatient();refresh()}
+function editPatient(id){const r=query('SELECT * FROM patients WHERE id=?',[id])[0];if(!r)return;showTab('patients');Object.entries({p_id:r.id,p_name:r.name,p_mobile:r.mobile,p_dob:r.dob,p_gender:r.gender,p_blood:r.blood_group,p_city:r.city,p_email:r.email,p_address:r.address,p_notes:r.notes}).forEach(([k,v])=>setVal(k,v))}
+function clearDoctor(){['d_id','d_name','d_spec','d_mobile','d_fee','d_room'].forEach(x=>setVal(x,''))}
+function saveDoctor(){const id=getVal('d_id'),name=getVal('d_name');if(!name)return alert('Doctor name is required');const a=[name,getVal('d_spec'),getVal('d_mobile'),Number(getVal('d_fee')||0),getVal('d_room')];if(id)exec('UPDATE doctors SET name=?,specialization=?,mobile=?,fee=?,room=? WHERE id=?',[...a,id]);else exec('INSERT INTO doctors(name,specialization,mobile,fee,room) VALUES(?,?,?,?,?)',a);clearDoctor();refresh()}
+function editDoctor(id){const r=query('SELECT * FROM doctors WHERE id=?',[id])[0];showTab('doctors');Object.entries({d_id:r.id,d_name:r.name,d_spec:r.specialization,d_mobile:r.mobile,d_fee:r.fee,d_room:r.room}).forEach(([k,v])=>setVal(k,v))}
+function clearVisit(){['v_id','v_patient','v_doctor','v_date','v_bp','v_weight','v_temp','v_diagnosis','v_symptoms','v_notes'].forEach(x=>setVal(x,''));setVal('v_date',nowLocal())}
+function saveVisit(){const id=getVal('v_id'),pid=getVal('v_patient');if(!pid)return alert('Select patient');const a=[pid,getVal('v_doctor')||null,getVal('v_date'),getVal('v_symptoms'),getVal('v_bp'),Number(getVal('v_weight')||0)||null,Number(getVal('v_temp')||0)||null,getVal('v_diagnosis'),getVal('v_notes')];if(id)exec('UPDATE visits SET patient_id=?,doctor_id=?,visit_date=?,symptoms=?,bp=?,weight=?,temperature=?,diagnosis=?,notes=? WHERE id=?',[...a,id]);else exec('INSERT INTO visits(patient_id,doctor_id,visit_date,symptoms,bp,weight,temperature,diagnosis,notes) VALUES(?,?,?,?,?,?,?,?,?)',a);clearVisit();refresh()}
+function editVisit(id){const r=query('SELECT * FROM visits WHERE id=?',[id])[0];showTab('visits');Object.entries({v_id:r.id,v_patient:r.patient_id,v_doctor:r.doctor_id,v_date:r.visit_date,v_bp:r.bp,v_weight:r.weight,v_temp:r.temperature,v_diagnosis:r.diagnosis,v_symptoms:r.symptoms,v_notes:r.notes}).forEach(([k,v])=>setVal(k,v))}
+function clearRx(){['rx_id','rx_patient','rx_doctor','rx_date','rx_medicine','rx_dosage','rx_frequency','rx_days','rx_instruction'].forEach(x=>setVal(x,''));setVal('rx_date',today())}
+function saveRx(){const id=getVal('rx_id'),a=[getVal('rx_patient')||null,getVal('rx_doctor')||null,getVal('rx_date'),getVal('rx_medicine'),getVal('rx_dosage'),getVal('rx_frequency'),Number(getVal('rx_days')||0),getVal('rx_instruction')];if(!a[3])return alert('Medicine is required');if(id)exec('UPDATE prescriptions SET patient_id=?,doctor_id=?,prescription_date=?,medicine=?,dosage=?,frequency=?,days=?,instructions=? WHERE id=?',[...a,id]);else exec('INSERT INTO prescriptions(patient_id,doctor_id,prescription_date,medicine,dosage,frequency,days,instructions) VALUES(?,?,?,?,?,?,?,?)',a);clearRx();refresh()}
+function editRx(id){const r=query('SELECT * FROM prescriptions WHERE id=?',[id])[0];showTab('prescriptions');Object.entries({rx_id:r.id,rx_patient:r.patient_id,rx_doctor:r.doctor_id,rx_date:r.prescription_date,rx_medicine:r.medicine,rx_dosage:r.dosage,rx_frequency:r.frequency,rx_days:r.days,rx_instruction:r.instructions}).forEach(([k,v])=>setVal(k,v))}
+function clearPayment(){['pay_id','pay_patient','pay_visit','pay_date','pay_amount','pay_notes'].forEach(x=>setVal(x,''));setVal('pay_mode','Cash');setVal('pay_date',today())}
+function savePayment(){const id=getVal('pay_id'),a=[getVal('pay_patient')||null,getVal('pay_visit')||null,getVal('pay_date'),Number(getVal('pay_amount')||0),getVal('pay_mode'),getVal('pay_notes')];if(a[3]<=0)return alert('Enter payment amount');if(id)exec('UPDATE payments SET patient_id=?,visit_id=?,payment_date=?,amount=?,mode=?,notes=? WHERE id=?',[...a,id]);else exec('INSERT INTO payments(patient_id,visit_id,payment_date,amount,mode,notes) VALUES(?,?,?,?,?,?)',a);clearPayment();refresh()}
+function editPayment(id){const r=query('SELECT * FROM payments WHERE id=?',[id])[0];showTab('payments');Object.entries({pay_id:r.id,pay_patient:r.patient_id,pay_visit:r.visit_id,pay_date:r.payment_date,pay_amount:r.amount,pay_mode:r.mode,pay_notes:r.notes}).forEach(([k,v])=>setVal(k,v))}
+function deleteRow(table,id){if(!confirm('Delete this record?'))return;exec(`DELETE FROM ${table} WHERE id=?`,[id]);refresh()}
+function newPatient(){showTab('patients');clearPatient();setVal('p_name','')}
+function newVisit(){showTab('visits');clearVisit()}
+function newPrescription(){showTab('prescriptions');clearRx()}
+function newPayment(){showTab('payments');clearPayment()}
+function showTab(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));if(id==='patients')renderPatients();if(id==='doctors')renderDoctors()}
+function exportCSV(table){const rows=query(`SELECT * FROM ${table}`);dl(new Blob([csv(rows)],{type:'text/csv'}),`${table}.csv`)}
+function exportJSON(table){const rows=query(`SELECT * FROM ${table}`);dl(new Blob([JSON.stringify(rows,null,2)],{type:'application/json'}),`${table}.json`)}
+function exportAllJSON(){const out={};tables.forEach(t=>out[t]=query(`SELECT * FROM ${t}`));out.exported_at=new Date().toISOString();dl(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),'doctor_patient_backup.json')}
+function exportAllCSV(){tables.forEach((t,i)=>setTimeout(()=>exportCSV(t),i*300))}
+function exportSQLite(){dl(new Blob([state.db.export()],{type:'application/x-sqlite3'}),'doctor_patient.db')}
+async function importSQLite(file){if(!file)return; if(!confirm('Replace the current local database with this SQLite file?'))return;const buf=new Uint8Array(await file.arrayBuffer());state.db=new state.SQL.Database(buf);saveLocal();refresh();alert('SQLite database imported successfully.')}
+async function importJSON(file){if(!file)return;try{const data=JSON.parse(await file.text());if(!confirm('Import JSON records into the current database?'))return;for(const r of data.patients||[])exec('INSERT OR REPLACE INTO patients(id,name,mobile,dob,gender,blood_group,city,email,address,notes,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)',[r.id,r.name,r.mobile,r.dob,r.gender,r.blood_group,r.city,r.email,r.address,r.notes,r.created_at]);for(const r of data.doctors||[])exec('INSERT OR REPLACE INTO doctors(id,name,specialization,mobile,fee,room,created_at) VALUES(?,?,?,?,?,?,?)',[r.id,r.name,r.specialization,r.mobile,r.fee,r.room,r.created_at]);for(const r of data.visits||[])exec('INSERT OR REPLACE INTO visits(id,patient_id,doctor_id,visit_date,symptoms,bp,weight,temperature,diagnosis,notes) VALUES(?,?,?,?,?,?,?,?,?,?)',[r.id,r.patient_id,r.doctor_id,r.visit_date,r.symptoms,r.bp,r.weight,r.temperature,r.diagnosis,r.notes]);for(const r of data.prescriptions||[])exec('INSERT OR REPLACE INTO prescriptions(id,patient_id,doctor_id,prescription_date,medicine,dosage,frequency,days,instructions) VALUES(?,?,?,?,?,?,?,?,?)',[r.id,r.patient_id,r.doctor_id,r.prescription_date,r.medicine,r.dosage,r.frequency,r.days,r.instructions]);for(const r of data.payments||[])exec('INSERT OR REPLACE INTO payments(id,patient_id,visit_id,payment_date,amount,mode,notes) VALUES(?,?,?,?,?,?,?)',[r.id,r.patient_id,r.visit_id,r.payment_date,r.amount,r.mode,r.notes]);refresh();alert('JSON imported.')}catch(e){alert('Invalid JSON: '+e.message)}}
+function runSQL(){try{const sql=getVal('sqlInput');if(!sql)return;const s=state.db.prepare(sql);const rows=[];while(s.step())rows.push(s.getAsObject());s.free();if(/^\s*(INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|REPLACE)/i.test(sql)){saveLocal();refresh()}document.getElementById('sqlStatus').textContent=`Query completed • ${rows.length} row(s)`;document.getElementById('sqlResult').textContent=rows.length?JSON.stringify(rows,null,2):'No rows returned / statement executed successfully.'}catch(e){document.getElementById('sqlStatus').textContent='SQL error';document.getElementById('sqlResult').textContent=e.message}}
+function schema(){document.getElementById('schema').textContent=query(`SELECT name,sql FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name`).map(x=>x.sql+';').join('\\n\\n')}
+function dbInfo(){let size=state.db.export().byteLength;document.getElementById('dbInfo').textContent=`SQLite database: doctor_patient.db\\nSize: ${size.toLocaleString()} bytes\\nTables: ${tables.join(', ')}\\nStorage: Browser localStorage\\nRows:\\n`+tables.map(t=>`  ${t}: ${query(`SELECT COUNT(*) c FROM ${t}`)[0].c}`).join('\\n')}
+async function start(){const script=document.createElement('script');script.src='https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/sql-wasm.js';script.onload=async()=>{state.SQL=await initSqlJs({locateFile:f=>'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/'+f});const saved=localStorage.getItem('doctorPatientSQLite');state.db=saved?new state.SQL.Database(b64ToBytes(saved)):new state.SQL.Database();initSchema();setVal('v_date',nowLocal());setVal('rx_date',today());setVal('pay_date',today());refresh()};script.onerror=()=>alert('Could not load SQLite engine. Open this HTML with internet access once so sql.js can load.');document.head.appendChild(script)}
+start();
+</script>
+</body>
+</html>
