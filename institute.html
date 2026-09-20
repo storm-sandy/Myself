@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#136f63">
+<title>Institute Management Pro - SQLite</title>
+<script src="vendor/sql-wasm.js" onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js'"></script>
+<style>
+:root{
+ --p:#136f63;--p2:#0d5149;--accent:#f59e0b;--bg:#f4f7f8;--card:#fff;--text:#17212b;
+ --muted:#64748b;--border:#dbe3e7;--danger:#dc2626;--ok:#15803d;--shadow:0 8px 25px #102a430d
+}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}
+.app{min-height:100vh}.top{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,var(--p2),var(--p));color:#fff;padding:12px 14px;box-shadow:0 4px 18px #0002}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:13px;background:#ffffff20;display:grid;place-items:center;font-size:22px}
+.brand h1{font-size:18px;margin:0}.brand small{opacity:.8}
+.status{margin-left:auto;font-size:11px;background:#ffffff18;padding:7px 9px;border-radius:20px}
+.tabs{position:sticky;top:67px;z-index:19;background:#fff;border-bottom:1px solid var(--border);display:flex;gap:5px;overflow:auto;padding:7px;scrollbar-width:none}
+.tabs button{flex:0 0 auto;background:transparent;color:var(--muted);padding:9px 12px;border-radius:10px;font-weight:700;font-size:12px}
+.tabs button.active{background:#e5f4f1;color:var(--p2)}
+main{max-width:1500px;margin:auto;padding:14px}.tab{display:none}.tab.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}.col12{grid-column:span 12}.col8{grid-column:span 8}.col6{grid-column:span 6}.col4{grid-column:span 4}.col3{grid-column:span 3}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+.card h2,.card h3{margin:0 0 10px}.card h2{font-size:17px}.card h3{font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.kpi{padding:14px;border-radius:14px;background:linear-gradient(145deg,#fff,#f3f8f8);border:1px solid var(--border)}.kpi b{font-size:25px;display:block}.kpi span{font-size:11px;color:var(--muted)}
+.formgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.field label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin:0 0 4px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:9px;background:#fff;color:var(--text)}.field textarea{min-height:72px;resize:vertical}
+.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.btn{padding:9px 12px;border-radius:9px;font-weight:700;background:#e8eef0;color:#233}.primary{background:var(--p);color:#fff}.warn{background:#fff3d7;color:#9a6500}.danger{background:#fee2e2;color:#991b1b}.success{background:#dcfce7;color:#166534}
+.tablewrap{overflow:auto;border:1px solid var(--border);border-radius:11px}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:8px;border-bottom:1px solid var(--border);font-size:12px;text-align:left}th{background:#f7fafb;position:sticky;top:0;z-index:1}tr:hover td{background:#fbfefd}
+.badge{display:inline-block;padding:4px 7px;border-radius:99px;background:#e7f5f2;color:var(--p2);font-size:10px;font-weight:800}.badge.red{background:#fee2e2;color:#991b1b}.badge.amber{background:#fef3c7;color:#92400e}
+.chartbox{height:260px;position:relative}.chartbox canvas{width:100%;height:100%}
+.notice{padding:10px;border-radius:10px;background:#eef6ff;border:1px solid #cfe2ff;color:#24527a;font-size:12px}
+.search{max-width:300px}.toolbar{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.modal{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;padding:15px;z-index:50}.modal.open{display:flex}.modalbox{background:#fff;border-radius:18px;max-width:620px;width:100%;max-height:90vh;overflow:auto;padding:16px}
+.progress{height:9px;background:#e7ecee;border-radius:9px;overflow:hidden}.progress i{display:block;height:100%;background:var(--p)}
+.small{font-size:11px;color:var(--muted)}.right{text-align:right}
+@media(max-width:900px){.kpis{grid-template-columns:repeat(3,1fr)}.col8,.col6,.col4,.col3{grid-column:span 12}.formgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}.formgrid{grid-template-columns:1fr}.top{padding:9px}.tabs{top:60px}.tabs button{padding:8px 10px}.card{padding:11px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+ <div class="brand"><div class="logo">🎓</div><div><h1>Institute Management Pro</h1><small>Enquiry → Admission → Lecture → Attendance → Faculty Payment</small></div><div id="dbStatus" class="status">SQLite loading…</div></div>
+</header>
+
+<nav class="tabs" id="tabs">
+ <button class="active" data-tab="dashboard">📊 Dashboard</button>
+ <button data-tab="enquiry">📝 Enquiry</button>
+ <button data-tab="students">👨‍🎓 Students</button>
+ <button data-tab="faculty">👨‍🏫 Faculty</button>
+ <button data-tab="courses">📚 Courses</button>
+ <button data-tab="lectures">🎥 Lectures</button>
+ <button data-tab="attendance">📍 GPS Attendance</button>
+ <button data-tab="fees">💳 Fees</button>
+ <button data-tab="payments">💰 Faculty Pay</button>
+ <button data-tab="reports">📈 Reports</button>
+ <button data-tab="database">🗄️ SQLite</button>
+</nav>
+
+<main>
+<section id="dashboard" class="tab active">
+ <div class="kpis" id="kpis"></div>
+ <div class="grid" style="margin-top:12px">
+  <div class="card col8"><h2>Student attendance trend</h2><div class="chartbox"><canvas id="attChart"></canvas></div></div>
+  <div class="card col4"><h2>Enquiry pipeline</h2><div class="chartbox"><canvas id="enqChart"></canvas></div></div>
+  <div class="card col6"><h2>Faculty lecture progress</h2><div class="chartbox"><canvas id="lectureChart"></canvas></div></div>
+  <div class="card col6"><h2>Faculty payment status</h2><div class="chartbox"><canvas id="payChart"></canvas></div></div>
+  <div class="card col12"><h2>Recent activity</h2><div id="recent"></div></div>
+ </div>
+</section>
+
+<section id="enquiry" class="tab">
+ <div class="grid">
+  <div class="card col4"><h2>New enquiry</h2><div class="formgrid">
+   <div class="field"><label>Name</label><input id="eqName"></div><div class="field"><label>Phone</label><input id="eqPhone"></div>
+   <div class="field"><label>Email</label><input id="eqEmail"></div><div class="field"><label>Course</label><input id="eqCourse"></div>
+   <div class="field"><label>Source</label><select id="eqSource"><option>Walk-in</option><option>Website</option><option>Phone</option><option>Referral</option><option>Social Media</option></select></div>
+   <div class="field"><label>Status</label><select id="eqStatus"><option>New</option><option>Contacted</option><option>Follow-up</option><option>Converted</option><option>Lost</option></select></div>
+   <div class="field" style="grid-column:1/-1"><label>Notes</label><textarea id="eqNotes"></textarea></div>
+  </div><div class="actions"><button class="btn primary" onclick="saveEnquiry()">Save Enquiry</button></div></div>
+  <div class="card col8"><div class="toolbar"><h2>Enquiries</h2><input class="field input search" id="eqSearch" placeholder="Search…" oninput="renderEnquiries()"></div><div class="tablewrap"><table><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Course</th><th>Source</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody id="eqTable"></tbody></table></div></div>
+ </div>
+</section>
+
+<section id="students" class="tab">
+ <div class="grid">
+  <div class="card col4"><h2>Student admission</h2><div class="formgrid">
+   <div class="field"><label>Student name</label><input id="stName"></div><div class="field"><label>Phone</label><input id="stPhone"></div>
+   <div class="field"><label>Email</label><input id="stEmail"></div><div class="field"><label>Course</label><input id="stCourse"></div>
+   <div class="field"><label>Batch</label><input id="stBatch" placeholder="Morning / Evening"></div><div class="field"><label>Admission date</label><input type="date" id="stDate"></div>
+   <div class="field"><label>Total fee</label><input type="number" id="stFee" value="0"></div><div class="field"><label>Paid fee</label><input type="number" id="stPaid" value="0"></div>
+  </div><div class="actions"><button class="btn primary" onclick="saveStudent()">Admit Student</button></div></div>
+  <div class="card col8"><div class="toolbar"><h2>Students</h2><input class="search" id="stSearch" placeholder="Search…" oninput="renderStudents()"></div><div class="tablewrap"><table><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Course</th><th>Batch</th><th>Fee</th><th>Balance</th><th>Action</th></tr></thead><tbody id="stTable"></tbody></table></div></div>
+ </div>
+</section>
+
+<section id="faculty" class="tab">
+ <div class="grid">
+  <div class="card col4"><h2>Faculty profile</h2><div class="formgrid">
+   <div class="field"><label>Name</label><input id="fcName"></div><div class="field"><label>Phone</label><input id="fcPhone"></div>
+   <div class="field"><label>Email</label><input id="fcEmail"></div><div class="field"><label>Subject</label><input id="fcSubject"></div>
+   <div class="field"><label>Rate / lecture</label><input type="number" id="fcRate" value="500"></div><div class="field"><label>Employment</label><select id="fcType"><option>Part-time</option><option>Full-time</option><option>Visiting</option></select></div>
+  </div><div class="actions"><button class="btn primary" onclick="saveFaculty()">Add Faculty</button></div></div>
+  <div class="card col8"><h2>Faculty</h2><div class="tablewrap"><table><thead><tr><th>ID</th><th>Name</th><th>Subject</th><th>Type</th><th>Rate</th><th>Lectures</th><th>Earned</th><th>Paid</th></tr></thead><tbody id="fcTable"></tbody></table></div></div>
+ </div>
+</section>
+
+<section id="courses" class="tab">
+ <div class="grid">
+  <div class="card col4"><h2>Course / subject</h2><div class="formgrid">
+   <div class="field"><label>Course name</label><input id="crName"></div><div class="field"><label>Duration</label><input id="crDuration"></div>
+   <div class="field"><label>Total topics</label><input type="number" id="crTopics" value="10"></div><div class="field"><label>Fee</label><input type="number" id="crFee" value="0"></div>
+  </div><div class="actions"><button class="btn primary" onclick="saveCourse()">Save Course</button></div></div>
+  <div class="card col8"><h2>Courses</h2><div class="tablewrap"><table><thead><tr><th>ID</th><th>Course</th><th>Duration</th><th>Topics</th><th>Fee</th></tr></thead><tbody id="crTable"></tbody></table></div></div>
+ </div>
+</section>
+
+<section id="lectures" class="tab">
+ <div class="grid">
+  <div class="card col4"><h2>Lecture scheduler</h2><div class="formgrid">
+   <div class="field"><label>Faculty</label><select id="leFaculty"></select></div><div class="field"><label>Course</label><select id="leCourse"></select></div>
+   <div class="field"><label>Date</label><input type="date" id="leDate"></div><div class="field"><label>Mode</label><select id="leMode"><option>Offline</option><option>Online</option></select></div>
+   <div class="field"><label>Topic / chapter</label><input id="leTopic"></div><div class="field"><label>Topic no.</label><input type="number" id="leTopicNo" value="1"></div>
+   <div class="field"><label>Meeting / room</label><input id="leRoom" placeholder="Room or meeting URL"></div><div class="field"><label>Duration (min)</label><input type="number" id="leDuration" value="60"></div>
+  </div><div class="actions"><button class="btn primary" onclick="saveLecture()">Save Lecture</button></div><div class="notice" style="margin-top:10px">Online lectures can store a Zoom/Meet/Teams link. Offline lectures can store a classroom/room.</div></div>
+  <div class="card col8"><h2>Lecture plan & progress</h2><div class="tablewrap"><table><thead><tr><th>Date</th><th>Faculty</th><th>Course</th><th>Topic</th><th>Mode</th><th>Duration</th><th>Status</th><th>Action</th></tr></thead><tbody id="leTable"></tbody></table></div></div>
+ </div>
+</section>
+
+<section id="attendance" class="tab">
+ <div class="grid">
+  <div class="card col4"><h2>GPS attendance</h2><div class="field"><label>Person type</label><select id="atType" onchange="loadAttendancePeople()"><option>Student</option><option>Faculty</option></select></div>
+  <div class="field" style="margin-top:8px"><label>Person</label><select id="atPerson"></select></div>
+  <div class="field" style="margin-top:8px"><label>Attendance</label><select id="atStatus"><option>Present</option><option>Late</option><option>Absent</option></select></div>
+  <div class="actions"><button class="btn primary" onclick="captureGPS()">📍 Capture GPS & Mark</button><button class="btn" onclick="manualAttendance()">Manual Mark</button></div>
+  <div id="gpsMsg" class="notice" style="margin-top:10px">GPS requires browser location permission and HTTPS/localhost in most browsers.</div></div>
+  <div class="card col8"><h2>Attendance register</h2><div class="toolbar"><select id="atFilter" onchange="renderAttendance()"><option>All</option><option>Student</option><option>Faculty</option></select><input class="search" id="atSearch" placeholder="Search…" oninput="renderAttendance()"></div><div class="tablewrap"><table><thead><tr><th>Date/time</th><th>Type</th><th>Person</th><th>Status</th><th>GPS</th><th>Accuracy</th><th>Action</th></tr></thead><tbody id="atTable"></tbody></table></div></div>
+ </div>
+</section>
+
+<section id="fees" class="tab">
+ <div class="grid">
+  <div class="card col4"><h2>Student fee receipt</h2><div class="formgrid">
+   <div class="field"><label>Student</label><select id="feeStudent"></select></div><div class="field"><label>Amount</label><input type="number" id="feeAmount"></div>
+   <div class="field"><label>Payment mode</label><select id="feeMode"><option>Cash</option><option>UPI</option><option>Bank</option><option>Card</option></select></div><div class="field"><label>Note</label><input id="feeNote"></div>
+  </div><div class="actions"><button class="btn primary" onclick="saveFee()">Record Payment</button></div></div>
+  <div class="card col8"><h2>Fee transactions</h2><div class="tablewrap"><table><thead><tr><th>Date</th><th>Student</th><th>Amount</th><th>Mode</th><th>Note</th></tr></thead><tbody id="feeTable"></tbody></table></div></div>
+ </div>
+</section>
+
+<section id="payments" class="tab">
+ <div class="grid">
+  <div class="card col4"><h2>Faculty payment</h2><div class="formgrid">
+   <div class="field"><label>Faculty</label><select id="payFaculty"></select></div><div class="field"><label>Payment type</label><select id="payType"><option>Part Payment</option><option>Full Payment</option></select></div>
+   <div class="field"><label>Amount</label><input type="number" id="payAmount"></div><div class="field"><label>Mode</label><select id="payMode"><option>Bank</option><option>UPI</option><option>Cash</option></select></div>
+   <div class="field" style="grid-column:1/-1"><label>Note</label><input id="payNote"></div>
+  </div><div class="actions"><button class="btn primary" onclick="saveFacultyPayment()">Record Faculty Payment</button></div></div>
+  <div class="card col8"><h2>Faculty payroll ledger</h2><div class="tablewrap"><table><thead><tr><th>Date</th><th>Faculty</th><th>Earned</th><th>Paid</th><th>Balance</th><th>Last payment</th><th>Status</th></tr></thead><tbody id="payTable"></tbody></table></div></div>
+ </div>
+</section>
+
+<section id="reports" class="tab">
+ <div class="grid">
+  <div class="card col6"><h2>Attendance by person</h2><div class="chartbox"><canvas id="personAttChart"></canvas></div></div>
+  <div class="card col6"><h2>Course lecture completion</h2><div class="chartbox"><canvas id="courseProgressChart"></canvas></div></div>
+  <div class="card col12"><h2>Operational summary</h2><div id="reportSummary"></div></div>
+ </div>
+</section>
+
+<section id="database" class="tab">
+ <div class="grid">
+  <div class="card col6"><h2>SQLite database</h2><p class="small">All operational data is stored in an in-browser SQLite database. Export/import lets you keep a real <b>.db</b> backup.</p>
+   <div class="actions"><button class="btn primary" onclick="exportDB()">⬇ SQLite .db</button><button class="btn" onclick="exportJSON()">⬇ JSON</button><button class="btn" onclick="exportCSV()">⬇ CSV ZIP-like bundle</button><button class="btn" onclick="exportSQL()">⬇ SQL</button><label class="btn">⬆ Import DB<input type="file" id="dbFile" accept=".db,.sqlite,.sqlite3" hidden onchange="importDB(this.files[0])"></label></div>
+   <div class="notice" style="margin-top:10px">CSV export creates one CSV containing all tables with table/row fields. JSON preserves each table as arrays.</div>
+  </div>
+  <div class="card col6"><h2>SQL console</h2><textarea id="sqlBox" style="width:100%;height:120px;border:1px solid var(--border);border-radius:10px;padding:10px" placeholder="SELECT * FROM students;"></textarea><div class="actions"><button class="btn primary" onclick="runSQL()">Run SQL</button><button class="btn" onclick="document.getElementById('sqlBox').value='SELECT name FROM sqlite_master WHERE type=&quot;table&quot;;'">Example</button></div><div id="sqlResult" class="tablewrap" style="margin-top:10px"></div></div>
+  <div class="card col12"><h2>Database tables</h2><div id="dbTables"></div></div>
+ </div>
+</section>
+</main>
+</div>
+
+<div class="modal" id="modal"><div class="modalbox"><div class="toolbar"><h2 id="modalTitle">Details</h2><button class="btn" onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
+
+<script>
+let db=null, SQL=null;
+const SQL_CDN="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/";
+const SQL_LOCAL="vendor/";
+const tables=[
+["enquiries","id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT,phone TEXT,email TEXT,course TEXT,source TEXT,status TEXT,notes TEXT,created_at TEXT"],
+["students","id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT,phone TEXT,email TEXT,course TEXT,batch TEXT,admission_date TEXT,total_fee REAL DEFAULT 0,paid_fee REAL DEFAULT 0"],
+["faculty","id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT,phone TEXT,email TEXT,subject TEXT,rate REAL DEFAULT 0,type TEXT"],
+["courses","id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT,duration TEXT,total_topics INTEGER DEFAULT 0,fee REAL DEFAULT 0"],
+["lectures","id INTEGER PRIMARY KEY AUTOINCREMENT,faculty_id INTEGER,course_id INTEGER,date TEXT,mode TEXT,topic TEXT,topic_no INTEGER,room TEXT,duration INTEGER,status TEXT DEFAULT 'Planned',completed INTEGER DEFAULT 0"],
+["attendance","id INTEGER PRIMARY KEY AUTOINCREMENT,person_type TEXT,person_id INTEGER,person_name TEXT,status TEXT,date_time TEXT,latitude REAL,longitude REAL,accuracy REAL"],
+["fees","id INTEGER PRIMARY KEY AUTOINCREMENT,student_id INTEGER,student_name TEXT,amount REAL,mode TEXT,note TEXT,date_time TEXT"],
+["faculty_payments","id INTEGER PRIMARY KEY AUTOINCREMENT,faculty_id INTEGER,faculty_name TEXT,amount REAL,type TEXT,mode TEXT,note TEXT,date_time TEXT"]
+];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const today=()=>new Date().toISOString().slice(0,10);
+const now=()=>new Date().toISOString();
+function q(sql,params=[]){let stmt=db.prepare(sql);stmt.bind(params);let a=[];while(stmt.step())a.push(stmt.getAsObject());stmt.free();return a}
+function exec(sql,params=[]){db.run(sql,params);saveLocal()}
+function saveLocal(){try{localStorage.setItem("institute_sqlite_db",u8toa(db.export()))}catch(e){}}
+function u8toa(u8){let s="";const chunk=0x8000;for(let i=0;i<u8.length;i+=chunk)s+=String.fromCharCode(...u8.subarray(i,i+chunk));return btoa(s)}
+function atou8(s){const b=atob(s),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u}
+async function init(){
+ try{
+  if(typeof initSqlJs!=="function") throw new Error("sql-wasm.js was not loaded. Put sql-wasm.js and sql-wasm.wasm in a vendor folder beside this HTML, or open it with internet access.");
+  let engineError=null;
+  try{ SQL=await initSqlJs({locateFile:f=>SQL_LOCAL+f}); }
+  catch(e){ engineError=e; SQL=await initSqlJs({locateFile:f=>SQL_CDN+f}); }
+  const saved=localStorage.getItem("institute_sqlite_db");
+  db=saved?new SQL.Database(atou8(saved)):new SQL.Database();
+  tables.forEach(t=>db.run(`CREATE TABLE IF NOT EXISTS ${t[0]}(${t[1]})`));
+  $("dbStatus").textContent="SQLite ready • local";
+  $("stDate").value=today();$("leDate").value=today();
+  seed();refreshAll();
+ }catch(e){$("dbStatus").textContent="SQLite error";alert("SQLite could not start.\\n\\nFor offline use, put sql-wasm.js and sql-wasm.wasm in a folder named vendor beside this HTML.\\n\\nError: "+e.message)}
+}
+function seed(){
+ if(q("SELECT COUNT(*) c FROM courses")[0].c==0){
+  exec("INSERT INTO courses(name,duration,total_topics,fee) VALUES(?,?,?,?)",["Python Data Science","3 Months",24,18000]);
+  exec("INSERT INTO courses(name,duration,total_topics,fee) VALUES(?,?,?,?)",["Java Full Stack","6 Months",40,35000]);
+ }
+}
+function refreshAll(){renderDashboard();renderEnquiries();renderStudents();renderFaculty();renderCourses();renderLectures();renderAttendance();renderFees();renderPayments();renderReports();loadSelects();renderDbTables()}
+document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.tab).classList.add("active");refreshAll()});
+
+function saveEnquiry(){let v=["eqName","eqPhone","eqEmail","eqCourse","eqSource","eqStatus","eqNotes"].map(x=>$(x).value.trim());if(!v[0])return alert("Enter enquiry name");exec("INSERT INTO enquiries(name,phone,email,course,source,status,notes,created_at) VALUES(?,?,?,?,?,?,?,?)",[...v,now()]);["eqName","eqPhone","eqEmail","eqCourse","eqNotes"].forEach(x=>$(x).value="");refreshAll()}
+function renderEnquiries(){let s=($("eqSearch")?.value||"").toLowerCase();let a=q("SELECT * FROM enquiries ORDER BY id DESC").filter(x=>(x.name+" "+x.phone+" "+x.course+" "+x.status).toLowerCase().includes(s));$("eqTable").innerHTML=a.map(x=>`<tr><td>${x.id}</td><td>${esc(x.name)}</td><td>${esc(x.phone)}</td><td>${esc(x.course)}</td><td>${esc(x.source)}</td><td><span class="badge">${esc(x.status)}</span></td><td>${x.created_at.slice(0,10)}</td><td><button class="btn danger" onclick="del('enquiries',${x.id})">Delete</button></td></tr>`).join("")}
+
+function saveStudent(){let v=["stName","stPhone","stEmail","stCourse","stBatch","stDate","stFee","stPaid"].map(x=>$(x).value);if(!v[0])return alert("Enter student name");exec("INSERT INTO students(name,phone,email,course,batch,admission_date,total_fee,paid_fee) VALUES(?,?,?,?,?,?,?,?)",v);refreshAll()}
+function renderStudents(){let s=($("stSearch")?.value||"").toLowerCase();let a=q("SELECT * FROM students ORDER BY id DESC").filter(x=>(x.name+" "+x.phone+" "+x.course).toLowerCase().includes(s));$("stTable").innerHTML=a.map(x=>`<tr><td>${x.id}</td><td>${esc(x.name)}</td><td>${esc(x.phone)}</td><td>${esc(x.course)}</td><td>${esc(x.batch)}</td><td>₹${(+x.total_fee).toFixed(0)}</td><td>₹${(+x.total_fee-+x.paid_fee).toFixed(0)}</td><td><button class="btn danger" onclick="del('students',${x.id})">Delete</button></td></tr>`).join("")}
+
+function saveFaculty(){let v=["fcName","fcPhone","fcEmail","fcSubject","fcRate","fcType"].map(x=>$(x).value);if(!v[0])return alert("Enter faculty name");exec("INSERT INTO faculty(name,phone,email,subject,rate,type) VALUES(?,?,?,?,?,?)",v);refreshAll()}
+function renderFaculty(){let a=q("SELECT * FROM faculty ORDER BY id DESC");$("fcTable").innerHTML=a.map(x=>{let l=q("SELECT COUNT(*) c FROM lectures WHERE faculty_id=?",[x.id])[0].c;let e=l*x.rate,p=q("SELECT COALESCE(SUM(amount),0) s FROM faculty_payments WHERE faculty_id=?",[x.id])[0].s;return `<tr><td>${x.id}</td><td>${esc(x.name)}</td><td>${esc(x.subject)}</td><td>${esc(x.type)}</td><td>₹${(+x.rate).toFixed(0)}</td><td>${l}</td><td>₹${e.toFixed(0)}</td><td>₹${(+p).toFixed(0)}</td></tr>`}).join("")}
+
+function saveCourse(){let v=["crName","crDuration","crTopics","crFee"].map(x=>$(x).value);if(!v[0])return alert("Enter course name");exec("INSERT INTO courses(name,duration,total_topics,fee) VALUES(?,?,?,?)",v);refreshAll()}
+function renderCourses(){$("crTable").innerHTML=q("SELECT * FROM courses ORDER BY id DESC").map(x=>`<tr><td>${x.id}</td><td>${esc(x.name)}</td><td>${esc(x.duration)}</td><td>${x.total_topics}</td><td>₹${(+x.fee).toFixed(0)}</td></tr>`).join("")}
+
+function loadSelects(){
+ let fs=q("SELECT * FROM faculty ORDER BY name"),cs=q("SELECT * FROM courses ORDER BY name"),ss=q("SELECT * FROM students ORDER BY name");
+ $("leFaculty").innerHTML=fs.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("");
+ $("payFaculty").innerHTML=fs.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("");
+ $("leCourse").innerHTML=cs.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("");
+ $("feeStudent").innerHTML=ss.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("");
+ loadAttendancePeople();
+}
+function saveLecture(){let v=["leFaculty","leCourse","leDate","leMode","leTopic","leTopicNo","leRoom","leDuration"].map(x=>$(x).value);if(!v[4])return alert("Enter topic");exec("INSERT INTO lectures(faculty_id,course_id,date,mode,topic,topic_no,room,duration,status,completed) VALUES(?,?,?,?,?,?,?,?,?,?)",[...v,"Planned",0]);refreshAll()}
+function renderLectures(){let a=q(`SELECT l.*,f.name faculty,c.name course FROM lectures l LEFT JOIN faculty f ON f.id=l.faculty_id LEFT JOIN courses c ON c.id=l.course_id ORDER BY l.date DESC,l.id DESC`);$("leTable").innerHTML=a.map(x=>`<tr><td>${x.date}</td><td>${esc(x.faculty)}</td><td>${esc(x.course)}</td><td>${esc(x.topic)} #${x.topic_no}</td><td>${x.mode}</td><td>${x.duration}m</td><td><span class="badge">${x.completed?"Completed":"Planned"}</span></td><td>${x.mode==="Online"&&x.room?`<a class="btn" target="_blank" href="${esc(x.room)}">Open</a>`:""} <button class="btn success" onclick="completeLecture(${x.id})">✓</button> <button class="btn danger" onclick="del('lectures',${x.id})">Delete</button></td></tr>`).join("")}
+function completeLecture(id){exec("UPDATE lectures SET completed=1,status='Completed' WHERE id=?",[id]);refreshAll()}
+
+function loadAttendancePeople(){let type=$("atType").value;let a=type==="Student"?q("SELECT id,name FROM students ORDER BY name"):q("SELECT id,name FROM faculty ORDER BY name");$("atPerson").innerHTML=a.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("")}
+function getPerson(){let type=$("atType").value,id=+$("atPerson").value;let r=type==="Student"?q("SELECT name FROM students WHERE id=?",[id]):q("SELECT name FROM faculty WHERE id=?",[id]);return {type,id,name:r[0]?.name||""}}
+function recordAttendance(lat=null,lon=null,acc=null){let p=getPerson();if(!p.name)return alert("Select person");exec("INSERT INTO attendance(person_type,person_id,person_name,status,date_time,latitude,longitude,accuracy) VALUES(?,?,?,?,?,?,?,?)",[p.type,p.id,p.name,$("atStatus").value,now(),lat,lon,acc]);$("gpsMsg").textContent=lat?`GPS captured: ${lat.toFixed(6)}, ${lon.toFixed(6)} ±${Math.round(acc||0)}m`:"Attendance saved without GPS";refreshAll()}
+function manualAttendance(){recordAttendance()}
+function captureGPS(){if(!navigator.geolocation){return alert("Geolocation is not supported by this browser.")}$("gpsMsg").textContent="Requesting GPS permission…";navigator.geolocation.getCurrentPosition(p=>recordAttendance(p.coords.latitude,p.coords.longitude,p.coords.accuracy),e=>{$("gpsMsg").textContent="GPS failed: "+e.message+" — use Manual Mark if required."})}
+function renderAttendance(){let f=$("atFilter")?.value||"All",s=($("atSearch")?.value||"").toLowerCase();let a=q("SELECT * FROM attendance ORDER BY id DESC").filter(x=>(f==="All"||x.person_type===f)&&(x.person_name+" "+x.status).toLowerCase().includes(s));$("atTable").innerHTML=a.map(x=>`<tr><td>${new Date(x.date_time).toLocaleString()}</td><td>${x.person_type}</td><td>${esc(x.person_name)}</td><td><span class="badge ${x.status==="Absent"?"red":""}">${x.status}</span></td><td>${x.latitude==null?"—":x.latitude.toFixed(5)+", "+x.longitude.toFixed(5)}</td><td>${x.accuracy?Math.round(x.accuracy)+"m":"—"}</td><td><button class="btn danger" onclick="del('attendance',${x.id})">Delete</button></td></tr>`).join("")}
+
+function saveFee(){let sid=+$("feeStudent").value,s=q("SELECT name FROM students WHERE id=?",[sid])[0];let amt=+$("feeAmount").value;if(!s||amt<=0)return alert("Select student and amount");exec("INSERT INTO fees(student_id,student_name,amount,mode,note,date_time) VALUES(?,?,?,?,?,?)",[sid,s.name,amt,$("feeMode").value,$("feeNote").value,now()]);exec("UPDATE students SET paid_fee=paid_fee+? WHERE id=?",[amt,sid]);$("feeAmount").value="";refreshAll()}
+function renderFees(){$("feeTable").innerHTML=q("SELECT * FROM fees ORDER BY id DESC").map(x=>`<tr><td>${new Date(x.date_time).toLocaleString()}</td><td>${esc(x.student_name)}</td><td>₹${(+x.amount).toFixed(0)}</td><td>${x.mode}</td><td>${esc(x.note)}</td></tr>`).join("")}
+
+function saveFacultyPayment(){let fid=+$("payFaculty").value,f=q("SELECT name FROM faculty WHERE id=?",[fid])[0],amt=+$("payAmount").value;if(!f||amt<=0)return alert("Select faculty and amount");exec("INSERT INTO faculty_payments(faculty_id,faculty_name,amount,type,mode,note,date_time) VALUES(?,?,?,?,?,?,?)",[fid,f.name,amt,$("payType").value,$("payMode").value,$("payNote").value,now()]);$("payAmount").value="";refreshAll()}
+function renderPayments(){$("payTable").innerHTML=q("SELECT id,name,rate FROM faculty ORDER BY name").map(x=>{let earned=q("SELECT COUNT(*) c FROM lectures WHERE faculty_id=?",[x.id])[0].c*x.rate,paid=q("SELECT COALESCE(SUM(amount),0) s FROM faculty_payments WHERE faculty_id=?",[x.id])[0].s,last=q("SELECT date_time FROM faculty_payments WHERE faculty_id=? ORDER BY id DESC LIMIT 1",[x.id])[0]?.date_time||"";return `<tr><td>${last?new Date(last).toLocaleDateString():"—"}</td><td>${esc(x.name)}</td><td>₹${earned.toFixed(0)}</td><td>₹${(+paid).toFixed(0)}</td><td>₹${Math.max(0,earned-paid).toFixed(0)}</td><td>${last?new Date(last).toLocaleString():"—"}</td><td><span class="badge ${paid>=earned&&earned>0?"":"amber"}">${earned>0&&paid>=earned?"Fully Paid":paid>0?"Part Paid":"Unpaid"}</span></td></tr>`}).join("")}
+
+function del(t,id){if(confirm("Delete this record?")){exec(`DELETE FROM ${t} WHERE id=?`,[id]);refreshAll()}}
+
+function renderDashboard(){
+ let en=q("SELECT COUNT(*) c FROM enquiries")[0].c,st=q("SELECT COUNT(*) c FROM students")[0].c,fc=q("SELECT COUNT(*) c FROM faculty")[0].c,le=q("SELECT COUNT(*) c FROM lectures")[0].c,at=q("SELECT COUNT(*) c FROM attendance WHERE date_time>=?",[new Date(Date.now()-30*864e5).toISOString()])[0]?.c||0;
+ let paid=q("SELECT COALESCE(SUM(amount),0) s FROM fees")[0].s,pay=q("SELECT COALESCE(SUM(amount),0) s FROM faculty_payments")[0].s;
+ $("kpis").innerHTML=[["Enquiries",en,"📝"],["Students",st,"👨‍🎓"],["Faculty",fc,"👨‍🏫"],["Lectures",le,"🎥"],["30d attendance",at,"📍"],["Student fees","₹"+(+paid).toFixed(0),"💳"],["Faculty paid","₹"+(+pay).toFixed(0),"💰"]].map(x=>`<div class="kpi"><b>${x[2]} ${x[1]}</b><span>${x[0]}</span></div>`).join("");
+ let recent=[...q("SELECT 'Enquiry' type,name,created_at dt FROM enquiries ORDER BY id DESC LIMIT 4"),...q("SELECT 'Lecture' type,topic name,date dt FROM lectures ORDER BY id DESC LIMIT 4")].sort((a,b)=>String(b.dt).localeCompare(String(a.dt))).slice(0,8);$("recent").innerHTML=recent.map(x=>`<div style="padding:8px;border-bottom:1px solid var(--border)"><b>${esc(x.type)}</b> — ${esc(x.name)} <span class="small">${esc(x.dt)}</span></div>`).join("")||'<div class="small">No activity yet.</div>';
+ drawAllCharts();
+}
+function setupCanvas(id){let c=$(id),r=c.getBoundingClientRect(),d=devicePixelRatio||1;c.width=r.width*d;c.height=r.height*d;let x=c.getContext("2d");x.scale(d,d);return [x,r.width,r.height]}
+function bar(id,labels,values,title){let [c,w,h]=setupCanvas(id);c.clearRect(0,0,w,h);c.fillStyle="#17212b";c.font="bold 14px system-ui";c.fillText(title,10,18);let max=Math.max(1,...values),bw=(w-30)/values.length*.62;values.forEach((v,i)=>{let x=20+i*(w-30)/values.length+5,y=h-28-(v/max)*(h-65);c.fillStyle="#136f63";c.fillRect(x,y,bw,h-28-y);c.fillStyle="#64748b";c.font="10px system-ui";c.fillText(labels[i].slice(0,12),x,h-12);c.fillStyle="#17212b";c.fillText(String(v),x,y-5)})}
+function line(id,labels,values,title){let [c,w,h]=setupCanvas(id);c.clearRect(0,0,w,h);c.fillStyle="#17212b";c.font="bold 14px system-ui";c.fillText(title,10,18);let max=Math.max(1,...values),step=(w-35)/Math.max(1,values.length-1);c.beginPath();values.forEach((v,i)=>{let x=20+i*step,y=h-30-(v/max)*(h-60);i?c.lineTo(x,y):c.moveTo(x,y)});c.strokeStyle="#136f63";c.lineWidth=3;c.stroke();values.forEach((v,i)=>{let x=20+i*step,y=h-30-(v/max)*(h-60);c.fillStyle="#136f63";c.beginPath();c.arc(x,y,4,0,7);c.fill();c.fillStyle="#64748b";c.font="10px system-ui";c.fillText(labels[i],x-15,h-10)})}
+function pie(id,labels,values,title){let [c,w,h]=setupCanvas(id);c.clearRect(0,0,w,h);c.fillStyle="#17212b";c.font="bold 14px system-ui";c.fillText(title,10,18);let cx=w*.35,cy=h*.54,r=Math.min(w*.28,h*.34),sum=values.reduce((a,b)=>a+b,0)||1,a=-Math.PI/2;values.forEach((v,i)=>{let da=v/sum*Math.PI*2;c.beginPath();c.moveTo(cx,cy);c.arc(cx,cy,r,a,a+da);c.closePath();c.fillStyle=["#136f63","#f59e0b","#3b82f6","#a855f7","#ef4444","#14b8a6"][i%6];c.fill();a+=da});labels.forEach((l,i)=>{c.fillStyle=["#136f63","#f59e0b","#3b82f6","#a855f7","#ef4444","#14b8a6"][i%6];c.fillRect(w*.62,35+i*22,10,10);c.fillStyle="#17212b";c.font="11px system-ui";c.fillText(l+" "+values[i],w*.62+16,44+i*22)})}
+function drawAllCharts(){
+ let days=[...Array(7)].map((_,i)=>{let d=new Date(Date.now()-(6-i)*864e5);return d.toISOString().slice(5,10)}),vals=days.map(d=>q("SELECT COUNT(*) c FROM attendance WHERE date_time LIKE ? AND status IN ('Present','Late')",[d+"%"])[0].c);line("attChart",days,vals,"Last 7 days attendance");
+ let enq=["New","Contacted","Follow-up","Converted","Lost"].map(s=>q("SELECT COUNT(*) c FROM enquiries WHERE status=?",[s])[0].c);pie("enqChart",["New","Contacted","Follow-up","Converted","Lost"],enq,"Enquiry pipeline");
+ let fs=q("SELECT id,name FROM faculty ORDER BY name").slice(0,8),lv=fs.map(x=>q("SELECT COUNT(*) c FROM lectures WHERE faculty_id=? AND completed=1",[x.id])[0].c);bar("lectureChart",fs.map(x=>x.name),lv,"Completed lectures");
+ let ps=fs.map(x=>q("SELECT COALESCE(SUM(amount),0) s FROM faculty_payments WHERE faculty_id=?",[x.id])[0].s),ev=fs.map(x=>q("SELECT COUNT(*) c FROM lectures WHERE faculty_id=?",[x.id])[0].c*x.rate);pie("payChart",fs.map(x=>x.name),fs.length?ps:[1], "Faculty paid");
+}
+function renderReports(){let s=q("SELECT name FROM students").map(x=>x.name),v=s.map(n=>q("SELECT COUNT(*) c FROM attendance WHERE person_type='Student' AND person_name=? AND status IN ('Present','Late')",[n])[0].c);bar("personAttChart",s.slice(0,10),v.slice(0,10),"Student attendance count");let c=q("SELECT id,name,total_topics FROM courses"),done=c.map(x=>q("SELECT COUNT(*) c FROM lectures WHERE course_id=? AND completed=1",[x.id])[0].c);bar("courseProgressChart",c.map(x=>x.name),done.map((x,i)=>c[i].total_topics?Math.round(x/c[i].total_topics*100):0),"Course topic completion %");$("reportSummary").innerHTML=`<div class="grid"><div class="card col3"><b>${q("SELECT COUNT(*) c FROM enquiries")[0].c}</b><div class="small">Total enquiries</div></div><div class="card col3"><b>${q("SELECT COUNT(*) c FROM students")[0].c}</b><div class="small">Admissions</div></div><div class="card col3"><b>${q("SELECT COUNT(*) c FROM lectures WHERE completed=1")[0].c}</b><div class="small">Completed lectures</div></div><div class="card col3"><b>${q("SELECT COALESCE(SUM(total_fee-paid_fee),0) s FROM students")[0].s.toFixed(0)}</b><div class="small">Student fee balance</div></div></div>`}
+function renderDbTables(){let a=q("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name");$("dbTables").innerHTML=a.map(x=>{let n=q(`SELECT COUNT(*) c FROM "${x.name}"`)[0].c;return `<span class="badge" style="margin:3px">${esc(x.name)} • ${n} rows</span>`}).join("")}
+function runSQL(){try{let sql=$("sqlBox").value.trim();if(!sql)return;let r=q(sql);if(!r.length){$("sqlResult").innerHTML="<div class='small' style='padding:10px'>Statement executed.</div>";saveLocal();return}let cols=Object.keys(r[0]);$("sqlResult").innerHTML="<table><thead><tr>"+cols.map(c=>`<th>${esc(c)}</th>`).join("")+"</tr></thead><tbody>"+r.map(x=>"<tr>"+cols.map(c=>`<td>${esc(x[c])}</td>`).join("")+"</tr>").join("")+"</tbody></table>"}catch(e){$("sqlResult").innerHTML=`<div style="padding:10px;color:#991b1b">${esc(e.message)}</div>`}}
+function download(blob,name){let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportDB(){download(new Blob([db.export()],{type:"application/x-sqlite3"}),"institute_management.db")}
+function allData(){let out={};tables.forEach(t=>out[t[0]]=q(`SELECT * FROM ${t[0]}`));return out}
+function exportJSON(){download(new Blob([JSON.stringify({exported_at:now(),tables:allData()},null,2)],{type:"application/json"}),"institute_management.json")}
+function csvCell(v){v=String(v??"");return `"${v.replace(/"/g,'""')}"`}
+function exportCSV(){let lines=[];tables.forEach(t=>{lines.push("TABLE,"+csvCell(t[0]));let a=q(`SELECT * FROM ${t[0]}`);if(a.length){let cols=Object.keys(a[0]);lines.push(cols.map(csvCell).join(","));a.forEach(r=>lines.push(cols.map(c=>csvCell(r[c])).join(",")))}lines.push("")});download(new Blob([lines.join("\n")],{type:"text/csv;charset=utf-8"}),"institute_management_all_tables.csv")}
+function exportSQL(){let s="-- Institute Management SQLite export\\nPRAGMA foreign_keys=OFF;\\n";tables.forEach(t=>{s+=`DROP TABLE IF EXISTS ${t[0]};\\nCREATE TABLE ${t[0]}(${t[1]});\\n`;let rows=q(`SELECT * FROM ${t[0]}`);rows.forEach(r=>{let cols=Object.keys(r),vals=cols.map(c=>r[c]==null?"NULL":"'" + String(r[c]).replace(/'/g,"''")+"'");s+=`INSERT INTO ${t[0]}(${cols.join(",")}) VALUES(${vals.join(",")});\\n`})});download(new Blob([s],{type:"text/sql"}),"institute_management.sql")}
+async function importDB(file){if(!file)return;try{let buf=new Uint8Array(await file.arrayBuffer());db=new SQL.Database(buf);saveLocal();refreshAll();alert("SQLite database imported successfully.")}catch(e){alert("Invalid SQLite database: "+e.message)}}
+function closeModal(){$("modal").classList.remove("open")}
+window.addEventListener("resize",()=>{if(db){drawAllCharts();renderReports()}});window.addEventListener("load",init);
+</script>
+</body>
+</html>
