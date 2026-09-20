@@ -3,30 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
-<title>My Calendar Pro</title>
+<meta name="theme-color" content="#0f172a">
+<title>My Calendar Pro - Glass UI</title>
 
 <style>
 /* =========================================================
-   CALENDAR PRO - MOBILE FIRST
+   CALENDAR PRO - GLASSMORPHISM UI
 ========================================================= */
 
 :root{
-    --primary:#1a73e8;
-    --primary-soft:#e8f0fe;
-    --accent:#4285f4;
-    --danger:#ea4335;
-    --success:#34a853;
-    --warning:#fbbc04;
+    --primary:#3b82f6;
+    --primary-glow:rgba(59, 130, 246, 0.4);
+    --primary-soft:rgba(59, 130, 246, 0.15);
+    --accent:#8b5cf6;
+    --danger:#ef4444;
+    --success:#10b981;
+    --warning:#f59e0b;
 
-    --bg:#f8fafd;
-    --card:#ffffff;
-    --text:#202124;
-    --muted:#70757a;
-    --border:#e0e3e7;
-    --day:#ffffff;
-    --weekend:#fafafa;
-    --shadow:0 2px 12px rgba(0,0,0,.10);
+    --bg-gradient:linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+    --card:rgba(255, 255, 255, 0.07);
+    --card-solid:#1e293b;
+    --text:#f8fafc;
+    --muted:#94a3b8;
+    --border:rgba(255, 255, 255, 0.12);
+    --day:rgba(255, 255, 255, 0.03);
+    --weekend:rgba(255, 255, 255, 0.01);
+    --shadow:0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --backdrop-blur:blur(16px);
 }
 
 *{
@@ -40,8 +43,8 @@ html,body{
     width:100%;
     height:100%;
     overflow:hidden;
-    font-family:Arial,Roboto,sans-serif;
-    background:var(--bg);
+    font-family:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background:var(--bg-gradient);
     color:var(--text);
 }
 
@@ -73,20 +76,15 @@ button{
 ========================================================= */
 
 .topbar{
-    height:56px;
-    min-height:56px;
-
+    height:60px;
+    min-height:60px;
     display:flex;
     align-items:center;
-
-    padding:
-        0 8px
-        env(safe-area-inset-right)
-        0 env(safe-area-inset-left);
-
+    padding:0 12px env(safe-area-inset-right) 0 env(safe-area-inset-left);
     background:var(--card);
+    backdrop-filter:var(--backdrop-blur);
+    -webkit-backdrop-filter:var(--backdrop-blur);
     border-bottom:1px solid var(--border);
-
     position:relative;
     z-index:20;
 }
@@ -94,37 +92,36 @@ button{
 .menu-btn,
 .search-btn,
 .theme-btn{
-    width:40px;
-    height:40px;
-    min-width:40px;
-
-    border:0;
-    border-radius:50%;
-
-    background:transparent;
+    width:42px;
+    height:42px;
+    min-width:42px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:var(--card);
     color:var(--text);
-
-    font-size:20px;
-
+    font-size:18px;
     display:grid;
     place-items:center;
+    transition:all 0.2s ease;
 }
 
 .menu-btn:active,
 .search-btn:active,
 .theme-btn:active{
     background:var(--primary-soft);
+    border-color:var(--primary);
+    transform:scale(0.95);
 }
 
 .app-title{
     flex:1;
     min-width:0;
-
-    padding-left:8px;
-
-    font-size:18px;
-    font-weight:600;
-
+    padding-left:12px;
+    font-size:20px;
+    font-weight:700;
+    background:linear-gradient(to right, #60a5fa, #c084fc);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
@@ -147,36 +144,36 @@ button{
 
 .month-header{
     background:var(--card);
-
-    padding:12px 12px 8px;
-
+    backdrop-filter:var(--backdrop-blur);
+    -webkit-backdrop-filter:var(--backdrop-blur);
+    padding:14px 16px 10px;
     text-align:center;
-
     border-bottom:1px solid var(--border);
 }
 
 .month-title{
-    border:0;
-    background:transparent;
-
+    border:1px solid var(--border);
+    background:var(--card);
     color:var(--text);
-
-    font-size:21px;
-    font-weight:600;
-
-    padding:5px 12px;
-
-    border-radius:8px;
+    font-size:22px;
+    font-weight:700;
+    padding:6px 16px;
+    border-radius:14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: all 0.2s;
 }
 
 .month-title:active{
     background:var(--primary-soft);
+    border-color:var(--primary);
 }
 
 .year-subtitle{
-    font-size:11px;
+    font-size:12px;
     color:var(--muted);
-    margin-top:1px;
+    margin-top:4px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
 }
 
 /* =========================================================
@@ -185,25 +182,20 @@ button{
 
 .weekdays{
     width:100%;
-
     display:grid;
     grid-template-columns:repeat(7,minmax(0,1fr));
-
-    background:var(--card);
-
+    background:rgba(15, 23, 42, 0.6);
     border-bottom:1px solid var(--border);
 }
 
 .weekdays div{
-    height:32px;
-
+    height:36px;
     display:grid;
     place-items:center;
-
-    font-size:10px;
-    font-weight:600;
-
+    font-size:11px;
+    font-weight:700;
     color:var(--muted);
+    letter-spacing: 0.5px;
 }
 
 /* =========================================================
@@ -212,27 +204,24 @@ button{
 
 .month-grid{
     width:100%;
-
     display:grid;
     grid-template-columns:repeat(7,minmax(0,1fr));
-
     background:var(--border);
-
     gap:1px;
 }
 
 .day{
     min-width:0;
-
     background:var(--day);
-
-    height:82px;
-
-    padding:4px 2px;
-
+    height:88px;
+    padding:6px 4px;
     position:relative;
-
     overflow:hidden;
+    transition:background 0.2s;
+}
+
+.day:hover{
+    background:rgba(255,255,255,0.06);
 }
 
 .day.weekend{
@@ -240,70 +229,62 @@ button{
 }
 
 .day.other{
-    opacity:.42;
+    opacity:.3;
 }
 
 .day-number{
-    width:25px;
-    height:25px;
-
-    margin:0 auto 2px;
-
+    width:26px;
+    height:26px;
+    margin:0 auto 4px;
     display:grid;
     place-items:center;
-
     border-radius:50%;
-
-    font-size:11px;
-    font-weight:500;
+    font-size:12px;
+    font-weight:600;
 }
 
 .day.today .day-number{
     background:var(--primary);
     color:white;
     font-weight:bold;
+    box-shadow:0 0 12px var(--primary-glow);
 }
 
 .holiday{
-    font-size:7px;
+    font-size:8px;
     line-height:11px;
-
-    color:#8e44ad;
-
+    color:#f472b6;
+    background:rgba(244, 114, 182, 0.1);
+    padding:1px 3px;
+    border-radius:3px;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
+    margin-bottom:1px;
 }
 
 .event{
     width:100%;
-    height:15px;
-
+    height:16px;
     margin-top:2px;
-
-    border-radius:3px;
-
-    padding:0 3px;
-
-    line-height:15px;
-
+    border-radius:4px;
+    padding:0 4px;
+    line-height:16px;
     color:white;
-
-    font-size:7px;
-    font-weight:500;
-
+    font-size:8px;
+    font-weight:600;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .more{
     color:var(--primary);
-
-    font-size:8px;
-
+    font-size:9px;
     padding-left:3px;
     margin-top:2px;
+    font-weight:600;
 }
 
 /* =========================================================
@@ -313,72 +294,69 @@ button{
 .bottom-nav{
     position:sticky;
     bottom:0;
-
     background:var(--card);
-
+    backdrop-filter:var(--backdrop-blur);
+    -webkit-backdrop-filter:var(--backdrop-blur);
     border-top:1px solid var(--border);
-
-    padding:
-        7px 5px
-        calc(7px + env(safe-area-inset-bottom))
-        7px;
-
+    padding:10px 8px calc(10px + env(safe-area-inset-bottom)) 8px;
     z-index:15;
+    box-shadow:0 -10px 25px rgba(0,0,0,0.3);
 }
 
 .nav-row{
     display:flex;
     align-items:center;
     justify-content:center;
-
-    gap:5px;
+    gap:8px;
 }
 
 .nav-btn{
-    height:38px;
-
+    height:42px;
     border:1px solid var(--border);
-
-    border-radius:19px;
-
+    border-radius:21px;
     background:var(--card);
     color:var(--text);
-
-    padding:0 11px;
-
-    font-size:11px;
-    white-space:nowrap;
+    padding:0 14px;
+    font-size:12px;
+    font-weight:600;
+    backdrop-filter:var(--backdrop-blur);
+    transition:all 0.2s;
 }
 
 .nav-btn:active{
     background:var(--primary-soft);
+    border-color:var(--primary);
 }
 
 .nav-btn.primary{
     background:var(--primary);
     color:white;
     border-color:var(--primary);
+    box-shadow:0 0 15px var(--primary-glow);
 }
 
 .nav-arrow{
-    width:38px;
+    width:42px;
     padding:0;
-
-    font-size:21px;
+    font-size:20px;
 }
 
 .view-select{
-    height:38px;
-
+    height:42px;
     border:1px solid var(--border);
-    border-radius:19px;
-
+    border-radius:21px;
     background:var(--card);
     color:var(--text);
+    padding:0 12px;
+    font-size:11px;
+    font-weight:600;
+    outline:none;
+    backdrop-filter:var(--backdrop-blur);
+}
 
-    padding:0 8px;
-
-    font-size:10px;
+.view-select option {
+    background: #1e293b;
+    color: #f8fafc;
 }
 
 /* =========================================================
@@ -388,11 +366,9 @@ button{
 .overlay{
     position:fixed;
     inset:0;
-
-    background:rgba(0,0,0,.42);
-
+    background:rgba(0,0,0,0.6);
+    backdrop-filter:blur(4px);
     z-index:100;
-
     display:none;
 }
 
@@ -402,24 +378,19 @@ button{
 
 .picker{
     position:fixed;
-
     left:0;
     right:0;
     bottom:0;
-
     max-height:80dvh;
-
-    background:var(--card);
-
-    border-radius:20px 20px 0 0;
-
+    background:rgba(30, 41, 59, 0.95);
+    backdrop-filter:var(--backdrop-blur);
+    border:1px solid var(--border);
+    border-radius:24px 24px 0 0;
     z-index:110;
-
-    padding:16px;
-
+    padding:20px;
     overflow:auto;
-
     display:none;
+    box-shadow:var(--shadow);
 }
 
 .picker.show{
@@ -430,56 +401,57 @@ button{
     display:flex;
     align-items:center;
     justify-content:space-between;
-
-    margin-bottom:12px;
+    margin-bottom:16px;
 }
 
 .picker-year{
-    font-size:20px;
-    font-weight:bold;
+    font-size:22px;
+    font-weight:700;
 }
 
 .picker-arrows{
     display:flex;
-    gap:5px;
+    gap:8px;
 }
 
 .circle-btn{
-    width:38px;
-    height:38px;
-
-    border:0;
+    width:40px;
+    height:40px;
+    border:1px solid var(--border);
     border-radius:50%;
-
     background:var(--primary-soft);
     color:var(--primary);
-
     font-size:20px;
+    display:grid;
+    place-items:center;
 }
 
 .month-options{
     display:grid;
-
     grid-template-columns:repeat(3,1fr);
-
-    gap:8px;
+    gap:10px;
 }
 
 .month-option{
-    height:43px;
-
-    border:0;
-    border-radius:22px;
-
-    background:var(--bg);
+    height:48px;
+    border:1px solid var(--border);
+    border-radius:24px;
+    background:rgba(255,255,255,0.05);
     color:var(--text);
+    font-size:13px;
+    font-weight:600;
+    transition:all 0.2s;
+}
 
-    font-size:12px;
+.month-option:active{
+    background:rgba(255,255,255,0.1);
 }
 
 .month-option.selected{
     background:var(--primary);
     color:white;
+    border-color:var(--primary);
+    box-shadow:0 0 15px var(--primary-glow);
 }
 
 /* =========================================================
@@ -488,57 +460,45 @@ button{
 
 .search-box{
     position:fixed;
-
-    top:56px;
+    top:60px;
     left:0;
     right:0;
-
-    background:var(--card);
-
-    padding:8px;
-
+    background:rgba(30, 41, 59, 0.95);
+    backdrop-filter:var(--backdrop-blur);
+    border-bottom:1px solid var(--border);
+    padding:10px 12px;
     z-index:70;
-
     display:none;
-
     box-shadow:var(--shadow);
 }
 
 .search-box.show{
     display:flex;
-    gap:6px;
+    gap:8px;
 }
 
 .search-input{
     flex:1;
-
-    height:42px;
-
+    height:44px;
     border:1px solid var(--border);
     border-radius:22px;
-
-    padding:0 15px;
-
+    padding:0 18px;
     outline:none;
-
-    background:var(--bg);
+    background:rgba(15, 23, 42, 0.6);
     color:var(--text);
+    font-size:14px;
 }
 
 .search-results{
     position:fixed;
-
-    top:106px;
+    top:114px;
     left:0;
     right:0;
     bottom:0;
-
-    background:var(--card);
-
+    background:rgba(15, 23, 42, 0.95);
+    backdrop-filter:var(--backdrop-blur);
     z-index:65;
-
     overflow:auto;
-
     display:none;
 }
 
@@ -548,39 +508,34 @@ button{
 
 .result{
     display:flex;
-
-    gap:10px;
-
-    padding:12px;
-
+    gap:12px;
+    padding:14px;
     border-bottom:1px solid var(--border);
+    background:var(--card);
+    margin:8px 12px;
+    border-radius:12px;
 }
 
 .result-color{
-    width:5px;
-    min-width:5px;
-
-    border-radius:5px;
+    width:6px;
+    min-width:6px;
+    border-radius:6px;
 }
 
 .result-title{
-    font-size:14px;
-    font-weight:bold;
+    font-size:15px;
+    font-weight:700;
 }
 
 .result-date{
     color:var(--muted);
-
-    font-size:11px;
-
-    margin-top:5px;
+    font-size:12px;
+    margin-top:4px;
 }
 
 .result-location{
     color:var(--muted);
-
-    font-size:10px;
-
+    font-size:11px;
     margin-top:4px;
 }
 
@@ -590,26 +545,19 @@ button{
 
 .drawer{
     position:fixed;
-
     top:0;
     bottom:0;
     left:0;
-
-    width:285px;
+    width:300px;
     max-width:85vw;
-
-    background:var(--card);
-
+    background:rgba(30, 41, 59, 0.95);
+    backdrop-filter:var(--backdrop-blur);
+    border-right:1px solid var(--border);
     z-index:200;
-
     transform:translateX(-110%);
-
-    transition:.22s;
-
-    padding:18px;
-
+    transition:transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding:20px;
     overflow:auto;
-
     box-shadow:var(--shadow);
 }
 
@@ -620,11 +568,9 @@ button{
 .drawer-overlay{
     position:fixed;
     inset:0;
-
     z-index:190;
-
-    background:rgba(0,0,0,.35);
-
+    background:rgba(0,0,0,0.6);
+    backdrop-filter:blur(4px);
     display:none;
 }
 
@@ -633,55 +579,59 @@ button{
 }
 
 .drawer-title{
-    font-size:21px;
-    font-weight:bold;
-
-    margin-bottom:20px;
+    font-size:22px;
+    font-weight:700;
+    margin-bottom:24px;
+    background:linear-gradient(to right, #60a5fa, #c084fc);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
 }
 
 .drawer-create{
     width:100%;
-    height:48px;
-
-    border:0;
+    height:50px;
+    border:1px solid var(--border);
     border-radius:25px;
-
-    background:var(--card);
-
-    box-shadow:var(--shadow);
-
+    background:var(--primary);
+    box-shadow:0 0 20px var(--primary-glow);
     text-align:left;
+    padding:0 20px;
+    color:white;
+    font-weight:600;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s;
+}
 
-    padding:0 17px;
-
-    color:var(--text);
+.drawer-create:active {
+    transform: scale(0.98);
 }
 
 .drawer-create span{
-    color:var(--primary);
-    font-size:25px;
-    margin-right:8px;
+    font-size:24px;
+    margin-right:10px;
+    line-height: 1;
 }
 
 .drawer-section{
-    margin-top:25px;
+    margin-top:28px;
 }
 
 .drawer-section-title{
     color:var(--muted);
-
-    font-size:10px;
-    font-weight:bold;
-
-    margin-bottom:7px;
+    font-size:11px;
+    font-weight:700;
+    margin-bottom:10px;
+    letter-spacing: 1px;
 }
 
 .drawer-item{
-    padding:10px 5px;
-
-    border-radius:7px;
-
-    font-size:13px;
+    padding:12px 10px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:500;
+    transition: background 0.2s;
+    cursor: pointer;
 }
 
 .drawer-item:active{
@@ -694,24 +644,18 @@ button{
 
 .theme-panel{
     position:fixed;
-
-    right:8px;
-    top:55px;
-
-    width:250px;
-
-    background:var(--card);
-
+    right:12px;
+    top:65px;
+    width:280px;
+    max-height:80dvh;
+    background:rgba(30, 41, 59, 0.95);
+    backdrop-filter:var(--backdrop-blur);
     border:1px solid var(--border);
-
-    border-radius:12px;
-
+    border-radius:16px;
     box-shadow:var(--shadow);
-
     z-index:150;
-
-    padding:12px;
-
+    padding:16px;
+    overflow-y:auto;
     display:none;
 }
 
@@ -720,48 +664,44 @@ button{
 }
 
 .theme-title{
-    font-size:13px;
-    font-weight:bold;
-
-    margin-bottom:10px;
+    font-size:14px;
+    font-weight:700;
+    margin-bottom:12px;
 }
 
 .themes{
     display:grid;
-
     grid-template-columns:1fr 1fr;
-
-    gap:7px;
+    gap:8px;
 }
 
 .theme{
     border:1px solid var(--border);
-
-    background:var(--bg);
-
+    background:rgba(255,255,255,0.05);
     color:var(--text);
+    border-radius:10px;
+    padding:10px 8px;
+    font-size:11px;
+    font-weight:600;
+    transition: background 0.2s;
+    text-align: left;
+}
 
-    border-radius:7px;
-
-    padding:8px 5px;
-
-    font-size:10px;
+.theme:active {
+    background:var(--primary-soft);
 }
 
 /* =========================================================
-   EVENT MODAL
+   MODALS
 ========================================================= */
 
 .modal-overlay{
     position:fixed;
     inset:0;
-
-    background:rgba(0,0,0,.45);
-
+    background:rgba(0,0,0,0.6);
+    backdrop-filter:blur(6px);
     z-index:300;
-
     display:none;
-
     align-items:flex-end;
 }
 
@@ -771,179 +711,185 @@ button{
 
 .modal{
     width:100%;
-
-    max-height:94dvh;
-
+    max-height:92dvh;
     overflow:auto;
-
-    background:var(--card);
-
-    border-radius:20px 20px 0 0;
+    background:rgba(30, 41, 59, 0.98);
+    backdrop-filter:var(--backdrop-blur);
+    border:1px solid var(--border);
+    border-radius:24px 24px 0 0;
+    box-shadow:var(--shadow);
 }
 
 .modal-head{
-    height:57px;
-
+    height:64px;
     display:flex;
     align-items:center;
     justify-content:space-between;
-
-    padding:0 15px;
-
+    padding:0 20px;
     border-bottom:1px solid var(--border);
-
     position:sticky;
     top:0;
-
-    background:var(--card);
-
+    background:rgba(30, 41, 59, 0.95);
+    backdrop-filter:var(--backdrop-blur);
     z-index:2;
 }
 
 .modal-head h2{
     margin:0;
-    font-size:18px;
+    font-size:20px;
+    font-weight:700;
 }
 
 .close{
     width:40px;
     height:40px;
-
-    border:0;
+    border:1px solid var(--border);
     border-radius:50%;
-
-    background:transparent;
-
-    font-size:27px;
-
+    background:rgba(255,255,255,0.05);
+    font-size:22px;
     color:var(--muted);
+    display:grid;
+    place-items:center;
 }
 
 .form{
-    padding:14px;
+    padding:18px;
 }
 
 .field{
-    margin-bottom:13px;
+    margin-bottom:16px;
 }
 
 .field label{
     display:block;
-
     color:var(--muted);
-
-    font-size:9px;
-    font-weight:bold;
-
-    margin-bottom:5px;
+    font-size:10px;
+    font-weight:700;
+    margin-bottom:6px;
+    letter-spacing: 0.5px;
 }
 
 .field input,
 .field select,
 .field textarea{
     width:100%;
-
-    min-height:42px;
-
+    min-height:46px;
     border:1px solid var(--border);
-
-    border-radius:7px;
-
-    padding:8px 10px;
-
-    background:var(--bg);
+    border-radius:12px;
+    padding:10px 14px;
+    background:rgba(15, 23, 42, 0.6);
     color:var(--text);
-
     outline:none;
+    font-size:14px;
+    transition:border-color 0.2s;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 10px var(--primary-glow);
 }
 
 .field textarea{
-    min-height:75px;
+    min-height:85px;
     resize:vertical;
 }
 
 .two{
     display:grid;
-
     grid-template-columns:1fr 1fr;
-
-    gap:8px;
+    gap:12px;
 }
 
 .checkbox{
     display:flex;
     align-items:center;
-
-    gap:8px;
+    gap:10px;
+    background:rgba(255,255,255,0.03);
+    padding:10px 14px;
+    border-radius:12px;
+    border:1px solid var(--border);
 }
 
 .checkbox input{
-    width:18px;
-    height:18px;
+    width:20px;
+    height:20px;
+    accent-color:var(--primary);
 }
 
 .checkbox label{
     margin:0;
+    color:var(--text);
+    font-size:13px;
+    font-weight:600;
 }
 
 .colors{
     display:flex;
-    gap:12px;
+    gap:14px;
     flex-wrap:wrap;
+    padding:6px 0;
 }
 
 .color{
-    width:29px;
-    height:29px;
-
+    width:34px;
+    height:34px;
     border-radius:50%;
+    border:3px solid rgba(255,255,255,0.2);
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+    transition:transform 0.2s;
+}
 
-    border:3px solid var(--card);
-
-    box-shadow:0 0 0 1px #aaa;
+.color:active{
+    transform:scale(0.9);
 }
 
 .color.active{
-    box-shadow:
-        0 0 0 2px var(--primary);
+    border-color:white;
+    transform:scale(1.1);
+    box-shadow:0 0 15px var(--primary);
 }
 
 .modal-actions{
     position:sticky;
     bottom:0;
-
     display:flex;
     justify-content:space-between;
     align-items:center;
-
-    padding:
-        10px 14px
-        calc(10px + env(safe-area-inset-bottom));
-
+    padding:14px 18px calc(14px + env(safe-area-inset-bottom));
     border-top:1px solid var(--border);
-
-    background:var(--card);
+    background:rgba(30, 41, 59, 0.95);
+    backdrop-filter:var(--backdrop-blur);
 }
 
 .btn{
-    min-height:40px;
-
-    border:0;
-    border-radius:7px;
-
-    padding:0 15px;
-
-    background:transparent;
+    min-height:42px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:0 18px;
+    background:rgba(255,255,255,0.05);
     color:var(--text);
+    font-weight:600;
+    font-size:14px;
+    transition: background 0.2s;
+}
+
+.btn:active{
+    background:rgba(255,255,255,0.1);
 }
 
 .btn.primary{
     background:var(--primary);
     color:white;
+    border-color:var(--primary);
+    box-shadow:0 0 15px var(--primary-glow);
 }
 
 .btn.danger{
-    color:var(--danger);
+    background:rgba(239, 68, 68, 0.15);
+    color:#f87171;
+    border-color:rgba(239, 68, 68, 0.3);
 }
 
 /* =========================================================
@@ -951,28 +897,32 @@ button{
 ========================================================= */
 
 .details{
-    padding:18px;
+    padding:20px;
 }
 
 .details-title{
-    font-size:21px;
-    font-weight:bold;
-
+    font-size:24px;
+    font-weight:700;
     margin-bottom:20px;
+    background:linear-gradient(to right, #60a5fa, #c084fc);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
 }
 
 .detail{
     display:flex;
-
-    gap:12px;
-
-    margin:16px 0;
-
-    font-size:13px;
+    gap:14px;
+    margin:18px 0;
+    font-size:14px;
+    background:rgba(255,255,255,0.03);
+    padding:12px;
+    border-radius:12px;
+    border:1px solid var(--border);
 }
 
 .detail-icon{
     width:24px;
+    font-size:18px;
 }
 
 /* =========================================================
@@ -980,38 +930,34 @@ button{
 ========================================================= */
 
 .agenda{
-    background:var(--card);
+    background:transparent;
 }
 
 .agenda-date{
-    padding:12px;
-
-    background:var(--bg);
-
+    padding:14px 16px;
+    background:rgba(15, 23, 42, 0.8);
     color:var(--muted);
-
-    font-size:12px;
-    font-weight:bold;
-
+    font-size:13px;
+    font-weight:700;
     border-bottom:1px solid var(--border);
+    letter-spacing: 0.5px;
 }
 
 .agenda-event{
     display:flex;
-
-    gap:10px;
-
-    padding:12px;
-
-    min-height:65px;
-
+    gap:12px;
+    padding:14px 16px;
+    min-height:70px;
     border-bottom:1px solid var(--border);
+    background:var(--card);
+    margin:8px 12px;
+    border-radius:14px;
+    backdrop-filter:var(--backdrop-blur);
 }
 
 .agenda-color{
-    width:5px;
-
-    border-radius:5px;
+    width:6px;
+    border-radius:6px;
 }
 
 .agenda-info{
@@ -1019,17 +965,15 @@ button{
 }
 
 .agenda-title{
-    font-size:14px;
-    font-weight:bold;
+    font-size:15px;
+    font-weight:700;
 }
 
 .agenda-time,
 .agenda-location{
-    font-size:10px;
-
+    font-size:11px;
     color:var(--muted);
-
-    margin-top:5px;
+    margin-top:6px;
 }
 
 .time-container{
@@ -1038,118 +982,104 @@ button{
 
 .time-header{
     display:grid;
-
-    grid-template-columns:45px repeat(7,1fr);
-
-    height:45px;
-
-    background:var(--card);
-
+    grid-template-columns:50px repeat(7,1fr);
+    height:50px;
+    background:rgba(15, 23, 42, 0.8);
     border-bottom:1px solid var(--border);
 }
 
 .time-header div{
     display:grid;
     place-items:center;
-
-    font-size:9px;
-
+    font-size:10px;
+    font-weight:600;
     border-right:1px solid var(--border);
+    color:var(--muted);
 }
 
 .time-body{
     display:grid;
-
-    grid-template-columns:45px repeat(7,1fr);
+    grid-template-columns:50px repeat(7,1fr);
 }
 
 .time-label{
-    height:60px;
-
+    height:65px;
     text-align:right;
-
-    padding:4px;
-
-    font-size:8px;
-
+    padding:6px;
+    font-size:9px;
+    font-weight:600;
     color:var(--muted);
-
     border-bottom:1px solid var(--border);
+    border-right:1px solid var(--border);
 }
 
 .time-cell{
-    height:60px;
-
+    height:65px;
     position:relative;
-
     border-right:1px solid var(--border);
     border-bottom:1px solid var(--border);
+    transition:background 0.2s;
+}
+
+.time-cell:hover{
+    background:rgba(255,255,255,0.04);
 }
 
 .time-event{
     position:absolute;
-
     left:2px;
     right:2px;
     top:2px;
-
-    min-height:35px;
-
-    padding:3px;
-
-    border-radius:4px;
-
+    min-height:38px;
+    padding:4px 6px;
+    border-radius:6px;
     color:white;
-
-    font-size:8px;
-
+    font-size:9px;
+    font-weight:600;
     overflow:hidden;
+    box-shadow:0 2px 6px rgba(0,0,0,0.3);
 }
 
 .year-grid{
     display:grid;
-
     grid-template-columns:1fr 1fr;
-
-    gap:8px;
-
-    padding:8px;
+    gap:12px;
+    padding:12px;
 }
 
 .year-month{
     background:var(--card);
-
+    backdrop-filter:var(--backdrop-blur);
     border:1px solid var(--border);
-
-    border-radius:8px;
-
-    padding:6px;
+    border-radius:16px;
+    padding:10px;
 }
 
 .year-title{
-    font-size:12px;
-    font-weight:bold;
-
-    margin-bottom:4px;
+    font-size:13px;
+    font-weight:700;
+    margin-bottom:8px;
+    color:var(--primary);
 }
 
 .year-days{
     display:grid;
     grid-template-columns:repeat(7,1fr);
-
     text-align:center;
 }
 
 .year-days div{
-    font-size:7px;
-    padding:3px 0;
+    font-size:8px;
+    padding:4px 0;
+    color:var(--muted);
+    font-weight:600;
 }
 
 .year-event-day{
     background:var(--primary);
     color:white;
-
     border-radius:50%;
+    box-shadow:0 0 8px var(--primary-glow);
 }
 
 /* =========================================================
@@ -1158,198 +1088,75 @@ button{
 
 .empty{
     text-align:center;
-
-    padding:60px 20px;
-
+    padding:80px 20px;
     color:var(--muted);
 }
 
 .empty-icon{
-    font-size:40px;
-    margin-bottom:10px;
+    font-size:48px;
+    margin-bottom:12px;
 }
 
 .toast{
     position:fixed;
-
     left:50%;
-    bottom:80px;
-
-    transform:
-        translate(-50%,120px);
-
-    background:#323232;
+    bottom:90px;
+    transform:translate(-50%,120px);
+    background:rgba(15, 23, 42, 0.95);
+    backdrop-filter:var(--backdrop-blur);
     color:white;
-
-    padding:11px 17px;
-
-    border-radius:6px;
-
-    font-size:12px;
-
+    padding:12px 20px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    font-size:13px;
+    font-weight:600;
     z-index:500;
-
-    transition:.25s;
+    box-shadow:var(--shadow);
+    transition:transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .toast.show{
-    transform:
-        translate(-50%,0);
+    transform:translate(-50%,0);
 }
 
 /* =========================================================
-   THEMES
-========================================================= */
-
-/* DARK */
-
-body.theme-dark{
-    --bg:#202124;
-    --card:#292a2d;
-    --day:#292a2d;
-    --weekend:#303134;
-
-    --text:#e8eaed;
-    --muted:#bdc1c6;
-    --border:#3c4043;
-
-    --primary:#8ab4f8;
-    --primary-soft:#3c4043;
-}
-
-/* AMOLED */
-
-body.theme-amoled{
-    --bg:#000000;
-    --card:#000000;
-    --day:#000000;
-    --weekend:#050505;
-
-    --text:#ffffff;
-    --muted:#aaaaaa;
-    --border:#222222;
-
-    --primary:#00bfff;
-    --primary-soft:#082f3d;
-}
-
-/* OCEAN */
-
-body.theme-ocean{
-    --primary:#0077b6;
-    --primary-soft:#d9f1ff;
-    --bg:#eefaff;
-    --card:#ffffff;
-    --day:#ffffff;
-}
-
-/* FOREST */
-
-body.theme-forest{
-    --primary:#2e7d32;
-    --primary-soft:#e4f4e4;
-    --bg:#f3faf3;
-}
-
-/* SUNSET */
-
-body.theme-sunset{
-    --primary:#ef6c00;
-    --primary-soft:#fff0df;
-    --bg:#fff9f4;
-}
-
-/* PURPLE */
-
-body.theme-purple{
-    --primary:#7e57c2;
-    --primary-soft:#eee7fb;
-    --bg:#faf8ff;
-}
-
-/* ROSE */
-
-body.theme-rose{
-    --primary:#d81b60;
-    --primary-soft:#fde5ef;
-    --bg:#fff8fb;
-}
-
-/* IOS */
-
-body.theme-ios{
-    --primary:#007aff;
-    --primary-soft:#e3f0ff;
-    --bg:#f2f2f7;
-    --card:#ffffff;
-    --day:#ffffff;
-}
-
-/* MINIMAL */
-
-body.theme-minimal{
-    --primary:#333333;
-    --primary-soft:#eeeeee;
-    --bg:#ffffff;
-    --card:#ffffff;
-    --day:#ffffff;
-    --border:#dddddd;
-}
-
-/* =========================================================
-   DESKTOP
+   DESKTOP RESPONSIVE
 ========================================================= */
 
 @media(min-width:700px){
-
     .day{
-        height:110px;
+        height:120px;
     }
-
     .event{
-        height:19px;
-        line-height:19px;
-        font-size:9px;
+        height:20px;
+        line-height:20px;
+        font-size:10px;
     }
-
     .holiday{
-        font-size:9px;
+        font-size:10px;
     }
-
-    .month-grid{
-        max-width:1200px;
-        margin:auto;
-    }
-
-    .weekdays{
-        max-width:1200px;
-        margin:auto;
-    }
-
+    .month-grid,
+    .weekdays,
     .bottom-nav{
         max-width:1200px;
         margin:auto;
     }
-
     .modal{
         max-width:600px;
         margin:auto;
-        border-radius:15px;
+        border-radius:20px;
     }
-
     .modal-overlay{
         align-items:center;
     }
-
     .picker{
         left:50%;
         right:auto;
-        width:400px;
+        width:420px;
         transform:translateX(-50%);
-        bottom:20px;
-        border-radius:18px;
+        bottom:30px;
+        border-radius:20px;
     }
-
 }
 </style>
 </head>
@@ -1363,211 +1170,113 @@ body.theme-minimal{
 ===================================================== -->
 
 <header class="topbar">
-
-    <button class="menu-btn"
-            onclick="openDrawer()">
-        ☰
-    </button>
-
-    <div class="app-title">
-        My Calendar
-    </div>
-
-    <button class="search-btn"
-            onclick="openSearch()">
-        🔍
-    </button>
-
-    <button class="theme-btn"
-            onclick="toggleThemePanel()">
-        ◐
-    </button>
-
+    <button class="menu-btn" onclick="openDrawer()">☰</button>
+    <div class="app-title">My Calendar Pro</div>
+    <button class="search-btn" onclick="openSearch()">🔍</button>
+    <button class="theme-btn" onclick="toggleThemePanel()">◐</button>
 </header>
 
 <!-- =====================================================
      SEARCH
 ===================================================== -->
 
-<div class="search-box"
-     id="searchBox">
-
-    <input
-        id="searchInput"
-        class="search-input"
-        placeholder="Search all events..."
-        autocomplete="off">
-
-    <button class="search-btn"
-            onclick="closeSearch()">
-        ×
-    </button>
-
+<div class="search-box" id="searchBox">
+    <input id="searchInput" class="search-input" placeholder="Search all events..." autocomplete="off">
+    <button class="search-btn" onclick="closeSearch()">×</button>
 </div>
 
-<div class="search-results"
-     id="searchResults">
-</div>
+<div class="search-results" id="searchResults"></div>
 
 <!-- =====================================================
-     THEME PANEL
+     THEME PANEL (50 NATURE THEMES)
 ===================================================== -->
 
-<div class="theme-panel"
-     id="themePanel">
-
-    <div class="theme-title">
-        Choose Theme
-    </div>
-
+<div class="theme-panel" id="themePanel">
+    <div class="theme-title">50 Nature Themes</div>
     <div class="themes">
-
-        <button class="theme"
-                onclick="setTheme('default')">
-            Google Blue
-        </button>
-
-        <button class="theme"
-                onclick="setTheme('theme-ios')">
-            iOS
-        </button>
-
-        <button class="theme"
-                onclick="setTheme('theme-dark')">
-            Dark
-        </button>
-
-        <button class="theme"
-                onclick="setTheme('theme-amoled')">
-            AMOLED
-        </button>
-
-        <button class="theme"
-                onclick="setTheme('theme-ocean')">
-            Ocean
-        </button>
-
-        <button class="theme"
-                onclick="setTheme('theme-forest')">
-            Forest
-        </button>
-
-        <button class="theme"
-                onclick="setTheme('theme-sunset')">
-            Sunset
-        </button>
-
-        <button class="theme"
-                onclick="setTheme('theme-purple')">
-            Purple
-        </button>
-
-        <button class="theme"
-                onclick="setTheme('theme-rose')">
-            Rose
-        </button>
-
-        <button class="theme"
-                onclick="setTheme('theme-minimal')">
-            Minimal
-        </button>
-
+        <button class="theme" onclick="setTheme('default')">1. Neon Slate</button>
+        <button class="theme" onclick="setTheme('n1')">2. Pine Forest</button>
+        <button class="theme" onclick="setTheme('n2')">3. Autumn Woods</button>
+        <button class="theme" onclick="setTheme('n3')">4. Emerald Canopy</button>
+        <button class="theme" onclick="setTheme('n4')">5. Ocean Deep</button>
+        <button class="theme" onclick="setTheme('n5')">6. Coral Reef</button>
+        <button class="theme" onclick="setTheme('n6')">7. Desert Dune</button>
+        <button class="theme" onclick="setTheme('n7')">8. Arctic Glacier</button>
+        <button class="theme" onclick="setTheme('n8')">9. Midnight Aurora</button>
+        <button class="theme" onclick="setTheme('n9')">10. Sakura Bloom</button>
+        <button class="theme" onclick="setTheme('n10')">11. Volcanic Ash</button>
+        <button class="theme" onclick="setTheme('n11')">12. Lavender Field</button>
+        <button class="theme" onclick="setTheme('n12')">13. Canyon Red</button>
+        <button class="theme" onclick="setTheme('n13')">14. Tropical Rainforest</button>
+        <button class="theme" onclick="setTheme('n14')">15. Mystic Moss</button>
+        <button class="theme" onclick="setTheme('n15')">16. Golden Savannah</button>
+        <button class="theme" onclick="setTheme('n16')">17. Starry Night Sky</button>
+        <button class="theme" onclick="setTheme('n17')">18. Bamboo Grove</button>
+        <button class="theme" onclick="setTheme('n18')">19. Misty Mountain</button>
+        <button class="theme" onclick="setTheme('n19')">20. Sunlit Meadow</button>
+        <button class="theme" onclick="setTheme('n20')">21. Autumn Equinox</button>
+        <button class="theme" onclick="setTheme('n21')">22. Winter Frost</button>
+        <button class="theme" onclick="setTheme('n22')">23. Spring Blossom</button>
+        <button class="theme" onclick="setTheme('n23')">24. Summer Solstice</button>
+        <button class="theme" onclick="setTheme('n24')">25. River Stone</button>
+        <button class="theme" onclick="setTheme('n25')">26. Redwood Bark</button>
+        <button class="theme" onclick="setTheme('n26')">27. Tidal Wave</button>
+        <button class="theme" onclick="setTheme('n27')">28. Sahara Sunset</button>
+        <button class="theme" onclick="setTheme('n28')">29. Polar Night</button>
+        <button class="theme" onclick="setTheme('n29')">30. Alpine Ridge</button>
+        <button class="theme" onclick="setTheme('n30')">31. Obsidian Cave</button>
+        <button class="theme" onclick="setTheme('n31')">32. Bioluminescent Bay</button>
+        <button class="theme" onclick="setTheme('n32')">33. Cypress Swamp</button>
+        <button class="theme" onclick="setTheme('n33')">34. Wildfire Ridge</button>
+        <button class="theme" onclick="setTheme('n34')">35. Glacial Lagoon</button>
+        <button class="theme" onclick="setTheme('n35')">36. Terraced Rice Field</button>
+        <button class="theme" onclick="setTheme('n36')">37. Stormy Cumulus</button>
+        <button class="theme" onclick="setTheme('n37')">38. Deep Earth</button>
+        <button class="theme" onclick="setTheme('n38')">39. Morning Dew</button>
+        <button class="theme" onclick="setTheme('n39')">40. Twilight Horizon</button>
+        <button class="theme" onclick="setTheme('n40')">41. Cactus Bloom</button>
+        <button class="theme" onclick="setTheme('n41')">42. Limestone Cave</button>
+        <button class="theme" onclick="setTheme('n42')">43. Copper Ore</button>
+        <button class="theme" onclick="setTheme('n43')">44. Turquoise Lagoon</button>
+        <button class="theme" onclick="setTheme('n44')">45. Slate Cliff</button>
+        <button class="theme" onclick="setTheme('n45')">46. Wildflower Valley</button>
+        <button class="theme" onclick="setTheme('n46')">47. Starfish Coast</button>
+        <button class="theme" onclick="setTheme('n47')">48. Peat Bog</button>
+        <button class="theme" onclick="setTheme('n48')">49. Thunderhead</button>
+        <button class="theme" onclick="setTheme('n49')">50. Earth Core</button>
     </div>
-
 </div>
 
 <!-- =====================================================
      DRAWER
 ===================================================== -->
 
-<div class="drawer-overlay"
-     id="drawerOverlay"
-     onclick="closeDrawer()">
-</div>
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 
-<aside class="drawer"
-       id="drawer">
-
-    <div class="drawer-title">
-        Calendar
-    </div>
-
-    <button class="drawer-create"
-            onclick="closeDrawer();openEvent()">
-
-        <span>＋</span>
-        Create event
-
+<aside class="drawer" id="drawer">
+    <div class="drawer-title">Navigation</div>
+    <button class="drawer-create" onclick="closeDrawer();openEvent()">
+        <span>＋</span> Create event
     </button>
-
     <div class="drawer-section">
-
-        <div class="drawer-section-title">
-            CALENDARS
-        </div>
-
-        <div class="drawer-item">
-            🔵 Events
-        </div>
-
-        <div class="drawer-item">
-            🟢 Personal
-        </div>
-
-        <div class="drawer-item">
-            🟡 Work
-        </div>
-
-        <div class="drawer-item">
-            🔴 Important
-        </div>
-
+        <div class="drawer-section-title">CALENDARS</div>
+        <div class="drawer-item">🔵 Events</div>
+        <div class="drawer-item">🟢 Personal</div>
+        <div class="drawer-item">🟡 Work</div>
+        <div class="drawer-item">🔴 Important</div>
     </div>
-
     <div class="drawer-section">
-
-        <div class="drawer-section-title">
-            HOLIDAYS
-        </div>
-
-        <div class="drawer-item">
-            🇮🇳 Indian Holidays
-        </div>
-
-        <div class="drawer-item">
-            🌎 International Holidays
-        </div>
-
+        <div class="drawer-section-title">HOLIDAYS</div>
+        <div class="drawer-item">🇮🇳 Indian Holidays</div>
+        <div class="drawer-item">🌎 International Holidays</div>
     </div>
-
     <div class="drawer-section">
-
-        <div class="drawer-section-title">
-            DATA
-        </div>
-
-        <div class="drawer-item"
-             onclick="exportEvents()">
-            📤 Export Events
-        </div>
-
-        <div class="drawer-item"
-             onclick="document.getElementById('importFile').click()">
-            📥 Import Events
-        </div>
-
-        <div class="drawer-item"
-             onclick="window.print()">
-            🖨 Print
-        </div>
-
-        <div class="drawer-item"
-             onclick="deleteAll()">
-            🗑 Delete All Events
-        </div>
-
+        <div class="drawer-section-title">DATA MANAGEMENT</div>
+        <div class="drawer-item" onclick="exportEvents()">📤 Export Events</div>
+        <div class="drawer-item" onclick="document.getElementById('importFile').click()">📥 Import Events</div>
+        <div class="drawer-item" onclick="window.print()">🖨 Print Calendar</div>
+        <div class="drawer-item" onclick="deleteAll()">🗑 Delete All Events</div>
     </div>
-
 </aside>
 
 <!-- =====================================================
@@ -1575,2353 +1284,749 @@ body.theme-minimal{
 ===================================================== -->
 
 <div class="content">
-
-    <!-- MONTH HEADER -->
-
     <div class="month-header">
-
-        <button class="month-title"
-                onclick="openPicker()"
-                id="monthTitle">
-        </button>
-
-        <div class="year-subtitle"
-             id="yearSubtitle">
-        </div>
-
+        <button class="month-title" onclick="openPicker()" id="monthTitle"></button>
+        <div class="year-subtitle" id="yearSubtitle"></div>
     </div>
-
-    <!-- WEEKDAYS -->
 
     <div class="weekdays">
-
-        <div>Sun</div>
-        <div>Mon</div>
-        <div>Tue</div>
-        <div>Wed</div>
-        <div>Thu</div>
-        <div>Fri</div>
-        <div>Sat</div>
-
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
     </div>
 
-    <!-- CALENDAR -->
-
-    <div id="calendar">
-    </div>
-
-    <!-- BOTTOM NAV -->
+    <div id="calendar"></div>
 
     <div class="bottom-nav">
-
         <div class="nav-row">
-
-            <button
-                class="nav-btn nav-arrow"
-                onclick="navigate(-1)">
-                ‹
-            </button>
-
-            <button
-                class="nav-btn primary"
-                onclick="goToday()">
-                Today
-            </button>
-
-            <button
-                class="nav-btn nav-arrow"
-                onclick="navigate(1)">
-                ›
-            </button>
-
-            <select
-                id="viewSelect"
-                class="view-select"
-                onchange="changeView(this.value)">
-
-                <option value="month">
-                    Month
-                </option>
-
-                <option value="week">
-                    Week
-                </option>
-
-                <option value="day">
-                    Day
-                </option>
-
-                <option value="agenda">
-                    Agenda
-                </option>
-
-                <option value="year">
-                    Year
-                </option>
-
+            <button class="nav-btn nav-arrow" onclick="navigate(-1)">‹</button>
+            <button class="nav-btn primary" onclick="goToday()">Today</button>
+            <button class="nav-btn nav-arrow" onclick="navigate(1)">›</button>
+            <select id="viewSelect" class="view-select" onchange="changeView(this.value)">
+                <option value="month">Month</option>
+                <option value="week">Week</option>
+                <option value="day">Day</option>
+                <option value="agenda">Agenda</option>
+                <option value="year">Year</option>
             </select>
-
         </div>
-
-        <div style="
-            text-align:center;
-            margin-top:5px;
-            font-size:9px;
-            color:var(--muted);
-        ">
-            Tap month/year to jump • Swipe left/right to navigate
+        <div style="text-align:center;margin-top:6px;font-size:10px;color:var(--muted);">
+            Tap header to jump • Swipe left/right to navigate
         </div>
-
     </div>
-
 </div>
 
 <!-- =====================================================
      PICKER
 ===================================================== -->
 
-<div class="overlay"
-     id="pickerOverlay"
-     onclick="closePicker()">
-</div>
+<div class="overlay" id="pickerOverlay" onclick="closePicker()"></div>
 
-<div class="picker"
-     id="picker">
-
+<div class="picker" id="picker">
     <div class="picker-header">
-
-        <div class="picker-year"
-             id="pickerYear">
-        </div>
-
+        <div class="picker-year" id="pickerYear"></div>
         <div class="picker-arrows">
-
-            <button class="circle-btn"
-                    onclick="pickerYear(-1)">
-                ‹
-            </button>
-
-            <button class="circle-btn"
-                    onclick="pickerYear(1)">
-                ›
-            </button>
-
+            <button class="circle-btn" onclick="pickerYear(-1)">‹</button>
+            <button class="circle-btn" onclick="pickerYear(1)">›</button>
         </div>
-
     </div>
-
-    <div class="month-options"
-         id="monthOptions">
-    </div>
-
+    <div class="month-options" id="monthOptions"></div>
 </div>
 
 <!-- =====================================================
      EVENT MODAL
 ===================================================== -->
 
-<div class="modal-overlay"
-     id="eventModal">
-
+<div class="modal-overlay" id="eventModal">
     <div class="modal">
-
         <div class="modal-head">
-
-            <h2 id="eventFormTitle">
-                Create event
-            </h2>
-
-            <button class="close"
-                    onclick="closeEvent()">
-                ×
-            </button>
-
+            <h2 id="eventFormTitle">Create event</h2>
+            <button class="close" onclick="closeEvent()">×</button>
         </div>
-
-        <input
-            type="hidden"
-            id="eventId">
-
+        <input type="hidden" id="eventId">
         <div class="form">
-
             <div class="field">
-
                 <label>TITLE</label>
-
-                <input
-                    id="eventTitle"
-                    placeholder="Event title">
-
+                <input id="eventTitle" placeholder="Event title">
             </div>
-
             <div class="field checkbox">
-
-                <input
-                    type="checkbox"
-                    id="allDay">
-
-                <label>
-                    All day
-                </label>
-
+                <input type="checkbox" id="allDay">
+                <label>All day event</label>
             </div>
-
             <div class="two">
-
                 <div class="field">
-
                     <label>START DATE</label>
-
-                    <input
-                        type="date"
-                        id="startDate">
-
+                    <input type="date" id="startDate">
                 </div>
-
                 <div class="field">
-
                     <label>START TIME</label>
-
-                    <input
-                        type="time"
-                        id="startTime"
-                        value="09:00">
-
+                    <input type="time" id="startTime" value="09:00">
                 </div>
-
             </div>
-
             <div class="two">
-
                 <div class="field">
-
                     <label>END DATE</label>
-
-                    <input
-                        type="date"
-                        id="endDate">
-
+                    <input type="date" id="endDate">
                 </div>
-
                 <div class="field">
-
                     <label>END TIME</label>
-
-                    <input
-                        type="time"
-                        id="endTime"
-                        value="10:00">
-
+                    <input type="time" id="endTime" value="10:00">
                 </div>
-
             </div>
-
             <div class="two">
-
                 <div class="field">
-
                     <label>CALENDAR</label>
-
                     <select id="calendarType">
-
                         <option>Events</option>
                         <option>Personal</option>
                         <option>Work</option>
                         <option>Important</option>
-
                     </select>
-
                 </div>
-
                 <div class="field">
-
                     <label>PRIORITY</label>
-
                     <select id="priority">
-
                         <option>Normal</option>
                         <option>High</option>
                         <option>Low</option>
-
                     </select>
-
                 </div>
-
             </div>
-
             <div class="two">
-
                 <div class="field">
-
                     <label>REPEAT</label>
-
                     <select id="repeat">
-
-                        <option value="none">
-                            Does not repeat
-                        </option>
-
-                        <option value="daily">
-                            Daily
-                        </option>
-
-                        <option value="weekly">
-                            Weekly
-                        </option>
-
-                        <option value="monthly">
-                            Monthly
-                        </option>
-
-                        <option value="yearly">
-                            Yearly
-                        </option>
-
+                        <option value="none">Does not repeat</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
                     </select>
-
                 </div>
-
                 <div class="field">
-
                     <label>REMINDER</label>
-
                     <select id="reminder">
-
-                        <option value="none">
-                            No reminder
-                        </option>
-
-                        <option value="5">
-                            5 min
-                        </option>
-
-                        <option value="10">
-                            10 min
-                        </option>
-
-                        <option value="30">
-                            30 min
-                        </option>
-
-                        <option value="60">
-                            1 hour
-                        </option>
-
-                        <option value="1440">
-                            1 day
-                        </option>
-
+                        <option value="none">No reminder</option>
+                        <option value="5">5 min</option>
+                        <option value="10">10 min</option>
+                        <option value="30">30 min</option>
+                        <option value="60">1 hour</option>
+                        <option value="1440">1 day</option>
                     </select>
-
                 </div>
-
             </div>
-
             <div class="field">
-
                 <label>LOCATION</label>
-
-                <input
-                    id="location"
-                    placeholder="Location">
-
+                <input id="location" placeholder="Location">
             </div>
-
             <div class="field">
-
                 <label>DESCRIPTION</label>
-
-                <textarea
-                    id="description"
-                    placeholder="Notes">
-                </textarea>
-
+                <textarea id="description" placeholder="Notes"></textarea>
             </div>
-
             <div class="field">
-
                 <label>EVENT COLOR</label>
-
                 <div class="colors">
-
-                    <button
-                        type="button"
-                        class="color active"
-                        data-color="#1a73e8"
-                        style="background:#1a73e8">
-                    </button>
-
-                    <button
-                        type="button"
-                        class="color"
-                        data-color="#34a853"
-                        style="background:#34a853">
-                    </button>
-
-                    <button
-                        type="button"
-                        class="color"
-                        data-color="#fbbc04"
-                        style="background:#fbbc04">
-                    </button>
-
-                    <button
-                        type="button"
-                        class="color"
-                        data-color="#ea4335"
-                        style="background:#ea4335">
-                    </button>
-
-                    <button
-                        type="button"
-                        class="color"
-                        data-color="#9334e6"
-                        style="background:#9334e6">
-                    </button>
-
-                    <button
-                        type="button"
-                        class="color"
-                        data-color="#ff6d00"
-                        style="background:#ff6d00">
-                    </button>
-
-                    <button
-                        type="button"
-                        class="color"
-                        data-color="#0097a7"
-                        style="background:#0097a7">
-                    </button>
-
+                    <button type="button" class="color active" data-color="#3b82f6" style="background:#3b82f6"></button>
+                    <button type="button" class="color" data-color="#10b981" style="background:#10b981"></button>
+                    <button type="button" class="color" data-color="#f59e0b" style="background:#f59e0b"></button>
+                    <button type="button" class="color" data-color="#ef4444" style="background:#ef4444"></button>
+                    <button type="button" class="color" data-color="#8b5cf6" style="background:#8b5cf6"></button>
+                    <button type="button" class="color" data-color="#ec4899" style="background:#ec4899"></button>
                 </div>
-
             </div>
-
         </div>
-
         <div class="modal-actions">
-
-            <button
-                class="btn danger"
-                id="deleteEventButton"
-                onclick="deleteCurrentEvent()"
-                style="display:none">
-                Delete
-            </button>
-
-            <div>
-
-                <button
-                    class="btn"
-                    onclick="closeEvent()">
-                    Cancel
-                </button>
-
-                <button
-                    class="btn primary"
-                    onclick="saveEvent()">
-                    Save
-                </button>
-
+            <button class="btn danger" id="deleteEventButton" onclick="deleteCurrentEvent()" style="display:none">Delete</button>
+            <div style="display:flex; gap:8px;">
+                <button class="btn" onclick="closeEvent()">Cancel</button>
+                <button class="btn primary" onclick="saveEvent()">Save</button>
             </div>
-
         </div>
-
     </div>
-
 </div>
 
 <!-- =====================================================
      DETAILS MODAL
 ===================================================== -->
 
-<div class="modal-overlay"
-     id="detailsModal">
-
+<div class="modal-overlay" id="detailsModal">
     <div class="modal">
-
         <div class="modal-head">
-
-            <h2>
-                Event
-            </h2>
-
-            <button class="close"
-                    onclick="closeDetails()">
-                ×
-            </button>
-
+            <h2>Event Details</h2>
+            <button class="close" onclick="closeDetails()">×</button>
         </div>
-
-        <div class="details"
-             id="details">
-        </div>
-
+        <div class="details" id="details"></div>
         <div class="modal-actions">
-
-            <button
-                class="btn danger"
-                onclick="deleteDetail()">
-                Delete
-            </button>
-
-            <div>
-
-                <button
-                    class="btn"
-                    onclick="editDetail()">
-                    Edit
-                </button>
-
-                <button
-                    class="btn primary"
-                    onclick="closeDetails()">
-                    Close
-                </button>
-
+            <button class="btn danger" onclick="deleteDetail()">Delete</button>
+            <div style="display:flex; gap:8px;">
+                <button class="btn" onclick="editDetail()">Edit</button>
+                <button class="btn primary" onclick="closeDetails()">Close</button>
             </div>
-
         </div>
-
     </div>
-
 </div>
 
-<input
-    type="file"
-    id="importFile"
-    accept=".json"
-    style="display:none">
-
-<div class="toast"
-     id="toast">
-</div>
+<input type="file" id="importFile" accept=".json" style="display:none">
+<div class="toast" id="toast"></div>
 
 <script>
-
-/* =========================================================
-   DATA
-========================================================= */
-
-const STORAGE="mobileCalendarAdvanced";
-
+const STORAGE="mobileCalendarGlassAdvanced";
 let events=[];
-
-try{
-    events=
-        JSON.parse(
-            localStorage.getItem(STORAGE)||"[]"
-        );
-}catch{
-    events=[];
-}
-
+try{events=JSON.parse(localStorage.getItem(STORAGE)||"[]");}catch{events=[];}
 let currentDate=new Date();
-
 let currentView="month";
-
-let selectedColor="#1a73e8";
-
+let selectedColor="#3b82f6";
 let selectedEventId=null;
+let pickerYearValue=currentDate.getFullYear();
 
-let pickerYearValue=
-    currentDate.getFullYear();
-
-const MONTHS=[
-    "January","February","March","April",
-    "May","June","July","August",
-    "September","October","November","December"
-];
-
-const DAYS=[
-    "Sunday","Monday","Tuesday",
-    "Wednesday","Thursday","Friday","Saturday"
-];
-
-/* =========================================================
-   HOLIDAYS
-========================================================= */
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
 const holidays={
-
-"2026-01-01":"New Year's Day",
-"2026-01-14":"Makar Sankranti",
-"2026-01-26":"Republic Day",
-
-"2026-02-15":"Maha Shivaratri",
-
-"2026-03-03":"Holi",
-"2026-03-19":"Gudi Padwa",
-"2026-03-20":"Ugadi",
-"2026-03-21":"Eid",
-
-"2026-04-02":"Ram Navami",
-"2026-04-03":"Good Friday",
-"2026-04-14":"Ambedkar Jayanti",
-
-"2026-05-01":"Maharashtra Day",
-"2026-05-27":"Eid al-Adha",
-
-"2026-06-26":"Muharram",
-
-"2026-08-15":"Independence Day",
-"2026-08-26":"Janmashtami",
-
-"2026-09-14":"Ganesh Chaturthi",
-
-"2026-10-02":"Gandhi Jayanti",
-"2026-10-20":"Dussehra",
-
-"2026-11-08":"Diwali",
-"2026-11-09":"Bhai Dooj",
-
-"2026-11-24":"Guru Nanak Jayanti",
-
-"2026-12-25":"Christmas"
-
+"2026-01-01":"New Year's Day","2026-01-26":"Republic Day","2026-03-03":"Holi","2026-03-19":"Gudi Padwa","2026-04-02":"Ram Navami","2026-05-01":"Maharashtra Day","2026-08-15":"Independence Day","2026-09-14":"Ganesh Chaturthi","2026-10-02":"Gandhi Jayanti","2026-11-08":"Diwali","2026-12-25":"Christmas"
 };
 
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function pad(n){
-    return String(n).padStart(2,"0");
-}
-
-function key(d){
-
-    return d.getFullYear()+"-"+
-           pad(d.getMonth()+1)+"-"+
-           pad(d.getDate());
-}
-
-function todayKey(){
-    return key(new Date());
-}
-
-function uid(){
-
-    return Date.now().toString(36)+
-           Math.random().toString(36).slice(2);
-}
-
-function save(){
-
-    localStorage.setItem(
-        STORAGE,
-        JSON.stringify(events)
-    );
-}
+function pad(n){return String(n).padStart(2,"0");}
+function key(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+function todayKey(){return key(new Date());}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
+function save(){localStorage.setItem(STORAGE,JSON.stringify(events));}
 
 function escapeHTML(x){
-
-    return String(x||"")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+    return String(x||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
 
 function toast(msg){
-
-    const t=
-        document.getElementById("toast");
-
+    const t=document.getElementById("toast");
     t.textContent=msg;
-
     t.classList.add("show");
-
-    setTimeout(
-        ()=>t.classList.remove("show"),
-        2200
-    );
+    setTimeout(()=>t.classList.remove("show"),2200);
 }
 
 function eventsForDate(d){
-
     const k=key(d);
-
     return events.filter(e=>{
-
-        if(e.startDate===k)
-            return true;
-
-        if(
-            e.endDate &&
-            e.startDate<=k &&
-            k<=e.endDate
-        )
-            return true;
-
+        if(e.startDate===k) return true;
+        if(e.endDate && e.startDate<=k && k<=e.endDate) return true;
         return false;
     });
 }
 
-/* =========================================================
-   HEADER
-========================================================= */
-
 function updateHeader(){
-
-    document.getElementById(
-        "monthTitle"
-    ).textContent=
-        MONTHS[currentDate.getMonth()];
-
-    document.getElementById(
-        "yearSubtitle"
-    ).textContent=
-        currentDate.getFullYear();
+    document.getElementById("monthTitle").textContent=MONTHS[currentDate.getMonth()];
+    document.getElementById("yearSubtitle").textContent=currentDate.getFullYear();
 }
 
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
 function navigate(dir){
-
-    if(currentView==="month"){
-
-        currentDate.setMonth(
-            currentDate.getMonth()+dir
-        );
-
-    }else if(currentView==="year"){
-
-        currentDate.setFullYear(
-            currentDate.getFullYear()+dir
-        );
-
-    }else if(currentView==="week"){
-
-        currentDate.setDate(
-            currentDate.getDate()+dir*7
-        );
-
-    }else{
-
-        currentDate.setDate(
-            currentDate.getDate()+dir
-        );
-
-    }
-
+    if(currentView==="month") currentDate.setMonth(currentDate.getMonth()+dir);
+    else if(currentView==="year") currentDate.setFullYear(currentDate.getFullYear()+dir);
+    else if(currentView==="week") currentDate.setDate(currentDate.getDate()+dir*7);
+    else currentDate.setDate(currentDate.getDate()+dir);
     render();
 }
 
 function goToday(){
-
     currentDate=new Date();
-
     render();
 }
-
-/* =========================================================
-   VIEW
-========================================================= */
 
 function changeView(view){
-
     currentView=view;
-
     render();
 }
 
-/* =========================================================
-   MONTH
-========================================================= */
-
 function renderMonth(){
-
-    const y=
-        currentDate.getFullYear();
-
-    const m=
-        currentDate.getMonth();
-
-    const first=
-        new Date(y,m,1);
-
-    const start=
-        new Date(
-            y,m,1-first.getDay()
-        );
-
-    let html=
-        '<div class="month-grid">';
-
+    const y=currentDate.getFullYear(), m=currentDate.getMonth();
+    const first=new Date(y,m,1);
+    const start=new Date(y,m,1-first.getDay());
+    let html='<div class="month-grid">';
     for(let i=0;i<42;i++){
-
-        const d=
-            new Date(start);
-
-        d.setDate(
-            start.getDate()+i
-        );
-
-        const k=key(d);
-
-        const list=
-            eventsForDate(d);
-
-        const isToday=
-            k===todayKey();
-
-        const isOther=
-            d.getMonth()!==m;
-
-        const weekend=
-            d.getDay()===0 ||
-            d.getDay()===6;
-
-        html+=`
-
-            <div
-                class="
-                    day
-                    ${isToday?"today":""}
-                    ${isOther?"other":""}
-                    ${weekend?"weekend":""}
-                "
-                onclick="openEvent('${k}')">
-
-                <div class="day-number">
-                    ${d.getDate()}
-                </div>
-
-        `;
-
+        const d=new Date(start);
+        d.setDate(start.getDate()+i);
+        const k=key(d), list=eventsForDate(d);
+        const isToday=k===todayKey(), isOther=d.getMonth()!==m, weekend=d.getDay()===0||d.getDay()===6;
+        html+=`<div class="day ${isToday?"today":""} ${isOther?"other":""} ${weekend?"weekend":""}" onclick="openEvent('${k}')">
+                <div class="day-number">${d.getDate()}</div>`;
         if(holidays[k]){
-
-            html+=`
-                <div class="holiday">
-                    ${escapeHTML(
-                        holidays[k]
-                    )}
-                </div>
-            `;
+            html+=`<div class="holiday">${escapeHTML(holidays[k])}</div>`;
         }
-
-        list
-        .slice(0,3)
-        .forEach(e=>{
-
-            html+=`
-
-                <div
-                    class="event"
-                    style="
-                        background:
-                        ${e.color||"#1a73e8"}
-                    "
-                    onclick="
-                        event.stopPropagation();
-                        showDetails('${e.id}')
-                    ">
-
-                    ${escapeHTML(e.title)}
-
-                </div>
-
-            `;
+        list.slice(0,3).forEach(e=>{
+            html+=`<div class="event" style="background:${e.color||"#3b82f6"}" onclick="event.stopPropagation();showDetails('${e.id}')">${escapeHTML(e.title)}</div>`;
         });
-
         if(list.length>3){
-
-            html+=`
-                <div class="more">
-                    +${list.length-3} more
-                </div>
-            `;
+            html+=`<div class="more">+${list.length-3} more</div>`;
         }
-
         html+="</div>";
     }
-
     html+="</div>";
-
-    document.getElementById(
-        "calendar"
-    ).innerHTML=html;
+    document.getElementById("calendar").innerHTML=html;
 }
 
-/* =========================================================
-   WEEK / DAY
-========================================================= */
-
 function startWeek(d){
-
     const x=new Date(d);
-
     x.setHours(0,0,0,0);
-
-    x.setDate(
-        x.getDate()-x.getDay()
-    );
-
+    x.setDate(x.getDate()-x.getDay());
     return x;
 }
 
 function renderTimeView(){
-
-    const isDay=
-        currentView==="day";
-
-    const count=
-        isDay?1:7;
-
-    const start=
-        isDay
-            ?new Date(currentDate)
-            :startWeek(currentDate);
-
-    let html=`
-
-        <div style="overflow:auto">
-
-        <div class="time-container">
-
-            <div class="time-header">
-
-                <div></div>
-    `;
-
+    const isDay=currentView==="day", count=isDay?1:7;
+    const start=isDay?new Date(currentDate):startWeek(currentDate);
+    let html='<div style="overflow:auto"><div class="time-container"><div class="time-header"><div></div>';
     for(let i=0;i<count;i++){
-
-        const d=
-            new Date(start);
-
-        d.setDate(
-            start.getDate()+i
-        );
-
-        html+=`
-
-            <div>
-                ${DAYS[d.getDay()].slice(0,3)}
-                <br>
-                ${d.getDate()}
-            </div>
-
-        `;
+        const d=new Date(start);
+        d.setDate(start.getDate()+i);
+        html+=`<div>${DAYS[d.getDay()].slice(0,3)}<br>${d.getDate()}</div>`;
     }
-
-    html+=`
-            </div>
-
-            <div class="time-body">
-    `;
-
+    html+='</div><div class="time-body">';
     for(let hour=0;hour<24;hour++){
-
-        html+=`
-
-            <div class="time-label">
-                ${pad(hour)}:00
-            </div>
-
-        `;
-
+        html+=`<div class="time-label">${pad(hour)}:00</div>`;
         for(let i=0;i<count;i++){
-
-            const d=
-                new Date(start);
-
-            d.setDate(
-                start.getDate()+i
-            );
-
-            const list=
-                eventsForDate(d)
-                .filter(e=>
-                    !e.allDay &&
-                    parseInt(
-                        (e.startTime||"00:00")
-                        .split(":")[0]
-                    )===hour
-                );
-
-            html+=`
-
-                <div
-                    class="time-cell"
-                    onclick="
-                        openEvent(
-                            '${key(d)}',
-                            '${pad(hour)}:00'
-                        )
-                    ">
-
-            `;
-
+            const d=new Date(start);
+            d.setDate(start.getDate()+i);
+            const list=eventsForDate(d).filter(e=>!e.allDay && parseInt((e.startTime||"00:00").split(":")[0])===hour);
+            html+=`<div class="time-cell" onclick="openEvent('${key(d)}','${pad(hour)}:00')">`;
             list.forEach(e=>{
-
-                html+=`
-
-                    <div
-                        class="time-event"
-                        style="
-                            background:
-                            ${e.color||"#1a73e8"}
-                        "
-                        onclick="
-                            event.stopPropagation();
-                            showDetails('${e.id}')
-                        ">
-
-                        ${escapeHTML(e.title)}
-
-                    </div>
-
-                `;
+                html+=`<div class="time-event" style="background:${e.color||"#3b82f6"}" onclick="event.stopPropagation();showDetails('${e.id}')">${escapeHTML(e.title)}</div>`;
             });
-
             html+="</div>";
         }
     }
-
-    html+=`
-            </div>
-        </div>
-        </div>
-    `;
-
-    document.getElementById(
-        "calendar"
-    ).innerHTML=html;
+    html+="</div></div></div>";
+    document.getElementById("calendar").innerHTML=html;
 }
-
-/* =========================================================
-   AGENDA
-========================================================= */
 
 function renderAgenda(){
-
-    const list=
-        events
-        .slice()
-        .sort((a,b)=>
-            (
-                a.startDate+
-                (a.startTime||"")
-            )
-            .localeCompare(
-                b.startDate+
-                (b.startTime||"")
-            )
-        );
-
+    const list=events.slice().sort((a,b)=>(a.startDate+(a.startTime||"")).localeCompare(b.startDate+(b.startTime||"")));
     if(!list.length){
-
-        document.getElementById(
-            "calendar"
-        ).innerHTML=`
-
-            <div class="empty">
-
-                <div class="empty-icon">
-                    📅
-                </div>
-
-                No events yet
-
-            </div>
-
-        `;
-
+        document.getElementById("calendar").innerHTML=`<div class="empty"><div class="empty-icon">📅</div>No events scheduled</div>`;
         return;
     }
-
-    let html=
-        '<div class="agenda">';
-
+    let html='<div class="agenda">';
     let previous="";
-
     list.forEach(e=>{
-
         if(e.startDate!==previous){
-
             previous=e.startDate;
-
-            const d=
-                new Date(
-                    e.startDate+
-                    "T00:00:00"
-                );
-
-            html+=`
-
-                <div class="agenda-date">
-
-                    ${DAYS[d.getDay()]},
-                    ${MONTHS[d.getMonth()]}
-                    ${d.getDate()},
-                    ${d.getFullYear()}
-
-                </div>
-            `;
+            const d=new Date(e.startDate+"T00:00:00");
+            html+=`<div class="agenda-date">${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}</div>`;
         }
-
-        html+=`
-
-            <div
-                class="agenda-event"
-                onclick="showDetails('${e.id}')">
-
-                <div
-                    class="agenda-color"
-                    style="
-                        background:
-                        ${e.color||"#1a73e8"}
-                    ">
-                </div>
-
+        html+=`<div class="agenda-event" onclick="showDetails('${e.id}')">
+                <div class="agenda-color" style="background:${e.color||"#3b82f6"}"></div>
                 <div class="agenda-info">
-
-                    <div class="agenda-title">
-                        ${escapeHTML(e.title)}
-                    </div>
-
-                    <div class="agenda-time">
-
-                        ${
-                            e.allDay
-                            ?"All day"
-                            :(e.startTime||"")+
-                             " – "+
-                             (e.endTime||"")
-                        }
-
-                    </div>
-
-                    ${
-                        e.location
-                        ?`
-                        <div class="agenda-location">
-                            📍 ${escapeHTML(e.location)}
-                        </div>
-                        `
-                        :""
-                    }
-
-                </div>
-
-            </div>
-
-        `;
+                    <div class="agenda-title">${escapeHTML(e.title)}</div>
+                    <div class="agenda-time">${e.allDay?"All day":(e.startTime||"")+" – "+(e.endTime||"")}</div>
+                    ${e.location?`<div class="agenda-location">📍 ${escapeHTML(e.location)}</div>`:""}
+                </div></div>`;
     });
-
     html+="</div>";
-
-    document.getElementById(
-        "calendar"
-    ).innerHTML=html;
+    document.getElementById("calendar").innerHTML=html;
 }
 
-/* =========================================================
-   YEAR
-========================================================= */
-
 function renderYear(){
-
-    const year=
-        currentDate.getFullYear();
-
-    let html=
-        '<div class="year-grid">';
-
+    const year=currentDate.getFullYear();
+    let html='<div class="year-grid">';
     for(let m=0;m<12;m++){
-
-        html+=`
-
-            <div class="year-month">
-
-                <div class="year-title">
-                    ${MONTHS[m]}
-                </div>
-
-                <div class="year-days">
-
-        `;
-
-        ["S","M","T","W","T","F","S"]
-        .forEach(x=>{
-            html+=`<div>${x}</div>`;
-        });
-
-        const first=
-            new Date(
-                year,m,1
-            ).getDay();
-
-        const total=
-            new Date(
-                year,m+1,0
-            ).getDate();
-
-        for(let i=0;i<first;i++)
-            html+="<div></div>";
-
-        for(let day=1;
-            day<=total;
-            day++){
-
-            const d=
-                new Date(
-                    year,m,day
-                );
-
-            const has=
-                eventsForDate(d).length ||
-                holidays[key(d)];
-
-            html+=`
-
-                <div
-                    class="${has?"year-event-day":""}"
-                    onclick="
-                        jumpToDate(
-                            ${year},
-                            ${m},
-                            ${day}
-                        )
-                    ">
-
-                    ${day}
-
-                </div>
-
-            `;
+        html+=`<div class="year-month"><div class="year-title">${MONTHS[m]}</div><div class="year-days">`;
+        ["S","M","T","W","T","F","S"].forEach(x=>html+=`<div>${x}</div>`);
+        const first=new Date(year,m,1).getDay();
+        const total=new Date(year,m+1,0).getDate();
+        for(let i=0;i<first;i++) html+="<div></div>";
+        for(let day=1;day<=total;day++){
+            const d=new Date(year,m,day);
+            const has=eventsForDate(d).length||holidays[key(d)];
+            html+=`<div class="${has?"year-event-day":""}" onclick="jumpToDate(${year},${m},${day})">${day}</div>`;
         }
-
-        html+=`
-                </div>
-            </div>
-        `;
+        html+="</div></div>";
     }
-
     html+="</div>";
-
-    document.getElementById(
-        "calendar"
-    ).innerHTML=html;
+    document.getElementById("calendar").innerHTML=html;
 }
 
 function jumpToDate(y,m,d){
-
-    currentDate=
-        new Date(y,m,d);
-
+    currentDate=new Date(y,m,d);
     currentView="day";
-
-    document.getElementById(
-        "viewSelect"
-    ).value="day";
-
+    document.getElementById("viewSelect").value="day";
     render();
 }
 
-/* =========================================================
-   RENDER
-========================================================= */
-
 function render(){
-
     updateHeader();
-
-    if(currentView==="month")
-        renderMonth();
-
-    else if(
-        currentView==="week" ||
-        currentView==="day"
-    )
-        renderTimeView();
-
-    else if(currentView==="agenda")
-        renderAgenda();
-
-    else
-        renderYear();
+    if(currentView==="month") renderMonth();
+    else if(currentView==="week"||currentView==="day") renderTimeView();
+    else if(currentView==="agenda") renderAgenda();
+    else renderYear();
 }
 
-/* =========================================================
-   PICKER
-========================================================= */
-
 function openPicker(){
-
-    pickerYearValue=
-        currentDate.getFullYear();
-
+    pickerYearValue=currentDate.getFullYear();
     renderPicker();
-
-    document.getElementById(
-        "pickerOverlay"
-    ).classList.add("show");
-
-    document.getElementById(
-        "picker"
-    ).classList.add("show");
+    document.getElementById("pickerOverlay").classList.add("show");
+    document.getElementById("picker").classList.add("show");
 }
 
 function closePicker(){
-
-    document.getElementById(
-        "pickerOverlay"
-    ).classList.remove("show");
-
-    document.getElementById(
-        "picker"
-    ).classList.remove("show");
+    document.getElementById("pickerOverlay").classList.remove("show");
+    document.getElementById("picker").classList.remove("show");
 }
 
 function pickerYear(dir){
-
     pickerYearValue+=dir;
-
     renderPicker();
 }
 
 function renderPicker(){
-
-    document.getElementById(
-        "pickerYear"
-    ).textContent=
-        pickerYearValue;
-
-    const box=
-        document.getElementById(
-            "monthOptions"
-        );
-
+    document.getElementById("pickerYear").textContent=pickerYearValue;
+    const box=document.getElementById("monthOptions");
     box.innerHTML="";
-
     MONTHS.forEach((month,index)=>{
-
-        const b=
-            document.createElement("button");
-
+        const b=document.createElement("button");
         b.className="month-option";
-
-        if(
-            pickerYearValue===
-                currentDate.getFullYear()
-            &&
-            index===
-                currentDate.getMonth()
-        ){
-            b.classList.add("selected");
-        }
-
+        if(pickerYearValue===currentDate.getFullYear()&&index===currentDate.getMonth()) b.classList.add("selected");
         b.textContent=month;
-
         b.onclick=()=>{
-
-            currentDate=
-                new Date(
-                    pickerYearValue,
-                    index,
-                    1
-                );
-
+            currentDate=new Date(pickerYearValue,index,1);
             currentView="month";
-
-            document.getElementById(
-                "viewSelect"
-            ).value="month";
-
+            document.getElementById("viewSelect").value="month";
             closePicker();
-
             render();
-
         };
-
         box.appendChild(b);
-
     });
 }
 
-/* =========================================================
-   EVENT FORM
-========================================================= */
-
 function openEvent(date=null,time=null){
-
-    const d=
-        date||key(currentDate);
-
-    document.getElementById(
-        "eventId"
-    ).value="";
-
-    document.getElementById(
-        "eventTitle"
-    ).value="";
-
-    document.getElementById(
-        "startDate"
-    ).value=d;
-
-    document.getElementById(
-        "endDate"
-    ).value=d;
-
-    document.getElementById(
-        "startTime"
-    ).value=time||"09:00";
-
-    document.getElementById(
-        "endTime"
-    ).value=time
-        ?pad(
-            Math.min(
-                23,
-                parseInt(
-                    time.split(":")[0]
-                )+1
-            )
-        )+":00"
-        :"10:00";
-
-    document.getElementById(
-        "allDay"
-    ).checked=false;
-
-    document.getElementById(
-        "calendarType"
-    ).value="Events";
-
-    document.getElementById(
-        "priority"
-    ).value="Normal";
-
-    document.getElementById(
-        "repeat"
-    ).value="none";
-
-    document.getElementById(
-        "reminder"
-    ).value="none";
-
-    document.getElementById(
-        "location"
-    ).value="";
-
-    document.getElementById(
-        "description"
-    ).value="";
-
-    selectedColor="#1a73e8";
-
+    const d=date||key(currentDate);
+    document.getElementById("eventId").value="";
+    document.getElementById("eventTitle").value="";
+    document.getElementById("startDate").value=d;
+    document.getElementById("endDate").value=d;
+    document.getElementById("startTime").value=time||"09:00";
+    document.getElementById("endTime").value=time?pad(Math.min(23,parseInt(time.split(":")[0])+1))+":00":"10:00";
+    document.getElementById("allDay").checked=false;
+    document.getElementById("calendarType").value="Events";
+    document.getElementById("priority").value="Normal";
+    document.getElementById("repeat").value="none";
+    document.getElementById("reminder").value="none";
+    document.getElementById("location").value="";
+    document.getElementById("description").value="";
+    selectedColor="#3b82f6";
     updateColors();
-
-    document.getElementById(
-        "eventFormTitle"
-    ).textContent=
-        "Create event";
-
-    document.getElementById(
-        "deleteEventButton"
-    ).style.display="none";
-
-    document.getElementById(
-        "eventModal"
-    ).classList.add("show");
+    document.getElementById("eventFormTitle").textContent="Create event";
+    document.getElementById("deleteEventButton").style.display="none";
+    document.getElementById("eventModal").classList.add("show");
 }
 
 function closeEvent(){
-
-    document.getElementById(
-        "eventModal"
-    ).classList.remove("show");
+    document.getElementById("eventModal").classList.remove("show");
 }
 
 function saveEvent(){
-
-    const title=
-        document.getElementById(
-            "eventTitle"
-        ).value.trim();
-
-    if(!title){
-
-        toast(
-            "Enter an event title"
-        );
-
-        return;
-    }
-
-    const id=
-        document.getElementById(
-            "eventId"
-        ).value;
-
+    const title=document.getElementById("eventTitle").value.trim();
+    if(!title){ toast("Enter an event title"); return; }
+    const id=document.getElementById("eventId").value;
     const obj={
-
         id:id||uid(),
-
         title:title,
-
-        startDate:
-            document.getElementById(
-                "startDate"
-            ).value,
-
-        endDate:
-            document.getElementById(
-                "endDate"
-            ).value,
-
-        startTime:
-            document.getElementById(
-                "startTime"
-            ).value,
-
-        endTime:
-            document.getElementById(
-                "endTime"
-            ).value,
-
-        allDay:
-            document.getElementById(
-                "allDay"
-            ).checked,
-
-        calendar:
-            document.getElementById(
-                "calendarType"
-            ).value,
-
-        priority:
-            document.getElementById(
-                "priority"
-            ).value,
-
-        repeat:
-            document.getElementById(
-                "repeat"
-            ).value,
-
-        reminder:
-            document.getElementById(
-                "reminder"
-            ).value,
-
-        location:
-            document.getElementById(
-                "location"
-            ).value.trim(),
-
-        description:
-            document.getElementById(
-                "description"
-            ).value.trim(),
-
+        startDate:document.getElementById("startDate").value,
+        endDate:document.getElementById("endDate").value,
+        startTime:document.getElementById("startTime").value,
+        endTime:document.getElementById("endTime").value,
+        allDay:document.getElementById("allDay").checked,
+        calendar:document.getElementById("calendarType").value,
+        priority:document.getElementById("priority").value,
+        repeat:document.getElementById("repeat").value,
+        reminder:document.getElementById("reminder").value,
+        location:document.getElementById("location").value.trim(),
+        description:document.getElementById("description").value.trim(),
         color:selectedColor
-
     };
-
     if(id){
-
-        const index=
-            events.findIndex(
-                e=>e.id===id
-            );
-
-        if(index>=0)
-            events[index]=obj;
-
+        const index=events.findIndex(e=>e.id===id);
+        if(index>=0) events[index]=obj;
         toast("Event updated");
-
     }else{
-
         events.push(obj);
-
         toast("Event created");
-
     }
-
     save();
-
     closeEvent();
-
     render();
 }
 
-/* =========================================================
-   DETAILS
-========================================================= */
-
 function showDetails(id){
-
-    const e=
-        events.find(x=>x.id===id);
-
+    const e=events.find(x=>x.id===id);
     if(!e)return;
-
     selectedEventId=id;
-
-    const d=
-        new Date(
-            e.startDate+
-            "T00:00:00"
-        );
-
-    document.getElementById(
-        "details"
-    ).innerHTML=`
-
-        <div class="details-title">
-            ${escapeHTML(e.title)}
-        </div>
-
+    const d=new Date(e.startDate+"T00:00:00");
+    document.getElementById("details").innerHTML=`
+        <div class="details-title">${escapeHTML(e.title)}</div>
         <div class="detail">
-
-            <div class="detail-icon">
-                📅
-            </div>
-
-            <div>
-
-                ${DAYS[d.getDay()]},
-                ${MONTHS[d.getMonth()]}
-                ${d.getDate()},
-                ${d.getFullYear()}
-
-                <br><br>
-
-                ${
-                    e.allDay
-                    ?"All day"
-                    :(e.startTime||"")+
-                     " – "+
-                     (e.endTime||"")
-                }
-
-            </div>
-
+            <div class="detail-icon">📅</div>
+            <div>${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}<br><br>${e.allDay?"All day":(e.startTime||"")+" – "+(e.endTime||"")}</div>
         </div>
-
-        ${
-            e.location
-            ?`
-            <div class="detail">
-
-                <div class="detail-icon">
-                    📍
-                </div>
-
-                <div>
-                    ${escapeHTML(e.location)}
-                </div>
-
-            </div>
-            `
-            :""
-        }
-
-        <div class="detail">
-
-            <div class="detail-icon">
-                📁
-            </div>
-
-            <div>
-                ${escapeHTML(
-                    e.calendar||"Events"
-                )}
-            </div>
-
-        </div>
-
-        <div class="detail">
-
-            <div class="detail-icon">
-                ⭐
-            </div>
-
-            <div>
-                ${escapeHTML(
-                    e.priority||"Normal"
-                )}
-            </div>
-
-        </div>
-
-        ${
-            e.description
-            ?`
-            <div class="detail">
-
-                <div class="detail-icon">
-                    📝
-                </div>
-
-                <div>
-                    ${escapeHTML(
-                        e.description
-                    ).replace(/\n/g,"<br>")}
-                </div>
-
-            </div>
-            `
-            :""
-        }
-
+        ${e.location?`<div class="detail"><div class="detail-icon">📍</div><div>${escapeHTML(e.location)}</div></div>`:""}
+        <div class="detail"><div class="detail-icon">📁</div><div>${escapeHTML(e.calendar||"Events")}</div></div>
+        <div class="detail"><div class="detail-icon">⭐</div><div>${escapeHTML(e.priority||"Normal")}</div></div>
+        ${e.description?`<div class="detail"><div class="detail-icon">📝</div><div>${escapeHTML(e.description).replace(/\n/g,"<br>")}</div></div>`:""}
     `;
-
-    document.getElementById(
-        "detailsModal"
-    ).classList.add("show");
+    document.getElementById("detailsModal").classList.add("show");
 }
 
 function closeDetails(){
-
-    document.getElementById(
-        "detailsModal"
-    ).classList.remove("show");
+    document.getElementById("detailsModal").classList.remove("show");
 }
 
 function editDetail(){
-
     const id=selectedEventId;
-
     closeDetails();
-
     editEvent(id);
 }
 
 function editEvent(id){
-
-    const e=
-        events.find(x=>x.id===id);
-
+    const e=events.find(x=>x.id===id);
     if(!e)return;
-
-    document.getElementById(
-        "eventId"
-    ).value=e.id;
-
-    document.getElementById(
-        "eventTitle"
-    ).value=e.title;
-
-    document.getElementById(
-        "startDate"
-    ).value=e.startDate;
-
-    document.getElementById(
-        "endDate"
-    ).value=e.endDate||e.startDate;
-
-    document.getElementById(
-        "startTime"
-    ).value=e.startTime||"";
-
-    document.getElementById(
-        "endTime"
-    ).value=e.endTime||"";
-
-    document.getElementById(
-        "allDay"
-    ).checked=!!e.allDay;
-
-    document.getElementById(
-        "calendarType"
-    ).value=e.calendar||"Events";
-
-    document.getElementById(
-        "priority"
-    ).value=e.priority||"Normal";
-
-    document.getElementById(
-        "repeat"
-    ).value=e.repeat||"none";
-
-    document.getElementById(
-        "reminder"
-    ).value=e.reminder||"none";
-
-    document.getElementById(
-        "location"
-    ).value=e.location||"";
-
-    document.getElementById(
-        "description"
-    ).value=e.description||"";
-
-    selectedColor=
-        e.color||"#1a73e8";
-
+    document.getElementById("eventId").value=e.id;
+    document.getElementById("eventTitle").value=e.title;
+    document.getElementById("startDate").value=e.startDate;
+    document.getElementById("endDate").value=e.endDate||e.startDate;
+    document.getElementById("startTime").value=e.startTime||"";
+    document.getElementById("endTime").value=e.endTime||"";
+    document.getElementById("allDay").checked=!!e.allDay;
+    document.getElementById("calendarType").value=e.calendar||"Events";
+    document.getElementById("priority").value=e.priority||"Normal";
+    document.getElementById("repeat").value=e.repeat||"none";
+    document.getElementById("reminder").value=e.reminder||"none";
+    document.getElementById("location").value=e.location||"";
+    document.getElementById("description").value=e.description||"";
+    selectedColor=e.color||"#3b82f6";
     updateColors();
-
-    document.getElementById(
-        "eventFormTitle"
-    ).textContent=
-        "Edit event";
-
-    document.getElementById(
-        "deleteEventButton"
-    ).style.display="block";
-
-    document.getElementById(
-        "eventModal"
-    ).classList.add("show");
+    document.getElementById("eventFormTitle").textContent="Edit event";
+    document.getElementById("deleteEventButton").style.display="block";
+    document.getElementById("eventModal").classList.add("show");
 }
 
 function deleteDetail(){
-
-    if(!selectedEventId)
-        return;
-
-    if(!confirm(
-        "Delete this event?"
-    ))
-        return;
-
-    events=
-        events.filter(
-            e=>e.id!==selectedEventId
-        );
-
+    if(!selectedEventId)return;
+    if(!confirm("Delete this event?"))return;
+    events=events.filter(e=>e.id!==selectedEventId);
     save();
-
     closeDetails();
-
     render();
-
     toast("Event deleted");
 }
 
 function deleteCurrentEvent(){
-
-    const id=
-        document.getElementById(
-            "eventId"
-        ).value;
-
+    const id=document.getElementById("eventId").value;
     if(!id)return;
-
-    if(!confirm(
-        "Delete this event?"
-    ))
-        return;
-
-    events=
-        events.filter(
-            e=>e.id!==id
-        );
-
+    if(!confirm("Delete this event?"))return;
+    events=events.filter(e=>e.id!==id);
     save();
-
     closeEvent();
-
     render();
-
     toast("Event deleted");
 }
 
-/* =========================================================
-   COLORS
-========================================================= */
-
-document
-.querySelectorAll(".color")
-.forEach(btn=>{
-
-    btn.addEventListener(
-        "click",
-        ()=>{
-
-            selectedColor=
-                btn.dataset.color;
-
-            updateColors();
-
-        }
-    );
-
+document.querySelectorAll(".color").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+        selectedColor=btn.dataset.color;
+        updateColors();
+    });
 });
 
 function updateColors(){
-
-    document
-    .querySelectorAll(".color")
-    .forEach(btn=>{
-
-        btn.classList.toggle(
-            "active",
-            btn.dataset.color===
-                selectedColor
-        );
-
+    document.querySelectorAll(".color").forEach(btn=>{
+        btn.classList.toggle("active",btn.dataset.color===selectedColor);
     });
 }
 
-/* =========================================================
-   SEARCH
-========================================================= */
-
 function openSearch(){
-
-    document.getElementById(
-        "searchBox"
-    ).classList.add("show");
-
-    setTimeout(
-        ()=>document
-            .getElementById("searchInput")
-            .focus(),
-        100
-    );
+    document.getElementById("searchBox").classList.add("show");
+    setTimeout(()=>document.getElementById("searchInput").focus(),100);
 }
 
 function closeSearch(){
-
-    document.getElementById(
-        "searchBox"
-    ).classList.remove("show");
-
-    document.getElementById(
-        "searchResults"
-    ).classList.remove("show");
-
-    document.getElementById(
-        "searchInput"
-    ).value="";
-
+    document.getElementById("searchBox").classList.remove("show");
+    document.getElementById("searchResults").classList.remove("show");
+    document.getElementById("searchInput").value="";
     render();
 }
 
-document.getElementById(
-    "searchInput"
-).addEventListener(
-    "input",
-    searchEvents
-);
-
-function searchEvents(){
-
-    const q=
-        document.getElementById(
-            "searchInput"
-        )
-        .value
-        .trim()
-        .toLowerCase();
-
-    const box=
-        document.getElementById(
-            "searchResults"
-        );
-
-    if(!q){
-
-        box.classList.remove("show");
-
-        return;
-    }
-
-    const results=
-        events.filter(e=>
-
-            (e.title||"")
-            .toLowerCase()
-            .includes(q)
-
-            ||
-
-            (e.location||"")
-            .toLowerCase()
-            .includes(q)
-
-            ||
-
-            (e.description||"")
-            .toLowerCase()
-            .includes(q)
-
-            ||
-
-            (e.calendar||"")
-            .toLowerCase()
-            .includes(q)
-
-            ||
-
-            (e.priority||"")
-            .toLowerCase()
-            .includes(q)
-
-        );
-
+document.getElementById("searchInput").addEventListener("input",()=>{
+    const q=document.getElementById("searchInput").value.trim().toLowerCase();
+    const box=document.getElementById("searchResults");
+    if(!q){ box.classList.remove("show"); return; }
+    const results=events.filter(e=>(e.title||"").toLowerCase().includes(q)||(e.location||"").toLowerCase().includes(q)||(e.description||"").toLowerCase().includes(q));
     box.classList.add("show");
-
     if(!results.length){
-
-        box.innerHTML=`
-
-            <div class="empty">
-
-                <div class="empty-icon">
-                    🔍
-                </div>
-
-                No matching events
-
-            </div>
-
-        `;
-
+        box.innerHTML=`<div class="empty"><div class="empty-icon">🔍</div>No matching events</div>`;
         return;
     }
-
-    box.innerHTML=
-        results.map(e=>`
-
-            <div
-                class="result"
-                onclick="showDetails('${e.id}')">
-
-                <div
-                    class="result-color"
-                    style="
-                        background:
-                        ${e.color||"#1a73e8"}
-                    ">
-                </div>
-
-                <div>
-
-                    <div class="result-title">
-                        ${escapeHTML(e.title)}
-                    </div>
-
-                    <div class="result-date">
-
-                        ${e.startDate}
-
-                        ·
-
-                        ${
-                            e.allDay
-                            ?"All day"
-                            :(e.startTime||"")+
-                             " – "+
-                             (e.endTime||"")
-                        }
-
-                    </div>
-
-                    ${
-                        e.location
-                        ?`
-                        <div class="result-location">
-                            📍
-                            ${escapeHTML(e.location)}
-                        </div>
-                        `
-                        :""
-                    }
-
-                </div>
-
+    box.innerHTML=results.map(e=>`
+        <div class="result" onclick="showDetails('${e.id}')">
+            <div class="result-color" style="background:${e.color||"#3b82f6"}"></div>
+            <div>
+                <div class="result-title">${escapeHTML(e.title)}</div>
+                <div class="result-date">${e.startDate} · ${e.allDay?"All day":(e.startTime||"")+" – "+(e.endTime||"")}</div>
+                ${e.location?`<div class="result-location">📍 ${escapeHTML(e.location)}</div>`:""}
             </div>
-
-        `).join("");
-}
-
-/* =========================================================
-   THEMES
-========================================================= */
+        </div>
+    `).join("");
+});
 
 function toggleThemePanel(){
-
-    document.getElementById(
-        "themePanel"
-    ).classList.toggle("show");
+    document.getElementById("themePanel").classList.toggle("show");
 }
+
+const themeMap = {
+    'n1': {bg:'linear-gradient(135deg, #062314 0%, #0f3822 50%, #062314 100%)', prim:'#22c55e', glow:'rgba(34, 197, 94, 0.4)', soft:'rgba(34, 197, 94, 0.15)'},
+    'n2': {bg:'linear-gradient(135deg, #2b140a 0%, #431f0f 50%, #2b140a 100%)', prim:'#ea580c', glow:'rgba(234, 88, 12, 0.4)', soft:'rgba(234, 88, 12, 0.15)'},
+    'n3': {bg:'linear-gradient(135deg, #022c22 0%, #064e3b 50%, #022c22 100%)', prim:'#10b981', glow:'rgba(16, 185, 129, 0.4)', soft:'rgba(16, 185, 129, 0.15)'},
+    'n4': {bg:'linear-gradient(135deg, #030712 0%, #082f49 50%, #030712 100%)', prim:'#0ea5e9', glow:'rgba(14, 165, 233, 0.4)', soft:'rgba(14, 165, 233, 0.15)'},
+    'n5': {bg:'linear-gradient(135deg, #38040e 0%, #581c87 50%, #38040e 100%)', prim:'#f43f5e', glow:'rgba(244, 63, 94, 0.4)', soft:'rgba(244, 63, 94, 0.15)'},
+    'n6': {bg:'linear-gradient(135deg, #422006 0%, #78350f 50%, #422006 100%)', prim:'#fbbf24', glow:'rgba(251, 191, 36, 0.4)', soft:'rgba(251, 191, 36, 0.15)'},
+    'n7': {bg:'linear-gradient(135deg, #082f49 0%, #1e3a8a 50%, #082f49 100%)', prim:'#38bdf8', glow:'rgba(56, 189, 248, 0.4)', soft:'rgba(56, 189, 248, 0.15)'},
+    'n8': {bg:'linear-gradient(135deg, #022f22 0%, #061a14 50%, #052e16 100%)', prim:'#4ade80', glow:'rgba(74, 222, 128, 0.4)', soft:'rgba(74, 222, 128, 0.15)'},
+    'n9': {bg:'linear-gradient(135deg, #4c0519 0%, #831843 50%, #4c0519 100%)', prim:'#fb7185', glow:'rgba(251, 113, 133, 0.4)', soft:'rgba(251, 113, 133, 0.15)'},
+    'n10': {bg:'linear-gradient(135deg, #1c1917 0%, #292524 50%, #1c1917 100%)', prim:'#a8a29e', glow:'rgba(168, 162, 158, 0.4)', soft:'rgba(168, 162, 158, 0.15)'},
+    'n11': {bg:'linear-gradient(135deg, #2e1065 0%, #4c1d95 50%, #2e1065 100%)', prim:'#c084fc', glow:'rgba(192, 132, 252, 0.4)', soft:'rgba(192, 132, 252, 0.15)'},
+    'n12': {bg:'linear-gradient(135deg, #451a03 0%, #7c2d12 50%, #451a03 100%)', prim:'#f97316', glow:'rgba(249, 115, 22, 0.4)', soft:'rgba(249, 115, 22, 0.15)'},
+    'n13': {bg:'linear-gradient(135deg, #052e16 0%, #14532d 50%, #052e16 100%)', prim:'#86efac', glow:'rgba(134, 239, 172, 0.4)', soft:'rgba(134, 239, 172, 0.15)'},
+    'n14': {bg:'linear-gradient(135deg, #064e3b 0%, #022c22 50%, #064e3b 100%)', prim:'#34d399', glow:'rgba(52, 211, 153, 0.4)', soft:'rgba(52, 211, 153, 0.15)'},
+    'n15': {bg:'linear-gradient(135deg, #3f2f04 0%, #713f12 50%, #3f2f04 100%)', prim:'#facc15', glow:'rgba(250, 204, 21, 0.4)', soft:'rgba(250, 204, 21, 0.15)'},
+    'n16': {bg:'linear-gradient(135deg, #09090b 0%, #18181b 50%, #09090b 100%)', prim:'#e2e8f0', glow:'rgba(226, 232, 240, 0.4)', soft:'rgba(226, 232, 240, 0.15)'},
+    'n17': {bg:'linear-gradient(135deg, #134e4a 0%, #042f2e 50%, #134e4a 100%)', prim:'#2dd4bf', glow:'rgba(45, 212, 191, 0.4)', soft:'rgba(45, 212, 191, 0.15)'},
+    'n18': {bg:'linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%)', prim:'#94a3b8', glow:'rgba(148, 163, 184, 0.4)', soft:'rgba(148, 163, 184, 0.15)'},
+    'n19': {bg:'linear-gradient(135deg, #14532d 0%, #166534 50%, #14532d 100%)', prim:'#4ade80', glow:'rgba(74, 222, 128, 0.4)', soft:'rgba(74, 222, 128, 0.15)'},
+    'n20': {bg:'linear-gradient(135deg, #431407 0%, #7c2d12 50%, #431407 100%)', prim:'#fb923c', glow:'rgba(251, 146, 60, 0.4)', soft:'rgba(251, 146, 60, 0.15)'},
+    'n21': {bg:'linear-gradient(135deg, #172554 0%, #1e3a8a 50%, #172554 100%)', prim:'#60a5fa', glow:'rgba(96, 165, 250, 0.4)', soft:'rgba(96, 165, 250, 0.15)'},
+    'n22': {bg:'linear-gradient(135deg, #500724 0%, #831843 50%, #500724 100%)', prim:'#fda4af', glow:'rgba(253, 164, 175, 0.4)', soft:'rgba(253, 164, 175, 0.15)'},
+    'n23': {bg:'linear-gradient(135deg, #78350f 0%, #b45309 50%, #78350f 100%)', prim:'#fde047', glow:'rgba(253, 224, 71, 0.4)', soft:'rgba(253, 224, 71, 0.15)'},
+    'n24': {bg:'linear-gradient(135deg, #334155 0%, #475569 50%, #334155 100%)', prim:'#cbd5e1', glow:'rgba(203, 213, 225, 0.4)', soft:'rgba(203, 213, 225, 0.15)'},
+    'n25': {bg:'linear-gradient(135deg, #2b110a 0%, #4a1d11 50%, #2b110a 100%)', prim:'#d97706', glow:'rgba(217, 119, 6, 0.4)', soft:'rgba(217, 119, 6, 0.15)'},
+    'n26': {bg:'linear-gradient(135deg, #0c4a6e 0%, #0369a1 50%, #0c4a6e 100%)', prim:'#38bdf8', glow:'rgba(56, 189, 248, 0.4)', soft:'rgba(56, 189, 248, 0.15)'},
+    'n27': {bg:'linear-gradient(135deg, #7c2d12 0%, #9a3412 50%, #7c2d12 100%)', prim:'#fdba74', glow:'rgba(253, 186, 116, 0.4)', soft:'rgba(253, 186, 116, 0.15)'},
+    'n28': {bg:'linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%)', prim:'#93c5fd', glow:'rgba(147, 197, 253, 0.4)', soft:'rgba(147, 197, 253, 0.15)'},
+    'n29': {bg:'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e293b 100%)', prim:'#f1f5f9', glow:'rgba(241, 245, 249, 0.4)', soft:'rgba(241, 245, 249, 0.15)'},
+    'n30': {bg:'linear-gradient(135deg, #09090b 0%, #27272a 50%, #09090b 100%)', prim:'#a1a1aa', glow:'rgba(161, 161, 170, 0.4)', soft:'rgba(161, 161, 170, 0.15)'},
+    'n31': {bg:'linear-gradient(135deg, #042f2e 0%, #0f766e 50%, #042f2e 100%)', prim:'#2dd4bf', glow:'rgba(45, 212, 191, 0.4)', soft:'rgba(45, 212, 191, 0.15)'},
+    'n32': {bg:'linear-gradient(135deg, #132a13 0%, #1b4d3e 50%, #132a13 100%)', prim:'#6ee7b7', glow:'rgba(110, 231, 183, 0.4)', soft:'rgba(110, 231, 183, 0.15)'},
+    'n33': {bg:'linear-gradient(135deg, #450a0a 0%, #7f1d1d 50%, #450a0a 100%)', prim:'#f87171', glow:'rgba(248, 113, 113, 0.4)', soft:'rgba(248, 113, 113, 0.15)'},
+    'n34': {bg:'linear-gradient(135deg, #082f49 0%, #0284c7 50%, #082f49 100%)', prim:'#7dd3fc', glow:'rgba(125, 211, 252, 0.4)', soft:'rgba(125, 211, 252, 0.15)'},
+    'n35': {bg:'linear-gradient(135deg, #365314 0%, #4d7c0f 50%, #365314 100%)', prim:'#bef264', glow:'rgba(190, 242, 100, 0.4)', soft:'rgba(190, 242, 100, 0.15)'},
+    'n36': {bg:'linear-gradient(135deg, #1e293b 0%, #475569 50%, #1e293b 100%)', prim:'#94a3b8', glow:'rgba(148, 163, 184, 0.4)', soft:'rgba(148, 163, 184, 0.15)'},
+    'n37': {bg:'linear-gradient(135deg, #271c19 0%, #3d2c25 50%, #271c19 100%)', prim:'#d79b76', glow:'rgba(215, 155, 118, 0.4)', soft:'rgba(215, 155, 118, 0.15)'},
+    'n38': {bg:'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #064e3b 100%)', prim:'#6ee7b7', glow:'rgba(110, 231, 183, 0.4)', soft:'rgba(110, 231, 183, 0.15)'},
+    'n39': {bg:'linear-gradient(135deg, #31103f 0%, #581c87 50%, #31103f 100%)', prim:'#d8b4fe', glow:'rgba(216, 180, 254, 0.4)', soft:'rgba(216, 180, 254, 0.15)'},
+    'n40': {bg:'linear-gradient(135deg, #422006 0%, #854d0e 50%, #422006 100%)', prim:'#fde047', glow:'rgba(253, 224, 71, 0.4)', soft:'rgba(253, 224, 71, 0.15)'},
+    'n41': {bg:'linear-gradient(135deg, #18181b 0%, #3f3f46 50%, #18181b 100%)', prim:'#d4d4d8', glow:'rgba(212, 212, 216, 0.4)', soft:'rgba(212, 212, 216, 0.15)'},
+    'n42': {bg:'linear-gradient(135deg, #431407 0%, #9a3412 50%, #431407 100%)', prim:'#fdba74', glow:'rgba(253, 186, 116, 0.4)', soft:'rgba(253, 186, 116, 0.15)'},
+    'n43': {bg:'linear-gradient(135deg, #042f2e 0%, #0d9488 50%, #042f2e 100%)', prim:'#5eead4', glow:'rgba(94, 234, 212, 0.4)', soft:'rgba(94, 234, 212, 0.15)'},
+    'n44': {bg:'linear-gradient(135deg, #0f172a 0%, #334155 50%, #0f172a 100%)', prim:'#cbd5e1', glow:'rgba(203, 213, 225, 0.4)', soft:'rgba(203, 213, 225, 0.15)'},
+    'n45': {bg:'linear-gradient(135deg, #14532d 0%, #15803d 50%, #14532d 100%)', prim:'#fde047', glow:'rgba(253, 224, 71, 0.4)', soft:'rgba(253, 224, 71, 0.15)'},
+    'n46': {bg:'linear-gradient(135deg, #500724 0%, #9f1239 50%, #500724 100%)', prim:'#fecdd3', glow:'rgba(254, 205, 211, 0.4)', soft:'rgba(254, 205, 211, 0.15)'},
+    'n47': {bg:'linear-gradient(135deg, #1c1917 0%, #292524 50%, #1c1917 100%)', prim:'#d79b76', glow:'rgba(215, 155, 118, 0.4)', soft:'rgba(215, 155, 118, 0.15)'},
+    'n48': {bg:'linear-gradient(135deg, #020617 0%, #1e293b 50%, #020617 100%)', prim:'#38bdf8', glow:'rgba(56, 189, 248, 0.4)', soft:'rgba(56, 189, 248, 0.15)'},
+    'n49': {bg:'linear-gradient(135deg, #450a0a 0%, #991b1b 50%, #450a0a 100%)', prim:'#fca5a5', glow:'rgba(252, 165, 165, 0.4)', soft:'rgba(252, 165, 165, 0.15)'}
+};
 
 function setTheme(theme){
-
-    document.body.className="";
-
-    if(theme!=="default")
-        document.body.classList.add(theme);
-
-    localStorage.setItem(
-        "calendarTheme",
-        theme
-    );
-
-    document.getElementById(
-        "themePanel"
-    ).classList.remove("show");
+    if(themeMap[theme]){
+        const t = themeMap[theme];
+        document.documentElement.style.setProperty('--bg-gradient', t.bg);
+        document.documentElement.style.setProperty('--primary', t.prim);
+        document.documentElement.style.setProperty('--primary-glow', t.glow);
+        document.documentElement.style.setProperty('--primary-soft', t.soft);
+    } else {
+        document.documentElement.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)');
+        document.documentElement.style.setProperty('--primary', '#3b82f6');
+        document.documentElement.style.setProperty('--primary-glow', 'rgba(59, 130, 246, 0.4)');
+        document.documentElement.style.setProperty('--primary-soft', 'rgba(59, 130, 246, 0.15)');
+    }
+    localStorage.setItem("calendarGlassTheme",theme);
+    document.getElementById("themePanel").classList.remove("show");
 }
 
-/* restore theme */
-
-const savedTheme=
-    localStorage.getItem(
-        "calendarTheme"
-    );
-
-if(savedTheme && savedTheme!=="default")
-    document.body.classList.add(
-        savedTheme
-    );
-
-/* =========================================================
-   DRAWER
-========================================================= */
+const savedTheme=localStorage.getItem("calendarGlassTheme");
+if(savedTheme) setTheme(savedTheme);
 
 function openDrawer(){
-
-    document.getElementById(
-        "drawer"
-    ).classList.add("show");
-
-    document.getElementById(
-        "drawerOverlay"
-    ).classList.add("show");
+    document.getElementById("drawer").classList.add("show");
+    document.getElementById("drawerOverlay").classList.add("show");
 }
 
 function closeDrawer(){
-
-    document.getElementById(
-        "drawer"
-    ).classList.remove("show");
-
-    document.getElementById(
-        "drawerOverlay"
-    ).classList.remove("show");
+    document.getElementById("drawer").classList.remove("show");
+    document.getElementById("drawerOverlay").classList.remove("show");
 }
-
-/* =========================================================
-   EXPORT / IMPORT
-========================================================= */
 
 function exportEvents(){
-
-    const blob=
-        new Blob(
-            [
-                JSON.stringify(
-                    events,
-                    null,
-                    2
-                )
-            ],
-            {
-                type:
-                    "application/json"
-            }
-        );
-
-    const url=
-        URL.createObjectURL(blob);
-
-    const a=
-        document.createElement("a");
-
+    const blob=new Blob([JSON.stringify(events,null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
     a.href=url;
-
-    a.download=
-        "calendar-events.json";
-
+    a.download="calendar-events.json";
     a.click();
-
     URL.revokeObjectURL(url);
-
-    toast(
-        "Events exported"
-    );
-
+    toast("Events exported");
     closeDrawer();
 }
 
-document.getElementById(
-    "importFile"
-).addEventListener(
-    "change",
-    function(){
-
-        const file=this.files[0];
-
-        if(!file)return;
-
-        const reader=
-            new FileReader();
-
-        reader.onload=function(){
-
-            try{
-
-                const data=
-                    JSON.parse(
-                        reader.result
-                    );
-
-                if(!Array.isArray(data))
-                    throw new Error();
-
-                events=data;
-
-                save();
-
-                render();
-
-                toast(
-                    "Events imported"
-                );
-
-            }catch{
-
-                alert(
-                    "Invalid calendar JSON"
-                );
-
-            }
-
-        };
-
-        reader.readAsText(file);
-
-        this.value="";
-
-    }
-);
-
-/* =========================================================
-   DELETE ALL
-========================================================= */
+document.getElementById("importFile").addEventListener("change",function(){
+    const file=this.files[0];
+    if(!file)return;
+    const reader=new FileReader();
+    reader.onload=function(){
+        try{
+            const data=JSON.parse(reader.result);
+            if(!Array.isArray(data))throw new Error();
+            events=data;
+            save();
+            render();
+            toast("Events imported");
+        }catch{
+            alert("Invalid calendar JSON");
+        }
+    };
+    reader.readAsText(file);
+    this.value="";
+});
 
 function deleteAll(){
-
-    if(!events.length){
-
-        toast(
-            "No events"
-        );
-
-        return;
-    }
-
-    if(!confirm(
-        "Delete all calendar events?"
-    ))
-        return;
-
+    if(!events.length){ toast("No events"); return; }
+    if(!confirm("Delete all calendar events?"))return;
     events=[];
-
     save();
-
     render();
-
     closeDrawer();
-
-    toast(
-        "All events deleted"
-    );
+    toast("All events deleted");
 }
 
-/* =========================================================
-   SWIPE
-========================================================= */
+let sx=0, sy=0;
+document.addEventListener("touchstart",e=>{
+    if(e.touches.length!==1)return;
+    sx=e.touches[0].clientX;
+    sy=e.touches[0].clientY;
+},{passive:true});
 
-let sx=0;
-let sy=0;
-
-document.addEventListener(
-    "touchstart",
-    e=>{
-
-        if(e.touches.length!==1)
-            return;
-
-        sx=e.touches[0].clientX;
-        sy=e.touches[0].clientY;
-
-    },
-    {passive:true}
-);
-
-document.addEventListener(
-    "touchend",
-    e=>{
-
-        if(!sx)return;
-
-        const dx=
-            e.changedTouches[0].clientX-sx;
-
-        const dy=
-            e.changedTouches[0].clientY-sy;
-
-        sx=0;
-
-        if(
-            Math.abs(dx)>70 &&
-            Math.abs(dx)>Math.abs(dy)
-        ){
-
-            navigate(
-                dx<0?1:-1
-            );
-
-        }
-
-    },
-    {passive:true}
-);
-
-/* =========================================================
-   KEYBOARD
-========================================================= */
-
-document.addEventListener(
-    "keydown",
-    e=>{
-
-        if(
-            e.target.matches(
-                "input,textarea,select"
-            )
-        )
-            return;
-
-        if(e.key==="ArrowLeft")
-            navigate(-1);
-
-        if(e.key==="ArrowRight")
-            navigate(1);
-
-        if(e.key.toLowerCase()==="t")
-            goToday();
-
-        if(e.key==="Escape"){
-
-            closeDrawer();
-            closeSearch();
-            closePicker();
-            closeEvent();
-            closeDetails();
-
-        }
-
+document.addEventListener("touchend",e=>{
+    if(!sx)return;
+    const dx=e.changedTouches[0].clientX-sx;
+    const dy=e.changedTouches[0].clientY-sy;
+    sx=0;
+    if(Math.abs(dx)>70 && Math.abs(dx)>Math.abs(dy)){
+        navigate(dx<0?1:-1);
     }
-);
+},{passive:true});
 
-/* =========================================================
-   START
-========================================================= */
+document.addEventListener("keydown",e=>{
+    if(e.target.matches("input,textarea,select"))return;
+    if(e.key==="ArrowLeft")navigate(-1);
+    if(e.key==="ArrowRight")navigate(1);
+    if(e.key.toLowerCase()==="t")goToday();
+    if(e.key==="Escape"){
+        closeDrawer(); closeSearch(); closePicker(); closeEvent(); closeDetails();
+    }
+});
 
 render();
-
 </script>
 
 </body>
