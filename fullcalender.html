@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nature Scheduler - Ultimate Calendar & Audio Alarms</title>
+    
+    <!-- FullCalendar v6 Global CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* Force bold font theme across all elements */
+        *, body, button, input, select, label, span, p, h1, h2, h3, .fc * {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 700 !important;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .fc-event {
+            cursor: pointer;
+            touch-action: none;
+        }
+        .fc-event-resizer {
+            width: 14px !important;
+            height: 14px !important;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+        }
+
+        .fc-daygrid-day:hover {
+            background-color: rgba(59, 130, 246, 0.08) !important;
+            transition: background-color 0.2s ease;
+        }
+
+        #dateTooltip {
+            pointer-events: none;
+            transition: opacity 0.15s ease-in-out;
+            z-index: 100;
+        }
+
+        /* ================= NATURE THEMES ================= */
+        body.theme-day {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        body.theme-day header, body.theme-day .bg-panel {
+            background-color: #ffffff;
+            color: #0f172a;
+            border-color: #e2e8f0;
+        }
+        body.theme-day .fc {
+            --fc-bg-event-color: #eff6ff;
+            --fc-border-color: #e2e8f0;
+            --fc-page-bg-color: #ffffff;
+            --fc-neutral-text-color: #0f172a;
+            color: #0f172a;
+        }
+
+        body.theme-midnight {
+            background-color: #030712;
+            color: #f3f4f6;
+        }
+        body.theme-midnight header, body.theme-midnight .bg-panel {
+            background-color: #0f172a;
+            color: #f3f4f6;
+            border-color: #1e293b;
+        }
+        body.theme-midnight .fc {
+            --fc-border-color: #1e293b;
+            --fc-page-bg-color: #0f172a;
+            --fc-neutral-text-color: #f3f4f6;
+            color: #f3f4f6;
+        }
+        body.theme-midnight input, body.theme-midnight select {
+            background-color: #1e293b;
+            color: #ffffff;
+            border-color: #334155;
+        }
+
+        body.theme-forest {
+            background-color: #022c22;
+            color: #ecfdf5;
+        }
+        body.theme-forest header, body.theme-forest .bg-panel {
+            background-color: #064e3b;
+            color: #ecfdf5;
+            border-color: #047857;
+        }
+        body.theme-forest .fc {
+            --fc-border-color: #047857;
+            --fc-page-bg-color: #064e3b;
+            --fc-neutral-text-color: #ecfdf5;
+            color: #ecfdf5;
+        }
+        body.theme-forest input, body.theme-forest select {
+            background-color: #022c22;
+            color: #ecfdf5;
+            border-color: #047857;
+        }
+    </style>
+</head>
+<body class="theme-day h-screen flex flex-col overflow-hidden transition-colors duration-300">
+
+    <!-- Floating Hover Tooltip -->
+    <div id="dateTooltip" class="fixed hidden bg-black/85 text-white text-[11px] px-3 py-2 rounded-lg shadow-xl backdrop-blur-md z-50 border border-white/20"></div>
+
+    <!-- Active Alarm Notification Banner -->
+    <div id="alarmBanner" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-slate-950 px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-4 border-2 border-amber-300 animate-bounce">
+        <span class="text-2xl">⏰</span>
+        <div>
+            <div id="alarmTitle" class="text-sm">Upcoming Event Alarm!</div>
+            <div id="alarmTimeMsg" class="text-xs opacity-90">Starts in 15 minutes</div>
+        </div>
+        <button onclick="dismissAlarm()" class="bg-slate-950 text-amber-300 px-3 py-1.5 rounded-xl text-xs hover:bg-slate-800 transition">Got it</button>
+    </div>
+
+    <!-- Top Header Bar -->
+    <header class="border-b px-4 py-3 md:px-6 flex items-center justify-between shadow-sm shrink-0 flex-wrap gap-3">
+        <div class="flex items-center space-x-2 md:space-x-3">
+            <div class="bg-blue-600 text-white p-2 rounded-lg text-lg">🌿</div>
+            <div>
+                <h1 class="text-base md:text-xl tracking-tight">Nature Scheduler</h1>
+                <p class="text-[10px] md:text-xs opacity-75 hidden sm:block">Expanded Categories & Day View Support</p>
+            </div>
+        </div>
+
+        <div id="weatherBadge" class="flex items-center space-x-2 px-3 py-1.5 rounded-xl border bg-black/5 border-black/10 text-xs shadow-inner">
+            <span id="weatherIcon" class="text-base">☀️</span>
+            <div>
+                <div id="weatherCondition" class="leading-tight">Sunny Day • 24°C</div>
+                <div id="weatherLocation" class="text-[10px] opacity-70">Local Climate Feed</div>
+            </div>
+        </div>
+
+        <button onclick="openAddEventModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm px-3.5 py-2 rounded-lg shadow transition">+ Add Event</button>
+    </header>
+
+    <!-- Main Workspace Layout: Calendar Top, Controls Bottom -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        
+        <!-- TOP SECTION: Calendar Container -->
+        <section class="h-[55%] min-h-[320px] p-3 md:p-4 border-b overflow-auto bg-panel shrink-0">
+            <div id="calendar" class="h-full min-w-[320px]"></div>
+        </section>
+
+        <!-- BOTTOM SECTION: Settings, Audio, and Filters Panel -->
+        <section class="h-[45%] flex-1 p-4 grid grid-cols-1 md:grid-cols-3 gap-4 overflow-y-auto bg-black/5">
+            
+            <!-- Panel Card 1: Nature Themes & Categories -->
+            <div class="bg-panel p-4 rounded-xl border shadow-sm flex flex-col">
+                <h2 class="text-xs uppercase tracking-wider opacity-70 mb-2">🌿 Nature Theme</h2>
+                <select id="themeSelect" onchange="changeTheme(this.value)" class="w-full border rounded-lg px-3 py-2 text-xs md:text-sm focus:outline-none shadow-sm cursor-pointer mb-3">
+                    <option value="theme-day">☀️ Day Light</option>
+                    <option value="theme-midnight">🌌 Midnight</option>
+                    <option value="theme-forest">🌲 Forest Wood</option>
+                </select>
+                
+                <h2 class="text-xs uppercase tracking-wider opacity-70 mb-2 mt-1">🏷️ Filter Categories</h2>
+                <div class="grid grid-cols-2 gap-1.5 text-xs">
+                    <label class="flex items-center space-x-1.5 cursor-pointer">
+                        <input type="checkbox" checked class="rounded text-blue-600" onchange="filterEvents('Work', this.checked)">
+                        <span class="w-2 h-2 rounded-full bg-blue-500"></span><span>Work</span>
+                    </label>
+                    <label class="flex items-center space-x-1.5 cursor-pointer">
+                        <input type="checkbox" checked class="rounded text-green-600" onchange="filterEvents('Personal', this.checked)">
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span><span>Personal</span>
+                    </label>
+                    <label class="flex items-center space-x-1.5 cursor-pointer">
+                        <input type="checkbox" checked class="rounded text-purple-600" onchange="filterEvents('Meeting', this.checked)">
+                        <span class="w-2 h-2 rounded-full bg-purple-500"></span><span>Meeting</span>
+                    </label>
+                    <label class="flex items-center space-x-1.5 cursor-pointer">
+                        <input type="checkbox" checked class="rounded text-red-600" onchange="filterEvents('Urgent', this.checked)">
+                        <span class="w-2 h-2 rounded-full bg-red-500"></span><span>Urgent</span>
+                    </label>
+                    <label class="flex items-center space-x-1.5 cursor-pointer col-span-2">
+                        <input type="checkbox" checked class="rounded text-amber-600" onchange="filterEvents('Health', this.checked)">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span><span>Health & Fitness</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Panel Card 2: Custom Alarm Audio Upload -->
+            <div class="bg-panel p-4 rounded-xl border shadow-sm flex flex-col">
+                <h2 class="text-xs uppercase tracking-wider opacity-70 mb-2">⏰ Custom Alarm Sound</h2>
+                <input type="file" id="customAudioInput" accept="audio/*" onchange="handleCustomAudioUpload(event)" class="w-full text-xs mb-2 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+                <div id="audioFileName" class="text-[10px] opacity-75 truncate mb-2">Using default synthesized chime</div>
+                <button onclick="testAlarmAudio()" class="mt-auto bg-black/10 hover:bg-black/20 py-1.5 px-3 rounded-lg text-xs transition">🔊 Test Alarm Sound</button>
+            </div>
+
+            <!-- Panel Card 3: Backup & Restore & Clear Data -->
+            <div class="bg-panel p-4 rounded-xl border shadow-sm flex flex-col">
+                <h2 class="text-xs uppercase tracking-wider opacity-70 mb-2">📥 Backup & Restore</h2>
+                <div class="flex space-x-2 mb-3">
+                    <button onclick="exportCalendarJSON()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs py-2 px-2 rounded-lg shadow transition">Export JSON</button>
+                    <label class="flex-1 bg-black/10 hover:bg-black/20 text-xs py-2 px-2 rounded-lg text-center cursor-pointer transition">
+                        Import JSON
+                        <input type="file" accept=".json" onchange="importCalendarJSON(event)" class="hidden">
+                    </label>
+                </div>
+                <button onclick="clearAllEvents()" class="mt-auto text-left text-xs text-red-500 hover:opacity-80 py-1.5 px-3 rounded-lg bg-red-500/10 border border-red-500/20 transition">🗑️ Clear All Saved Data</button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Modal Form for Event Management & Recurrence -->
+    <div id="eventModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-panel rounded-xl shadow-2xl w-full max-w-md p-5 md:p-6 border">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalTitle" class="text-base md:text-lg">Event Editor</h3>
+                <button onclick="closeModal()" class="text-xl">&times;</button>
+            </div>
+            
+            <form id="eventForm" onsubmit="handleFormSubmit(event)" class="space-y-3">
+                <input type="hidden" id="eventOriginalId">
+                <div>
+                    <label class="block text-[11px] uppercase tracking-wider opacity-75 mb-1">Event Title</label>
+                    <input type="text" id="eventTitleInput" required placeholder="e.g., Doctor Appointment" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider opacity-75 mb-1">Start Time</label>
+                        <input type="datetime-local" id="eventStartInput" required class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider opacity-75 mb-1">End Time</label>
+                        <input type="datetime-local" id="eventEndInput" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider opacity-75 mb-1">Category</label>
+                        <select id="eventCategoryInput" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                            <option value="Work">Work</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Meeting">Meeting</option>
+                            <option value="Urgent">Urgent</option>
+                            <option value="Health">Health</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider opacity-75 mb-1">Recurrence Rule</label>
+                        <select id="eventRecurrenceInput" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                            <option value="none">None (One-time)</option>
+                            <option value="daily">Daily Repeat</option>
+                            <option value="weekly">Weekly Repeat</option>
+                            <option value="monthly">Monthly Repeat</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-3 border-t border-black/10">
+                    <button type="button" id="deleteEventBtn" onclick="deleteCurrentEvent()" class="hidden text-red-500 text-xs md:text-sm">Delete</button>
+                    <div class="flex space-x-2 ml-auto">
+                        <button type="button" onclick="closeModal()" class="px-3 py-2 text-xs md:text-sm opacity-80">Cancel</button>
+                        <button type="submit" class="px-4 py-2 text-xs md:text-sm bg-blue-600 text-white rounded-lg shadow">Save Event</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script Application Logic -->
+    <script>
+        let calendar;
+        let activeEventToEdit = null;
+        let alarmCheckInterval = null;
+        let triggeredAlarms = new Set();
+        let customAudioDataUrl = localStorage.getItem('fullcalendar_custom_alarm_audio') || null;
+
+        const categoryColorMap = {
+            'Work': '#2563eb',     // Blue
+            'Personal': '#10b981', // Green
+            'Meeting': '#8b5cf6',  // Purple
+            'Urgent': '#ef4444',   // Red
+            'Health': '#f59e0b'    // Amber
+        };
+
+        const defaultEvents = [
+            { id: '1', title: 'Daily Standup', start: new Date().toISOString().split('T')[0] + 'T09:00:00', backgroundColor: '#2563eb', borderColor: '#2563eb', extendedProps: { category: 'Work', recurrence: 'daily' } }
+        ];
+
+        const themeWeatherMap = {
+            'theme-day': { icon: '☀️', condition: 'Sunny Day • 24°C', location: 'Sunlit Valley' },
+            'theme-midnight': { icon: '🌌', condition: 'Clear Starlight • 12°C', location: 'Cosmic Ridge' },
+            'theme-forest': { icon: '🌲', condition: 'Misty Canopy • 18°C', location: 'Ancient Woods' }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            
+            const savedTheme = localStorage.getItem('fullcalendar_nature_theme') || 'theme-day';
+            document.body.className = `${savedTheme} h-screen flex flex-col overflow-hidden transition-colors duration-300`;
+            document.getElementById('themeSelect').value = savedTheme;
+            updateWeatherBadge(savedTheme);
+
+            if (customAudioDataUrl) {
+                document.getElementById('audioFileName').innerText = "Loaded custom audio file ✓";
+            }
+
+            let savedEvents = JSON.parse(localStorage.getItem('fullcalendar_nature_events')) || defaultEvents;
+            const isMobile = window.innerWidth < 768;
+
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: isMobile ? 'listWeek' : 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: isMobile ? 'dayGridMonth,timeGridDay,listWeek' : 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                },
+                navLinks: true,
+                editable: true,
+                selectable: true,
+                nowIndicator: true,
+                dayMaxEvents: true,
+                events: savedEvents,
+
+                select: function(info) {
+                    openAddEventModal(info.startStr, info.endStr);
+                    calendar.unselect();
+                },
+                eventClick: function(info) {
+                    openEditEventModal(info.event);
+                },
+                eventDrop: function(info) { persistCalendarEvents(); },
+                eventResize: function(info) { persistCalendarEvents(); },
+
+                dateDidMount: function(arg) {
+                    const cellEl = arg.el;
+                    const dateStr = arg.date.toISOString().split('T')[0];
+
+                    cellEl.addEventListener('mouseenter', (e) => {
+                        const dayEvents = calendar.getEvents().filter(ev => {
+                            if (!ev.start) return false;
+                            return ev.start.toISOString().split('T')[0] === dateStr;
+                        });
+
+                        const tooltip = document.getElementById('dateTooltip');
+                        let content = `<div class="font-bold border-b border-white/20 pb-1 mb-1">${arg.date.toDateString()}</div>`;
+                        if (dayEvents.length > 0) {
+                            content += dayEvents.map(ev => `<div>• ${ev.title}</div>`).join('');
+                        } else {
+                            content += `<div class="opacity-75">No scheduled events</div>`;
+                        }
+
+                        tooltip.innerHTML = content;
+                        tooltip.style.left = `${e.pageX + 12}px`;
+                        tooltip.style.top = `${e.pageY + 12}px`;
+                        tooltip.classList.remove('hidden');
+                    });
+                    cellEl.addEventListener('mousemove', (e) => {
+                        const tooltip = document.getElementById('dateTooltip');
+                        tooltip.style.left = `${e.pageX + 12}px`;
+                        tooltip.style.top = `${e.pageY + 12}px`;
+                    });
+                    cellEl.addEventListener('mouseleave', () => {
+                        document.getElementById('dateTooltip').classList.add('hidden');
+                    });
+                }
+            });
+
+            calendar.render();
+            startAlarmSystem();
+        });
+
+        function changeTheme(themeName) {
+            document.body.className = `${themeName} h-screen flex flex-col overflow-hidden transition-colors duration-300`;
+            localStorage.setItem('fullcalendar_nature_theme', themeName);
+            updateWeatherBadge(themeName);
+        }
+
+        function updateWeatherBadge(themeName) {
+            const weather = themeWeatherMap[themeName] || themeWeatherMap['theme-day'];
+            document.getElementById('weatherIcon').innerText = weather.icon;
+            document.getElementById('weatherCondition').innerText = weather.condition;
+            document.getElementById('weatherLocation').innerText = weather.location;
+        }
+
+        function persistCalendarEvents() {
+            const events = calendar.getEvents().map(e => ({
+                id: e.id,
+                title: e.title,
+                start: e.startStr,
+                end: e.endStr,
+                allDay: e.allDay,
+                backgroundColor: e.backgroundColor,
+                borderColor: e.borderColor,
+                extendedProps: e.extendedProps
+            }));
+            localStorage.setItem('fullcalendar_nature_events', JSON.stringify(events));
+        }
+
+        // Custom Audio Handlers
+        function handleCustomAudioUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                alert("Please select an audio file under 5MB.");
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                customAudioDataUrl = e.target.result;
+                localStorage.setItem('fullcalendar_custom_alarm_audio', customAudioDataUrl);
+                document.getElementById('audioFileName').innerText = `Loaded: ${file.name}`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function testAlarmAudio() {
+            playAlarmChime();
+        }
+
+        function playAlarmChime() {
+            try {
+                if (customAudioDataUrl) {
+                    const customAudio = new Audio(customAudioDataUrl);
+                    customAudio.play().catch(err => playSynthesizedChime());
+                } else {
+                    playSynthesizedChime();
+                }
+            } catch (e) {
+                playSynthesizedChime();
+            }
+        }
+
+        function playSynthesizedChime() {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.6);
+        }
+
+        // Backup and Restore (JSON Export & Import)
+        function exportCalendarJSON() {
+            const events = calendar.getEvents().map(e => ({
+                id: e.id,
+                title: e.title,
+                start: e.startStr,
+                end: e.endStr,
+                allDay: e.allDay,
+                backgroundColor: e.backgroundColor,
+                borderColor: e.borderColor,
+                extendedProps: e.extendedProps
+            }));
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(events, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `calendar_backup_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importCalendarJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedEvents = JSON.parse(e.target.result);
+                    if (!Array.isArray(importedEvents)) {
+                        throw new Error("Invalid JSON format");
+                    }
+
+                    calendar.getEvents().forEach(ev => ev.remove());
+                    importedEvents.forEach(ev => {
+                        calendar.addEvent(ev);
+                    });
+
+                    persistCalendarEvents();
+                    alert(`Successfully imported ${importedEvents.length} events!`);
+                } catch (error) {
+                    alert("Failed to parse JSON backup file. Make sure it's a valid calendar export.");
+                }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // Alarm Monitoring Engine
+        function startAlarmSystem() {
+            if (alarmCheckInterval) clearInterval(alarmCheckInterval);
+            alarmCheckInterval = setInterval(() => {
+                const now = new Date();
+                calendar.getEvents().forEach(ev => {
+                    if (!ev.start) return;
+                    const eventTime = new Date(ev.start);
+                    const diffMinutes = (eventTime - now) / 60000;
+                    if (diffMinutes >= 0 && diffMinutes <= 15 && !triggeredAlarms.has(ev.id)) {
+                        triggeredAlarms.add(ev.id);
+                        triggerAlarmUI(ev.title, Math.round(diffMinutes));
+                    }
+                });
+            }, 10000);
+        }
+
+        function triggerAlarmUI(title, minsLeft) {
+            const banner = document.getElementById('alarmBanner');
+            document.getElementById('alarmTitle').innerText = `Reminder: "${title}"`;
+            document.getElementById('alarmTimeMsg').innerText = minsLeft <= 1 ? `Starting right now!` : `Starts in about ${minsLeft} minutes`;
+            banner.classList.remove('hidden');
+            playAlarmChime();
+        }
+
+        function dismissAlarm() {
+            document.getElementById('alarmBanner').classList.add('hidden');
+        }
+
+        // Modal Form & Recurrence Logic
+        function openAddEventModal(startStr = '', endStr = '') {
+            activeEventToEdit = null;
+            document.getElementById('modalTitle').innerText = 'Add Event';
+            document.getElementById('eventOriginalId').value = '';
+            document.getElementById('eventTitleInput').value = '';
+            
+            const now = new Date();
+            document.getElementById('eventStartInput').value = startStr ? startStr.slice(0, 16) : now.toISOString().slice(0, 16);
+            document.getElementById('eventEndInput').value = endStr ? endStr.slice(0, 16) : new Date(now.getTime() + 3600000).toISOString().slice(0, 16);
+            document.getElementById('eventCategoryInput').value = 'Work';
+            document.getElementById('eventRecurrenceInput').value = 'none';
+            
+            document.getElementById('deleteEventBtn').classList.add('hidden');
+            document.getElementById('eventModal').classList.remove('hidden');
+            document.getElementById('eventModal').classList.add('flex');
+        }
+
+        function openEditEventModal(event) {
+            activeEventToEdit = event;
+            document.getElementById('modalTitle').innerText = 'Edit / Delete Event';
+            document.getElementById('eventOriginalId').value = event.id;
+            document.getElementById('eventTitleInput').value = event.title;
+            document.getElementById('eventStartInput').value = event.startStr ? event.startStr.slice(0, 16) : '';
+            document.getElementById('eventEndInput').value = event.endStr ? event.endStr.slice(0, 16) : '';
+            document.getElementById('eventCategoryInput').value = event.extendedProps?.category || 'Work';
+            document.getElementById('eventRecurrenceInput').value = event.extendedProps?.recurrence || 'none';
+
+            document.getElementById('deleteEventBtn').classList.remove('hidden');
+            document.getElementById('eventModal').classList.remove('hidden');
+            document.getElementById('eventModal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('eventModal').classList.remove('flex');
+            document.getElementById('eventModal').classList.add('hidden');
+            activeEventToEdit = null;
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const title = document.getElementById('eventTitleInput').value;
+            const startStr = document.getElementById('eventStartInput').value;
+            const endStr = document.getElementById('eventEndInput').value;
+            const category = document.getElementById('eventCategoryInput').value;
+            const recurrence = document.getElementById('eventRecurrenceInput').value;
+
+            let color = categoryColorMap[category] || '#2563eb';
+
+            if (activeEventToEdit) {
+                activeEventToEdit.setProp('title', title);
+                activeEventToEdit.setStart(startStr);
+                activeEventToEdit.setEnd(endStr ? endStr : null);
+                activeEventToEdit.setProp('backgroundColor', color);
+                activeEventToEdit.setProp('borderColor', color);
+                activeEventToEdit.setExtendedProp('category', category);
+                activeEventToEdit.setExtendedProp('recurrence', recurrence);
+                triggeredAlarms.delete(activeEventToEdit.id);
+            } else {
+                calendar.addEvent({
+                    id: String(Date.now()),
+                    title: title,
+                    start: startStr,
+                    end: endStr ? endStr : null,
+                    backgroundColor: color,
+                    borderColor: color,
+                    extendedProps: { category: category, recurrence: recurrence }
+                });
+
+                if (recurrence !== 'none') {
+                    let baseStartDate = new Date(startStr);
+                    let baseEndDate = endStr ? new Date(endStr) : null;
+
+                    for (let i = 1; i <= 4; i++) {
+                        let nextStart = new Date(baseStartDate);
+                        let nextEnd = baseEndDate ? new Date(baseEndDate) : null;
+
+                        if (recurrence === 'daily') {
+                            nextStart.setDate(nextStart.getDate() + i);
+                            if (nextEnd) nextEnd.setDate(nextEnd.getDate() + i);
+                        } else if (recurrence === 'weekly') {
+                            nextStart.setDate(nextStart.getDate() + (i * 7));
+                            if (nextEnd) nextEnd.setDate(nextEnd.getDate() + (i * 7));
+                        } else if (recurrence === 'monthly') {
+                            nextStart.setMonth(nextStart.getMonth() + i);
+                            if (nextEnd) nextEnd.setMonth(nextEnd.getMonth() + i);
+                        }
+
+                        calendar.addEvent({
+                            id: String(Date.now() + i),
+                            title: title,
+                            start: nextStart.toISOString(),
+                            end: nextEnd ? nextEnd.toISOString() : null,
+                            backgroundColor: color,
+                            borderColor: color,
+                            extendedProps: { category: category, recurrence: recurrence }
+                        });
+                    }
+                }
+            }
+
+            persistCalendarEvents();
+            closeModal();
+        }
+
+        function deleteCurrentEvent() {
+            if (activeEventToEdit) {
+                activeEventToEdit.remove();
+                persistCalendarEvents();
+                closeModal();
+            }
+        }
+
+        function filterEvents(category, isVisible) {
+            calendar.getEvents().forEach(ev => {
+                if (ev.extendedProps.category === category) {
+                    ev.setProp('display', isVisible ? 'auto' : 'none');
+                }
+            });
+        }
+
+        function clearAllEvents() {
+            if (confirm("Remove all saved entries?")) {
+                localStorage.removeItem('fullcalendar_nature_events');
+                calendar.getEvents().forEach(ev => ev.remove());
+                triggeredAlarms.clear();
+            }
+        }
+    </script>
+</body>
+</html>
