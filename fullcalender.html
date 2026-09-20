@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nature Scheduler - 10 Nature Themes</title>
+    <title>Nature Scheduler - Alarms & IndexedDB</title>
     
     <!-- FullCalendar v6 Global CDN -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
@@ -38,61 +38,50 @@
         }
 
         /* ================= 10 NATURE THEMES PALETTE ================= */
-        
-        /* 1. Day Light (Sunny Valley) */
         body.theme-day { background-color: #f8fafc; color: #0f172a; }
         body.theme-day header, body.theme-day .bg-panel { background-color: #ffffff; color: #0f172a; border-color: #e2e8f0; }
         body.theme-day .fc { --fc-border-color: #e2e8f0; --fc-page-bg-color: #ffffff; --fc-neutral-text-color: #0f172a; color: #0f172a; }
 
-        /* 2. Midnight (Cosmic Ridge) */
         body.theme-midnight { background-color: #030712; color: #f3f4f6; }
         body.theme-midnight header, body.theme-midnight .bg-panel { background-color: #0f172a; color: #f3f4f6; border-color: #1e293b; }
         body.theme-midnight .fc { --fc-border-color: #1e293b; --fc-page-bg-color: #0f172a; --fc-neutral-text-color: #f3f4f6; color: #f3f4f6; }
         body.theme-midnight input, body.theme-midnight select { background-color: #1e293b; color: #ffffff; border-color: #334155; }
 
-        /* 3. Forest Wood (Ancient Woods) */
         body.theme-forest { background-color: #022c22; color: #ecfdf5; }
         body.theme-forest header, body.theme-forest .bg-panel { background-color: #064e3b; color: #ecfdf5; border-color: #047857; }
         body.theme-forest .fc { --fc-border-color: #047857; --fc-page-bg-color: #064e3b; --fc-neutral-text-color: #ecfdf5; color: #ecfdf5; }
         body.theme-forest input, body.theme-forest select { background-color: #022c22; color: #ecfdf5; border-color: #047857; }
 
-        /* 4. Ocean Deep (Coral Blue) */
         body.theme-ocean { background-color: #082f49; color: #f0f9ff; }
         body.theme-ocean header, body.theme-ocean .bg-panel { background-color: #0369a1; color: #f0f9ff; border-color: #0284c7; }
         body.theme-ocean .fc { --fc-border-color: #0284c7; --fc-page-bg-color: #0369a1; --fc-neutral-text-color: #f0f9ff; color: #f0f9ff; }
         body.theme-ocean input, body.theme-ocean select { background-color: #082f49; color: #f0f9ff; border-color: #0284c7; }
 
-        /* 5. Sunset Glow (Desert Horizon) */
         body.theme-sunset { background-color: #451a03; color: #fff7ed; }
         body.theme-sunset header, body.theme-sunset .bg-panel { background-color: #7c2d12; color: #fff7ed; border-color: #9a3412; }
         body.theme-sunset .fc { --fc-border-color: #9a3412; --fc-page-bg-color: #7c2d12; --fc-neutral-text-color: #fff7ed; color: #fff7ed; }
         body.theme-sunset input, body.theme-sunset select { background-color: #451a03; color: #fff7ed; border-color: #9a3412; }
 
-        /* 6. Autumn Amber (Golden Maple) */
         body.theme-autumn { background-color: #422006; color: #fef3c7; }
         body.theme-autumn header, body.theme-autumn .bg-panel { background-color: #78350f; color: #fef3c7; border-color: #92400e; }
         body.theme-autumn .fc { --fc-border-color: #92400e; --fc-page-bg-color: #78350f; --fc-neutral-text-color: #fef3c7; color: #fef3c7; }
         body.theme-autumn input, body.theme-autumn select { background-color: #422006; color: #fef3c7; border-color: #92400e; }
 
-        /* 7. Winter Frost (Glacial Ice) */
         body.theme-winter { background-color: #0f172a; color: #f8fafc; }
         body.theme-winter header, body.theme-winter .bg-panel { background-color: #1e293b; color: #f8fafc; border-color: #334155; }
         body.theme-winter .fc { --fc-border-color: #334155; --fc-page-bg-color: #1e293b; --fc-neutral-text-color: #f8fafc; color: #f8fafc; }
         body.theme-winter input, body.theme-winter select { background-color: #0f172a; color: #f8fafc; border-color: #334155; }
 
-        /* 8. Mountain Mist (Highland Fog) */
         body.theme-mountain { background-color: #18181b; color: #f4f4f5; }
         body.theme-mountain header, body.theme-mountain .bg-panel { background-color: #27272a; color: #f4f4f5; border-color: #3f3f46; }
         body.theme-mountain .fc { --fc-border-color: #3f3f46; --fc-page-bg-color: #27272a; --fc-neutral-text-color: #f4f4f5; color: #f4f4f5; }
         body.theme-mountain input, body.theme-mountain select { background-color: #18181b; color: #f4f4f5; border-color: #3f3f46; }
 
-        /* 9. Sakura Blossom (Spring Petals) */
         body.theme-sakura { background-color: #4c0519; color: #ffe4e6; }
         body.theme-sakura header, body.theme-sakura .bg-panel { background-color: #881337; color: #ffe4e6; border-color: #9f1239; }
         body.theme-sakura .fc { --fc-border-color: #9f1239; --fc-page-bg-color: #881337; --fc-neutral-text-color: #ffe4e6; color: #ffe4e6; }
         body.theme-sakura input, body.theme-sakura select { background-color: #4c0519; color: #ffe4e6; border-color: #9f1239; }
 
-        /* 10. Volcanic Ash (Basalt Stone) */
         body.theme-volcano { background-color: #1c1917; color: #f5f5f4; }
         body.theme-volcano header, body.theme-volcano .bg-panel { background-color: #292524; color: #f5f5f4; border-color: #44403c; }
         body.theme-volcano .fc { --fc-border-color: #44403c; --fc-page-bg-color: #292524; --fc-neutral-text-color: #f5f5f4; color: #f5f5f4; }
@@ -104,14 +93,27 @@
     <!-- Floating Hover Tooltip -->
     <div id="dateTooltip" class="fixed hidden bg-black/85 text-white text-[11px] px-3 py-2 rounded-lg shadow-xl backdrop-blur-md z-50 border border-white/20"></div>
 
-    <!-- Active Alarm Notification Banner -->
-    <div id="alarmBanner" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-slate-950 px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-4 border-2 border-amber-300 animate-bounce">
-        <span class="text-2xl">⏰</span>
-        <div>
-            <div id="alarmTitle" class="text-sm">Upcoming Event Alarm!</div>
-            <div id="alarmTimeMsg" class="text-xs opacity-90">Starts in 15 minutes</div>
+    <!-- Active Alarm Notification Banner with Snooze Options -->
+    <div id="alarmBanner" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-slate-950 px-5 py-4 rounded-2xl shadow-2xl flex flex-col gap-3 border-2 border-amber-300 animate-bounce max-w-sm w-full">
+        <div class="flex items-center space-x-3">
+            <span class="text-3xl">⏰</span>
+            <div>
+                <div id="alarmTitle" class="text-sm font-bold">Upcoming Event Alarm!</div>
+                <div id="alarmTimeMsg" class="text-xs opacity-90">Starts in 15 minutes</div>
+            </div>
         </div>
-        <button onclick="dismissAlarm()" class="bg-slate-950 text-amber-300 px-3 py-1.5 rounded-xl text-xs hover:bg-slate-800 transition">Got it</button>
+        <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-950/20">
+            <div class="flex items-center space-x-1">
+                <select id="snoozeTimeSelect" class="bg-slate-950 text-amber-300 text-xs px-2 py-1.5 rounded-lg border border-amber-400 focus:outline-none">
+                    <option value="5">5m</option>
+                    <option value="10" selected>10m</option>
+                    <option value="15">15m</option>
+                    <option value="30">30m</option>
+                </select>
+                <button onclick="snoozeActiveAlarm()" class="bg-slate-950 text-amber-300 px-3 py-1.5 rounded-lg text-xs hover:bg-slate-800 transition">Snooze</button>
+            </div>
+            <button onclick="dismissAlarm()" class="bg-slate-950 text-white px-3.5 py-1.5 rounded-lg text-xs hover:bg-slate-800 transition font-bold">Dismiss</button>
+        </div>
     </div>
 
     <!-- Top Header Bar -->
@@ -120,7 +122,7 @@
             <div class="bg-blue-600 text-white p-2 rounded-lg text-lg">🌿</div>
             <div>
                 <h1 class="text-base md:text-xl tracking-tight">Nature Scheduler</h1>
-                <p class="text-[10px] md:text-xs opacity-75 hidden sm:block">IndexedDB Nature Scheduler & 10 Themes</p>
+                <p class="text-[10px] md:text-xs opacity-75 hidden sm:block">IndexedDB Nature Scheduler & Alarm Controls</p>
             </div>
         </div>
 
@@ -135,13 +137,11 @@
         <button onclick="openAddEventModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm px-3.5 py-2 rounded-lg shadow transition">+ Add Event</button>
     </header>
 
-    <!-- Main Workspace Layout: Calendar Top, Controls Bottom -->
+    <!-- Main Workspace Layout -->
     <main class="flex-1 flex flex-col overflow-hidden">
         
-        <!-- TOP SECTION: Calendar Container with Prominent View Switcher Bar -->
+        <!-- Calendar Container -->
         <section class="h-[58%] min-h-[340px] p-3 md:p-4 border-b flex flex-col bg-panel shrink-0">
-            
-            <!-- Custom Top View Switcher & Navigation Controls -->
             <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2 border-b border-black/10">
                 <div class="flex items-center space-x-1.5 bg-black/5 p-1 rounded-xl">
                     <button onclick="changeCalendarView('dayGridMonth')" id="btn-month" class="px-3 py-1.5 rounded-lg text-xs bg-blue-600 text-white transition shadow-sm">Month</button>
@@ -159,14 +159,13 @@
                 </div>
             </div>
 
-            <!-- Calendar Element -->
             <div id="calendar" class="flex-1 min-w-[320px]"></div>
         </section>
 
-        <!-- BOTTOM SECTION: Separated GUI Settings Cards -->
+        <!-- Bottom GUI Settings Cards -->
         <section class="h-[42%] flex-1 p-3 md:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 overflow-y-auto bg-black/5">
             
-            <!-- GUI Card 1: Nature Themes (10 Options) -->
+            <!-- GUI Card 1: Nature Themes -->
             <div class="bg-panel p-4 rounded-xl border shadow-sm flex flex-col justify-between">
                 <div>
                     <h2 class="text-xs uppercase tracking-wider opacity-70 mb-2 flex items-center gap-1.5">🌿 Theme Appearance</h2>
@@ -245,12 +244,12 @@
 
     </main>
 
-    <!-- Modal Form for Event Management & Recurrence -->
-    <div id="eventModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-panel rounded-xl shadow-2xl w-full max-w-md p-5 md:p-6 border">
+    <!-- Modal Form for Event Management, Alarms & Recurrence -->
+    <div id="eventModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 overflow-y-auto">
+        <div class="bg-panel rounded-xl shadow-2xl w-full max-w-md p-5 md:p-6 border my-auto">
             <div class="flex justify-between items-center mb-4">
-                <h3 id="modalTitle" class="text-base md:text-lg">Event Editor</h3>
-                <button onclick="closeModal()" class="text-xl">&times;</button>
+                <h3 id="modalTitle" class="text-base md:text-lg font-bold">Event Editor</h3>
+                <button onclick="closeModal()" class="text-xl px-2 py-1">&times;</button>
             </div>
             
             <form id="eventForm" onsubmit="handleFormSubmit(event)" class="space-y-3">
@@ -274,7 +273,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-[11px] uppercase tracking-wider opacity-75 mb-1">Category</label>
-                        <select id="eventCategoryInput" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                        <select id="eventCategoryInput" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none cursor-pointer">
                             <option value="Work">Work</option>
                             <option value="Personal">Personal</option>
                             <option value="Meeting">Meeting</option>
@@ -284,7 +283,7 @@
                     </div>
                     <div>
                         <label class="block text-[11px] uppercase tracking-wider opacity-75 mb-1">Recurrence Rule</label>
-                        <select id="eventRecurrenceInput" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                        <select id="eventRecurrenceInput" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none cursor-pointer">
                             <option value="none">None (One-time)</option>
                             <option value="daily">Daily Repeat</option>
                             <option value="weekly">Weekly Repeat</option>
@@ -293,11 +292,44 @@
                     </div>
                 </div>
 
+                <!-- FULLY VISIBLE ALARM MANAGEMENT PANEL -->
+                <div class="p-3.5 bg-blue-500/10 rounded-xl border border-blue-500/30 space-y-3">
+                    <div class="flex items-center justify-between border-b border-blue-500/20 pb-2">
+                        <span class="text-xs uppercase tracking-wider font-bold flex items-center gap-1.5 text-blue-600 dark:text-blue-400">⏰ Alarm Status & Controls</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="alarmEnabledInput" checked class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                            <span class="ml-2 text-xs font-bold" id="alarmToggleLabel">Enabled</span>
+                        </label>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider opacity-75 mb-1">Alert Timing</label>
+                            <select id="alarmOffsetInput" class="w-full border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none cursor-pointer">
+                                <option value="0">At start time</option>
+                                <option value="5" selected>5 mins before</option>
+                                <option value="15">15 mins before</option>
+                                <option value="30">30 mins before</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider opacity-75 mb-1">Default Snooze</label>
+                            <select id="alarmSnoozeDurationInput" class="w-full border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none cursor-pointer">
+                                <option value="5">5 minutes</option>
+                                <option value="10" selected>10 minutes</option>
+                                <option value="15">15 minutes</option>
+                                <option value="30">30 minutes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="flex items-center justify-between pt-3 border-t border-black/10">
-                    <button type="button" id="deleteEventBtn" onclick="deleteCurrentEvent()" class="hidden text-red-500 text-xs md:text-sm font-bold">Delete</button>
+                    <button type="button" id="deleteEventBtn" onclick="deleteCurrentEvent()" class="hidden text-red-500 text-xs md:text-sm font-bold px-2 py-1">Delete</button>
                     <div class="flex space-x-2 ml-auto">
                         <button type="button" onclick="closeModal()" class="px-3 py-2 text-xs md:text-sm opacity-80">Cancel</button>
-                        <button type="submit" class="px-4 py-2 text-xs md:text-sm bg-blue-600 text-white rounded-lg shadow">Save Event</button>
+                        <button type="submit" class="px-4 py-2 text-xs md:text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow transition">Save Event</button>
                     </div>
                 </div>
             </form>
@@ -311,6 +343,7 @@
         let activeEventToEdit = null;
         let alarmCheckInterval = null;
         let triggeredAlarms = new Set();
+        let currentRingingEvent = null;
         let customAudioDataUrl = localStorage.getItem('fullcalendar_custom_alarm_audio') || null;
 
         const categoryColorMap = {
@@ -322,7 +355,20 @@
         };
 
         const defaultEvents = [
-            { id: '1', title: 'Daily Standup', start: new Date().toISOString().split('T')[0] + 'T09:00:00', backgroundColor: '#2563eb', borderColor: '#2563eb', extendedProps: { category: 'Work', recurrence: 'daily' } }
+            { 
+                id: '1', 
+                title: 'Daily Standup', 
+                start: new Date().toISOString().split('T')[0] + 'T09:00:00', 
+                backgroundColor: '#2563eb', 
+                borderColor: '#2563eb', 
+                extendedProps: { 
+                    category: 'Work', 
+                    recurrence: 'daily',
+                    alarmEnabled: true,
+                    alarmOffset: 5,
+                    snoozeDuration: 10
+                } 
+            }
         ];
 
         const themeWeatherMap = {
@@ -341,7 +387,7 @@
         // IndexedDB Helper Functions
         function initDB() {
             return new Promise((resolve, reject) => {
-                const request = indexedDB.open('NatureSchedulerDB', 1);
+                const request = indexedDB.open('NatureSchedulerDB', 2);
                 request.onerror = () => reject(request.error);
                 request.onsuccess = () => {
                     db = request.result;
@@ -409,6 +455,11 @@
             document.body.className = `${savedTheme} h-screen flex flex-col overflow-hidden transition-colors duration-300`;
             document.getElementById('themeSelect').value = savedTheme;
             updateWeatherBadge(savedTheme);
+
+            // Toggle Label Sync
+            document.getElementById('alarmEnabledInput').addEventListener('change', (e) => {
+                document.getElementById('alarmToggleLabel').innerText = e.target.checked ? 'Enabled' : 'Disabled';
+            });
 
             if (customAudioDataUrl) {
                 document.getElementById('audioFileName').innerText = "Loaded custom audio ✓";
@@ -576,7 +627,7 @@
             osc.stop(audioCtx.currentTime + 0.6);
         }
 
-        // Backup and Restore (JSON Export & Import using IndexedDB)
+        // Backup and Restore (JSON Export & Import)
         async function exportCalendarJSON() {
             const events = await getAllEventsFromDB();
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(events, null, 2));
@@ -617,39 +668,67 @@
             reader.readAsText(file);
         }
 
-        // Alarm Monitoring Engine
+        // Alarm Monitoring Engine with Snooze & Enable/Disable
         function startAlarmSystem() {
             if (alarmCheckInterval) clearInterval(alarmCheckInterval);
             alarmCheckInterval = setInterval(() => {
                 const now = new Date();
                 calendar.getEvents().forEach(ev => {
                     if (!ev.start) return;
+                    
+                    const props = ev.extendedProps || {};
+                    if (props.alarmEnabled === false) return;
+
                     const eventTime = new Date(ev.start);
-                    const diffMinutes = (eventTime - now) / 60000;
-                    if (diffMinutes >= 0 && diffMinutes <= 15 && !triggeredAlarms.has(ev.id)) {
+                    const offsetMinutes = parseInt(props.alarmOffset ?? 5, 10);
+                    const targetAlertTime = new Date(eventTime.getTime() - (offsetMinutes * 60000));
+                    
+                    const diffMs = targetAlertTime - now;
+                    const diffMinutes = diffMs / 60000;
+
+                    if (diffMinutes >= -0.25 && diffMinutes <= 0.25 && !triggeredAlarms.has(ev.id)) {
                         triggeredAlarms.add(ev.id);
-                        triggerAlarmUI(ev.title, Math.round(diffMinutes));
+                        currentRingingEvent = ev;
+                        triggerAlarmUI(ev.title, offsetMinutes);
                     }
                 });
-            }, 10000);
+            }, 5000);
         }
 
-        function triggerAlarmUI(title, minsLeft) {
+        function triggerAlarmUI(title, offsetMinutes) {
             const banner = document.getElementById('alarmBanner');
             document.getElementById('alarmTitle').innerText = `Reminder: "${title}"`;
-            document.getElementById('alarmTimeMsg').innerText = minsLeft <= 1 ? `Starting right now!` : `Starts in about ${minsLeft} minutes`;
+            document.getElementById('alarmTimeMsg').innerText = offsetMinutes === 0 ? `Starting right now!` : `Scheduled in ${offsetMinutes} minutes`;
             banner.classList.remove('hidden');
             playAlarmChime();
         }
 
         function dismissAlarm() {
             document.getElementById('alarmBanner').classList.add('hidden');
+            currentRingingEvent = null;
         }
 
-        // Modal Form & Recurrence Logic with Current Date Default
+        async function snoozeActiveAlarm() {
+            if (!currentRingingEvent) {
+                dismissAlarm();
+                return;
+            }
+
+            const snoozeMinutes = parseInt(document.getElementById('snoozeTimeSelect').value, 10);
+            const currentStart = new Date(currentRingingEvent.start);
+            const newStart = new Date(currentStart.getTime() + (snoozeMinutes * 60000));
+
+            currentRingingEvent.setStart(newStart);
+            await persistEvent(currentRingingEvent);
+
+            triggeredAlarms.delete(currentRingingEvent.id);
+            dismissAlarm();
+        }
+
+        // Modal Form Management with Alarm Options & Current Date Default
         function openAddEventModal(startStr = '', endStr = '') {
             activeEventToEdit = null;
-            document.getElementById('modalTitle').innerText = 'Add Event';
+            document.getElementById('modalTitle').innerText = 'Add Event & Alarm';
             document.getElementById('eventOriginalId').value = '';
             document.getElementById('eventTitleInput').value = '';
             
@@ -661,6 +740,13 @@
             document.getElementById('eventEndInput').value = defaultEnd;
             document.getElementById('eventCategoryInput').value = 'Work';
             document.getElementById('eventRecurrenceInput').value = 'none';
+            
+            // Alarm defaults
+            const alarmToggle = document.getElementById('alarmEnabledInput');
+            alarmToggle.checked = true;
+            document.getElementById('alarmToggleLabel').innerText = 'Enabled';
+            document.getElementById('alarmOffsetInput').value = '5';
+            document.getElementById('alarmSnoozeDurationInput').value = '10';
             
             document.getElementById('deleteEventBtn').classList.add('hidden');
             document.getElementById('eventModal').classList.remove('hidden');
@@ -674,8 +760,18 @@
             document.getElementById('eventTitleInput').value = event.title;
             document.getElementById('eventStartInput').value = event.startStr ? event.startStr.slice(0, 16) : '';
             document.getElementById('eventEndInput').value = event.endStr ? event.endStr.slice(0, 16) : '';
-            document.getElementById('eventCategoryInput').value = event.extendedProps?.category || 'Work';
-            document.getElementById('eventRecurrenceInput').value = event.extendedProps?.recurrence || 'none';
+            
+            const props = event.extendedProps || {};
+            document.getElementById('eventCategoryInput').value = props.category || 'Work';
+            document.getElementById('eventRecurrenceInput').value = props.recurrence || 'none';
+            
+            const isEnabled = props.alarmEnabled !== false;
+            const alarmToggle = document.getElementById('alarmEnabledInput');
+            alarmToggle.checked = isEnabled;
+            document.getElementById('alarmToggleLabel').innerText = isEnabled ? 'Enabled' : 'Disabled';
+            
+            document.getElementById('alarmOffsetInput').value = props.alarmOffset ?? 5;
+            document.getElementById('alarmSnoozeDurationInput').value = props.snoozeDuration ?? 10;
 
             document.getElementById('deleteEventBtn').classList.remove('hidden');
             document.getElementById('eventModal').classList.remove('hidden');
@@ -695,8 +791,12 @@
             const endStr = document.getElementById('eventEndInput').value;
             const category = document.getElementById('eventCategoryInput').value;
             const recurrence = document.getElementById('eventRecurrenceInput').value;
+            const alarmEnabled = document.getElementById('alarmEnabledInput').checked;
+            const alarmOffset = parseInt(document.getElementById('alarmOffsetInput').value, 10);
+            const snoozeDuration = parseInt(document.getElementById('alarmSnoozeDurationInput').value, 10);
 
             let color = categoryColorMap[category] || '#2563eb';
+            const extendedProps = { category, recurrence, alarmEnabled, alarmOffset, snoozeDuration };
 
             if (activeEventToEdit) {
                 activeEventToEdit.setProp('title', title);
@@ -706,8 +806,11 @@
                 activeEventToEdit.setProp('borderColor', color);
                 activeEventToEdit.setExtendedProp('category', category);
                 activeEventToEdit.setExtendedProp('recurrence', recurrence);
+                activeEventToEdit.setExtendedProp('alarmEnabled', alarmEnabled);
+                activeEventToEdit.setExtendedProp('alarmOffset', alarmOffset);
+                activeEventToEdit.setExtendedProp('snoozeDuration', snoozeDuration);
+                
                 triggeredAlarms.delete(activeEventToEdit.id);
-
                 await persistEvent(activeEventToEdit);
             } else {
                 const newId = String(Date.now());
@@ -718,7 +821,7 @@
                     end: endStr ? endStr : null,
                     backgroundColor: color,
                     borderColor: color,
-                    extendedProps: { category: category, recurrence: recurrence }
+                    extendedProps: extendedProps
                 };
 
                 calendar.addEvent(newEventData);
@@ -750,7 +853,7 @@
                             end: nextEnd ? nextEnd.toISOString() : null,
                             backgroundColor: color,
                             borderColor: color,
-                            extendedProps: { category: category, recurrence: recurrence }
+                            extendedProps: extendedProps
                         };
 
                         calendar.addEvent(recurringEventData);
