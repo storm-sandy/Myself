@@ -1,0 +1,3889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#087f5b">
+
+<title>Work Management System</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+:root{
+  --primary:#087f5b;
+  --primary2:#0ca678;
+  --dark:#123;
+  --bg:#f3f6f8;
+  --card:#fff;
+  --border:#dfe5e8;
+  --text:#182026;
+  --muted:#6c757d;
+  --danger:#dc3545;
+  --warning:#f59f00;
+  --success:#198754;
+  --info:#0d6efd;
+}
+
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+button,input,select,textarea{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.app{
+  max-width:1500px;
+  margin:auto;
+}
+
+/* HEADER */
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:white;
+  padding:14px;
+  box-shadow:0 3px 12px rgba(0,0,0,.15);
+}
+
+.header-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.brand{
+  font-size:21px;
+  font-weight:bold;
+}
+
+.subtitle{
+  font-size:12px;
+  opacity:.85;
+  margin-top:3px;
+}
+
+.clock{
+  text-align:right;
+  font-size:13px;
+}
+
+/* TABS */
+
+.tabs{
+  position:sticky;
+  top:76px;
+  z-index:90;
+  display:flex;
+  gap:5px;
+  overflow-x:auto;
+  background:white;
+  border-bottom:1px solid var(--border);
+  padding:6px;
+  scrollbar-width:thin;
+}
+
+.tab{
+  flex:0 0 auto;
+  border:0;
+  background:#edf1f3;
+  color:#333;
+  padding:10px 15px;
+  border-radius:9px;
+  font-weight:bold;
+  white-space:nowrap;
+}
+
+.tab.active{
+  background:var(--primary);
+  color:white;
+}
+
+/* CONTENT */
+
+.content{
+  padding:12px;
+}
+
+.tab-page{
+  display:none;
+}
+
+.tab-page.active{
+  display:block;
+}
+
+/* CARDS */
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:0 3px 10px rgba(0,0,0,.05);
+}
+
+.card-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
+}
+
+.card-title h3{
+  margin:0;
+}
+
+/* GRID */
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+.grid3{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+/* FORM */
+
+label{
+  display:block;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:5px;
+}
+
+input,
+select,
+textarea{
+  width:100%;
+  border:1px solid #ccd4d8;
+  border-radius:9px;
+  padding:10px;
+  background:white;
+  outline:none;
+}
+
+textarea{
+  min-height:90px;
+  resize:vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 2px rgba(8,127,91,.12);
+}
+
+/* BUTTONS */
+
+.btn{
+  border:0;
+  border-radius:9px;
+  padding:10px 14px;
+  color:white;
+  background:var(--primary);
+  font-weight:bold;
+  margin:3px 0;
+}
+
+.btn:hover{
+  opacity:.9;
+}
+
+.btn-info{
+  background:var(--info);
+}
+
+.btn-success{
+  background:var(--success);
+}
+
+.btn-warning{
+  background:var(--warning);
+}
+
+.btn-danger{
+  background:var(--danger);
+}
+
+.btn-secondary{
+  background:#6c757d;
+}
+
+.btn-light{
+  background:#e9ecef;
+  color:#222;
+}
+
+/* DASHBOARD STATS */
+
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+}
+
+.stat{
+  background:white;
+  border-radius:14px;
+  padding:14px;
+  border:1px solid var(--border);
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+.stat-icon{
+  font-size:25px;
+}
+
+.stat-value{
+  font-size:25px;
+  font-weight:bold;
+  margin-top:5px;
+}
+
+.stat-label{
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* CATEGORY */
+
+.category-scroll{
+  width:100%;
+  max-height:190px;
+  overflow:auto;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#f8fafb;
+  padding:7px;
+}
+
+.category-buttons{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(125px,1fr));
+  gap:7px;
+  min-width:540px;
+}
+
+.category-btn{
+  border:1px solid #ccd3d6;
+  border-radius:9px;
+  background:#edf0f2;
+  color:#333;
+  padding:10px 7px;
+  font-weight:bold;
+}
+
+.category-btn.active{
+  background:var(--primary);
+  color:white;
+  border-color:var(--primary);
+}
+
+.selected-category{
+  margin-top:7px;
+  background:#e8f7f1;
+  border:1px solid #b7e4d2;
+  color:#087f5b;
+  border-radius:8px;
+  padding:9px;
+  font-weight:bold;
+}
+
+/* SEARCH */
+
+.search-box{
+  position:relative;
+}
+
+.search-box input{
+  padding-left:38px;
+}
+
+.search-icon{
+  position:absolute;
+  left:12px;
+  top:10px;
+  font-size:18px;
+}
+
+/* TABLE */
+
+.table-wrapper{
+  width:100%;
+  overflow:auto;
+}
+
+table{
+  width:100%;
+  min-width:900px;
+  border-collapse:collapse;
+}
+
+th,
+td{
+  padding:9px;
+  border-bottom:1px solid var(--border);
+  text-align:center;
+  font-size:13px;
+}
+
+th{
+  background:#f0f3f5;
+  position:sticky;
+  top:0;
+}
+
+.delete-btn{
+  border:0;
+  background:var(--danger);
+  color:white;
+  border-radius:6px;
+  padding:6px 10px;
+}
+
+/* BADGES */
+
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:bold;
+}
+
+.present{
+  background:#d1e7dd;
+  color:#0f5132;
+}
+
+.absent{
+  background:#f8d7da;
+  color:#842029;
+}
+
+.halfday{
+  background:#fff3cd;
+  color:#664d03;
+}
+
+.leave{
+  background:#cfe2ff;
+  color:#084298;
+}
+
+.wfh{
+  background:#e2d9f3;
+  color:#432874;
+}
+
+/* CHART */
+
+.chart-box{
+  position:relative;
+  min-height:300px;
+}
+
+/* ATTENDANCE */
+
+.attendance-status{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:7px;
+}
+
+.status-btn{
+  border:1px solid #ccc;
+  background:#f1f3f5;
+  color:#333;
+  border-radius:9px;
+  padding:11px 5px;
+  font-weight:bold;
+}
+
+.status-btn.active{
+  background:var(--primary);
+  color:white;
+}
+
+/* TOOLBAR */
+
+.toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+
+.toolbar>*{
+  flex:1;
+  min-width:140px;
+}
+
+/* EMPTY */
+
+.empty{
+  text-align:center;
+  padding:30px;
+  color:#777;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+  .stats-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:600px){
+
+  .header-inner{
+    align-items:flex-start;
+  }
+
+  .brand{
+    font-size:18px;
+  }
+
+  .clock{
+    font-size:11px;
+  }
+
+  .tabs{
+    top:72px;
+  }
+
+  .content{
+    padding:8px;
+  }
+
+  .stats-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .grid,
+  .grid2,
+  .grid3{
+    grid-template-columns:1fr;
+  }
+
+  .attendance-status{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .category-buttons{
+    grid-template-columns:repeat(2,minmax(125px,1fr));
+    min-width:270px;
+  }
+
+  .toolbar>*{
+    min-width:100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- HEADER -->
+
+<header class="header">
+
+  <div class="header-inner">
+
+    <div>
+      <div class="brand">📊 Work Management System</div>
+      <div class="subtitle">
+        Work • Tasks • Attendance • Reports • Productivity
+      </div>
+    </div>
+
+    <div class="clock">
+      <div id="currentDate"></div>
+      <div id="currentTime"></div>
+    </div>
+
+  </div>
+
+</header>
+
+
+<!-- TABS -->
+
+<nav class="tabs">
+
+  <button class="tab active" data-tab="dashboard">
+    📊 Dashboard
+  </button>
+
+  <button class="tab" data-tab="work">
+    📝 Work
+  </button>
+
+  <button class="tab" data-tab="attendance">
+    👥 Attendance
+  </button>
+
+  <button class="tab" data-tab="records">
+    📋 Records
+  </button>
+
+  <button class="tab" data-tab="reports">
+    📈 Reports
+  </button>
+
+  <button class="tab" data-tab="data">
+    💾 Data
+  </button>
+
+</nav>
+
+
+<main class="content">
+
+
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
+
+<section id="dashboard" class="tab-page active">
+
+  <div class="stats-grid">
+
+    <div class="stat">
+      <div class="stat-icon">📝</div>
+      <div class="stat-value" id="dashTasks">0</div>
+      <div class="stat-label">Work Records</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-icon">💰</div>
+      <div class="stat-value" id="dashTotal">0</div>
+      <div class="stat-label">Total Count / Amount</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-icon">✅</div>
+      <div class="stat-value" id="dashPresent">0</div>
+      <div class="stat-label">Present</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-icon">❌</div>
+      <div class="stat-value" id="dashAbsent">0</div>
+      <div class="stat-label">Absent</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-icon">⏱️</div>
+      <div class="stat-value" id="dashHours">0</div>
+      <div class="stat-label">Working Hours</div>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-title">
+      <h3>📊 Productivity Overview</h3>
+      <button class="btn btn-light" onclick="refreshDashboard()">
+        🔄 Refresh
+      </button>
+    </div>
+
+    <div class="chart-box">
+      <canvas id="dashboardChart"></canvas>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-title">
+      <h3>📅 Today's Summary</h3>
+    </div>
+
+    <div id="todaySummary"></div>
+
+  </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     WORK TAB
+===================================================== -->
+
+<section id="work" class="tab-page">
+
+  <div class="card">
+
+    <div class="card-title">
+      <h3>➕ Add Work / Task</h3>
+    </div>
+
+
+    <div class="grid">
+
+      <div>
+        <label>Date</label>
+        <input type="date" id="workDate">
+      </div>
+
+      <div>
+        <label>Count / Amount</label>
+        <input type="number" id="workCost"
+               placeholder="Count / Amount"
+               min="0"
+               step="any">
+      </div>
+
+      <div>
+        <label>Title</label>
+        <input type="text" id="workTitle"
+               placeholder="Task / Work title">
+      </div>
+
+      <div>
+        <label>Time Slot</label>
+        <select id="workTime"></select>
+      </div>
+
+    </div>
+
+
+    <div style="margin-top:10px">
+
+      <label>Description</label>
+
+      <textarea id="workDescription"
+        placeholder="Describe the work..."></textarea>
+
+    </div>
+
+
+    <div style="margin-top:10px">
+
+      <label>Category</label>
+
+      <div class="category-scroll">
+
+        <div class="category-buttons"
+             id="categoryButtons"></div>
+
+      </div>
+
+      <div class="selected-category">
+        Selected Category:
+        <span id="selectedCategory">
+          Please select
+        </span>
+      </div>
+
+    </div>
+
+
+    <div style="margin-top:10px">
+
+      <label>Work Type</label>
+
+      <select id="workType">
+        <option value="">Select Type</option>
+      </select>
+
+    </div>
+
+
+    <div class="toolbar">
+
+      <button class="btn btn-success"
+              onclick="addWork()">
+        ➕ Add Work
+      </button>
+
+      <button class="btn btn-secondary"
+              onclick="clearWorkForm()">
+        Clear
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- WORK FILTER -->
+
+  <div class="card">
+
+    <div class="card-title">
+      <h3>🔎 Search & Filter Work</h3>
+    </div>
+
+
+    <div class="grid3">
+
+      <div class="search-box">
+
+        <span class="search-icon">🔎</span>
+
+        <input type="search"
+               id="workSearch"
+               placeholder="Search title, description, category, type..."
+               oninput="renderWork()">
+
+      </div>
+
+
+      <div>
+
+        <label>From Date</label>
+
+        <input type="date"
+               id="workFrom"
+               onchange="renderWork()">
+
+      </div>
+
+
+      <div>
+
+        <label>To Date</label>
+
+        <input type="date"
+               id="workTo"
+               onchange="renderWork()">
+
+      </div>
+
+    </div>
+
+
+    <div class="grid3">
+
+      <div>
+
+        <label>Category</label>
+
+        <select id="filterCategory"
+                onchange="renderWork()">
+
+          <option value="">All Categories</option>
+
+        </select>
+
+      </div>
+
+
+      <div>
+
+        <label>Type</label>
+
+        <select id="filterType"
+                onchange="renderWork()">
+
+          <option value="">All Types</option>
+
+        </select>
+
+      </div>
+
+
+      <div>
+
+        <label>Time</label>
+
+        <select id="filterTime"
+                onchange="renderWork()">
+
+          <option value="">All Times</option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <button class="btn btn-light"
+            onclick="clearWorkFilters()">
+
+      Clear Filters
+
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-title">
+
+      <h3>📝 Work Records</h3>
+
+      <strong>
+        <span id="workCount">0</span>
+      </strong>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>Date</th>
+            <th>Count</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Time</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Delete</th>
+          </tr>
+
+        </thead>
+
+        <tbody id="workTable"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     ATTENDANCE
+===================================================== -->
+
+<section id="attendance" class="tab-page">
+
+  <div class="card">
+
+    <div class="card-title">
+
+      <h3>👥 Attendance Management</h3>
+
+    </div>
+
+
+    <div class="grid3">
+
+      <div>
+
+        <label>Date</label>
+
+        <input type="date"
+               id="attDate">
+
+      </div>
+
+
+      <div>
+
+        <label>Employee / Person</label>
+
+        <input type="text"
+               id="attPerson"
+               placeholder="Name">
+
+      </div>
+
+
+      <div>
+
+        <label>Department / Team</label>
+
+        <input type="text"
+               id="attDepartment"
+               placeholder="Department">
+
+      </div>
+
+    </div>
+
+
+    <label style="margin-top:12px">
+      Attendance Status
+    </label>
+
+    <div class="attendance-status">
+
+      <button class="status-btn active"
+              data-status="Present"
+              onclick="selectAttendanceStatus(this)">
+        ✅ Present
+      </button>
+
+      <button class="status-btn"
+              data-status="Absent"
+              onclick="selectAttendanceStatus(this)">
+        ❌ Absent
+      </button>
+
+      <button class="status-btn"
+              data-status="Half Day"
+              onclick="selectAttendanceStatus(this)">
+        🌓 Half Day
+      </button>
+
+      <button class="status-btn"
+              data-status="Leave"
+              onclick="selectAttendanceStatus(this)">
+        🏖️ Leave
+      </button>
+
+      <button class="status-btn"
+              data-status="Work From Home"
+              onclick="selectAttendanceStatus(this)">
+        🏠 WFH
+      </button>
+
+    </div>
+
+
+    <div class="grid3"
+         style="margin-top:12px">
+
+      <div>
+
+        <label>In Time</label>
+
+        <input type="time"
+               id="attIn">
+
+      </div>
+
+
+      <div>
+
+        <label>Out Time</label>
+
+        <input type="time"
+               id="attOut">
+
+      </div>
+
+
+      <div>
+
+        <label>Remarks</label>
+
+        <input type="text"
+               id="attRemarks"
+               placeholder="Optional remarks">
+
+      </div>
+
+    </div>
+
+
+    <div class="toolbar"
+         style="margin-top:10px">
+
+      <button class="btn btn-success"
+              onclick="addAttendance()">
+        ➕ Save Attendance
+      </button>
+
+      <button class="btn btn-info"
+              onclick="setCurrentTime('attIn')">
+        🕐 Current In
+      </button>
+
+      <button class="btn btn-warning"
+              onclick="setCurrentTime('attOut')">
+        🕐 Current Out
+      </button>
+
+      <button class="btn btn-secondary"
+              onclick="clearAttendanceForm()">
+        Clear
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ATTENDANCE FILTER -->
+
+  <div class="card">
+
+    <div class="card-title">
+
+      <h3>🔎 Attendance Search</h3>
+
+    </div>
+
+
+    <div class="grid3">
+
+      <div class="search-box">
+
+        <span class="search-icon">🔎</span>
+
+        <input type="search"
+               id="attSearch"
+               placeholder="Search person, department, remarks..."
+               oninput="renderAttendance()">
+
+      </div>
+
+
+      <div>
+
+        <label>From</label>
+
+        <input type="date"
+               id="attFrom"
+               onchange="renderAttendance()">
+
+      </div>
+
+
+      <div>
+
+        <label>To</label>
+
+        <input type="date"
+               id="attTo"
+               onchange="renderAttendance()">
+
+      </div>
+
+    </div>
+
+
+    <div class="grid3">
+
+      <div>
+
+        <label>Status</label>
+
+        <select id="attFilterStatus"
+                onchange="renderAttendance()">
+
+          <option value="">All Status</option>
+          <option>Present</option>
+          <option>Absent</option>
+          <option>Half Day</option>
+          <option>Leave</option>
+          <option>Work From Home</option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-title">
+
+      <h3>📋 Attendance Records</h3>
+
+      <strong>
+        <span id="attCount">0</span>
+      </strong>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>Date</th>
+            <th>Person</th>
+            <th>Department</th>
+            <th>Status</th>
+            <th>In</th>
+            <th>Out</th>
+            <th>Hours</th>
+            <th>Remarks</th>
+            <th>Delete</th>
+          </tr>
+
+        </thead>
+
+        <tbody id="attendanceTable"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     RECORDS
+===================================================== -->
+
+<section id="records" class="tab-page">
+
+  <div class="card">
+
+    <div class="card-title">
+
+      <h3>📋 Combined Records</h3>
+
+    </div>
+
+
+    <div class="search-box">
+
+      <span class="search-icon">🔎</span>
+
+      <input type="search"
+             id="globalSearch"
+             placeholder="Search work and attendance..."
+             oninput="renderCombinedRecords()">
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="table-wrapper">
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>Date</th>
+            <th>Record</th>
+            <th>Name / Title</th>
+            <th>Category / Department</th>
+            <th>Status / Type</th>
+            <th>Time</th>
+            <th>Value</th>
+          </tr>
+
+        </thead>
+
+        <tbody id="combinedTable"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     REPORTS
+===================================================== -->
+
+<section id="reports" class="tab-page">
+
+  <div class="card">
+
+    <div class="card-title">
+
+      <h3>📈 Work Report</h3>
+
+    </div>
+
+
+    <div class="grid3">
+
+      <div>
+
+        <label>View</label>
+
+        <select id="reportView"
+                onchange="renderReports()">
+
+          <option value="day">Day</option>
+          <option value="week">Week</option>
+          <option value="month" selected>Month</option>
+          <option value="year">Year</option>
+
+        </select>
+
+      </div>
+
+
+      <div>
+
+        <label>From</label>
+
+        <input type="date"
+               id="reportFrom"
+               onchange="renderReports()">
+
+      </div>
+
+
+      <div>
+
+        <label>To</label>
+
+        <input type="date"
+               id="reportTo"
+               onchange="renderReports()">
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="chart-box">
+
+      <canvas id="workChart"></canvas>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="chart-box">
+
+      <canvas id="attendanceChart"></canvas>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-title">
+
+      <h3>📊 Attendance Summary</h3>
+
+    </div>
+
+    <div id="attendanceSummary"></div>
+
+  </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     DATA
+===================================================== -->
+
+<section id="data" class="tab-page">
+
+  <div class="card">
+
+    <div class="card-title">
+
+      <h3>💾 Data Management</h3>
+
+    </div>
+
+
+    <div class="toolbar">
+
+      <button class="btn btn-success"
+              onclick="exportWorkCSV()">
+        ⬇ Work CSV
+      </button>
+
+      <button class="btn btn-info"
+              onclick="exportAttendanceCSV()">
+        ⬇ Attendance CSV
+      </button>
+
+      <button class="btn btn-warning"
+              onclick="exportJSON()">
+        ⬇ Full JSON
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h3>📥 Import Work CSV</h3>
+
+    <input type="file"
+           id="workCSVInput"
+           accept=".csv,text/csv"
+           onchange="importWorkCSV(event)">
+
+  </div>
+
+
+  <div class="card">
+
+    <h3>📥 Import Attendance CSV</h3>
+
+    <input type="file"
+           id="attendanceCSVInput"
+           accept=".csv,text/csv"
+           onchange="importAttendanceCSV(event)">
+
+  </div>
+
+
+  <div class="card">
+
+    <h3>🗑️ Delete Data</h3>
+
+    <div class="grid2">
+
+      <button class="btn btn-danger"
+              onclick="deleteWorkByRange()">
+        Delete Work by Date Range
+      </button>
+
+      <button class="btn btn-danger"
+              onclick="deleteAttendanceByRange()">
+        Delete Attendance by Date Range
+      </button>
+
+    </div>
+
+
+    <button class="btn btn-danger"
+            style="width:100%;margin-top:10px"
+            onclick="clearEverything()">
+
+      ⚠️ Delete ALL Work & Attendance
+
+    </button>
+
+  </div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   CONFIGURATION
+========================================================= */
+
+const CONFIG={
+
+  workKey:"work_management_records_v2",
+
+  attendanceKey:"work_management_attendance_v2",
+
+  times:[
+    "Morning 4-6",
+    "Morning 6-8",
+    "Morning 8-12",
+    "Afternoon 12-3",
+    "Afternoon 3-5",
+    "Evening 5-7",
+    "Night 7-12",
+    "Night 12-4",
+    "Others"
+  ],
+
+  categories:{
+
+    Work:[
+      "SOD",
+      "EOD",
+      "Requirement",
+      "Understanding",
+      "Planning",
+      "Coding",
+      "Deployment",
+      "Testing",
+      "Execution",
+      "Analysis",
+      "Debugging",
+      "Closing",
+      "KT",
+      "Ticket",
+      "Incident",
+      "Solution",
+      "Issue",
+      "Support",
+      "Dependency",
+      "Manual Task",
+      "Data checking",
+      "Data Analysis",
+      "Data Exploration"
+    ],
+
+    Data:[
+      "Data Entry",
+      "Data Lineage",
+      "Data checking",
+      "Data Analysis",
+      "Data Exploration",
+      "Data Base"
+    ],
+
+    Communication:[
+      "Report",
+      "Follow Up",
+      "Planning",
+      "Review",
+      "Documentation",
+      "Data Entry",
+      "Team Call",
+      "Email",
+      "Meeting",
+      "Meeting Notes",
+      "Hands Up",
+      "Response",
+      "Client Handling",
+      "Team Handling",
+      "Delivery Handling"
+    ],
+
+    Library:[
+      "Book Name",
+      "Book Issue",
+      "Book Return",
+      "Study",
+      "Reading",
+      "Online",
+      "Practice",
+      "Certification",
+      "Research",
+      "Skill Development"
+    ],
+
+    Curriculars:[
+      "Indoor Games",
+      "Sports",
+      "Walking",
+      "Yoga",
+      "Meditation",
+      "Health Checkup",
+      "Medical",
+      "Health",
+      "Rest",
+      "Breathing",
+      "Gym",
+      "Cycling",
+      "Festivals",
+      "Events",
+      "Presentation",
+      "Speaking"
+    ],
+
+    Transport:[
+      "Train",
+      "Bus",
+      "Auto",
+      "Taxi",
+      "Car",
+      "Bike",
+      "Parking",
+      "Public Transport"
+    ],
+
+    Cafeteria:[
+      "Breakfast",
+      "Lunch",
+      "Dinner",
+      "Snacks",
+      "Restaurant",
+      "Tea",
+      "Coffee",
+      "Beverages"
+    ],
+
+    Urgency:[
+      "Important",
+      "Urgent",
+      "Reminder",
+      "Follow Up",
+      "Pending",
+      "Completed",
+      "In Progress"
+    ],
+
+    Teams:[
+      "Project Manager",
+      "Team Leader",
+      "Team Member",
+      "Colleague",
+      "Department",
+      "Delivery Manager",
+      "Client"
+    ],
+
+    Other:[
+      "Others"
+    ]
+
+  }
+
+};
+
+
+/* =========================================================
+   DATA
+========================================================= */
+
+let workData=[];
+
+let attendanceData=[];
+
+let selectedCategory="";
+
+let attendanceStatus="Present";
+
+let dashboardChart=null;
+
+let workChart=null;
+
+let attendanceChart=null;
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function today(){
+
+  const d=new Date();
+
+  return formatDate(d);
+
+}
+
+
+function formatDate(d){
+
+  return d.getFullYear()+"-"+
+    String(d.getMonth()+1).padStart(2,"0")+"-"+
+    String(d.getDate()).padStart(2,"0");
+
+}
+
+
+function escapeHTML(v){
+
+  return String(v??"")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+function saveData(){
+
+  localStorage.setItem(
+    CONFIG.workKey,
+    JSON.stringify(workData)
+  );
+
+  localStorage.setItem(
+    CONFIG.attendanceKey,
+    JSON.stringify(attendanceData)
+  );
+
+}
+
+
+function loadData(){
+
+  try{
+
+    workData=JSON.parse(
+      localStorage.getItem(CONFIG.workKey)||"[]"
+    );
+
+    attendanceData=JSON.parse(
+      localStorage.getItem(CONFIG.attendanceKey)||"[]"
+    );
+
+    if(!Array.isArray(workData))
+      workData=[];
+
+    if(!Array.isArray(attendanceData))
+      attendanceData=[];
+
+  }catch(e){
+
+    workData=[];
+    attendanceData=[];
+
+  }
+
+}
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+function updateClock(){
+
+  const d=new Date();
+
+  document.getElementById("currentDate").textContent=
+    d.toLocaleDateString(
+      undefined,
+      {
+        weekday:"short",
+        day:"2-digit",
+        month:"short",
+        year:"numeric"
+      }
+    );
+
+  document.getElementById("currentTime").textContent=
+    d.toLocaleTimeString();
+
+}
+
+setInterval(updateClock,1000);
+
+updateClock();
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+document.querySelectorAll(".tab").forEach(tab=>{
+
+  tab.addEventListener("click",()=>{
+
+    document.querySelectorAll(".tab")
+      .forEach(t=>t.classList.remove("active"));
+
+    document.querySelectorAll(".tab-page")
+      .forEach(p=>p.classList.remove("active"));
+
+    tab.classList.add("active");
+
+    const page=document.getElementById(
+      tab.dataset.tab
+    );
+
+    if(page)
+      page.classList.add("active");
+
+    if(tab.dataset.tab==="dashboard")
+      refreshDashboard();
+
+    if(tab.dataset.tab==="work")
+      renderWork();
+
+    if(tab.dataset.tab==="attendance")
+      renderAttendance();
+
+    if(tab.dataset.tab==="records")
+      renderCombinedRecords();
+
+    if(tab.dataset.tab==="reports")
+      renderReports();
+
+  });
+
+});
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+function initialize(){
+
+  loadData();
+
+  const t=today();
+
+  document.getElementById("workDate").value=t;
+
+  document.getElementById("attDate").value=t;
+
+  document.getElementById("workFrom").value=
+    new Date().getFullYear()+"-"+
+    String(new Date().getMonth()+1).padStart(2,"0")+"-01";
+
+  document.getElementById("workTo").value=t;
+
+  document.getElementById("attFrom").value=
+    new Date().getFullYear()+"-"+
+    String(new Date().getMonth()+1).padStart(2,"0")+"-01";
+
+  document.getElementById("attTo").value=t;
+
+  document.getElementById("reportFrom").value=
+    new Date().getFullYear()+"-"+
+    String(new Date().getMonth()+1).padStart(2,"0")+"-01";
+
+  document.getElementById("reportTo").value=t;
+
+  populateTimes();
+
+  populateCategories();
+
+  populateFilters();
+
+  refreshDashboard();
+
+  renderWork();
+
+  renderAttendance();
+
+}
+
+
+function populateTimes(){
+
+  const selects=[
+    document.getElementById("workTime"),
+    document.getElementById("filterTime")
+  ];
+
+  selects.forEach((sel,index)=>{
+
+    if(index===0)
+      sel.innerHTML='<option value="">Select Time</option>';
+    else
+      sel.innerHTML='<option value="">All Times</option>';
+
+    CONFIG.times.forEach(t=>{
+
+      const o=document.createElement("option");
+
+      o.value=t;
+
+      o.textContent=t;
+
+      sel.appendChild(o);
+
+    });
+
+  });
+
+}
+
+
+/* =========================================================
+   CATEGORIES
+========================================================= */
+
+function populateCategories(){
+
+  const box=document.getElementById(
+    "categoryButtons"
+  );
+
+  box.innerHTML="";
+
+  Object.keys(CONFIG.categories)
+    .forEach(category=>{
+
+      const btn=document.createElement("button");
+
+      btn.className="category-btn";
+
+      btn.type="button";
+
+      btn.textContent=category;
+
+      btn.onclick=()=>selectCategory(
+        category,
+        btn
+      );
+
+      box.appendChild(btn);
+
+    });
+
+}
+
+
+function selectCategory(category,button){
+
+  selectedCategory=category;
+
+  document.getElementById(
+    "selectedCategory"
+  ).textContent=category;
+
+  document.querySelectorAll(
+    ".category-btn"
+  ).forEach(b=>{
+    b.classList.remove("active");
+  });
+
+  button.classList.add("active");
+
+  const type=document.getElementById(
+    "workType"
+  );
+
+  type.innerHTML=
+    '<option value="">Select Type</option>';
+
+  CONFIG.categories[category]
+    .forEach(v=>{
+
+      const o=document.createElement("option");
+
+      o.value=v;
+
+      o.textContent=v;
+
+      type.appendChild(o);
+
+    });
+
+}
+
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+function populateFilters(){
+
+  const categorySelect=
+    document.getElementById(
+      "filterCategory"
+    );
+
+  Object.keys(CONFIG.categories)
+    .forEach(c=>{
+
+      const o=document.createElement("option");
+
+      o.value=c;
+
+      o.textContent=c;
+
+      categorySelect.appendChild(o);
+
+    });
+
+  populateTypeFilter();
+
+}
+
+
+function populateTypeFilter(){
+
+  const select=
+    document.getElementById("filterType");
+
+  const current=select.value;
+
+  select.innerHTML=
+    '<option value="">All Types</option>';
+
+  const all=[];
+
+  Object.values(CONFIG.categories)
+    .forEach(arr=>{
+
+      arr.forEach(v=>{
+
+        if(!all.includes(v))
+          all.push(v);
+
+      });
+
+    });
+
+  all.sort().forEach(v=>{
+
+    const o=document.createElement("option");
+
+    o.value=v;
+
+    o.textContent=v;
+
+    select.appendChild(o);
+
+  });
+
+  select.value=current;
+
+}
+
+
+/* =========================================================
+   ADD WORK
+========================================================= */
+
+function addWork(){
+
+  const date=
+    document.getElementById("workDate").value;
+
+  const cost=
+    Number(document.getElementById("workCost").value);
+
+  const title=
+    document.getElementById("workTitle").value.trim();
+
+  const desc=
+    document.getElementById(
+      "workDescription"
+    ).value.trim();
+
+  const time=
+    document.getElementById("workTime").value;
+
+  const type=
+    document.getElementById("workType").value;
+
+
+  if(!date)
+    return alert("Please select date.");
+
+  if(!selectedCategory)
+    return alert("Please select Category.");
+
+  if(!type)
+    return alert("Please select Work Type.");
+
+  if(!title)
+    return alert("Please enter Title.");
+
+  if(!desc)
+    return alert("Please enter Description.");
+
+  if(!Number.isFinite(cost))
+    return alert("Please enter valid Count / Amount.");
+
+
+  workData.push({
+
+    id:Date.now()+Math.random(),
+
+    date,
+
+    cost,
+
+    title,
+
+    desc,
+
+    time,
+
+    category:selectedCategory,
+
+    type
+
+  });
+
+
+  saveData();
+
+  clearWorkForm();
+
+  renderWork();
+
+  refreshDashboard();
+
+  alert("Work record added successfully.");
+
+}
+
+
+function clearWorkForm(){
+
+  document.getElementById(
+    "workDate"
+  ).value=today();
+
+  document.getElementById(
+    "workCost"
+  ).value="";
+
+  document.getElementById(
+    "workTitle"
+  ).value="";
+
+  document.getElementById(
+    "workDescription"
+  ).value="";
+
+  document.getElementById(
+    "workTime"
+  ).value="";
+
+  document.getElementById(
+    "workType"
+  ).innerHTML=
+    '<option value="">Select Type</option>';
+
+  selectedCategory="";
+
+  document.getElementById(
+    "selectedCategory"
+  ).textContent="Please select";
+
+  document.querySelectorAll(
+    ".category-btn"
+  ).forEach(b=>{
+    b.classList.remove("active");
+  });
+
+}
+
+
+/* =========================================================
+   WORK FILTER
+========================================================= */
+
+function getFilteredWork(){
+
+  const search=
+    document.getElementById(
+      "workSearch"
+    ).value.toLowerCase().trim();
+
+  const from=
+    document.getElementById("workFrom").value;
+
+  const to=
+    document.getElementById("workTo").value;
+
+  const category=
+    document.getElementById(
+      "filterCategory"
+    ).value;
+
+  const type=
+    document.getElementById(
+      "filterType"
+    ).value;
+
+  const time=
+    document.getElementById(
+      "filterTime"
+    ).value;
+
+
+  return workData.filter(r=>{
+
+    if(from && r.date<from)
+      return false;
+
+    if(to && r.date>to)
+      return false;
+
+    if(category &&
+       r.category!==category)
+      return false;
+
+    if(type &&
+       r.type!==type)
+      return false;
+
+    if(time &&
+       r.time!==time)
+      return false;
+
+
+    if(search){
+
+      const text=[
+        r.date,
+        r.title,
+        r.desc,
+        r.category,
+        r.type,
+        r.time
+      ]
+      .join(" ")
+      .toLowerCase();
+
+      if(!text.includes(search))
+        return false;
+
+    }
+
+    return true;
+
+  });
+
+}
+
+
+function renderWork(){
+
+  const list=getFilteredWork();
+
+  const body=
+    document.getElementById(
+      "workTable"
+    );
+
+  body.innerHTML="";
+
+
+  if(!list.length){
+
+    body.innerHTML=
+      '<tr><td colspan="8" class="empty">'+
+      'No work records found.'+
+      '</td></tr>';
+
+  }
+
+
+  list.forEach(r=>{
+
+    const index=workData.indexOf(r);
+
+    const tr=document.createElement("tr");
+
+    tr.innerHTML=`
+
+      <td>${escapeHTML(r.date)}</td>
+
+      <td>${Number(r.cost||0)}</td>
+
+      <td><b>${escapeHTML(r.title)}</b></td>
+
+      <td>${escapeHTML(r.desc)}</td>
+
+      <td>${escapeHTML(r.time)}</td>
+
+      <td>${escapeHTML(r.category)}</td>
+
+      <td>${escapeHTML(r.type)}</td>
+
+      <td>
+        <button class="delete-btn"
+          onclick="deleteWork(${index})">
+          X
+        </button>
+      </td>
+
+    `;
+
+    body.appendChild(tr);
+
+  });
+
+
+  document.getElementById(
+    "workCount"
+  ).textContent=list.length;
+
+}
+
+
+function clearWorkFilters(){
+
+  document.getElementById(
+    "workSearch"
+  ).value="";
+
+  document.getElementById(
+    "filterCategory"
+  ).value="";
+
+  document.getElementById(
+    "filterType"
+  ).value="";
+
+  document.getElementById(
+    "filterTime"
+  ).value="";
+
+  renderWork();
+
+}
+
+
+function deleteWork(index){
+
+  if(!confirm(
+    "Delete this work record?"
+  ))
+    return;
+
+  workData.splice(index,1);
+
+  saveData();
+
+  renderWork();
+
+  refreshDashboard();
+
+}
+
+
+/* =========================================================
+   ATTENDANCE
+========================================================= */
+
+function selectAttendanceStatus(button){
+
+  document.querySelectorAll(
+    ".status-btn"
+  ).forEach(b=>{
+    b.classList.remove("active");
+  });
+
+  button.classList.add("active");
+
+  attendanceStatus=
+    button.dataset.status;
+
+}
+
+
+function setCurrentTime(id){
+
+  const d=new Date();
+
+  document.getElementById(id).value=
+    String(d.getHours()).padStart(2,"0")+
+    ":"+
+    String(d.getMinutes()).padStart(2,"0");
+
+}
+
+
+function calculateHours(inTime,outTime){
+
+  if(!inTime||!outTime)
+    return 0;
+
+  const a=inTime.split(":");
+  const b=outTime.split(":");
+
+  let start=
+    Number(a[0])*60+Number(a[1]);
+
+  let end=
+    Number(b[0])*60+Number(b[1]);
+
+  if(end<start)
+    end+=24*60;
+
+  return Math.round(
+    ((end-start)/60)*100
+  )/100;
+
+}
+
+
+function addAttendance(){
+
+  const date=
+    document.getElementById(
+      "attDate"
+    ).value;
+
+  const person=
+    document.getElementById(
+      "attPerson"
+    ).value.trim();
+
+  const department=
+    document.getElementById(
+      "attDepartment"
+    ).value.trim();
+
+  const inTime=
+    document.getElementById(
+      "attIn"
+    ).value;
+
+  const outTime=
+    document.getElementById(
+      "attOut"
+    ).value;
+
+  const remarks=
+    document.getElementById(
+      "attRemarks"
+    ).value.trim();
+
+
+  if(!date)
+    return alert("Please select date.");
+
+  if(!person)
+    return alert("Please enter person name.");
+
+
+  const hours=calculateHours(
+    inTime,
+    outTime
+  );
+
+
+  attendanceData.push({
+
+    id:Date.now()+Math.random(),
+
+    date,
+
+    person,
+
+    department,
+
+    status:attendanceStatus,
+
+    inTime,
+
+    outTime,
+
+    hours,
+
+    remarks
+
+  });
+
+
+  saveData();
+
+  clearAttendanceForm();
+
+  renderAttendance();
+
+  refreshDashboard();
+
+  alert("Attendance saved successfully.");
+
+}
+
+
+function clearAttendanceForm(){
+
+  document.getElementById(
+    "attDate"
+  ).value=today();
+
+  document.getElementById(
+    "attPerson"
+  ).value="";
+
+  document.getElementById(
+    "attDepartment"
+  ).value="";
+
+  document.getElementById(
+    "attIn"
+  ).value="";
+
+  document.getElementById(
+    "attOut"
+  ).value="";
+
+  document.getElementById(
+    "attRemarks"
+  ).value="";
+
+  attendanceStatus="Present";
+
+  document.querySelectorAll(
+    ".status-btn"
+  ).forEach(b=>{
+    b.classList.toggle(
+      "active",
+      b.dataset.status==="Present"
+    );
+  });
+
+}
+
+
+function getFilteredAttendance(){
+
+  const search=
+    document.getElementById(
+      "attSearch"
+    ).value.toLowerCase().trim();
+
+  const from=
+    document.getElementById(
+      "attFrom"
+    ).value;
+
+  const to=
+    document.getElementById(
+      "attTo"
+    ).value;
+
+  const status=
+    document.getElementById(
+      "attFilterStatus"
+    ).value;
+
+
+  return attendanceData.filter(r=>{
+
+    if(from && r.date<from)
+      return false;
+
+    if(to && r.date>to)
+      return false;
+
+    if(status &&
+       r.status!==status)
+      return false;
+
+
+    if(search){
+
+      const text=[
+        r.date,
+        r.person,
+        r.department,
+        r.status,
+        r.remarks
+      ]
+      .join(" ")
+      .toLowerCase();
+
+      if(!text.includes(search))
+        return false;
+
+    }
+
+    return true;
+
+  });
+
+}
+
+
+function statusBadge(status){
+
+  let cls="present";
+
+  if(status==="Absent")
+    cls="absent";
+
+  if(status==="Half Day")
+    cls="halfday";
+
+  if(status==="Leave")
+    cls="leave";
+
+  if(status==="Work From Home")
+    cls="wfh";
+
+
+  return `<span class="badge ${cls}">
+    ${escapeHTML(status)}
+  </span>`;
+
+}
+
+
+function renderAttendance(){
+
+  const list=
+    getFilteredAttendance();
+
+  const body=
+    document.getElementById(
+      "attendanceTable"
+    );
+
+  body.innerHTML="";
+
+
+  if(!list.length){
+
+    body.innerHTML=
+      '<tr><td colspan="9" class="empty">'+
+      'No attendance records found.'+
+      '</td></tr>';
+
+  }
+
+
+  list.forEach(r=>{
+
+    const index=
+      attendanceData.indexOf(r);
+
+    const tr=
+      document.createElement("tr");
+
+
+    tr.innerHTML=`
+
+      <td>${escapeHTML(r.date)}</td>
+
+      <td><b>${escapeHTML(r.person)}</b></td>
+
+      <td>${escapeHTML(r.department)}</td>
+
+      <td>${statusBadge(r.status)}</td>
+
+      <td>${escapeHTML(r.inTime)}</td>
+
+      <td>${escapeHTML(r.outTime)}</td>
+
+      <td>${Number(r.hours||0).toFixed(2)}</td>
+
+      <td>${escapeHTML(r.remarks)}</td>
+
+      <td>
+        <button class="delete-btn"
+          onclick="deleteAttendance(${index})">
+          X
+        </button>
+      </td>
+
+    `;
+
+
+    body.appendChild(tr);
+
+  });
+
+
+  document.getElementById(
+    "attCount"
+  ).textContent=list.length;
+
+}
+
+
+function deleteAttendance(index){
+
+  if(!confirm(
+    "Delete this attendance record?"
+  ))
+    return;
+
+  attendanceData.splice(index,1);
+
+  saveData();
+
+  renderAttendance();
+
+  refreshDashboard();
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function refreshDashboard(){
+
+  const workToday=
+    workData.filter(r=>r.date===today());
+
+  const attToday=
+    attendanceData.filter(r=>r.date===today());
+
+
+  document.getElementById(
+    "dashTasks"
+  ).textContent=
+    workToday.length;
+
+
+  document.getElementById(
+    "dashTotal"
+  ).textContent=
+    workToday.reduce(
+      (s,r)=>s+Number(r.cost||0),
+      0
+    );
+
+
+  document.getElementById(
+    "dashPresent"
+  ).textContent=
+    attToday.filter(
+      r=>r.status==="Present"||
+         r.status==="Work From Home"
+    ).length;
+
+
+  document.getElementById(
+    "dashAbsent"
+  ).textContent=
+    attToday.filter(
+      r=>r.status==="Absent"
+    ).length;
+
+
+  document.getElementById(
+    "dashHours"
+  ).textContent=
+    attToday.reduce(
+      (s,r)=>s+Number(r.hours||0),
+      0
+    ).toFixed(2);
+
+
+  renderDashboardChart();
+
+  renderTodaySummary();
+
+}
+
+
+function renderTodaySummary(){
+
+  const workToday=
+    workData.filter(
+      r=>r.date===today()
+    );
+
+  const attToday=
+    attendanceData.filter(
+      r=>r.date===today()
+    );
+
+
+  document.getElementById(
+    "todaySummary"
+  ).innerHTML=`
+
+    <div class="grid2">
+
+      <div>
+
+        <h4>📝 Work Today</h4>
+
+        <p>
+          Records:
+          <b>${workToday.length}</b>
+        </p>
+
+        <p>
+          Total:
+          <b>
+            ${workToday.reduce(
+              (s,r)=>s+Number(r.cost||0),
+              0
+            )}
+          </b>
+        </p>
+
+      </div>
+
+
+      <div>
+
+        <h4>👥 Attendance Today</h4>
+
+        <p>
+          Records:
+          <b>${attToday.length}</b>
+        </p>
+
+        <p>
+          Present/WFH:
+          <b>
+            ${attToday.filter(
+              r=>r.status==="Present"||
+                 r.status==="Work From Home"
+            ).length}
+          </b>
+        </p>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+function renderDashboardChart(){
+
+  if(dashboardChart)
+    dashboardChart.destroy();
+
+
+  const days={};
+
+  workData.forEach(r=>{
+
+    days[r.date]=
+      (days[r.date]||0)+
+      Number(r.cost||0);
+
+  });
+
+
+  const keys=
+    Object.keys(days)
+      .sort()
+      .slice(-14);
+
+
+  dashboardChart=
+    new Chart(
+      document.getElementById(
+        "dashboardChart"
+      ),
+      {
+
+        type:"bar",
+
+        data:{
+
+          labels:keys,
+
+          datasets:[{
+
+            label:"Work Count / Amount",
+
+            data:keys.map(
+              k=>days[k]
+            ),
+
+            borderWidth:2
+
+          }]
+
+        },
+
+        options:{
+
+          responsive:true,
+
+          maintainAspectRatio:false,
+
+          scales:{
+            y:{
+              beginAtZero:true
+            }
+          }
+
+        }
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   COMBINED RECORDS
+========================================================= */
+
+function renderCombinedRecords(){
+
+  const search=
+    document.getElementById(
+      "globalSearch"
+    ).value.toLowerCase().trim();
+
+  const body=
+    document.getElementById(
+      "combinedTable"
+    );
+
+  body.innerHTML="";
+
+
+  const records=[];
+
+
+  workData.forEach(r=>{
+
+    records.push({
+
+      date:r.date,
+
+      record:"Work",
+
+      name:r.title,
+
+      category:r.category,
+
+      status:r.type,
+
+      time:r.time,
+
+      value:r.cost,
+
+      text:[
+        r.date,
+        r.title,
+        r.desc,
+        r.category,
+        r.type,
+        r.time
+      ].join(" ")
+
+    });
+
+  });
+
+
+  attendanceData.forEach(r=>{
+
+    records.push({
+
+      date:r.date,
+
+      record:"Attendance",
+
+      name:r.person,
+
+      category:r.department,
+
+      status:r.status,
+
+      time:
+        (r.inTime||"")+" - "+
+        (r.outTime||""),
+
+      value:r.hours,
+
+      text:[
+        r.date,
+        r.person,
+        r.department,
+        r.status,
+        r.remarks
+      ].join(" ")
+
+    });
+
+  });
+
+
+  const filtered=records
+    .filter(r=>
+      !search ||
+      r.text.toLowerCase()
+        .includes(search)
+    )
+    .sort(
+      (a,b)=>
+        b.date.localeCompare(a.date)
+    );
+
+
+  if(!filtered.length){
+
+    body.innerHTML=
+      '<tr><td colspan="7" class="empty">'+
+      'No records found.'+
+      '</td></tr>';
+
+  }
+
+
+  filtered.forEach(r=>{
+
+    const tr=
+      document.createElement("tr");
+
+    tr.innerHTML=`
+
+      <td>${escapeHTML(r.date)}</td>
+
+      <td><b>${escapeHTML(r.record)}</b></td>
+
+      <td>${escapeHTML(r.name)}</td>
+
+      <td>${escapeHTML(r.category)}</td>
+
+      <td>${escapeHTML(r.status)}</td>
+
+      <td>${escapeHTML(r.time)}</td>
+
+      <td>${escapeHTML(r.value)}</td>
+
+    `;
+
+    body.appendChild(tr);
+
+  });
+
+}
+
+
+/* =========================================================
+   REPORTS
+========================================================= */
+
+function getWeekKey(date){
+
+  const d=new Date(date+"T00:00:00");
+
+  d.setHours(0,0,0,0);
+
+  d.setDate(
+    d.getDate()+
+    3-
+    (d.getDay()+6)%7
+  );
+
+  const w1=
+    new Date(
+      d.getFullYear(),
+      0,
+      4
+    );
+
+  const n=
+    1+
+    Math.round(
+      (
+        (d-w1)/86400000-
+        3+
+        (w1.getDay()+6)%7
+      )/7
+    );
+
+  return d.getFullYear()+
+    "-W"+
+    String(n).padStart(2,"0");
+
+}
+
+
+function reportKey(date,type){
+
+  if(type==="day")
+    return date;
+
+  if(type==="month")
+    return date.slice(0,7);
+
+  if(type==="year")
+    return date.slice(0,4);
+
+  if(type==="week")
+    return getWeekKey(date);
+
+}
+
+
+function renderReports(){
+
+  const from=
+    document.getElementById(
+      "reportFrom"
+    ).value;
+
+  const to=
+    document.getElementById(
+      "reportTo"
+    ).value;
+
+  const type=
+    document.getElementById(
+      "reportView"
+    ).value;
+
+
+  const works=
+    workData.filter(r=>
+      (!from||r.date>=from)&&
+      (!to||r.date<=to)
+    );
+
+
+  const groups={};
+
+  works.forEach(r=>{
+
+    const key=
+      reportKey(r.date,type);
+
+    groups[key]=
+      (groups[key]||0)+
+      Number(r.cost||0);
+
+  });
+
+
+  const keys=
+    Object.keys(groups).sort();
+
+
+  if(workChart)
+    workChart.destroy();
+
+
+  workChart=
+    new Chart(
+      document.getElementById(
+        "workChart"
+      ),
+      {
+
+        type:type==="day"?
+          "line":"bar",
+
+        data:{
+
+          labels:keys,
+
+          datasets:[{
+
+            label:"Work Total",
+
+            data:keys.map(
+              k=>groups[k]
+            ),
+
+            borderWidth:2
+
+          }]
+
+        },
+
+        options:{
+
+          responsive:true,
+
+          maintainAspectRatio:false,
+
+          scales:{
+            y:{
+              beginAtZero:true
+            }
+          }
+
+        }
+
+      }
+    );
+
+
+  renderAttendanceReport(
+    from,
+    to
+  );
+
+}
+
+
+function renderAttendanceReport(
+  from,
+  to
+){
+
+  const list=
+    attendanceData.filter(r=>
+      (!from||r.date>=from)&&
+      (!to||r.date<=to)
+    );
+
+
+  const summary={
+
+    Present:0,
+
+    Absent:0,
+
+    "Half Day":0,
+
+    Leave:0,
+
+    "Work From Home":0
+
+  };
+
+
+  list.forEach(r=>{
+
+    if(summary[r.status]!==undefined)
+      summary[r.status]++;
+
+  });
+
+
+  document.getElementById(
+    "attendanceSummary"
+  ).innerHTML=`
+
+    <div class="grid">
+
+      <div class="stat">
+        <div class="stat-value">
+          ${summary.Present}
+        </div>
+        <div class="stat-label">
+          Present
+        </div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-value">
+          ${summary.Absent}
+        </div>
+        <div class="stat-label">
+          Absent
+        </div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-value">
+          ${summary["Half Day"]}
+        </div>
+        <div class="stat-label">
+          Half Day
+        </div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-value">
+          ${summary.Leave}
+        </div>
+        <div class="stat-label">
+          Leave
+        </div>
+      </div>
+
+    </div>
+
+  `;
+
+
+  if(attendanceChart)
+    attendanceChart.destroy();
+
+
+  attendanceChart=
+    new Chart(
+      document.getElementById(
+        "attendanceChart"
+      ),
+      {
+
+        type:"doughnut",
+
+        data:{
+
+          labels:Object.keys(summary),
+
+          datasets:[{
+
+            data:Object.values(summary),
+
+            borderWidth:2
+
+          }]
+
+        },
+
+        options:{
+          responsive:true,
+          maintainAspectRatio:false
+        }
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   CSV
+========================================================= */
+
+function csvEscape(v){
+
+  return '"'+
+    String(v??"")
+      .replace(/"/g,'""')+
+    '"';
+
+}
+
+
+function downloadFile(
+  content,
+  filename,
+  type
+){
+
+  const blob=
+    new Blob(
+      [content],
+      {type}
+    );
+
+  const url=
+    URL.createObjectURL(blob);
+
+  const a=
+    document.createElement("a");
+
+  a.href=url;
+
+  a.download=filename;
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  a.remove();
+
+  URL.revokeObjectURL(url);
+
+}
+
+
+/* WORK CSV */
+
+function exportWorkCSV(){
+
+  if(!workData.length)
+    return alert("No work data.");
+
+  let csv=
+    "date,cost,title,description,time,category,type\n";
+
+
+  workData.forEach(r=>{
+
+    csv+=
+      [
+        r.date,
+        r.cost,
+        r.title,
+        r.desc,
+        r.time,
+        r.category,
+        r.type
+      ]
+      .map(csvEscape)
+      .join(",")+
+      "\n";
+
+  });
+
+
+  downloadFile(
+    csv,
+    "work-records.csv",
+    "text/csv;charset=utf-8"
+  );
+
+}
+
+
+/* ATTENDANCE CSV */
+
+function exportAttendanceCSV(){
+
+  if(!attendanceData.length)
+    return alert("No attendance data.");
+
+  let csv=
+    "date,person,department,status,in,out,hours,remarks\n";
+
+
+  attendanceData.forEach(r=>{
+
+    csv+=
+      [
+        r.date,
+        r.person,
+        r.department,
+        r.status,
+        r.inTime,
+        r.outTime,
+        r.hours,
+        r.remarks
+      ]
+      .map(csvEscape)
+      .join(",")+
+      "\n";
+
+  });
+
+
+  downloadFile(
+    csv,
+    "attendance-records.csv",
+    "text/csv;charset=utf-8"
+  );
+
+}
+
+
+/* FULL JSON */
+
+function exportJSON(){
+
+  const obj={
+
+    exportedAt:new Date().toISOString(),
+
+    work:workData,
+
+    attendance:attendanceData
+
+  };
+
+
+  downloadFile(
+
+    JSON.stringify(
+      obj,
+      null,
+      2
+    ),
+
+    "work-management-backup.json",
+
+    "application/json"
+
+  );
+
+}
+
+
+/* =========================================================
+   CSV PARSER
+========================================================= */
+
+function parseCSV(text){
+
+  const rows=[];
+
+  let row=[];
+
+  let value="";
+
+  let quoted=false;
+
+
+  for(let i=0;i<text.length;i++){
+
+    const c=text[i];
+
+    const next=text[i+1];
+
+
+    if(c==='"' &&
+       quoted &&
+       next==='"'){
+
+      value+='"';
+
+      i++;
+
+      continue;
+
+    }
+
+
+    if(c==='"'){
+
+      quoted=!quoted;
+
+      continue;
+
+    }
+
+
+    if(c===","&&!quoted){
+
+      row.push(value);
+
+      value="";
+
+      continue;
+
+    }
+
+
+    if(
+      (c==="\n"||c==="\r")&&
+      !quoted
+    ){
+
+      if(c==="\r"&&next==="\n")
+        i++;
+
+      row.push(value);
+
+      value="";
+
+      if(row.length)
+        rows.push(row);
+
+      row=[];
+
+      continue;
+
+    }
+
+
+    value+=c;
+
+  }
+
+
+  if(value!==""||row.length){
+
+    row.push(value);
+
+    rows.push(row);
+
+  }
+
+
+  return rows;
+
+}
+
+
+/* =========================================================
+   IMPORT WORK CSV
+========================================================= */
+
+function importWorkCSV(event){
+
+  const file=
+    event.target.files[0];
+
+  if(!file)return;
+
+
+  const reader=
+    new FileReader();
+
+
+  reader.onload=e=>{
+
+    const rows=
+      parseCSV(
+        e.target.result
+          .replace(/^\uFEFF/,"")
+      );
+
+
+    if(rows.length<2)
+      return alert(
+        "No records found."
+      );
+
+
+    const header=
+      rows[0].map(
+        h=>h.trim().toLowerCase()
+      );
+
+
+    const idx=name=>
+      header.indexOf(name);
+
+
+    let count=0;
+
+
+    for(let i=1;i<rows.length;i++){
+
+      const r=rows[i];
+
+      const obj={
+
+        id:Date.now()+Math.random(),
+
+        date:r[idx("date")]||"",
+
+        cost:Number(
+          r[idx("cost")]
+        )||0,
+
+        title:r[idx("title")]||"",
+
+        desc:r[idx("description")]||"",
+
+        time:r[idx("time")]||"",
+
+        category:r[idx("category")]||"Other",
+
+        type:r[idx("type")]||"Others"
+
+      };
+
+
+      if(!obj.date||
+         !obj.title)
+        continue;
+
+
+      workData.push(obj);
+
+      count++;
+
+    }
+
+
+    saveData();
+
+    renderWork();
+
+    refreshDashboard();
+
+    alert(
+      count+
+      " work record(s) imported."
+    );
+
+    event.target.value="";
+
+  };
+
+
+  reader.readAsText(file);
+
+}
+
+
+/* =========================================================
+   IMPORT ATTENDANCE CSV
+========================================================= */
+
+function importAttendanceCSV(event){
+
+  const file=
+    event.target.files[0];
+
+  if(!file)return;
+
+
+  const reader=
+    new FileReader();
+
+
+  reader.onload=e=>{
+
+    const rows=
+      parseCSV(
+        e.target.result
+          .replace(/^\uFEFF/,"")
+      );
+
+
+    if(rows.length<2)
+      return alert(
+        "No records found."
+      );
+
+
+    const header=
+      rows[0].map(
+        h=>h.trim().toLowerCase()
+      );
+
+
+    const idx=name=>
+      header.indexOf(name);
+
+
+    let count=0;
+
+
+    for(let i=1;i<rows.length;i++){
+
+      const r=rows[i];
+
+      const obj={
+
+        id:Date.now()+Math.random(),
+
+        date:r[idx("date")]||"",
+
+        person:r[idx("person")]||"",
+
+        department:
+          r[idx("department")]||"",
+
+        status:
+          r[idx("status")]||"Present",
+
+        inTime:
+          r[idx("in")]||"",
+
+        outTime:
+          r[idx("out")]||"",
+
+        hours:Number(
+          r[idx("hours")]
+        )||0,
+
+        remarks:
+          r[idx("remarks")]||""
+
+      };
+
+
+      if(!obj.date||
+         !obj.person)
+        continue;
+
+
+      attendanceData.push(obj);
+
+      count++;
+
+    }
+
+
+    saveData();
+
+    renderAttendance();
+
+    refreshDashboard();
+
+    alert(
+      count+
+      " attendance record(s) imported."
+    );
+
+    event.target.value="";
+
+  };
+
+
+  reader.readAsText(file);
+
+}
+
+
+/* =========================================================
+   DELETE DATE RANGE
+========================================================= */
+
+function deleteWorkByRange(){
+
+  const from=
+    prompt(
+      "Enter From Date (YYYY-MM-DD):",
+      document.getElementById(
+        "workFrom"
+      ).value
+    );
+
+  if(!from)return;
+
+
+  const to=
+    prompt(
+      "Enter To Date (YYYY-MM-DD):",
+      document.getElementById(
+        "workTo"
+      ).value
+    );
+
+  if(!to)return;
+
+
+  if(from>to)
+    return alert(
+      "From date cannot be after To date."
+    );
+
+
+  const before=
+    workData.length;
+
+
+  workData=
+    workData.filter(
+      r=>r.date<from||
+         r.date>to
+    );
+
+
+  saveData();
+
+  renderWork();
+
+  refreshDashboard();
+
+
+  alert(
+    before-workData.length+
+    " work record(s) deleted."
+  );
+
+}
+
+
+function deleteAttendanceByRange(){
+
+  const from=
+    prompt(
+      "Enter From Date (YYYY-MM-DD):"
+    );
+
+  if(!from)return;
+
+
+  const to=
+    prompt(
+      "Enter To Date (YYYY-MM-DD):"
+    );
+
+  if(!to)return;
+
+
+  if(from>to)
+    return alert(
+      "From date cannot be after To date."
+    );
+
+
+  const before=
+    attendanceData.length;
+
+
+  attendanceData=
+    attendanceData.filter(
+      r=>r.date<from||
+         r.date>to
+    );
+
+
+  saveData();
+
+  renderAttendance();
+
+  refreshDashboard();
+
+
+  alert(
+    before-attendanceData.length+
+    " attendance record(s) deleted."
+  );
+
+}
+
+
+/* =========================================================
+   CLEAR EVERYTHING
+========================================================= */
+
+function clearEverything(){
+
+  if(!confirm(
+    "WARNING!\n\n"+
+    "This will delete ALL work and attendance data.\n\n"+
+    "Continue?"
+  ))
+    return;
+
+
+  if(!confirm(
+    "Are you absolutely sure?"
+  ))
+    return;
+
+
+  workData=[];
+
+  attendanceData=[];
+
+  saveData();
+
+  renderWork();
+
+  renderAttendance();
+
+  renderCombinedRecords();
+
+  refreshDashboard();
+
+  alert("All data deleted.");
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+window.addEventListener(
+  "DOMContentLoaded",
+  initialize
+);
+
+</script>
+
+</body>
+</html>
+
