@@ -120,7 +120,7 @@
             <div class="bg-blue-600 text-white p-2 rounded-lg text-lg">🌿</div>
             <div>
                 <h1 class="text-base md:text-xl tracking-tight">Nature Scheduler</h1>
-                <p class="text-[10px] md:text-xs opacity-75 hidden sm:block">10 Nature Themes & Responsive Separate GUIs</p>
+                <p class="text-[10px] md:text-xs opacity-75 hidden sm:block">IndexedDB Nature Scheduler & 10 Themes</p>
             </div>
         </div>
 
@@ -163,7 +163,7 @@
             <div id="calendar" class="flex-1 min-w-[320px]"></div>
         </section>
 
-        <!-- BOTTOM SECTION: Separated Separate GUI Settings Cards -->
+        <!-- BOTTOM SECTION: Separated GUI Settings Cards -->
         <section class="h-[42%] flex-1 p-3 md:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 overflow-y-auto bg-black/5">
             
             <!-- GUI Card 1: Nature Themes (10 Options) -->
@@ -294,7 +294,7 @@
                 </div>
 
                 <div class="flex items-center justify-between pt-3 border-t border-black/10">
-                    <button type="button" id="deleteEventBtn" onclick="deleteCurrentEvent()" class="hidden text-red-500 text-xs md:text-sm">Delete</button>
+                    <button type="button" id="deleteEventBtn" onclick="deleteCurrentEvent()" class="hidden text-red-500 text-xs md:text-sm font-bold">Delete</button>
                     <div class="flex space-x-2 ml-auto">
                         <button type="button" onclick="closeModal()" class="px-3 py-2 text-xs md:text-sm opacity-80">Cancel</button>
                         <button type="submit" class="px-4 py-2 text-xs md:text-sm bg-blue-600 text-white rounded-lg shadow">Save Event</button>
@@ -307,6 +307,7 @@
     <!-- Script Application Logic -->
     <script>
         let calendar;
+        let db;
         let activeEventToEdit = null;
         let alarmCheckInterval = null;
         let triggeredAlarms = new Set();
@@ -337,7 +338,71 @@
             'theme-volcano': { icon: '🌋', condition: 'Basalt Warmth • 35°C', location: 'Basalt Stone' }
         };
 
-        document.addEventListener('DOMContentLoaded', function() {
+        // IndexedDB Helper Functions
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('NatureSchedulerDB', 1);
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+                    if (!database.objectStoreNames.contains('events')) {
+                        database.createObjectStore('events', { keyPath: 'id' });
+                    }
+                };
+            });
+        }
+
+        function getAllEventsFromDB() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction('events', 'readonly');
+                const store = transaction.objectStore('events');
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function saveEventToDB(eventObj) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction('events', 'readwrite');
+                const store = transaction.objectStore('events');
+                const request = store.put(eventObj);
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function deleteEventFromDB(id) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction('events', 'readwrite');
+                const store = transaction.objectStore('events');
+                const request = store.delete(id);
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function clearAllEventsFromDB() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction('events', 'readwrite');
+                const store = transaction.objectStore('events');
+                const request = store.clear();
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function toLocalDateTimeString(date) {
+            const d = new Date(date);
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
             const calendarEl = document.getElementById('calendar');
             
             const savedTheme = localStorage.getItem('fullcalendar_nature_theme') || 'theme-day';
@@ -349,66 +414,94 @@
                 document.getElementById('audioFileName').innerText = "Loaded custom audio ✓";
             }
 
-            let savedEvents = JSON.parse(localStorage.getItem('fullcalendar_nature_events')) || defaultEvents;
-            const isMobile = window.innerWidth < 768;
-
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: isMobile ? 'listWeek' : 'dayGridMonth',
-                headerToolbar: false, // Custom toolbar used instead
-                navLinks: true,
-                editable: true,
-                selectable: true,
-                nowIndicator: true,
-                dayMaxEvents: true,
-                events: savedEvents,
-
-                select: function(info) {
-                    openAddEventModal(info.startStr, info.endStr);
-                    calendar.unselect();
-                },
-                eventClick: function(info) {
-                    openEditEventModal(info.event);
-                },
-                eventDrop: function(info) { persistCalendarEvents(); },
-                eventResize: function(info) { persistCalendarEvents(); },
-
-                dateDidMount: function(arg) {
-                    const cellEl = arg.el;
-                    const dateStr = arg.date.toISOString().split('T')[0];
-
-                    cellEl.addEventListener('mouseenter', (e) => {
-                        const dayEvents = calendar.getEvents().filter(ev => {
-                            if (!ev.start) return false;
-                            return ev.start.toISOString().split('T')[0] === dateStr;
-                        });
-
-                        const tooltip = document.getElementById('dateTooltip');
-                        let content = `<div class="font-bold border-b border-white/20 pb-1 mb-1">${arg.date.toDateString()}</div>`;
-                        if (dayEvents.length > 0) {
-                            content += dayEvents.map(ev => `<div>• ${ev.title}</div>`).join('');
-                        } else {
-                            content += `<div class="opacity-75">No scheduled events</div>`;
-                        }
-
-                        tooltip.innerHTML = content;
-                        tooltip.style.left = `${e.pageX + 12}px`;
-                        tooltip.style.top = `${e.pageY + 12}px`;
-                        tooltip.classList.remove('hidden');
-                    });
-                    cellEl.addEventListener('mousemove', (e) => {
-                        const tooltip = document.getElementById('dateTooltip');
-                        tooltip.style.left = `${e.pageX + 12}px`;
-                        tooltip.style.top = `${e.pageY + 12}px`;
-                    });
-                    cellEl.addEventListener('mouseleave', () => {
-                        document.getElementById('dateTooltip').classList.add('hidden');
-                    });
+            try {
+                await initDB();
+                let savedEvents = await getAllEventsFromDB();
+                if (!savedEvents || savedEvents.length === 0) {
+                    for (const defEvent of defaultEvents) {
+                        await saveEventToDB(defEvent);
+                    }
+                    savedEvents = defaultEvents;
                 }
-            });
 
-            calendar.render();
-            startAlarmSystem();
+                calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    headerToolbar: false,
+                    navLinks: true,
+                    editable: true,
+                    selectable: true,
+                    nowIndicator: true,
+                    dayMaxEvents: true,
+                    events: savedEvents,
+
+                    select: function(info) {
+                        openAddEventModal(info.startStr, info.endStr);
+                        calendar.unselect();
+                    },
+                    eventClick: function(info) {
+                        openEditEventModal(info.event);
+                    },
+                    eventDrop: async function(info) {
+                        await persistEvent(info.event);
+                    },
+                    eventResize: async function(info) {
+                        await persistEvent(info.event);
+                    },
+
+                    dateDidMount: function(arg) {
+                        const cellEl = arg.el;
+                        const dateStr = arg.date.toISOString().split('T')[0];
+
+                        cellEl.addEventListener('mouseenter', (e) => {
+                            const dayEvents = calendar.getEvents().filter(ev => {
+                                if (!ev.start) return false;
+                                return ev.start.toISOString().split('T')[0] === dateStr;
+                            });
+
+                            const tooltip = document.getElementById('dateTooltip');
+                            let content = `<div class="font-bold border-b border-white/20 pb-1 mb-1">${arg.date.toDateString()}</div>`;
+                            if (dayEvents.length > 0) {
+                                content += dayEvents.map(ev => `<div>• ${ev.title}</div>`).join('');
+                            } else {
+                                content += `<div class="opacity-75">No scheduled events</div>`;
+                            }
+
+                            tooltip.innerHTML = content;
+                            tooltip.style.left = `${e.pageX + 12}px`;
+                            tooltip.style.top = `${e.pageY + 12}px`;
+                            tooltip.classList.remove('hidden');
+                        });
+                        cellEl.addEventListener('mousemove', (e) => {
+                            const tooltip = document.getElementById('dateTooltip');
+                            tooltip.style.left = `${e.pageX + 12}px`;
+                            tooltip.style.top = `${e.pageY + 12}px`;
+                        });
+                        cellEl.addEventListener('mouseleave', () => {
+                            document.getElementById('dateTooltip').classList.add('hidden');
+                        });
+                    }
+                });
+
+                calendar.render();
+                startAlarmSystem();
+            } catch (err) {
+                console.error("Initialization error with IndexedDB:", err);
+            }
         });
+
+        async function persistEvent(eventInstance) {
+            const eventObj = {
+                id: eventInstance.id,
+                title: eventInstance.title,
+                start: eventInstance.startStr,
+                end: eventInstance.endStr,
+                allDay: eventInstance.allDay,
+                backgroundColor: eventInstance.backgroundColor,
+                borderColor: eventInstance.borderColor,
+                extendedProps: eventInstance.extendedProps
+            };
+            await saveEventToDB(eventObj);
+        }
 
         function changeCalendarView(viewName) {
             calendar.changeView(viewName);
@@ -434,20 +527,6 @@
             document.getElementById('weatherIcon').innerText = weather.icon;
             document.getElementById('weatherCondition').innerText = weather.condition;
             document.getElementById('weatherLocation').innerText = weather.location;
-        }
-
-        function persistCalendarEvents() {
-            const events = calendar.getEvents().map(e => ({
-                id: e.id,
-                title: e.title,
-                start: e.startStr,
-                end: e.endStr,
-                allDay: e.allDay,
-                backgroundColor: e.backgroundColor,
-                borderColor: e.borderColor,
-                extendedProps: e.extendedProps
-            }));
-            localStorage.setItem('fullcalendar_nature_events', JSON.stringify(events));
         }
 
         // Custom Audio Handlers
@@ -497,19 +576,9 @@
             osc.stop(audioCtx.currentTime + 0.6);
         }
 
-        // Backup and Restore (JSON Export & Import)
-        function exportCalendarJSON() {
-            const events = calendar.getEvents().map(e => ({
-                id: e.id,
-                title: e.title,
-                start: e.startStr,
-                end: e.endStr,
-                allDay: e.allDay,
-                backgroundColor: e.backgroundColor,
-                borderColor: e.borderColor,
-                extendedProps: e.extendedProps
-            }));
-
+        // Backup and Restore (JSON Export & Import using IndexedDB)
+        async function exportCalendarJSON() {
+            const events = await getAllEventsFromDB();
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(events, null, 2));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
@@ -519,24 +588,26 @@
             downloadAnchor.remove();
         }
 
-        function importCalendarJSON(event) {
+        async function importCalendarJSON(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = async function(e) {
                 try {
                     const importedEvents = JSON.parse(e.target.result);
                     if (!Array.isArray(importedEvents)) {
                         throw new Error("Invalid JSON format");
                     }
 
+                    await clearAllEventsFromDB();
                     calendar.getEvents().forEach(ev => ev.remove());
-                    importedEvents.forEach(ev => {
-                        calendar.addEvent(ev);
-                    });
 
-                    persistCalendarEvents();
+                    for (const ev of importedEvents) {
+                        await saveEventToDB(ev);
+                        calendar.addEvent(ev);
+                    }
+
                     alert(`Successfully imported ${importedEvents.length} events!`);
                 } catch (error) {
                     alert("Failed to parse JSON backup file. Make sure it's a valid calendar export.");
@@ -575,7 +646,7 @@
             document.getElementById('alarmBanner').classList.add('hidden');
         }
 
-        // Modal Form & Recurrence Logic
+        // Modal Form & Recurrence Logic with Current Date Default
         function openAddEventModal(startStr = '', endStr = '') {
             activeEventToEdit = null;
             document.getElementById('modalTitle').innerText = 'Add Event';
@@ -583,8 +654,11 @@
             document.getElementById('eventTitleInput').value = '';
             
             const now = new Date();
-            document.getElementById('eventStartInput').value = startStr ? startStr.slice(0, 16) : now.toISOString().slice(0, 16);
-            document.getElementById('eventEndInput').value = endStr ? endStr.slice(0, 16) : new Date(now.getTime() + 3600000).toISOString().slice(0, 16);
+            const defaultStart = startStr ? startStr.slice(0, 16) : toLocalDateTimeString(now);
+            const defaultEnd = endStr ? endStr.slice(0, 16) : toLocalDateTimeString(new Date(now.getTime() + 3600000));
+
+            document.getElementById('eventStartInput').value = defaultStart;
+            document.getElementById('eventEndInput').value = defaultEnd;
             document.getElementById('eventCategoryInput').value = 'Work';
             document.getElementById('eventRecurrenceInput').value = 'none';
             
@@ -614,7 +688,7 @@
             activeEventToEdit = null;
         }
 
-        function handleFormSubmit(e) {
+        async function handleFormSubmit(e) {
             e.preventDefault();
             const title = document.getElementById('eventTitleInput').value;
             const startStr = document.getElementById('eventStartInput').value;
@@ -633,16 +707,22 @@
                 activeEventToEdit.setExtendedProp('category', category);
                 activeEventToEdit.setExtendedProp('recurrence', recurrence);
                 triggeredAlarms.delete(activeEventToEdit.id);
+
+                await persistEvent(activeEventToEdit);
             } else {
-                calendar.addEvent({
-                    id: String(Date.now()),
+                const newId = String(Date.now());
+                const newEventData = {
+                    id: newId,
                     title: title,
                     start: startStr,
                     end: endStr ? endStr : null,
                     backgroundColor: color,
                     borderColor: color,
                     extendedProps: { category: category, recurrence: recurrence }
-                });
+                };
+
+                calendar.addEvent(newEventData);
+                await saveEventToDB(newEventData);
 
                 if (recurrence !== 'none') {
                     let baseStartDate = new Date(startStr);
@@ -663,7 +743,7 @@
                             if (nextEnd) nextEnd.setMonth(nextEnd.getMonth() + i);
                         }
 
-                        calendar.addEvent({
+                        const recurringEventData = {
                             id: String(Date.now() + i),
                             title: title,
                             start: nextStart.toISOString(),
@@ -671,19 +751,22 @@
                             backgroundColor: color,
                             borderColor: color,
                             extendedProps: { category: category, recurrence: recurrence }
-                        });
+                        };
+
+                        calendar.addEvent(recurringEventData);
+                        await saveEventToDB(recurringEventData);
                     }
                 }
             }
 
-            persistCalendarEvents();
             closeModal();
         }
 
-        function deleteCurrentEvent() {
+        async function deleteCurrentEvent() {
             if (activeEventToEdit) {
+                const eventId = activeEventToEdit.id;
                 activeEventToEdit.remove();
-                persistCalendarEvents();
+                await deleteEventFromDB(eventId);
                 closeModal();
             }
         }
@@ -696,9 +779,9 @@
             });
         }
 
-        function clearAllEvents() {
+        async function clearAllEvents() {
             if (confirm("Remove all saved entries?")) {
-                localStorage.removeItem('fullcalendar_nature_events');
+                await clearAllEventsFromDB();
                 calendar.getEvents().forEach(ev => ev.remove());
                 triggeredAlarms.clear();
             }
