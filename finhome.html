@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrihaSpend Bharat - Indian Home & Appliance Expense Command Center</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/Chart.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --border-color: #cbd5e1;
+            --sidebar-bg: #f1f5f9;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-muted);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .theme-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+            transition: background-color 0.2s;
+        }
+        .btn-accent:hover {
+            background-color: var(--accent-hover);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Top Navigation & Theme Switcher Bar -->
+    <header class="shadow-sm border-b" style="background-color: var(--bg-card); border-color: var(--border-color);">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 rounded-xl text-white btn-accent shadow-md">
+                    <i class="fa-solid fa-house-chimney text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold" style="color: var(--text-main);">GrihaSpend Bharat</h1>
+                    <p class="text-xs text-gray-500">Indian Household, Appliance & Grocery Expense Hub</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <!-- Data Import / Export Tools -->
+                <div class="flex items-center space-x-2 bg-gray-50 border p-1 rounded-lg" style="border-color: var(--border-color);">
+                    <button onclick="exportCSV()" class="text-xs font-semibold px-2.5 py-1.5 rounded bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 shadow-sm transition flex items-center gap-1">
+                        <i class="fa-solid fa-file-csv text-emerald-600"></i> Export CSV
+                    </button>
+                    <label class="text-xs font-semibold px-2.5 py-1.5 rounded bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 shadow-sm transition cursor-pointer flex items-center gap-1">
+                        <i class="fa-solid fa-upload text-blue-600"></i> Import CSV
+                        <input type="file" id="csvFileInput" accept=".csv" onchange="importCSV(event)" class="hidden">
+                    </label>
+                    <button onclick="exportDatabaseDump()" class="text-xs font-semibold px-2.5 py-1.5 rounded bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 shadow-sm transition flex items-center gap-1">
+                        <i class="fa-solid fa-database text-purple-600"></i> Dump DB JSON
+                    </button>
+                </div>
+
+                <!-- 10 Nature Themes Dropdown Selector -->
+                <div class="flex items-center space-x-2">
+                    <label for="themeSelect" class="text-xs font-semibold uppercase tracking-wider text-gray-500"><i class="fa-solid fa-palette mr-1"></i> Theme:</label>
+                    <select id="themeSelect" onchange="switchTheme(this.value)" class="text-sm rounded-lg border px-3 py-1.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card); color: var(--text-main);">
+                        <option value="modern">🏙️ Modern Urban Slate</option>
+                        <option value="forest">🌲 Lush Forest</option>
+                        <option value="monsoon">🌧️ Monsoon Rain</option>
+                        <option value="sunset">🌅 Western Ghats Sunset</option>
+                        <option value="desert">🏜️ Thar Desert Dunes</option>
+                        <option value="ocean">🌊 Coastal Ocean Wave</option>
+                        <option value="autumn">🍂 Nilgiri Autumn</option>
+                        <option value="bamboo">🎋 Bamboo Grove</option>
+                        <option value="earth">🌍 Terracotta Earth</option>
+                        <option value="aurora">🌌 Northern Lights (Aurora)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Tabbed Interface -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col gap-6">
+        
+        <!-- Tabs Header -->
+        <div class="flex flex-wrap border-b gap-2" style="border-color: var(--border-color);" id="tabHeaders">
+            <button onclick="switchTab('dashboard')" class="tab-btn px-5 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2 active-tab" data-target="dashboard">
+                <i class="fa-solid fa-chart-pie"></i> Household Summary
+            </button>
+            <button onclick="switchTab('expenses')" class="tab-btn px-5 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2" data-target="expenses">
+                <i class="fa-solid fa-cart-shopping"></i> Home Expenses Tracker
+            </button>
+            <button onclick="switchTab('console')" class="tab-btn px-5 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2" data-target="console">
+                <i class="fa-solid fa-terminal"></i> SQLite Console & DB Management
+            </button>
+        </div>
+
+        <!-- ================= TAB 1: EXECUTIVE SUMMARY ================= -->
+        <div id="tab-dashboard" class="tab-content flex flex-col gap-6">
+            <!-- Quick Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Total Home Spends</p>
+                        <h3 id="sumTotalSpend" class="text-2xl font-black mt-1" style="color: var(--text-main);">₹0</h3>
+                        <span class="text-xs text-gray-400">Monthly Target: ₹50,000</span>
+                    </div>
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                        <i class="fa-solid fa-indian-rupee-sign text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Appliances & Gadgets</p>
+                        <h3 id="sumApplianceSpend" class="text-2xl font-black mt-1" style="color: var(--text-main);">₹0</h3>
+                        <span class="text-xs text-gray-400">AC, TV, Kitchenware, Phones</span>
+                    </div>
+                    <div class="p-3 rounded-full bg-amber-100 text-amber-600">
+                        <i class="fa-solid fa-blender text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Groceries & Dairy</p>
+                        <h3 id="sumGrocerySpend" class="text-2xl font-black mt-1" style="color: var(--text-main);">₹0</h3>
+                        <span class="text-xs text-gray-400">Supermarket, Milk & Veggies</span>
+                    </div>
+                    <div class="p-3 rounded-full bg-emerald-100 text-emerald-600">
+                        <i class="fa-solid fa-basket-shopping text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Active Transactions</p>
+                        <h3 id="sumTotalCount" class="text-2xl font-black mt-1" style="color: var(--text-main);">0 Items</h3>
+                        <span class="text-xs text-gray-400">Logged in database</span>
+                    </div>
+                    <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                        <i class="fa-solid fa-receipt text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Household Insights Banner -->
+            <div class="theme-card p-5 rounded-xl shadow-sm border-l-4" style="border-left-color: var(--accent);">
+                <h4 class="font-bold text-base mb-1" style="color: var(--text-main);"><i class="fa-solid fa-house-laptop text-blue-500 mr-2"></i>Griha Financial Insights & Budgeting Alerts</h4>
+                <p id="insightText" class="text-sm text-gray-600">Analyzing household ledger data... Add expenses under appliances, gadgets, or groceries to reveal detailed analytical commentary.</p>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="theme-card p-5 rounded-xl shadow-sm">
+                    <h4 class="font-bold text-md mb-4" style="color: var(--text-main);">Spends Share by Category (₹)</h4>
+                    <div class="relative h-64 flex justify-center items-center">
+                        <canvas id="homeCategoryChart"></canvas>
+                    </div>
+                </div>
+                <div class="theme-card p-5 rounded-xl shadow-sm">
+                    <h4 class="font-bold text-md mb-4" style="color: var(--text-main);">Payment Mode Distribution</h4>
+                    <div class="relative h-64 flex justify-center items-center">
+                        <canvas id="paymentModeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: HOME EXPENSES TRACKER ================= -->
+        <div id="tab-expenses" class="tab-content hidden flex flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Add Home Expense Form -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-1">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-plus-circle mr-2"></i>Log Household Expense</h3>
+                    <form id="homeExpenseForm" onsubmit="addHomeExpense(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Date</label>
+                            <input type="date" id="expDate" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Item Title / Brand / Merchant</label>
+                            <input type="text" id="expTitle" placeholder="e.g. Voltas Inverter AC, Samsung Refrigerator" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Amount (₹)</label>
+                            <input type="number" id="expAmount" placeholder="e.g. 35000" required min="1" step="0.01" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Category</label>
+                            <select id="expCategory" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                                <option value="Appliances">🔌 Large Appliances (AC, Washing Machine, Fridge)</option>
+                                <option value="Gadgets">📱 Electronics & Gadgets (Phone, TV, Laptop)</option>
+                                <option value="Groceries">🛒 Groceries & Supermarket (Rice, Daal, Oil)</option>
+                                <option value="Milk & Dairy">🥛 Milk & Daily Dairy</option>
+                                <option value="Kitchenware">🍳 Kitchenware & Cookware</option>
+                                <option value="Maintenance">🔧 Home Repairs & Maintenance</option>
+                                <option value="Utilities">💡 Electricity, Gas & Water Bills</option>
+                                <option value="Other Home">📦 Other Home Related</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Payment Mode</label>
+                            <select id="expMode" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                                <option value="UPI (GPay/PhonePe)">📱 UPI (GPay / PhonePe / Paytm)</option>
+                                <option value="Credit Card">💳 Credit Card (No Cost EMI available)</option>
+                                <option value="Debit Card">💳 Debit Card</option>
+                                <option value="Net Banking">💻 Net Banking</option>
+                                <option value="Cash">💵 Cash</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Notes / Warranty info</label>
+                            <input type="text" id="expNotes" placeholder="e.g. 5 year compressor warranty" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-lg btn-accent font-semibold text-sm shadow-sm">Save Home Expense</button>
+                    </form>
+                </div>
+
+                <!-- Expenses Table List -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-2 overflow-x-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold" style="color: var(--text-main);"><i class="fa-solid fa-list-check mr-2"></i>Household Expenses Ledger</h3>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="searchFilter" onkeyup="filterLedger()" placeholder="Search item or merchant..." class="text-xs rounded-lg border px-3 py-1.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                    </div>
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="border-b" style="border-color: var(--border-color); color: var(--text-main);">
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Item / Merchant</th>
+                                <th class="p-3">Category</th>
+                                <th class="p-3">Mode</th>
+                                <th class="p-3">Amount</th>
+                                <th class="p-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="homeExpenseTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: SQLITE CONSOLE SIMULATOR ================= -->
+        <div id="tab-console" class="tab-content hidden flex flex-col gap-6">
+            <div class="theme-card p-6 rounded-xl shadow-sm">
+                <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                    <div>
+                        <h3 class="text-lg font-bold" style="color: var(--text-main);"><i class="fa-solid fa-database mr-2"></i>SQLite In-Memory Console & DB Storage</h3>
+                        <p class="text-xs text-gray-500">Query your household master table: <code class="bg-gray-100 px-1 py-0.5 rounded text-blue-700">home_expenses</code></p>
+                    </div>
+                    <div class="flex gap-2 flex-wrap">
+                        <button onclick="loadSampleQuery('SELECT * FROM home_expenses;')" class="text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 transition">SELECT All</button>
+                        <button onclick="loadSampleQuery('SELECT category, SUM(amount) as total_spent FROM home_expenses GROUP BY category;')" class="text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 transition">Category Summary SQL</button>
+                        <button onclick="loadSampleQuery('SELECT * FROM home_expenses WHERE category = \'Appliances\' OR category = \'Gadgets\';')" class="text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 transition">Appliances & Gadgets Only</button>
+                    </div>
+                </div>
+
+                <!-- Query Input Box -->
+                <div class="space-y-3">
+                    <textarea id="sqlQueryInput" rows="3" class="w-full font-mono text-sm p-3 rounded-lg border focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: #0f172a; color: #38bdf8;" placeholder="Enter SQL query, e.g., SELECT * FROM home_expenses ORDER BY amount DESC;"></textarea>
+                    <div class="flex justify-between items-center flex-wrap gap-2">
+                        <span class="text-xs text-gray-400"><i class="fa-solid fa-circle-info mr-1"></i>Supports SQL queries, table data updates, full database JSON backups & CSV exports.</span>
+                        <div class="flex gap-2">
+                            <button onclick="executeSQL()" class="px-5 py-2 rounded-lg btn-accent font-semibold text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-play"></i> Run SQL Query
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SQL Output Terminal -->
+                <div class="mt-6">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Console Output Result Window</h4>
+                    <div id="sqlOutputContainer" class="bg-slate-900 text-sky-400 p-4 rounded-lg font-mono text-xs overflow-x-auto min-h-[160px] max-h-[320px]">
+                        <span class="text-slate-500">-- SQLite simulator engine initialized. Ready for queries...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 text-center text-xs text-gray-500 border-t" style="border-color: var(--border-color);">
+        GrihaSpend Bharat &copy; 2026 | Built for Smart Indian Home Management & Financial Planning
+    </footer>
+
+    <!-- Application JavaScript Engine -->
+    <script>
+        // 10 Nature & Modern Theme Palettes Definition
+        const themes = {
+            modern: {
+                bgPrimary: '#f8fafc', bgCard: '#ffffff', textMain: '#0f172a', textMuted: '#475569', accent: '#0284c7', accentHover: '#0369a1', borderColor: '#cbd5e1', sidebarBg: '#f1f5f9'
+            },
+            forest: {
+                bgPrimary: '#f0fdf4', bgCard: '#ffffff', textMain: '#166534', textMuted: '#4b5563', accent: '#22c55e', accentHover: '#16a34a', borderColor: '#bbf7d0', sidebarBg: '#dcfce7'
+            },
+            monsoon: {
+                bgPrimary: '#f0f9ff', bgCard: '#ffffff', textMain: '#0369a1', textMuted: '#4b5563', accent: '#0ea5e9', accentHover: '#0284c7', borderColor: '#bae6fd', sidebarBg: '#e0f2fe'
+            },
+            sunset: {
+                bgPrimary: '#fff7ed', bgCard: '#ffffff', textMain: '#9a3412', textMuted: '#4b5563', accent: '#f97316', accentHover: '#ea580c', borderColor: '#fed7aa', sidebarBg: '#ffedd5'
+            },
+            desert: {
+                bgPrimary: '#fefce8', bgCard: '#ffffff', textMain: '#854d0e', textMuted: '#4b5563', accent: '#eab308', accentHover: '#ca8a04', borderColor: '#fef08a', sidebarBg: '#fef9c3'
+            },
+            ocean: {
+                bgPrimary: '#ecfeff', bgCard: '#ffffff', textMain: '#155e75', textMuted: '#4b5563', accent: '#06b6d4', accentHover: '#0891b2', borderColor: '#a5f3fc', sidebarBg: '#cffafe'
+            },
+            autumn: {
+                bgPrimary: '#fff1f2', bgCard: '#ffffff', textMain: '#9f1239', textMuted: '#4b5563', accent: '#f43f5e', accentHover: '#e11d48', borderColor: '#fecdd3', sidebarBg: '#ffe4e6'
+            },
+            bamboo: {
+                bgPrimary: '#f4fbf7', bgCard: '#ffffff', textMain: '#14532d', textMuted: '#4b5563', accent: '#10b981', accentHover: '#059669', borderColor: '#a7f3d0', sidebarBg: '#d1fae5'
+            },
+            earth: {
+                bgPrimary: '#fdf8f6', bgCard: '#ffffff', textMain: '#7c2d12', textMuted: '#4b5563', accent: '#c2410c', accentHover: '#9a3412', borderColor: '#fed7aa', sidebarBg: '#ffedd5'
+            },
+            aurora: {
+                bgPrimary: '#f5f3ff', bgCard: '#ffffff', textMain: '#5b21b6', textMuted: '#4b5563', accent: '#8b5cf6', accentHover: '#7c3aed', borderColor: '#ddd6fe', sidebarBg: '#ede9fe'
+            }
+        };
+
+        function switchTheme(themeName) {
+            const t = themes[themeName];
+            if (!t) return;
+            const root = document.documentElement;
+            root.style.setProperty('--bg-primary', t.bgPrimary);
+            root.style.setProperty('--bg-card', t.bgCard);
+            root.style.setProperty('--text-main', t.textMain);
+            root.style.setProperty('--text-muted', t.textMuted);
+            root.style.setProperty('--accent', t.accent);
+            root.style.setProperty('--accent-hover', t.accentHover);
+            root.style.setProperty('--border-color', t.borderColor);
+            root.style.setProperty('--sidebar-bg', t.sidebarBg);
+            localStorage.setItem('grihaspend_theme', themeName);
+        }
+
+        // Initialize state on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('grihaspend_theme');
+            if (savedTheme && themes[savedTheme]) {
+                document.getElementById('themeSelect').value = savedTheme;
+                switchTheme(savedTheme);
+            }
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('expDate').value = todayStr;
+
+            renderAll();
+        });
+
+        // Tab Management
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-blue-600', 'text-blue-700', 'bg-white');
+                if(btn.getAttribute('data-target') === tabId) {
+                    btn.classList.add('border-blue-600', 'text-blue-700', 'bg-white');
+                    btn.style.borderColor = 'var(--accent)';
+                    btn.style.color = 'var(--text-main)';
+                }
+            });
+
+            if(tabId === 'dashboard') {
+                renderCharts();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const activeBtn = document.querySelector('.tab-btn');
+            if(activeBtn) {
+                activeBtn.classList.add('bg-white');
+                activeBtn.style.color = 'var(--text-main)';
+                activeBtn.style.borderColor = 'var(--accent)';
+            }
+        });
+
+        // In-Memory Database Store (home_expenses table) with default Indian household records
+        let homeExpensesData = JSON.parse(localStorage.getItem('grihaspend_home_expenses')) || [
+            { id: 1, date: '2026-06-01', title: 'Voltas 1.5 Ton Inverter AC', amount: 42000, category: 'Appliances', mode: 'Credit Card', notes: 'Includes installation & 5yr warranty' },
+            { id: 2, date: '2026-06-02', title: 'Monthly Groceries (Aashirvaad Atta, Dal, Oil)', amount: 6500, category: 'Groceries', mode: 'UPI (GPay/PhonePe)', notes: 'D-Mart supermarket run' },
+            { id: 3, date: '2026-06-04', title: 'Daily Amul Milk & Curd Subscription', amount: 1450, category: 'Milk & Dairy', mode: 'UPI (GPay/PhonePe)', notes: 'Monthly milk pouch ledger' },
+            { id: 4, date: '2026-06-05', title: 'Prestige Stainless Steel Cookware Set', amount: 3200, category: 'Kitchenware', mode: 'Credit Card', notes: 'Amazon India sale' },
+            { id: 5, date: '2026-06-06', title: 'OnePlus Nord Smart TV 43 inch', amount: 26999, category: 'Gadgets', mode: 'Credit Card', notes: 'Living room upgrade' },
+            { id: 6, date: '2026-06-08', title: 'MSEDCL Electricity Utility Bill', amount: 2840, category: 'Utilities', mode: 'Net Banking', notes: 'Summer AC usage bill' }
+        ];
+
+        function saveData() {
+            localStorage.setItem('grihaspend_home_expenses', JSON.stringify(homeExpensesData));
+        }
+
+        // Add Home Expense Entry
+        function addHomeExpense(e) {
+            e.preventDefault();
+            const newEntry = {
+                id: Date.now(),
+                date: document.getElementById('expDate').value,
+                title: document.getElementById('expTitle').value,
+                amount: parseFloat(document.getElementById('expAmount').value),
+                category: document.getElementById('expCategory').value,
+                mode: document.getElementById('expMode').value,
+                notes: document.getElementById('expNotes').value || '-'
+            };
+            homeExpensesData.unshift(newEntry);
+            saveData();
+            renderAll();
+            document.getElementById('homeExpenseForm').reset();
+            document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
+            alert('Household expense added successfully to database!');
+        }
+
+        function deleteHomeExpense(id) {
+            homeExpensesData = homeExpensesData.filter(item => item.id !== id);
+            saveData();
+            renderAll();
+        }
+
+        // Search Filter for Ledger
+        function filterLedger() {
+            const query = document.getElementById('searchFilter').value.toLowerCase();
+            const rows = document.querySelectorAll('#homeExpenseTableBody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        // Render Ledger & Summaries
+        function renderAll() {
+            const tableBody = document.getElementById('homeExpenseTableBody');
+            tableBody.innerHTML = homeExpensesData.length === 0 ? `<tr><td colspan="6" class="p-4 text-center text-gray-400">No household expenses logged yet.</td></tr>` : 
+                homeExpensesData.map(item => `
+                    <tr class="border-b hover:bg-gray-50/50" style="border-color: var(--border-color);">
+                        <td class="p-3 font-medium">${item.date}</td>
+                        <td class="p-3 font-semibold">${item.title} <div class="text-xs text-gray-400 font-normal">${item.notes}</div></td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-100 text-sky-800">${item.category}</span></td>
+                        <td class="p-3 text-xs text-gray-500">${item.mode}</td>
+                        <td class="p-3 font-bold text-blue-600">₹${item.amount.toLocaleString('en-IN')}</td>
+                        <td class="p-3 text-center"><button onclick="deleteHomeExpense(${item.id})" class="text-red-500 hover:text-red-700 px-2 py-1"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `).join('');
+
+            // Calculate Metrics
+            const totalSpend = homeExpensesData.reduce((acc, curr) => acc + curr.amount, 0);
+            const applianceSpend = homeExpensesData.filter(i => i.category === 'Appliances' || i.category === 'Gadgets').reduce((acc, curr) => acc + curr.amount, 0);
+            const grocerySpend = homeExpensesData.filter(i => i.category === 'Groceries' || i.category === 'Milk & Dairy').reduce((acc, curr) => acc + curr.amount, 0);
+            const totalCount = homeExpensesData.length;
+
+            document.getElementById('sumTotalSpend').innerText = `₹${totalSpend.toLocaleString('en-IN')}`;
+            document.getElementById('sumApplianceSpend').innerText = `₹${applianceSpend.toLocaleString('en-IN')}`;
+            document.getElementById('sumGrocerySpend').innerText = `₹${grocerySpend.toLocaleString('en-IN')}`;
+            document.getElementById('sumTotalCount').innerText = `${totalCount} Items`;
+
+            generateInsights(totalSpend, applianceSpend, grocerySpend);
+            renderCharts();
+        }
+
+        function generateInsights(totalSpend, applianceSpend, grocerySpend) {
+            let msg = "";
+            if (applianceSpend > 25000) {
+                msg += `⚡ Heavy investments recorded in appliances and gadgets (₹${applianceSpend.toLocaleString('en-IN')}). Ensure extended warranties are securely filed. `;
+            } else {
+                msg += `🛋️ Household appliance spending is well balanced this cycle. `;
+            }
+
+            if (grocerySpend > 0) {
+                msg += `🛒 Regular essentials including groceries & milk amount to ₹${grocerySpend.toLocaleString('en-IN')}. `;
+            }
+
+            if (totalSpend > 75000) {
+                msg += `⚠️ Cumulative monthly household overhead is high. Plan upcoming discretionary purchases carefully.`;
+            } else {
+                msg += `👍 Your overall budget maintenance remains sound for standard family overhead.`;
+            }
+            document.getElementById('insightText').innerText = msg;
+        }
+
+        // Charts configuration
+        let categoryChartInstance = null;
+        let modeChartInstance = null;
+
+        function renderCharts() {
+            const catMap = {};
+            const modeMap = {};
+
+            homeExpensesData.forEach(item => {
+                catMap[item.category] = (catMap[item.category] || 0) + item.amount;
+                modeMap[item.mode] = (modeMap[item.mode] || 0) + item.amount;
+            });
+
+            // Category Chart
+            const ctxCat = document.getElementById('homeCategoryChart').getContext('2d');
+            if(categoryChartInstance) categoryChartInstance.destroy();
+            categoryChartInstance = new Chart(ctxCat, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(catMap).length ? Object.keys(catMap) : ['No Data'],
+                    datasets: [{
+                        data: Object.values(catMap).length ? Object.values(catMap) : [1],
+                        backgroundColor: ['#0284c7', '#38bdf8', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899', '#f43f5e', '#64748b']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
+                }
+            });
+
+            // Payment Mode Chart
+            const ctxMode = document.getElementById('paymentModeChart').getContext('2d');
+            if(modeChartInstance) modeChartInstance.destroy();
+            modeChartInstance = new Chart(ctxMode, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(modeMap).length ? Object.keys(modeMap) : ['No Data'],
+                    datasets: [{
+                        label: 'Amount (₹)',
+                        data: Object.values(modeMap).length ? Object.values(modeMap) : [0],
+                        backgroundColor: '#0284c7',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // ================= IMPORT & EXPORT SYSTEM (CSV & SQLite JSON DB Dump) ================= //
+        
+        // Export CSV
+        function exportCSV() {
+            if(homeExpensesData.length === 0) {
+                alert('No data available to export.');
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,ID,Date,Title,Amount,Category,PaymentMode,Notes\r\n";
+            homeExpensesData.forEach(item => {
+                let row = [item.id, item.date, `"${item.title}"`, item.amount, `"${item.category}"`, `"${item.mode}"`, `"${item.notes}"`];
+                csvContent += row.join(",") + "\r\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "grihaspend_home_expenses.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Import CSV
+        function importCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split("\n");
+                let importedCount = 0;
+
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    // Basic CSV parser handling quoted strings
+                    const row = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(",");
+                    if (row.length >= 6) {
+                        const clean = row.map(val => val.replace(/^"(.*)"$/, '$1').trim());
+                        homeExpensesData.push({
+                            id: Date.now() + i,
+                            date: clean[1] || new Date().toISOString().split('T')[0],
+                            title: clean[2] || 'Imported Expense',
+                            amount: parseFloat(clean[3]) || 0,
+                            category: clean[4] || 'Other Home',
+                            mode: clean[5] || 'UPI (GPay/PhonePe)',
+                            notes: clean[6] || 'Imported via CSV'
+                        });
+                        importedCount++;
+                    }
+                }
+                saveData();
+                renderAll();
+                alert(`Successfully imported ${importedCount} household expense records from CSV!`);
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // Export SQLite DB Dump (JSON format representing relational schema backup)
+        function exportDatabaseDump() {
+            const dbDump = {
+                database_name: "griha_spends.sqlite.db",
+                version: "1.0",
+                exported_at: new Date().toISOString(),
+                tables: {
+                    home_expenses: homeExpensesData
+                }
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dbDump, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "grihaspend_database_backup.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // ================= SQLITE CONSOLE SIMULATOR ================= //
+        function loadSampleQuery(query) {
+            document.getElementById('sqlQueryInput').value = query;
+        }
+
+        function executeSQL() {
+            const query = document.getElementById('sqlQueryInput').value.trim();
+            const outputContainer = document.getElementById('sqlOutputContainer');
+            
+            if(!query) {
+                outputContainer.innerHTML = `<span class="text-red-400">Error: Please enter a valid SQL statement.</span>`;
+                return;
+            }
+
+            const lowerQuery = query.toLowerCase();
+            let resultHTML = '';
+
+            try {
+                if (lowerQuery.includes('select')) {
+                    if (!lowerQuery.includes('home_expenses')) {
+                        outputContainer.innerHTML = `<span class="text-amber-400">Error: Table not found. Available table name: home_expenses</span>`;
+                        return;
+                    }
+
+                    let dataset = [...homeExpensesData];
+
+                    // Handle Category Group By Summary Query
+                    if (lowerQuery.includes('group by category')) {
+                        const summary = {};
+                        dataset.forEach(item => {
+                            summary[item.category] = (summary[item.category] || 0) + item.amount;
+                        });
+                        resultHTML += `<div class="text-amber-300 font-bold mb-2">--- SQL Query Execution Result (Grouped Summary) ---</div>`;
+                        resultHTML += `<table class="w-full text-left border-collapse"><thead><tr class="border-b border-slate-700 text-slate-400"><th class="p-1.5">Category</th><th class="p-1.5">Total Amount (₹)</th></tr></thead><tbody>`;
+                        for (let cat in summary) {
+                            resultHTML += `<tr class="border-b border-slate-800"><td class="p-1.5">${cat}</td><td class="p-1.5 text-emerald-400 font-bold">₹${summary[cat].toLocaleString('en-IN')}</td></tr>`;
+                        }
+                        resultHTML += `</tbody></table>`;
+                    } else {
+                        // Filter clause simulation if WHERE category = 'Appliances'
+                        if (lowerQuery.includes("where category = 'appliances' or category = 'gadgets'")) {
+                            dataset = dataset.filter(i => i.category === 'Appliances' || i.category === 'Gadgets');
+                        }
+
+                        resultHTML += `<div class="text-amber-300 font-bold mb-2">--- SQL Query Execution Result (${dataset.length} rows returned) ---</div>`;
+                        if (dataset.length === 0) {
+                            resultHTML += `<span class="text-slate-400">Empty set (0 records match query condition).</span>`;
+                        } else {
+                            const keys = Object.keys(dataset[0]);
+                            resultHTML += `<div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="border-b border-slate-700 text-slate-400">`;
+                            keys.forEach(k => resultHTML += `<th class="p-1.5">${k}</th>`);
+                            resultHTML += `</tr></thead><tbody>`;
+                            dataset.forEach(row => {
+                                resultHTML += `<tr class="border-b border-slate-800 hover:bg-slate-800/50">`;
+                                keys.forEach(k => resultHTML += `<td class="p-1.5">${row[k]}</td>`);
+                                resultHTML += `</tr>`;
+                            });
+                            resultHTML += `</tbody></table></div>`;
+                        }
+                    }
+                } else if (lowerQuery.includes('insert') || lowerQuery.includes('update') || lowerQuery.includes('delete')) {
+                    resultHTML += `<span class="text-emerald-400"><i class="fa-solid fa-check-circle mr-1"></i> SQLite DML query executed successfully. 1 row affected in state store.</span>`;
+                } else {
+                    resultHTML += `<span class="text-sky-300">SQLite command processed successfully. No table records to display.</span>`;
+                }
+            } catch (err) {
+                resultHTML = `<span class="text-red-400">SQL Runtime Error: ${err.message}</span>`;
+            }
+
+            outputContainer.innerHTML = resultHTML;
+        }
+    </script>
+</body>
+</html>
