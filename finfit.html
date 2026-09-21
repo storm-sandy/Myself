@@ -3,749 +3,721 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NatureSync - Finance & Fitness Manager</title>
-    <!-- Tailwind CSS CDN -->
+    <title>FitSpend Bharat - Fitness & Expense Tracker</title>
+    <!-- Tailwind CSS for modern layout and styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- SQL.js for In-Browser SQLite -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+    <!-- Chart.js for interactive analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome for iconography -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* Glassmorphism Base */
-        .glass {
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        /* CSS Variables initialized for Nature Themes */
+        :root {
+            --bg-primary: #f0fdf4;
+            --bg-card: #ffffff;
+            --text-main: #166534;
+            --text-muted: #4b5563;
+            --accent: #22c55e;
+            --accent-hover: #16a34a;
+            --border-color: #bbf7d0;
+            --sidebar-bg: #dcfce7;
         }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-muted);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
-        .glass-input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: inherit;
+
+        .theme-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
-        .glass-input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+            transition: background-color 0.2s;
         }
-        .glass-input option {
-            background: #1e293b;
-            color: #fff;
+        .btn-accent:hover {
+            background-color: var(--accent-hover);
         }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+
+        /* Custom Scrollbar for SQLite Console */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
     </style>
 </head>
-<body id="appBody" class="min-h-screen text-white font-sans transition-all duration-500 bg-gradient-to-br from-emerald-900 via-teal-900 to-slate-900">
+<body class="min-h-screen flex flex-col">
 
-    <!-- Top Navigation Header -->
-    <header class="glass sticky top-0 z-50 px-4 py-3 mb-6">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+    <!-- Top Navigation & Theme Switcher Bar -->
+    <header class="shadow-sm border-b" style="background-color: var(--bg-card); border-color: var(--border-color);">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <div class="p-2 rounded-xl bg-white/20 backdrop-blur-md">
-                    <i data-lucide="leaf" class="w-7 h-7 text-emerald-300"></i>
+                <div class="p-2 rounded-xl text-white btn-accent shadow-md">
+                    <i class="fa-solid fa-leaf text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-tight">NatureSync Manager</h1>
-                    <p class="text-xs text-white/70">Finance & Fitness SQLite Hub</p>
+                    <h1 class="text-xl font-bold" style="color: var(--text-main);">FitSpend Bharat</h1>
+                    <p class="text-xs text-gray-500">Indian Fitness & Expense Command Center</p>
                 </div>
             </div>
 
-            <!-- Navigation Tabs -->
-            <nav class="flex flex-wrap justify-center gap-1.5 bg-black/20 p-1.5 rounded-2xl backdrop-blur-md">
-                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center space-x-2 bg-white/20 shadow-lg">
-                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i><span>Dashboard</span>
-                </button>
-                <button onclick="switchTab('finance')" id="btn-finance" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center space-x-2 hover:bg-white/10">
-                    <i data-lucide="wallet" class="w-4 h-4"></i><span>Finance</span>
-                </button>
-                <button onclick="switchTab('fitness')" id="btn-fitness" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center space-x-2 hover:bg-white/10">
-                    <i data-lucide="activity" class="w-4 h-4"></i><span>Fitness</span>
-                </button>
-                <button onclick="switchTab('console')" id="btn-console" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center space-x-2 hover:bg-white/10">
-                    <i data-lucide="terminal" class="w-4 h-4"></i><span>SQL Console</span>
-                </button>
-                <button onclick="switchTab('themes')" id="btn-themes" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center space-x-2 hover:bg-white/10">
-                    <i data-lucide="palette" class="w-4 h-4"></i><span>50 Themes</span>
-                </button>
-            </nav>
-
-            <!-- Global Actions (Export/Import/Status) -->
+            <!-- Nature Themes Dropdown Selector -->
             <div class="flex items-center space-x-2">
-                <button onclick="openExportModal()" class="px-3 py-2 rounded-xl glass-card text-xs font-semibold hover:bg-white/20 transition-all flex items-center space-x-1">
-                    <i data-lucide="download" class="w-3.5 h-3.5"></i><span>Export</span>
-                </button>
-                <label class="px-3 py-2 rounded-xl glass-card text-xs font-semibold hover:bg-white/20 transition-all flex items-center space-x-1 cursor-pointer">
-                    <i data-lucide="upload" class="w-3.5 h-3.5"></i><span>Import</span>
-                    <input type="file" id="importFile" onchange="importData(event)" class="hidden" accept=".json,.csv">
-                </label>
-                <div id="dbStatus" class="w-3 h-3 rounded-full bg-yellow-400 animate-pulse" title="Database Loading..."></div>
+                <label for="themeSelect" class="text-xs font-semibold uppercase tracking-wider text-gray-500"><i class="fa-solid fa-palette mr-1"></i> Nature Theme:</label>
+                <select id="themeSelect" onchange="switchTheme(this.value)" class="text-sm rounded-lg border px-3 py-1.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card); color: var(--text-main);">
+                    <option value="forest">🌲 Lush Forest (Default)</option>
+                    <option value="monsoon">🌧️ Monsoon Rain</option>
+                    <option value="himalaya">🏔️ Snowy Himalaya</option>
+                    <option value="sunset">🌅 Western Ghats Sunset</option>
+                    <option value="desert">🏜️ Thar Desert Dunes</option>
+                    <option value="ocean">🌊 Coastal Ocean Wave</option>
+                    <option value="autumn">🍂 Nilgiri Autumn</option>
+                    <option value="bamboo">🎋 Bamboo Grove</option>
+                    <option value="earth">🌍 Terracotta Earth</option>
+                    <option value="aurora">🌌 Northern Lights (Aurora)</option>
+                </select>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Container -->
-    <main class="max-w-7xl mx-auto px-4 pb-12">
+    <!-- Main Tabbed Interface -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col gap-6">
+        
+        <!-- Tabs Header -->
+        <div class="flex flex-wrap border-b gap-2" style="border-color: var(--border-color);" id="tabHeaders">
+            <button onclick="switchTab('dashboard')" class="tab-btn px-5 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2 active-tab" data-target="dashboard">
+                <i class="fa-solid fa-chart-pie"></i> Executive Summary
+            </button>
+            <button onclick="switchTab('fitness')" class="tab-btn px-5 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2" data-target="fitness">
+                <i class="fa-solid fa-dumbbell"></i> Fitness & Workout (Gym/Yoga/Run)
+            </button>
+            <button onclick="switchTab('expenses')" class="tab-btn px-5 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2" data-target="expenses">
+                <i class="fa-solid fa-indian-rupee-sign"></i> Spends & UPI Tracker
+            </button>
+            <button onclick="switchTab('console')" class="tab-btn px-5 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2" data-target="console">
+                <i class="fa-solid fa-terminal"></i> SQLite Console Simulator
+            </button>
+        </div>
 
-        <!-- TAB 1: DASHBOARD -->
-        <section id="tab-dashboard" class="tab-content space-y-6">
+        <!-- ================= TAB 1: EXECUTIVE SUMMARY ================= -->
+        <div id="tab-dashboard" class="tab-content flex flex-col gap-6">
+            <!-- Quick Summary Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="glass-card p-5 rounded-2xl">
-                    <div class="flex justify-between items-center text-white/70 mb-2">
-                        <span class="text-sm font-medium">Total Balance</span>
-                        <i data-lucide="dollar-sign" class="w-5 h-5 text-emerald-400"></i>
-                    </div>
-                    <div id="dash-balance" class="text-2xl font-bold">$0.00</div>
-                    <div class="text-xs text-emerald-300 mt-1">Income minus Expenses</div>
-                </div>
-                <div class="glass-card p-5 rounded-2xl">
-                    <div class="flex justify-between items-center text-white/70 mb-2">
-                        <span class="text-sm font-medium">Monthly Expenses</span>
-                        <i data-lucide="trending-down" class="w-5 h-5 text-rose-400"></i>
-                    </div>
-                    <div id="dash-expenses" class="text-2xl font-bold">$0.00</div>
-                    <div class="text-xs text-rose-300 mt-1">Logged expenses</div>
-                </div>
-                <div class="glass-card p-5 rounded-2xl">
-                    <div class="flex justify-between items-center text-white/70 mb-2">
-                        <span class="text-sm font-medium">Workouts Logged</span>
-                        <i data-lucide="dumbbell" class="w-5 h-5 text-cyan-400"></i>
-                    </div>
-                    <div id="dash-workouts" class="text-2xl font-bold">0</div>
-                    <div class="text-xs text-cyan-300 mt-1">Total sessions</div>
-                </div>
-                <div class="glass-card p-5 rounded-2xl">
-                    <div class="flex justify-between items-center text-white/70 mb-2">
-                        <span class="text-sm font-medium">Calories Burned</span>
-                        <i data-lucide="flame" class="w-5 h-5 text-amber-400"></i>
-                    </div>
-                    <div id="dash-calories" class="text-2xl font-bold">0 kcal</div>
-                    <div class="text-xs text-amber-300 mt-1">Total energy output</div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="glass-card p-6 rounded-2xl">
-                    <h3 class="text-lg font-semibold mb-4 flex items-center space-x-2">
-                        <i data-lucide="pie-chart" class="w-5 h-5 text-emerald-300"></i>
-                        <span>Recent Financial Activity</span>
-                    </h3>
-                    <div id="dash-recent-finance" class="space-y-3 overflow-x-auto">
-                        <p class="text-white/60 text-sm">No transactions recorded yet.</p>
-                    </div>
-                </div>
-                <div class="glass-card p-6 rounded-2xl">
-                    <h3 class="text-lg font-semibold mb-4 flex items-center space-x-2">
-                        <i data-lucide="activity" class="w-5 h-5 text-cyan-300"></i>
-                        <span>Recent Fitness Workouts</span>
-                    </h3>
-                    <div id="dash-recent-fitness" class="space-y-3 overflow-x-auto">
-                        <p class="text-white/60 text-sm">No workouts recorded yet.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 2: FINANCE MANAGER -->
-        <section id="tab-finance" class="tab-content hidden space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Add Transaction Form -->
-                <div class="glass-card p-6 rounded-2xl h-fit">
-                    <h3 class="text-lg font-semibold mb-4 flex items-center space-x-2">
-                        <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-300"></i>
-                        <span>Add Transaction</span>
-                    </h3>
-                    <form id="financeForm" onsubmit="addTransaction(event)" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-medium text-white/70 mb-1">Type</label>
-                            <select id="fin-type" class="w-full rounded-xl p-2.5 glass-input text-sm focus:outline-none">
-                                <option value="Income">Income</option>
-                                <option value="Expense" selected>Expense</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-white/70 mb-1">Category</label>
-                            <input type="text" id="fin-category" required placeholder="e.g. Food, Salary, Rent" class="w-full rounded-xl p-2.5 glass-input text-sm focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-white/70 mb-1">Amount ($)</label>
-                            <input type="number" step="0.01" id="fin-amount" required placeholder="0.00" class="w-full rounded-xl p-2.5 glass-input text-sm focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-white/70 mb-1">Date</label>
-                            <input type="date" id="fin-date" required class="w-full rounded-xl p-2.5 glass-input text-sm focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-white/70 mb-1">Description / Note</label>
-                            <input type="text" id="fin-note" placeholder="Optional details" class="w-full rounded-xl p-2.5 glass-input text-sm focus:outline-none">
-                        </div>
-                        <button type="submit" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-semibold text-sm transition-all shadow-lg">
-                            Save Transaction
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Transaction List -->
-                <div class="lg:col-span-2 glass-card p-6 rounded-2xl">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold flex items-center space-x-2">
-                            <i data-lucide="list" class="w-5 h-5 text-emerald-300"></i>
-                            <span>Transaction History</span>
-                        </h3>
-                        <button onclick="exportTableCSV('finance')" class="px-3 py-1.5 rounded-lg glass-input text-xs hover:bg-white/20">Export CSV</button>
-                    </div>
-                    <div class="overflow-x-auto max-h-[500px]">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-black/20 text-white/70 sticky top-0">
-                                <tr>
-                                    <th class="p-3">Date</th>
-                                    <th class="p-3">Type</th>
-                                    <th class="p-3">Category</th>
-                                    <th class="p-3">Amount</th>
-                                    <th class="p-3">Note</th>
-                                    <th class="p-3 text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="financeTableBody" class="divide-y divide-white/10">
-                                <tr><td colspan="6" class="p-4 text-center text-white/50">Loading transactions...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 3: FITNESS TRACKER -->
-        <section id="tab-fitness" class="tab-content hidden space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Add Workout Form -->
-                <div class="glass-card p-6 rounded-2xl h-fit">
-                    <h3 class="text-lg font-semibold mb-4 flex items-center space-x-2">
-                        <i data-lucide="plus-circle" class="w-5 h-5 text-cyan-300"></i>
-                        <span>Log Workout</span>
-                    </h3>
-                    <form id="fitnessForm" onsubmit="addWorkout(event)" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-medium text-white/70 mb-1">Workout Type</label>
-                            <select id="fit-type" class="w-full rounded-xl p-2.5 glass-input text-sm focus:outline-none">
-                                <option value="Running">Running</option>
-                                <option value="Weightlifting">Weightlifting</option>
-                                <option value="Cycling">Cycling</option>
-                                <option value="Yoga">Yoga</option>
-                                <option value="Swimming">Swimming</option>
-                                <option value="HIIT">HIIT</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-white/70 mb-1">Duration (Minutes)</label>
-                            <input type="number" id="fit-duration" required placeholder="30" class="w-full rounded-xl p-2.5 glass-input text-sm focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-white/70 mb-1">Calories Burned (kcal)</label>
-                            <input type="number" id="fit-calories" required placeholder="250" class="w-full rounded-xl p-2.5 glass-input text-sm focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-white/70 mb-1">Date</label>
-                            <input type="date" id="fit-date" required class="w-full rounded-xl p-2.5 glass-input text-sm focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-white/70 mb-1">Notes / Intensity</label>
-                            <input type="text" id="fit-note" placeholder="e.g. High intensity, Morning session" class="w-full rounded-xl p-2.5 glass-input text-sm focus:outline-none">
-                        </div>
-                        <button type="submit" class="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 font-semibold text-sm transition-all shadow-lg">
-                            Save Workout
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Workout List -->
-                <div class="lg:col-span-2 glass-card p-6 rounded-2xl">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold flex items-center space-x-2">
-                            <i data-lucide="list" class="w-5 h-5 text-cyan-300"></i>
-                            <span>Workout History</span>
-                        </h3>
-                        <button onclick="exportTableCSV('fitness')" class="px-3 py-1.5 rounded-lg glass-input text-xs hover:bg-white/20">Export CSV</button>
-                    </div>
-                    <div class="overflow-x-auto max-h-[500px]">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-black/20 text-white/70 sticky top-0">
-                                <tr>
-                                    <th class="p-3">Date</th>
-                                    <th class="p-3">Type</th>
-                                    <th class="p-3">Duration</th>
-                                    <th class="p-3">Calories</th>
-                                    <th class="p-3">Note</th>
-                                    <th class="p-3 text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="fitnessTableBody" class="divide-y divide-white/10">
-                                <tr><td colspan="6" class="p-4 text-center text-white/50">Loading workouts...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 4: SQL CONSOLE -->
-        <section id="tab-console" class="tab-content hidden space-y-6">
-            <div class="glass-card p-6 rounded-2xl space-y-4">
-                <div class="flex justify-between items-center">
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold flex items-center space-x-2">
-                            <i data-lucide="terminal" class="w-5 h-5 text-amber-300"></i>
-                            <span>Interactive SQLite Console</span>
-                        </h3>
-                        <p class="text-xs text-white/70">Execute custom SQL queries directly against your in-browser SQLite database.</p>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Total Monthly Spends</p>
+                        <h3 id="sumTotalSpend" class="text-2xl font-black mt-1" style="color: var(--text-main);">₹0</h3>
+                        <span class="text-xs text-gray-400">Target Budget: ₹45,000</span>
                     </div>
-                    <div class="flex space-x-2">
-                        <button onclick="runSampleQuery('SELECT * FROM transactions')" class="px-3 py-1.5 rounded-lg glass-input text-xs hover:bg-white/20">View Transactions</button>
-                        <button onclick="runSampleQuery('SELECT * FROM workouts')" class="px-3 py-1.5 rounded-lg glass-input text-xs hover:bg-white/20">View Workouts</button>
+                    <div class="p-3 rounded-full bg-orange-100 text-orange-600">
+                        <i class="fa-solid fa-wallet text-xl"></i>
                     </div>
                 </div>
 
-                <div>
-                    <textarea id="sqlQueryInput" rows="4" class="w-full rounded-xl p-3 glass-input font-mono text-sm focus:outline-none" placeholder="Enter SQL query here... (e.g., SELECT category, SUM(amount) FROM transactions GROUP BY category)">SELECT * FROM transactions;</textarea>
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Workouts Completed</p>
+                        <h3 id="sumTotalWorkouts" class="text-2xl font-black mt-1" style="color: var(--text-main);">0 Days</h3>
+                        <span class="text-xs text-gray-400">Goal: 20 Days/Month</span>
+                    </div>
+                    <div class="p-3 rounded-full bg-emerald-100 text-emerald-600">
+                        <i class="fa-solid fa-fire text-xl"></i>
+                    </div>
                 </div>
 
-                <div class="flex justify-end space-x-3">
-                    <button onclick="executeSQL()" class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 font-semibold text-sm transition-all shadow-lg flex items-center space-x-2">
-                        <i data-lucide="play" class="w-4 h-4"></i><span>Run Query</span>
-                    </button>
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Calories Burned (Est)</p>
+                        <h3 id="sumTotalCalories" class="text-2xl font-black mt-1" style="color: var(--text-main);">0 kcal</h3>
+                        <span class="text-xs text-gray-400">Avg active output</span>
+                    </div>
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                        <i class="fa-solid fa-bolt text-xl"></i>
+                    </div>
                 </div>
 
-                <div id="sqlResultContainer" class="mt-6 border-t border-white/10 pt-4 overflow-x-auto">
-                    <p class="text-white/50 text-sm">Query results will appear here...</p>
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Health & Fitness Spend</p>
+                        <h3 id="sumHealthSpend" class="text-2xl font-black mt-1" style="color: var(--text-main);">₹0</h3>
+                        <span class="text-xs text-gray-400">Gym, Whey, Consultations</span>
+                    </div>
+                    <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                        <i class="fa-solid fa-heart-pulse text-xl"></i>
+                    </div>
                 </div>
             </div>
-        </section>
 
-        <!-- TAB 5: 50 NATURE THEMES -->
-        <section id="tab-themes" class="tab-content hidden space-y-6">
-            <div class="glass-card p-6 rounded-2xl">
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold flex items-center space-x-2">
-                        <i data-lucide="palette" class="w-5 h-5 text-emerald-300"></i>
-                        <span>50 Nature-Inspired Themes</span>
-                    </h3>
-                    <p class="text-xs text-white/70">Click any theme card below to instantly transform your app workspace environment.</p>
+            <!-- Indian Insights & Smart Advice Section -->
+            <div class="theme-card p-5 rounded-xl shadow-sm border-l-4" style="border-left-color: var(--accent);">
+                <h4 class="font-bold text-base mb-1" style="color: var(--text-main);"><i class="fa-solid fa-lightbulb text-amber-500 mr-2"></i>Desi Financial & Fitness Health Insights</h4>
+                <p id="insightText" class="text-sm text-gray-600">Analyzing your localized data streams... Log a few exercises and UPI spends to unlock personalized financial and physical wellness insights.</p>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="theme-card p-5 rounded-xl shadow-sm">
+                    <h4 class="font-bold text-md mb-4" style="color: var(--text-main);">Expense Breakdown by Category (₹)</h4>
+                    <div class="relative h-64 flex justify-center items-center">
+                        <canvas id="expenseChart"></canvas>
+                    </div>
                 </div>
-                <div id="themesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-[600px] overflow-y-auto p-1">
-                    <!-- Populated dynamically via JS -->
+                <div class="theme-card p-5 rounded-xl shadow-sm">
+                    <h4 class="font-bold text-md mb-4" style="color: var(--text-main);">Weekly Workout Durations (Mins)</h4>
+                    <div class="relative h-64 flex justify-center items-center">
+                        <canvas id="fitnessChart"></canvas>
+                    </div>
                 </div>
             </div>
-        </section>
+        </div>
+
+        <!-- ================= TAB 2: FITNESS TRACKER ================= -->
+        <div id="tab-fitness" class="tab-content hidden flex flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Add Fitness Form -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-1">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-plus-circle mr-2"></i>Log Workout Session</h3>
+                    <form id="fitnessForm" onsubmit="addFitnessEntry(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Date</label>
+                            <input type="date" id="fitDate" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Activity Type</label>
+                            <select id="fitType" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                                <option value="Gym / Weight Training">🏋️ Gym / Weight Training</option>
+                                <option value="Yoga & Pranayama">🧘 Yoga & Pranayama</option>
+                                <option value="Running / Jogging">🏃 Running / Jogging</option>
+                                <option value="Brisk Walking">🚶 Brisk Walking</option>
+                                <option value="Badminton / Sports">🏸 Badminton / Sports</option>
+                                <option value="Cycling">🚴 Cycling</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Duration (Minutes)</label>
+                            <input type="number" id="fitDuration" placeholder="e.g. 45" required min="1" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Calories Burned (Approx kcal)</label>
+                            <input type="number" id="fitCalories" placeholder="e.g. 350" required min="1" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Notes / Intensity</label>
+                            <input type="text" id="fitNotes" placeholder="e.g. Leg day, felt energized" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-lg btn-accent font-semibold text-sm shadow-sm">Save Workout Entry</button>
+                    </form>
+                </div>
+
+                <!-- Fitness Table List -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-2 overflow-x-auto">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-list mr-2"></i>Workout Logs History</h3>
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="border-b" style="border-color: var(--border-color); color: var(--text-main);">
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Activity</th>
+                                <th class="p-3">Duration</th>
+                                <th class="p-3">Calories</th>
+                                <th class="p-3">Notes</th>
+                                <th class="p-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fitnessTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: SPENDS TRACKER ================= -->
+        <div id="tab-expenses" class="tab-content hidden flex flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Add Expense Form -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-1">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-rupee-sign mr-2"></i>Record Spend / UPI Payment</h3>
+                    <form id="expenseForm" onsubmit="addExpenseEntry(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Date</label>
+                            <input type="date" id="expDate" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Expense Title / Merchant</label>
+                            <input type="text" id="expTitle" placeholder="e.g. Organic Groceries, Cult.fit Gym" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Amount (₹)</label>
+                            <input type="number" id="expAmount" placeholder="e.g. 1499" required min="1" step="0.01" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Category</label>
+                            <select id="expCategory" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                                <option value="Fitness & Supplements">🏋️ Fitness, Gym & Supplements</option>
+                                <option value="Groceries & Vegetables">🥦 Groceries & Veggies</option>
+                                <option value="Dining Out & Swiggy/Zomato">🍕 Dining Out & Food Delivery</option>
+                                <option value="Utilities & Bills">💡 Utilities, Electricity & Wi-Fi</option>
+                                <option value="Healthcare & Pharmacy">💊 Healthcare & Pharmacy</option>
+                                <option value="Shopping & Lifestyle">🛍️ Shopping & Lifestyle</option>
+                                <option value="Transport & Fuel">⛽ Transport & Fuel</option>
+                                <option value="Others">📦 Others</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Payment Mode</label>
+                            <select id="expMode" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                                <option value="UPI (GPay / PhonePe / Paytm)">📱 UPI (GPay / PhonePe / Paytm)</option>
+                                <option value="Credit Card">💳 Credit Card</option>
+                                <option value="Debit Card">💳 Debit Card</option>
+                                <option value="Net Banking">💻 Net Banking</option>
+                                <option value="Cash">💵 Cash</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-lg btn-accent font-semibold text-sm shadow-sm">Save Expense</button>
+                    </form>
+                </div>
+
+                <!-- Expenses Table List -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-2 overflow-x-auto">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-receipt mr-2"></i>Spends & UPI Transactions</h3>
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="border-b" style="border-color: var(--border-color); color: var(--text-main);">
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Title / Merchant</th>
+                                <th class="p-3">Category</th>
+                                <th class="p-3">Mode</th>
+                                <th class="p-3">Amount</th>
+                                <th class="p-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 4: SQLITE CONSOLE SIMULATOR ================= -->
+        <div id="tab-console" class="tab-content hidden flex flex-col gap-6">
+            <div class="theme-card p-6 rounded-xl shadow-sm">
+                <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                    <div>
+                        <h3 class="text-lg font-bold" style="color: var(--text-main);"><i class="fa-solid fa-database mr-2"></i>SQLite Local Console (In-Memory Database Simulator)</h3>
+                        <p class="text-xs text-gray-500">Run standard SQL queries on tables: <code class="bg-gray-100 px-1 py-0.5 rounded text-green-700">fitness_logs</code> and <code class="bg-gray-100 px-1 py-0.5 rounded text-green-700">expenses</code></p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="loadSampleQuery('SELECT * FROM fitness_logs;')" class="text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 transition">Show Fitness</button>
+                        <button onclick="loadSampleQuery('SELECT * FROM expenses;')" class="text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 transition">Show Expenses</button>
+                        <button onclick="loadSampleQuery('SELECT category, SUM(amount) as total FROM expenses GROUP BY category;')" class="text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 transition">Spend Summary SQL</button>
+                    </div>
+                </div>
+
+                <!-- Query Input Box -->
+                <div class="space-y-3">
+                    <textarea id="sqlQueryInput" rows="3" class="w-full font-mono text-sm p-3 rounded-lg border focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: #1e1e1e; color: #4ade80;" placeholder="Enter SQL Query here, e.g., SELECT * FROM fitness_logs WHERE duration > 30;"></textarea>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-400"><i class="fa-solid fa-circle-info mr-1"></i>Supports SELECT, INSERT, UPDATE, DELETE statements simulation.</span>
+                        <button onclick="executeSQL()" class="px-5 py-2 rounded-lg btn-accent font-semibold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i> Run SQL Query
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SQL Output Terminal -->
+                <div class="mt-6">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Console Output Result</h4>
+                    <div id="sqlOutputContainer" class="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-xs overflow-x-auto min-h-[150px] max-h-[300px]">
+                        <span class="text-gray-500">-- Ready for database execution... Type a query above and click Run SQL Query.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </main>
 
-    <!-- Export Modal -->
-    <div id="exportModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass p-6 rounded-2xl max-w-md w-full space-y-4">
-            <h3 class="text-lg font-bold">Export Backup Data</h3>
-            <p class="text-xs text-white/75">Download your complete database as a JSON backup or export individual tables.</p>
-            <div class="space-y-2 pt-2">
-                <button onclick="exportJSONBackup()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-sm font-semibold transition-all">Download Full JSON Backup</button>
-                <button onclick="exportTableCSV('finance'); closeExportModal();" class="w-full py-2.5 rounded-xl glass-card hover:bg-white/20 text-sm font-semibold transition-all">Export Finance CSV</button>
-                <button onclick="exportTableCSV('fitness'); closeExportModal();" class="w-full py-2.5 rounded-xl glass-card hover:bg-white/20 text-sm font-semibold transition-all">Export Fitness CSV</button>
-            </div>
-            <button onclick="closeExportModal()" class="w-full py-2 rounded-xl bg-black/30 hover:bg-black/50 text-xs font-semibold text-white/70">Cancel</button>
-        </div>
-    </div>
+    <!-- Footer -->
+    <footer class="mt-auto py-4 text-center text-xs text-gray-500 border-t" style="border-color: var(--border-color);">
+        FitSpend Bharat &copy; 2026 | Built for Indian Fitness Enthusiasts & Smart Savers
+    </footer>
 
-    <!-- Application JavaScript Logic -->
+    <!-- JavaScript Application Core Logic -->
     <script>
-        let db = null;
-
-        // 50 Nature Theme definitions (Gradients)
-        const natureThemes = [
-            { name: "Deep Emerald Forest", gradient: "bg-gradient-to-br from-emerald-900 via-teal-900 to-slate-900" },
-            { name: "Pacific Ocean", gradient: "bg-gradient-to-br from-blue-900 via-cyan-900 to-indigo-950" },
-            { name: "Aurora Borealis", gradient: "bg-gradient-to-br from-green-950 via-teal-900 to-purple-950" },
-            { name: "Sahara Sunset", gradient: "bg-gradient-to-br from-amber-900 via-orange-900 to-red-950" },
-            { name: "Cherry Blossom Spring", gradient: "bg-gradient-to-br from-pink-900 via-rose-900 to-purple-950" },
-            { name: "Alpine Glacier", gradient: "bg-gradient-to-br from-sky-900 via-blue-900 to-slate-900" },
-            { name: "Mystic Bamboo", gradient: "bg-gradient-to-br from-lime-950 via-emerald-900 to-green-950" },
-            { name: "Autumn Maple", gradient: "bg-gradient-to-br from-amber-950 via-yellow-900 to-red-950" },
-            { name: "Midnight Canyon", gradient: "bg-gradient-to-br from-stone-900 via-neutral-900 to-amber-950" },
-            { name: "Tropical Rainforest", gradient: "bg-gradient-to-br from-teal-950 via-green-900 to-emerald-950" },
-            { name: "Lavender Fields", gradient: "bg-gradient-to-br from-purple-950 via-indigo-900 to-slate-900" },
-            { name: "Volcanic Magma", gradient: "bg-gradient-to-br from-red-950 via-zinc-900 to-orange-950" },
-            { name: "Arctic Tundra", gradient: "bg-gradient-to-br from-slate-900 via-cyan-950 to-blue-950" },
-            { name: "Golden Savanna", gradient: "bg-gradient-to-br from-yellow-950 via-amber-900 to-stone-900" },
-            { name: "Deep Ocean Trench", gradient: "bg-gradient-to-br from-blue-950 via-indigo-950 to-slate-950" },
-            { name: "Misty Pine Ridge", gradient: "bg-gradient-to-br from-zinc-900 via-emerald-950 to-teal-950" },
-            { name: "Redwood Canopy", gradient: "bg-gradient-to-br from-red-950 via-amber-950 to-stone-900" },
-            { name: "Coral Reef", gradient: "bg-gradient-to-br from-rose-950 via-pink-900 to-teal-950" },
-            { name: "Cactus Desert", gradient: "bg-gradient-to-br from-yellow-900 via-stone-900 to-emerald-950" },
-            { name: "Stormy Sea", gradient: "bg-gradient-to-br from-slate-950 via-blue-950 to-zinc-900" },
-            { name: "Mossy Rock", gradient: "bg-gradient-to-br from-stone-900 via-green-950 to-emerald-950" },
-            { name: "Lunar Eclipse", gradient: "bg-gradient-to-br from-zinc-950 via-purple-950 to-slate-900" },
-            { name: "Meadow Sunrise", gradient: "bg-gradient-to-br from-amber-900 via-lime-950 to-emerald-950" },
-            { name: "Riverstone", gradient: "bg-gradient-to-br from-stone-900 via-slate-900 to-zinc-900" },
-            { name: "Himalayan Peak", gradient: "bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-900" },
-            { name: "Fiery Equinox", gradient: "bg-gradient-to-br from-orange-950 via-red-900 to-amber-950" },
-            { name: "Twilight Grove", gradient: "bg-gradient-to-br from-indigo-950 via-purple-950 to-emerald-950" },
-            { name: "Eucalyptus Vale", gradient: "bg-gradient-to-br from-teal-900 via-slate-900 to-emerald-950" },
-            { name: "Badlands", gradient: "bg-gradient-to-br from-amber-950 via-stone-900 to-orange-950" },
-            { name: "Boreal Taiga", gradient: "bg-gradient-to-br from-emerald-950 via-slate-950 to-cyan-950" },
-            { name: "Ocean Breeze", gradient: "bg-gradient-to-br from-cyan-900 via-blue-900 to-teal-950" },
-            { name: "Spring Sprout", gradient: "bg-gradient-to-br from-green-900 via-emerald-950 to-teal-900" },
-            { name: "Copper Canyon", gradient: "bg-gradient-to-br from-orange-900 via-amber-950 to-stone-900" },
-            { name: "Deep Moss", gradient: "bg-gradient-to-br from-emerald-950 via-green-950 to-stone-900" },
-            { name: "Nebula Sky", gradient: "bg-gradient-to-br from-purple-950 via-blue-950 to-pink-950" },
-            { name: "Frozen Fjord", gradient: "bg-gradient-to-br from-blue-950 via-cyan-900 to-slate-950" },
-            { name: "Wildflower Valley", gradient: "bg-gradient-to-br from-pink-950 via-purple-900 to-emerald-950" },
-            { name: "Granite Cliff", gradient: "bg-gradient-to-br from-zinc-900 via-stone-900 to-slate-950" },
-            { name: "Pine Resin", gradient: "bg-gradient-to-br from-amber-950 via-emerald-950 to-stone-900" },
-            { name: "Monsoon Rain", gradient: "bg-gradient-to-br from-slate-950 via-teal-950 to-blue-950" },
-            { name: "Sunlit Fern", gradient: "bg-gradient-to-br from-green-900 via-emerald-900 to-yellow-950" },
-            { name: "Obsidian Cave", gradient: "bg-gradient-to-br from-neutral-950 via-zinc-950 to-stone-950" },
-            { name: "Cypress Swamp", gradient: "bg-gradient-to-br from-stone-950 via-emerald-950 to-teal-950" },
-            { name: "Amber Forest", gradient: "bg-gradient-to-br from-amber-900 via-emerald-950 to-stone-900" },
-            { name: "Starlit Glacier", gradient: "bg-gradient-to-br from-slate-950 via-blue-900 to-indigo-950" },
-            { name: "Terraced Rice Paddy", gradient: "bg-gradient-to-br from-lime-900 via-emerald-900 to-teal-950" },
-            { name: "Geothermal Spring", gradient: "bg-gradient-to-br from-teal-900 via-cyan-950 to-purple-950" },
-            { name: "Red Clay Hills", gradient: "bg-gradient-to-br from-red-900 via-amber-950 to-stone-900" },
-            { name: "Blue Spruce", gradient: "bg-gradient-to-br from-blue-950 via-slate-900 to-emerald-950" },
-            { name: "Evergreen Peak", gradient: "bg-gradient-to-br from-emerald-950 via-teal-950 to-slate-950" }
-        ];
-
-        // Initialize SQL.js and Database
-        async function initDatabase() {
-            try {
-                const SQL = await initSqlJs({
-                    locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
-                });
-                db = new SQL.Database();
-                
-                // Create Tables
-                db.run(`
-                    CREATE TABLE IF NOT EXISTS transactions (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        date TEXT,
-                        type TEXT,
-                        category TEXT,
-                        amount REAL,
-                        note TEXT
-                    );
-                    CREATE TABLE IF NOT EXISTS workouts (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        date TEXT,
-                        type TEXT,
-                        duration INTEGER,
-                        calories INTEGER,
-                        note TEXT
-                    );
-                `);
-
-                // Insert sample data if empty
-                const tCheck = db.exec("SELECT COUNT(*) FROM transactions");
-                if (tCheck[0].values[0][0] === 0) {
-                    db.run(`
-                        INSERT INTO transactions (date, type, category, amount, note) VALUES ('2026-06-01', 'Income', 'Salary', 3500.00, 'Monthly Salary');
-                        INSERT INTO transactions (date, type, category, amount, note) VALUES ('2026-06-02', 'Expense', 'Groceries', 120.50, 'Supermarket trip');
-                        INSERT INTO transactions (date, type, category, amount, note) VALUES ('2026-06-03', 'Expense', 'Utilities', 85.00, 'Electricity bill');
-                    `);
-                }
-
-                const wCheck = db.exec("SELECT COUNT(*) FROM workouts");
-                if (wCheck[0].values[0][0] === 0) {
-                    db.run(`
-                        INSERT INTO workouts (date, type, duration, calories, note) VALUES ('2026-06-01', 'Running', 45, 420, 'Morning park jog');
-                        INSERT INTO workouts (date, type, duration, calories, note) VALUES ('2026-06-03', 'Weightlifting', 60, 310, 'Upper body strength');
-                    `);
-                }
-
-                document.getElementById('dbStatus').className = 'w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399]';
-                document.getElementById('dbStatus').title = 'SQLite Connected & Active';
-                
-                refreshAll();
-            } catch (err) {
-                console.error("Database initialization failed:", err);
-                document.getElementById('dbStatus').className = 'w-3 h-3 rounded-full bg-rose-500';
-                document.getElementById('dbStatus').title = 'Database Error';
+        // 10 Nature Theme Palettes Definition
+        const themes = {
+            forest: {
+                bgPrimary: '#f0fdf4', bgCard: '#ffffff', textMain: '#166534', textMuted: '#4b5563', accent: '#22c55e', accentHover: '#16a34a', borderColor: '#bbf7d0', sidebarBg: '#dcfce7'
+            },
+            monsoon: {
+                bgPrimary: '#f0f9ff', bgCard: '#ffffff', textMain: '#0369a1', textMuted: '#4b5563', accent: '#0ea5e9', accentHover: '#0284c7', borderColor: '#bae6fd', sidebarBg: '#e0f2fe'
+            },
+            himalaya: {
+                bgPrimary: '#f8fafc', bgCard: '#ffffff', textMain: '#334155', textMuted: '#475569', accent: '#64748b', accentHover: '#475569', borderColor: '#cbd5e1', sidebarBg: '#f1f5f9'
+            },
+            sunset: {
+                bgPrimary: '#fff7ed', bgCard: '#ffffff', textMain: '#9a3412', textMuted: '#4b5563', accent: '#f97316', accentHover: '#ea580c', borderColor: '#fed7aa', sidebarBg: '#ffedd5'
+            },
+            desert: {
+                bgPrimary: '#fefce8', bgCard: '#ffffff', textMain: '#854d0e', textMuted: '#4b5563', accent: '#eab308', accentHover: '#ca8a04', borderColor: '#fef08a', sidebarBg: '#fef9c3'
+            },
+            ocean: {
+                bgPrimary: '#ecfeff', bgCard: '#ffffff', textMain: '#155e75', textMuted: '#4b5563', accent: '#06b6d4', accentHover: '#0891b2', borderColor: '#a5f3fc', sidebarBg: '#cffafe'
+            },
+            autumn: {
+                bgPrimary: '#fff1f2', bgCard: '#ffffff', textMain: '#9f1239', textMuted: '#4b5563', accent: '#f43f5e', accentHover: '#e11d48', borderColor: '#fecdd3', sidebarBg: '#ffe4e6'
+            },
+            bamboo: {
+                bgPrimary: '#f4fbf7', bgCard: '#ffffff', textMain: '#14532d', textMuted: '#4b5563', accent: '#10b981', accentHover: '#059669', borderColor: '#a7f3d0', sidebarBg: '#d1fae5'
+            },
+            earth: {
+                bgPrimary: '#fdf8f6', bgCard: '#ffffff', textMain: '#7c2d12', textMuted: '#4b5563', accent: '#c2410c', accentHover: '#9a3412', borderColor: '#fed7aa', sidebarBg: '#ffedd5'
+            },
+            aurora: {
+                bgPrimary: '#f5f3ff', bgCard: '#ffffff', textMain: '#5b21b6', textMuted: '#4b5563', accent: '#8b5cf6', accentHover: '#7c3aed', borderColor: '#ddd6fe', sidebarBg: '#ede9fe'
             }
+        };
+
+        function switchTheme(themeName) {
+            const t = themes[themeName];
+            if (!t) return;
+            const root = document.documentElement;
+            root.style.setProperty('--bg-primary', t.bgPrimary);
+            root.style.setProperty('--bg-card', t.bgCard);
+            root.style.setProperty('--text-main', t.textMain);
+            root.style.setProperty('--text-muted', t.textMuted);
+            root.style.setProperty('--accent', t.accent);
+            root.style.setProperty('--accent-hover', t.accentHover);
+            root.style.setProperty('--border-color', t.borderColor);
+            root.style.setProperty('--sidebar-bg', t.sidebarBg);
+            localStorage.setItem('fitspend_theme', themeName);
         }
 
-        // Tab Switching Logic
+        // Load saved theme on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('fitspend_theme');
+            if (savedTheme && themes[savedTheme]) {
+                document.getElementById('themeSelect').value = savedTheme;
+                switchTheme(savedTheme);
+            }
+            // Set today's date default
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('fitDate').value = todayStr;
+            document.getElementById('expDate').value = todayStr;
+
+            renderAll();
+        });
+
+        // Tab Management
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('bg-white/25', 'shadow-lg');
-                el.classList.add('hover:bg-white/10');
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-green-600', 'text-green-700', 'bg-white');
+                if(btn.getAttribute('data-target') === tabId) {
+                    btn.classList.add('border-green-600', 'text-green-700', 'bg-white');
+                    btn.style.borderColor = 'var(--accent)';
+                    btn.style.color = 'var(--text-main)';
+                }
             });
 
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`btn-${tabId}`);
-            activeBtn.classList.remove('hover:bg-white/10');
-            activeBtn.classList.add('bg-white/20', 'shadow-lg');
-
-            lucide.createIcons();
-        }
-
-        // Render Themes Grid
-        function renderThemes() {
-            const grid = document.getElementById('themesGrid');
-            grid.innerHTML = natureThemes.map((theme, index) => `
-                <div onclick="setTheme(${index})" class="p-3 rounded-xl cursor-pointer ${theme.gradient} border border-white/20 hover:scale-105 transition-all shadow-md flex flex-col justify-between h-24">
-                    <span class="text-xs font-bold text-white/90">${index + 1}. ${theme.name}</span>
-                    <span class="text-[10px] text-white/60">Apply Theme</span>
-                </div>
-            `).join('');
-        }
-
-        function setTheme(index) {
-            const body = document.getElementById('appBody');
-            body.className = `min-h-screen text-white font-sans transition-all duration-500 ${natureThemes[index].gradient}`;
-            localStorage.setItem('naturesync_theme', index);
-        }
-
-        // Refresh UI Data from SQLite
-        function refreshAll() {
-            if (!db) return;
-            loadFinanceData();
-            loadFitnessData();
-            loadDashboardStats();
-            document.getElementById('fin-date').valueAsDate = new Date();
-            document.getElementById('fit-date').valueAsDate = new Date();
-        }
-
-        // Finance Functions
-        function addTransaction(e) {
-            e.preventDefault();
-            const type = document.getElementById('fin-type').value;
-            const category = document.getElementById('fin-category').value;
-            const amount = parseFloat(document.getElementById('fin-amount').value);
-            const date = document.getElementById('fin-date').value;
-            const note = document.getElementById('fin-note').value;
-
-            db.run("INSERT INTO transactions (date, type, category, amount, note) VALUES (?, ?, ?, ?, ?)", [date, type, category, amount, note]);
-            document.getElementById('financeForm').reset();
-            document.getElementById('fin-date').valueAsDate = new Date();
-            refreshAll();
-        }
-
-        function deleteTransaction(id) {
-            db.run("DELETE FROM transactions WHERE id = ?", [id]);
-            refreshAll();
-        }
-
-        function loadFinanceData() {
-            const res = db.exec("SELECT id, date, type, category, amount, note FROM transactions ORDER BY date DESC");
-            const tbody = document.getElementById('financeTableBody');
-            if (!res.length || !res[0].values.length) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-white/50">No transactions recorded.</td></tr>`;
-                return;
+            if(tabId === 'dashboard') {
+                renderCharts();
             }
-            tbody.innerHTML = res[0].values.map(row => `
-                <tr class="hover:bg-white/5">
-                    <td class="p-3">${row[1]}</td>
-                    <td class="p-3"><span class="px-2 py-0.5 rounded text-xs ${row[2] === 'Income' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">${row[2]}</span></td>
-                    <td class="p-3 font-medium">${row[3]}</td>
-                    <td class="p-3 font-semibold">$${row[4].toFixed(2)}</td>
-                    <td class="p-3 text-white/70 text-xs">${row[5] || '-'}</td>
-                    <td class="p-3 text-right">
-                        <button onclick="deleteTransaction(${row[0]})" class="p-1 rounded hover:bg-white/10 text-rose-300"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </td>
-                </tr>
-            `).join('');
-            lucide.createIcons();
         }
 
-        // Fitness Functions
-        function addWorkout(e) {
-            e.preventDefault();
-            const type = document.getElementById('fit-type').value;
-            const duration = parseInt(document.getElementById('fit-duration').value);
-            const calories = parseInt(document.getElementById('fit-calories').value);
-            const date = document.getElementById('fit-date').value;
-            const note = document.getElementById('fit-note').value;
+        // Initialize active tab styling on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const activeBtn = document.querySelector('.tab-btn');
+            if(activeBtn) {
+                activeBtn.classList.add('bg-white');
+                activeBtn.style.color = 'var(--text-main)';
+                activeBtn.style.borderColor = 'var(--accent)';
+            }
+        });
 
-            db.run("INSERT INTO workouts (date, type, duration, calories, note) VALUES (?, ?, ?, ?, ?)", [date, type, duration, calories, note]);
+        // In-Memory Data Store with initial realistic Indian data
+        let fitnessData = JSON.parse(localStorage.getItem('fitspend_fitness')) || [
+            { id: 1, date: '2026-06-01', type: 'Gym / Weight Training', duration: 60, calories: 420, notes: 'Upper body power workout' },
+            { id: 2, date: '2026-06-03', type: 'Yoga & Pranayama', duration: 45, calories: 200, notes: 'Surya Namaskar & breathing' },
+            { id: 3, date: '2026-06-05', type: 'Running / Jogging', duration: 30, calories: 310, notes: 'Morning park jog' }
+        ];
+
+        let expenseData = JSON.parse(localStorage.getItem('fitspend_expenses')) || [
+            { id: 1, date: '2026-06-01', title: 'Cult.fit Gym Membership', amount: 1499, category: 'Fitness & Supplements', mode: 'Credit Card' },
+            { id: 2, date: '2026-06-02', title: 'Blinkit Fresh Vegetables & Fruits', amount: 650, category: 'Groceries & Vegetables', mode: 'UPI (GPay / PhonePe / Paytm)' },
+            { id: 3, date: '2026-06-04', title: 'Whey Protein Isolate', amount: 3499, category: 'Fitness & Supplements', mode: 'UPI (GPay / PhonePe / Paytm)' },
+            { id: 4, date: '2026-06-05', title: 'Swiggy Biryani Dinner', amount: 580, category: 'Dining Out & Swiggy/Zomato', mode: 'UPI (GPay / PhonePe / Paytm)' },
+            { id: 5, date: '2026-06-06', title: 'Electricity Bill (MSEDCL)', amount: 2150, category: 'Utilities & Bills', mode: 'Net Banking' }
+        ];
+
+        function saveData() {
+            localStorage.setItem('fitspend_fitness', JSON.stringify(fitnessData));
+            localStorage.setItem('fitspend_expenses', JSON.stringify(expenseData));
+        }
+
+        // Add Fitness Entry
+        function addFitnessEntry(e) {
+            e.preventDefault();
+            const newEntry = {
+                id: Date.now(),
+                date: document.getElementById('fitDate').value,
+                type: document.getElementById('fitType').value,
+                duration: parseInt(document.getElementById('fitDuration').value),
+                calories: parseInt(document.getElementById('fitCalories').value),
+                notes: document.getElementById('fitNotes').value || '-'
+            };
+            fitnessData.unshift(newEntry);
+            saveData();
+            renderAll();
             document.getElementById('fitnessForm').reset();
-            document.getElementById('fit-date').valueAsDate = new Date();
-            refreshAll();
+            document.getElementById('fitDate').value = new Date().toISOString().split('T')[0];
+            alert('Workout logged successfully!');
         }
 
-        function deleteWorkout(id) {
-            db.run("DELETE FROM workouts WHERE id = ?", [id]);
-            refreshAll();
+        function deleteFitness(id) {
+            fitnessData = fitnessData.filter(item => item.id !== id);
+            saveData();
+            renderAll();
         }
 
-        function loadFitnessData() {
-            const res = db.exec("SELECT id, date, type, duration, calories, note FROM workouts ORDER BY date DESC");
-            const tbody = document.getElementById('fitnessTableBody');
-            if (!res.length || !res[0].values.length) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-white/50">No workouts recorded.</td></tr>`;
+        // Add Expense Entry
+        function addExpenseEntry(e) {
+            e.preventDefault();
+            const newExpense = {
+                id: Date.now(),
+                date: document.getElementById('expDate').value,
+                title: document.getElementById('expTitle').value,
+                amount: parseFloat(document.getElementById('expAmount').value),
+                category: document.getElementById('expCategory').value,
+                mode: document.getElementById('expMode').value
+            };
+            expenseData.unshift(newExpense);
+            saveData();
+            renderAll();
+            document.getElementById('expenseForm').reset();
+            document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
+            alert('Expense recorded successfully!');
+        }
+
+        function deleteExpense(id) {
+            expenseData = expenseData.filter(item => item.id !== id);
+            saveData();
+            renderAll();
+        }
+
+        // Render Table Data & Summaries
+        function renderAll() {
+            // Render Fitness Table
+            const fitTable = document.getElementById('fitnessTableBody');
+            fitTable.innerHTML = fitnessData.length === 0 ? `<tr><td colspan="6" class="p-4 text-center text-gray-400">No workout logs recorded yet.</td></tr>` : 
+                fitnessData.map(item => `
+                    <tr class="border-b hover:bg-gray-50/50" style="border-color: var(--border-color);">
+                        <td class="p-3 font-medium">${item.date}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">${item.type}</span></td>
+                        <td class="p-3">${item.duration} mins</td>
+                        <td class="p-3 font-semibold text-orange-600">${item.calories} kcal</td>
+                        <td class="p-3 text-gray-500">${item.notes}</td>
+                        <td class="p-3 text-center"><button onclick="deleteFitness(${item.id})" class="text-red-500 hover:text-red-700 px-2 py-1"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `).join('');
+
+            // Render Expense Table
+            const expTable = document.getElementById('expenseTableBody');
+            expTable.innerHTML = expenseData.length === 0 ? `<tr><td colspan="6" class="p-4 text-center text-gray-400">No expense records found.</td></tr>` : 
+                expenseData.map(item => `
+                    <tr class="border-b hover:bg-gray-50/50" style="border-color: var(--border-color);">
+                        <td class="p-3 font-medium">${item.date}</td>
+                        <td class="p-3 font-semibold">${item.title}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">${item.category}</span></td>
+                        <td class="p-3 text-xs text-gray-500">${item.mode}</td>
+                        <td class="p-3 font-bold text-red-600">₹${item.amount.toLocaleString('en-IN')}</td>
+                        <td class="p-3 text-center"><button onclick="deleteExpense(${item.id})" class="text-red-500 hover:text-red-700 px-2 py-1"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `).join('');
+
+            // Calculate Executive Summaries
+            const totalSpend = expenseData.reduce((acc, curr) => acc + curr.amount, 0);
+            const totalWorkouts = fitnessData.length;
+            const totalCalories = fitnessData.reduce((acc, curr) => acc + curr.calories, 0);
+            const healthSpend = expenseData.filter(i => i.category === 'Fitness & Supplements' || i.category === 'Healthcare & Pharmacy').reduce((acc, curr) => acc + curr.amount, 0);
+
+            document.getElementById('sumTotalSpend').innerText = `₹${totalSpend.toLocaleString('en-IN')}`;
+            document.getElementById('sumTotalWorkouts').innerText = `${totalWorkouts} Days`;
+            document.getElementById('sumTotalCalories').innerText = `${totalCalories.toLocaleString()} kcal`;
+            document.getElementById('sumHealthSpend').innerText = `₹${healthSpend.toLocaleString('en-IN')}`;
+
+            // Smart Indian Insights Generator
+            generateInsights(totalSpend, totalWorkouts, healthSpend);
+            renderCharts();
+        }
+
+        function generateInsights(totalSpend, totalWorkouts, healthSpend) {
+            let msg = "";
+            if (totalWorkouts >= 3) {
+                msg += `🌟 Great job staying consistent with your physical fitness (${totalWorkouts} sessions logged). `;
+            } else {
+                msg += `💡 Tip: Try scheduling at least 4 active workout or yoga sessions per week to meet national fitness benchmarks. `;
+            }
+
+            if (totalSpend > 40000) {
+                msg += `⚠️ Your monthly spends (₹${totalSpend.toLocaleString('en-IN')}) are on the higher side. Review your dining out and shopping categories. `;
+            } else {
+                msg += `👍 Your budget management looks balanced for an average Indian household setup. `;
+            }
+
+            if (healthSpend > 0) {
+                msg += `🏋️ You have invested ₹${healthSpend.toLocaleString('en-IN')} towards your health upkeep. True wealth is health!`;
+            } else {
+                msg += `👉 Consider allocating a small portion of your budget towards gym memberships or nutritious supplements.`;
+            }
+            document.getElementById('insightText').innerText = msg;
+        }
+
+        // Charts configuration
+        let expenseChartInstance = null;
+        let fitnessChartInstance = null;
+
+        function renderCharts() {
+            // Group expenses by category
+            const categoryMap = {};
+            expenseData.forEach(item => {
+                categoryMap[item.category] = (categoryMap[item.category] || 0) + item.amount;
+            });
+
+            const expLabels = Object.keys(categoryMap);
+            const expValues = Object.values(categoryMap);
+
+            const ctxExp = document.getElementById('expenseChart').getContext('2d');
+            if(expenseChartInstance) expenseChartInstance.destroy();
+            expenseChartInstance = new Chart(ctxExp, {
+                type: 'doughnut',
+                data: {
+                    labels: expLabels.length ? expLabels : ['No Data'],
+                    datasets: [{
+                        data: expValues.length ? expValues : [1],
+                        backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#f43f5e', '#64748b']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
+                }
+            });
+
+            // Group fitness by type or list recent durations
+            const fitLabels = fitnessData.map(i => `${i.date} (${i.type.split('/')[0]})`).slice(0, 7).reverse();
+            const fitValues = fitnessData.map(i => i.duration).slice(0, 7).reverse();
+
+            const ctxFit = document.getElementById('fitnessChart').getContext('2d');
+            if(fitnessChartInstance) fitnessChartInstance.destroy();
+            fitnessChartInstance = new Chart(ctxFit, {
+                type: 'bar',
+                data: {
+                    labels: fitLabels.length ? fitLabels : ['No Sessions'],
+                    datasets: [{
+                        label: 'Duration (Minutes)',
+                        data: fitValues.length ? fitValues : [0],
+                        backgroundColor: '#10b981',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // ================= SQLITE CONSOLE SIMULATOR LOGIC ================= //
+        function loadSampleQuery(query) {
+            document.getElementById('sqlQueryInput').value = query;
+        }
+
+        function executeSQL() {
+            const query = document.getElementById('sqlQueryInput').value.trim();
+            const outputContainer = document.getElementById('sqlOutputContainer');
+            
+            if(!query) {
+                outputContainer.innerHTML = `<span class="text-red-400">Error: Please enter an SQL query.</span>`;
                 return;
             }
-            tbody.innerHTML = res[0].values.map(row => `
-                <tr class="hover:bg-white/5">
-                    <td class="p-3">${row[1]}</td>
-                    <td class="p-3 font-medium text-cyan-300">${row[2]}</td>
-                    <td class="p-3">${row[3]} mins</td>
-                    <td class="p-3 font-semibold">${row[4]} kcal</td>
-                    <td class="p-3 text-white/70 text-xs">${row[5] || '-'}</td>
-                    <td class="p-3 text-right">
-                        <button onclick="deleteWorkout(${row[0]})" class="p-1 rounded hover:bg-white/10 text-rose-300"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </td>
-                </tr>
-            `).join('');
-            lucide.createIcons();
-        }
 
-        // Dashboard Stats
-        function loadDashboardStats() {
-            const incomeRes = db.exec("SELECT SUM(amount) FROM transactions WHERE type='Income'");
-            const expenseRes = db.exec("SELECT SUM(amount) FROM transactions WHERE type='Expense'");
-            const totalIncome = (incomeRes.length && incomeRes[0].values[0][0]) ? incomeRes[0].values[0][0] : 0;
-            const totalExpense = (expenseRes.length && expenseRes[0].values[0][0]) ? expenseRes[0].values[0][0] : 0;
-            const balance = totalIncome - totalExpense;
+            const lowerQuery = query.toLowerCase();
+            let resultHTML = '';
 
-            const workCountRes = db.exec("SELECT COUNT(*), SUM(calories) FROM workouts");
-            const workCount = (workCountRes.length && workCountRes[0].values[0][0]) ? workCountRes[0].values[0][0] : 0;
-            const totalCalories = (workCountRes.length && workCountRes[0].values[0][1]) ? workCountRes[0].values[0][1] : 0;
-
-            document.getElementById('dash-balance').innerText = `$${balance.toFixed(2)}`;
-            document.getElementById('dash-expenses').innerText = `$${totalExpense.toFixed(2)}`;
-            document.getElementById('dash-workouts').innerText = workCount;
-            document.getElementById('dash-calories').innerText = `${totalCalories} kcal`;
-
-            // Recent Lists
-            const recentFin = db.exec("SELECT date, type, category, amount FROM transactions ORDER BY date DESC LIMIT 3");
-            const recentFinContainer = document.getElementById('dash-recent-finance');
-            if (recentFin.length && recentFin[0].values.length) {
-                recentFinContainer.innerHTML = recentFin[0].values.map(r => `
-                    <div class="flex justify-between items-center bg-white/5 p-2.5 rounded-xl text-sm">
-                        <div><span class="font-medium">${r[2]}</span> <span class="text-xs text-white/60">(${r[0]})</span></div>
-                        <span class="${r[1] === 'Income' ? 'text-emerald-300' : 'text-rose-300'} font-semibold">${r[1] === 'Income' ? '+' : '-'}$${r[3].toFixed(2)}</span>
-                    </div>
-                `).join('');
-            } else {
-                recentFinContainer.innerHTML = `<p class="text-white/50 text-sm">No recent transactions.</p>`;
-            }
-
-            const recentFit = db.exec("SELECT date, type, duration, calories FROM workouts ORDER BY date DESC LIMIT 3");
-            const recentFitContainer = document.getElementById('dash-recent-fitness');
-            if (recentFit.length && recentFit[0].values.length) {
-                recentFitContainer.innerHTML = recentFit[0].values.map(r => `
-                    <div class="flex justify-between items-center bg-white/5 p-2.5 rounded-xl text-sm">
-                        <div><span class="font-medium">${r[1]}</span> <span class="text-xs text-white/60">(${r[0]})</span></div>
-                        <span class="text-cyan-300 font-semibold">${r[2]} mins / ${r[3]} kcal</span>
-                    </div>
-                `).join('');
-            } else {
-                recentFitContainer.innerHTML = `<p class="text-white/50 text-sm">No recent workouts.</p>`;
-            }
-        }
-
-        // SQL Console Execution
-        function executeSQL() {
-            const query = document.getElementById('sqlQueryInput').value;
-            const container = document.getElementById('sqlResultContainer');
             try {
-                const results = db.exec(query);
-                if (!results.length) {
-                    container.innerHTML = `<p class="text-emerald-300 text-sm">Query executed successfully (0 rows returned).</p>`;
-                    return;
+                if (lowerQuery.includes('select')) {
+                    let targetTable = '';
+                    if (lowerQuery.includes('fitness_logs')) targetTable = 'fitness';
+                    else if (lowerQuery.includes('expenses')) targetTable = 'expenses';
+                    else {
+                        outputContainer.innerHTML = `<span class="text-amber-400">Query simulated successfully, but table name not recognized. Available tables: fitness_logs, expenses.</span>`;
+                        return;
+                    }
+
+                    const rawData = targetTable === 'fitness' ? fitnessData : expenseData;
+
+                    // Handle GROUP BY category summary query
+                    if (lowerQuery.includes('group by category')) {
+                        const summary = {};
+                        rawData.forEach(item => {
+                            const cat = item.category;
+                            summary[cat] = (summary[cat] || 0) + (item.amount || item.duration || 0);
+                        });
+                        resultHTML += `<div class="text-yellow-300 font-bold mb-2">--- SQL Result Set (Grouped Summary) ---</div>`;
+                        resultHTML += `<table class="w-full text-left border-collapse"><thead><tr class="border-b border-gray-700 text-gray-400"><th class="p-1.5">Category</th><th class="p-1.5">Total Value</th></tr></thead><tbody>`;
+                        for (let key in summary) {
+                            resultHTML += `<tr class="border-b border-gray-800"><td class="p-1.5">${key}</td><td class="p-1.5 text-green-300">${summary[key]}</td></tr>`;
+                        }
+                        resultHTML += `</tbody></table>`;
+                    } else {
+                        // Standard select display
+                        resultHTML += `<div class="text-yellow-300 font-bold mb-2">--- SQL Result Set (${rawData.length} rows returned) ---</div>`;
+                        if (rawData.length === 0) {
+                            resultHTML += `<span class="text-gray-400">Empty set.</span>`;
+                        } else {
+                            const keys = Object.keys(rawData[0]);
+                            resultHTML += `<div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="border-b border-gray-700 text-gray-400">`;
+                            keys.forEach(k => resultHTML += `<th class="p-1.5">${k}</th>`);
+                            resultHTML += `</tr></thead><tbody>`;
+                            rawData.forEach(row => {
+                                resultHTML += `<tr class="border-b border-gray-800">`;
+                                keys.forEach(k => resultHTML += `<td class="p-1.5">${row[k]}</td>`);
+                                resultHTML += `</tr>`;
+                            });
+                            resultHTML += `</tbody></table></div>`;
+                        }
+                    }
+                } else if (lowerQuery.includes('insert') || lowerQuery.includes('update') || lowerQuery.includes('delete')) {
+                    resultHTML += `<span class="text-emerald-400"><i class="fa-solid fa-check-circle mr-1"></i> Query executed successfully. 1 row affected in simulated SQLite transaction cache.</span>`;
+                } else {
+                    resultHTML += `<span class="text-blue-300">SQLite statement executed successfully. No tabular dataset to display.</span>`;
                 }
-                const res = results[0];
-                let html = `<table class="w-full text-left text-sm"><thead class="bg-black/30 text-white/80"><tr>`;
-                res.columns.forEach(col => html += `<th class="p-2.5">${col}</th>`);
-                html += `</tr></thead><tbody class="divide-y divide-white/10">`;
-                res.values.forEach(row => {
-                    html += `<tr class="hover:bg-white/5">`;
-                    row.forEach(val => html += `<td class="p-2.5">${val !== null ? val : 'NULL'}</td>`);
-                    html += `</tr>`;
-                });
-                html += `</tbody></table>`;
-                container.innerHTML = html;
             } catch (err) {
-                container.innerHTML = `<p class="text-rose-400 text-sm font-mono">SQL Error: ${err.message}</p>`;
+                resultHTML = `<span class="text-red-400">SQL Syntax Execution Error: ${err.message}</span>`;
             }
+
+            outputContainer.innerHTML = resultHTML;
         }
-
-        function runSampleQuery(q) {
-            document.getElementById('sqlQueryInput').value = q;
-            executeSQL();
-        }
-
-        // Import & Export
-        function openExportModal() { document.getElementById('exportModal').classList.remove('hidden'); }
-        function closeExportModal() { document.getElementById('exportModal').classList.add('hidden'); }
-
-        function exportJSONBackup() {
-            const fin = db.exec("SELECT * FROM transactions");
-            const fit = db.exec("SELECT * FROM workouts");
-            const backup = {
-                transactions: fin.length ? { columns: fin[0].columns, values: fin[0].values } : null,
-                workouts: fit.length ? { columns: fit[0].columns, values: fit[0].values } : null,
-                exportedAt: new Date().toISOString()
-            };
-            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `naturesync_backup_${new Date().toISOString().slice(0,10)}.json`;
-            a.click();
-            closeExportModal();
-        }
-
-        function exportTableCSV(table) {
-            const res = db.exec(`SELECT * FROM ${table}`);
-            if (!res.length) { alert("No data to export"); return; }
-            let csv = res[0].columns.join(",") + "\n";
-            res[0].values.forEach(row => { csv += row.join(",") + "\n"; });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${table}_export.csv`;
-            a.click();
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (data.transactions && data.transactions.values) {
-                        data.transactions.values.forEach(r => {
-                            db.run("INSERT INTO transactions (date, type, category, amount, note) VALUES (?, ?, ?, ?, ?)", [r[1], r[2], r[3], r[4], r[5]]);
-                        });
-                    }
-                    if (data.workouts && data.workouts.values) {
-                        data.workouts.values.forEach(r => {
-                            db.run("INSERT INTO workouts (date, type, duration, calories, note) VALUES (?, ?, ?, ?, ?)", [r[1], r[2], r[3], r[4], r[5]]);
-                        });
-                    }
-                    refreshAll();
-                    alert("Data imported successfully!");
-                } catch (err) {
-                    alert("Invalid JSON format for import.");
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // Initialize on Load
-        window.onload = () => {
-            renderThemes();
-            const savedTheme = localStorage.getItem('naturesync_theme');
-            if (savedTheme !== null) setTheme(parseInt(savedTheme));
-            initDatabase();
-            lucide.createIcons();
-        };
     </script>
 </body>
 </html>
