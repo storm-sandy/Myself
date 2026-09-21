@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SansthaSpend Bharat - School, College & Institute Fee, Payroll & Expense Command Center</title>
+    <!-- Chart.js UMD stable build CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --accent: #4f46e5;
+            --accent-hover: #4338ca;
+            --border-color: #cbd5e1;
+            --sidebar-bg: #f1f5f9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-muted);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1280px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 12px; }
+        .gap-4 { gap: 16px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; }
+        @media(max-width: 1024px) { .grid-3 { grid-template-columns: 1fr; } }
+
+        .theme-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-accent:hover { background-color: var(--accent-hover); }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-outline:hover { background: #f1f5f9; }
+
+        label.form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            font-size: 14px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            outline: none;
+        }
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        .tabs-header {
+            display: flex;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--border-color);
+            gap: 8px;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 8px 8px 0 0;
+            transition: 0.2s;
+        }
+        .tab-btn.active-tab {
+            color: var(--text-main);
+            border-bottom-color: var(--accent);
+            background-color: var(--bg-card);
+        }
+        .hidden { display: none !important; }
+
+        .table-container { overflow-x: auto; width: 100%; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th { font-weight: 600; color: var(--text-main); }
+
+        .badge-cat {
+            background-color: #e0e7ff;
+            color: #4338ca;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .icon-box {
+            padding: 12px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .console-box {
+            background-color: #0f172a;
+            color: #38bdf8;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            min-height: 160px;
+            max-height: 320px;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 16px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header & Navigation Bar -->
+    <header>
+        <div class="header-container">
+            <div class="flex items-center gap-3">
+                <div class="icon-box" style="background-color: var(--accent); color: white;">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h1 style="font-size: 18px; font-weight: bold; color: var(--text-main);">SansthaSpend Bharat</h1>
+                    <p style="font-size: 11px; color: var(--text-muted);">School, College, Coaching Institute & Campus Financial Hub</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4" style="flex-wrap: wrap;">
+                <div class="flex items-center gap-2" style="background: #f8fafc; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 8px;">
+                    <button onclick="exportCSV()" class="btn-outline">
+                        <i class="fa-solid fa-file-csv" style="color: #16a34a;"></i> Export CSV
+                    </button>
+                    <label class="btn-outline" style="cursor: pointer;">
+                        <i class="fa-solid fa-upload" style="color: #4f46e5;"></i> Import CSV
+                        <input type="file" id="csvFileInput" accept=".csv" onchange="importCSV(event)" style="display: none;">
+                    </label>
+                    <button onclick="exportDatabaseDump()" class="btn-outline">
+                        <i class="fa-solid fa-database" style="color: #9333ea;"></i> Dump DB JSON
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <label for="themeSelect" class="form-label" style="margin-bottom:0;"><i class="fa-solid fa-palette"></i> Theme:</label>
+                    <select id="themeSelect" onchange="switchTheme(this.value)" class="form-control" style="width: auto; padding: 6px 10px;">
+                        <option value="modern">🎓 Academic Indigo</option>
+                        <option value="forest">🌲 Campus Green</option>
+                        <option value="monsoon">🌧️ Monsoon Rain</option>
+                        <option value="sunset">🌅 Western Ghats Sunset</option>
+                        <option value="ocean">🌊 Coastal Ocean Wave</option>
+                        <option value="aurora">🌌 Northern Lights</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main>
+        <div class="tabs-header" id="tabHeaders">
+            <button onclick="switchTab('dashboard')" class="tab-btn active-tab" data-target="dashboard">
+                <i class="fa-solid fa-chart-pie"></i> Executive Summary
+            </button>
+            <button onclick="switchTab('expenses')" class="tab-btn" data-target="expenses">
+                <i class="fa-solid fa-receipt"></i> Ledger & Transactions
+            </button>
+            <button onclick="switchTab('console')" class="tab-btn" data-target="console">
+                <i class="fa-solid fa-terminal"></i> SQLite SQL Console
+            </button>
+        </div>
+
+        <!-- ================= TAB 1: EXECUTIVE SUMMARY ================= -->
+        <div id="tab-dashboard" class="flex" style="flex-direction: column; gap: 24px;">
+            <div class="grid-4">
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Total Institutional Outflow</p>
+                        <h3 id="sumTotalSpend" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">₹0</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Monthly Operating Budget</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #e0e7ff; color: #4338ca;">
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Faculty & Payroll</p>
+                        <h3 id="sumPayrollSpend" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">₹0</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Lecturers, Staff & Admin Salaries</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #fef3c7; color: #d97706;">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Labs, ICT & Equipment</p>
+                        <h3 id="sumEquipSpend" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">₹0</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Computers, Projectors, Science Kits</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #d1fae5; color: #059669;">
+                        <i class="fa-solid fa-computer"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Logged Vouchers</p>
+                        <h3 id="sumTotalCount" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">0 Items</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Active Ledger Entries</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #ede9fe; color: #7c3aed;">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card" style="border-left: 4px solid var(--accent);">
+                <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 4px; color: var(--text-main);">
+                    <i class="fa-solid fa-circle-info" style="color: var(--accent); margin-right: 6px;"></i>Sanstha Financial & Budgeting Insights
+                </h4>
+                <p id="insightText" style="font-size: 13px; color: var(--text-muted);">Analyzing institution ledgers...</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="theme-card">
+                    <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 16px; color: var(--text-main);">Expenditure Share by Category (₹)</h4>
+                    <div style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+                <div class="theme-card">
+                    <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 16px; color: var(--text-main);">Disbursement Mode Breakdown</h4>
+                    <div style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="modeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: EXPENSES & FEES TRACKER ================= -->
+        <div id="tab-expenses" class="hidden grid-3">
+            <div class="theme-card">
+                <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 16px; color: var(--text-main);">
+                    <i class="fa-solid fa-plus-circle" style="margin-right: 6px;"></i>Log Transaction / Voucher
+                </h3>
+                <form id="expenseForm" onsubmit="addExpense(event)" style="display: flex; flex-direction: column; gap: 14px;">
+                    <div>
+                        <label class="form-label">Date</label>
+                        <input type="date" id="expDate" required class="form-control">
+                    </div>
+                    <div>
+                        <label class="form-label">Particulars / Vendor / Payee</label>
+                        <input type="text" id="expTitle" placeholder="e.g. Prof. Sharma Honorarium, Dell Desktops" required class="form-control">
+                    </div>
+                    <div>
+                        <label class="form-label">Amount (₹)</label>
+                        <input type="number" id="expAmount" placeholder="e.g. 45000" required min="1" step="0.01" class="form-control">
+                    </div>
+                    <div>
+                        <label class="form-label">Category</label>
+                        <select id="expCategory" class="form-control">
+                            <option value="Faculty Payroll">👨‍🏫 Faculty & Staff Salaries / Honorarium</option>
+                            <option value="Labs & ICT">💻 Computer Labs, Projectors & IT Upgrades</option>
+                            <option value="Library">📚 Books, Journals & Library Subscriptions</option>
+                            <option value="Events & Fests">🎭 Annual Function, Sports & Cultural Events</option>
+                            <option value="Maintenance">🔧 Campus Repairs, Cleaning & Plumbing</option>
+                            <option value="Utilities">💡 Electricity, Water & Internet Bills</option>
+                            <option value="Fee Refunds / Scholarships">🎓 Student Scholarships & Fee Refunds</option>
+                            <option value="Other Expenses">📦 Miscellaneous Institutional Spends</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Payment Mode</label>
+                        <select id="expMode" class="form-control">
+                            <option value="Bank NEFT/RTGS">🏦 Bank Transfer (NEFT / RTGS)</option>
+                            <option value="UPI Institution ID">📱 UPI Institutional Handle</option>
+                            <option value="Cheque">✍️ Account Payee Cheque</option>
+                            <option value="Institutional Card">💳 Corporate Debit/Credit Card</option>
+                            <option value="Petty Cash">💵 Petty Cash Voucher</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Voucher / Bill Ref & Notes</label>
+                        <input type="text" id="expNotes" placeholder="e.g. Voucher #402, Term-1 Audit" class="form-control">
+                    </div>
+                    <button type="submit" class="btn-accent" style="width: 100%; margin-top: 6px;">Save Voucher Entry</button>
+                </form>
+            </div>
+
+            <div class="theme-card">
+                <div class="flex justify-between items-center" style="margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="font-size: 16px; font-weight: bold; color: var(--text-main);">
+                        <i class="fa-solid fa-list-check" style="margin-right: 6px;"></i>Institutional Ledger
+                    </h3>
+                    <input type="text" id="searchFilter" onkeyup="filterLedger()" placeholder="Search particulars..." class="form-control" style="width: 220px; padding: 6px 10px;">
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Particulars / Payee</th>
+                                <th>Category</th>
+                                <th>Mode</th>
+                                <th>Amount</th>
+                                <th style="text-align: center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: SQLITE CONSOLE SIMULATOR ================= -->
+        <div id="tab-console" class="hidden flex" style="flex-direction: column; gap: 24px;">
+            <div class="theme-card">
+                <div class="flex justify-between items-center" style="margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h3 style="font-size: 16px; font-weight: bold; color: var(--text-main);">
+                            <i class="fa-solid fa-database" style="margin-right: 6px;"></i>SQLite In-Memory Console & DB Storage
+                        </h3>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Query your institutional table: <code style="background: #f1f5f9; padding: 2px 4px; border-radius: 4px; color: var(--accent);">sanstha_expenses</code></p>
+                    </div>
+                    <div class="flex gap-2" style="flex-wrap: wrap;">
+                        <button onclick="loadSampleQuery('SELECT * FROM sanstha_expenses;')" class="btn-outline">SELECT All Vouchers</button>
+                        <button onclick="loadSampleQuery('SELECT category, SUM(amount) as total_outflow FROM sanstha_expenses GROUP BY category;')" class="btn-outline">Category Summary SQL</button>
+                        <button onclick="loadSampleQuery('SELECT * FROM sanstha_expenses WHERE category = \'Faculty Payroll\';')" class="btn-outline">Payroll Vouchers Only</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <textarea id="sqlQueryInput" rows="3" class="form-control" style="font-family: monospace; background-color: #0f172a; color: #38bdf8; border-color: #334155;" placeholder="Enter SQL query..."></textarea>
+                    <div class="flex justify-between items-center" style="flex-wrap: wrap; gap: 10px;">
+                        <span style="font-size: 11px; color: var(--text-muted);"><i class="fa-solid fa-circle-info" style="margin-right: 4px;"></i>Supports SQL selectors & audits.</span>
+                        <button onclick="executeSQL()" class="btn-accent flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i> Run SQL Query
+                        </button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <p class="form-label" style="margin-bottom: 8px;">Console Output Result Window</p>
+                    <div id="sqlOutputContainer" class="console-box">
+                        <span style="color: #64748b;">-- SQLite simulator engine initialized for SansthaSpend...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        SansthaSpend Bharat &copy; 2026 | Built for Schools, Colleges, Universities & Educational Institutes
+    </footer>
+
+    <!-- Application JavaScript Engine -->
+    <script>
+        const themes = {
+            modern: { bgPrimary: '#f8fafc', bgCard: '#ffffff', textMain: '#0f172a', textMuted: '#475569', accent: '#4f46e5', accentHover: '#4338ca', borderColor: '#cbd5e1', sidebarBg: '#f1f5f9' },
+            forest: { bgPrimary: '#f0fdf4', bgCard: '#ffffff', textMain: '#166534', textMuted: '#4b5563', accent: '#22c55e', accentHover: '#16a34a', borderColor: '#bbf7d0', sidebarBg: '#dcfce7' },
+            monsoon: { bgPrimary: '#f0f9ff', bgCard: '#ffffff', textMain: '#0369a1', textMuted: '#4b5563', accent: '#0ea5e9', accentHover: '#0284c7', borderColor: '#bae6fd', sidebarBg: '#e0f2fe' },
+            sunset: { bgPrimary: '#fff7ed', bgCard: '#ffffff', textMain: '#9a3412', textMuted: '#4b5563', accent: '#f97316', accentHover: '#ea580c', borderColor: '#fed7aa', sidebarBg: '#ffedd5' },
+            ocean: { bgPrimary: '#ecfeff', bgCard: '#ffffff', textMain: '#155e75', textMuted: '#4b5563', accent: '#06b6d4', accentHover: '#0891b2', borderColor: '#a5f3fc', sidebarBg: '#cffafe' },
+            aurora: { bgPrimary: '#f5f3ff', bgCard: '#ffffff', textMain: '#5b21b6', textMuted: '#4b5563', accent: '#8b5cf6', accentHover: '#7c3aed', borderColor: '#ddd6fe', sidebarBg: '#ede9fe' }
+        };
+
+        function switchTheme(themeName) {
+            const t = themes[themeName];
+            if (!t) return;
+            const root = document.documentElement;
+            root.style.setProperty('--bg-primary', t.bgPrimary);
+            root.style.setProperty('--bg-card', t.bgCard);
+            root.style.setProperty('--text-main', t.textMain);
+            root.style.setProperty('--text-muted', t.textMuted);
+            root.style.setProperty('--accent', t.accent);
+            root.style.setProperty('--accent-hover', t.accentHover);
+            root.style.setProperty('--border-color', t.borderColor);
+            root.style.setProperty('--sidebar-bg', t.sidebarBg);
+            localStorage.setItem('sansthaspend_theme', themeName);
+        }
+
+        let expensesData = JSON.parse(localStorage.getItem('sansthaspend_expenses')) || [
+            { id: 1, date: '2026-06-01', title: 'Monthly Faculty & Lecturer Payroll', amount: 850000, category: 'Faculty Payroll', mode: 'Bank NEFT/RTGS', notes: 'May 2026 Staff Salaries' },
+            { id: 2, date: '2026-06-03', title: 'Dell Core i5 Desktops for Lab-2', amount: 320000, category: 'Labs & ICT', mode: 'Bank NEFT/RTGS', notes: 'Invoice #992' },
+            { id: 3, date: '2026-06-05', title: 'Annual Sports Day Medals & Trophies', amount: 45000, category: 'Events & Fests', mode: 'UPI Institution ID', notes: 'Sports Committee' },
+            { id: 4, date: '2026-06-08', title: 'Campus Power & Electricity Bill', amount: 64000, category: 'Utilities', mode: 'Bank NEFT/RTGS', notes: 'MSEDCL / BESCOM' },
+            { id: 5, date: '2026-06-10', title: 'Library Reference Books & Journals', amount: 28000, category: 'Library', mode: 'Cheque', notes: 'Academic Year 2026-27' }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('sansthaspend_theme');
+            if (savedTheme && themes[savedTheme]) {
+                document.getElementById('themeSelect').value = savedTheme;
+                switchTheme(savedTheme);
+            }
+            document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
+            renderAll();
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active-tab');
+                if(btn.getAttribute('data-target') === tabId) {
+                    btn.classList.add('active-tab');
+                }
+            });
+
+            if(tabId === 'dashboard') {
+                setTimeout(() => renderCharts(), 50);
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('sansthaspend_expenses', JSON.stringify(expensesData));
+        }
+
+        function addExpense(e) {
+            e.preventDefault();
+            const newEntry = {
+                id: Date.now(),
+                date: document.getElementById('expDate').value,
+                title: document.getElementById('expTitle').value,
+                amount: parseFloat(document.getElementById('expAmount').value),
+                category: document.getElementById('expCategory').value,
+                mode: document.getElementById('expMode').value,
+                notes: document.getElementById('expNotes').value || '-'
+            };
+            expensesData.unshift(newEntry);
+            saveData();
+            renderAll();
+            document.getElementById('expenseForm').reset();
+            document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
+            alert('Voucher entry successfully recorded!');
+        }
+
+        function deleteExpense(id) {
+            expensesData = expensesData.filter(item => item.id !== id);
+            saveData();
+            renderAll();
+        }
+
+        function filterLedger() {
+            const query = document.getElementById('searchFilter').value.toLowerCase();
+            const rows = document.querySelectorAll('#expenseTableBody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        function renderAll() {
+            const tableBody = document.getElementById('expenseTableBody');
+            tableBody.innerHTML = expensesData.length === 0 ? `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No vouchers logged yet.</td></tr>` : 
+                expensesData.map(item => `
+                    <tr>
+                        <td style="font-weight: 500;">${item.date}</td>
+                        <td style="font-weight: 600;">${item.title} <div style="font-size: 11px; color: var(--text-muted); font-weight: normal;">${item.notes}</div></td>
+                        <td><span class="badge-cat">${item.category}</span></td>
+                        <td style="font-size: 12px; color: var(--text-muted);">${item.mode}</td>
+                        <td style="font-weight: bold; color: var(--accent);">₹${item.amount.toLocaleString('en-IN')}</td>
+                        <td style="text-align: center;"><button onclick="deleteExpense(${item.id})" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px;"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `).join('');
+
+            const totalSpend = expensesData.reduce((acc, curr) => acc + curr.amount, 0);
+            const payrollSpend = expensesData.filter(i => i.category === 'Faculty Payroll').reduce((acc, curr) => acc + curr.amount, 0);
+            const equipSpend = expensesData.filter(i => i.category === 'Labs & ICT' || i.category === 'Library').reduce((acc, curr) => acc + curr.amount, 0);
+            const totalCount = expensesData.length;
+
+            document.getElementById('sumTotalSpend').innerText = `₹${totalSpend.toLocaleString('en-IN')}`;
+            document.getElementById('sumPayrollSpend').innerText = `₹${payrollSpend.toLocaleString('en-IN')}`;
+            document.getElementById('sumEquipSpend').innerText = `₹${equipSpend.toLocaleString('en-IN')}`;
+            document.getElementById('sumTotalCount').innerText = `${totalCount} Items`;
+
+            generateInsights(totalSpend, payrollSpend);
+            renderCharts();
+        }
+
+        function generateInsights(totalSpend, payrollSpend) {
+            let msg = "";
+            const payrollRatio = totalSpend > 0 ? ((payrollSpend / totalSpend) * 100).toFixed(1) : 0;
+            msg += `👨‍🏫 Faculty and staff payroll comprises ${payrollRatio}% of total institutional outflow. `;
+            if (totalSpend > 1500000) {
+                msg += `⚠️ High-volume operating period. Ensure fee collections match departmental burn rates.`;
+            } else {
+                msg += `👍 Institutional operational budget is well within sustainable thresholds.`;
+            }
+            document.getElementById('insightText').innerText = msg;
+        }
+
+        let categoryChartInstance = null;
+        let modeChartInstance = null;
+
+        function renderCharts() {
+            if (typeof Chart === 'undefined') return;
+
+            const catMap = {};
+            const modeMap = {};
+
+            expensesData.forEach(item => {
+                catMap[item.category] = (catMap[item.category] || 0) + item.amount;
+                modeMap[item.mode] = (modeMap[item.mode] || 0) + item.amount;
+            });
+
+            // Category Chart
+            const ctxCat = document.getElementById('categoryChart');
+            if (ctxCat) {
+                if(categoryChartInstance) categoryChartInstance.destroy();
+                categoryChartInstance = new Chart(ctxCat.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(catMap).length ? Object.keys(catMap) : ['No Data'],
+                        datasets: [{
+                            data: Object.values(catMap).length ? Object.values(catMap) : [1],
+                            backgroundColor: ['#4f46e5', '#38bdf8', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899', '#f43f5e', '#64748b']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
+                    }
+                });
+            }
+
+            // Payment Mode Chart
+            const ctxMode = document.getElementById('modeChart');
+            if (ctxMode) {
+                if(modeChartInstance) modeChartInstance.destroy();
+                modeChartInstance = new Chart(ctxMode.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(modeMap).length ? Object.keys(modeMap) : ['No Data'],
+                        datasets: [{
+                            label: 'Amount (₹)',
+                            data: Object.values(modeMap).length ? Object.values(modeMap) : [0],
+                            backgroundColor: '#4f46e5',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        function exportCSV() {
+            if(expensesData.length === 0) { alert('No data.'); return; }
+            let csvContent = "data:text/csv;charset=utf-8,ID,Date,Title,Amount,Category,PaymentMode,Notes\r\n";
+            expensesData.forEach(item => {
+                csvContent += [item.id, item.date, `"${item.title}"`, item.amount, `"${item.category}"`, `"${item.mode}"`, `"${item.notes}"`].join(",") + "\r\n";
+            });
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", "sansthaspend_institutional_ledger.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function importCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split("\n");
+                let count = 0;
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    const row = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(",");
+                    if (row.length >= 6) {
+                        const clean = row.map(val => val.replace(/^"(.*)"$/, '$1').trim());
+                        expensesData.push({
+                            id: Date.now() + i,
+                            date: clean[1] || new Date().toISOString().split('T')[0],
+                            title: clean[2] || 'Imported Voucher',
+                            amount: parseFloat(clean[3]) || 0,
+                            category: clean[4] || 'Other Expenses',
+                            mode: clean[5] || 'NEFT',
+                            notes: clean[6] || 'CSV'
+                        });
+                        count++;
+                    }
+                }
+                saveData();
+                renderAll();
+                alert(`Successfully imported ${count} vouchers!`);
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function exportDatabaseDump() {
+            const dbDump = { database_name: "sanstha_expenses.sqlite.db", version: "1.0", tables: { sanstha_expenses: expensesData } };
+            const link = document.createElement('a');
+            link.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dbDump, null, 2)));
+            link.setAttribute("download", "sansthaspend_database_backup.json");
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+
+        function loadSampleQuery(query) { document.getElementById('sqlQueryInput').value = query; }
+
+        function executeSQL() {
+            const query = document.getElementById('sqlQueryInput').value.trim().toLowerCase();
+            const out = document.getElementById('sqlOutputContainer');
+            if(!query) { out.innerHTML = `<span style="color: #ef4444;">Enter a query.</span>`; return; }
+
+            if (query.includes('select')) {
+                if (query.includes('group by category')) {
+                    const summary = {};
+                    expensesData.forEach(item => { summary[item.category] = (summary[item.category] || 0) + item.amount; });
+                    let html = `<div style="color: #facc15; font-weight: bold; margin-bottom: 8px;">--- Results ---</div><table><thead><tr><th>Category</th><th>Total Outflow</th></tr></thead><tbody>`;
+                    for (let cat in summary) { html += `<tr><td>${cat}</td><td style="color: #4ade80;">₹${summary[cat].toLocaleString('en-IN')}</td></tr>`; }
+                    out.innerHTML = html + `</tbody></table>`;
+                } else {
+                    let dataset = [...expensesData];
+                    if (query.includes("faculty payroll")) dataset = dataset.filter(i => i.category === 'Faculty Payroll');
+                    let html = `<div style="color: #facc15; font-weight: bold; margin-bottom: 8px;">--- Results (${dataset.length} rows) ---</div><table><thead><tr><th>Date</th><th>Particulars</th><th>Category</th><th>Amount</th></tr></thead><tbody>`;
+                    dataset.forEach(row => { html += `<tr><td>${row.date}</td><td>${row.title}</td><td>${row.category}</td><td>₹${row.amount}</td></tr>`; });
+                    out.innerHTML = html + `</tbody></table>`;
+                }
+            } else {
+                out.innerHTML = `<span style="color: #4ade80;">Query executed successfully.</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
