@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSchedule Bharat - Student Online & Offline Lecture Command Center</title>
+    <!-- Chart.js UMD stable build CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --border-color: #cbd5e1;
+            --sidebar-bg: #f1f5f9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-muted);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1280px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 12px; }
+        .gap-4 { gap: 16px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; }
+        @media(max-width: 1024px) { .grid-3 { grid-template-columns: 1fr; } }
+
+        .theme-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-accent:hover { background-color: var(--accent-hover); }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-outline:hover { background: #f1f5f9; }
+
+        label.form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            font-size: 14px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            outline: none;
+        }
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+        }
+
+        .tabs-header {
+            display: flex;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--border-color);
+            gap: 8px;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 8px 8px 0 0;
+            transition: 0.2s;
+        }
+        .tab-btn.active-tab {
+            color: var(--text-main);
+            border-bottom-color: var(--accent);
+            background-color: var(--bg-card);
+        }
+        .hidden { display: none !important; }
+
+        .table-container { overflow-x: auto; width: 100%; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th { font-weight: 600; color: var(--text-main); }
+
+        .badge-cat {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-mode {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .mode-online { background-color: #d1fae5; color: #047857; }
+        .mode-offline { background-color: #fef3c7; color: #b45309; }
+
+        .icon-box {
+            padding: 12px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .console-box {
+            background-color: #0f172a;
+            color: #38bdf8;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            min-height: 160px;
+            max-height: 320px;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 16px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header & Navigation Bar -->
+    <header>
+        <div class="header-container">
+            <div class="flex items-center gap-3">
+                <div class="icon-box" style="background-color: var(--accent); color: white;">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h1 style="font-size: 18px; font-weight: bold; color: var(--text-main);">EduSchedule Bharat</h1>
+                    <p style="font-size: 11px; color: var(--text-muted);">School, College & Institute Lecture Management Hub</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4" style="flex-wrap: wrap;">
+                <div class="flex items-center gap-2" style="background: #f8fafc; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 8px;">
+                    <button onclick="exportCSV()" class="btn-outline">
+                        <i class="fa-solid fa-file-csv" style="color: #16a34a;"></i> Export CSV
+                    </button>
+                    <label class="btn-outline" style="cursor: pointer;">
+                        <i class="fa-solid fa-upload" style="color: #0284c7;"></i> Import CSV
+                        <input type="file" id="csvFileInput" accept=".csv" onchange="importCSV(event)" style="display: none;">
+                    </label>
+                    <button onclick="exportDatabaseDump()" class="btn-outline">
+                        <i class="fa-solid fa-database" style="color: #9333ea;"></i> Dump DB JSON
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <label for="themeSelect" class="form-label" style="margin-bottom:0;"><i class="fa-solid fa-palette"></i> Theme:</label>
+                    <select id="themeSelect" onchange="switchTheme(this.value)" class="form-control" style="width: auto; padding: 6px 10px;">
+                        <option value="modern">🏙️ Modern Urban Slate</option>
+                        <option value="forest">🌲 Lush Forest</option>
+                        <option value="monsoon">🌧️ Monsoon Rain</option>
+                        <option value="sunset">🌅 Western Ghats Sunset</option>
+                        <option value="desert">🏜️ Thar Desert Dunes</option>
+                        <option value="ocean">🌊 Coastal Ocean Wave</option>
+                        <option value="autumn">🍂 Nilgiri Autumn</option>
+                        <option value="bamboo">🎋 Bamboo Grove</option>
+                        <option value="earth">🌍 Terracotta Earth</option>
+                        <option value="aurora">🌌 Northern Lights (Aurora)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main>
+        <div class="tabs-header" id="tabHeaders">
+            <button onclick="switchTab('dashboard')" class="tab-btn active-tab" data-target="dashboard">
+                <i class="fa-solid fa-chart-pie"></i> Academic Overview
+            </button>
+            <button onclick="switchTab('lectures')" class="tab-btn" data-target="lectures">
+                <i class="fa-solid fa-calendar-days"></i> Lecture Timetable & Tracker
+            </button>
+            <button onclick="switchTab('console')" class="tab-btn" data-target="console">
+                <i class="fa-solid fa-terminal"></i> SQLite Console & DB Management
+            </button>
+        </div>
+
+        <!-- ================= TAB 1: ACADEMIC OVERVIEW ================= -->
+        <div id="tab-dashboard" class="flex" style="flex-direction: column; gap: 24px;">
+            <div class="grid-4">
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Total Lectures</p>
+                        <h3 id="sumTotalCount" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">0</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Scheduled sessions</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #dbeafe; color: #2563eb;">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Online Lectures</p>
+                        <h3 id="sumOnlineCount" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">0</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Zoom / Google Meet / Teams</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #d1fae5; color: #059669;">
+                        <i class="fa-solid fa-video"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Offline Lectures</p>
+                        <h3 id="sumOfflineCount" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">0</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">School / College / Institute</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #fef3c7; color: #d97706;">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Completed Sessions</p>
+                        <h3 id="sumCompletedCount" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">0</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Attendance recorded</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #ede9fe; color: #7c3aed;">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card" style="border-left: 4px solid var(--accent);">
+                <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 4px; color: var(--text-main);">
+                    <i class="fa-solid fa-lightbulb" style="color: var(--accent); margin-right: 6px;"></i>Academic Productivity & Attendance Insights
+                </h4>
+                <p id="insightText" style="font-size: 13px; color: var(--text-muted);">Analyzing lecture schedule...</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="theme-card">
+                    <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 16px; color: var(--text-main);">Lectures by Subject</h4>
+                    <div style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="subjectChart"></canvas>
+                    </div>
+                </div>
+                <div class="theme-card">
+                    <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 16px; color: var(--text-main);">Online vs. Offline Breakdown</h4>
+                    <div style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="modeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: LECTURES TIMETABLE & TRACKER ================= -->
+        <div id="tab-lectures" class="hidden grid-3">
+            <div class="theme-card">
+                <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 16px; color: var(--text-main);">
+                    <i class="fa-solid fa-plus-circle" style="margin-right: 6px;"></i>Add New Lecture
+                </h3>
+                <form id="lectureForm" onsubmit="addLecture(event)" style="display: flex; flex-direction: column; gap: 14px;">
+                    <div>
+                        <label class="form-label">Subject Title</label>
+                        <input type="text" id="lecTitle" placeholder="e.g. Advanced Python & Algorithms" required class="form-control">
+                    </div>
+                    <div class="grid-2" style="gap: 10px;">
+                        <div>
+                            <label class="form-label">Date</label>
+                            <input type="date" id="lecDate" required class="form-control">
+                        </div>
+                        <div>
+                            <label class="form-label">Time Slot</label>
+                            <input type="text" id="lecTime" placeholder="e.g. 10:00 AM - 11:30 AM" required class="form-control">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">Institution / Platform</label>
+                        <input type="text" id="lecInstitute" placeholder="e.g. University Dept / Zoom / Coaching" required class="form-control">
+                    </div>
+                    <div class="grid-2" style="gap: 10px;">
+                        <div>
+                            <label class="form-label">Mode</label>
+                            <select id="lecMode" class="form-control" onchange="toggleModeFields()">
+                                <option value="Online">💻 Online Lecture</option>
+                                <option value="Offline">🏫 Offline Classroom</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Status</label>
+                            <select id="lecStatus" class="form-control">
+                                <option value="Scheduled">Scheduled</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="onlineFieldContainer">
+                        <label class="form-label">Online Meeting Link (Zoom / Meet)</label>
+                        <input type="url" id="lecLink" placeholder="https://zoom.us/j/..." class="form-control">
+                    </div>
+                    <div id="offlineFieldContainer" class="hidden">
+                        <label class="form-label">Building / Room Number</label>
+                        <input type="text" id="lecRoom" placeholder="e.g. Hall 4B, 2nd Floor" class="form-control">
+                    </div>
+                    <div>
+                        <label class="form-label">Notes / Homework</label>
+                        <input type="text" id="lecNotes" placeholder="e.g. Bring laptop, complete ch. 3" class="form-control">
+                    </div>
+                    <button type="submit" class="btn-accent" style="width: 100%; margin-top: 6px;">Save Lecture</button>
+                </form>
+            </div>
+
+            <div class="theme-card">
+                <div class="flex justify-between items-center" style="margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="font-size: 16px; font-weight: bold; color: var(--text-main);">
+                        <i class="fa-solid fa-list-check" style="margin-right: 6px;"></i>Lecture Schedule Ledger
+                    </h3>
+                    <input type="text" id="searchFilter" onkeyup="filterLedger()" placeholder="Search subject or institute..." class="form-control" style="width: 220px; padding: 6px 10px;">
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Subject & Info</th>
+                                <th>Institute</th>
+                                <th>Mode</th>
+                                <th>Location / Link</th>
+                                <th style="text-align: center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lectureTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: SQLITE CONSOLE SIMULATOR ================= -->
+        <div id="tab-console" class="hidden flex" style="flex-direction: column; gap: 24px;">
+            <div class="theme-card">
+                <div class="flex justify-between items-center" style="margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h3 style="font-size: 16px; font-weight: bold; color: var(--text-main);">
+                            <i class="fa-solid fa-database" style="margin-right: 6px;"></i>SQLite In-Memory Console & DB Storage
+                        </h3>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Query your relational table: <code style="background: #f1f5f9; padding: 2px 4px; border-radius: 4px; color: var(--accent);">student_lectures</code></p>
+                    </div>
+                    <div class="flex gap-2" style="flex-wrap: wrap;">
+                        <button onclick="loadSampleQuery('SELECT * FROM student_lectures;')" class="btn-outline">SELECT All</button>
+                        <button onclick="loadSampleQuery('SELECT mode, COUNT(*) as count FROM student_lectures GROUP BY mode;')" class="btn-outline">Mode Summary SQL</button>
+                        <button onclick="loadSampleQuery('SELECT * FROM student_lectures WHERE mode = \'Online\';')" class="btn-outline">Online Lectures Only</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <textarea id="sqlQueryInput" rows="3" class="form-control" style="font-family: monospace; background-color: #0f172a; color: #38bdf8; border-color: #334155;" placeholder="Enter SQL query..."></textarea>
+                    <div class="flex justify-between items-center" style="flex-wrap: wrap; gap: 10px;">
+                        <span style="font-size: 11px; color: var(--text-muted);"><i class="fa-solid fa-circle-info" style="margin-right: 4px;"></i>Supports SQL selectors & CSV exports.</span>
+                        <button onclick="executeSQL()" class="btn-accent flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i> Run SQL Query
+                        </button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <p class="form-label" style="margin-bottom: 8px;">Console Output Result Window</p>
+                    <div id="sqlOutputContainer" class="console-box">
+                        <span style="color: #64748b;">-- SQLite simulator engine initialized. Ready for queries...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        EduSchedule Bharat &copy; 2026 | Built for School, College & Institute Lecture Management
+    </footer>
+
+    <!-- Application JavaScript Engine -->
+    <script>
+        const themes = {
+            modern: { bgPrimary: '#f8fafc', bgCard: '#ffffff', textMain: '#0f172a', textMuted: '#475569', accent: '#0284c7', accentHover: '#0369a1', borderColor: '#cbd5e1', sidebarBg: '#f1f5f9' },
+            forest: { bgPrimary: '#f0fdf4', bgCard: '#ffffff', textMain: '#166534', textMuted: '#4b5563', accent: '#22c55e', accentHover: '#16a34a', borderColor: '#bbf7d0', sidebarBg: '#dcfce7' },
+            monsoon: { bgPrimary: '#f0f9ff', bgCard: '#ffffff', textMain: '#0369a1', textMuted: '#4b5563', accent: '#0ea5e9', accentHover: '#0284c7', borderColor: '#bae6fd', sidebarBg: '#e0f2fe' },
+            sunset: { bgPrimary: '#fff7ed', bgCard: '#ffffff', textMain: '#9a3412', textMuted: '#4b5563', accent: '#f97316', accentHover: '#ea580c', borderColor: '#fed7aa', sidebarBg: '#ffedd5' },
+            desert: { bgPrimary: '#fefce8', bgCard: '#ffffff', textMain: '#854d0e', textMuted: '#4b5563', accent: '#eab308', accentHover: '#ca8a04', borderColor: '#fef08a', sidebarBg: '#fef9c3' },
+            ocean: { bgPrimary: '#ecfeff', bgCard: '#ffffff', textMain: '#155e75', textMuted: '#4b5563', accent: '#06b6d4', accentHover: '#0891b2', borderColor: '#a5f3fc', sidebarBg: '#cffafe' },
+            autumn: { bgPrimary: '#fff1f2', bgCard: '#ffffff', textMain: '#9f1239', textMuted: '#4b5563', accent: '#f43f5e', accentHover: '#e11d48', borderColor: '#fecdd3', sidebarBg: '#ffe4e6' },
+            bamboo: { bgPrimary: '#f4fbf7', bgCard: '#ffffff', textMain: '#14532d', textMuted: '#4b5563', accent: '#10b981', accentHover: '#059669', borderColor: '#a7f3d0', sidebarBg: '#d1fae5' },
+            earth: { bgPrimary: '#fdf8f6', bgCard: '#ffffff', textMain: '#7c2d12', textMuted: '#4b5563', accent: '#c2410c', accentHover: '#9a3412', borderColor: '#fed7aa', sidebarBg: '#ffedd5' },
+            aurora: { bgPrimary: '#f5f3ff', bgCard: '#ffffff', textMain: '#5b21b6', textMuted: '#4b5563', accent: '#8b5cf6', accentHover: '#7c3aed', borderColor: '#ddd6fe', sidebarBg: '#ede9fe' }
+        };
+
+        function switchTheme(themeName) {
+            const t = themes[themeName];
+            if (!t) return;
+            const root = document.documentElement;
+            root.style.setProperty('--bg-primary', t.bgPrimary);
+            root.style.setProperty('--bg-card', t.bgCard);
+            root.style.setProperty('--text-main', t.textMain);
+            root.style.setProperty('--text-muted', t.textMuted);
+            root.style.setProperty('--accent', t.accent);
+            root.style.setProperty('--accent-hover', t.accentHover);
+            root.style.setProperty('--border-color', t.borderColor);
+            root.style.setProperty('--sidebar-bg', t.sidebarBg);
+            localStorage.setItem('eduschedule_theme', themeName);
+        }
+
+        let lecturesData = JSON.parse(localStorage.getItem('eduschedule_lectures')) || [
+            { id: 1, title: 'Python Programming & OOP', date: '2026-06-01', time: '09:00 AM - 10:30 AM', institute: 'College Dept of CS', mode: 'Offline', location: 'Hall 302, Science Block', status: 'Completed', notes: 'Bring IDE laptops' },
+            { id: 2, title: 'Advanced Calculus Online', date: '2026-06-01', time: '11:00 AM - 12:30 PM', institute: 'Zoom Masterclass', mode: 'Online', location: 'https://zoom.us/j/samplemeeting1', status: 'Completed', notes: 'Ch. 4 differential equations' },
+            { id: 3, title: 'Physics Laboratory Practical', date: '2026-06-02', time: '02:00 PM - 04:00 PM', institute: 'Institute Physics Lab', mode: 'Offline', location: 'Lab Room 04', status: 'Scheduled', notes: 'Wear lab coats' },
+            { id: 4, title: 'Data Structures Webinar', date: '2026-06-03', time: '06:00 PM - 07:30 PM', institute: 'Google Meet Institute', mode: 'Online', location: 'https://meet.google.com/abc-xyz-pqr', status: 'Scheduled', notes: 'Trees and Graphs' }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('eduschedule_theme');
+            if (savedTheme && themes[savedTheme]) {
+                document.getElementById('themeSelect').value = savedTheme;
+                switchTheme(savedTheme);
+            }
+            document.getElementById('lecDate').value = new Date().toISOString().split('T')[0];
+            renderAll();
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active-tab');
+                if(btn.getAttribute('data-target') === tabId) {
+                    btn.classList.add('active-tab');
+                }
+            });
+
+            if(tabId === 'dashboard') {
+                setTimeout(() => renderCharts(), 50);
+            }
+        }
+
+        function toggleModeFields() {
+            const mode = document.getElementById('lecMode').value;
+            const onlineContainer = document.getElementById('onlineFieldContainer');
+            const offlineContainer = document.getElementById('offlineFieldContainer');
+            if (mode === 'Online') {
+                onlineContainer.classList.remove('hidden');
+                offlineContainer.classList.add('hidden');
+            } else {
+                onlineContainer.classList.add('hidden');
+                offlineContainer.classList.remove('hidden');
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('eduschedule_lectures', JSON.stringify(lecturesData));
+        }
+
+        function addLecture(e) {
+            e.preventDefault();
+            const mode = document.getElementById('lecMode').value;
+            const location = mode === 'Online' ? document.getElementById('lecLink').value : document.getElementById('lecRoom').value;
+
+            const newEntry = {
+                id: Date.now(),
+                title: document.getElementById('lecTitle').value,
+                date: document.getElementById('lecDate').value,
+                time: document.getElementById('lecTime').value,
+                institute: document.getElementById('lecInstitute').value,
+                mode: mode,
+                location: location || '-',
+                status: document.getElementById('lecStatus').value,
+                notes: document.getElementById('lecNotes').value || '-'
+            };
+            lecturesData.unshift(newEntry);
+            saveData();
+            renderAll();
+            document.getElementById('lectureForm').reset();
+            document.getElementById('lecDate').value = new Date().toISOString().split('T')[0];
+            toggleModeFields();
+            alert('Lecture scheduled successfully!');
+        }
+
+        function deleteLecture(id) {
+            lecturesData = lecturesData.filter(item => item.id !== id);
+            saveData();
+            renderAll();
+        }
+
+        function filterLedger() {
+            const query = document.getElementById('searchFilter').value.toLowerCase();
+            const rows = document.querySelectorAll('#lectureTableBody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        function renderAll() {
+            const tableBody = document.getElementById('lectureTableBody');
+            tableBody.innerHTML = lecturesData.length === 0 ? `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No lectures scheduled yet.</td></tr>` : 
+                lecturesData.map(item => {
+                    const isOnline = item.mode === 'Online';
+                    const locationDisplay = isOnline && item.location.startsWith('http') ? 
+                        `<a href="${item.location}" target="_blank" class="btn-outline" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-video" style="color: #059669;"></i> Join Link</a>` : 
+                        `<span>${item.location}</span>`;
+
+                    return `
+                        <tr>
+                            <td style="font-weight: 500;">${item.date}<div style="font-size: 11px; color: var(--text-muted); font-weight: normal;">${item.time}</div></td>
+                            <td style="font-weight: 600;">${item.title} <div style="font-size: 11px; color: var(--text-muted); font-weight: normal;">${item.notes}</div></td>
+                            <td><span class="badge-cat">${item.institute}</span></td>
+                            <td><span class="badge-mode ${isOnline ? 'mode-online' : 'mode-offline'}">${item.mode}</span></td>
+                            <td>${locationDisplay}</td>
+                            <td style="text-align: center;"><button onclick="deleteLecture(${item.id})" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px;"><i class="fa-solid fa-trash"></i></button></td>
+                        </tr>
+                    `;
+                }).join('');
+
+            const totalCount = lecturesData.length;
+            const onlineCount = lecturesData.filter(i => i.mode === 'Online').length;
+            const offlineCount = lecturesData.filter(i => i.mode === 'Offline').length;
+            const completedCount = lecturesData.filter(i => i.status === 'Completed').length;
+
+            document.getElementById('sumTotalCount').innerText = totalCount;
+            document.getElementById('sumOnlineCount').innerText = onlineCount;
+            document.getElementById('sumOfflineCount').innerText = offlineCount;
+            document.getElementById('sumCompletedCount').innerText = completedCount;
+
+            generateInsights(totalCount, onlineCount, offlineCount, completedCount);
+            renderCharts();
+        }
+
+        function generateInsights(total, online, offline, completed) {
+            let msg = "";
+            if (offline > online) {
+                msg += `🏫 Physical classroom attendance is high (${offline} offline vs ${online} online). Make sure to plan your commute accordingly. `;
+            } else {
+                msg += `💻 Heavy reliance on virtual sessions (${online} online vs ${offline} offline). Ensure stable internet connectivity. `;
+            }
+            const compRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+            msg += `📈 Lecture completion rate stands at ${compRate}%. Keep up with your study goals!`;
+            document.getElementById('insightText').innerText = msg;
+        }
+
+        let subjectChartInstance = null;
+        let modeChartInstance = null;
+
+        function renderCharts() {
+            if (typeof Chart === 'undefined') return;
+
+            const subMap = {};
+            const modeMap = { Online: 0, Offline: 0 };
+
+            lecturesData.forEach(item => {
+                const shortSub = item.title.split(' ')[0] + (item.title.split(' ')[1] ? ' ' + item.title.split(' ')[1] : '');
+                subMap[shortSub] = (subMap[shortSub] || 0) + 1;
+                modeMap[item.mode] = (modeMap[item.mode] || 0) + 1;
+            });
+
+            // Subject Chart
+            const ctxSub = document.getElementById('subjectChart');
+            if (ctxSub) {
+                if(subjectChartInstance) subjectChartInstance.destroy();
+                subjectChartInstance = new Chart(ctxSub.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(subMap).length ? Object.keys(subMap) : ['No Data'],
+                        datasets: [{
+                            data: Object.values(subMap).length ? Object.values(subMap) : [1],
+                            backgroundColor: ['#0284c7', '#38bdf8', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899', '#f43f5e', '#64748b']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
+                    }
+                });
+            }
+
+            // Mode Chart
+            const ctxMode = document.getElementById('modeChart');
+            if (ctxMode) {
+                if(modeChartInstance) modeChartInstance.destroy();
+                modeChartInstance = new Chart(ctxMode.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(modeMap),
+                        datasets: [{
+                            label: 'Lecture Count',
+                            data: Object.values(modeMap),
+                            backgroundColor: ['#10b981', '#f59e0b'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        function exportCSV() {
+            if(lecturesData.length === 0) { alert('No data.'); return; }
+            let csvContent = "data:text/csv;charset=utf-8,ID,Title,Date,Time,Institute,Mode,Location,Status,Notes\r\n";
+            lecturesData.forEach(item => {
+                csvContent += [item.id, `"${item.title}"`, item.date, `"${item.time}"`, `"${item.institute}"`, item.mode, `"${item.location}"`, item.status, `"${item.notes}"`].join(",") + "\r\n";
+            });
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", "eduschedule_lectures.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function importCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split("\n");
+                let count = 0;
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    const row = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(",");
+                    if (row.length >= 7) {
+                        const clean = row.map(val => val.replace(/^"(.*)"$/, '$1').trim());
+                        lecturesData.push({
+                            id: Date.now() + i,
+                            title: clean[1] || 'Imported Lecture',
+                            date: clean[2] || new Date().toISOString().split('T')[0],
+                            time: clean[3] || '10:00 AM',
+                            institute: clean[4] || 'Institute',
+                            mode: clean[5] || 'Online',
+                            location: clean[6] || '-',
+                            status: clean[7] || 'Scheduled',
+                            notes: clean[8] || 'CSV Import'
+                        });
+                        count++;
+                    }
+                }
+                saveData();
+                renderAll();
+                alert(`Successfully imported ${count} lectures!`);
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function exportDatabaseDump() {
+            const dbDump = { database_name: "eduschedule.sqlite.db", version: "1.0", tables: { student_lectures: lecturesData } };
+            const link = document.createElement('a');
+            link.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dbDump, null, 2)));
+            link.setAttribute("download", "eduschedule_database_backup.json");
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+
+        function loadSampleQuery(query) { document.getElementById('sqlQueryInput').value = query; }
+
+        function executeSQL() {
+            const query = document.getElementById('sqlQueryInput').value.trim().toLowerCase();
+            const out = document.getElementById('sqlOutputContainer');
+            if(!query) { out.innerHTML = `<span style="color: #ef4444;">Enter a query.</span>`; return; }
+
+            if (query.includes('select')) {
+                if (query.includes('group by mode')) {
+                    const summary = { Online: 0, Offline: 0 };
+                    lecturesData.forEach(item => { summary[item.mode] = (summary[item.mode] || 0) + 1; });
+                    let html = `<div style="color: #facc15; font-weight: bold; margin-bottom: 8px;">--- Results ---</div><table><thead><tr><th>Mode</th><th>Count</th></tr></thead><tbody>`;
+                    for (let mode in summary) { html += `<tr><td>${mode}</td><td style="color: #4ade80;">${summary[mode]}</td></tr>`; }
+                    out.innerHTML = html + `</tbody></table>`;
+                } else {
+                    let dataset = [...lecturesData];
+                    if (query.includes("online")) dataset = dataset.filter(i => i.mode === 'Online');
+                    let html = `<div style="color: #facc15; font-weight: bold; margin-bottom: 8px;">--- Results (${dataset.length} rows) ---</div><table><thead><tr><th>Date</th><th>Title</th><th>Institute</th><th>Mode</th></tr></thead><tbody>`;
+                    dataset.forEach(row => { html += `<tr><td>${row.date}</td><td>${row.title}</td><td>${row.institute}</td><td>${row.mode}</td></tr>`; });
+                    out.innerHTML = html + `</tbody></table>`;
+                }
+            } else {
+                out.innerHTML = `<span style="color: #4ade80;">Query executed successfully.</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
