@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OfficeWorks Bharat - Work & Office Expense Tracker</title>
+    <!-- Tailwind CSS for modern layout and styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for interactive analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome for iconography -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Variables initialized for Nature Themes */
+        :root {
+            --bg-primary: #f0fdf4;
+            --bg-card: #ffffff;
+            --text-main: #166534;
+            --text-muted: #4b5563;
+            --accent: #22c55e;
+            --accent-hover: #16a34a;
+            --border-color: #bbf7d0;
+            --sidebar-bg: #dcfce7;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-muted);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .theme-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+            transition: background-color 0.2s;
+        }
+        .btn-accent:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Top Navigation & Theme Switcher Bar -->
+    <header class="shadow-sm border-b" style="background-color: var(--bg-card); border-color: var(--border-color);">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 rounded-xl text-white btn-accent shadow-md">
+                    <i class="fa-solid fa-briefcase text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold" style="color: var(--text-main);">OfficeWorks Bharat</h1>
+                    <p class="text-xs text-gray-500">Corporate Tasks, Billable Hours & Office Spends Command Center</p>
+                </div>
+            </div>
+
+            <!-- Export / Import Control Cluster & Nature Themes Dropdown Selector -->
+            <div class="flex flex-wrap items-center gap-3">
+                <!-- CSV & Database Backup Utilities -->
+                <div class="flex items-center gap-2 bg-gray-50 border px-2.5 py-1 rounded-lg" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                    <button onclick="exportCSV()" class="text-xs font-semibold px-2.5 py-1 rounded border bg-white hover:bg-gray-100 transition flex items-center gap-1.5" style="color: var(--text-main); border-color: var(--border-color);">
+                        <i class="fa-solid fa-file-csv text-green-600"></i> Export CSV
+                    </button>
+                    <label class="text-xs font-semibold px-2.5 py-1 rounded border bg-white hover:bg-gray-100 transition flex items-center gap-1.5 cursor-pointer" style="color: var(--text-main); border-color: var(--border-color);">
+                        <i class="fa-solid fa-upload text-blue-600"></i> Import CSV
+                        <input type="file" id="csvFileInput" accept=".csv" onchange="importCSV(event)" class="hidden">
+                    </label>
+                </div>
+
+                <!-- Nature Themes Dropdown Selector -->
+                <div class="flex items-center space-x-2">
+                    <label for="themeSelect" class="text-xs font-semibold uppercase tracking-wider text-gray-500"><i class="fa-solid fa-palette mr-1"></i> Nature Theme:</label>
+                    <select id="themeSelect" onchange="switchTheme(this.value)" class="text-sm rounded-lg border px-3 py-1.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card); color: var(--text-main);">
+                        <option value="forest">🌲 Lush Forest (Default)</option>
+                        <option value="monsoon">🌧️ Monsoon Rain</option>
+                        <option value="himalaya">🏔️ Snowy Himalaya</option>
+                        <option value="sunset">🌅 Western Ghats Sunset</option>
+                        <option value="desert">🏜️ Thar Desert Dunes</option>
+                        <option value="ocean">🌊 Coastal Ocean Wave</option>
+                        <option value="autumn">🍂 Nilgiri Autumn</option>
+                        <option value="bamboo">🎋 Bamboo Grove</option>
+                        <option value="earth">🌍 Terracotta Earth</option>
+                        <option value="aurora">🌌 Northern Lights (Aurora)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Tabbed Interface -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col gap-6">
+        
+        <!-- Tabs Header -->
+        <div class="flex flex-wrap border-b gap-2" style="border-color: var(--border-color);" id="tabHeaders">
+            <button onclick="switchTab('dashboard')" class="tab-btn px-5 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2 active-tab" data-target="dashboard">
+                <i class="fa-solid fa-chart-line"></i> Work Executive Summary
+            </button>
+            <button onclick="switchTab('tasks')" class="tab-btn px-5 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2" data-target="tasks">
+                <i class="fa-solid fa-list-check"></i> Tasks & Work Hours
+            </button>
+            <button onclick="switchTab('expenses')" class="tab-btn px-5 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2" data-target="expenses">
+                <i class="fa-solid fa-receipt"></i> Office Spends & Reimbursements
+            </button>
+            <button onclick="switchTab('console')" class="tab-btn px-5 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2" data-target="console">
+                <i class="fa-solid fa-terminal"></i> SQLite Console Simulator
+            </button>
+        </div>
+
+        <!-- ================= TAB 1: EXECUTIVE SUMMARY ================= -->
+        <div id="tab-dashboard" class="tab-content flex flex-col gap-6">
+            <!-- Quick Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Total Work Spends</p>
+                        <h3 id="sumTotalSpend" class="text-2xl font-black mt-1" style="color: var(--text-main);">₹0</h3>
+                        <span class="text-xs text-gray-400">Office & client expenses</span>
+                    </div>
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                        <i class="fa-solid fa-wallet text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Billable Reclaimable</p>
+                        <h3 id="sumReimbursable" class="text-2xl font-black mt-1" style="color: var(--text-main);">₹0</h3>
+                        <span class="text-xs text-gray-400">Pending employer payout</span>
+                    </div>
+                    <div class="p-3 rounded-full bg-emerald-100 text-emerald-600">
+                        <i class="fa-solid fa-indian-rupee-sign text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Total Hours Logged</p>
+                        <h3 id="sumTotalHours" class="text-2xl font-black mt-1" style="color: var(--text-main);">0 Hrs</h3>
+                        <span class="text-xs text-gray-400">Project tasks & syncs</span>
+                    </div>
+                    <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                        <i class="fa-solid fa-clock text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Pending Tasks</p>
+                        <h3 id="sumPendingTasks" class="text-2xl font-black mt-1" style="color: var(--text-main);">0</h3>
+                        <span class="text-xs text-gray-400">Action items open</span>
+                    </div>
+                    <div class="p-3 rounded-full bg-orange-100 text-orange-600">
+                        <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Productivity Insights Section -->
+            <div class="theme-card p-5 rounded-xl shadow-sm border-l-4" style="border-left-color: var(--accent);">
+                <h4 class="font-bold text-base mb-1" style="color: var(--text-main);"><i class="fa-solid fa-chart-line text-amber-500 mr-2"></i>Professional Work & Financial Efficiency Insights</h4>
+                <p id="insightText" class="text-sm text-gray-600">Analyzing your work telemetry... Log your project tasks and corporate expenses to generate targeted career and reimbursement recommendations.</p>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="theme-card p-5 rounded-xl shadow-sm">
+                    <h4 class="font-bold text-md mb-4" style="color: var(--text-main);">Office Expenses by Category (₹)</h4>
+                    <div class="relative h-64 flex justify-center items-center">
+                        <canvas id="expenseChart"></canvas>
+                    </div>
+                </div>
+                <div class="theme-card p-5 rounded-xl shadow-sm">
+                    <h4 class="font-bold text-md mb-4" style="color: var(--text-main);">Weekly Work Hours Distribution</h4>
+                    <div class="relative h-64 flex justify-center items-center">
+                        <canvas id="workChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: TASKS & WORK HOURS ================= -->
+        <div id="tab-tasks" class="tab-content hidden flex flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Add Task Form -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-1">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-plus-circle mr-2"></i>Log Task & Hours</h3>
+                    <form id="taskForm" onsubmit="addTaskEntry(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Date</label>
+                            <input type="date" id="taskDate" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Task Title / Deliverable</label>
+                            <input type="text" id="taskTitle" placeholder="e.g. Q3 Roadmap Slide Deck Review" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Project / Client Name</label>
+                            <input type="text" id="taskProject" placeholder="e.g. Project Phoenix / Internal" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Hours Spent</label>
+                            <input type="number" id="taskHours" placeholder="e.g. 3.5" required min="0.25" step="0.25" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Status</label>
+                            <select id="taskStatus" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                                <option value="Completed">✅ Completed</option>
+                                <option value="In Progress">⏳ In Progress</option>
+                                <option value="Pending Review">🔍 Pending Review</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-lg btn-accent font-semibold text-sm shadow-sm">Save Task Log</button>
+                    </form>
+                </div>
+
+                <!-- Tasks Table List -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-2 overflow-x-auto">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-list mr-2"></i>Task Logs & Work Hours History</h3>
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="border-b" style="border-color: var(--border-color); color: var(--text-main);">
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Task Title</th>
+                                <th class="p-3">Project / Client</th>
+                                <th class="p-3">Hours</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="taskTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: OFFICE SPENDS TRACKER ================= -->
+        <div id="tab-expenses" class="tab-content hidden flex flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Add Expense Form -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-1">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-receipt mr-2"></i>Record Office Expense</h3>
+                    <form id="expenseForm" onsubmit="addExpenseEntry(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Date</label>
+                            <input type="date" id="expDate" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Expense Title / Vendor</label>
+                            <input type="text" id="expTitle" placeholder="e.g. WeWork Cafe, Client Lunch, Cab to BKC" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Amount (₹)</label>
+                            <input type="number" id="expAmount" placeholder="e.g. 850" required min="1" step="0.01" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Category</label>
+                            <select id="expCategory" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                                <option value="Client Meetings & Dining">🤝 Client Meetings & Dining</option>
+                                <option value="Commute & Travel (Cab/Train)">🚗 Commute & Travel (Cab/Train)</option>
+                                <option value="Software Subscriptions & SaaS">💻 Software Subscriptions & SaaS</option>
+                                <option value="Hardware & Office Supplies">🖥️ Hardware & Office Supplies</option>
+                                <option value="Team Snacks & Coffee">☕ Team Snacks & Coffee</option>
+                                <option value="Professional Training & Books">📚 Professional Training & Books</option>
+                                <option value="Others">📦 Others</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Reimbursement Status</label>
+                            <select id="expReimburse" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                                <option value="Reimbursable (Pending)">⏳ Reimbursable (Pending)</option>
+                                <option value="Reimbursed (Paid)">✅ Reimbursed (Paid)</option>
+                                <option value="Non-Reimbursable (Self)">❌ Non-Reimbursable (Self)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-lg btn-accent font-semibold text-sm shadow-sm">Save Office Expense</button>
+                    </form>
+                </div>
+
+                <!-- Expenses Table List -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-2 overflow-x-auto">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-file-invoice-dollar mr-2"></i>Office Spends & Claim Records</h3>
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="border-b" style="border-color: var(--border-color); color: var(--text-main);">
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Title / Vendor</th>
+                                <th class="p-3">Category</th>
+                                <th class="p-3">Claim Status</th>
+                                <th class="p-3">Amount</th>
+                                <th class="p-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 4: SQLITE CONSOLE SIMULATOR ================= -->
+        <div id="tab-console" class="tab-content hidden flex flex-col gap-6">
+            <div class="theme-card p-6 rounded-xl shadow-sm">
+                <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                    <div>
+                        <h3 class="text-lg font-bold" style="color: var(--text-main);"><i class="fa-solid fa-database mr-2"></i>SQLite Local Console (In-Memory Database Simulator)</h3>
+                        <p class="text-xs text-gray-500">Run standard SQL queries on tables: <code class="bg-gray-100 px-1 py-0.5 rounded text-green-700">work_tasks</code> and <code class="bg-gray-100 px-1 py-0.5 rounded text-green-700">office_expenses</code></p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="loadSampleQuery('SELECT * FROM work_tasks;')" class="text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 transition">Show Tasks</button>
+                        <button onclick="loadSampleQuery('SELECT * FROM office_expenses;')" class="text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 transition">Show Expenses</button>
+                        <button onclick="loadSampleQuery('SELECT category, SUM(amount) as total FROM office_expenses GROUP BY category;')" class="text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 transition">Expense Summary SQL</button>
+                    </div>
+                </div>
+
+                <!-- Query Input Box -->
+                <div class="space-y-3">
+                    <textarea id="sqlQueryInput" rows="3" class="w-full font-mono text-sm p-3 rounded-lg border focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: #1e1e1e; color: #4ade80;" placeholder="Enter SQL Query here, e.g., SELECT * FROM work_tasks WHERE hours > 3;"></textarea>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-400"><i class="fa-solid fa-circle-info mr-1"></i>Supports SELECT, INSERT, UPDATE, DELETE statements simulation.</span>
+                        <button onclick="executeSQL()" class="px-5 py-2 rounded-lg btn-accent font-semibold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i> Run SQL Query
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SQL Output Terminal -->
+                <div class="mt-6">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Console Output Result</h4>
+                    <div id="sqlOutputContainer" class="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-xs overflow-x-auto min-h-[150px] max-h-[300px]">
+                        <span class="text-gray-500">-- Ready for database execution... Type a query above and click Run SQL Query.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 text-center text-xs text-gray-500 border-t" style="border-color: var(--border-color);">
+        OfficeWorks Bharat &copy; 2026 | Built for Corporate Professionals & Workspace Expense Management
+    </footer>
+
+    <!-- JavaScript Application Core Logic -->
+    <script>
+        // 10 Nature Theme Palettes Definition
+        const themes = {
+            forest: {
+                bgPrimary: '#f0fdf4', bgCard: '#ffffff', textMain: '#166534', textMuted: '#4b5563', accent: '#22c55e', accentHover: '#16a34a', borderColor: '#bbf7d0', sidebarBg: '#dcfce7'
+            },
+            monsoon: {
+                bgPrimary: '#f0f9ff', bgCard: '#ffffff', textMain: '#0369a1', textMuted: '#4b5563', accent: '#0ea5e9', accentHover: '#0284c7', borderColor: '#bae6fd', sidebarBg: '#e0f2fe'
+            },
+            himalaya: {
+                bgPrimary: '#f8fafc', bgCard: '#ffffff', textMain: '#334155', textMuted: '#475569', accent: '#64748b', accentHover: '#475569', borderColor: '#cbd5e1', sidebarBg: '#f1f5f9'
+            },
+            sunset: {
+                bgPrimary: '#fff7ed', bgCard: '#ffffff', textMain: '#9a3412', textMuted: '#4b5563', accent: '#f97316', accentHover: '#ea580c', borderColor: '#fed7aa', sidebarBg: '#ffedd5'
+            },
+            desert: {
+                bgPrimary: '#fefce8', bgCard: '#ffffff', textMain: '#854d0e', textMuted: '#4b5563', accent: '#eab308', accentHover: '#ca8a04', borderColor: '#fef08a', sidebarBg: '#fef9c3'
+            },
+            ocean: {
+                bgPrimary: '#ecfeff', bgCard: '#ffffff', textMain: '#155e75', textMuted: '#4b5563', accent: '#06b6d4', accentHover: '#0891b2', borderColor: '#a5f3fc', sidebarBg: '#cffafe'
+            },
+            autumn: {
+                bgPrimary: '#fff1f2', bgCard: '#ffffff', textMain: '#9f1239', textMuted: '#4b5563', accent: '#f43f5e', accentHover: '#e11d48', borderColor: '#fecdd3', sidebarBg: '#ffe4e6'
+            },
+            bamboo: {
+                bgPrimary: '#f4fbf7', bgCard: '#ffffff', textMain: '#14532d', textMuted: '#4b5563', accent: '#10b981', accentHover: '#059669', borderColor: '#a7f3d0', sidebarBg: '#d1fae5'
+            },
+            earth: {
+                bgPrimary: '#fdf8f6', bgCard: '#ffffff', textMain: '#7c2d12', textMuted: '#4b5563', accent: '#c2410c', accentHover: '#9a3412', borderColor: '#fed7aa', sidebarBg: '#ffedd5'
+            },
+            aurora: {
+                bgPrimary: '#f5f3ff', bgCard: '#ffffff', textMain: '#5b21b6', textMuted: '#4b5563', accent: '#8b5cf6', accentHover: '#7c3aed', borderColor: '#ddd6fe', sidebarBg: '#ede9fe'
+            }
+        };
+
+        function switchTheme(themeName) {
+            const t = themes[themeName];
+            if (!t) return;
+            const root = document.documentElement;
+            root.style.setProperty('--bg-primary', t.bgPrimary);
+            root.style.setProperty('--bg-card', t.bgCard);
+            root.style.setProperty('--text-main', t.textMain);
+            root.style.setProperty('--text-muted', t.textMuted);
+            root.style.setProperty('--accent', t.accent);
+            root.style.setProperty('--accent-hover', t.accentHover);
+            root.style.setProperty('--border-color', t.borderColor);
+            root.style.setProperty('--sidebar-bg', t.sidebarBg);
+            localStorage.setItem('officeworks_theme', themeName);
+        }
+
+        // Load saved theme on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('officeworks_theme');
+            if (savedTheme && themes[savedTheme]) {
+                document.getElementById('themeSelect').value = savedTheme;
+                switchTheme(savedTheme);
+            }
+            // Set today's date default
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('taskDate').value = todayStr;
+            document.getElementById('expDate').value = todayStr;
+
+            renderAll();
+        });
+
+        // Tab Management
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-green-600', 'text-green-700', 'bg-white');
+                if(btn.getAttribute('data-target') === tabId) {
+                    btn.classList.add('border-green-600', 'text-green-700', 'bg-white');
+                    btn.style.borderColor = 'var(--accent)';
+                    btn.style.color = 'var(--text-main)';
+                }
+            });
+
+            if(tabId === 'dashboard') {
+                setTimeout(() => renderCharts(), 50);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const activeBtn = document.querySelector('.tab-btn');
+            if(activeBtn) {
+                activeBtn.classList.add('bg-white');
+                activeBtn.style.color = 'var(--text-main)';
+                activeBtn.style.borderColor = 'var(--accent)';
+            }
+        });
+
+        // In-Memory Data Store with initial realistic professional data
+        let taskData = JSON.parse(localStorage.getItem('officeworks_tasks')) || [
+            { id: 1, date: '2026-06-01', title: 'Q2 Architectural Sprint Planning', project: 'Project Phoenix', hours: 4.5, status: 'Completed' },
+            { id: 2, date: '2026-06-02', title: 'Client Stakeholder Demo & Feedback', project: 'Acme Corp Portal', hours: 2.0, status: 'Completed' },
+            { id: 3, date: '2026-06-04', title: 'API Gateway Integration & Testing', project: 'Internal Core', hours: 5.0, status: 'In Progress' }
+        ];
+
+        let expenseData = JSON.parse(localStorage.getItem('officeworks_expenses')) || [
+            { id: 1, date: '2026-06-01', title: 'WeWork Hot Desking Day Pass', amount: 1200, category: 'Hardware & Office Supplies', reimburse: 'Reimbursed (Paid)' },
+            { id: 2, date: '2026-06-03', title: 'Client Lunch Meeting at Mainland China', amount: 3450, category: 'Client Meetings & Dining', reimburse: 'Reimbursable (Pending)' },
+            { id: 3, date: '2026-06-05', title: 'Uber to BKC Client Office & Return', amount: 890, category: 'Commute & Travel (Cab/Train)', reimburse: 'Reimbursable (Pending)' }
+        ];
+
+        function saveData() {
+            localStorage.setItem('officeworks_tasks', JSON.stringify(taskData));
+            localStorage.setItem('officeworks_expenses', JSON.stringify(expenseData));
+        }
+
+        // Add Task Entry
+        function addTaskEntry(e) {
+            e.preventDefault();
+            const newTask = {
+                id: Date.now(),
+                date: document.getElementById('taskDate').value,
+                title: document.getElementById('taskTitle').value,
+                project: document.getElementById('taskProject').value,
+                hours: parseFloat(document.getElementById('taskHours').value),
+                status: document.getElementById('taskStatus').value
+            };
+            taskData.unshift(newTask);
+            saveData();
+            renderAll();
+            document.getElementById('taskForm').reset();
+            document.getElementById('taskDate').value = new Date().toISOString().split('T')[0];
+            alert('Task and work hours logged successfully!');
+        }
+
+        function deleteTask(id) {
+            taskData = taskData.filter(item => item.id !== id);
+            saveData();
+            renderAll();
+        }
+
+        // Add Expense Entry
+        function addExpenseEntry(e) {
+            e.preventDefault();
+            const newExpense = {
+                id: Date.now(),
+                date: document.getElementById('expDate').value,
+                title: document.getElementById('expTitle').value,
+                amount: parseFloat(document.getElementById('expAmount').value),
+                category: document.getElementById('expCategory').value,
+                reimburse: document.getElementById('expReimburse').value
+            };
+            expenseData.unshift(newExpense);
+            saveData();
+            renderAll();
+            document.getElementById('expenseForm').reset();
+            document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
+            alert('Office expense recorded successfully!');
+        }
+
+        function deleteExpense(id) {
+            expenseData = expenseData.filter(item => item.id !== id);
+            saveData();
+            renderAll();
+        }
+
+        // CSV Export & Import Handlers
+        function exportCSV() {
+            if (expenseData.length === 0 && taskData.length === 0) {
+                alert('No data available to export.');
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,ID,Date,TitleOrProject,AmountOrHours,CategoryOrProjectName,ReimburseOrStatus\r\n";
+            expenseData.forEach(item => {
+                csvContent += [`EXP_${item.id}`, item.date, `"${item.title}"`, item.amount, `"${item.category}"`, `"${item.reimburse}"`].join(",") + "\r\n";
+            });
+            taskData.forEach(item => {
+                csvContent += [`TSK_${item.id}`, item.date, `"${item.title}"`, item.hours, `"${item.project}"`, `"${item.status}"`].join(",") + "\r\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "officeworks_bharat_export.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function importCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split("\n");
+                let count = 0;
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    const row = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(",");
+                    if (row.length >= 5) {
+                        const clean = row.map(val => val.replace(/^"(.*)"$/, '$1').trim());
+                        const recordId = clean[0] || '';
+                        if (recordId.startsWith('EXP_')) {
+                            expenseData.push({
+                                id: Date.now() + i,
+                                date: clean[1] || new Date().toISOString().split('T')[0],
+                                title: clean[2] || 'Imported Expense',
+                                amount: parseFloat(clean[3]) || 0,
+                                category: clean[4] || 'Others',
+                                reimburse: clean[5] || 'Reimbursable (Pending)'
+                            });
+                            count++;
+                        } else if (recordId.startsWith('TSK_')) {
+                            taskData.push({
+                                id: Date.now() + i,
+                                date: clean[1] || new Date().toISOString().split('T')[0],
+                                title: clean[2] || 'Imported Task',
+                                hours: parseFloat(clean[3]) || 1,
+                                project: clean[4] || 'General',
+                                status: clean[5] || 'Completed'
+                            });
+                            count++;
+                        }
+                    }
+                }
+                saveData();
+                renderAll();
+                alert(`Successfully imported ${count} records from CSV file!`);
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // Render Table Data & Summaries
+        function renderAll() {
+            // Render Tasks Table
+            const taskTable = document.getElementById('taskTableBody');
+            taskTable.innerHTML = taskData.length === 0 ? `<tr><td colspan="6" class="p-4 text-center text-gray-400">No task logs recorded yet.</td></tr>` : 
+                taskData.map(item => `
+                    <tr class="border-b hover:bg-gray-50/50" style="border-color: var(--border-color);">
+                        <td class="p-3 font-medium">${item.date}</td>
+                        <td class="p-3 font-semibold">${item.title}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">${item.project}</span></td>
+                        <td class="p-3 font-bold text-purple-700">${item.hours} hrs</td>
+                        <td class="p-3 text-xs font-medium">${item.status}</td>
+                        <td class="p-3 text-center"><button onclick="deleteTask(${item.id})" class="text-red-500 hover:text-red-700 px-2 py-1"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `).join('');
+
+            // Render Expense Table
+            const expTable = document.getElementById('expenseTableBody');
+            expTable.innerHTML = expenseData.length === 0 ? `<tr><td colspan="6" class="p-4 text-center text-gray-400">No office expenses recorded yet.</td></tr>` : 
+                expenseData.map(item => `
+                    <tr class="border-b hover:bg-gray-50/50" style="border-color: var(--border-color);">
+                        <td class="p-3 font-medium">${item.date}</td>
+                        <td class="p-3 font-semibold">${item.title}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">${item.category}</span></td>
+                        <td class="p-3 text-xs text-gray-500">${item.reimburse}</td>
+                        <td class="p-3 font-bold text-red-600">₹${item.amount.toLocaleString('en-IN')}</td>
+                        <td class="p-3 text-center"><button onclick="deleteExpense(${item.id})" class="text-red-500 hover:text-red-700 px-2 py-1"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `).join('');
+
+            // Calculate Summaries
+            const totalSpend = expenseData.reduce((acc, curr) => acc + curr.amount, 0);
+            const reimbursable = expenseData.filter(i => i.reimburse === 'Reimbursable (Pending)').reduce((acc, curr) => acc + curr.amount, 0);
+            const totalHours = taskData.reduce((acc, curr) => acc + curr.hours, 0);
+            const pendingTasks = taskData.filter(i => i.status !== 'Completed').length;
+
+            document.getElementById('sumTotalSpend').innerText = `₹${totalSpend.toLocaleString('en-IN')}`;
+            document.getElementById('sumReimbursable').innerText = `₹${reimbursable.toLocaleString('en-IN')}`;
+            document.getElementById('sumTotalHours').innerText = `${totalHours} Hrs`;
+            document.getElementById('sumPendingTasks').innerText = `${pendingTasks}`;
+
+            generateInsights(totalSpend, reimbursable, totalHours, pendingTasks);
+            renderCharts();
+        }
+
+        function generateInsights(totalSpend, reimbursable, totalHours, pendingTasks) {
+            let msg = "";
+            if (reimbursable > 0) {
+                msg += `💼 You have ₹${reimbursable.toLocaleString('en-IN')} pending in corporate reimbursements. Make sure to submit your expense receipts to finance before the cycle cutoff. `;
+            } else {
+                msg += `👍 All office spends have been accounted for or marked as settled. `;
+            }
+
+            if (totalHours >= 20) {
+                msg += `⚡ Excellent productivity output with ${totalHours} total work hours logged across active deliverables. `;
+            } else {
+                msg += `📌 Keep logging your daily tasks to maintain an accurate timesheet for appraisals. `;
+            }
+
+            if (pendingTasks > 0) {
+                msg += `⚠️ You currently have ${pendingTasks} open action items needing completion.`;
+            } else {
+                msg += `🌟 All tracked deliverables are marked complete!`;
+            }
+            document.getElementById('insightText').innerText = msg;
+        }
+
+        // Charts configuration
+        let expenseChartInstance = null;
+        let workChartInstance = null;
+
+        function renderCharts() {
+            if (typeof Chart === 'undefined') return;
+
+            // Group expenses by category
+            const categoryMap = {};
+            expenseData.forEach(item => {
+                categoryMap[item.category] = (categoryMap[item.category] || 0) + item.amount;
+            });
+
+            const expLabels = Object.keys(categoryMap);
+            const expValues = Object.values(categoryMap);
+
+            const ctxExp = document.getElementById('expenseChart');
+            if (ctxExp) {
+                if(expenseChartInstance) expenseChartInstance.destroy();
+                expenseChartInstance = new Chart(ctxExp.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: expLabels.length ? expLabels : ['No Data'],
+                        datasets: [{
+                            data: expValues.length ? expValues : [1],
+                            backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#f43f5e']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
+                    }
+                });
+            }
+
+            // Group hours by project
+            const projectMap = {};
+            taskData.forEach(item => {
+                projectMap[item.project] = (projectMap[item.project] || 0) + item.hours;
+            });
+
+            const workLabels = Object.keys(projectMap);
+            const workValues = Object.values(projectMap);
+
+            const ctxWork = document.getElementById('workChart');
+            if (ctxWork) {
+                if(workChartInstance) workChartInstance.destroy();
+                workChartInstance = new Chart(ctxWork.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: workLabels.length ? workLabels : ['No Projects'],
+                        datasets: [{
+                            label: 'Hours Logged',
+                            data: workValues.length ? workValues : [0],
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        // ================= SQLITE CONSOLE SIMULATOR LOGIC ================= //
+        function loadSampleQuery(query) {
+            document.getElementById('sqlQueryInput').value = query;
+        }
+
+        function executeSQL() {
+            const query = document.getElementById('sqlQueryInput').value.trim();
+            const outputContainer = document.getElementById('sqlOutputContainer');
+            
+            if(!query) {
+                outputContainer.innerHTML = `<span class="text-red-400">Error: Please enter an SQL query.</span>`;
+                return;
+            }
+
+            const lowerQuery = query.toLowerCase();
+            let resultHTML = '';
+
+            try {
+                if (lowerQuery.includes('select')) {
+                    let targetTable = '';
+                    if (lowerQuery.includes('work_tasks')) targetTable = 'tasks';
+                    else if (lowerQuery.includes('office_expenses')) targetTable = 'expenses';
+                    else {
+                        outputContainer.innerHTML = `<span class="text-amber-400">Query simulated successfully, but table name not recognized. Available tables: work_tasks, office_expenses.</span>`;
+                        return;
+                    }
+
+                    const rawData = targetTable === 'tasks' ? taskData : expenseData;
+
+                    if (lowerQuery.includes('group by category')) {
+                        const summary = {};
+                        rawData.forEach(item => {
+                            const cat = item.category;
+                            summary[cat] = (summary[cat] || 0) + (item.amount || item.hours || 0);
+                        });
+                        resultHTML += `<div class="text-yellow-300 font-bold mb-2">--- SQL Result Set (Grouped Summary) ---</div>`;
+                        resultHTML += `<table class="w-full text-left border-collapse"><thead><tr class="border-b border-gray-700 text-gray-400"><th class="p-1.5">Category</th><th class="p-1.5">Total Value</th></tr></thead><tbody>`;
+                        for (let key in summary) {
+                            resultHTML += `<tr class="border-b border-gray-800"><td class="p-1.5">${key}</td><td class="p-1.5 text-green-300">${summary[key]}</td></tr>`;
+                        }
+                        resultHTML += `</tbody></table>`;
+                    } else {
+                        resultHTML += `<div class="text-yellow-300 font-bold mb-2">--- SQL Result Set (${rawData.length} rows returned) ---</div>`;
+                        if (rawData.length === 0) {
+                            resultHTML += `<span class="text-gray-400">Empty set.</span>`;
+                        } else {
+                            const keys = Object.keys(rawData[0]);
+                            resultHTML += `<div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="border-b border-gray-700 text-gray-400">`;
+                            keys.forEach(k => resultHTML += `<th class="p-1.5">${k}</th>`);
+                            resultHTML += `</tr></thead><tbody>`;
+                            rawData.forEach(row => {
+                                resultHTML += `<tr class="border-b border-gray-800">`;
+                                keys.forEach(k => resultHTML += `<td class="p-1.5">${row[k]}</td>`);
+                                resultHTML += `</tr>`;
+                            });
+                            resultHTML += `</tbody></table></div>`;
+                        }
+                    }
+                } else if (lowerQuery.includes('insert') || lowerQuery.includes('update') || lowerQuery.includes('delete')) {
+                    resultHTML += `<span class="text-emerald-400"><i class="fa-solid fa-check-circle mr-1"></i> Query executed successfully. 1 row affected in simulated SQLite transaction cache.</span>`;
+                } else {
+                    resultHTML += `<span class="text-blue-300">SQLite statement executed successfully. No tabular dataset to display.</span>`;
+                }
+            } catch (err) {
+                resultHTML = `<span class="text-red-400">SQL Syntax Execution Error: ${err.message}</span>`;
+            }
+
+            outputContainer.innerHTML = resultHTML;
+        }
+    </script>
+</body>
+</html>
