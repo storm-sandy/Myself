@@ -451,7 +451,7 @@
                     <div>
                         <p class="form-label">Total Actual Hours</p>
                         <h3 id="sumTotalHours" style="font-size: 20px; font-weight: 900; color: var(--text-main); margin-top: 4px;">0.0 hrs</h3>
-                        <span style="font-size: 11px; color: var(--text-muted);">(Out - In) difference</span>
+                        <span style="font-size: 11px; color: var(--text-muted);">Calculated time spent</span>
                     </div>
                     <div class="icon-box" style="background-color: #e0e7ff; color: #4f46e5;">
                         <i class="fa-solid fa-hourglass-half"></i>
@@ -640,7 +640,7 @@
                             <tr>
                                 <th>Date & Name</th>
                                 <th>Time-In / Out & GPS Stamp</th>
-                                <th>Actual Hours (Out - In) & Details</th>
+                                <th>Total Hours & Work Details</th>
                                 <th>Status</th>
                                 <th style="text-align: center;">Action</th>
                             </tr>
@@ -724,7 +724,7 @@
 
         let attendanceData = JSON.parse(localStorage.getItem('officepulse_data')) || [
             { id: 1, date: '2026-09-20', name: 'Amit Deshmukh', timeIn: '09:15 AM [19.07, 72.87]', timeOut: '06:30 PM [19.07, 72.87]', workMode: 'Office', taskStatus: 'Done', taskDesc: 'Completed Q3 compliance review and server deployment.' },
-            { id: 2, date: '2026-09-21', name: 'Priya Kulkarni', timeIn: '10:00 AM [19.21, 73.12]', timeOut: '04:30 PM [19.21, 73.12]', workMode: 'WFH', taskStatus: 'Pending', taskDesc: 'Drafting UI wireframes for mobile dashboard views.' }
+            { id: 2, date: '2026-09-21', name: 'Priya Kulkarni', timeIn: '10:45 AM [19.21, 73.12]', timeOut: '06:15 PM [19.21, 73.12]', workMode: 'WFH', taskStatus: 'Pending', taskDesc: 'Drafting UI wireframes for mobile dashboard views.' }
         ];
 
         let calendarData = JSON.parse(localStorage.getItem('officepulse_calendar')) || {
@@ -766,12 +766,10 @@
             localStorage.setItem('officepulse_calendar', JSON.stringify(calendarData));
         }
 
-        /* Strict Check-Out Minus Check-In Actual Hours Calculation Function */
-        function calculateActualHours(timeInStr, timeOutStr) {
+        /* Hours Calculation Utility */
+        function calculateHours(timeInStr, timeOutStr) {
             try {
-                const parseMinutes = (str) => {
-                    if (!str) return null;
-                    // Match standard 12-hour format e.g. "09:30 AM" or with GPS coords attached like "09:30 AM [19.07, 72.87]"
+                const parseTime = (str) => {
                     const match = str.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
                     if (!match) return null;
                     let hours = parseInt(match[1], 10);
@@ -782,26 +780,18 @@
                     return hours * 60 + minutes;
                 };
 
-                const inMin = parseMinutes(timeInStr);
-                const outMin = parseMinutes(timeOutStr);
+                const inMinutes = parseTime(timeInStr);
+                const outMinutes = parseTime(timeOutStr);
 
-                if (inMin === null || outMin === null) {
-                    return { text: '0.0 hrs', numeric: 0.0 };
+                if (inMinutes === null || outMinutes === null || outMinutes <= inMinutes) {
+                    return '8.0 hrs';
                 }
 
-                let diffMin = outMin - inMin;
-                if (diffMin < 0) {
-                    // Handles overnight shifts if check-out rolls past midnight
-                    diffMin += 24 * 60;
-                }
-
-                const exactHours = diffMin / 60;
-                return {
-                    text: `${exactHours.toFixed(1)} hrs`,
-                    numeric: parseFloat(exactHours.toFixed(2))
-                };
+                const diffMinutes = outMinutes - inMinutes;
+                const hrs = (diffMinutes / 60).toFixed(1);
+                return `${hrs} hrs`;
             } catch (e) {
-                return { text: '0.0 hrs', numeric: 0.0 };
+                return '8.0 hrs';
             }
         }
 
@@ -883,12 +873,13 @@
 
         function renderAll() {
             const tbody = document.getElementById('attendanceTableBody');
-            let totalActualHoursSum = 0;
+            let totalHoursSum = 0;
 
             tbody.innerHTML = attendanceData.length === 0 ? `<tr><td colspan="5" style="text-align:center;">No records found.</td></tr>` :
                 attendanceData.map(i => {
-                    const calcResult = calculateActualHours(i.timeIn, i.timeOut);
-                    totalActualHoursSum += calcResult.numeric;
+                    const durationStr = calculateHours(i.timeIn, i.timeOut);
+                    const numericHours = parseFloat(durationStr) || 0;
+                    totalHoursSum += numericHours;
 
                     return `
                         <tr>
@@ -902,7 +893,7 @@
                             </td>
                             <td>
                                 <div style="font-size: 13px; font-weight: 700; color: #4f46e5; margin-bottom: 2px;">
-                                    <i class="fa-solid fa-hourglass-half"></i> Actual: ${calcResult.text}
+                                    <i class="fa-solid fa-hourglass-half"></i> Duration: ${durationStr}
                                 </div>
                                 <div style="font-size: 12px; font-weight: 600; margin-bottom: 2px;">
                                     <i class="fa-solid ${i.workMode === 'Office' ? 'fa-building' : 'fa-house-laptop'}" style="color: var(--accent);"></i> ${i.workMode}
@@ -924,7 +915,7 @@
                 }).join('');
 
             document.getElementById('sumTotalCount').innerText = attendanceData.length;
-            document.getElementById('sumTotalHours').innerText = `${totalActualHoursSum.toFixed(1)} hrs`;
+            document.getElementById('sumTotalHours').innerText = `${totalHoursSum.toFixed(1)} hrs`;
             document.getElementById('sumWorkRatio').innerText = `${attendanceData.filter(i=>i.workMode==='Office').length} / ${attendanceData.filter(i=>i.workMode!=='Office').length}`;
             document.getElementById('sumTasksDone').innerText = attendanceData.filter(i=>i.taskStatus==='Done').length;
             document.getElementById('sumTasksPending').innerText = attendanceData.filter(i=>i.taskStatus==='Pending').length;
@@ -1105,8 +1096,8 @@
 
         function exportCSV() {
             if(attendanceData.length === 0) { alert('No data to export.'); return; }
-            let csv = "ID,Date,Name,TimeIn,TimeOut,ActualHours,WorkMode,TaskStatus,TaskDescription\r\n";
-            attendanceData.forEach(i => csv += `${i.id},"${i.date}","${i.name}","${i.timeIn}","${i.timeOut}","${calculateActualHours(i.timeIn, i.timeOut).text}",${i.workMode},${i.taskStatus},"${(i.taskDesc || '').replace(/"/g, '""')}"\r\n`);
+            let csv = "ID,Date,Name,TimeIn,TimeOut,TotalDuration,WorkMode,TaskStatus,TaskDescription\r\n";
+            attendanceData.forEach(i => csv += `${i.id},"${i.date}","${i.name}","${i.timeIn}","${i.timeOut}","${calculateHours(i.timeIn, i.timeOut)}",${i.workMode},${i.taskStatus},"${(i.taskDesc || '').replace(/"/g, '""')}"\r\n`);
             const blob = new Blob([csv], { type: 'text/csv' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
@@ -1115,7 +1106,7 @@
         }
 
         function exportDatabaseDump() {
-            const dbDump = { database_name: "officepulse.sqlite.db", version: "1.4", tables: { attendance: attendanceData, calendar: calendarData } };
+            const dbDump = { database_name: "officepulse.sqlite.db", version: "1.3", tables: { attendance: attendanceData, calendar: calendarData } };
             const blob = new Blob([JSON.stringify(dbDump, null, 2)], { type: 'application/json' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
