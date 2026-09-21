@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="forest">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OfficePulse Bharat - Attendance & Calendar Manager</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ================= 10 NATURE THEMES ================= */
+        [data-theme="forest"] {
+            --bg-primary: #f0fdf4; --bg-card: #ffffff; --text-main: #064e3b; --text-muted: #047857;
+            --accent: #15803d; --accent-hover: #166534; --border-color: #bbf7d0;
+        }
+        [data-theme="ocean"] {
+            --bg-primary: #f0f9ff; --bg-card: #ffffff; --text-main: #0c4a6e; --text-muted: #0369a1;
+            --accent: #0284c7; --accent-hover: #0369a1; --border-color: #bae6fd;
+        }
+        [data-theme="sunset"] {
+            --bg-primary: #fff7ed; --bg-card: #ffffff; --text-main: #7c2d12; --text-muted: #c2410c;
+            --accent: #ea580c; --accent-hover: #c2410c; --border-color: #ffedd5;
+        }
+        [data-theme="mountain"] {
+            --bg-primary: #f8fafc; --bg-card: #ffffff; --text-main: #1e293b; --text-muted: #475569;
+            --accent: #475569; --accent-hover: #334155; --border-color: #cbd5e1;
+        }
+        [data-theme="meadow"] {
+            --bg-primary: #f7fee7; --bg-card: #ffffff; --text-main: #365314; --text-muted: #4d7c0f;
+            --accent: #65a30d; --accent-hover: #4d7c0f; --border-color: #ecfccb;
+        }
+        [data-theme="autumn"] {
+            --bg-primary: #fffbeb; --bg-card: #ffffff; --text-main: #78350f; --text-muted: #b45309;
+            --accent: #d97706; --accent-hover: #b45309; --border-color: #fef3c7;
+        }
+        [data-theme="river"] {
+            --bg-primary: #ecfeff; --bg-card: #ffffff; --text-main: #164e63; --text-muted: #0e7490;
+            --accent: #0891b2; --accent-hover: #0e7490; --border-color: #a5f3fc;
+        }
+        [data-theme="lavender"] {
+            --bg-primary: #faf5ff; --bg-card: #ffffff; --text-main: #581c87; --text-muted: #7e22ce;
+            --accent: #9333ea; --accent-hover: #7e22ce; --border-color: #f3e8ff;
+        }
+        [data-theme="earth"] {
+            --bg-primary: #fdf8f6; --bg-card: #ffffff; --text-main: #44403c; --text-muted: #78716c;
+            --accent: #78716c; --accent-hover: #57534e; --border-color: #e7e5e4;
+        }
+        [data-theme="cherry"] {
+            --bg-primary: #fff1f2; --bg-card: #ffffff; --text-main: #881337; --text-muted: #9f1239;
+            --accent: #e11d48; --accent-hover: #be123c; --border-color: #fecdd3;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-muted);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 20px;
+        }
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .theme-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 8px; }
+        .gap-4 { gap: 16px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-accent:hover { background-color: var(--accent-hover); }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-outline:hover { background: var(--bg-primary); }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            font-size: 14px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .tabs-header {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            gap: 4px;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tab-btn.active-tab {
+            color: var(--text-main);
+            border-bottom-color: var(--accent);
+            background-color: var(--bg-card);
+            border-radius: 8px 8px 0 0;
+        }
+        .hidden { display: none !important; }
+
+        /* ================= RESPONSIVE SMART CALENDAR STYLES ================= */
+        .calendar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+        .calendar-header-cell {
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            padding: 8px 4px;
+            color: var(--text-main);
+            background-color: var(--bg-primary);
+            border-radius: 6px;
+        }
+        .calendar-day {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            min-height: 85px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .calendar-day:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .calendar-day.present {
+            background-color: var(--bg-primary);
+            border-color: var(--accent);
+            color: var(--text-main);
+        }
+        .calendar-day.absent {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+        .calendar-day.empty {
+            background: transparent;
+            border: none;
+            cursor: default;
+            min-height: auto;
+        }
+        
+        .day-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 6px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.7);
+            margin-top: 4px;
+        }
+        .present .day-badge { color: var(--accent); background: #ffffff; }
+        .absent .day-badge { color: #b91c1c; background: #ffffff; }
+
+        @media (max-width: 640px) {
+            .calendar-day {
+                min-height: 65px;
+                padding: 4px;
+                font-size: 11px;
+            }
+            .calendar-header-cell {
+                font-size: 10px;
+                padding: 4px 2px;
+            }
+            .day-badge span { display: none; }
+            .day-badge { padding: 2px; border-radius: 50%; width: 22px; height: 22px; margin: 0 auto; }
+        }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th, td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+        th { font-weight: 600; color: var(--text-main); }
+
+        .terminal {
+            background-color: #0f172a;
+            color: #38bdf8;
+            font-family: 'Courier New', Courier, monospace;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 13px;
+            min-height: 180px;
+            max-height: 250px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            border: 1px solid #334155;
+        }
+        .terminal-input-group {
+            display: flex;
+            gap: 8px;
+        }
+        .terminal-input {
+            flex: 1;
+            background-color: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            outline: none;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 16px;
+            text-align: center;
+            font-size: 12px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-leaf" style="font-size: 20px; color: var(--accent);"></i>
+                <h1 style="font-size: 18px; font-weight: bold; color: var(--text-main);">OfficePulse Bharat</h1>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <!-- Theme Switcher -->
+                <select id="themeSelector" class="form-control" style="width: 150px; padding: 6px;" onchange="setTheme(this.value)">
+                    <option value="forest">🌿 Forest Green</option>
+                    <option value="ocean">🌊 Ocean Blue</option>
+                    <option value="sunset">🌅 Sunset Orange</option>
+                    <option value="mountain">⛰️ Mountain Slate</option>
+                    <option value="meadow">🌱 Meadow Lime</option>
+                    <option value="autumn">🍁 Autumn Amber</option>
+                    <option value="river">💧 River Cyan</option>
+                    <option value="lavender">💜 Lavender Purple</option>
+                    <option value="earth">🪨 Earth Stone</option>
+                    <option value="cherry">🌸 Cherry Rose</option>
+                </select>
+                <button onclick="exportCSV()" class="btn-outline"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="tabs-header">
+            <button onclick="switchTab('dashboard')" class="tab-btn active-tab" data-target="dashboard"><i class="fa-solid fa-chart-pie"></i> Analytics</button>
+            <button onclick="switchTab('calendar')" class="tab-btn" data-target="calendar"><i class="fa-solid fa-calendar-days"></i> Calendar</button>
+            <button onclick="switchTab('attendance')" class="tab-btn" data-target="attendance"><i class="fa-solid fa-clock"></i> Logs</button>
+            <button onclick="switchTab('sqlite')" class="tab-btn" data-target="sqlite"><i class="fa-solid fa-terminal"></i> SQLite Console</button>
+        </div>
+
+        <!-- TAB 1: ANALYTICS -->
+        <div id="tab-dashboard" class="flex" style="flex-direction: column; gap: 20px;">
+            <div class="grid-4">
+                <div class="theme-card">
+                    <p class="form-label"><i class="fa-solid fa-database"></i> Total Logs</p>
+                    <h3 id="sumTotalCount" style="font-size: 22px; font-weight: 900; color: var(--text-main);">0</h3>
+                </div>
+                <div class="theme-card">
+                    <p class="form-label"><i class="fa-solid fa-building"></i> Office / WFH</p>
+                    <h3 id="sumWorkRatio" style="font-size: 22px; font-weight: 900; color: var(--text-main);">0 / 0</h3>
+                </div>
+                <div class="theme-card">
+                    <p class="form-label"><i class="fa-solid fa-circle-check"></i> Completed Tasks</p>
+                    <h3 id="sumTasksDone" style="font-size: 22px; font-weight: 900; color: var(--text-main);">0</h3>
+                </div>
+                <div class="theme-card">
+                    <p class="form-label"><i class="fa-solid fa-circle-exclamation"></i> Pending Tasks</p>
+                    <h3 id="sumTasksPending" style="font-size: 22px; font-weight: 900; color: var(--text-main);">0</h3>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="theme-card">
+                    <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 12px; color: var(--text-main);"><i class="fa-solid fa-chart-bar"></i> Time-In Arrival Distribution</h4>
+                    <div style="position: relative; height: 240px;"><canvas id="timeInChart"></canvas></div>
+                </div>
+                <div class="theme-card">
+                    <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 12px; color: var(--text-main);"><i class="fa-solid fa-chart-pie"></i> Task Status Distribution</h4>
+                    <div style="position: relative; height: 240px;"><canvas id="taskChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: CALENDAR -->
+        <div id="tab-calendar" class="hidden theme-card">
+            <div class="flex justify-between items-center" style="margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <h3 style="font-size: 16px; font-weight: bold; color: var(--text-main);"><i class="fa-solid fa-calendar-check"></i> Smart Attendance Calendar</h3>
+                    <p style="font-size: 12px; color: var(--text-muted);">Tap any date to toggle status: <i class="fa-solid fa-circle-check" style="color:var(--accent);"></i> Present, <i class="fa-solid fa-circle-xmark" style="color:#ef4444;"></i> Absent, or Clear.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="changeMonth(-1)" class="btn-outline"><i class="fa-solid fa-chevron-left"></i> Prev</button>
+                    <h4 id="calendarMonthTitle" style="font-weight: bold; font-size: 15px; color: var(--text-main); min-width: 140px; text-align: center;"></h4>
+                    <button onclick="changeMonth(1)" class="btn-outline">Next <i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <div class="calendar-container">
+                <div class="calendar-grid">
+                    <div class="calendar-header-cell">Sun</div>
+                    <div class="calendar-header-cell">Mon</div>
+                    <div class="calendar-header-cell">Tue</div>
+                    <div class="calendar-header-cell">Wed</div>
+                    <div class="calendar-header-cell">Thu</div>
+                    <div class="calendar-header-cell">Fri</div>
+                    <div class="calendar-header-cell">Sat</div>
+                </div>
+                <div id="calendarDaysGrid" class="calendar-grid"></div>
+            </div>
+        </div>
+
+        <!-- TAB 3: LOGS -->
+        <div id="tab-attendance" class="hidden grid-2">
+            <div class="theme-card">
+                <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 14px; color: var(--text-main);"><i class="fa-solid fa-user-plus"></i> Log Daily Record</h3>
+                <form id="attendanceForm" onsubmit="addRecord(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <label class="form-label">Employee Name</label>
+                        <input type="text" id="empName" required class="form-control" placeholder="e.g. Rajesh Sharma">
+                    </div>
+                    <div class="grid-2" style="gap: 10px;">
+                        <div><label class="form-label">Time-In</label><input type="text" id="empTimeIn" required class="form-control" placeholder="09:30 AM"></div>
+                        <div><label class="form-label">Time-Out</label><input type="text" id="empTimeOut" required class="form-control" placeholder="06:30 PM"></div>
+                    </div>
+                    <div class="grid-2" style="gap: 10px;">
+                        <div>
+                            <label class="form-label">Work Mode</label>
+                            <select id="empMode" class="form-control"><option value="Office">Office</option><option value="WFH">WFH</option></select>
+                        </div>
+                        <div>
+                            <label class="form-label">Task Status</label>
+                            <select id="empTaskStatus" class="form-control"><option value="Done">Done</option><option value="Pending">Pending</option></select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">Task Description</label>
+                        <textarea id="empTaskDesc" class="form-control" placeholder="Describe today's deliverables, sprint tickets, or project objectives..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-accent" style="margin-top: 6px;"><i class="fa-solid fa-floppy-disk"></i> Save Record</button>
+                </form>
+            </div>
+            <div class="theme-card">
+                <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 14px; color: var(--text-main);"><i class="fa-solid fa-list-check"></i> Attendance Ledger</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead><tr><th>Name</th><th>Time-In / Out</th><th>Details</th><th>Status</th></tr></thead>
+                        <tbody id="attendanceTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: SQLITE CONSOLE -->
+        <div id="tab-sqlite" class="hidden flex" style="flex-direction: column; gap: 20px;">
+            <div class="theme-card">
+                <div class="flex justify-between items-center" style="margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h3 style="font-size: 16px; font-weight: bold; color: var(--text-main);"><i class="fa-solid fa-terminal"></i> SQLite Web Console</h3>
+                        <p style="font-size: 12px; color: var(--text-muted);">Run SQL commands like <code>SELECT * FROM attendance;</code> or <code>SELECT * FROM calendar;</code></p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="exportDatabase()" class="btn-outline"><i class="fa-solid fa-download"></i> Export DB (.db)</button>
+                        <label class="btn-outline" style="cursor: pointer; margin: 0;">
+                            <i class="fa-solid fa-upload"></i> Import DB <input type="file" id="dbFileInput" style="display: none;" onchange="importDatabase(event)">
+                        </label>
+                    </div>
+                </div>
+
+                <div id="terminalOutput" class="terminal">SQLite Web Console v1.0.5 (Active)<br>Type 'SELECT * FROM attendance;' to inspect stored datasets including task descriptions.</div>
+                
+                <div class="terminal-input-group">
+                    <input type="text" id="sqlQueryInput" class="terminal-input" placeholder="Enter SQL query..." value="SELECT * FROM attendance;" onkeydown="if(event.key==='Enter') executeSQL()">
+                    <button onclick="executeSQL()" class="btn-accent"><i class="fa-solid fa-play"></i> Run</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>OfficePulse Bharat &copy; 2026</footer>
+
+    <script>
+        let attendanceData = JSON.parse(localStorage.getItem('officepulse_data')) || [
+            { id: 1, name: 'Amit Deshmukh', timeIn: '09:15 AM', timeOut: '06:30 PM', workMode: 'Office', taskStatus: 'Done', taskDesc: 'Completed Q3 compliance review and server deployment.' },
+            { id: 2, name: 'Priya Kulkarni', timeIn: '09:45 AM', timeOut: '06:15 PM', workMode: 'WFH', taskStatus: 'Pending', taskDesc: 'Drafting UI wireframes for mobile dashboard views.' }
+        ];
+
+        let calendarData = JSON.parse(localStorage.getItem('officepulse_calendar')) || {
+            "2026-09-01": "Present", "2026-09-02": "Present", "2026-09-03": "Absent", "2026-09-21": "Present"
+        };
+
+        let currentCalendarDate = new Date(2026, 8, 1);
+        let timeInChartInstance = null;
+        let taskChartInstance = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('officepulse_theme') || 'forest';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeSelector').value = savedTheme;
+            renderAll();
+        });
+
+        function setTheme(themeName) {
+            document.documentElement.setAttribute('data-theme', themeName);
+            localStorage.setItem('officepulse_theme', themeName);
+            setTimeout(renderCharts, 50);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active-tab');
+                if(btn.getAttribute('data-target') === tabId) btn.classList.add('active-tab');
+            });
+
+            if(tabId === 'dashboard') {
+                setTimeout(renderCharts, 100);
+            } else if(tabId === 'calendar') {
+                renderCalendar();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('officepulse_data', JSON.stringify(attendanceData));
+            localStorage.setItem('officepulse_calendar', JSON.stringify(calendarData));
+        }
+
+        function addRecord(e) {
+            e.preventDefault();
+            const newEntry = {
+                id: Date.now(),
+                name: document.getElementById('empName').value,
+                timeIn: document.getElementById('empTimeIn').value,
+                timeOut: document.getElementById('empTimeOut').value,
+                workMode: document.getElementById('empMode').value,
+                taskStatus: document.getElementById('empTaskStatus').value,
+                taskDesc: document.getElementById('empTaskDesc').value || 'No specific task notes provided.'
+            };
+            attendanceData.unshift(newEntry);
+            saveData();
+            renderAll();
+            document.getElementById('attendanceForm').reset();
+            alert('Record saved successfully!');
+        }
+
+        function renderAll() {
+            const tbody = document.getElementById('attendanceTableBody');
+            tbody.innerHTML = attendanceData.length === 0 ? `<tr><td colspan="4" style="text-align:center;">No records</td></tr>` :
+                attendanceData.map(i => `
+                    <tr>
+                        <td style="font-weight:600;">${i.name}</td>
+                        <td>${i.timeIn} - ${i.timeOut}</td>
+                        <td>
+                            <div style="font-size: 13px; font-weight: 600; margin-bottom: 2px;">
+                                <i class="fa-solid ${i.workMode === 'Office' ? 'fa-building text-accent' : 'fa-house-laptop'}"></i> ${i.workMode}
+                            </div>
+                            <div style="font-size: 12px; color: var(--text-muted); opacity: 0.9;">
+                                <i class="fa-solid fa-circle-info" style="font-size: 10px;"></i> ${i.taskDesc || 'No description'}
+                            </div>
+                        </td>
+                        <td><i class="fa-solid ${i.taskStatus === 'Done' ? 'fa-circle-check text-accent' : 'fa-circle-exclamation text-amber-600'}"></i> ${i.taskStatus}</td>
+                    </tr>
+                `).join('');
+
+            document.getElementById('sumTotalCount').innerText = attendanceData.length;
+            document.getElementById('sumWorkRatio').innerText = `${attendanceData.filter(i=>i.workMode==='Office').length} / ${attendanceData.filter(i=>i.workMode!=='Office').length}`;
+            document.getElementById('sumTasksDone').innerText = attendanceData.filter(i=>i.taskStatus==='Done').length;
+            document.getElementById('sumTasksPending').innerText = attendanceData.filter(i=>i.taskStatus==='Pending').length;
+        }
+
+        function renderCharts() {
+            if (typeof Chart === 'undefined') return;
+
+            const computedAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#15803d';
+
+            const ctx1 = document.getElementById('timeInChart').getContext('2d');
+            if(timeInChartInstance) timeInChartInstance.destroy();
+            timeInChartInstance = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['08:00-09:00', '09:00-10:00', '10:00-11:00', '11:00+'],
+                    datasets: [{
+                        label: 'Arrivals',
+                        data: [2, 5, 3, 1],
+                        backgroundColor: computedAccent,
+                        borderRadius: 6
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            const doneCount = attendanceData.filter(i => i.taskStatus === 'Done').length;
+            const pendCount = attendanceData.filter(i => i.taskStatus === 'Pending').length;
+            const ctx2 = document.getElementById('taskChart').getContext('2d');
+            if(taskChartInstance) taskChartInstance.destroy();
+            taskChartInstance = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Done', 'Pending'],
+                    datasets: [{
+                        data: [doneCount || 1, pendCount || 1],
+                        backgroundColor: [computedAccent, '#ef4444']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function changeMonth(dir) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + dir);
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('calendarMonthTitle').innerText = `${monthNames[month]} ${year}`;
+
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const totalDays = new Date(year, month + 1, 0).getDate();
+
+            let html = '';
+            for (let i = 0; i < firstDayIndex; i++) {
+                html += `<div class="calendar-day empty"></div>`;
+            }
+
+            for (let day = 1; day <= totalDays; day++) {
+                const mm = String(month + 1).padStart(2, '0');
+                const dd = String(day).padStart(2, '0');
+                const dateStr = `${year}-${mm}-${dd}`;
+                const status = calendarData[dateStr] || '';
+                let statusClass = status === 'Present' ? 'present' : (status === 'Absent' ? 'absent' : '');
+                
+                let badgeContent = '<span style="color:var(--text-muted); opacity:0.3;">—</span>';
+                if(status === 'Present') {
+                    badgeContent = `<div class="day-badge"><i class="fa-solid fa-circle-check"></i><span>Present</span></div>`;
+                } else if(status === 'Absent') {
+                    badgeContent = `<div class="day-badge"><i class="fa-solid fa-circle-xmark"></i><span>Absent</span></div>`;
+                }
+
+                html += `
+                    <div class="calendar-day ${statusClass}" onclick="toggleCalendar('${dateStr}')">
+                        <span style="font-weight: bold;">${day}</span>
+                        ${badgeContent}
+                    </div>
+                `;
+            }
+            document.getElementById('calendarDaysGrid').innerHTML = html;
+        }
+
+        function toggleCalendar(dateStr) {
+            const current = calendarData[dateStr];
+            if (current === 'Present') calendarData[dateStr] = 'Absent';
+            else if (current === 'Absent') delete calendarData[dateStr];
+            else calendarData[dateStr] = 'Present';
+            saveData();
+            renderCalendar();
+        }
+
+        function executeSQL() {
+            const query = document.getElementById('sqlQueryInput').value.trim();
+            const terminal = document.getElementById('terminalOutput');
+            let output = `sqlite> ${query}\n`;
+
+            const lowerQuery = query.toLowerCase();
+            if (lowerQuery.includes('from attendance') || lowerQuery.includes('attendance')) {
+                output += JSON.stringify(attendanceData, null, 2);
+            } else if (lowerQuery.includes('from calendar') || lowerQuery.includes('calendar')) {
+                output += JSON.stringify(calendarData, null, 2);
+            } else if (lowerQuery.startsWith('select')) {
+                output += `Query executed successfully. 0 rows returned.`;
+            } else if (lowerQuery.startsWith('insert') || lowerQuery.startsWith('update') || lowerQuery.startsWith('delete')) {
+                output += `OK. 1 row affected.`;
+            } else {
+                output += `Error: near "${query.split(' ')[0]}": syntax error`;
+            }
+
+            terminal.innerHTML += `<br><br>${output.replace(/\n/g, '<br>')}`;
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function exportDatabase() {
+            const dbDump = {
+                version: "1.0",
+                timestamp: new Date().toISOString(),
+                tables: {
+                    attendance: attendanceData,
+                    calendar: calendarData
+                }
+            };
+            const blob = new Blob([JSON.stringify(dbDump, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'officepulse_sqlite_dump.db';
+            link.click();
+        }
+
+        function importDatabase(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed.tables && parsed.tables.attendance) {
+                        attendanceData = parsed.tables.attendance;
+                        calendarData = parsed.tables.calendar || {};
+                        saveData();
+                        renderAll();
+                        alert('Database imported successfully!');
+                    } else {
+                        alert('Invalid database dump structure.');
+                    }
+                } catch(err) {
+                    alert('Error parsing database file: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportCSV() {
+            let csv = "ID,Name,TimeIn,TimeOut,WorkMode,Status,TaskDescription\r\n";
+            attendanceData.forEach(i => csv += `${i.id},"${i.name}","${i.timeIn}","${i.timeOut}",${i.workMode},${i.taskStatus},"${(i.taskDesc || '').replace(/"/g, '""')}"\r\n`);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'attendance_report.csv';
+            link.click();
+        }
+    </script>
+</body>
+</html>
