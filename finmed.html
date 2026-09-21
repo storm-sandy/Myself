@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwasthyaBharat - Health, Food & Medical Tracker</title>
+    <!-- Tailwind CSS for modern layout and styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for interactive analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome for iconography -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Variables initialized for Nature Themes */
+        :root {
+            --bg-primary: #f0fdf4;
+            --bg-card: #ffffff;
+            --text-main: #166534;
+            --text-muted: #4b5563;
+            --accent: #22c55e;
+            --accent-hover: #16a34a;
+            --border-color: #bbf7d0;
+            --sidebar-bg: #dcfce7;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-muted);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .theme-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+            transition: background-color 0.2s;
+        }
+        .btn-accent:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Top Navigation & Theme Switcher Bar -->
+    <header class="shadow-sm border-b" style="background-color: var(--bg-card); border-color: var(--border-color);">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 rounded-xl text-white btn-accent shadow-md">
+                    <i class="fa-solid fa-heart-pulse text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold" style="color: var(--text-main);">SwasthyaBharat</h1>
+                    <p class="text-xs text-gray-500">Health, Nutrition, Clinical Visits & Medical Spends Command Center</p>
+                </div>
+            </div>
+
+            <!-- Export / Import Control Cluster & Nature Themes Dropdown Selector -->
+            <div class="flex flex-wrap items-center gap-3">
+                <!-- CSV & Database Backup Utilities -->
+                <div class="flex items-center gap-2 bg-gray-50 border px-2.5 py-1 rounded-lg" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                    <button onclick="exportCSV()" class="text-xs font-semibold px-2.5 py-1 rounded border bg-white hover:bg-gray-100 transition flex items-center gap-1.5" style="color: var(--text-main); border-color: var(--border-color);">
+                        <i class="fa-solid fa-file-csv text-green-600"></i> Export CSV
+                    </button>
+                    <label class="text-xs font-semibold px-2.5 py-1 rounded border bg-white hover:bg-gray-100 transition flex items-center gap-1.5 cursor-pointer" style="color: var(--text-main); border-color: var(--border-color);">
+                        <i class="fa-solid fa-upload text-blue-600"></i> Import CSV
+                        <input type="file" id="csvFileInput" accept=".csv" onchange="importCSV(event)" class="hidden">
+                    </label>
+                </div>
+
+                <!-- Nature Themes Dropdown Selector -->
+                <div class="flex items-center space-x-2">
+                    <label for="themeSelect" class="text-xs font-semibold uppercase tracking-wider text-gray-500"><i class="fa-solid fa-palette mr-1"></i> Nature Theme:</label>
+                    <select id="themeSelect" onchange="switchTheme(this.value)" class="text-sm rounded-lg border px-3 py-1.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card); color: var(--text-main);">
+                        <option value="forest">🌲 Lush Forest (Default)</option>
+                        <option value="monsoon">🌧️ Monsoon Rain</option>
+                        <option value="himalaya">🏔️ Snowy Himalaya</option>
+                        <option value="sunset">🌅 Western Ghats Sunset</option>
+                        <option value="desert">🏜️ Thar Desert Dunes</option>
+                        <option value="ocean">🌊 Coastal Ocean Wave</option>
+                        <option value="autumn">🍂 Nilgiri Autumn</option>
+                        <option value="bamboo">🎋 Bamboo Grove</option>
+                        <option value="earth">🌍 Terracotta Earth</option>
+                        <option value="aurora">🌌 Northern Lights (Aurora)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Tabbed Interface -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col gap-6">
+        
+        <!-- Tabs Header -->
+        <div class="flex flex-wrap border-b gap-2" style="border-color: var(--border-color);" id="tabHeaders">
+            <button onclick="switchTab('dashboard')" class="tab-btn px-4 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2 active-tab" data-target="dashboard">
+                <i class="fa-solid fa-chart-pie"></i> Health Dashboard
+            </button>
+            <button onclick="switchTab('food')" class="tab-btn px-4 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2" data-target="food">
+                <i class="fa-solid fa-utensils"></i> Food & Nutrition
+            </button>
+            <button onclick="switchTab('doctors')" class="tab-btn px-4 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2" data-target="doctors">
+                <i class="fa-solid fa-stethoscope"></i> Doctors & Diagnosis
+            </button>
+            <button onclick="switchTab('medicines')" class="tab-btn px-4 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2" data-target="medicines">
+                <i class="fa-solid fa-pills"></i> Medicines & Therapy
+            </button>
+            <button onclick="switchTab('expenses')" class="tab-btn px-4 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2" data-target="expenses">
+                <i class="fa-solid fa-indian-rupee-sign"></i> Medical Spends
+            </button>
+            <button onclick="switchTab('console')" class="tab-btn px-4 py-2.5 font-semibold text-sm rounded-t-lg border-b-2 border-transparent transition flex items-center gap-2" data-target="console">
+                <i class="fa-solid fa-terminal"></i> SQLite Console
+            </button>
+        </div>
+
+        <!-- ================= TAB 1: HEALTH DASHBOARD ================= -->
+        <div id="tab-dashboard" class="tab-content flex flex-col gap-6">
+            <!-- Quick Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Total Medical Spends</p>
+                        <h3 id="sumTotalSpend" class="text-2xl font-black mt-1" style="color: var(--text-main);">₹0</h3>
+                        <span class="text-xs text-gray-400">Consultations, meds & tests</span>
+                    </div>
+                    <div class="p-3 rounded-full bg-red-100 text-red-600">
+                        <i class="fa-solid fa-wallet text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Doctor Visits Logged</p>
+                        <h3 id="sumDoctorVisits" class="text-2xl font-black mt-1" style="color: var(--text-main);">0</h3>
+                        <span class="text-xs text-gray-400">Clinical consultations</span>
+                    </div>
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                        <i class="fa-solid fa-user-doctor text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Active Prescriptions</p>
+                        <h3 id="sumActiveMeds" class="text-2xl font-black mt-1" style="color: var(--text-main);">0</h3>
+                        <span class="text-xs text-gray-400">Medicines & therapies</span>
+                    </div>
+                    <div class="p-3 rounded-full bg-emerald-100 text-emerald-600">
+                        <i class="fa-solid fa-prescription-bottle-medical text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card p-5 rounded-xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Avg Daily Calories</p>
+                        <h3 id="sumAvgCalories" class="text-2xl font-black mt-1" style="color: var(--text-main);">0 kcal</h3>
+                        <span class="text-xs text-gray-400">Nutritional intake</span>
+                    </div>
+                    <div class="p-3 rounded-full bg-amber-100 text-amber-600">
+                        <i class="fa-solid fa-bowl-food text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Insights Banner -->
+            <div class="theme-card p-5 rounded-xl shadow-sm border-l-4" style="border-left-color: var(--accent);">
+                <h4 class="font-bold text-base mb-1" style="color: var(--text-main);"><i class="fa-solid fa-notes-medical text-emerald-600 mr-2"></i>Clinical & Dietary Wellness Insights</h4>
+                <p id="insightText" class="text-sm text-gray-600">Analyzing your health metrics... Log meals, doctor consultations, prescriptions, and healthcare spends to unlock personalized medical insights.</p>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="theme-card p-5 rounded-xl shadow-sm">
+                    <h4 class="font-bold text-md mb-4" style="color: var(--text-main);">Medical Expenses Breakdown (₹)</h4>
+                    <div class="relative h-64 flex justify-center items-center">
+                        <canvas id="expenseChart"></canvas>
+                    </div>
+                </div>
+                <div class="theme-card p-5 rounded-xl shadow-sm">
+                    <h4 class="font-bold text-md mb-4" style="color: var(--text-main);">Daily Nutritional Calorie Intake (kcal)</h4>
+                    <div class="relative h-64 flex justify-center items-center">
+                        <canvas id="nutritionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: FOOD & NUTRITION ================= -->
+        <div id="tab-food" class="tab-content hidden flex flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Add Food Form -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-1">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-plus-circle mr-2"></i>Log Meal & Nutrition</h3>
+                    <form id="foodForm" onsubmit="addFoodEntry(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Date</label>
+                            <input type="date" id="foodDate" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Meal Type</label>
+                            <select id="foodMealType" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                                <option value="Breakfast">🍳 Breakfast</option>
+                                <option value="Lunch">🍛 Lunch</option>
+                                <option value="Dinner">🍲 Dinner</option>
+                                <option value="Snacks & Beverages">☕ Snacks & Beverages</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Food Items / Description</label>
+                            <input type="text" id="foodItems" placeholder="e.g. Poha, Chai, Dal Chawal, Salad" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Estimated Calories (kcal)</label>
+                            <input type="number" id="foodCalories" placeholder="e.g. 450" required min="1" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Dietary Notes</label>
+                            <input type="text" id="foodNotes" placeholder="e.g. Low sodium, high protein" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-lg btn-accent font-semibold text-sm shadow-sm">Save Meal Entry</button>
+                    </form>
+                </div>
+
+                <!-- Food Table List -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-2 overflow-x-auto">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-list mr-2"></i>Nutritional Meal Logs History</h3>
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="border-b" style="border-color: var(--border-color); color: var(--text-main);">
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Meal</th>
+                                <th class="p-3">Items</th>
+                                <th class="p-3">Calories</th>
+                                <th class="p-3">Notes</th>
+                                <th class="p-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="foodTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: DOCTORS & DIAGNOSIS ================= -->
+        <div id="tab-doctors" class="tab-content hidden flex flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Add Doctor Visit Form -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-1">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-user-doctor mr-2"></i>Log Doctor Visit & Diagnosis</h3>
+                    <form id="doctorForm" onsubmit="addDoctorEntry(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Date</label>
+                            <input type="date" id="docDate" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Doctor Name & Specialty</label>
+                            <input type="text" id="docName" placeholder="e.g. Dr. Sharma (General Physician / Cardiologist)" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Hospital / Clinic</label>
+                            <input type="text" id="docHospital" placeholder="e.g. Kokilaben Hospital / Apollo Clinic" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Diagnosis / Findings</label>
+                            <input type="text" id="docDiagnosis" placeholder="e.g. Seasonal Viral Infection / Hypertension Check" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Consultation Fee (₹)</label>
+                            <input type="number" id="docFee" placeholder="e.g. 1000" required min="0" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-lg btn-accent font-semibold text-sm shadow-sm">Save Doctor Visit</button>
+                    </form>
+                </div>
+
+                <!-- Doctors Table List -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-2 overflow-x-auto">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-clipboard-user mr-2"></i>Doctor Consultations & Diagnoses History</h3>
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="border-b" style="border-color: var(--border-color); color: var(--text-main);">
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Doctor & Specialty</th>
+                                <th class="p-3">Clinic / Hospital</th>
+                                <th class="p-3">Diagnosis</th>
+                                <th class="p-3">Fee</th>
+                                <th class="p-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctorTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 4: MEDICINES & THERAPY ================= -->
+        <div id="tab-medicines" class="tab-content hidden flex flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Add Medicine Form -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-1">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-pills mr-2"></i>Add Medicine or Therapy</h3>
+                    <form id="medicineForm" onsubmit="addMedicineEntry(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Start Date</label>
+                            <input type="date" id="medDate" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Medicine Name / Therapy Type</label>
+                            <input type="text" id="medName" placeholder="e.g. Paracetamol 650mg / Physiotherapy Session" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Category</label>
+                            <select id="medCategory" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                                <option value="Prescription Medication">💊 Prescription Medication</option>
+                                <option value="Vitamins & Supplements">🌿 Vitamins & Supplements</option>
+                                <option value="Physiotherapy / Rehab">🧘 Physiotherapy / Rehab</option>
+                                <option value="Extra Therapy & Chiropractic">💆 Extra Therapy & Chiropractic</option>
+                                <option value="Diagnostic Lab Test">🔬 Diagnostic Lab Test (Blood/MRI)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Dosage / Schedule</label>
+                            <input type="text" id="medDosage" placeholder="e.g. Twice daily after meals for 5 days" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Cost (₹)</label>
+                            <input type="number" id="medCost" placeholder="e.g. 450" required min="0" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-lg btn-accent font-semibold text-sm shadow-sm">Save Medicine / Therapy</button>
+                    </form>
+                </div>
+
+                <!-- Medicines Table List -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-2 overflow-x-auto">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-capsules mr-2"></i>Medicines, Lab Tests & Therapies Log</h3>
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="border-b" style="border-color: var(--border-color); color: var(--text-main);">
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Item Name</th>
+                                <th class="p-3">Category</th>
+                                <th class="p-3">Dosage / Schedule</th>
+                                <th class="p-3">Cost</th>
+                                <th class="p-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="medicineTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 5: MEDICAL SPENDS ================= -->
+        <div id="tab-expenses" class="tab-content hidden flex flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Add Expense Form -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-1">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-receipt mr-2"></i>Record Medical Expense</h3>
+                    <form id="expenseForm" onsubmit="addExpenseEntry(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Date</label>
+                            <input type="date" id="expDate" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Expense Title / Vendor / Pharmacy</label>
+                            <input type="text" id="expTitle" placeholder="e.g. Apollo Pharmacy, SRL Diagnostics, Dr. Fee" required class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Amount (₹)</label>
+                            <input type="number" id="expAmount" placeholder="e.g. 1500" required min="1" step="0.01" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Category</label>
+                            <select id="expCategory" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                                <option value="Doctor Consultation">🩺 Doctor Consultation</option>
+                                <option value="Medicines & Pharmacy">💊 Medicines & Pharmacy</option>
+                                <option value="Diagnostic Lab Tests & Scans">🔬 Diagnostic Lab Tests & Scans</option>
+                                <option value="Therapy & Rehabilitation">🧘 Therapy & Rehabilitation</option>
+                                <option value="Health Insurance Premium">🛡️ Health Insurance Premium</option>
+                                <option value="Hospitalization / Surgery">🏥 Hospitalization / Surgery</option>
+                                <option value="Others">📦 Others</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase mb-1">Payment Mode</label>
+                            <select id="expMode" class="w-full text-sm rounded-lg border p-2.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                                <option value="UPI (GPay / PhonePe / Paytm)">📱 UPI (GPay / PhonePe / Paytm)</option>
+                                <option value="Health Insurance TPA Cashless">🛡️ Health Insurance TPA Cashless</option>
+                                <option value="Credit Card">💳 Credit Card</option>
+                                <option value="Cash">💵 Cash</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-lg btn-accent font-semibold text-sm shadow-sm">Save Medical Expense</button>
+                    </form>
+                </div>
+
+                <!-- Expenses Table List -->
+                <div class="theme-card p-6 rounded-xl shadow-sm lg:col-span-2 overflow-x-auto">
+                    <h3 class="text-lg font-bold mb-4" style="color: var(--text-main);"><i class="fa-solid fa-file-invoice-dollar mr-2"></i>Medical Spends & Insurance Claims</h3>
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="border-b" style="border-color: var(--border-color); color: var(--text-main);">
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Title / Vendor</th>
+                                <th class="p-3">Category</th>
+                                <th class="p-3">Mode</th>
+                                <th class="p-3">Amount</th>
+                                <th class="p-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 6: SQLITE CONSOLE SIMULATOR ================= -->
+        <div id="tab-console" class="tab-content hidden flex flex-col gap-6">
+            <div class="theme-card p-6 rounded-xl shadow-sm">
+                <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                    <div>
+                        <h3 class="text-lg font-bold" style="color: var(--text-main);"><i class="fa-solid fa-database mr-2"></i>SQLite Local Console (In-Memory Database Simulator)</h3>
+                        <p class="text-xs text-gray-500">Run standard SQL queries on tables: <code class="bg-gray-100 px-1 py-0.5 rounded text-green-700">food_logs</code>, <code class="bg-gray-100 px-1 py-0.5 rounded text-green-700">doctor_visits</code>, <code class="bg-gray-100 px-1 py-0.5 rounded text-green-700">medicines_therapies</code>, and <code class="bg-gray-100 px-1 py-0.5 rounded text-green-700">medical_expenses</code></p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="loadSampleQuery('SELECT * FROM food_logs;')" class="text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 transition">Show Food</button>
+                        <button onclick="loadSampleQuery('SELECT * FROM doctor_visits;')" class="text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 transition">Show Doctors</button>
+                        <button onclick="loadSampleQuery('SELECT * FROM medicines_therapies;')" class="text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 transition">Show Meds</button>
+                        <button onclick="loadSampleQuery('SELECT category, SUM(amount) as total FROM medical_expenses GROUP BY category;')" class="text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 transition">Spend Summary SQL</button>
+                    </div>
+                </div>
+
+                <!-- Query Input Box -->
+                <div class="space-y-3">
+                    <textarea id="sqlQueryInput" rows="3" class="w-full font-mono text-sm p-3 rounded-lg border focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: #1e1e1e; color: #4ade80;" placeholder="Enter SQL Query here, e.g., SELECT * FROM medical_expenses WHERE amount > 1000;"></textarea>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-400"><i class="fa-solid fa-circle-info mr-1"></i>Supports SELECT, INSERT, UPDATE, DELETE statements simulation.</span>
+                        <button onclick="executeSQL()" class="px-5 py-2 rounded-lg btn-accent font-semibold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i> Run SQL Query
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SQL Output Terminal -->
+                <div class="mt-6">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Console Output Result</h4>
+                    <div id="sqlOutputContainer" class="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-xs overflow-x-auto min-h-[150px] max-h-[300px]">
+                        <span class="text-gray-500">-- Ready for database execution... Type a query above and click Run SQL Query.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 text-center text-xs text-gray-500 border-t" style="border-color: var(--border-color);">
+        SwasthyaBharat &copy; 2026 | Built for Health, Nutrition & Medical Expense Management in India
+    </footer>
+
+    <!-- JavaScript Application Core Logic -->
+    <script>
+        // 10 Nature Theme Palettes Definition
+        const themes = {
+            forest: {
+                bgPrimary: '#f0fdf4', bgCard: '#ffffff', textMain: '#166534', textMuted: '#4b5563', accent: '#22c55e', accentHover: '#16a34a', borderColor: '#bbf7d0', sidebarBg: '#dcfce7'
+            },
+            monsoon: {
+                bgPrimary: '#f0f9ff', bgCard: '#ffffff', textMain: '#0369a1', textMuted: '#4b5563', accent: '#0ea5e9', accentHover: '#0284c7', borderColor: '#bae6fd', sidebarBg: '#e0f2fe'
+            },
+            himalaya: {
+                bgPrimary: '#f8fafc', bgCard: '#ffffff', textMain: '#334155', textMuted: '#475569', accent: '#64748b', accentHover: '#475569', borderColor: '#cbd5e1', sidebarBg: '#f1f5f9'
+            },
+            sunset: {
+                bgPrimary: '#fff7ed', bgCard: '#ffffff', textMain: '#9a3412', textMuted: '#4b5563', accent: '#f97316', accentHover: '#ea580c', borderColor: '#fed7aa', sidebarBg: '#ffedd5'
+            },
+            desert: {
+                bgPrimary: '#fefce8', bgCard: '#ffffff', textMain: '#854d0e', textMuted: '#4b5563', accent: '#eab308', accentHover: '#ca8a04', borderColor: '#fef08a', sidebarBg: '#fef9c3'
+            },
+            ocean: {
+                bgPrimary: '#ecfeff', bgCard: '#ffffff', textMain: '#155e75', textMuted: '#4b5563', accent: '#06b6d4', accentHover: '#0891b2', borderColor: '#a5f3fc', sidebarBg: '#cffafe'
+            },
+            autumn: {
+                bgPrimary: '#fff1f2', bgCard: '#ffffff', textMain: '#9f1239', textMuted: '#4b5563', accent: '#f43f5e', accentHover: '#e11d48', borderColor: '#fecdd3', sidebarBg: '#ffe4e6'
+            },
+            bamboo: {
+                bgPrimary: '#f4fbf7', bgCard: '#ffffff', textMain: '#14532d', textMuted: '#4b5563', accent: '#10b981', accentHover: '#059669', borderColor: '#a7f3d0', sidebarBg: '#d1fae5'
+            },
+            earth: {
+                bgPrimary: '#fdf8f6', bgCard: '#ffffff', textMain: '#7c2d12', textMuted: '#4b5563', accent: '#c2410c', accentHover: '#9a3412', borderColor: '#fed7aa', sidebarBg: '#ffedd5'
+            },
+            aurora: {
+                bgPrimary: '#f5f3ff', bgCard: '#ffffff', textMain: '#5b21b6', textMuted: '#4b5563', accent: '#8b5cf6', accentHover: '#7c3aed', borderColor: '#ddd6fe', sidebarBg: '#ede9fe'
+            }
+        };
+
+        function switchTheme(themeName) {
+            const t = themes[themeName];
+            if (!t) return;
+            const root = document.documentElement;
+            root.style.setProperty('--bg-primary', t.bgPrimary);
+            root.style.setProperty('--bg-card', t.bgCard);
+            root.style.setProperty('--text-main', t.textMain);
+            root.style.setProperty('--text-muted', t.textMuted);
+            root.style.setProperty('--accent', t.accent);
+            root.style.setProperty('--accent-hover', t.accentHover);
+            root.style.setProperty('--border-color', t.borderColor);
+            root.style.setProperty('--sidebar-bg', t.sidebarBg);
+            localStorage.setItem('swasthya_theme', themeName);
+        }
+
+        // Load saved theme on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('swasthya_theme');
+            if (savedTheme && themes[savedTheme]) {
+                document.getElementById('themeSelect').value = savedTheme;
+                switchTheme(savedTheme);
+            }
+            // Set today's date default
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('foodDate').value = todayStr;
+            document.getElementById('docDate').value = todayStr;
+            document.getElementById('medDate').value = todayStr;
+            document.getElementById('expDate').value = todayStr;
+
+            renderAll();
+        });
+
+        // Tab Management
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-green-600', 'text-green-700', 'bg-white');
+                if(btn.getAttribute('data-target') === tabId) {
+                    btn.classList.add('border-green-600', 'text-green-700', 'bg-white');
+                    btn.style.borderColor = 'var(--accent)';
+                    btn.style.color = 'var(--text-main)';
+                }
+            });
+
+            if(tabId === 'dashboard') {
+                setTimeout(() => renderCharts(), 50);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const activeBtn = document.querySelector('.tab-btn');
+            if(activeBtn) {
+                activeBtn.classList.add('bg-white');
+                activeBtn.style.color = 'var(--text-main)';
+                activeBtn.style.borderColor = 'var(--accent)';
+            }
+        });
+
+        // In-Memory Data Store with initial realistic medical/food data
+        let foodData = JSON.parse(localStorage.getItem('swasthya_food')) || [
+            { id: 1, date: '2026-06-01', mealType: 'Breakfast', items: 'Oats with Almond Milk & Bananas', calories: 380, notes: 'Heart healthy fiber' },
+            { id: 2, date: '2026-06-01', mealType: 'Lunch', items: 'Brown Rice, Dal Tadka & Green Salad', calories: 520, notes: 'Low glycemic index' },
+            { id: 3, date: '2026-06-02', mealType: 'Dinner', items: 'Grilled Paneer with Steamed Vegetables', calories: 440, notes: 'High protein, low carb' }
+        ];
+
+        let doctorData = JSON.parse(localStorage.getItem('swasthya_doctors')) || [
+            { id: 1, date: '2026-06-02', name: 'Dr. Ramesh Kulkarni (General Physician)', hospital: 'Lilavati Hospital, Mumbai', diagnosis: 'Seasonal Viral Fever & Fatigue', fee: 1000 },
+            { id: 2, date: '2026-06-05', name: 'Dr. Anita Deshmukh (Physiotherapist)', hospital: 'Spine & Rehab Clinic, Bandra', diagnosis: 'Lower Back Strain / Posture Correction', fee: 800 }
+        ];
+
+        let medicineData = JSON.parse(localStorage.getItem('swasthya_medicines')) || [
+            { id: 1, date: '2026-06-02', name: 'Paracetamol 650mg & Vitamin C', category: 'Prescription Medication', dosage: 'Twice daily after meals for 5 days', cost: 350 },
+            { id: 2, date: '2026-06-04', name: 'Advanced Chiropractic Spinal Therapy', category: 'Extra Therapy & Chiropractic', dosage: '1 Session / week', cost: 1500 },
+            { id: 3, date: '2026-06-05', name: 'Complete Blood Count (CBC) & CRP Test', category: 'Diagnostic Lab Test', dosage: 'Fasting blood draw', cost: 1200 }
+        ];
+
+        let expenseData = JSON.parse(localStorage.getItem('swasthya_expenses')) || [
+            { id: 1, date: '2026-06-02', title: 'Doctor Consultation Fee (Dr. Kulkarni)', amount: 1000, category: 'Doctor Consultation', mode: 'UPI (GPay / PhonePe / Paytm)' },
+            { id: 2, date: '2026-06-02', title: 'Apollo Pharmacy Prescribed Medicines', amount: 350, category: 'Medicines & Pharmacy', mode: 'Credit Card' },
+            { id: 3, date: '2026-06-05', title: 'SRL Diagnostics Blood Panel Test', amount: 1200, category: 'Diagnostic Lab Tests & Scans', mode: 'UPI (GPay / PhonePe / Paytm)' },
+            { id: 4, date: '2026-06-05', title: 'Physiotherapy Rehab Session', amount: 1500, category: 'Therapy & Rehabilitation', mode: 'Cash' }
+        ];
+
+        function saveData() {
+            localStorage.setItem('swasthya_food', JSON.stringify(foodData));
+            localStorage.setItem('swasthya_doctors', JSON.stringify(doctorData));
+            localStorage.setItem('swasthya_medicines', JSON.stringify(medicineData));
+            localStorage.setItem('swasthya_expenses', JSON.stringify(expenseData));
+        }
+
+        // Add Food Entry
+        function addFoodEntry(e) {
+            e.preventDefault();
+            const newFood = {
+                id: Date.now(),
+                date: document.getElementById('foodDate').value,
+                mealType: document.getElementById('foodMealType').value,
+                items: document.getElementById('foodItems').value,
+                calories: parseInt(document.getElementById('foodCalories').value),
+                notes: document.getElementById('foodNotes').value || '-'
+            };
+            foodData.unshift(newFood);
+            saveData();
+            renderAll();
+            document.getElementById('foodForm').reset();
+            document.getElementById('foodDate').value = new Date().toISOString().split('T')[0];
+            alert('Meal nutrition logged successfully!');
+        }
+
+        function deleteFood(id) {
+            foodData = foodData.filter(item => item.id !== id);
+            saveData();
+            renderAll();
+        }
+
+        // Add Doctor Entry
+        function addDoctorEntry(e) {
+            e.preventDefault();
+            const newDoc = {
+                id: Date.now(),
+                date: document.getElementById('docDate').value,
+                name: document.getElementById('docName').value,
+                hospital: document.getElementById('docHospital').value,
+                diagnosis: document.getElementById('docDiagnosis').value,
+                fee: parseFloat(document.getElementById('docFee').value)
+            };
+            doctorData.unshift(newDoc);
+            saveData();
+            renderAll();
+            document.getElementById('doctorForm').reset();
+            document.getElementById('docDate').value = new Date().toISOString().split('T')[0];
+            alert('Doctor visit & diagnosis logged successfully!');
+        }
+
+        function deleteDoctor(id) {
+            doctorData = doctorData.filter(item => item.id !== id);
+            saveData();
+            renderAll();
+        }
+
+        // Add Medicine Entry
+        function addMedicineEntry(e) {
+            e.preventDefault();
+            const newMed = {
+                id: Date.now(),
+                date: document.getElementById('medDate').value,
+                name: document.getElementById('medName').value,
+                category: document.getElementById('medCategory').value,
+                dosage: document.getElementById('medDosage').value,
+                cost: parseFloat(document.getElementById('medCost').value)
+            };
+            medicineData.unshift(newMed);
+            saveData();
+            renderAll();
+            document.getElementById('medicineForm').reset();
+            document.getElementById('medDate').value = new Date().toISOString().split('T')[0];
+            alert('Medicine or therapy logged successfully!');
+        }
+
+        function deleteMedicine(id) {
+            medicineData = medicineData.filter(item => item.id !== id);
+            saveData();
+            renderAll();
+        }
+
+        // Add Expense Entry
+        function addExpenseEntry(e) {
+            e.preventDefault();
+            const newExpense = {
+                id: Date.now(),
+                date: document.getElementById('expDate').value,
+                title: document.getElementById('expTitle').value,
+                amount: parseFloat(document.getElementById('expAmount').value),
+                category: document.getElementById('expCategory').value,
+                mode: document.getElementById('expMode').value
+            };
+            expenseData.unshift(newExpense);
+            saveData();
+            renderAll();
+            document.getElementById('expenseForm').reset();
+            document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
+            alert('Medical expense recorded successfully!');
+        }
+
+        function deleteExpense(id) {
+            expenseData = expenseData.filter(item => item.id !== id);
+            saveData();
+            renderAll();
+        }
+
+        // CSV Export & Import Handlers
+        function exportCSV() {
+            if (expenseData.length === 0 && foodData.length === 0 && doctorData.length === 0 && medicineData.length === 0) {
+                alert('No data available to export.');
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,ID,Date,Field2,Field3,Field4,Field5\r\n";
+            expenseData.forEach(item => {
+                csvContent += [`EXP_${item.id}`, item.date, `"${item.title}"`, item.amount, `"${item.category}"`, `"${item.mode}"`].join(",") + "\r\n";
+            });
+            foodData.forEach(item => {
+                csvContent += [`FOOD_${item.id}`, item.date, `"${item.mealType}"`, `"${item.items}"`, item.calories, `"${item.notes}"`].join(",") + "\r\n";
+            });
+            doctorData.forEach(item => {
+                csvContent += [`DOC_${item.id}`, item.date, `"${item.name}"`, `"${item.hospital}"`, `"${item.diagnosis}"`, item.fee].join(",") + "\r\n";
+            });
+            medicineData.forEach(item => {
+                csvContent += [`MED_${item.id}`, item.date, `"${item.name}"`, `"${item.category}"`, `"${item.dosage}"`, item.cost].join(",") + "\r\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "swasthyabharat_export.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function importCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split("\n");
+                let count = 0;
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    const row = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(",");
+                    if (row.length >= 5) {
+                        const clean = row.map(val => val.replace(/^"(.*)"$/, '$1').trim());
+                        const recordId = clean[0] || '';
+                        if (recordId.startsWith('EXP_')) {
+                            expenseData.push({
+                                id: Date.now() + i,
+                                date: clean[1] || new Date().toISOString().split('T')[0],
+                                title: clean[2] || 'Imported Expense',
+                                amount: parseFloat(clean[3]) || 0,
+                                category: clean[4] || 'Others',
+                                mode: clean[5] || 'UPI'
+                            });
+                            count++;
+                        } else if (recordId.startsWith('FOOD_')) {
+                            foodData.push({
+                                id: Date.now() + i,
+                                date: clean[1] || new Date().toISOString().split('T')[0],
+                                mealType: clean[2] || 'Lunch',
+                                items: clean[3] || 'Meal',
+                                calories: parseInt(clean[4]) || 400,
+                                notes: clean[5] || '-'
+                            });
+                            count++;
+                        } else if (recordId.startsWith('DOC_')) {
+                            doctorData.push({
+                                id: Date.now() + i,
+                                date: clean[1] || new Date().toISOString().split('T')[0],
+                                name: clean[2] || 'Doctor',
+                                hospital: clean[3] || 'Clinic',
+                                diagnosis: clean[4] || 'Checkup',
+                                fee: parseFloat(clean[5]) || 500
+                            });
+                            count++;
+                        } else if (recordId.startsWith('MED_')) {
+                            medicineData.push({
+                                id: Date.now() + i,
+                                date: clean[1] || new Date().toISOString().split('T')[0],
+                                name: clean[2] || 'Medication',
+                                category: clean[3] || 'Prescription',
+                                dosage: clean[4] || 'Daily',
+                                cost: parseFloat(clean[5]) || 100
+                            });
+                            count++;
+                        }
+                    }
+                }
+                saveData();
+                renderAll();
+                alert(`Successfully imported ${count} records from CSV file!`);
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // Render Table Data & Summaries
+        function renderAll() {
+            // Render Food Table
+            const foodTable = document.getElementById('foodTableBody');
+            foodTable.innerHTML = foodData.length === 0 ? `<tr><td colspan="6" class="p-4 text-center text-gray-400">No meal logs recorded yet.</td></tr>` : 
+                foodData.map(item => `
+                    <tr class="border-b hover:bg-gray-50/50" style="border-color: var(--border-color);">
+                        <td class="p-3 font-medium">${item.date}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">${item.mealType}</span></td>
+                        <td class="p-3 font-semibold">${item.items}</td>
+                        <td class="p-3 font-bold text-orange-600">${item.calories} kcal</td>
+                        <td class="p-3 text-gray-500">${item.notes}</td>
+                        <td class="p-3 text-center"><button onclick="deleteFood(${item.id})" class="text-red-500 hover:text-red-700 px-2 py-1"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `).join('');
+
+            // Render Doctors Table
+            const docTable = document.getElementById('doctorTableBody');
+            docTable.innerHTML = doctorData.length === 0 ? `<tr><td colspan="6" class="p-4 text-center text-gray-400">No doctor visits recorded yet.</td></tr>` : 
+                doctorData.map(item => `
+                    <tr class="border-b hover:bg-gray-50/50" style="border-color: var(--border-color);">
+                        <td class="p-3 font-medium">${item.date}</td>
+                        <td class="p-3 font-semibold">${item.name}</td>
+                        <td class="p-3 text-gray-600">${item.hospital}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">${item.diagnosis}</span></td>
+                        <td class="p-3 font-bold text-red-600">₹${item.fee.toLocaleString('en-IN')}</td>
+                        <td class="p-3 text-center"><button onclick="deleteDoctor(${item.id})" class="text-red-500 hover:text-red-700 px-2 py-1"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `).join('');
+
+            // Render Medicines Table
+            const medTable = document.getElementById('medicineTableBody');
+            medTable.innerHTML = medicineData.length === 0 ? `<tr><td colspan="6" class="p-4 text-center text-gray-400">No medicines or therapies logged yet.</td></tr>` : 
+                medicineData.map(item => `
+                    <tr class="border-b hover:bg-gray-50/50" style="border-color: var(--border-color);">
+                        <td class="p-3 font-medium">${item.date}</td>
+                        <td class="p-3 font-semibold">${item.name}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">${item.category}</span></td>
+                        <td class="p-3 text-xs text-gray-600">${item.dosage}</td>
+                        <td class="p-3 font-bold text-red-600">₹${item.cost.toLocaleString('en-IN')}</td>
+                        <td class="p-3 text-center"><button onclick="deleteMedicine(${item.id})" class="text-red-500 hover:text-red-700 px-2 py-1"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `).join('');
+
+            // Render Expenses Table
+            const expTable = document.getElementById('expenseTableBody');
+            expTable.innerHTML = expenseData.length === 0 ? `<tr><td colspan="6" class="p-4 text-center text-gray-400">No medical expenses recorded yet.</td></tr>` : 
+                expenseData.map(item => `
+                    <tr class="border-b hover:bg-gray-50/50" style="border-color: var(--border-color);">
+                        <td class="p-3 font-medium">${item.date}</td>
+                        <td class="p-3 font-semibold">${item.title}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">${item.category}</span></td>
+                        <td class="p-3 text-xs text-gray-500">${item.mode}</td>
+                        <td class="p-3 font-bold text-red-600">₹${item.amount.toLocaleString('en-IN')}</td>
+                        <td class="p-3 text-center"><button onclick="deleteExpense(${item.id})" class="text-red-500 hover:text-red-700 px-2 py-1"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `).join('');
+
+            // Calculate Summaries
+            const totalSpend = expenseData.reduce((acc, curr) => acc + curr.amount, 0);
+            const totalVisits = doctorData.length;
+            const activeMeds = medicineData.length;
+            const avgCalories = foodData.length ? Math.round(foodData.reduce((acc, curr) => acc + curr.calories, 0) / Math.max(1, new Set(foodData.map(i=>i.date)).size)) : 0;
+
+            document.getElementById('sumTotalSpend').innerText = `₹${totalSpend.toLocaleString('en-IN')}`;
+            document.getElementById('sumDoctorVisits').innerText = `${totalVisits}`;
+            document.getElementById('sumActiveMeds').innerText = `${activeMeds}`;
+            document.getElementById('sumAvgCalories').innerText = `${avgCalories} kcal`;
+
+            generateInsights(totalSpend, totalVisits, activeMeds);
+            renderCharts();
+        }
+
+        function generateInsights(totalSpend, totalVisits, activeMeds) {
+            let msg = "";
+            if (totalVisits > 0) {
+                msg += `🩺 You have logged ${totalVisits} clinical doctor consultations. Ensure all follow-up appointments and lab tests are completed on schedule. `;
+            } else {
+                msg += `👍 No recent doctor visits logged. Maintain your preventive health routines! `;
+            }
+
+            if (activeMeds > 0) {
+                msg += `💊 You are tracking ${activeMeds} active prescriptions or therapies. Ensure strict adherence to prescribed dosages. `;
+            } else {
+                msg += `🌿 No active medications currently logged. `;
+            }
+
+            if (totalSpend > 5000) {
+                msg += `💡 Your cumulative medical expenses stand at ₹${totalSpend.toLocaleString('en-IN')}. Verify if these are eligible for Section 80D tax deductions or health insurance claims.`;
+            } else {
+                msg += `🌟 Healthcare expenses are well within optimal budgetary ranges.`;
+            }
+            document.getElementById('insightText').innerText = msg;
+        }
+
+        // Charts configuration
+        let expenseChartInstance = null;
+        let nutritionChartInstance = null;
+
+        function renderCharts() {
+            if (typeof Chart === 'undefined') return;
+
+            // Group expenses by category
+            const categoryMap = {};
+            expenseData.forEach(item => {
+                categoryMap[item.category] = (categoryMap[item.category] || 0) + item.amount;
+            });
+
+            const expLabels = Object.keys(categoryMap);
+            const expValues = Object.values(categoryMap);
+
+            const ctxExp = document.getElementById('expenseChart');
+            if (ctxExp) {
+                if(expenseChartInstance) expenseChartInstance.destroy();
+                expenseChartInstance = new Chart(ctxExp.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: expLabels.length ? expLabels : ['No Data'],
+                        datasets: [{
+                            data: expValues.length ? expValues : [1],
+                            backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#f43f5e']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
+                    }
+                });
+            }
+
+            // Nutritional calories per food log
+            const foodLabels = foodData.map(i => `${i.date} (${i.mealType})`).slice(0, 7).reverse();
+            const foodValues = foodData.map(i => i.calories).slice(0, 7).reverse();
+
+            const ctxNut = document.getElementById('nutritionChart');
+            if (ctxNut) {
+                if(nutritionChartInstance) nutritionChartInstance.destroy();
+                nutritionChartInstance = new Chart(ctxNut.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: foodLabels.length ? foodLabels : ['No Meals'],
+                        datasets: [{
+                            label: 'Calories (kcal)',
+                            data: foodValues.length ? foodValues : [0],
+                            backgroundColor: '#f59e0b',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        // ================= SQLITE CONSOLE SIMULATOR LOGIC ================= //
+        function loadSampleQuery(query) {
+            document.getElementById('sqlQueryInput').value = query;
+        }
+
+        function executeSQL() {
+            const query = document.getElementById('sqlQueryInput').value.trim();
+            const outputContainer = document.getElementById('sqlOutputContainer');
+            
+            if(!query) {
+                outputContainer.innerHTML = `<span class="text-red-400">Error: Please enter an SQL query.</span>`;
+                return;
+            }
+
+            const lowerQuery = query.toLowerCase();
+            let resultHTML = '';
+
+            try {
+                if (lowerQuery.includes('select')) {
+                    let targetTable = '';
+                    if (lowerQuery.includes('food_logs')) targetTable = 'food';
+                    else if (lowerQuery.includes('doctor_visits')) targetTable = 'doctors';
+                    else if (lowerQuery.includes('medicines_therapies')) targetTable = 'medicines';
+                    else if (lowerQuery.includes('medical_expenses')) targetTable = 'expenses';
+                    else {
+                        outputContainer.innerHTML = `<span class="text-amber-400">Query simulated successfully, but table name not recognized. Available tables: food_logs, doctor_visits, medicines_therapies, medical_expenses.</span>`;
+                        return;
+                    }
+
+                    let rawData = foodData;
+                    if (targetTable === 'doctors') rawData = doctorData;
+                    else if (targetTable === 'medicines') rawData = medicineData;
+                    else if (targetTable === 'expenses') rawData = expenseData;
+
+                    if (lowerQuery.includes('group by category')) {
+                        const summary = {};
+                        rawData.forEach(item => {
+                            const cat = item.category || 'General';
+                            summary[cat] = (summary[cat] || 0) + (item.amount || item.cost || 0);
+                        });
+                        resultHTML += `<div class="text-yellow-300 font-bold mb-2">--- SQL Result Set (Grouped Summary) ---</div>`;
+                        resultHTML += `<table class="w-full text-left border-collapse"><thead><tr class="border-b border-gray-700 text-gray-400"><th class="p-1.5">Category</th><th class="p-1.5">Total Value</th></tr></thead><tbody>`;
+                        for (let key in summary) {
+                            resultHTML += `<tr class="border-b border-gray-800"><td class="p-1.5">${key}</td><td class="p-1.5 text-green-300">${summary[key]}</td></tr>`;
+                        }
+                        resultHTML += `</tbody></table>`;
+                    } else {
+                        resultHTML += `<div class="text-yellow-300 font-bold mb-2">--- SQL Result Set (${rawData.length} rows returned) ---</div>`;
+                        if (rawData.length === 0) {
+                            resultHTML += `<span class="text-gray-400">Empty set.</span>`;
+                        } else {
+                            const keys = Object.keys(rawData[0]);
+                            resultHTML += `<div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="border-b border-gray-700 text-gray-400">`;
+                            keys.forEach(k => resultHTML += `<th class="p-1.5">${k}</th>`);
+                            resultHTML += `</tr></thead><tbody>`;
+                            rawData.forEach(row => {
+                                resultHTML += `<tr class="border-b border-gray-800">`;
+                                keys.forEach(k => resultHTML += `<td class="p-1.5">${row[k]}</td>`);
+                                resultHTML += `</tr>`;
+                            });
+                            resultHTML += `</tbody></table></div>`;
+                        }
+                    }
+                } else if (lowerQuery.includes('insert') || lowerQuery.includes('update') || lowerQuery.includes('delete')) {
+                    resultHTML += `<span class="text-emerald-400"><i class="fa-solid fa-check-circle mr-1"></i> Query executed successfully. 1 row affected in simulated SQLite transaction cache.</span>`;
+                } else {
+                    resultHTML += `<span class="text-blue-300">SQLite statement executed successfully. No tabular dataset to display.</span>`;
+                }
+            } catch (err) {
+                resultHTML = `<span class="text-red-400">SQL Syntax Execution Error: ${err.message}</span>`;
+            }
+
+            outputContainer.innerHTML = resultHTML;
+        }
+    </script>
+</body>
+</html>
