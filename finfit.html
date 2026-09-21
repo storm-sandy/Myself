@@ -75,21 +75,35 @@
                 </div>
             </div>
 
-            <!-- Nature Themes Dropdown Selector -->
-            <div class="flex items-center space-x-2">
-                <label for="themeSelect" class="text-xs font-semibold uppercase tracking-wider text-gray-500"><i class="fa-solid fa-palette mr-1"></i> Nature Theme:</label>
-                <select id="themeSelect" onchange="switchTheme(this.value)" class="text-sm rounded-lg border px-3 py-1.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card); color: var(--text-main);">
-                    <option value="forest">🌲 Lush Forest (Default)</option>
-                    <option value="monsoon">🌧️ Monsoon Rain</option>
-                    <option value="himalaya">🏔️ Snowy Himalaya</option>
-                    <option value="sunset">🌅 Western Ghats Sunset</option>
-                    <option value="desert">🏜️ Thar Desert Dunes</option>
-                    <option value="ocean">🌊 Coastal Ocean Wave</option>
-                    <option value="autumn">🍂 Nilgiri Autumn</option>
-                    <option value="bamboo">🎋 Bamboo Grove</option>
-                    <option value="earth">🌍 Terracotta Earth</option>
-                    <option value="aurora">🌌 Northern Lights (Aurora)</option>
-                </select>
+            <!-- Export / Import Control Cluster & Nature Themes Dropdown Selector -->
+            <div class="flex flex-wrap items-center gap-3">
+                <!-- CSV & Database Backup Utilities -->
+                <div class="flex items-center gap-2 bg-gray-50 border px-2.5 py-1 rounded-lg" style="border-color: var(--border-color); background-color: var(--bg-card);">
+                    <button onclick="exportCSV()" class="text-xs font-semibold px-2.5 py-1 rounded border bg-white hover:bg-gray-100 transition flex items-center gap-1.5" style="color: var(--text-main); border-color: var(--border-color);">
+                        <i class="fa-solid fa-file-csv text-green-600"></i> Export CSV
+                    </button>
+                    <label class="text-xs font-semibold px-2.5 py-1 rounded border bg-white hover:bg-gray-100 transition flex items-center gap-1.5 cursor-pointer" style="color: var(--text-main); border-color: var(--border-color);">
+                        <i class="fa-solid fa-upload text-blue-600"></i> Import CSV
+                        <input type="file" id="csvFileInput" accept=".csv" onchange="importCSV(event)" class="hidden">
+                    </label>
+                </div>
+
+                <!-- Nature Themes Dropdown Selector -->
+                <div class="flex items-center space-x-2">
+                    <label for="themeSelect" class="text-xs font-semibold uppercase tracking-wider text-gray-500"><i class="fa-solid fa-palette mr-1"></i> Nature Theme:</label>
+                    <select id="themeSelect" onchange="switchTheme(this.value)" class="text-sm rounded-lg border px-3 py-1.5 focus:outline-none focus:ring-2" style="border-color: var(--border-color); background-color: var(--bg-card); color: var(--text-main);">
+                        <option value="forest">🌲 Lush Forest (Default)</option>
+                        <option value="monsoon">🌧️ Monsoon Rain</option>
+                        <option value="himalaya">🏔️ Snowy Himalaya</option>
+                        <option value="sunset">🌅 Western Ghats Sunset</option>
+                        <option value="desert">🏜️ Thar Desert Dunes</option>
+                        <option value="ocean">🌊 Coastal Ocean Wave</option>
+                        <option value="autumn">🍂 Nilgiri Autumn</option>
+                        <option value="bamboo">🎋 Bamboo Grove</option>
+                        <option value="earth">🌍 Terracotta Earth</option>
+                        <option value="aurora">🌌 Northern Lights (Aurora)</option>
+                    </select>
+                </div>
             </div>
         </div>
     </header>
@@ -437,7 +451,8 @@
             });
 
             if(tabId === 'dashboard') {
-                renderCharts();
+                // Short timeout to guarantee canvas element dimensions are computed when tab becomes visible
+                setTimeout(() => renderCharts(), 50);
             }
         }
 
@@ -521,6 +536,74 @@
             renderAll();
         }
 
+        // CSV Export & Import Handlers
+        function exportCSV() {
+            if (expenseData.length === 0 && fitnessData.length === 0) {
+                alert('No data available to export.');
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,ID,Date,TypeOrTitle,DurationOrAmount,CaloriesOrCategory,NotesOrMode\r\n";
+            expenseData.forEach(item => {
+                csvContent += [`EXP_${item.id}`, item.date, `"${item.title}"`, item.amount, `"${item.category}"`, `"${item.mode}"`].join(",") + "\r\n";
+            });
+            fitnessData.forEach(item => {
+                csvContent += [`FIT_${item.id}`, item.date, `"${item.type}"`, item.duration, item.calories, `"${item.notes}"`].join(",") + "\r\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "fitspend_bharat_export.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function importCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split("\n");
+                let count = 0;
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    const row = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(",");
+                    if (row.length >= 5) {
+                        const clean = row.map(val => val.replace(/^"(.*)"$/, '$1').trim());
+                        const recordId = clean[0] || '';
+                        if (recordId.startsWith('EXP_')) {
+                            expenseData.push({
+                                id: Date.now() + i,
+                                date: clean[1] || new Date().toISOString().split('T')[0],
+                                title: clean[2] || 'Imported Expense',
+                                amount: parseFloat(clean[3]) || 0,
+                                category: clean[4] || 'Others',
+                                mode: clean[5] || 'UPI'
+                            });
+                            count++;
+                        } else if (recordId.startsWith('FIT_')) {
+                            fitnessData.push({
+                                id: Date.now() + i,
+                                date: clean[1] || new Date().toISOString().split('T')[0],
+                                type: clean[2] || 'Gym / Weight Training',
+                                duration: parseInt(clean[3]) || 30,
+                                calories: parseInt(clean[4]) || 200,
+                                notes: clean[5] || 'Imported Workout'
+                            });
+                            count++;
+                        }
+                    }
+                }
+                saveData();
+                renderAll();
+                alert(`Successfully imported ${count} records from CSV file!`);
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
         // Render Table Data & Summaries
         function renderAll() {
             // Render Fitness Table
@@ -594,6 +677,8 @@
         let fitnessChartInstance = null;
 
         function renderCharts() {
+            if (typeof Chart === 'undefined') return;
+
             // Group expenses by category
             const categoryMap = {};
             expenseData.forEach(item => {
@@ -603,48 +688,52 @@
             const expLabels = Object.keys(categoryMap);
             const expValues = Object.values(categoryMap);
 
-            const ctxExp = document.getElementById('expenseChart').getContext('2d');
-            if(expenseChartInstance) expenseChartInstance.destroy();
-            expenseChartInstance = new Chart(ctxExp, {
-                type: 'doughnut',
-                data: {
-                    labels: expLabels.length ? expLabels : ['No Data'],
-                    datasets: [{
-                        data: expValues.length ? expValues : [1],
-                        backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#f43f5e', '#64748b']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
-                }
-            });
+            const ctxExp = document.getElementById('expenseChart');
+            if (ctxExp) {
+                if(expenseChartInstance) expenseChartInstance.destroy();
+                expenseChartInstance = new Chart(ctxExp.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: expLabels.length ? expLabels : ['No Data'],
+                        datasets: [{
+                            data: expValues.length ? expValues : [1],
+                            backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#f43f5e', '#64748b']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
+                    }
+                });
+            }
 
             // Group fitness by type or list recent durations
             const fitLabels = fitnessData.map(i => `${i.date} (${i.type.split('/')[0]})`).slice(0, 7).reverse();
             const fitValues = fitnessData.map(i => i.duration).slice(0, 7).reverse();
 
-            const ctxFit = document.getElementById('fitnessChart').getContext('2d');
-            if(fitnessChartInstance) fitnessChartInstance.destroy();
-            fitnessChartInstance = new Chart(ctxFit, {
-                type: 'bar',
-                data: {
-                    labels: fitLabels.length ? fitLabels : ['No Sessions'],
-                    datasets: [{
-                        label: 'Duration (Minutes)',
-                        data: fitValues.length ? fitValues : [0],
-                        backgroundColor: '#10b981',
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true } },
-                    plugins: { legend: { display: false } }
-                }
-            });
+            const ctxFit = document.getElementById('fitnessChart');
+            if (ctxFit) {
+                if(fitnessChartInstance) fitnessChartInstance.destroy();
+                fitnessChartInstance = new Chart(ctxFit.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: fitLabels.length ? fitLabels : ['No Sessions'],
+                        datasets: [{
+                            label: 'Duration (Minutes)',
+                            data: fitValues.length ? fitValues : [0],
+                            backgroundColor: '#10b981',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
         }
 
         // ================= SQLITE CONSOLE SIMULATOR LOGIC ================= //
