@@ -3,11 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fullday Dashboard - Category Buttons</title>
+<title>Fullday Dashboard - Tabbed Format</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 *{box-sizing:border-box}
 body{font-family:Arial,sans-serif;background:#f4f6f9;padding:10px;margin:0}
+
+/* =========================================================
+   TAB NAVIGATION STYLES
+========================================================= */
+.tabs-header {
+  display: flex;
+  overflow-x: auto;
+  gap: 8px;
+  background: #fff;
+  padding: 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.1);
+  margin-bottom: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab-btn {
+  flex: 1;
+  min-width: 110px;
+  background: #f8f9fa;
+  color: #495057;
+  border: 1px solid #dee2e6;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  margin: 0;
+}
+
+.tab-btn.active {
+  background: #007bff;
+  color: #fff;
+  border-color: #007bff;
+  box-shadow: 0 2px 5px rgba(0,123,255,.3);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* =========================================================
+   EXISTING CARD STYLES
+========================================================= */
 .card{background:#fff;padding:12px;margin-bottom:12px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
 h3{margin-top:5px}
 input,select,button{padding:9px;margin:4px 0;border-radius:8px;border:1px solid #ccc;width:100%;font-size:15px}
@@ -27,8 +77,6 @@ th{background:#f1f3f5}
 
 /* =========================================================
    SCROLLABLE CATEGORY BUTTONS
-   - Horizontal + vertical scrolling
-   - Supports unlimited categories
 ========================================================= */
 .category-scroll{
   width:100%;
@@ -46,8 +94,7 @@ th{background:#f1f3f5}
 
 .category-buttons{
   display:grid;
-  grid-template-columns:repeat(
-  4,minmax(130px,1fr));
+  grid-template-columns:repeat(4,minmax(130px,1fr));
   gap:7px;
   min-width:540px;
 }
@@ -109,89 +156,113 @@ th{background:#f1f3f5}
 </head>
 <body>
 
-<div class="card">
-<h3>➕ Add Task</h3>
-
-<input type="date" id="date">
-<input type="number" id="cost" placeholder="Count/Amount" min="0" step="any">
-<input type="text" id="place" placeholder="Title">
-<input type="text" id="desc" placeholder="Description">
-
-<label><b>Time</b></label>
-<select id="types"></select>
-
-<label><b>Select Category</b></label>
-<div class="scroll-hint">↔ Swipe left/right and ↕ scroll up/down for more categories</div>
-<div class="category-scroll">
-  <div class="category-buttons" id="categoryButtons"></div>
+<!-- Tab Buttons Header -->
+<div class="tabs-header">
+  <button class="tab-btn active" onclick="switchTab('addTab', this)">➕ Add Task</button>
+  <button class="tab-btn" onclick="switchTab('filterTab', this)">🔎 Filters</button>
+  <button class="tab-btn" onclick="switchTab('recordsTab', this)">📋 Records</button>
+  <button class="tab-btn" onclick="switchTab('chartTab', this)">📊 Chart</button>
+  <button class="tab-btn" onclick="switchTab('dataTab', this)">💾 Data</button>
 </div>
 
-<div class="selected-category">
-Selected Category: <span id="selectedCategory">Please select</span>
+<!-- Tab 1: Add Task -->
+<div id="addTab" class="tab-content active">
+  <div class="card">
+    <h3>➕ Add Task</h3>
+
+    <input type="date" id="date">
+    <input type="number" id="cost" placeholder="Count/Amount" min="0" step="any">
+    <input type="text" id="place" placeholder="Title">
+    <input type="text" id="desc" placeholder="Description">
+
+    <label><b>Time</b></label>
+    <select id="types"></select>
+
+    <label><b>Select Category</b></label>
+    <div class="scroll-hint">↔ Swipe left/right and ↕ scroll up/down for more categories</div>
+    <div class="category-scroll">
+      <div class="category-buttons" id="categoryButtons"></div>
+    </div>
+
+    <div class="selected-category">
+    Selected Category: <span id="selectedCategory">Please select</span>
+    </div>
+
+    <label><b>Select Type</b></label>
+    <select id="type" onchange="renderAll()"></select>
+
+    <button onclick="addRecord()">Add Record</button>
+  </div>
 </div>
 
-<label><b>Select Type</b></label>
-<select id="type" onchange="renderAll()"></select>
+<!-- Tab 2: Filters -->
+<div id="filterTab" class="tab-content">
+  <div class="card">
+    <h3>🔎 Filters</h3>
+    <div class="filter-grid">
+      <div>
+        <label>View</label>
+        <select id="viewType" onchange="renderAll()">
+          <option value="day">Day</option>
+          <option value="week">Week</option>
+          <option value="month" selected>Month</option>
+          <option value="year">Year</option>
+        </select>
+      </div>
 
-<button onclick="addRecord()">Add Record</button>
-</div>
+      <div>
+        <label>From Date</label>
+        <input type="date" id="fromDate">
+      </div>
 
-<div class="card">
-<h3>🔎 Filters</h3>
-<div class="filter-grid">
-<div>
-<label>View</label>
-<select id="viewType" onchange="renderAll()">
-<option value="day">Day</option>
-<option value="week">Week</option>
-<option value="month" selected>Month</option>
-<option value="year">Year</option>
-</select>
-</div>
+      <div>
+        <label>To Date</label>
+        <input type="date" id="toDate">
+      </div>
+    </div>
 
-<div>
-<label>From Date</label>
-<input type="date" id="fromDate">
-</div>
-
-<div>
-<label>To Date</label>
-<input type="date" id="toDate">
-</div>
-</div>
-
-<button onclick="renderAll()">Apply Filters</button>
-<button class="danger" onclick="deleteByDateRange()">Delete Records in Date Range</button>
-<br><br>
-<div class="stats">Total : <span id="total">0</span></div>
-<div class="small">Showing <span id="recordCount">0</span> records</div>
+    <button onclick="renderAll()">Apply Filters</button>
+    <button class="danger" onclick="deleteByDateRange()">Delete Records in Date Range</button>
+    <br><br>
+    <div class="stats">Total : <span id="total">0</span></div>
+    <div class="small">Showing <span id="recordCount">0</span> records</div>
+  </div>
 </div>
 
-<div class="card">
-<h3>💾 Data Management</h3>
-<button class="success" onclick="exportCSV()">⬇ Export CSV</button>
-<input type="file" id="fileInput" accept=".csv,text/csv" onchange="importCSV(event)">
-<button class="secondary" onclick="clearAllData()">Clear All Data</button>
+<!-- Tab 3: Records -->
+<div id="recordsTab" class="tab-content">
+  <div class="card">
+    <h3>📋 Records</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Count/Amount</th><th>Task</th><th>Description</th>
+            <th>Time</th><th>Category</th><th>Delete</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
-<div class="card">
-<h3>📊 Chart</h3>
-<canvas id="chart"></canvas>
+<!-- Tab 4: Chart -->
+<div id="chartTab" class="tab-content">
+  <div class="card">
+    <h3>📊 Chart</h3>
+    <canvas id="chart"></canvas>
+  </div>
 </div>
 
-<div class="card">
-<h3>📋 Records</h3>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr>
-<th>Date</th><th>Count/Amount</th><th>Task</th><th>Description</th>
-<th>Time</th><th>Category</th><th>Delete</th>
-</tr>
-</thead>
-<tbody id="tableBody"></tbody>
-</table>
-</div>
+<!-- Tab 5: Data Management -->
+<div id="dataTab" class="tab-content">
+  <div class="card">
+    <h3>💾 Data Management</h3>
+    <button class="success" onclick="exportCSV()">⬇ Export CSV</button>
+    <input type="file" id="fileInput" accept=".csv,text/csv" onchange="importCSV(event)">
+    <button class="secondary" onclick="clearAllData()">Clear All Data</button>
+  </div>
 </div>
 
 <script>
@@ -204,61 +275,8 @@ const CONFIG={
     "Evening 5-7","Night 7-12","Night 12-4","Others"
   ],
 
-  /* Button Category -> Type/Selection Box values */
-  categoryGroups:{
-   
-"Work":[
-"SOD","EOD","Requirement","Understanding","Planning","Coding","Deployment","Testing","Execution","Analysis","Debugging","Closing","KT","Ticket","Incident","Solution",
-"Issue","Support","Dependency","Manual Task","Data checking","Data Analysis",
-"Data Exploration"
-    ],
+categoryGroups:{ "Work":[ "SOD","EOD","Requirement","Understanding","Planning","Coding","Deployment","Testing","Execution","Analysis","Debugging","Closing","KT","Ticket","Incident","Solution", "Issue","Support","Dependency","Manual Task","Data checking","Data Analysis", "Data Exploration" ], "Data":[ "Data Entry", "Data Lineage", "Data checking", "Data Analysis", "Data Exploration", "Data Base" ], "Communication":[ "Report","Follow Up","Planning", "Review","Documentation","Data Entry","Team Call","Email","Meeting", "Meeting Notes","Hands Up","Response","Client Handling", "Team Handling","Delivery Handling" ], "Library":[ "Book Name","BookIssue","BookReturn", "Study","Reading","Online","Practice","Certification","Research","Skill Development" ], "Curriculars":["IndoorGames","Sports","Walking","Yoga","Meditation","Health Checkup","Medical","Health","Rest","Breathing","Gym","Cycling","Festivals","Events","Presentation","Speaking" ], "Transport":["Train","Bus","Auto","Taxi","Car","Bike","Parking","Public Transport" ], "Cafeteria":[ "Breakfast","Lunch","Dinner","Snacks", "Restaurant","Tea","Coffee","Beverages" ], "Urgency":[ "Important","Urgent","Reminder","Follow Up","Pending","Completed","in progress" ], "Teams":[ "Project Manager","Team Leader","Team Member","Colleague","Department","Delivery Manager","Client" ], "Other":[ "Others" ] } };
 
-"Data":[
-"Data Entry",
-"Data Lineage",
-"Data checking",
-"Data Analysis",
-"Data Exploration",
-"Data Base"
-    ],
-
-"Communication":[ 
-"Report","Follow Up","Planning",
-"Review","Documentation","Data Entry","Team Call","Email","Meeting",
-"Meeting Notes","Hands Up","Response","Client Handling",
-"Team Handling","Delivery Handling"
-    ],
-
-"Library":[
-"Book Name","BookIssue","BookReturn",
-"Study","Reading","Online","Practice","Certification","Research","Skill Development"
-    ],
-
-"Curriculars":["IndoorGames","Sports","Walking","Yoga","Meditation","Health Checkup","Medical","Health","Rest","Breathing","Gym","Cycling","Festivals","Events","Presentation","Speaking"
-    ],
-
-"Transport":["Train","Bus","Auto","Taxi","Car","Bike","Parking","Public Transport"
-],
-
-"Cafeteria":[ 
-"Breakfast","Lunch","Dinner","Snacks",
-"Restaurant","Tea","Coffee","Beverages"
-    ],
-
-"Urgency":[ 
-"Important","Urgent","Reminder","Follow Up","Pending","Completed","in progress"
-    ],
-
-"Teams":[ 
-"Project Manager","Team Leader","Team Member","Colleague","Department","Delivery Manager","Client"
-    ],
-
-"Other":[
-      "Others"
-    ]
-
-  }
-};
 
 let data=[],chart=null;
 let selectedButtonCategory="";
@@ -274,10 +292,27 @@ const selectedCategoryEl=document.getElementById("selectedCategory");
 const viewTypeEl=document.getElementById("viewType");
 const fromDateEl=document.getElementById("fromDate");
 const toDateEl=document.getElementById("toDate");
-//const filterTypeEl=document//.getElementById("filterType");
 const tableBodyEl=document.getElementById("tableBody");
 const totalEl=document.getElementById("total");
 const recordCountEl=document.getElementById("recordCount");
+
+/* Tab Switching Function */
+function switchTab(tabId, btnElement) {
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  document.getElementById(tabId).classList.add('active');
+  btnElement.classList.add('active');
+
+  // Re-render chart if switching to chart tab to handle dynamic canvas dimensions
+  if (tabId === 'chartTab') {
+    renderAll();
+  }
+}
 
 function formatDate(d){
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -299,7 +334,6 @@ function populateTimeSelect(){
   });
 }
 
-/* Create the category buttons */
 function populateCategoryButtons(){
   categoryButtonsEl.innerHTML="";
 
@@ -317,13 +351,6 @@ function populateCategoryButtons(){
   });
 }
 
-/*
-  When a button is clicked:
-  1. Button becomes active.
-  2. Selected category name changes.
-  3. Type selection box is replaced by only the values
-     belonging to that button.
-*/
 function selectButtonCategory(group,button){
   selectedButtonCategory=group;
   selectedCategoryEl.textContent=group;
@@ -344,27 +371,6 @@ function selectButtonCategory(group,button){
 
   typeEl.selectedIndex=0;
 }
-
-/* Populate filter with every category/type */
-/* function populateFilterSelect(){
-  filterTypeEl.innerHTML='<option value="">All Categories</option>';
-  
-  
-  const all=[];
-  Object.values(CONFIG.categoryGroups).forEach(list=>{
-    list.forEach(v=>{
-      if(!all.includes(v))all.push(v);
-    });
-  });
-
-  all.forEach(v=>{
-    const o=document.createElement("option");
-    o.value=v;
-    o.textContent=v;
-    filterTypeEl.appendChild(o);
-  });
-}
-*/
 
 function normalizeRecord(r){
   return {
@@ -412,10 +418,8 @@ function addRecord(){
 
   if(!r.date)return alert("Please select date.");
   if(isNaN(r.cost))return alert("Please enter a valid count.");
-
-if(!r.place)return alert("Please add Title.");
-
-if(!r.desc)return alert("Please add description");
+  if(!r.place)return alert("Please add Title.");
+  if(!r.desc)return alert("Please add description");
 
   data.push(r);
   save();
@@ -454,6 +458,13 @@ function deleteByDateRange(){
 
   if(from>to)
     return alert("From date cannot be after To date.");
+
+if(!data.length)
+    return alert("No data available.");
+
+  if(!confirm("Delete ALL records?"))
+    return;
+
 
   const old=data.length;
   data=data.filter(r=>!(r.date>=from&&r.date<=to));
@@ -738,7 +749,6 @@ function clearAllData(){
 window.addEventListener("DOMContentLoaded",()=>{
   populateTimeSelect();
   populateCategoryButtons();
- // populateFilterSelect();
   initializeDates();
   loadData();
   renderAll();
