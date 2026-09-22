@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Clean Pro - Ultimate Text Processor & Cleaner</title>
+    <style>
+        :root {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --success-color: #10b981;
+            --success-hover: #059669;
+            --danger-color: #ef4444;
+            --danger-hover: #dc2626;
+            --section-bg: #f8fafc;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --primary-color: #3b82f6;
+            --primary-hover: #60a5fa;
+            --primary-light: #1e3a8a;
+            --success-color: #34d399;
+            --success-hover: #10b981;
+            --danger-color: #f87171;
+            --danger-hover: #ef4444;
+            --section-bg: #0f172a;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            background: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background: var(--primary-color);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .theme-toggle {
+            background: var(--section-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary-color);
+        }
+
+        /* Workspace Grid */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 16px;
+            align-items: center;
+        }
+
+        @media (max-width: 900px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+            .center-actions {
+                flex-direction: row !important;
+                justify-content: center;
+            }
+        }
+
+        .pane {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .pane-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.875rem;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .center-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: var(--section-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .icon-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: var(--section-bg);
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        /* Control Sections */
+        .controls-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .control-panel {
+            background: var(--section-bg);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 10px;
+        }
+
+        .control-panel h3 {
+            margin: 0 0 12px 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .find-replace-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .find-replace-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 0.875rem;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .checkbox-row {
+            display: flex;
+            gap: 16px;
+            font-size: 0.8rem;
+            align-items: center;
+            color: var(--text-muted);
+        }
+
+        .checkbox-row label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 400;
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button.btn-success {
+            background-color: var(--success-color);
+        }
+        button.btn-success:hover {
+            background-color: var(--success-hover);
+        }
+
+        button.btn-danger {
+            background-color: var(--danger-color);
+        }
+        button.btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+
+        button.btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+        button.btn-secondary:hover {
+            background: var(--section-bg);
+            border-color: var(--primary-color);
+        }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 12px 18px;
+            border-radius: 10px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translateY(10px); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon">TC</div>
+            <div>
+                <h1>Text Clean Pro</h1>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Advanced Text Sanitizer & Transformation Suite</div>
+            </div>
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
+        </button>
+    </header>
+
+    <!-- Workspace -->
+    <div class="workspace">
+        <!-- Input Pane -->
+        <div class="pane">
+            <div class="pane-header">
+                <label for="inputText">Input Text</label>
+                <button class="btn-secondary" style="padding: 2px 8px; font-size: 0.75rem;" onclick="clearInput()">Clear</button>
+            </div>
+            <textarea id="inputText" placeholder="Paste your messy text, logs, data or code here..." oninput="processText()"></textarea>
+            <div class="stats-bar" id="inputStats">
+                <span>Chars: 0</span>
+                <span>Words: 0</span>
+                <span>Lines: 0</span>
+                <span>Read Time: 0s</span>
+            </div>
+        </div>
+
+        <!-- Center Swap / Action Column -->
+        <div class="center-actions">
+            <button class="icon-btn" onclick="swapPanels()" title="Swap Input & Output">⇄</button>
+            <button class="icon-btn" onclick="copyOutput()" title="Copy Output">📋</button>
+        </div>
+
+        <!-- Output Pane -->
+        <div class="pane">
+            <div class="pane-header">
+                <label for="outputText">Processed Output</label>
+                <div style="display: flex; gap: 4px;">
+                    <button class="btn-secondary" style="padding: 2px 8px; font-size: 0.75rem;" onclick="downloadOutput()">Download .txt</button>
+                </div>
+            </div>
+            <textarea id="outputText" placeholder="Cleaned text will appear here automatically..." readonly></textarea>
+            <div class="stats-bar" id="outputStats">
+                <span>Chars: 0</span>
+                <span>Words: 0</span>
+                <span>Lines: 0</span>
+                <span>Read Time: 0s</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Advanced Controls Grid -->
+    <div class="controls-container">
+        
+        <!-- Find & Replace Panel -->
+        <div class="control-panel">
+            <h3>Find & Replace Engine</h3>
+            <div class="find-replace-grid">
+                <input type="text" id="findText" placeholder="Find string or pattern..." oninput="processText()">
+                <input type="text" id="replaceText" placeholder="Replace with..." oninput="processText()">
+                <button onclick="processText()">Apply Replace</button>
+            </div>
+            <div class="checkbox-row">
+                <label><input type="checkbox" id="useRegex" onchange="processText()"> Use Regular Expressions (RegEx)</label>
+                <label><input type="checkbox" id="caseSensitive" checked onchange="processText()"> Case Sensitive</label>
+            </div>
+        </div>
+
+        <!-- Quick Cleaning & Formatting Actions -->
+        <div class="control-panel">
+            <h3>Sanitization & Whitespace Tools</h3>
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="runAction('removeSpaces')">Remove Extra Spaces</button>
+                <button class="btn-secondary" onclick="runAction('removeNewlines')">Remove Line Breaks</button>
+                <button class="btn-secondary" onclick="runAction('removeTabs')">Remove Tabs</button>
+                <button class="btn-secondary" onclick="runAction('trimLines')">Trim Line Padding</button>
+                <button class="btn-secondary" onclick="runAction('removeJunk')">Strip Junk Characters</button>
+                <button class="btn-secondary" onclick="runAction('removeEmptyLines')">Remove Empty Lines</button>
+            </div>
+        </div>
+
+        <!-- Transformers & Advanced Utilities -->
+        <div class="control-panel">
+            <h3>Advanced Transformations & Utilities</h3>
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="runAction('toUpperCase')">UPPERCASE</button>
+                <button class="btn-secondary" onclick="runAction('toLowerCase')">lowercase</button>
+                <button class="btn-secondary" onclick="runAction('toTitleCase')">Title Case</button>
+                <button class="btn-secondary" onclick="runAction('removeDuplicates')">Remove Duplicate Lines</button>
+                <button class="btn-secondary" onclick="runAction('sortLinesAsc')">Sort Lines (A-Z)</button>
+                <button class="btn-secondary" onclick="runAction('sortLinesDesc')">Sort Lines (Z-A)</button>
+                <button class="btn-secondary" onclick="runAction('stripHtml')">Strip HTML Tags</button>
+                <button class="btn-secondary" onclick="runAction('reverseText')">Reverse Text</button>
+                <button class="btn-success" onclick="runAction('cleanEverything')">✨ Clean Everything</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Toast Notification Container -->
+<div id="toast-container"></div>
+
+<script>
+    // --- Theme Management ---
+    function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        
+        document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        document.getElementById('themeText').textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+    }
+
+    // Load saved theme preference
+    if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('themeIcon').textContent = '☀️';
+        document.getElementById('themeText').textContent = 'Light Mode';
+    }
+
+    // --- Toast System ---
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        
+        let icon = '✅';
+        if (type === 'error') icon = '❌';
+        if (type === 'info') icon = 'ℹ️';
+
+        toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    // --- Core Analytics & Text Processing Engine ---
+    function getInput() {
+        return document.getElementById('inputText').value;
+    }
+
+    function setOutput(text) {
+        document.getElementById('outputText').value = text;
+        updateStats('input', getInput(), 'inputStats');
+        updateStats('output', text, 'outputStats');
+    }
+
+    function updateStats(type, text, elementId) {
+        const charsWithSpaces = text.length;
+        const charsNoSpaces = text.replace(/\s/g, '').length;
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        const lines = text ? text.split(/\r\n|\r|\n/).length : 0;
+        const readTimeSec = Math.ceil(words / 200 * 60); // Assuming 200 words per minute average reading speed
+
+        document.getElementById(elementId).innerHTML = `
+            <span>Chars: ${charsWithSpaces}</span>
+            <span>Words: ${words}</span>
+            <span>Lines: ${lines}</span>
+            <span>Est. Read: ${readTimeSec < 60 ? readTimeSec + 's' : Math.ceil(readTimeSec/60) + 'm'}</span>
+        `;
+    }
+
+    function processText() {
+        let text = getInput();
+        
+        // Find & Replace Logic
+        const findStr = document.getElementById('findText').value;
+        const replaceStr = document.getElementById('replaceText').value;
+        const useRegex = document.getElementById('useRegex').checked;
+        const caseSensitive = document.getElementById('caseSensitive').checked;
+
+        if (findStr) {
+            try {
+                let flags = caseSensitive ? 'g' : 'gi';
+                let regex;
+                if (useRegex) {
+                    regex = new RegExp(findStr, flags);
+                } else {
+                    regex = new RegExp(escapeRegExp(findStr), flags);
+                }
+                text = text.replace(regex, replaceStr);
+            } catch (e) {
+                // Invalid regex pattern caught silently during user typing
+            }
+        }
+
+        setOutput(text);
+    }
+
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    // --- Operations Dispatcher ---
+    function runAction(actionName) {
+        let text = getInput();
+        if (!text) {
+            showToast("Input text box is empty!", "info");
+            return;
+        }
+
+        switch (actionName) {
+            case 'removeSpaces':
+                text = text.replace(/[ \t]{2,}/g, ' ');
+                break;
+            case 'removeNewlines':
+                text = text.replace(/[\r\n]+/g, ' ');
+                break;
+            case 'removeTabs':
+                text = text.replace(/\t/g, '');
+                break;
+            case 'trimLines':
+                text = text.split(/\r?\n/).map(line => line.trim()).join('\n');
+                break;
+            case 'removeJunk':
+                text = text.replace(/[^\w\s.,!?-]/gu, '');
+                break;
+            case 'removeEmptyLines':
+                text = text.split(/\r?\n/).filter(line => line.trim() !== '').join('\n');
+                break;
+            case 'toUpperCase':
+                text = text.toUpperCase();
+                break;
+            case 'toLowerCase':
+                text = text.toLowerCase();
+                break;
+            case 'toTitleCase':
+                text = text.toLowerCase().replace(/(^\w|\s\w)/g, m => m.toUpperCase());
+                break;
+            case 'removeDuplicates':
+                text = [...new Set(text.split(/\r?\n/))].join('\n');
+                break;
+            case 'sortLinesAsc':
+                text = text.split(/\r?\n/).sort().join('\n');
+                break;
+            case 'sortLinesDesc':
+                text = text.split(/\r?\n/).sort().reverse().join('\n');
+                break;
+            case 'stripHtml':
+                text = text.replace(/<[^>]*>?/gm, '');
+                break;
+            case 'reverseText':
+                text = text.split('').reverse().join('');
+                break;
+            case 'cleanEverything':
+                text = text.replace(/<[^>]*>?/gm, '')           // Strip HTML
+                           .replace(/\t/g, ' ')                  // Tabs to spaces
+                           .replace(/[^\w\s.,!?-]/gu, '')        // Junk symbols
+                           .replace(/[ ]{2,}/g, ' ')             // Multi-spaces
+                           .split(/\r?\n/)
+                           .map(l => l.trim())
+                           .filter(l => l !== '')
+                           .join('\n');                          // Trim & remove blanks
+                break;
+        }
+
+        setOutput(text);
+        showToast("Action applied successfully!");
+    }
+
+    // --- Quick Utility Functions ---
+    function clearInput() {
+        document.getElementById('inputText').value = '';
+        setOutput('');
+        showToast("Input cleared.", "info");
+    }
+
+    function swapPanels() {
+        const outputVal = document.getElementById('outputText').value;
+        if (!outputVal) return;
+        document.getElementById('inputText').value = outputVal;
+        processText();
+        showToast("Panels swapped.", "info");
+    }
+
+    function copyOutput() {
+        const outputText = document.getElementById('outputText');
+        if (!outputText.value) {
+            showToast("No output text to copy!", "error");
+            return;
+        }
+        navigator.clipboard.writeText(outputText.value).then(() => {
+            showToast("Copied result to clipboard!");
+        });
+    }
+
+    function downloadOutput() {
+        const text = document.getElementById('outputText').value;
+        if (!text) {
+            showToast("No output text to download!", "error");
+            return;
+        }
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'cleaned-text-' + new Date().toISOString().slice(0, 10) + '.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast("File downloaded successfully!");
+    }
+
+    // Initial trigger
+    processText();
+</script>
+
+</body>
+</html>
