@@ -18,10 +18,10 @@ function autoCacheAllFiles() {
   const filesToCache = new Set([
     "./",
     "./index.html",
-    "./home.html",
-    "./style.css",
-    "./app.js",
-    "./manifest.json",
+    "/Myself/util/home.html",
+    "/Myself/style/style.css",
+    "/Myself/js/app.js",
+    "/Myself/js/manifest.json",
     "./icon.png"
   ]);
 
