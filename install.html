@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="forest">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2d4a3e">
+  <title>Nature PWA App Launcher</title>
+  <style>
+    /* --- NATURE THEMES & DESIGN SYSTEM --- */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #2d4a3e 0%, #13221b 100%);
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --text-main: #1b2e26;
+      --text-muted: #536c60;
+      --primary: #3b7a57;
+      --primary-hover: #2e6145;
+      --accent: #87a96b;
+      --danger: #b23b3b;
+      --danger-hover: #8f2e2e;
+      --border: rgba(59, 122, 87, 0.2);
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      --radius: 16px;
+    }
+
+    [data-theme="ocean"] {
+      --bg-gradient: linear-gradient(135deg, #103347 0%, #05141c 100%);
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --text-main: #0c2331;
+      --text-muted: #486a82;
+      --primary: #1e6091;
+      --primary-hover: #15466a;
+      --accent: #168aad;
+      --danger: #bb3e03;
+      --border: rgba(30, 96, 145, 0.2);
+    }
+
+    [data-theme="desert"] {
+      --bg-gradient: linear-gradient(135deg, #5c3a21 0%, #26160d 100%);
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --text-main: #382212;
+      --text-muted: #79553d;
+      --primary: #b0572e;
+      --primary-hover: #8e4321;
+      --accent: #d4a373;
+      --danger: #9e2a2b;
+      --border: rgba(176, 87, 46, 0.2);
+    }
+
+    [data-theme="aurora"] {
+      --bg-gradient: linear-gradient(135deg, #1b2a47 0%, #090e18 100%);
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --text-main: #121c2e;
+      --text-muted: #4e617d;
+      --primary: #4361ee;
+      --primary-hover: #3a56d4;
+      --accent: #4cc9f0;
+      --danger: #f72585;
+      --border: rgba(67, 97, 238, 0.2);
+    }
+
+    [data-theme="sakura"] {
+      --bg-gradient: linear-gradient(135deg, #5c3a4a 0%, #211319 100%);
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --text-main: #3b202c;
+      --text-muted: #785363;
+      --primary: #b56576;
+      --primary-hover: #964f5e;
+      --accent: #e5989b;
+      --danger: #d90429;
+      --border: rgba(181, 101, 118, 0.2);
+    }
+
+    [data-theme="autumn"] {
+      --bg-gradient: linear-gradient(135deg, #593122 0%, #1f100a 100%);
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --text-main: #381c11;
+      --text-muted: #7d5241;
+      --primary: #bc6c25;
+      --primary-hover: #98561d;
+      --accent: #dda15e;
+      --danger: #ae2012;
+      --border: rgba(188, 104, 37, 0.2);
+    }
+
+    [data-theme="lavender"] {
+      --bg-gradient: linear-gradient(135deg, #382c47 0%, #140f1a 100%);
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --text-main: #231a2e;
+      --text-muted: #6b5c7a;
+      --primary: #7b2cbf;
+      --primary-hover: #5a189a;
+      --accent: #9d4edd;
+      --danger: #d90429;
+      --border: rgba(123, 44, 191, 0.2);
+    }
+
+    [data-theme="canyon"] {
+      --bg-gradient: linear-gradient(135deg, #61361c 0%, #241309 100%);
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --text-main: #331b0e;
+      --text-muted: #75513d;
+      --primary: #c86d51;
+      --primary-hover: #a5553e;
+      --accent: #e09f3e;
+      --danger: #9a031e;
+      --border: rgba(200, 109, 81, 0.2);
+    }
+
+    [data-theme="glacier"] {
+      --bg-gradient: linear-gradient(135deg, #2b455c 0%, #0d1721 100%);
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --text-main: #162430;
+      --text-muted: #506a7e;
+      --primary: #337a9d;
+      --primary-hover: #265f7c;
+      --accent: #73c2fb;
+      --danger: #cc2936;
+      --border: rgba(51, 122, 157, 0.2);
+    }
+
+    [data-theme="meadow"] {
+      --bg-gradient: linear-gradient(135deg, #3d5a36 0%, #152012 100%);
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --text-main: #20311c;
+      --text-muted: #5e7a56;
+      --primary: #588157;
+      --primary-hover: #3f5e3e;
+      --accent: #a3b18a;
+      --danger: #bc4749;
+      --border: rgba(88, 129, 87, 0.2);
+    }
+
+    /* --- GLOBAL STYLING --- */
+    * {
+      box-sizing: border-box;
+      transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 1.5rem;
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* --- THEME SELECTOR BAR --- */
+    .theme-bar {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      padding: 0.4rem 0.75rem;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      border: 1px solid var(--border);
+      z-index: 1000;
+    }
+
+    .theme-bar label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .theme-bar select {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* --- CONTAINER & CARDS --- */
+    .container {
+      width: 100%;
+      max-width: 720px;
+      margin-top: 1.5rem;
+    }
+
+    header {
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 0.4rem 0;
+      color: #fff;
+      font-size: 1.8rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    header p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 1.75rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: var(--text-main);
+      font-size: 1.1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .storage-badge {
+      font-size: 0.75rem;
+      font-weight: normal;
+      color: var(--text-muted);
+      background: rgba(0,0,0,0.05);
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+
+    /* --- UPLOAD DROPZONE --- */
+    .dropzone {
+      border: 2px dashed var(--border);
+      padding: 2rem 1rem;
+      border-radius: 12px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--primary);
+      background: rgba(59, 122, 87, 0.05);
+    }
+
+    .dropzone input[type="file"] {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .dropzone-text {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      pointer-events: none;
+    }
+
+    .dropzone-text strong {
+      color: var(--primary);
+    }
+
+    /* --- SEARCH INPUT --- */
+    .search-box {
+      width: 100%;
+      padding: 10px 14px;
+      margin-bottom: 1rem;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .search-box:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 122, 87, 0.15);
+    }
+
+    /* --- APP LIST UI --- */
+    #app-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .app-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .app-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .app-name {
+      font-weight: 600;
+      color: var(--text-main);
+      font-size: 0.95rem;
+    }
+
+    .app-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 8px;
+    }
+
+    .app-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* --- BUTTONS --- */
+    button {
+      padding: 8px 14px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    button:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    button.danger {
+      background: var(--danger);
+    }
+
+    button.danger:hover {
+      background: var(--danger-hover);
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    /* --- VIEWER VIEW --- */
+    #viewer-view {
+      display: none;
+      width: 100%;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .viewer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .viewer-title-area h2 {
+      margin: 0;
+      color: var(--text-main);
+      font-size: 1.25rem;
+    }
+
+    .viewer-controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 75vh;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: var(--shadow);
+    }
+
+    /* --- RESPONSIVE ADJUSTMENTS --- */
+    @media (max-width: 600px) {
+      body {
+        padding: 1rem 0.5rem;
+      }
+      .theme-bar {
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 0.3rem 0.5rem;
+      }
+      .app-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .app-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nature Theme Selector Bar -->
+  <div class="theme-bar">
+    <label for="theme-select">🌿 Theme:</label>
+    <select id="theme-select" onchange="switchTheme(this.value)">
+      <option value="forest">Forest</option>
+      <option value="ocean">Ocean</option>
+      <option value="desert">Desert</option>
+      <option value="aurora">Aurora</option>
+      <option value="sakura">Sakura</option>
+      <option value="autumn">Autumn</option>
+      <option value="lavender">Lavender</option>
+      <option value="canyon">Canyon</option>
+      <option value="glacier">Glacier</option>
+      <option value="meadow">Meadow</option>
+    </select>
+  </div>
+
+  <div class="container">
+    <!-- Dashboard View -->
+    <div id="dashboard-view">
+      <header>
+        <h1>Nature PWA Launcher</h1>
+        <p>Install and manage your single-file web apps locally inside an optimized offline environment.</p>
+      </header>
+
+      <div class="card">
+        <h3>Install New HTML App</h3>
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="html-uploader" accept=".html, .htm" />
+          <div class="dropzone-text">
+            Drag & drop your HTML file here, or <strong>browse files</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>
+          <span>Installed Apps</span>
+          <span class="storage-badge" id="storage-indicator">0 apps</span>
+        </h3>
+        <input type="text" id="search-input" class="search-box" placeholder="Search installed apps..." oninput="filterApps()" />
+        <div id="app-list"><div class="empty-state">Loading installed apps...</div></div>
+      </div>
+    </div>
+
+    <!-- App Viewer View -->
+    <div id="viewer-view">
+      <div class="viewer-header">
+        <div class="viewer-title-area">
+          <h2 id="viewer-title">App Title</h2>
+        </div>
+        <div class="viewer-controls">
+          <button id="fullscreen-btn">Fullscreen</button>
+          <button class="danger" id="back-btn">&#8592; Exit App</button>
+        </div>
+      </div>
+      <iframe id="app-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-modals"></iframe>
+    </div>
+  </div>
+
+  <script>
+    // --- THEME MANAGEMENT ---
+    function initTheme() {
+      const savedTheme = localStorage.getItem('appTheme') || 'forest';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      const selectElem = document.getElementById('theme-select');
+      if (selectElem) selectElem.value = savedTheme;
+    }
+
+    function switchTheme(themeName) {
+      document.documentElement.setAttribute('data-theme', themeName);
+      localStorage.setItem('appTheme', themeName);
+    }
+
+    // --- STATE & INDEXEDDB ---
+    let db;
+    let installedApps = [];
+    let currentObjectUrl = null;
+
+    const uploader = document.getElementById('html-uploader');
+    const appList = document.getElementById('app-list');
+    const searchInput = document.getElementById('search-input');
+    const storageIndicator = document.getElementById('storage-indicator');
+    const dashboardView = document.getElementById('dashboard-view');
+    const viewerView = document.getElementById('viewer-view');
+    const appFrame = document.getElementById('app-frame');
+    const viewerTitle = document.getElementById('viewer-title');
+    const backBtn = document.getElementById('back-btn');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const dropzone = document.getElementById('dropzone');
+
+    // Run theme initialization on startup
+    initTheme();
+
+    // 1. Initialize IndexedDB
+    const request = indexedDB.open('NaturePWAAppsDB', 1);
+
+    request.onupgradeneeded = (event) => {
+      db = event.target.result;
+      if (!db.objectStoreNames.contains('apps')) {
+        db.createObjectStore('apps', { keyPath: 'id', autoIncrement: true });
+      }
+    };
+
+    request.onsuccess = (event) => {
+      db = event.target.result;
+      loadAppsFromDB();
+    };
+
+    request.onerror = (event) => {
+      console.error('IndexedDB failed to open:', event.target.error);
+    };
+
+    // 2. Handle File Input & Dropzone
+    uploader.addEventListener('change', (event) => {
+      handleFiles(event.target.files);
+    });
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('dragover');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer.files.length > 0) {
+        handleFiles(e.dataTransfer.files);
+      }
+    });
+
+    function handleFiles(files) {
+      const file = files[0];
+      if (!file) return;
+
+      if (!file.name.endsWith('.html') && !file.name.endsWith('.htm')) {
+        alert('Please select a valid HTML file.');
+        return;
+      }
+
+      const transaction = db.transaction(['apps'], 'readwrite');
+      const store = transaction.objectStore('apps');
+
+      // Format size readable string
+      const sizeKb = (file.size / 1024).toFixed(1) + ' KB';
+
+      const record = {
+        name: file.name,
+        fileBlob: file,
+        size: sizeKb,
+        installedAt: new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+      };
+
+      const addRequest = store.add(record);
+
+      addRequest.onsuccess = () => {
+        uploader.value = '';
+        loadAppsFromDB();
+      };
+
+      addRequest.onerror = (error) => {
+        console.error('Error saving app:', error);
+      };
+    }
+
+    // 3. Load Apps from IndexedDB
+    function loadAppsFromDB() {
+      const transaction = db.transaction(['apps'], 'readonly');
+      const store = transaction.objectStore('apps');
+      const getRequest = store.getAll();
+
+      getRequest.onsuccess = () => {
+        installedApps = getRequest.result.map(record => ({
+          id: record.id,
+          name: record.name,
+          size: record.size || 'Unknown size',
+          date: record.installedAt || 'Recently',
+          url: URL.createObjectURL(record.fileBlob)
+        }));
+        renderAppList(installedApps);
+        storageIndicator.textContent = `${installedApps.length} app${installedApps.length === 1 ? '' : 's'}`;
+      };
+    }
+
+    // 4. Render App List UI with Filter Support
+    function renderAppList(appsToRender) {
+      if (appsToRender.length === 0) {
+        appList.innerHTML = '<div class="empty-state">No matching apps found. Upload or clear search filters.</div>';
+        return;
+      }
+
+      appList.innerHTML = '';
+      appsToRender.forEach((app) => {
+        // Find correct raw index to launch
+        const originalIndex = installedApps.findIndex(a => a.id === app.id);
+        const item = document.createElement('div');
+        item.className = 'app-item';
+        item.innerHTML = `
+          <div class="app-info">
+            <span class="app-name">${app.name}</span>
+            <span class="app-meta">
+              <span>${app.date}</span> • <span>${app.size}</span>
+            </span>
+          </div>
+          <div class="app-actions">
+            <button onclick="launchApp(${originalIndex})">Launch</button>
+            <button class="danger" onclick="deleteApp(${app.id})">Remove</button>
+          </div>
+        `;
+        appList.appendChild(item);
+      });
+    }
+
+    function filterApps() {
+      const query = searchInput.value.toLowerCase().trim();
+      const filtered = installedApps.filter(app => app.name.toLowerCase().includes(query));
+      renderAppList(filtered);
+    }
+
+    // 5. Launch App in Viewer
+    window.launchApp = (index) => {
+      const app = installedApps[index];
+      viewerTitle.textContent = app.name;
+      currentObjectUrl = app.url;
+      appFrame.src = currentObjectUrl;
+      
+      dashboardView.style.display = 'none';
+      viewerView.style.display = 'block';
+    };
+
+    // Return to Dashboard
+    backBtn.addEventListener('click', () => {
+      appFrame.src = 'about:blank';
+      viewerView.style.display = 'none';
+      dashboardView.style.display = 'block';
+    });
+
+    // Fullscreen View Mode
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        appFrame.requestFullscreen().catch(err => {
+          console.error(`Error attempting fullscreen: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    // 6. Delete App from IndexedDB
+    window.deleteApp = (id) => {
+      if (!confirm('Are you sure you want to remove this mini application?')) return;
+
+      const transaction = db.transaction(['apps'], 'readwrite');
+      const store = transaction.objectStore('apps');
+      const deleteRequest = store.delete(id);
+
+      deleteRequest.onsuccess = () => {
+        loadAppsFromDB();
+        searchInput.value = '';
+      };
+    };
+  </script>
+</body>
+</html>
