@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<title>Chess Tournament Pro</title>
+<style>
+:root{--bg:#08111f;--panel:rgba(18,30,50,.78);--panel2:#10213a;--text:#eef5ff;--muted:#9fb0c7;--accent:#55d6a0;--accent2:#5aa9ff;--danger:#ff667d;--light:#f0d9b5;--dark:#b58863;--line:rgba(255,255,255,.1);--shadow:0 14px 40px #0007}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:radial-gradient(circle at 20% 0%,#16375b 0,#08111f 42%,#050a12 100%);color:var(--text);min-height:100vh}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{max-width:1500px;margin:auto;padding:14px}
+.top{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}.brand{font-size:22px;font-weight:800}.sub{font-size:12px;color:var(--muted)}.actions{display:flex;gap:7px;flex-wrap:wrap}
+.btn{padding:9px 12px;border-radius:11px;background:#ffffff12;color:var(--text);border:1px solid var(--line)}.btn:hover{background:#ffffff1e}.primary{background:var(--accent);color:#052218;font-weight:700}.danger{background:#ff52621a;color:#ff9aaa;border-color:#ff526244}
+.layout{display:grid;grid-template-columns:250px 1fr;gap:12px}.side,.panel{background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);backdrop-filter:blur(16px);border-radius:18px}
+.side{padding:10px;height:max-content;position:sticky;top:10px}.nav{display:grid;gap:6px}.nav button{text-align:left;padding:11px;border-radius:11px;background:transparent;color:var(--text)}.nav button.active,.nav button:hover{background:#ffffff12}.content{min-width:0}.page{display:none}.page.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.card{padding:15px}.kpi{font-size:27px;font-weight:800}.label{font-size:12px;color:var(--muted)}.grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:12px}.panel{padding:14px;margin-bottom:12px}.panel h2,.panel h3{margin:0 0 10px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.form{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.field{display:grid;gap:5px}.field label{font-size:12px;color:var(--muted)}input,select,textarea{width:100%;background:#07111e;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:9px;outline:0}textarea{min-height:80px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}th{color:#a9bed7;font-size:12px}tbody tr:hover{background:#ffffff07}.scroll{overflow:auto;max-height:430px}
+.boardWrap{display:grid;grid-template-columns:minmax(320px,760px) 330px;gap:16px;justify-content:center;align-items:start}.boardShell{width:100%;display:flex;justify-content:center}.board{width:min(760px,calc(100vw - 390px),calc(100vh - 180px));min-width:320px;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));border-radius:12px;overflow:hidden;box-shadow:0 15px 50px #0008;border:2px solid #0005}.sq{position:relative;display:grid;place-items:center;font-size:clamp(28px,calc((min(760px,100vw - 390px,100vh - 180px))/8 * .78),68px);line-height:1;user-select:none;min-width:0;min-height:0}.sq.light{background:var(--light)}.sq.dark{background:var(--dark)}.sq.sel{box-shadow:inset 0 0 0 5px #55d6a0}.sq.last{filter:brightness(1.12)}.sq.check{box-shadow:inset 0 0 0 5px #ff5169}.dot{width:22%;height:22%;border-radius:50%;background:#163b;position:absolute}.capture{width:78%;height:78%;border:4px solid #d54;position:absolute;border-radius:50%}.piece{position:relative;z-index:2;text-shadow:0 2px 2px #0007}.coords{position:absolute;font-size:9px;font-weight:700;opacity:.6;bottom:2px;left:3px}.sidegame{display:grid;gap:9px}.clock{display:grid;grid-template-columns:1fr 1fr;gap:8px}.clock>div{padding:12px;background:#07111e;border-radius:12px;text-align:center}.clock .active{outline:2px solid var(--accent)}.time{font-size:27px;font-variant-numeric:tabular-nums}.tabs{display:flex;gap:6px;overflow:auto;margin-bottom:10px}.tabs button{min-height:44px}.gameTabs{display:flex;gap:7px;overflow:auto;padding-bottom:5px}.gameTab{display:none}.gameTab.active{display:block}.tabs button{white-space:nowrap}.hidden{display:none!important}.badge{display:inline-block;padding:3px 7px;border-radius:99px;background:#ffffff10;font-size:11px}.win{color:#64e0a6}.loss{color:#ff8293}.draw{color:#ffd36b}.empty{padding:25px;text-align:center;color:var(--muted)}
+.modal{position:fixed;inset:0;background:#0009;display:none;place-items:center;padding:15px;z-index:20}.modal.show{display:grid}.modalbox{width:min(620px,100%);background:#0c1829;border:1px solid var(--line);border-radius:18px;padding:17px;box-shadow:var(--shadow)}
+.toast{position:fixed;right:15px;bottom:15px;background:#10213a;border:1px solid var(--line);padding:11px 14px;border-radius:12px;display:none;z-index:30}.toast.show{display:block}
+@media(max-width:1050px){.layout{grid-template-columns:1fr}.side{position:static}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap}.cards{grid-template-columns:repeat(2,1fr)}.boardWrap{grid-template-columns:1fr}.board{width:min(760px,calc(100vw - 28px));min-width:0;margin:auto}.sq{font-size:clamp(28px,9vw,68px)}.sidegame{max-width:760px;width:100%;margin:auto}.form{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.app{padding:8px}.top{align-items:flex-start}.cards{grid-template-columns:1fr 1fr}.form{grid-template-columns:1fr}.brand{font-size:18px}.board{width:96vw}.sq{font-size:11vw}.actions .btn{padding:7px 9px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div><div class="brand">♟ Chess Tournament Pro</div><div class="sub">Single-file offline chess & tournament manager</div></div>
+  <div class="actions"><button class="btn" onclick="newGame()">New Game</button><button class="btn" onclick="exportAll()">Export</button><button class="btn" onclick="document.getElementById('importFile').click()">Import</button><input id="importFile" type="file" accept=".json" hidden onchange="importAll(this.files[0])"></div>
+</header>
+<div class="layout">
+<aside class="side">
+ <div class="nav">
+  <button class="active" data-page="dashboard">📊 Dashboard</button>
+  <button data-page="play">♟ Play Chess</button>
+  <button data-page="players">👥 Players</button>
+  <button data-page="tournaments">🏆 Tournaments</button>
+  <button data-page="games">📜 Games</button>
+  <button data-page="database">🗄 Data / SQL</button>
+  <button data-page="settings">⚙ Settings</button>
+ </div>
+</aside>
+<main class="content">
+<section id="dashboard" class="page active">
+ <div class="cards">
+  <div class="panel card"><div class="kpi" id="kPlayers">0</div><div class="label">Players</div></div>
+  <div class="panel card"><div class="kpi" id="kTournaments">0</div><div class="label">Tournaments</div></div>
+  <div class="panel card"><div class="kpi" id="kGames">0</div><div class="label">Completed Games</div></div>
+  <div class="panel card"><div class="kpi" id="kActive">0</div><div class="label">Active Tournaments</div></div>
+ </div>
+ <div class="grid2">
+  <div class="panel"><h2>Quick Start</h2><div class="row">
+   <button class="btn primary" onclick="showPage('play')">Play a Game</button><button class="btn" onclick="openTournamentModal()">Create Tournament</button><button class="btn" onclick="showPage('players')">Manage Players</button>
+  </div><p class="sub">Data is stored locally in your browser. Export regularly for backup.</p></div>
+  <div class="panel"><h2>Format Support</h2><div class="row"><span class="badge">Swiss</span><span class="badge">Round Robin</span><span class="badge">Knockout</span><span class="badge">PGN</span><span class="badge">JSON</span><span class="badge">CSV</span></div></div>
+ </div>
+ <div class="panel"><h2>Recent Games</h2><div id="recentGames"></div></div>
+</section>
+
+<section id="play" class="page">
+ <div class="panel">
+  <div class="gameTabs" role="tablist">
+   <button class="btn primary" data-gtab="gameBoard">♟ Board</button>
+   <button class="btn" data-gtab="gameSetup">⚙ Game Setup</button>
+   <button class="btn" data-gtab="gameMoves">📜 Moves</button>
+  </div>
+ </div>
+ <div id="gameBoard" class="gameTab active">
+  <div class="boardWrap">
+   <div>
+    <div class="panel"><div class="row" style="justify-content:space-between"><div><h2>Chess Board</h2><span class="sub" id="gameStatus">White to move</span></div><div class="row"><button class="btn" onclick="undoMove()">Undo</button><button class="btn" onclick="flipBoard()">Flip</button><button class="btn danger" onclick="newGame()">Reset</button></div></div></div>
+    <div class="boardShell"><div id="board" class="board"></div></div>
+   </div>
+   <div class="sidegame">
+    <div class="panel"><div class="clock"><div id="whiteClock"><b>White</b><div class="time">10:00</div></div><div id="blackClock"><b>Black</b><div class="time">10:00</div></div></div></div>
+    <div class="panel"><h3>Current Game</h3><div class="sub">The board stays square and each cell remains equal in size on mobile and desktop.</div></div>
+   </div>
+  </div>
+ </div>
+ <div id="gameSetup" class="gameTab">
+  <div class="panel"><h2>Game Setup</h2><div class="form">
+   <div class="field"><label>White</label><input id="whiteName" value="White"></div>
+   <div class="field"><label>Black</label><input id="blackName" value="Black"></div>
+   <div class="field"><label>Time (minutes)</label><input id="timeMin" type="number" min="0" value="10"></div>
+  </div><br><button class="btn primary" onclick="applyGameSetup()">Apply & Start Clock</button></div>
+ </div>
+ <div id="gameMoves" class="gameTab">
+  <div class="panel"><h2>Move List</h2><div id="moveList" class="scroll"></div></div>
+ </div>
+</section>
+
+<section id="players" class="page">
+ <div class="panel"><h2>Player Management</h2><div class="form">
+  <div class="field"><label>Name</label><input id="pName"></div><div class="field"><label>Rating</label><input id="pRating" type="number" value="1200"></div><div class="field"><label>Club / Team</label><input id="pClub"></div>
+ </div><br><button class="btn primary" onclick="addPlayer()">Add Player</button></div>
+ <div class="panel"><div class="row"><input id="playerSearch" placeholder="Search players..." oninput="renderPlayers()" style="max-width:320px"><button class="btn" onclick="downloadCSV('players')">Players CSV</button></div><div class="scroll"><table><thead><tr><th>Name</th><th>Rating</th><th>Club</th><th>W</th><th>D</th><th>L</th><th>Actions</th></tr></thead><tbody id="playerRows"></tbody></table></div></div>
+</section>
+
+<section id="tournaments" class="page">
+ <div class="panel"><div class="row" style="justify-content:space-between"><h2>Tournament Manager</h2><button class="btn primary" onclick="openTournamentModal()">+ Create</button></div><div id="tournamentCards"></div></div>
+</section>
+
+<section id="games" class="page">
+ <div class="panel"><div class="row"><input id="gameSearch" placeholder="Search games..." oninput="renderGames()" style="max-width:340px"><button class="btn" onclick="downloadCSV('games')">Games CSV</button><button class="btn" onclick="exportPGN()">Export PGN</button></div><div class="scroll"><table><thead><tr><th>Date</th><th>White</th><th>Black</th><th>Result</th><th>Tournament</th></tr></thead><tbody id="gameRows"></tbody></table></div></div>
+</section>
+
+<section id="database" class="page">
+ <div class="panel"><h2>Data & SQL Console</h2><p class="sub">This is a lightweight browser SQL-like console over the app's local data. It supports SELECT/COUNT/DELETE/UPDATE for Players, Games and Tournaments. No server required.</p>
+ <textarea id="sql" placeholder="Examples:
+SELECT * FROM Players
+SELECT COUNT(*) FROM Games
+DELETE FROM Players WHERE id=1
+UPDATE Players SET rating=1300 WHERE id=1"></textarea><br><button class="btn primary" onclick="runSQL()">Run Query</button> <button class="btn" onclick="document.getElementById('sql').value=''">Clear</button><pre id="sqlOut" style="white-space:pre-wrap;overflow:auto"></pre></div>
+</section>
+
+<section id="settings" class="page">
+ <div class="panel"><h2>Settings</h2><div class="form">
+  <div class="field"><label>Theme</label><select id="theme" onchange="setTheme(this.value)"><option value="default">Midnight</option><option value="forest">Forest</option><option value="light">Light</option></select></div>
+  <div class="field"><label>Board style</label><select id="boardStyle" onchange="setBoardStyle(this.value)"><option value="classic">Classic</option><option value="green">Green</option><option value="blue">Blue</option></select></div>
+ </div><br><button class="btn danger" onclick="if(confirm('Delete ALL local data?')){localStorage.removeItem(DBKEY);location.reload()}">Reset All Data</button></div>
+</section>
+</main></div>
+</div>
+
+<div id="modal" class="modal"><div class="modalbox"><div class="row" style="justify-content:space-between"><h2>Create Tournament</h2><button class="btn" onclick="closeModal()">×</button></div>
+<div class="form">
+ <div class="field"><label>Name</label><input id="tName" placeholder="City Championship"></div>
+ <div class="field"><label>Format</label><select id="tFormat"><option value="swiss">Swiss</option><option value="roundrobin">Round Robin</option><option value="knockout">Knockout</option></select></div>
+ <div class="field"><label>Rounds</label><input id="tRounds" type="number" min="1" value="4"></div>
+ <div class="field"><label>Time control</label><select id="tTime"><option value="10">10 min</option><option value="5">5 min</option><option value="15">15 min</option><option value="0">Unlimited</option></select></div>
+</div><br><div class="field"><label>Select players</label><div id="playerChecks" class="scroll" style="max-height:190px"></div></div><br>
+<div class="row" style="justify-content:flex-end"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="createTournament()">Create Tournament</button></div>
+</div></div>
+<div id="toast" class="toast"></div>
+
+<script>
+const DBKEY='chessTournamentPro_v1';
+const PIECES={w:{k:'♔',q:'♕',r:'♖',b:'♗',n:'♘',p:'♙'},b:{k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'}};
+let DB=loadDB(), board=[], turn='w', selected=null, history=[], flipped=false, lastMove=null;
+let whiteSeconds=600,blackSeconds=600,clockTimer=null,gameStart=null, gameNames={w:'White',b:'Black'}, currentTournament=null;
+
+function loadDB(){try{return JSON.parse(localStorage.getItem(DBKEY))||{players:[],games:[],tournaments:[]}}catch(e){return {players:[],games:[],tournaments:[]}}}
+function saveDB(){localStorage.setItem(DBKEY,JSON.stringify(DB));renderAll()}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function toast(s){let x=document.getElementById('toast');x.textContent=s;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2200)}
+function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===id));renderAll()}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+document.querySelectorAll('.gameTab').forEach(x=>x.classList.remove('active'));
+document.getElementById('gameBoard').classList.add('active');
+document.querySelectorAll('[data-gtab]').forEach(b=>b.addEventListener('click',()=>{
+ document.querySelectorAll('.gameTab').forEach(x=>x.classList.remove('active'));
+ document.querySelectorAll('[data-gtab]').forEach(x=>x.classList.remove('primary'));
+ document.getElementById(b.dataset.gtab).classList.add('active');
+ b.classList.add('primary');
+}));
+
+
+function startBoard(){board=[
+['r','n','b','q','k','b','n','r'],['p','p','p','p','p','p','p','p'],Array(8).fill(null),Array(8).fill(null),Array(8).fill(null),Array(8).fill(null),
+['P','P','P','P','P','P','P','P'],['R','N','B','Q','K','B','N','R']];turn='w';selected=null;history=[];lastMove=null;gameStart=new Date();renderBoard();renderMoves();updateStatus()}
+function cloneBoard(){return board.map(r=>r.slice())}
+function colorOf(p){return !p?null:(p===p.toUpperCase()?'w':'b')}
+function typeOf(p){return p?p.toLowerCase():null}
+function inside(r,c){return r>=0&&r<8&&c>=0&&c<8}
+function algebra(r,c){return 'abcdefgh'[c]+(8-r)}
+function pseudoMoves(r,c,b=board){
+ let p=b[r][c];if(!p)return [];let col=colorOf(p),t=typeOf(p),out=[];
+ const add=(rr,cc)=>{if(!inside(rr,cc))return false;let q=b[rr][cc];if(!q){out.push([rr,cc]);return true}if(colorOf(q)!==col)out.push([rr,cc]);return false};
+ if(t==='p'){let d=col==='w'?-1:1,st=col==='w'?6:1;if(inside(r+d,c)&&!b[r+d][c]){out.push([r+d,c]);if(r===st&&!b[r+2*d][c])out.push([r+2*d,c])}for(let dc of [-1,1])if(inside(r+d,c+dc)&&b[r+d][c+dc]&&colorOf(b[r+d][c+dc])!==col)out.push([r+d,c+dc])}
+ if(t==='n')for(let [dr,dc] of [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]])add(r+dr,c+dc);
+ if(t==='b'||t==='r'||t==='q'){let dirs=[];if(t==='b'||t==='q')dirs.push([-1,-1],[-1,1],[1,-1],[1,1]);if(t==='r'||t==='q')dirs.push([-1,0],[1,0],[0,-1],[0,1]);for(let [dr,dc] of dirs){let rr=r+dr,cc=c+dc;while(add(rr,cc)){rr+=dr;cc+=dc}}}
+ if(t==='k')for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)if(dr||dc)add(r+dr,c+dc);
+ return out
+}
+function findKing(b,col){for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(b[r][c]=== (col==='w'?'K':'k'))return [r,c];return null}
+function attacked(b,r,c,by){for(let rr=0;rr<8;rr++)for(let cc=0;cc<8;cc++)if(colorOf(b[rr][cc])===by){let t=typeOf(b[rr][cc]);if(t==='p'){let d=by==='w'?-1:1;if(r===rr+d&&Math.abs(c-cc)===1)return true}else if(pseudoMoves(rr,cc,b).some(x=>x[0]===r&&x[1]===c))return true}return false}
+function inCheck(b,col){let k=findKing(b,col);return k?attacked(b,k[0],k[1],col==='w'?'b':'w'):true}
+function legalMoves(r,c){
+ let p=board[r][c];if(!p||colorOf(p)!==turn)return [];
+ return pseudoMoves(r,c).filter(([rr,cc])=>{let b=cloneBoard();b[rr][cc]=b[r][c];b[r][c]=null;return !inCheck(b,turn)})
+}
+function allLegal(col=turn){let a=[];for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(colorOf(board[r][c])===col)for(let m of legalMoves(r,c))a.push({from:[r,c],to:m});return a}
+function renderBoard(){
+ let el=document.getElementById('board');el.innerHTML='';
+ for(let vr=0;vr<8;vr++)for(let vc=0;vc<8;vc++){let r=flipped?7-vr:vr,c=flipped?7-vc:vc,p=board[r][c],s=document.createElement('div');s.className='sq '+((r+c)%2?'dark':'light');
+ if(selected&&selected[0]===r&&selected[1]===c)s.classList.add('sel');if(lastMove&&((lastMove[0][0]===r&&lastMove[0][1]===c)||(lastMove[1][0]===r&&lastMove[1][1]===c)))s.classList.add('last');if(p&&typeOf(p)==='k'&&inCheck(board,colorOf(p)))s.classList.add('check');
+ if(p){let z=document.createElement('span');z.className='piece';z.textContent=PIECES[colorOf(p)][typeOf(p)];s.appendChild(z)}
+ if(selected&&legalMoves(...selected).some(x=>x[0]===r&&x[1]===c)){let d=document.createElement('i');d.className=p?'capture':'dot';s.appendChild(d)}
+ let co=document.createElement('span');co.className='coords';co.textContent=algebra(r,c);s.appendChild(co);s.onclick=()=>squareClick(r,c);el.appendChild(s)}
+}
+function squareClick(r,c){
+ if(!gameStart)gameStart=new Date();
+ if(selected){let lm=legalMoves(...selected);if(lm.some(x=>x[0]===r&&x[1]===c)){makeMove(selected,[r,c]);return}}
+ if(colorOf(board[r][c])===turn){selected=[r,c];renderBoard()}
+}
+function makeMove(fr,to){
+ let p=board[fr[0]][fr[1]], captured=board[to[0]][to[1]], san=algebra(...fr)+'-'+algebra(...to);
+ history.push({board:cloneBoard(),turn,lastMove,notation:algebra(...fr)+'-'+algebra(...to)});board[to[0]][to[1]]=p;board[fr[0]][fr[1]]=null;
+ if(typeOf(p)==='p'&&(to[0]===0||to[0]===7)){board[to[0]][to[1]]=colorOf(p)==='w'?'Q':'q';san+='=Q'}
+ lastMove=[fr,to];selected=null;turn=turn==='w'?'b':'w';renderBoard();renderMoves();updateStatus();
+ let legal=allLegal(turn);if(!legal.length){let result=inCheck(board,turn)?(turn==='w'?'0-1':'1-0'):'1/2-1/2';finishGame(result,inCheck(board,turn)?'Checkmate':'Draw by stalemate')}
+}
+function undoMove(){let h=history.pop();if(!h)return;board=h.board;turn=h.turn;lastMove=h.lastMove;selected=null;renderBoard();renderMoves();updateStatus()}
+function renderMoves(){let el=document.getElementById('moveList');if(!history.length){el.innerHTML='<div class="empty">No moves yet</div>';return}el.innerHTML=history.map((_,i)=>`<div>${Math.floor(i/2)+1}${i%2?'...':' . '} ${i%2?'Black':'White'} move</div>`).join('')}
+function updateStatus(){let s=inCheck(board,turn)?'Check — ':'';document.getElementById('gameStatus').textContent=s+(turn==='w'?'White':'Black')+' to move'}
+function flipBoard(){flipped=!flipped;renderBoard()}
+function newGame(){stopClock();startBoard();applyGameSetup(false)}
+function applyGameSetup(reset=true){
+ gameNames.w=document.getElementById('whiteName').value||'White';gameNames.b=document.getElementById('blackName').value||'Black';let m=Math.max(0,+document.getElementById('timeMin').value||0);whiteSeconds=blackSeconds=m*60;updateClock();if(reset)startClock()
+}
+function startClock(){stopClock();if(whiteSeconds<=0&&blackSeconds<=0)return;clockTimer=setInterval(()=>{if(turn==='w'){whiteSeconds--;if(whiteSeconds<=0){whiteSeconds=0;finishGame('0-1','White flag')}}else{blackSeconds--;if(blackSeconds<=0){blackSeconds=0;finishGame('1-0','Black flag')}}updateClock()},1000)}
+function stopClock(){if(clockTimer){clearInterval(clockTimer);clockTimer=null}}
+function fmt(t){return Math.floor(t/60).toString().padStart(2,'0')+':'+(t%60).toString().padStart(2,'0')}
+function updateClock(){document.querySelector('#whiteClock .time').textContent=fmt(whiteSeconds);document.querySelector('#blackClock .time').textContent=fmt(blackSeconds);document.getElementById('whiteClock').classList.toggle('active',turn==='w');document.getElementById('blackClock').classList.toggle('active',turn==='b')}
+function finishGame(result,reason=''){
+ stopClock();let game={id:uid(),date:new Date().toISOString(),white:gameNames.w,black:gameNames.b,result,reason,tournamentId:currentTournament||null,moves:history.length};DB.games.unshift(game);updatePlayerStats(game);saveDB();toast(result+' '+reason);setTimeout(()=>newGame(),700)
+}
+function updatePlayerStats(g){for(let p of DB.players){if(p.name===g.white){p.games=(p.games||0)+1;if(g.result==='1-0')p.w=(p.w||0)+1;else if(g.result==='1/2-1/2')p.d=(p.d||0)+1;else p.l=(p.l||0)+1}if(p.name===g.black){p.games=(p.games||0)+1;if(g.result==='0-1')p.w=(p.w||0)+1;else if(g.result==='1/2-1/2')p.d=(p.d||0)+1;else p.l=(p.l||0)+1}}}
+function addPlayer(){let name=document.getElementById('pName').value.trim();if(!name)return toast('Enter player name');if(DB.players.some(p=>p.name.toLowerCase()===name.toLowerCase()))return toast('Player already exists');DB.players.push({id:uid(),name,rating:+document.getElementById('pRating').value||1200,club:document.getElementById('pClub').value.trim(),w:0,d:0,l:0,games:0});document.getElementById('pName').value='';saveDB();toast('Player added')}
+function renderPlayers(){let q=(document.getElementById('playerSearch')?.value||'').toLowerCase();let rows=DB.players.filter(p=>p.name.toLowerCase().includes(q)||String(p.club||'').toLowerCase().includes(q)).map(p=>`<tr><td>${esc(p.name)}</td><td>${p.rating}</td><td>${esc(p.club||'')}</td><td>${p.w||0}</td><td>${p.d||0}</td><td>${p.l||0}</td><td><button class="btn danger" onclick="deletePlayer('${p.id}')">Delete</button></td></tr>`).join('');document.getElementById('playerRows').innerHTML=rows||'<tr><td colspan="7" class="empty">No players</td></tr>'}
+function deletePlayer(id){if(confirm('Delete player?')){DB.players=DB.players.filter(p=>p.id!==id);saveDB()}}
+function openTournamentModal(){let pc=document.getElementById('playerChecks');pc.innerHTML=DB.players.length?DB.players.map(p=>`<label style="display:block;padding:6px"><input type="checkbox" value="${p.id}"> ${esc(p.name)} <span class="sub">(${p.rating})</span></label>`).join(''):'<div class="empty">Add players first</div>';document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function createTournament(){let ids=[...document.querySelectorAll('#playerChecks input:checked')].map(x=>x.value);if(ids.length<2)return toast('Select at least 2 players');let t={id:uid(),name:document.getElementById('tName').value.trim()||'Tournament '+new Date().toLocaleDateString(),format:document.getElementById('tFormat').value,rounds:+document.getElementById('tRounds').value||1,time:+document.getElementById('tTime').value,playerIds:ids,currentRound:0,status:'active',standings:{},pairings:[],created:new Date().toISOString()};ids.forEach(id=>t.standings[id]={pts:0,w:0,d:0,l:0,buch:0});DB.tournaments.push(t);saveDB();closeModal();renderTournaments();toast('Tournament created')}
+function renderTournaments(){let el=document.getElementById('tournamentCards');if(!DB.tournaments.length){el.innerHTML='<div class="empty">No tournaments</div>';return}el.innerHTML=DB.tournaments.map(t=>`<div class="panel" style="background:#ffffff06"><div class="row" style="justify-content:space-between"><div><h3>${esc(t.name)}</h3><span class="badge">${t.format}</span> <span class="badge">${t.status}</span> <span class="badge">${t.currentRound}/${t.rounds} rounds</span></div><div class="row"><button class="btn primary" onclick="runTournamentRound('${t.id}')">${t.currentRound?'Next Round':'Start Round'}</button><button class="btn" onclick="showStandings('${t.id}')">Standings</button><button class="btn danger" onclick="deleteTournament('${t.id}')">Delete</button></div></div><div id="stand_${t.id}"></div></div>`).join('')}
+function deleteTournament(id){if(confirm('Delete tournament?')){DB.tournaments=DB.tournaments.filter(t=>t.id!==id);saveDB()}}
+function runTournamentRound(id){
+ let t=DB.tournaments.find(x=>x.id===id);if(!t||t.status!=='active')return;if(t.currentRound>=t.rounds){t.status='complete';saveDB();return toast('Tournament complete')}
+ t.currentRound++;let ps=t.playerIds.map(id=>DB.players.find(p=>p.id===id)).filter(Boolean);
+ if(t.format==='roundrobin'){let n=ps.length;let r=t.currentRound-1;let pairs=[];for(let i=0;i<n;i++){for(let j=i+1;j<n;j++)if((i+j+r)%Math.max(1,n-1)===r%Math.max(1,n-1))pairs.push([ps[i],ps[j]])}t.pairings=pairs.length?pairs:pairSwiss(ps,t); }
+ else if(t.format==='knockout'){let sorted=ps.slice().sort((a,b)=>b.rating-a.rating);if(t.currentRound===1)t.knockout=sorted;let arr=t.knockout||sorted;pairs=[];for(let i=0;i<arr.length;i+=2)if(arr[i+1])pairs.push([arr[i],arr[i+1]]);t.pairings=pairs}
+ else t.pairings=pairSwiss(ps,t);
+ saveDB();showTournamentPairings(t)}
+function pairSwiss(ps,t){let sorted=ps.slice().sort((a,b)=>(t.standings[b.id]?.pts||0)-(t.standings[a.id]?.pts||0)||(b.rating-a.rating));let pairs=[];for(let i=0;i<sorted.length;i+=2){if(sorted[i+1])pairs.push([sorted[i],sorted[i+1]])}if(sorted.length%2){let bye=sorted[sorted.length-1];t.standings[bye.id].pts+=1}return pairs}
+function showTournamentPairings(t){let html='<h4>Round '+t.currentRound+' Pairings</h4><div class="scroll"><table><tr><th>Board</th><th>White</th><th>Black</th><th>Action</th></tr>'+t.pairings.map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p[0].name)}</td><td>${esc(p[1].name)}</td><td><button class="btn" onclick="startTournamentGame('${t.id}',${i})">Play</button><button class="btn" onclick="recordTournamentResult('${t.id}',${i},'1/2-1/2')">Draw</button></td></tr>`).join('')+'</table></div>';let target=document.getElementById('stand_'+t.id);if(target)target.innerHTML=html}
+function startTournamentGame(tid,i){let t=DB.tournaments.find(x=>x.id===tid),pair=t.pairings[i];currentTournament=tid;document.getElementById('whiteName').value=pair[0].name;document.getElementById('blackName').value=pair[1].name;document.getElementById('timeMin').value=t.time;showPage('play');startBoard();applyGameSetup()}
+function recordTournamentResult(tid,i,result){let t=DB.tournaments.find(x=>x.id===tid),pair=t.pairings[i];let a=t.standings[pair[0].id],b=t.standings[pair[1].id];if(result==='1-0'){a.pts+=1;a.w++ ;b.l++}else if(result==='0-1'){b.pts+=1;b.w++;a.l++}else{a.pts+=.5;b.pts+=.5;a.d++;b.d++}if(t.format==='knockout'){if(!t.winners)t.winners=[];t.winners.push(result==='1-0'?pair[0]:result==='0-1'?pair[1]:pair[0])}saveDB();toast('Result recorded');showStandings(tid)}
+function showStandings(tid){let t=DB.tournaments.find(x=>x.id===tid);let arr=t.playerIds.map(id=>({p:DB.players.find(p=>p.id===id),s:t.standings[id]})).filter(x=>x.p).sort((a,b)=>b.s.pts-a.s.pts||b.p.rating-a.p.rating);let target=document.getElementById('stand_'+tid);if(target)target.innerHTML='<h4>Standings</h4><table><tr><th>#</th><th>Player</th><th>Pts</th><th>W</th><th>D</th><th>L</th><th>Rating</th></tr>'+arr.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.p.name)}</td><td>${x.s.pts}</td><td>${x.s.w}</td><td>${x.s.d}</td><td>${x.s.l}</td><td>${x.p.rating}</td></tr>`).join('')+'</table>'}
+function renderGames(){let q=(document.getElementById('gameSearch')?.value||'').toLowerCase();let rows=DB.games.filter(g=>(g.white+' '+g.black+' '+(g.result||'')).toLowerCase().includes(q)).map(g=>`<tr><td>${new Date(g.date).toLocaleString()}</td><td>${esc(g.white)}</td><td>${esc(g.black)}</td><td>${g.result}</td><td>${g.tournamentId||'-'}</td></tr>`).join('');document.getElementById('gameRows').innerHTML=rows||'<tr><td colspan="5" class="empty">No games</td></tr>'}
+function renderDashboard(){document.getElementById('kPlayers').textContent=DB.players.length;document.getElementById('kTournaments').textContent=DB.tournaments.length;document.getElementById('kGames').textContent=DB.games.length;document.getElementById('kActive').textContent=DB.tournaments.filter(t=>t.status==='active').length;document.getElementById('recentGames').innerHTML=DB.games.slice(0,8).map(g=>`<div style="padding:7px;border-bottom:1px solid var(--line)">${esc(g.white)} vs ${esc(g.black)} — <b>${g.result}</b> <span class="sub">${new Date(g.date).toLocaleString()}</span></div>`).join('')||'<div class="empty">No games</div>'}
+function renderAll(){renderDashboard();renderPlayers();renderTournaments();renderGames();renderBoard();updateClock()}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function downloadCSV(type){let rows=[];if(type==='players'){rows=[['Name','Rating','Club','Wins','Draws','Losses'],...DB.players.map(p=>[p.name,p.rating,p.club,p.w,p.d,p.l])]}else rows=[['Date','White','Black','Result','Reason'],...DB.games.map(g=>[g.date,g.white,g.black,g.result,g.reason])];let csv=rows.map(r=>r.map(x=>`"${String(x??'').replaceAll('"','""')}"`).join(',')).join('\n');download(csv,type+'.csv','text/csv')}
+function download(data,name,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function exportAll(){download(JSON.stringify(DB,null,2),'chess_tournament_backup.json','application/json')}
+function importAll(file){if(!file)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(x.players&&x.games&&x.tournaments){DB=x;saveDB();toast('Import successful')}else toast('Invalid backup')}catch(e){toast('Invalid JSON')}};r.readAsText(file)}
+function exportPGN(){let p=DB.games.map(g=>`[White "${g.white}"]\n[Black "${g.black}"]\n[Result "${g.result}"]\n[Date "${g.date.slice(0,10)}"]\n\n${g.result}\n`).join('\n');download(p,'games.pgn','application/x-chess-pgn')}
+function runSQL(){
+ let q=document.getElementById('sql').value.trim(),out=document.getElementById('sqlOut'),m=q.match(/^SELECT\s+(.+?)\s+FROM\s+(Players|Games|Tournaments)(?:\s+WHERE\s+(.+))?$/i);
+ if(/^SELECT\s+COUNT\(\*\)\s+FROM\s+/i.test(q)){let n=q.match(/FROM\s+(Players|Games|Tournaments)/i)[1].toLowerCase();out.textContent=JSON.stringify({count:DB[n].length},null,2);return}
+ if(m){let n=m[2].toLowerCase(),arr=DB[n];if(m[3])arr=whereFilter(arr,m[3]);if(m[1].trim()==='*')out.textContent=JSON.stringify(arr,null,2);else{let cols=m[1].split(',').map(x=>x.trim());out.textContent=JSON.stringify(arr.map(x=>Object.fromEntries(cols.map(c=>[c,x[c]]))),null,2)}return}
+ let d=q.match(/^DELETE\s+FROM\s+(Players|Games|Tournaments)(?:\s+WHERE\s+(.+))?$/i);if(d){let n=d[1].toLowerCase();if(d[2])DB[n]=DB[n].filter(x=>!whereFilter([x],d[2]).length);else DB[n]=[];saveDB();out.textContent='Deleted';return}
+ let u=q.match(/^UPDATE\s+(Players|Games|Tournaments)\s+SET\s+(.+?)\s+WHERE\s+(.+)$/i);if(u){let n=u[1].toLowerCase(),sets=u[2].split(',').map(x=>x.split('=').map(y=>y.trim())),a=whereFilter(DB[n],u[3]);a.forEach(x=>sets.forEach(([k,v])=>x[k]=isNaN(Number(v))?v.replace(/^['"]|['"]$/g,''):Number(v)));saveDB();out.textContent='Updated '+a.length+' row(s)';return}
+ out.textContent='Supported: SELECT * FROM Players/Games/Tournaments; SELECT COUNT(*) FROM Games; DELETE FROM ... WHERE id=...; UPDATE Players SET rating=1300 WHERE id=...'}
+function whereFilter(arr,w){let m=w.match(/^(\w+)\s*=\s*['"]?([^'"]+)['"]?$/);if(!m)return [];return arr.filter(x=>String(x[m[1]])===m[2])}
+function setTheme(v){document.body.classList.remove('theme-forest','theme-light');if(v==='forest')document.body.classList.add('theme-forest');if(v==='light')document.body.classList.add('theme-light');localStorage.setItem('chessTheme',v)}
+function setBoardStyle(v){document.body.dataset.board=v;localStorage.setItem('chessBoard',v);let st=document.getElementById('boardStyle');if(st)st.value=v}
+(function init(){
+ let th=localStorage.getItem('chessTheme')||'default';document.getElementById('theme').value=th;setTheme(th);document.getElementById('boardStyle').value=localStorage.getItem('chessBoard')||'classic';
+ let bs=localStorage.getItem('chessBoard')||'classic';document.body.dataset.board=bs;
+ let style=document.createElement('style');style.textContent=`body.theme-forest{--bg:#071810;--panel:rgba(11,42,29,.8);--panel2:#123c29;--accent:#71e0a5}body.theme-light{--bg:#edf3f8;--panel:rgba(255,255,255,.86);--text:#152235;--muted:#5d6b7e;--line:#0001;background:#edf3f8}body[data-board="green"]{--light:#e8efd1;--dark:#789656}body[data-board="blue"]{--light:#dce9f5;--dark:#6687a5}`;document.head.appendChild(style);
+ startBoard();applyGameSetup(false);renderAll()
+})();
+</script>
+</body>
+</html>
