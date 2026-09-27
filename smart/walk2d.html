@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Global Route Finder & Advanced Multi-Hazard/Area Inspector</title>
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <style>
+    :root {
+      --bg-main: #0F172A;
+      --bg-card: #1E293B;
+      --accent-blue: #38BDF8;
+      --accent-dark: #0284C7;
+      --accent-purple: #C084FC;
+      --accent-gold: #FACC15;
+      --danger: #EF4444;
+      --warning: #F97316;
+      --success: #22C55E;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border-color: rgba(56, 189, 248, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .top-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .inputs-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+      max-width: 750px;
+    }
+
+    @media (min-width: 768px) {
+      .inputs-wrapper {
+        flex-direction: row;
+      }
+    }
+
+    .input-group {
+      display: flex;
+      flex: 1;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .input-group input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 0.5rem 0.75rem;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .input-group input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-dark));
+      color: var(--bg-main);
+      border: none;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border-radius: 8px;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn-secondary {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-blue);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-success {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    /* Advanced Multi-Category Filter Bar */
+    .controls-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.4rem 0.75rem;
+    }
+
+    .filters-grid label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .filters-grid input[type="checkbox"] {
+      accent-color: var(--accent-blue);
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+
+    .actions-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.4rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .metrics-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .metrics-bar {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+    }
+
+    .metric-badge {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.35rem 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    @media (min-width: 640px) {
+      .metric-badge {
+        flex: 1;
+      }
+    }
+
+    .metric-title {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .metric-val {
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    .hint-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Main layout container with map and side inspector drawer */
+    .workspace {
+      display: flex;
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #map {
+      flex: 1;
+      height: 100%;
+      background-color: #1e293b;
+      z-index: 1;
+    }
+
+    /* Enroute Area Names Drawer */
+    .inspector-drawer {
+      width: 320px;
+      background: var(--bg-card);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      z-index: 1000;
+      transition: transform 0.3s ease;
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      box-shadow: -5px 0 20px rgba(0,0,0,0.4);
+    }
+
+    .inspector-drawer.collapsed {
+      transform: translateX(100%);
+    }
+
+    .drawer-header {
+      padding: 0.75rem 1rem;
+      background: rgba(15, 23, 42, 0.8);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .drawer-header h3 {
+      font-size: 0.9rem;
+      color: var(--accent-blue);
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .area-card {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.6rem;
+      font-size: 0.78rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .area-card:hover {
+      border-color: var(--accent-blue);
+    }
+
+    .area-title {
+      font-weight: 600;
+      color: var(--accent-gold);
+    }
+
+    .area-meta {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+    }
+
+    .drawer-toggle-tab {
+      position: absolute;
+      left: -38px;
+      top: 15px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-right: none;
+      color: var(--accent-blue);
+      padding: 0.5rem;
+      border-radius: 6px 0 0 6px;
+      cursor: pointer;
+      z-index: 1001;
+      font-weight: 600;
+      writing-mode: vertical-lr;
+      text-orientation: mixed;
+      font-size: 0.75rem;
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 1rem;
+    }
+
+    .modal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 480px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.75rem;
+    }
+
+    .modal-header h3 {
+      font-size: 1.05rem;
+      color: var(--accent-blue);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.25rem;
+      cursor: pointer;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.82rem;
+    }
+
+    .form-field label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .form-field input, .form-field select, .form-field textarea {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.5rem;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .form-field textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation & Control Panel -->
+  <header>
+    <div class="top-row">
+      <h1>🗺️ Advanced Route Finder & Enroute Area Inspector</h1>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <button class="btn btn-success" onclick="locateUserGPS()" style="font-size: 0.75rem; padding: 0.35rem 0.7rem;">📍 My Live GPS</button>
+        <span class="hint-text">💡 Tap map twice (Start ➔ Dest)</span>
+      </div>
+    </div>
+
+    <div class="top-row">
+      <div class="inputs-wrapper">
+        <div class="input-group">
+          <input type="text" id="startInput" placeholder="Start Location (e.g. Mumbai, India)" />
+        </div>
+        <div class="input-group">
+          <input type="text" id="destInput" placeholder="Destination Location (e.g. Pune, India)" />
+        </div>
+      </div>
+      <button class="btn" onclick="calculateRoute()">Calculate Route</button>
+    </div>
+
+    <!-- Multi-Category Landmark Checkboxes -->
+    <div class="controls-bar">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Filter Landmarks & Hazards:</span>
+        <div style="display: flex; gap: 0.4rem;">
+          <button class="btn btn-secondary" onclick="toggleAllFilters(true)" style="font-size: 0.7rem; padding: 0.2rem 0.5rem;">Select All</button>
+          <button class="btn btn-danger" onclick="toggleAllFilters(false)" style="font-size: 0.7rem; padding: 0.2rem 0.5rem;">Clear All</button>
+        </div>
+      </div>
+      
+      <div class="filters-grid">
+        <label><input type="checkbox" id="cat_temples" onchange="updateRouteOverlays()"> 🏛️ Temples</label>
+        <label><input type="checkbox" id="cat_accidents" onchange="updateRouteOverlays()"> ⚠️ Accident Zones</label>
+        <label><input type="checkbox" id="cat_bridges" onchange="updateRouteOverlays()"> 🌉 Bridges</label>
+        <label><input type="checkbox" id="cat_rivers" onchange="updateRouteOverlays()"> 💧 Rivers</label>
+        <label><input type="checkbox" id="cat_sharp_turns" onchange="updateRouteOverlays()"> 🔄 Sharp Turns</label>
+        <label><input type="checkbox" id="cat_haunted" onchange="updateRouteOverlays()"> 👻 Haunted</label>
+        <label><input type="checkbox" id="cat_paranormal" onchange="updateRouteOverlays()"> 🌀 Paranormal</label>
+        <label><input type="checkbox" id="cat_avoid_day" onchange="updateRouteOverlays()"> ☀️ Avoid Day</label>
+        <label><input type="checkbox" id="cat_avoid_night" onchange="updateRouteOverlays()"> 🌙 Avoid Night</label>
+        <label><input type="checkbox" id="cat_avoid_season" onchange="updateRouteOverlays()"> ❄️ Avoid Season</label>
+      </div>
+      
+      <div class="actions-row">
+        <span class="hint-text">Toggle checkboxes or use the side drawer to inspect enroute area names.</span>
+        <div style="display: flex; gap: 0.4rem;">
+          <button class="btn btn-secondary" onclick="openAddModal()" style="font-size: 0.75rem; padding: 0.3rem 0.5rem;">➕ Add Spot</button>
+          <button class="btn btn-secondary" onclick="exportJSONFile()" style="font-size: 0.75rem; padding: 0.3rem 0.5rem;">💾 Export</button>
+          <button class="btn btn-secondary" onclick="triggerImportJSON()" style="font-size: 0.75rem; padding: 0.3rem 0.5rem;">📂 Import</button>
+          <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImportJSON(event)">
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Metrics Display Bar -->
+    <div class="metrics-bar">
+      <div class="metric-badge">
+        <span class="metric-title">🚶 Walking</span>
+        <span><b id="walkDist" class="metric-val">-</b> (<span id="walkTime" class="metric-val">-</span>)</span>
+      </div>
+      <div class="metric-badge">
+        <span class="metric-title">🚗 Driving</span>
+        <span><b id="driveDist" class="metric-val">-</b> (<span id="driveTime" class="metric-val">-</span>)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Workspace with Map and Side Inspector Drawer -->
+  <div class="workspace">
+    <div id="map"></div>
+
+    <!-- Enroute Area Names Drawer -->
+    <div class="inspector-drawer" id="inspectorDrawer">
+      <button class="drawer-toggle-tab" onclick="toggleDrawer()">📍 Enroute Areas</button>
+      <div class="drawer-header">
+        <h3>Enroute Areas & Settlements</h3>
+        <button class="close-btn" onclick="toggleDrawer()" style="font-size: 1rem;">&times;</button>
+      </div>
+      <div class="drawer-body" id="areaListContainer">
+        <div class="hint-text" style="text-align: center; margin-top: 2rem;">Calculate a route or move the map to scan and list area names and details here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Custom Location Modal -->
+  <div class="modal-overlay" id="addModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Add Custom Hazard or Landmark</h3>
+        <button class="close-btn" onclick="closeAddModal()">&times;</button>
+      </div>
+      
+      <div class="form-field">
+        <label>Category Type</label>
+        <select id="spotCategory">
+          <option value="temples">🏛️ Temple / Shrine</option>
+          <option value="accidents">⚠️ Accident Zone</option>
+          <option value="bridges">🌉 Bridge</option>
+          <option value="rivers">💧 River Crossing</option>
+          <option value="sharp_turns">🔄 Sharp Turn</option>
+          <option value="haunted">👻 Haunted Area</option>
+          <option value="paranormal">🌀 Paranormal Zone</option>
+          <option value="avoid_day">☀️ Avoid at Day</option>
+          <option value="avoid_night">🌙 Avoid at Night</option>
+          <option value="avoid_season">❄️ Avoid at Season</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label>Location Name</label>
+        <input type="text" id="spotName" placeholder="e.g. Mumbai Coastal Curve" />
+      </div>
+
+      <div style="display: flex; gap: 0.5rem;">
+        <div class="form-field" style="flex: 1;">
+          <label>Latitude</label>
+          <input type="number" step="any" id="spotLat" />
+        </div>
+        <div class="form-field" style="flex: 1;">
+          <label>Longitude</label>
+          <input type="number" step="any" id="spotLon" />
+        </div>
+      </div>
+      <button class="btn btn-secondary" style="font-size: 0.78rem; padding: 0.35rem;" onclick="useMapCenterForSpot()">📍 Use Map Center Coordinates</button>
+
+      <div class="form-field">
+        <label>Description / Details</label>
+        <textarea id="spotDesc" placeholder="Details or safety warning..."></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
+        <button class="btn" onclick="saveNewSpot()">Save to Database</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS Library -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <script>
+    const map = L.map('map', { zoomControl: false }).setView([19.0760, 72.8777], 11); // Default to Mumbai region
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let startMarker = null;
+    let destMarker = null;
+    let userGpsMarker = null;
+    let routeLine = null;
+    let currentRouteCoords = []; 
+    let clickState = 0; 
+    let enrouteAreaMarkers = L.layerGroup().addTo(map);
+
+    const activeLayers = {};
+    const categoryConfigs = {
+      temples: { color: '#FACC15', label: '🏛️ Temple' },
+      accidents: { color: '#EF4444', label: '⚠️ Accident Zone' },
+      bridges: { color: '#38BDF8', label: '🌉 Bridge' },
+      rivers: { color: '#0284C7', label: '💧 River' },
+      sharp_turns: { color: '#F97316', label: '🔄 Sharp Turn' },
+      haunted: { color: '#C084FC', label: '👻 Haunted' },
+      paranormal: { color: '#A855F7', label: '🌀 Paranormal' },
+      avoid_day: { color: '#EAB308', label: '☀️ Avoid at Day' },
+      avoid_night: { color: '#6366F1', label: '🌙 Avoid at Night' },
+      avoid_season: { color: '#14B8A6', label: '❄️ Avoid at Season' }
+    };
+
+    Object.keys(categoryConfigs).forEach(cat => {
+      activeLayers[cat] = L.layerGroup();
+    });
+
+    const defaultDatabase = {
+      temples: [
+        { name: "Siddhivinayak Temple", lat: 19.0167, lon: 72.8302, radius: 1000, desc: "Mumbai - Historic Ganesha shrine." },
+        { name: "St. Peter's Basilica", lat: 41.9022, lon: 12.4534, radius: 1000, desc: "Vatican City - Global Catholic center." }
+      ],
+      accidents: [
+        { name: "Mumbai-Pune Expressway Ghat Section", lat: 18.7500, lon: 73.4000, radius: 1500, desc: "Maharashtra - Steep slopes and heavy vehicle speed zones." }
+      ],
+      bridges: [
+        { name: "Bandra-Worli Sea Link", lat: 19.0330, lon: 72.8150, radius: 1000, desc: "Mumbai - Cable-stayed bridge over Mahim Bay." }
+      ],
+      rivers: [
+        { name: "Mithi River Crossing", lat: 19.0700, lon: 72.8600, radius: 1200, desc: "Mumbai - Major tidal river channel." }
+      ],
+      sharp_turns: [
+        { name: "Tamhini Ghat Hairpin Turn", lat: 18.4500, lon: 73.4300, radius: 800, desc: "Western Ghats - Winding mountain hairpin bends." }
+      ],
+      haunted: [
+        { name: "Mukesh Mills", lat: 18.9050, lon: 72.8180, radius: 800, desc: "Mumbai - Abandoned mill ruins with phantom legends." }
+      ],
+      paranormal: [
+        { name: "D'Souza Chawl", lat: 19.0430, lon: 72.8400, radius: 1000, desc: "Mumbai - Local folklore and unexplained occurrences." }
+      ],
+      avoid_day: [
+        { name: "Thar Desert Highway Stretch", lat: 26.9000, lon: 70.9000, radius: 2000, desc: "Rajasthan - Severe high temperatures during midday." }
+      ],
+      avoid_night: [
+        { name: "Aarey Colony Deep Forest Road", lat: 19.1650, lon: 72.8800, radius: 1000, desc: "Mumbai - Isolated forest perimeter road unlit at night." }
+      ],
+      avoid_season: [
+        { name: "Malshej Ghat Monsoon Landslide Zone", lat: 19.3300, lon: 73.7600, radius: 1200, desc: "Western Ghats - High boulder fall risks during peak monsoon." }
+      ]
+    };
+
+    const STORAGE_KEY = 'global_hazards_db_v3';
+    let regionalDatabase = loadDatabase();
+
+    function loadDatabase() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try { return JSON.parse(saved); } catch(e) { console.error(e); }
+      }
+      return defaultDatabase;
+    }
+
+    function saveDatabaseToStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(regionalDatabase));
+    }
+
+    function toggleAllFilters(selectState) {
+      Object.keys(categoryConfigs).forEach(cat => {
+        const checkbox = document.getElementById(`cat_${cat}`);
+        if (checkbox) checkbox.checked = selectState;
+      });
+      updateRouteOverlays();
+    }
+
+    function toggleDrawer() {
+      const drawer = document.getElementById('inspectorDrawer');
+      drawer.classList.toggle('collapsed');
+    }
+
+    function locateUserGPS() {
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(position => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        map.setView([lat, lon], 14);
+        if (userGpsMarker) map.removeLayer(userGpsMarker);
+        userGpsMarker = L.marker([lat, lon], {
+          icon: L.divIcon({ className: 'gps-dot', html: '🔵', iconSize: [20, 20] })
+        }).addTo(map).bindPopup("<b>You are here (Live GPS)</b>").openPopup();
+        
+        document.getElementById('startInput').value = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+        setStart(lat, lon, "Current GPS Location");
+        fetchEnrouteAreaNames(lat, lon);
+      }, err => {
+        alert("Unable to retrieve your location: " + err.message);
+      }, { enableHighAccuracy: true });
+    }
+
+    async function fetchEnrouteAreaNames(lat, lon) {
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+        const data = await res.json();
+        const container = document.getElementById('areaListContainer');
+        container.innerHTML = '';
+
+        if (data && data.address) {
+          const areaName = data.display_name || "Current Location Area";
+          const card = document.createElement('div');
+          card.className = 'area-card';
+          card.innerHTML = `<span class="area-title">📍 ${data.address.suburb || data.address.city || data.address.town || "Local Area"}</span>` +
+                           `<span class="area-meta">${areaName}</span>`;
+          container.appendChild(card);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function scanEnrouteAreasForRoute() {
+      if (!currentRouteCoords || currentRouteCoords.length === 0) return;
+      enrouteAreaMarkers.clearLayers();
+      const container = document.getElementById('areaListContainer');
+      container.innerHTML = '';
+
+      // Sample points along route to fetch area names
+      const step = Math.max(1, Math.floor(currentRouteCoords.length / 8));
+      const fetchedNames = new Set();
+
+      for (let i = 0; i < currentRouteCoords.length; i += step) {
+        const coord = currentRouteCoords[i];
+        const lon = coord[0];
+        const lat = coord[1];
+        
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+          const data = await res.json();
+          if (data && data.address) {
+            const placeName = data.address.suburb || data.address.city || data.address.town || data.address.village || "Enroute Settlement";
+            const fullAddress = data.display_name;
+
+            if (!fetchedNames.has(placeName)) {
+              fetchedNames.add(placeName);
+
+              const marker = L.marker([lat, lon]).bindPopup(`<b>Enroute Area: ${placeName}</b><br>${fullAddress}`);
+              enrouteAreaMarkers.addLayer(marker);
+
+              const card = document.createElement('div');
+              card.className = 'area-card';
+              card.onclick = () => map.setView([lat, lon], 14);
+              card.innerHTML = `<span class="area-title">🏘️ ${placeName}</span>` +
+                               `<span class="area-meta">${fullAddress}</span>`;
+              container.appendChild(card);
+            }
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      if (container.children.length === 0) {
+        container.innerHTML = '<div class="hint-text" style="text-align: center; margin-top: 2rem;">No specific settlements found along route index.</div>';
+      }
+    }
+
+    function exportJSONFile() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(regionalDatabase, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "global_hazards_and_landmarks_database.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function triggerImportJSON() {
+      document.getElementById('importFile').click();
+    }
+
+    function handleImportJSON(event) {
+      const fileReader = new FileReader();
+      if (event.target.files && event.target.files[0]) {
+        fileReader.readAsText(event.target.files[0], "UTF-8");
+        fileReader.onload = function(e) {
+          try {
+            const importedData = JSON.parse(e.target.result);
+            if (importedData && importedData.temples) {
+              regionalDatabase = importedData;
+              saveDatabaseToStorage();
+              alert("Successfully imported hazard database!");
+              updateRouteOverlays();
+            } else {
+              alert("Invalid JSON format.");
+            }
+          } catch (err) {
+            alert("Error parsing JSON: " + err.message);
+          }
+          event.target.value = '';
+        };
+      }
+    }
+
+    function openAddModal() {
+      document.getElementById('addModal').style.display = 'flex';
+      const center = map.getCenter();
+      document.getElementById('spotLat').value = center.lat.toFixed(4);
+      document.getElementById('spotLon').value = center.lng.toFixed(4);
+    }
+
+    function closeAddModal() {
+      document.getElementById('addModal').style.display = 'none';
+    }
+
+    function useMapCenterForSpot() {
+      const center = map.getCenter();
+      document.getElementById('spotLat').value = center.lat.toFixed(4);
+      document.getElementById('spotLon').value = center.lng.toFixed(4);
+    }
+
+    function saveNewSpot() {
+      const cat = document.getElementById('spotCategory').value;
+      const name = document.getElementById('spotName').value.trim();
+      const lat = parseFloat(document.getElementById('spotLat').value);
+      const lon = parseFloat(document.getElementById('spotLon').value);
+      const desc = document.getElementById('spotDesc').value.trim();
+
+      if (!name || isNaN(lat) || isNaN(lon)) {
+        alert("Please provide a valid name, latitude, and longitude.");
+        return;
+      }
+
+      if (!regionalDatabase[cat]) regionalDatabase[cat] = [];
+      regionalDatabase[cat].push({ name, lat, lon, radius: 1000, desc: desc || "Custom user-added spot." });
+      saveDatabaseToStorage();
+      closeAddModal();
+      alert(`Successfully added "${name}"!`);
+      updateRouteOverlays();
+    }
+
+    function isNearRoute(lat, lon, maxDistMeters = 500000) {
+      if (!currentRouteCoords || currentRouteCoords.length === 0) return true;
+      const point = L.latLng(lat, lon);
+      const step = Math.max(1, Math.floor(currentRouteCoords.length / 50));
+      for (let i = 0; i < currentRouteCoords.length; i += step) {
+        const dist = point.distanceTo(L.latLng(currentRouteCoords[i][1], currentRouteCoords[i][0]));
+        if (dist <= maxDistMeters) return true;
+      }
+      return false;
+    }
+
+    function updateRouteOverlays() {
+      Object.keys(activeLayers).forEach(cat => {
+        activeLayers[cat].clearLayers();
+        const checkbox = document.getElementById(`cat_${cat}`);
+        
+        if (checkbox && checkbox.checked && regionalDatabase[cat]) {
+          const config = categoryConfigs[cat];
+          regionalDatabase[cat].forEach(item => {
+            if (isNearRoute(item.lat, item.lon, 500000)) {
+              const circle = L.circle([item.lat, item.lon], {
+                radius: (item.radius || 1000) * 3,
+                color: config.color,
+                weight: 2,
+                fillColor: config.color,
+                fillOpacity: 0.3
+              }).bindPopup(`<b>${config.label}: ${item.name}</b><br>${item.desc}`);
+
+              const marker = L.marker([item.lat, item.lon]).bindPopup(`<b>${config.label}: ${item.name}</b><br>${item.desc}`);
+              
+              activeLayers[cat].addLayer(circle);
+              activeLayers[cat].addLayer(marker);
+            }
+          });
+          if (!map.hasLayer(activeLayers[cat])) map.addLayer(activeLayers[cat]);
+        } else {
+          if (map.hasLayer(activeLayers[cat])) map.removeLayer(activeLayers[cat]);
+        }
+      });
+    }
+
+    map.on('click', async function(e) {
+      const { lat, lng } = e.latlng;
+      const coordStr = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      if (clickState === 0) {
+        setStart(lat, lng, coordStr);
+        document.getElementById('startInput').value = coordStr;
+        clickState = 1;
+      } else {
+        setDest(lat, lng, coordStr);
+        document.getElementById('destInput').value = coordStr;
+        clickState = 0;
+        await fetchAndDisplayRoadRoutes();
+      }
+    });
+
+    async function parseLocation(query) {
+      query = query.trim();
+      const coordMatch = query.match(/^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/);
+      if (coordMatch) {
+        return { lat: parseFloat(coordMatch[1]), lon: parseFloat(coordMatch[3]) };
+      }
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      if (data && data.length > 0) {
+        return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+      }
+      throw new Error(`Location not found: "${query}"`);
+    }
+
+    function setStart(lat, lon, label) {
+      if (startMarker) map.removeLayer(startMarker);
+      startMarker = L.marker([lat, lon]).addTo(map).bindPopup("Start: " + label);
+    }
+
+    function setDest(lat, lon, label) {
+      if (destMarker) map.removeLayer(destMarker);
+      destMarker = L.marker([lat, lon]).addTo(map).bindPopup("Destination: " + label);
+    }
+
+    async function calculateRoute() {
+      const startQuery = document.getElementById('startInput').value;
+      const destQuery = document.getElementById('destInput').value;
+
+      if (!startQuery || !destQuery) {
+        alert("Please enter both start and destination points.");
+        return;
+      }
+
+      try {
+        const sCoord = await parseLocation(startQuery);
+        setStart(sCoord.lat, sCoord.lon, startQuery);
+
+        const dCoord = await parseLocation(destQuery);
+        setDest(dCoord.lat, dCoord.lon, destQuery);
+
+        map.fitBounds([[sCoord.lat, sCoord.lon], [dCoord.lat, dCoord.lon]], { padding: [60, 60] });
+        await fetchAndDisplayRoadRoutes();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function fetchAndDisplayRoadRoutes() {
+      if (!startMarker || !destMarker) return;
+      const s = startMarker.getLatLng();
+      const d = destMarker.getLatLng();
+
+      try {
+        const driveRoute = await fetchOSRMRoute('driving', s, d);
+        const walkRoute = await fetchOSRMRoute('foot', s, d);
+
+        currentRouteCoords = driveRoute.geometry.coordinates;
+
+        document.getElementById('driveDist').textContent = (driveRoute.distance / 1000).toFixed(1) + ' km';
+        document.getElementById('driveTime').textContent = formatDuration(driveRoute.duration);
+
+        const walkDistMeters = walkRoute.distance;
+        document.getElementById('walkDist').textContent = (walkDistMeters / 1000).toFixed(1) + ' km';
+        const walkingSpeedMetersPerSec = 4.8 * 1000 / 3600;
+        document.getElementById('walkTime').textContent = formatDuration(walkDistMeters / walkingSpeedMetersPerSec);
+
+        if (routeLine) map.removeLayer(routeLine);
+        routeLine = L.geoJSON(driveRoute.geometry, {
+          style: { color: '#38BDF8', weight: 5, opacity: 0.85 }
+        }).addTo(map);
+
+        updateRouteOverlays();
+        await scanEnrouteAreasForRoute();
+
+      } catch (error) {
+        console.error("Routing error:", error);
+        alert("Could not fetch road network route between these points.");
+      }
+    }
+
+    async function fetchOSRMRoute(profile, start, dest) {
+      const url = `https://router.project-osrm.org/route/v1/${profile}/${start.lng},${start.lat};${dest.lng},${dest.lat}?overview=full&geometries=geojson`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.routes && data.routes.length > 0) {
+        return data.routes[0];
+      }
+      throw new Error("No path found");
+    }
+
+    function formatDuration(seconds) {
+      const hours = seconds / 3600;
+      if (hours < 1) {
+        return Math.max(1, Math.round(seconds / 60)) + 'm';
+      }
+      const hrs = Math.floor(hours);
+      const mins = Math.round((hours - hrs) * 60);
+      return `${hrs}h ${mins}m`;
+    }
+  </script>
+</body>
+</html>
