@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Smart Route Finder with Live OSM Landmarks</title>
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <style>
+    :root {
+      --bg-main: #0F172A;
+      --bg-card: #1E293B;
+      --accent-blue: #38BDF8;
+      --accent-dark: #0284C7;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border-color: rgba(56, 189, 248, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Control Hub */
+    header {
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .top-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .inputs-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+      max-width: 800px;
+    }
+
+    @media (min-width: 768px) {
+      .inputs-wrapper {
+        flex-direction: row;
+      }
+    }
+
+    .input-group {
+      display: flex;
+      flex: 1;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .input-group input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 0.55rem 0.75rem;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .input-group input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-dark));
+      color: var(--bg-main);
+      border: none;
+      padding: 0.55rem 1.25rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border-radius: 8px;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn-secondary {
+      background: var(--bg-main);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      padding: 0.4rem 0.75rem;
+      font-weight: 500;
+      font-size: 0.75rem;
+      cursor: pointer;
+      border-radius: 6px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      color: var(--text-main);
+      border-color: var(--accent-blue);
+    }
+
+    /* Top Metrics Dashboard Bar */
+    .metrics-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .metrics-bar {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+    }
+
+    .metric-badge {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.4rem 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    @media (min-width: 640px) {
+      .metric-badge {
+        flex: 1;
+      }
+    }
+
+    .metric-title {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .metric-val {
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    /* Checkbox Controls Bar */
+    .checkbox-bar {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.78rem;
+      color: var(--text-main);
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+    }
+
+    .checkbox-item input {
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+
+    .hint-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    @media (min-width: 768px) {
+      .hint-text {
+        text-align: right;
+      }
+    }
+
+    /* Custom Map Label Badges */
+    .map-label-badge {
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #F8FAFC;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      pointer-events: auto;
+    }
+
+    /* Fullscreen Map Area */
+    #map {
+      flex: 1;
+      width: 100%;
+      background-color: #1e293b;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation & Control Panel -->
+  <header>
+    <div class="top-row">
+      <h1>🗺️ Smart Route Finder with Live OSM Landmarks</h1>
+      <span class="hint-text">💡 Tap map twice (Start ➔ Dest) or type names/coords</span>
+    </div>
+
+    <div class="top-row" style="gap: 0.5rem;">
+      <div class="inputs-wrapper">
+        <div class="input-group">
+          <input type="text" id="startInput" placeholder="Start (e.g., Shahad or 19.24, 73.15)" />
+        </div>
+        <div class="input-group">
+          <input type="text" id="destInput" placeholder="Destination (e.g., Thane or 19.21, 72.97)" />
+        </div>
+      </div>
+      <button class="btn" onclick="calculateRoute()">Calculate</button>
+    </div>
+
+    <!-- Metrics & Checkbox POI Filters Bar -->
+    <div class="top-row" style="align-items: center; gap: 1rem;">
+      <div class="metrics-bar" style="flex: 1;">
+        <div class="metric-badge">
+          <span class="metric-title">🚶 Walking</span>
+          <span><b id="walkDist" class="metric-val">-</b> (<span id="walkTime" class="metric-val">-</span>)</span>
+        </div>
+        <div class="metric-badge">
+          <span class="metric-title">🚗 Driving</span>
+          <span><b id="driveDist" class="metric-val">-</b> (<span id="driveTime" class="metric-val">-</span>)</span>
+        </div>
+      </div>
+      
+      <div class="checkbox-bar">
+        <label class="checkbox-item">
+          <input type="checkbox" id="chkTemples" checked onchange="togglePoiLayer('temples')">
+          <span style="color: #F97316;">🛕 Temples</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" id="chkResorts" checked onchange="togglePoiLayer('resorts')">
+          <span style="color: #10B981;">🏨 Branded Hotels</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" id="chkHospitals" checked onchange="togglePoiLayer('hospitals')">
+          <span style="color: #EF4444;">🏥 Hospitals</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" id="chkMedicals" checked onchange="togglePoiLayer('medicals')">
+          <span style="color: #06B6D4;">💊 Apollo/Wellness</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" id="chkTourist" checked onchange="togglePoiLayer('tourist')">
+          <span style="color: #8B5CF6;">🏖️ Tourist Places</span>
+        </label>
+        <button class="btn-secondary" onclick="toggleAllCheckboxes()">Toggle All</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Interactive Map Container -->
+  <div id="map"></div>
+
+  <!-- Leaflet JS Library -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <script>
+    // Initialize Leaflet Map centered around Mumbai/Thane/Kalyan region
+    const map = L.map('map', { zoomControl: false }).setView([19.2183, 73.0858], 12);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    // OpenStreetMap Tile Layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let startMarker = null;
+    let destMarker = null;
+    let routeLine = null;
+    let clickState = 0; 
+
+    // Dedicated Layer Groups for Live OSM POIs
+    const templesLayer = L.layerGroup().addTo(map);
+    const resortsLayer = L.layerGroup().addTo(map);
+    const hospitalsLayer = L.layerGroup().addTo(map);
+    const medicalsLayer = L.layerGroup().addTo(map);
+    const touristLayer = L.layerGroup().addTo(map);
+
+    // Handle map clicks for easy point selection
+    map.on('click', async function(e) {
+      const { lat, lng } = e.latlng;
+      const coordStr = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      if (clickState === 0) {
+        setStart(lat, lng, coordStr);
+        document.getElementById('startInput').value = coordStr;
+        clickState = 1;
+      } else {
+        setDest(lat, lng, coordStr);
+        document.getElementById('destInput').value = coordStr;
+        clickState = 0;
+        await fetchAndDisplayRouteAndPOIs();
+      }
+    });
+
+    async function parseLocation(query) {
+      query = query.trim();
+      const coordMatch = query.match(/^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/);
+      if (coordMatch) {
+        return { lat: parseFloat(coordMatch[1]), lon: parseFloat(coordMatch[3]) };
+      }
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      if (data && data.length > 0) {
+        return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+      }
+      throw new Error(`Location not found: "${query}"`);
+    }
+
+    function setStart(lat, lon, label) {
+      if (startMarker) map.removeLayer(startMarker);
+      startMarker = L.marker([lat, lon]).addTo(map).bindPopup("Start: " + label);
+    }
+
+    function setDest(lat, lon, label) {
+      if (destMarker) map.removeLayer(destMarker);
+      destMarker = L.marker([lat, lon]).addTo(map).bindPopup("Destination: " + label);
+    }
+
+    async function calculateRoute() {
+      const startQuery = document.getElementById('startInput').value;
+      const destQuery = document.getElementById('destInput').value;
+
+      if (!startQuery || !destQuery) {
+        alert("Please enter or select both start and destination points.");
+        return;
+      }
+
+      try {
+        const sCoord = await parseLocation(startQuery);
+        setStart(sCoord.lat, sCoord.lon, startQuery);
+
+        const dCoord = await parseLocation(destQuery);
+        setDest(dCoord.lat, dCoord.lon, destQuery);
+
+        map.fitBounds([[sCoord.lat, sCoord.lon], [dCoord.lat, dCoord.lon]], { padding: [60, 60] });
+        await fetchAndDisplayRouteAndPOIs();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function fetchAndDisplayRouteAndPOIs() {
+      if (!startMarker || !destMarker) return;
+      const s = startMarker.getLatLng();
+      const d = destMarker.getLatLng();
+
+      try {
+        const driveRoute = await fetchOSRMRoute('driving', s, d);
+        const walkRoute = await fetchOSRMRoute('foot', s, d);
+
+        // Update Driving UI
+        document.getElementById('driveDist').textContent = (driveRoute.distance / 1000).toFixed(1) + ' km';
+        document.getElementById('driveTime').textContent = formatDuration(driveRoute.duration);
+
+        // Update Walking UI
+        const walkDistMeters = walkRoute.distance;
+        document.getElementById('walkDist').textContent = (walkDistMeters / 1000).toFixed(1) + ' km';
+        const walkingSpeedMetersPerSec = 4.8 * 1000 / 3600; 
+        const calculatedWalkSeconds = walkDistMeters / walkingSpeedMetersPerSec;
+        document.getElementById('walkTime').textContent = formatDuration(calculatedWalkSeconds);
+
+        // Draw Driving Route Line
+        if (routeLine) map.removeLayer(routeLine);
+        routeLine = L.geoJSON(driveRoute.geometry, {
+          style: { color: '#38BDF8', weight: 5, opacity: 0.85 }
+        }).addTo(map);
+
+        // Fetch Real Live POIs along route bounding box from OpenStreetMap Overpass API
+        const south = Math.min(s.lat, d.lat) - 0.03;
+        const north = Math.max(s.lat, d.lat) + 0.03;
+        const west = Math.min(s.lng, d.lng) - 0.03;
+        const east = Math.max(s.lng, d.lng) + 0.03;
+
+        await fetchLiveOSMPOIs(south, west, north, east);
+
+      } catch (error) {
+        console.error("Routing / POI error:", error);
+        alert("Could not fetch route network data or live landmarks.");
+      }
+    }
+
+    async function fetchLiveOSMPOIs(south, west, north, east) {
+      // Clear previous markers
+      templesLayer.clearLayers();
+      resortsLayer.clearLayers();
+      hospitalsLayer.clearLayers();
+      medicalsLayer.clearLayers();
+      touristLayer.clearLayers();
+
+      const query = `
+        [out:json][timeout:25];
+        (
+          node["amenity"="place_of_worship"](${south},${west},${north},${east});
+          way["amenity"="place_of_worship"](${south},${west},${north},${east});
+          node["tourism"~"hotel|resort"](${south},${west},${north},${east});
+          way["tourism"~"hotel|resort"](${south},${west},${north},${east});
+          node["amenity"="hospital"](${south},${west},${north},${east});
+          way["amenity"="hospital"](${south},${west},${north},${east});
+          node["amenity"="pharmacy"](${south},${west},${north},${east});
+          way["amenity"="pharmacy"](${south},${west},${north},${east});
+          node["shop"="chemist"](${south},${west},${north},${east});
+          way["shop"="chemist"](${south},${west},${north},${east});
+          node["tourism"="attraction"](${south},${west},${north},${east});
+          way["tourism"="attraction"](${south},${west},${north},${east});
+        );
+        out center;
+      `;
+
+      try {
+        const response = await fetch('https://overpass-api.de/api/interpreter', {
+          method: 'POST',
+          body: query
+        });
+        const data = await response.json();
+        
+        if (data && data.elements) {
+          data.elements.forEach(el => {
+            const lat = el.lat || (el.center && el.center.lat);
+            const lon = el.lon || (el.center && el.center.lon);
+            if (!lat || !lon) return;
+
+            const tags = el.tags || {};
+            const name = tags.name || tags['name:en'] || tags['name:hi'] || '';
+            const brand = tags.brand || tags.operator || '';
+            const combinedText = (name + ' ' + brand).toLowerCase();
+
+            // Categorize based on strict user preference criteria
+            if (tags.amenity === 'place_of_worship') {
+              const displayName = name || 'Temple';
+              addPoiMarker(templesLayer, lat, lon, `🛕 ${displayName}`, '#F97316', `<b>${displayName}</b><br>Place of Worship`);
+            } 
+            else if (['hotel', 'resort'].includes(tags.tourism)) {
+              // Branded hotels or hotels with star ratings >= 2 or recognized hotel chains
+              const isBrandedOrRated = tags.stars || 
+                ['taj', 'marriott', 'hyatt', 'hilton', 'radisson', 'oberoi', 'lemon tree', 'vivanta', 'ibis', 'fabhotels', 'oyo', 'treebo', 'regency', 'residency', 'pride', 'fortune', 'sarovar', 'ginger'].some(b => combinedText.includes(b));
+              
+              if (isBrandedOrRated && name) {
+                addPoiMarker(resortsLayer, lat, lon, `🏨 ${name}`, '#10B981', `<b>${name}</b><br>Hotel / Resort`);
+              }
+            } 
+            else if (tags.amenity === 'hospital') {
+              const displayName = name || 'Hospital';
+              addPoiMarker(hospitalsLayer, lat, lon, `🏥 ${displayName}`, '#EF4444', `<b>${displayName}</b><br>Hospital / Medical Center`);
+            } 
+            else if (tags.amenity === 'pharmacy' || tags.shop === 'chemist') {
+              // Filter strictly for major brand chain medicine providers like Apollo, Wellness Forever, etc.
+              const isChainPharmacy = ['apollo', 'wellness', 'netmeds', 'medplus', 'guardian', 'noble', 'zota', 'wellness forever'].some(b => combinedText.includes(b));
+              
+              if (isChainPharmacy && name) {
+                addPoiMarker(medicalsLayer, lat, lon, `💊 ${name}`, '#06B6D4', `<b>${name}</b><br>Pharmacy Chain`);
+              }
+            } 
+            else if (tags.tourism === 'attraction') {
+              const displayName = name || 'Tourist Attraction';
+              addPoiMarker(touristLayer, lat, lon, `🏖️ ${displayName}`, '#8B5CF6', `<b>${displayName}</b><br>Tourist Attraction`);
+            }
+          });
+        }
+        
+        // Re-apply checkbox visibility sync after loading
+        syncAllLayerVisibilities();
+
+      } catch (err) {
+        console.warn("Overpass API request failed or timed out:", err);
+      }
+    }
+
+    function addPoiMarker(layerGroup, lat, lon, labelText, borderColor, popupHtml) {
+      const markerHtml = `<div class="map-label-badge" style="border-color: ${borderColor};">${labelText}</div>`;
+      const customIcon = L.divIcon({
+        className: 'custom-div-icon',
+        html: markerHtml,
+        iconSize: [140, 30],
+        iconAnchor: [70, 15]
+      });
+      const marker = L.marker([lat, lon], { icon: customIcon }).bindPopup(popupHtml);
+      layerGroup.addLayer(marker);
+    }
+
+    function togglePoiLayer(type) {
+      if (type === 'temples') {
+        if (document.getElementById('chkTemples').checked) map.addLayer(templesLayer);
+        else map.removeLayer(templesLayer);
+      } else if (type === 'resorts') {
+        if (document.getElementById('chkResorts').checked) map.addLayer(resortsLayer);
+        else map.removeLayer(resortsLayer);
+      } else if (type === 'hospitals') {
+        if (document.getElementById('chkHospitals').checked) map.addLayer(hospitalsLayer);
+        else map.removeLayer(hospitalsLayer);
+      } else if (type === 'medicals') {
+        if (document.getElementById('chkMedicals').checked) map.addLayer(medicalsLayer);
+        else map.removeLayer(medicalsLayer);
+      } else if (type === 'tourist') {
+        if (document.getElementById('chkTourist').checked) map.addLayer(touristLayer);
+        else map.removeLayer(touristLayer);
+      }
+    }
+
+    function syncAllLayerVisibilities() {
+      togglePoiLayer('temples');
+      togglePoiLayer('resorts');
+      togglePoiLayer('hospitals');
+      togglePoiLayer('medicals');
+      togglePoiLayer('tourist');
+    }
+
+    let allCheckedState = true;
+    function toggleAllCheckboxes() {
+      allCheckedState = !allCheckedState;
+      const checkboxes = ['chkTemples', 'chkResorts', 'chkHospitals', 'chkMedicals', 'chkTourist'];
+      checkboxes.forEach(id => {
+        const el = document.getElementById(id);
+        el.checked = allCheckedState;
+        el.dispatchEvent(new Event('change'));
+      });
+    }
+
+    async function fetchOSRMRoute(profile, start, dest) {
+      const url = `https://router.project-osrm.org/route/v1/${profile}/${start.lng},${start.lat};${dest.lng},${dest.lat}?overview=full&geometries=geojson`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.routes && data.routes.length > 0) {
+        return data.routes[0];
+      }
+      throw new Error("No path found");
+    }
+
+    function formatDuration(seconds) {
+      const hours = seconds / 3600;
+      if (hours < 1) {
+        return Math.min(Math.max(1, Math.round(seconds / 60)), 59) + 'm';
+      }
+      const hrs = Math.floor(hours);
+      const mins = Math.round((hours - hrs) * 60);
+      return `${hrs}h ${mins}m`;
+    }
+  </script>
+</body>
+</html>
