@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Leaflet Smart Route Finder with Multiple Hazard Detection</title>
+  <title>Leaflet Smart Route Finder with Multi-Hazard & Haunted Detection</title>
   
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -119,6 +119,24 @@
       opacity: 0.9;
     }
 
+    .btn-secondary {
+      background: var(--bg-main);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      padding: 0.4rem 0.75rem;
+      font-weight: 500;
+      font-size: 0.75rem;
+      cursor: pointer;
+      border-radius: 6px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      color: var(--text-main);
+      border-color: var(--accent-blue);
+    }
+
     /* Top Metrics Dashboard Bar */
     .metrics-bar {
       display: grid;
@@ -226,7 +244,7 @@
   <!-- Top Navigation & Control Panel -->
   <header>
     <div class="top-row">
-      <h1>🗺️ Smart Route Finder with Multi-Hazard Detection</h1>
+      <h1>🗺️ Smart Route Finder with Multi-Hazard & Haunted Detection</h1>
       <span class="hint-text">💡 Tap map twice (Start ➔ Dest) or type names/coords</span>
     </div>
 
@@ -258,11 +276,15 @@
       <div class="checkbox-bar">
         <label class="checkbox-item">
           <input type="checkbox" id="chkAccident" checked onchange="toggleOverlayLayer('accident'); evaluateRouteSafety()">
-          <span style="color: #EF4444;">⚠️ Accident Zones</span>
+          <span style="color: #EF4444;">⚠️ Accident</span>
         </label>
         <label class="checkbox-item">
           <input type="checkbox" id="chkNight" checked onchange="toggleOverlayLayer('night'); evaluateRouteSafety()">
-          <span style="color: #A855F7;">🌙 Avoid Night Risk</span>
+          <span style="color: #A855F7;">🌙 Night Risk</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" id="chkHaunted" checked onchange="toggleOverlayLayer('haunted'); evaluateRouteSafety()">
+          <span style="color: #CBD5E1;">👻 Haunted</span>
         </label>
         <label class="checkbox-item">
           <input type="checkbox" id="chkMountains" checked onchange="toggleOverlayLayer('mountains')">
@@ -276,12 +298,13 @@
           <input type="checkbox" id="chkRiver" checked onchange="toggleOverlayLayer('river')">
           <span style="color: #38BDF8;">🌊 River</span>
         </label>
+        <button class="btn-secondary" onclick="toggleAllCheckboxes()">Toggle All</button>
       </div>
     </div>
 
     <!-- Dynamic Hazard Alert Banner -->
     <div id="hazardWarning" class="warning-banner">
-      <span>⚠️ <b>Route Hazard Warning:</b> Your calculated route passes through or near high-risk accident or night hazard zones. Drive with caution.</span>
+      <span>⚠️ <b>Route Hazard Warning:</b> Your calculated route passes through or near high-risk accident, night hazard, or paranormal/haunted zones. Proceed with caution.</span>
     </div>
   </header>
 
@@ -307,11 +330,12 @@
     let routeLine = null;
     let clickState = 0; 
     let currentRouteCoords = null;
-    let activeHazardZones = { accidents: [], night: null };
+    let activeHazardZones = { accidents: [], night: null, haunted: [] };
 
     // Dedicated Layer Groups for Toggling Overlays
     const accidentLayer = L.layerGroup().addTo(map);
     const nightLayer = L.layerGroup().addTo(map);
+    const hauntedLayer = L.layerGroup().addTo(map);
     const mountainsLayer = L.layerGroup().addTo(map);
     const ghatLayer = L.layerGroup().addTo(map);
     const riverLayer = L.layerGroup().addTo(map);
@@ -427,22 +451,23 @@
     function renderContextualOverlays(start, dest) {
       accidentLayer.clearLayers();
       nightLayer.clearLayers();
+      hauntedLayer.clearLayers();
       mountainsLayer.clearLayers();
       ghatLayer.clearLayers();
       riverLayer.clearLayers();
 
       activeHazardZones.accidents = [];
+      activeHazardZones.haunted = [];
 
       const midLat = (start.lat + dest.lat) / 2;
       const midLng = (start.lng + dest.lng) / 2;
       const latOffset = Math.abs(dest.lat - start.lat) * 0.25 || 0.02;
       const lngOffset = Math.abs(dest.lng - start.lng) * 0.25 || 0.02;
 
-      // 1. Generate Multiple Accident-Prone Zones (Transparent Red Circles) along the route corridor
+      // 1. Generate Multiple Accident-Prone Zones (Transparent Red Circles)
       const numAccidentZones = 4;
       for (let i = 1; i <= numAccidentZones; i++) {
         const t = i / (numAccidentZones + 1);
-        // Position them staggered along the route line with alternating orthogonal shifts
         const zoneLat = start.lat + (dest.lat - start.lat) * t + (i % 2 === 0 ? latOffset * 0.4 : -latOffset * 0.3);
         const zoneLng = start.lng + (dest.lng - start.lng) * t + (i % 2 === 0 ? -lngOffset * 0.4 : lngOffset * 0.3);
         const radiusMeters = 800 + (i * 150) % 500;
@@ -474,7 +499,33 @@
       nightLayer.addLayer(nightZone);
       activeHazardZones.night = nightPolygonCoords;
 
-      // 3. Mountains Section (Transparent Yellow)
+      // 3. Generate Comprehensive Haunted Regions (Transparent Black Polygons)
+      const numHauntedZones = 3;
+      for (let i = 1; i <= numHauntedZones; i++) {
+        const factorLat = (i === 1) ? 0.3 : (i === 2) ? -0.5 : 0.2;
+        const factorLng = (i === 1) ? -0.4 : (i === 2) ? 0.4 : 0.7;
+        const hLat = midLat + (latOffset * factorLat);
+        const hLng = midLng + (lngOffset * factorLng);
+        
+        const hauntedPolygonCoords = [
+          [hLat - latOffset * 0.25, hLng - lngOffset * 0.25],
+          [hLat + latOffset * 0.15, hLng - lngOffset * 0.35],
+          [hLat + latOffset * 0.3,  hLng + lngOffset * 0.15],
+          [hLat - latOffset * 0.1,  hLng + lngOffset * 0.3]
+        ];
+
+        const hauntedZone = L.polygon(hauntedPolygonCoords, {
+          color: '#000000',
+          fillColor: '#000000',
+          fillOpacity: 0.55,
+          weight: 1.5
+        }).bindPopup(`👻 Haunted / Paranormal Activity Zone #${i}`);
+
+        hauntedLayer.addLayer(hauntedZone);
+        activeHazardZones.haunted.push(hauntedPolygonCoords);
+      }
+
+      // 4. Mountains Section (Transparent Yellow)
       const mountainZone = L.polygon([
         [midLat + latOffset, midLng + lngOffset * 0.5],
         [midLat + latOffset * 1.5, midLng + lngOffset * 1.2],
@@ -487,7 +538,7 @@
       }).bindPopup("⛰️ Mountainous Terrain Section");
       mountainsLayer.addLayer(mountainZone);
 
-      // 4. Ghat Section (Transparent Orange)
+      // 5. Ghat Section (Transparent Orange)
       const ghatZone = L.polygon([
         [midLat - latOffset * 0.2, midLng - lngOffset * 0.2],
         [midLat, midLng + lngOffset * 0.3],
@@ -501,7 +552,7 @@
       }).bindPopup("🛣️ Steep Ghat / Winding Pass Section");
       ghatLayer.addLayer(ghatZone);
 
-      // 5. River Section (Transparent Blue)
+      // 6. River Section (Transparent Blue)
       const riverZone = L.polyline([
         [midLat - latOffset * 0.8, midLng - lngOffset * 0.5],
         [midLat + latOffset * 0.8, midLng + lngOffset * 0.5]
@@ -547,6 +598,7 @@
     function evaluateRouteSafety() {
       const checkAccident = document.getElementById('chkAccident').checked;
       const checkNight = document.getElementById('chkNight').checked;
+      const checkHaunted = document.getElementById('chkHaunted').checked;
       const warningBanner = document.getElementById('hazardWarning');
 
       if (!currentRouteCoords) {
@@ -579,10 +631,20 @@
           }
         }
 
+        // 3. Check Haunted Polygon Intersection
+        if (checkHaunted && activeHazardZones.haunted) {
+          for (let polygon of activeHazardZones.haunted) {
+            if (isPointInPolygon([lat, lon], polygon)) {
+              intersectsHazard = true;
+              break;
+            }
+          }
+        }
+
         if (intersectsHazard) break;
       }
 
-      if (intersectsHazard && (checkAccident || checkNight)) {
+      if (intersectsHazard && (checkAccident || checkNight || checkHaunted)) {
         warningBanner.style.display = 'flex';
         if (routeLine) {
           routeLine.setStyle({ color: '#EF4444', dashArray: '6, 6' });
@@ -608,6 +670,12 @@
         } else {
           map.removeLayer(nightLayer);
         }
+      } else if (type === 'haunted') {
+        if (document.getElementById('chkHaunted').checked) {
+          map.addLayer(hauntedLayer);
+        } else {
+          map.removeLayer(hauntedLayer);
+        }
       } else if (type === 'mountains') {
         if (document.getElementById('chkMountains').checked) {
           map.addLayer(mountainsLayer);
@@ -627,6 +695,17 @@
           map.removeLayer(riverLayer);
         }
       }
+    }
+
+    let allCheckedState = true;
+    function toggleAllCheckboxes() {
+      allCheckedState = !allCheckedState;
+      const checkboxes = ['chkAccident', 'chkNight', 'chkHaunted', 'chkMountains', 'chkGhat', 'chkRiver'];
+      checkboxes.forEach(id => {
+        const el = document.getElementById(id);
+        el.checked = allCheckedState;
+        el.dispatchEvent(new Event('change'));
+      });
     }
 
     async function fetchOSRMRoute(profile, start, dest) {
