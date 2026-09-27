@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Leaflet Smart Route Finder with Multiple Hazard Detection</title>
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <style>
+    :root {
+      --bg-main: #0F172A;
+      --bg-card: #1E293B;
+      --accent-blue: #38BDF8;
+      --accent-dark: #0284C7;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border-color: rgba(56, 189, 248, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Control Hub */
+    header {
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .top-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .inputs-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+      max-width: 800px;
+    }
+
+    @media (min-width: 768px) {
+      .inputs-wrapper {
+        flex-direction: row;
+      }
+    }
+
+    .input-group {
+      display: flex;
+      flex: 1;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .input-group input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 0.55rem 0.75rem;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .input-group input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-dark));
+      color: var(--bg-main);
+      border: none;
+      padding: 0.55rem 1.25rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border-radius: 8px;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Top Metrics Dashboard Bar */
+    .metrics-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .metrics-bar {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+    }
+
+    .metric-badge {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.4rem 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    @media (min-width: 640px) {
+      .metric-badge {
+        flex: 1;
+      }
+    }
+
+    .metric-title {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .metric-val {
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    /* Checkbox Controls Bar */
+    .checkbox-bar {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.78rem;
+      color: var(--text-main);
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+    }
+
+    .checkbox-item input {
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+
+    .warning-banner {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid #EF4444;
+      color: #FCA5A5;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .hint-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    @media (min-width: 768px) {
+      .hint-text {
+        text-align: right;
+      }
+    }
+
+    /* Fullscreen Map Area */
+    #map {
+      flex: 1;
+      width: 100%;
+      background-color: #1e293b;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation & Control Panel -->
+  <header>
+    <div class="top-row">
+      <h1>🗺️ Smart Route Finder with Multi-Hazard Detection</h1>
+      <span class="hint-text">💡 Tap map twice (Start ➔ Dest) or type names/coords</span>
+    </div>
+
+    <div class="top-row" style="gap: 0.5rem;">
+      <div class="inputs-wrapper">
+        <div class="input-group">
+          <input type="text" id="startInput" placeholder="Start (Name or Lat, Lon e.g. 19.2, 73.0)" />
+        </div>
+        <div class="input-group">
+          <input type="text" id="destInput" placeholder="Destination (Name or Lat, Lon e.g. 19.4, 72.8)" />
+        </div>
+      </div>
+      <button class="btn" onclick="calculateRoute()">Calculate</button>
+    </div>
+
+    <!-- Metrics & Checkbox Filters Bar -->
+    <div class="top-row" style="align-items: center; gap: 1rem;">
+      <div class="metrics-bar" style="flex: 1;">
+        <div class="metric-badge">
+          <span class="metric-title">🚶 Walking</span>
+          <span><b id="walkDist" class="metric-val">-</b> (<span id="walkTime" class="metric-val">-</span>)</span>
+        </div>
+        <div class="metric-badge">
+          <span class="metric-title">🚗 Driving</span>
+          <span><b id="driveDist" class="metric-val">-</b> (<span id="driveTime" class="metric-val">-</span>)</span>
+        </div>
+      </div>
+      
+      <div class="checkbox-bar">
+        <label class="checkbox-item">
+          <input type="checkbox" id="chkAccident" checked onchange="toggleOverlayLayer('accident'); evaluateRouteSafety()">
+          <span style="color: #EF4444;">⚠️ Accident Zones</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" id="chkNight" checked onchange="toggleOverlayLayer('night'); evaluateRouteSafety()">
+          <span style="color: #A855F7;">🌙 Avoid Night Risk</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" id="chkMountains" checked onchange="toggleOverlayLayer('mountains')">
+          <span style="color: #EAB308;">⛰️ Mountains</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" id="chkGhat" checked onchange="toggleOverlayLayer('ghat')">
+          <span style="color: #F97316;">🛣️ Ghat</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" id="chkRiver" checked onchange="toggleOverlayLayer('river')">
+          <span style="color: #38BDF8;">🌊 River</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Dynamic Hazard Alert Banner -->
+    <div id="hazardWarning" class="warning-banner">
+      <span>⚠️ <b>Route Hazard Warning:</b> Your calculated route passes through or near high-risk accident or night hazard zones. Drive with caution.</span>
+    </div>
+  </header>
+
+  <!-- Interactive Map Container -->
+  <div id="map"></div>
+
+  <!-- Leaflet JS Library -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <script>
+    // Initialize Leaflet Map centered around Mumbai region
+    const map = L.map('map', { zoomControl: false }).setView([19.2183, 73.0858], 11);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    // OpenStreetMap Tile Layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let startMarker = null;
+    let destMarker = null;
+    let routeLine = null;
+    let clickState = 0; 
+    let currentRouteCoords = null;
+    let activeHazardZones = { accidents: [], night: null };
+
+    // Dedicated Layer Groups for Toggling Overlays
+    const accidentLayer = L.layerGroup().addTo(map);
+    const nightLayer = L.layerGroup().addTo(map);
+    const mountainsLayer = L.layerGroup().addTo(map);
+    const ghatLayer = L.layerGroup().addTo(map);
+    const riverLayer = L.layerGroup().addTo(map);
+
+    // Handle map clicks for easy point selection
+    map.on('click', async function(e) {
+      const { lat, lng } = e.latlng;
+      const coordStr = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      if (clickState === 0) {
+        setStart(lat, lng, coordStr);
+        document.getElementById('startInput').value = coordStr;
+        clickState = 1;
+      } else {
+        setDest(lat, lng, coordStr);
+        document.getElementById('destInput').value = coordStr;
+        clickState = 0;
+        await fetchAndDisplayRoadRoutes();
+      }
+    });
+
+    async function parseLocation(query) {
+      query = query.trim();
+      const coordMatch = query.match(/^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/);
+      if (coordMatch) {
+        return { lat: parseFloat(coordMatch[1]), lon: parseFloat(coordMatch[3]) };
+      }
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      if (data && data.length > 0) {
+        return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+      }
+      throw new Error(`Location not found: "${query}"`);
+    }
+
+    function setStart(lat, lon, label) {
+      if (startMarker) map.removeLayer(startMarker);
+      startMarker = L.marker([lat, lon]).addTo(map).bindPopup("Start: " + label);
+    }
+
+    function setDest(lat, lon, label) {
+      if (destMarker) map.removeLayer(destMarker);
+      destMarker = L.marker([lat, lon]).addTo(map).bindPopup("Destination: " + label);
+    }
+
+    async function calculateRoute() {
+      const startQuery = document.getElementById('startInput').value;
+      const destQuery = document.getElementById('destInput').value;
+
+      if (!startQuery || !destQuery) {
+        alert("Please enter or select both start and destination points.");
+        return;
+      }
+
+      try {
+        const sCoord = await parseLocation(startQuery);
+        setStart(sCoord.lat, sCoord.lon, startQuery);
+
+        const dCoord = await parseLocation(destQuery);
+        setDest(dCoord.lat, dCoord.lon, destQuery);
+
+        map.fitBounds([[sCoord.lat, sCoord.lon], [dCoord.lat, dCoord.lon]], { padding: [60, 60] });
+        await fetchAndDisplayRoadRoutes();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function fetchAndDisplayRoadRoutes() {
+      if (!startMarker || !destMarker) return;
+      const s = startMarker.getLatLng();
+      const d = destMarker.getLatLng();
+
+      try {
+        const driveRoute = await fetchOSRMRoute('driving', s, d);
+        const walkRoute = await fetchOSRMRoute('foot', s, d);
+
+        // Store route coordinates globally for safety checks
+        currentRouteCoords = driveRoute.geometry.coordinates;
+
+        // Update Driving UI
+        document.getElementById('driveDist').textContent = (driveRoute.distance / 1000).toFixed(1) + ' km';
+        document.getElementById('driveTime').textContent = formatDuration(driveRoute.duration);
+
+        // Update Walking UI
+        const walkDistMeters = walkRoute.distance;
+        document.getElementById('walkDist').textContent = (walkDistMeters / 1000).toFixed(1) + ' km';
+        const walkingSpeedMetersPerSec = 4.8 * 1000 / 3600; 
+        const calculatedWalkSeconds = walkDistMeters / walkingSpeedMetersPerSec;
+        document.getElementById('walkTime').textContent = formatDuration(calculatedWalkSeconds);
+
+        // Render Contextual Overlay Zones along the route corridor
+        renderContextualOverlays(s, d);
+
+        // Draw Driving Route Line
+        if (routeLine) map.removeLayer(routeLine);
+        routeLine = L.geoJSON(driveRoute.geometry, {
+          style: {
+            color: '#38BDF8',
+            weight: 5,
+            opacity: 0.85
+          }
+        }).addTo(map);
+
+        // Evaluate whether the route intersects any hazard zone
+        evaluateRouteSafety();
+
+      } catch (error) {
+        console.error("Routing error:", error);
+        alert("Could not fetch route network data between these points.");
+      }
+    }
+
+    function renderContextualOverlays(start, dest) {
+      accidentLayer.clearLayers();
+      nightLayer.clearLayers();
+      mountainsLayer.clearLayers();
+      ghatLayer.clearLayers();
+      riverLayer.clearLayers();
+
+      activeHazardZones.accidents = [];
+
+      const midLat = (start.lat + dest.lat) / 2;
+      const midLng = (start.lng + dest.lng) / 2;
+      const latOffset = Math.abs(dest.lat - start.lat) * 0.25 || 0.02;
+      const lngOffset = Math.abs(dest.lng - start.lng) * 0.25 || 0.02;
+
+      // 1. Generate Multiple Accident-Prone Zones (Transparent Red Circles) along the route corridor
+      const numAccidentZones = 4;
+      for (let i = 1; i <= numAccidentZones; i++) {
+        const t = i / (numAccidentZones + 1);
+        // Position them staggered along the route line with alternating orthogonal shifts
+        const zoneLat = start.lat + (dest.lat - start.lat) * t + (i % 2 === 0 ? latOffset * 0.4 : -latOffset * 0.3);
+        const zoneLng = start.lng + (dest.lng - start.lng) * t + (i % 2 === 0 ? -lngOffset * 0.4 : lngOffset * 0.3);
+        const radiusMeters = 800 + (i * 150) % 500;
+
+        const accidentZone = L.circle([zoneLat, zoneLng], {
+          color: '#EF4444',
+          fillColor: '#EF4444',
+          fillOpacity: 0.35,
+          radius: radiusMeters,
+          weight: 1.5
+        }).bindPopup(`⚠️ High Accident-Prone Zone #${i}`);
+        
+        accidentLayer.addLayer(accidentZone);
+        activeHazardZones.accidents.push({ center: [zoneLat, zoneLng], radius: radiusMeters });
+      }
+
+      // 2. Low Population / Hard Road Night Risk Zone (Polygon)
+      const nightPolygonCoords = [
+        [midLat - latOffset * 0.4, midLng + lngOffset * 0.2],
+        [midLat - latOffset * 0.8, midLng + lngOffset * 0.8],
+        [midLat - latOffset * 0.2, midLng + lngOffset * 1.0]
+      ];
+      const nightZone = L.polygon(nightPolygonCoords, {
+        color: '#A855F7',
+        fillColor: '#A855F7',
+        fillOpacity: 0.4,
+        weight: 1.5
+      }).bindPopup("🌙 Low Population & Rough Road Night Hazard Zone");
+      nightLayer.addLayer(nightZone);
+      activeHazardZones.night = nightPolygonCoords;
+
+      // 3. Mountains Section (Transparent Yellow)
+      const mountainZone = L.polygon([
+        [midLat + latOffset, midLng + lngOffset * 0.5],
+        [midLat + latOffset * 1.5, midLng + lngOffset * 1.2],
+        [midLat + latOffset * 0.5, midLng + lngOffset * 1.5]
+      ], {
+        color: '#EAB308',
+        fillColor: '#EAB308',
+        fillOpacity: 0.35,
+        weight: 1.5
+      }).bindPopup("⛰️ Mountainous Terrain Section");
+      mountainsLayer.addLayer(mountainZone);
+
+      // 4. Ghat Section (Transparent Orange)
+      const ghatZone = L.polygon([
+        [midLat - latOffset * 0.2, midLng - lngOffset * 0.2],
+        [midLat, midLng + lngOffset * 0.3],
+        [midLat + latOffset * 0.1, midLng + lngOffset * 0.2],
+        [midLat - latOffset * 0.3, midLng - lngOffset * 0.1]
+      ], {
+        color: '#F97316',
+        fillColor: '#F97316',
+        fillOpacity: 0.4,
+        weight: 1.5
+      }).bindPopup("🛣️ Steep Ghat / Winding Pass Section");
+      ghatLayer.addLayer(ghatZone);
+
+      // 5. River Section (Transparent Blue)
+      const riverZone = L.polyline([
+        [midLat - latOffset * 0.8, midLng - lngOffset * 0.5],
+        [midLat + latOffset * 0.8, midLng + lngOffset * 0.5]
+      ], {
+        color: '#38BDF8',
+        weight: 22,
+        opacity: 0.4
+      }).bindPopup("🌊 River Crossing / Water Body Section");
+      riverLayer.addLayer(riverZone);
+    }
+
+    // Helper: Calculate distance in meters between two lat/lng points (Haversine Formula)
+    function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const dLat = deg2rad(lat2 - lat1);
+      const dLon = deg2rad(lon2 - lon1);
+      const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2); 
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+      return R * c;
+    }
+
+    function deg2rad(deg) {
+      return deg * (Math.PI/180);
+    }
+
+    // Helper: Point in polygon check using ray casting
+    function isPointInPolygon(point, polygon) {
+      const x = point[0], y = point[1];
+      let inside = false;
+      for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+        const xi = polygon[i][0], yi = polygon[i][1];
+        const xj = polygon[j][0], yj = polygon[j][1];
+        
+        const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+
+    function evaluateRouteSafety() {
+      const checkAccident = document.getElementById('chkAccident').checked;
+      const checkNight = document.getElementById('chkNight').checked;
+      const warningBanner = document.getElementById('hazardWarning');
+
+      if (!currentRouteCoords) {
+        warningBanner.style.display = 'none';
+        return;
+      }
+
+      let intersectsHazard = false;
+
+      for (let coord of currentRouteCoords) {
+        const lon = coord[0];
+        const lat = coord[1];
+
+        // 1. Check Accident Zones Intersection
+        if (checkAccident && activeHazardZones.accidents) {
+          for (let zone of activeHazardZones.accidents) {
+            const dist = getDistanceFromLatLonInMeters(lat, lon, zone.center[0], zone.center[1]);
+            if (dist <= zone.radius) {
+              intersectsHazard = true;
+              break;
+            }
+          }
+        }
+
+        // 2. Check Night Polygon Intersection
+        if (checkNight && activeHazardZones.night) {
+          if (isPointInPolygon([lat, lon], activeHazardZones.night)) {
+            intersectsHazard = true;
+            break;
+          }
+        }
+
+        if (intersectsHazard) break;
+      }
+
+      if (intersectsHazard && (checkAccident || checkNight)) {
+        warningBanner.style.display = 'flex';
+        if (routeLine) {
+          routeLine.setStyle({ color: '#EF4444', dashArray: '6, 6' });
+        }
+      } else {
+        warningBanner.style.display = 'none';
+        if (routeLine) {
+          routeLine.setStyle({ color: '#38BDF8', dashArray: null });
+        }
+      }
+    }
+
+    function toggleOverlayLayer(type) {
+      if (type === 'accident') {
+        if (document.getElementById('chkAccident').checked) {
+          map.addLayer(accidentLayer);
+        } else {
+          map.removeLayer(accidentLayer);
+        }
+      } else if (type === 'night') {
+        if (document.getElementById('chkNight').checked) {
+          map.addLayer(nightLayer);
+        } else {
+          map.removeLayer(nightLayer);
+        }
+      } else if (type === 'mountains') {
+        if (document.getElementById('chkMountains').checked) {
+          map.addLayer(mountainsLayer);
+        } else {
+          map.removeLayer(mountainsLayer);
+        }
+      } else if (type === 'ghat') {
+        if (document.getElementById('chkGhat').checked) {
+          map.addLayer(ghatLayer);
+        } else {
+          map.removeLayer(ghatLayer);
+        }
+      } else if (type === 'river') {
+        if (document.getElementById('chkRiver').checked) {
+          map.addLayer(riverLayer);
+        } else {
+          map.removeLayer(riverLayer);
+        }
+      }
+    }
+
+    async function fetchOSRMRoute(profile, start, dest) {
+      const url = `https://router.project-osrm.org/route/v1/${profile}/${start.lng},${start.lat};${dest.lng},${dest.lat}?overview=full&geometries=geojson`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.routes && data.routes.length > 0) {
+        return data.routes[0];
+      }
+      throw new Error("No path found");
+    }
+
+    function formatDuration(seconds) {
+      const hours = seconds / 3600;
+      if (hours < 1) {
+        return Math.max(1, Math.round(seconds / 60)) + 'm';
+      }
+      const hrs = Math.floor(hours);
+      const mins = Math.round((hours - hrs) * 60);
+      return `${hrs}h ${mins}m`;
+    }
+  </script>
+</body>
+</html>
