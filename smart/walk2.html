@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Leaflet Route & Distance Finder</title>
+  <title>Leaflet Real Road Route Finder</title>
   
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -188,7 +188,7 @@
   <!-- Top Navigation & Control Panel -->
   <header>
     <div class="top-row">
-      <h1>🗺️ Route Finder</h1>
+      <h1>🗺️ Real Road Route Finder</h1>
       <span class="hint-text">💡 Tap map twice (Start ➔ Dest) or type names/coords</span>
     </div>
 
@@ -207,11 +207,11 @@
     <!-- Live Metrics Display Bar -->
     <div class="metrics-bar">
       <div class="metric-badge">
-        <span class="metric-title">🚶 Walking</span>
+        <span class="metric-title">🚶 Walking (Roads)</span>
         <span><b id="walkDist" class="metric-val">-</b> (<span id="walkTime" class="metric-val">-</span>)</span>
       </div>
       <div class="metric-badge">
-        <span class="metric-title">🚗 Driving</span>
+        <span class="metric-title">🚗 Driving (Highways)</span>
         <span><b id="driveDist" class="metric-val">-</b> (<span id="driveTime" class="metric-val">-</span>)</span>
       </div>
     </div>
@@ -220,7 +220,7 @@
   <!-- Interactive Map Container -->
   <div id="map"></div>
 
-  <!-- Leaflet JS Library (Zero API Keys Required) -->
+  <!-- Leaflet JS Library -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
   <script>
@@ -239,7 +239,7 @@
     let routeLine = null;
     let clickState = 0; 
 
-    // Handle map clicks for easy mobile/desktop point selection
+    // Handle map clicks for easy point selection
     map.on('click', async function(e) {
       const { lat, lng } = e.latlng;
       const coordStr = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
@@ -251,7 +251,7 @@
         setDest(lat, lng, coordStr);
         document.getElementById('destInput').value = coordStr;
         clickState = 0;
-        updateMetricsAndMap();
+        await fetchAndDisplayRoadRoutes();
       }
     });
 
@@ -280,17 +280,6 @@
       destMarker = L.marker([lat, lon]).addTo(map).bindPopup("Destination: " + label);
     }
 
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371; 
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      return R * c;
-    }
-
     async function calculateRoute() {
       const startQuery = document.getElementById('startInput').value;
       const destQuery = document.getElementById('destInput').value;
@@ -308,42 +297,65 @@
         setDest(dCoord.lat, dCoord.lon, destQuery);
 
         map.fitBounds([[sCoord.lat, sCoord.lon], [dCoord.lat, dCoord.lon]], { padding: [60, 60] });
-        updateMetricsAndMap();
+        await fetchAndDisplayRoadRoutes();
       } catch (err) {
         alert(err.message);
       }
     }
 
-    function updateMetricsAndMap() {
+    async function fetchAndDisplayRoadRoutes() {
       if (!startMarker || !destMarker) return;
       const s = startMarker.getLatLng();
       const d = destMarker.getLatLng();
 
-      const straightDist = calculateDistance(s.lat, s.lng, d.lat, d.lng);
-      const driveDist = straightDist * 1.3;
-      const walkDist = straightDist * 1.2;
+      try {
+        // Fetch driving route and walking route paths via OSRM
+        const driveRoute = await fetchOSRMRoute('driving', s, d);
+        const walkRoute = await fetchOSRMRoute('foot', s, d);
 
-      const driveHours = driveDist / 45;
-      const walkHours = walkDist / 4.5;
+        // Update Driving UI
+        document.getElementById('driveDist').textContent = (driveRoute.distance / 1000).toFixed(1) + ' km';
+        document.getElementById('driveTime').textContent = formatDuration(driveRoute.duration);
 
-      document.getElementById('driveDist').textContent = driveDist.toFixed(1) + ' km';
-      document.getElementById('driveTime').textContent = formatTime(driveHours);
+        // Update Walking UI (Distance from pedestrian routing path)
+        const walkDistMeters = walkRoute.distance;
+        document.getElementById('walkDist').textContent = (walkDistMeters / 1000).toFixed(1) + ' km';
 
-      document.getElementById('walkDist').textContent = walkDist.toFixed(1) + ' km';
-      document.getElementById('walkTime').textContent = formatTime(walkHours);
+        // Precise Human Walking Calculation: 4.8 km/h = 80 meters per minute (or 1.333 meters per second)
+        const walkingSpeedMetersPerSec = 4.8 * 1000 / 3600; // ~1.333 m/s
+        const calculatedWalkSeconds = walkDistMeters / walkingSpeedMetersPerSec;
+        document.getElementById('walkTime').textContent = formatDuration(calculatedWalkSeconds);
 
-      if (routeLine) map.removeLayer(routeLine);
-      routeLine = L.polyline([[s.lat, s.lng], [d.lat, d.lng]], {
-        color: '#38BDF8',
-        weight: 4,
-        dashArray: '6, 6',
-        opacity: 0.8
-      }).addTo(map);
+        // Draw the driving route road geometry on the map by default
+        if (routeLine) map.removeLayer(routeLine);
+        routeLine = L.geoJSON(driveRoute.geometry, {
+          style: {
+            color: '#38BDF8',
+            weight: 5,
+            opacity: 0.85
+          }
+        }).addTo(map);
+
+      } catch (error) {
+        console.error("Routing error:", error);
+        alert("Could not fetch route network data between these points.");
+      }
     }
 
-    function formatTime(hours) {
+    async function fetchOSRMRoute(profile, start, dest) {
+      const url = `https://router.project-osrm.org/route/v1/${profile}/${start.lng},${start.lat};${dest.lng},${dest.lat}?overview=full&geometries=geojson`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.routes && data.routes.length > 0) {
+        return data.routes[0];
+      }
+      throw new Error("No path found");
+    }
+
+    function formatDuration(seconds) {
+      const hours = seconds / 3600;
       if (hours < 1) {
-        return Math.round(hours * 60) + 'm';
+        return Math.max(1, Math.round(seconds / 60)) + 'm';
       }
       const hrs = Math.floor(hours);
       const mins = Math.round((hours - hrs) * 60);
