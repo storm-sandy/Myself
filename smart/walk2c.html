@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Advanced Real Road Navigation System</title>
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <style>
+    :root {
+      --bg-main: #0F172A;
+      --bg-card: #1E293B;
+      --accent-blue: #38BDF8;
+      --accent-dark: #0284C7;
+      --accent-green: #10B981;
+      --accent-orange: #F59E0B;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border-color: rgba(56, 189, 248, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Control Hub */
+    header {
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .top-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .inputs-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+      max-width: 700px;
+    }
+
+    @media (min-width: 768px) {
+      .inputs-wrapper {
+        flex-direction: row;
+      }
+    }
+
+    .input-group {
+      display: flex;
+      flex: 1;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .input-group input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 0.55rem 0.75rem;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .input-group input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-dark));
+      color: var(--bg-main);
+      border: none;
+      padding: 0.55rem 1.25rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border-radius: 8px;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn-nav {
+      background: linear-gradient(135deg, var(--accent-green), #059669);
+      color: #fff;
+    }
+
+    /* Top Metrics Dashboard Bar */
+    .metrics-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .metrics-bar {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+    }
+
+    .metric-badge {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.4rem 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    @media (min-width: 640px) {
+      .metric-badge {
+        flex: 1;
+      }
+    }
+
+    .metric-title {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .metric-val {
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    .checkbox-bar {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: var(--text-main);
+      align-items: center;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+    }
+
+    .checkbox-item input {
+      accent-color: var(--accent-green);
+      cursor: pointer;
+    }
+
+    .hint-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    @media (min-width: 768px) {
+      .hint-text {
+        text-align: right;
+      }
+    }
+
+    /* Main Content Layout (Sidebar + Map) */
+    .main-content {
+      display: flex;
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Turn-by-Turn Navigation Sidebar Drawer */
+    #nav-sidebar {
+      width: 360px;
+      background-color: var(--bg-card);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      z-index: 999;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+    }
+
+    #nav-sidebar.active {
+      transform: translateX(0);
+    }
+
+    .nav-header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    .nav-header h3 {
+      font-size: 0.95rem;
+      color: var(--accent-green);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .close-sidebar {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.25rem;
+      cursor: pointer;
+    }
+
+    .nav-live-hud {
+      background: rgba(16, 185, 129, 0.1);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .hud-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .hud-instruction {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .hud-sub {
+      font-size: 0.8rem;
+      color: var(--accent-green);
+      font-weight: 600;
+    }
+
+    .nav-steps-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .nav-step-item {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-step-item:hover {
+      border-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .nav-step-item.current {
+      border-color: var(--accent-green);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .step-icon {
+      font-size: 1.1rem;
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .step-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .step-instruction {
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .step-distance {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+    }
+
+    /* Interactive Map Container */
+    #map {
+      flex: 1;
+      width: 100%;
+      background-color: #1e293b;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation & Control Panel -->
+  <header>
+    <div class="top-row">
+      <h1>🗺️ Advanced Real Road Navigation System</h1>
+      <span class="hint-text">💡 Tap map twice (Start ➔ Dest) or type names/coords</span>
+    </div>
+
+    <div class="top-row" style="gap: 0.5rem;">
+      <div class="inputs-wrapper">
+        <div class="input-group">
+          <input type="text" id="startInput" placeholder="Start (Name or Lat, Lon e.g. 19.2, 73.0)" />
+        </div>
+        <div class="input-group">
+          <input type="text" id="destInput" placeholder="Destination (Name or Lat, Lon e.g. 19.4, 72.8)" />
+        </div>
+      </div>
+      <button class="btn" onclick="calculateRoute()">Calculate</button>
+      <button class="btn btn-nav" id="navToggleBtn" onclick="toggleNavigationMode()" style="display:none;">🧭 Start GPS Nav</button>
+    </div>
+
+    <!-- Live Metrics & Navigation Toggle Checkbox Bar -->
+    <div class="top-row" style="align-items: center;">
+      <div class="metrics-bar" style="flex: 1;">
+        <div class="metric-badge">
+          <span class="metric-title">🚶 Walking (Roads)</span>
+          <span><b id="walkDist" class="metric-val">-</b> (<span id="walkTime" class="metric-val">-</span>)</span>
+        </div>
+        <div class="metric-badge">
+          <span class="metric-title">🚗 Driving (Highways)</span>
+          <span><b id="driveDist" class="metric-val">-</b> (<span id="driveTime" class="metric-val">-</span>)</span>
+        </div>
+      </div>
+
+      <div class="checkbox-bar">
+        <label class="checkbox-item">
+          <input type="checkbox" id="navCheckbox" onchange="toggleNavSidebarFromCheckbox(this)">
+          <span>🧭 Show Navigation Box</span>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout (Sidebar + Map) -->
+  <div class="main-content">
+    <!-- Turn-by-Turn Navigation Sidebar Drawer -->
+    <div id="nav-sidebar">
+      <div class="nav-header">
+        <h3>🧭 Turn-by-Turn Guidance</h3>
+        <button class="close-sidebar" onclick="closeNavSidebarByButton()">×</button>
+      </div>
+      <div class="nav-live-hud" id="navLiveHud">
+        <span class="hud-title">Next Maneuver</span>
+        <span class="hud-instruction" id="hudInstruction">Awaiting route calculation...</span>
+        <span class="hud-sub" id="hudSubDistance">Distance: --</span>
+      </div>
+      <div class="nav-steps-list" id="navStepsContainer">
+        <div style="color: var(--text-muted); text-align: center; margin-top: 2rem; font-size: 0.85rem;">
+          Calculate a route to view step-by-step navigation instructions.<br><br>💡 Click any step below to highlight it on the map!
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Map Container -->
+    <div id="map"></div>
+  </div>
+
+  <!-- Leaflet JS Library -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <script>
+    // Initialize Leaflet Map centered around Mumbai region
+    const map = L.map('map', { zoomControl: false }).setView([19.2183, 73.0858], 11);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let startMarker = null;
+    let destMarker = null;
+    let userLocationMarker = null;
+    let stepMarker = null;
+    let routeLine = null;
+    let clickState = 0; 
+    let currentRouteData = null;
+    let isNavigating = false;
+    let watchId = null;
+    let currentStepIndex = 0;
+    let allRouteSteps = [];
+
+    // Map click handling
+    map.on('click', async function(e) {
+      const { lat, lng } = e.latlng;
+      const coordStr = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      if (clickState === 0) {
+        setStart(lat, lng, coordStr);
+        document.getElementById('startInput').value = coordStr;
+        clickState = 1;
+      } else {
+        setDest(lat, lng, coordStr);
+        document.getElementById('destInput').value = coordStr;
+        clickState = 0;
+        await fetchAndDisplayRoadRoutes();
+      }
+    });
+
+    async function parseLocation(query) {
+      query = query.trim();
+      const coordMatch = query.match(/^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/);
+      if (coordMatch) {
+        return { lat: parseFloat(coordMatch[1]), lon: parseFloat(coordMatch[3]) };
+      }
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      if (data && data.length > 0) {
+        return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+      }
+      throw new Error(`Location not found: "${query}"`);
+    }
+
+    function setStart(lat, lon, label) {
+      if (startMarker) map.removeLayer(startMarker);
+      startMarker = L.marker([lat, lon]).addTo(map).bindPopup("Start: " + label);
+    }
+
+    function setDest(lat, lon, label) {
+      if (destMarker) map.removeLayer(destMarker);
+      destMarker = L.marker([lat, lon]).addTo(map).bindPopup("Destination: " + label);
+    }
+
+    async function calculateRoute() {
+      const startQuery = document.getElementById('startInput').value;
+      const destQuery = document.getElementById('destInput').value;
+
+      if (!startQuery || !destQuery) {
+        alert("Please enter or select both start and destination points.");
+        return;
+      }
+
+      try {
+        const sCoord = await parseLocation(startQuery);
+        setStart(sCoord.lat, sCoord.lon, startQuery);
+
+        const dCoord = await parseLocation(destQuery);
+        setDest(dCoord.lat, dCoord.lon, destQuery);
+
+        map.fitBounds([[sCoord.lat, sCoord.lon], [dCoord.lat, dCoord.lon]], { padding: [60, 60] });
+        await fetchAndDisplayRoadRoutes();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function fetchAndDisplayRoadRoutes() {
+      if (!startMarker || !destMarker) return;
+      const s = startMarker.getLatLng();
+      const d = destMarker.getLatLng();
+
+      try {
+        const driveRoute = await fetchOSRMRoute('driving', s, d);
+        const walkRoute = await fetchOSRMRoute('foot', s, d);
+
+        currentRouteData = driveRoute;
+
+        document.getElementById('driveDist').textContent = (driveRoute.distance / 1000).toFixed(1) + ' km';
+        document.getElementById('driveTime').textContent = formatDuration(driveRoute.duration);
+
+        const walkDistMeters = walkRoute.distance;
+        document.getElementById('walkDist').textContent = (walkDistMeters / 1000).toFixed(1) + ' km';
+        const walkingSpeedMetersPerSec = 4.8 * 1000 / 3600; 
+        document.getElementById('walkTime').textContent = formatDuration(walkDistMeters / walkingSpeedMetersPerSec);
+
+        if (routeLine) map.removeLayer(routeLine);
+        routeLine = L.geoJSON(driveRoute.geometry, {
+          style: { color: '#38BDF8', weight: 5, opacity: 0.85 }
+        }).addTo(map);
+
+        processNavigationSteps(driveRoute);
+        document.getElementById('navToggleBtn').style.display = 'inline-block';
+
+      } catch (error) {
+        console.error("Routing error:", error);
+        alert("Could not fetch route network data between these points.");
+      }
+    }
+
+    async function fetchOSRMRoute(profile, start, dest) {
+      const url = `https://router.project-osrm.org/route/v1/${profile}/${start.lng},${start.lat};${dest.lng},${dest.lat}?overview=full&geometries=geojson&steps=true`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.routes && data.routes.length > 0) {
+        return data.routes[0];
+      }
+      throw new Error("No path found");
+    }
+
+    function processNavigationSteps(route) {
+      allRouteSteps = [];
+      if (!route.legs) return;
+
+      route.legs.forEach(leg => {
+        leg.steps.forEach(step => {
+          allRouteSteps.push(step);
+        });
+      });
+
+      renderNavigationStepsList();
+      if (allRouteSteps.length > 0) {
+        updateActiveStepHud(0);
+      }
+    }
+
+    function renderNavigationStepsList() {
+      const container = document.getElementById('navStepsContainer');
+      container.innerHTML = '';
+
+      allRouteSteps.forEach((step, idx) => {
+        const instruction = formatManeuver(step.maneuver);
+        const distanceStr = step.distance > 1000 ? (step.distance / 1000).toFixed(1) + ' km' : Math.round(step.distance) + ' m';
+        const icon = getManeuverIcon(step.maneuver.type, step.maneuver.modifier);
+
+        const div = document.createElement('div');
+        div.className = `nav-step-item ${idx === currentStepIndex ? 'current' : ''}`;
+        div.id = `nav-step-${idx}`;
+        div.onclick = () => focusOnStep(idx); // Click handler to highlight on map
+        div.innerHTML = `
+          <div class="step-icon">${icon}</div>
+          <div class="step-details">
+            <span class="step-instruction">${instruction}</span>
+            <span class="step-distance">In ${distanceStr} • ${step.name || 'Unnamed road'}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Focus and highlight specific step on the map when clicked
+    function focusOnStep(index) {
+      if (index < 0 || index >= allRouteSteps.length) return;
+      currentStepIndex = index;
+      
+      const step = allRouteSteps[index];
+      updateActiveStepHud(index, false); // Update HUD without repeating speech
+
+      if (step.maneuver && step.maneuver.location) {
+        const [lon, lat] = step.maneuver.location;
+        map.setView([lat, lon], 17, { animate: true });
+
+        if (stepMarker) map.removeLayer(stepMarker);
+        stepMarker = L.circleMarker([lat, lon], {
+          radius: 10,
+          color: '#38BDF8',
+          fillColor: '#38BDF8',
+          fillOpacity: 0.7,
+          weight: 3
+        }).addTo(map).bindPopup(`<b>Step ${index + 1}:</b> ${formatManeuver(step.maneuver)}<br><small>${step.name || 'Road'}</small>`).openPopup();
+      }
+    }
+
+    function updateActiveStepHud(index, speak = true) {
+      if (index >= allRouteSteps.length) {
+        document.getElementById('hudInstruction').textContent = "You have arrived at your destination! 🏁";
+        document.getElementById('hudSubDistance').textContent = "Destination reached";
+        if (speak) speakInstruction("You have arrived at your destination.");
+        return;
+      }
+
+      currentStepIndex = index;
+      const step = allRouteSteps[index];
+      const instruction = formatManeuver(step.maneuver);
+      const distanceStr = step.distance > 1000 ? (step.distance / 1000).toFixed(1) + ' km' : Math.round(step.distance) + ' m';
+
+      document.getElementById('hudInstruction').textContent = instruction;
+      document.getElementById('hudSubDistance').textContent = `Distance: ${distanceStr} on ${step.name || 'road'}`;
+
+      if (speak) {
+        speakInstruction(`${instruction}. In ${distanceStr}`);
+      }
+
+      // Highlight active item in list
+      document.querySelectorAll('.nav-step-item').forEach((el, idx) => {
+        if (idx === index) {
+          el.classList.add('current');
+          el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+          el.classList.remove('current');
+        }
+      });
+    }
+
+    function formatManeuver(m) {
+      const type = m.type;
+      const mod = m.modifier || '';
+      if (type === 'depart') return 'Start driving';
+      if (type === 'arrive') return 'Arrive at destination';
+      if (type === 'turn') return `Turn ${mod.replace('_', ' ')}`;
+      if (type === 'merge') return `Merge ${mod}`;
+      if (type === 'roundabout') return `Take roundabout (${mod})`;
+      return `${type} ${mod}`.trim();
+    }
+
+    function getManeuverIcon(type, mod) {
+      if (type === 'depart') return '🚗';
+      if (type === 'arrive') return '🏁';
+      if (mod.includes('left')) return '⬅️';
+      if (mod.includes('right')) return '➡️';
+      if (mod.includes('straight')) return '⬆️';
+      if (type === 'roundabout') return '🔄';
+      return '📍';
+    }
+
+    function speakInstruction(text) {
+      if ('speechSynthesis' in window && isNavigating) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.0;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    // Toggle Checkbox Synchronization for Navigation Box
+    function toggleNavSidebarFromCheckbox(checkbox) {
+      const sidebar = document.getElementById('nav-sidebar');
+      if (checkbox.checked) {
+        sidebar.classList.add('active');
+      } else {
+        sidebar.classList.remove('active');
+      }
+    }
+
+    function closeNavSidebarByButton() {
+      document.getElementById('nav-sidebar').classList.remove('active');
+      document.getElementById('navCheckbox').checked = false;
+    }
+
+    function toggleNavigationMode() {
+      isNavigating = !isNavigating;
+      const btn = document.getElementById('navToggleBtn');
+      const checkbox = document.getElementById('navCheckbox');
+
+      if (isNavigating) {
+        btn.textContent = '🛑 Stop GPS Nav';
+        btn.style.background = '#EF4444';
+        checkbox.checked = true;
+        document.getElementById('nav-sidebar').classList.add('active');
+        startLiveTracking();
+      } else {
+        btn.textContent = '🧭 Start GPS Nav';
+        btn.style.background = '';
+        stopLiveTracking();
+      }
+    }
+
+    function startLiveTracking() {
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser");
+        return;
+      }
+      watchId = navigator.geolocation.watchPosition(
+        position => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          updateUserLocationOnMap(lat, lon);
+          checkRouteProgression(lat, lon);
+        },
+        err => {
+          console.warn("GPS tracking warning:", err);
+        },
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 5000 }
+      );
+    }
+
+    function stopLiveTracking() {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+      if (userLocationMarker) {
+        map.removeLayer(userLocationMarker);
+        userLocationMarker = null;
+      }
+    }
+
+    function updateUserLocationOnMap(lat, lon) {
+      if (!userLocationMarker) {
+        userLocationMarker = L.marker([lat, lon], {
+          icon: L.divIcon({ className: 'current-gps-icon', html: '📍', iconSize: [30, 30] })
+        }).addTo(map);
+      } else {
+        userLocationMarker.setLatLng([lat, lon]);
+      }
+      map.panTo([lat, lon], { animate: true });
+    }
+
+    function checkRouteProgression(lat, lon) {
+      if (allRouteSteps.length === 0 || currentStepIndex >= allRouteSteps.length) return;
+      const currentStep = allRouteSteps[currentStepIndex];
+      if (!currentStep.maneuver || !currentStep.maneuver.location) return;
+
+      const [stepLon, stepLat] = currentStep.maneuver.location;
+      const distMeters = getDistanceFromLatLonInMeters(lat, lon, stepLat, stepLon);
+
+      // If user is within 25 meters of maneuver point, advance to next step
+      if (distMeters < 25) {
+        updateActiveStepHud(currentStepIndex + 1);
+      }
+    }
+
+    function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371000; // Radius of earth in meters
+      const dLat = deg2rad(lat2 - lat1);
+      const dLon = deg2rad(lon2 - lon1);
+      const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
+
+    function deg2rad(deg) {
+      return deg * (Math.PI/180);
+    }
+
+    function formatDuration(seconds) {
+      const hours = seconds / 3600;
+      if (hours < 1) {
+        return Math.max(1, Math.round(seconds / 60)) + 'm';
+      }
+      const hrs = Math.floor(hours);
+      const mins = Math.round((hours - hrs) * 60);
+      return `${hrs}h ${mins}m`;
+    }
+  </script>
+</body>
+</html>
