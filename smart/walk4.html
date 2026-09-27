@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Tab Nature GPS Tracker with Auto-Geocoding</title>
+    <!-- Leaflet CSS for maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        /* 10 Nature Themes Setup */
+        :root, [data-theme="forest"] {
+            --bg-deep: #0b1410; --bg-card: #13221b; --bg-input: #1a2f26; --border-color: #274738; --accent: #38b000; --accent-hover: #4cc311; --text-main: #e2f1ea; --text-muted: #8aa89b;
+        }
+        [data-theme="pine"] {
+            --bg-deep: #0d161d; --bg-card: #15222e; --bg-input: #1e3042; --border-color: #2c445c; --accent: #00b4d8; --accent-hover: #90e0ef; --text-main: #e0fbfc; --text-muted: #83c5be;
+        }
+        [data-theme="autumn"] {
+            --bg-deep: #190f0a; --bg-card: #2b1d14; --bg-input: #3d2a1e; --border-color: #593e2e; --accent: #e07a5f; --accent-hover: #f4a261; --text-main: #f4f1de; --text-muted: #d8b49a;
+        }
+        [data-theme="moss"] {
+            --bg-deep: #12140d; --bg-card: #1e2215; --bg-input: #2b301e; --border-color: #42492f; --accent: #aacc00; --accent-hover: #ccff33; --text-main: #f0f4e6; --text-muted: #a3b38c;
+        }
+        [data-theme="ocean"] {
+            --bg-deep: #06141a; --bg-card: #0d222b; --bg-input: #14323d; --border-color: #1f4e5c; --accent: #00b4d8; --accent-hover: #48cae4; --text-main: #caf0f8; --text-muted: #90e0ef;
+        }
+        [data-theme="desert"] {
+            --bg-deep: #1a140d; --bg-card: #2b2216; --bg-input: #3b3020; --border-color: #594831; --accent: #dda15e; --accent-hover: #e9c46a; --text-main: #fefae0; --text-muted: #d4a373;
+        }
+        [data-theme="tundra"] {
+            --bg-deep: #111418; --bg-card: #1b2129; --bg-input: #262f3b; --border-color: #3b4859; --accent: #70d6ff; --accent-hover: #e0c3fc; --text-main: #f7fff7; --text-muted: #a2aebb;
+        }
+        [data-theme="volcano"] {
+            --bg-deep: #170d0d; --bg-card: #261515; --bg-input: #381e1e; --border-color: #572d2d; --accent: #e63946; --accent-hover: #ff4d6d; --text-main: #fff1f2; --text-muted: #d1a3a3;
+        }
+        [data-theme="sakura"] {
+            --bg-deep: #170e13; --bg-card: #261720; --bg-input: #38212f; --border-color: #573349; --accent: #ff70a6; --accent-hover: #ff97b7; --text-main: #fff0f5; --text-muted: #d6a2bc;
+        }
+        [data-theme="nightshade"] {
+            --bg-deep: #0f0a17; --bg-card: #191226; --bg-input: #251b36; --border-color: #3a2b54; --accent: #9d4edd; --accent-hover: #c77dff; --text-main: #f3e8ff; --text-muted: #b197fc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 15px;
+            transition: background 0.3s ease;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        select {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px 10px;
+            border-radius: 6px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Tabs Navigation */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background-color: var(--bg-card);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent);
+            color: #05100b;
+            border-color: var(--accent);
+        }
+
+        /* Tab Content Panes */
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Map Max Screen Styling */
+        #map {
+            width: 100%;
+            height: calc(100vh - 180px);
+            min-height: 500px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            z-index: 10;
+        }
+
+        .map-instruction {
+            background-color: var(--bg-input);
+            border-left: 4px solid var(--accent);
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Form Styling */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        @media(min-width: 768px) {
+            .form-grid-2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        input, textarea {
+            width: 100%;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--accent);
+        }
+
+        /* Checkbox styling */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: border-color 0.2s;
+        }
+        .checkbox-container:hover {
+            border-color: var(--accent);
+        }
+        .checkbox-container input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+        .checkbox-container label {
+            margin: 0;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            text-transform: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Fast Typeahead Suggestions */
+        .suggestions-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 0 0 8px 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .suggestion-item:hover {
+            background-color: var(--border-color);
+        }
+
+        button.action-btn {
+            background-color: var(--accent);
+            color: #05100b;
+            border: none;
+            padding: 11px 20px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-size: 0.9rem;
+        }
+        button.action-btn:hover {
+            opacity: 0.9;
+        }
+
+        button.secondary-btn {
+            background-color: transparent;
+            color: #ff6b6b;
+            border: 1px solid #5a2222;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Table Styling for Last Tab */
+        .table-container {
+            overflow-x: auto;
+            max-height: 420px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--bg-input);
+            color: var(--accent);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background-color: rgba(255,255,255,0.02);
+        }
+
+        .export-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body data-theme="forest">
+
+    <div class="container">
+        <!-- Header & Theme Picker -->
+        <header>
+            <h1>🌲 Nature GPS Tracker</h1>
+            <div class="theme-selector">
+                <label for="themeSelect" style="margin:0;">Theme:</label>
+                <select id="themeSelect">
+                    <option value="forest">🌲 Forest Green</option>
+                    <option value="pine">🌊 Deep Pine</option>
+                    <option value="autumn">🍂 Autumn Woods</option>
+                    <option value="moss">🌿 Moss Canopy</option>
+                    <option value="ocean">🐳 Oceanic Blue</option>
+                    <option value="desert">🏜️ Desert Earth</option>
+                    <option value="tundra">❄️ Tundra Ice</option>
+                    <option value="volcano">🌋 Volcano Ash</option>
+                    <option value="sakura">🌸 Sakura Bloom</option>
+                    <option value="nightshade">🔮 Nightshade</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">🗺️ 1. Interactive Map</button>
+            <button class="tab-btn" onclick="switchTab(1)">📝 2. Data Entry & Search</button>
+            <button class="tab-btn" onclick="switchTab(2)">💾 3. Data Table & Export</button>
+        </div>
+
+        <!-- TAB 1: Max Screen Map -->
+        <div class="tab-pane active" id="paneMap">
+            <div class="card">
+                <div class="map-instruction">
+                    💡 <strong>Tip:</strong> Click anywhere on the map to auto-fetch the area name, address, coordinates, and open entry form!
+                </div>
+                <div id="map"></div>
+            </div>
+        </div>
+
+        <!-- TAB 2: Data Entry & Search Form -->
+        <div class="tab-pane" id="paneEntry">
+            <div class="card">
+                <h2 style="color:var(--accent); margin-bottom:15px; font-size:1.1rem; text-align:center;">Add New Location Record</h2>
+                <form id="trackerForm" class="form-grid">
+                    
+                    <!-- Current GPS Checkbox Toggle -->
+                    <div class="checkbox-container" id="currentGpsToggleBox">
+                        <input type="checkbox" id="useCurrentGpsCheckbox">
+                        <label for="useCurrentGpsCheckbox">📍 Use Current Live GPS & Auto-Fill Location Details</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Location / Area Name *</label>
+                        <input type="text" id="locName" required placeholder="e.g., Summit Ridge">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fast Search Area / Typeahead Address *</label>
+                        <input type="text" id="searchQuery" placeholder="Type city, landmark, region...">
+                        <div id="suggestionsBox" class="suggestions-box"></div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Latitude *</label>
+                            <input type="number" step="any" id="lat" required placeholder="Auto-filled">
+                        </div>
+                        <div class="form-group">
+                            <label>Longitude *</label>
+                            <input type="number" step="any" id="lon" required placeholder="Auto-filled">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Radius Area (Meters)</label>
+                        <input type="number" id="radius" value="500" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="description" rows="2" placeholder="Auto-filled or custom geological notes..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Comments</label>
+                        <input type="text" id="comments" placeholder="Auto-filled or wildlife notes">
+                    </div>
+
+                    <button type="submit" class="action-btn" style="width:100%;">Save to IndexedDB Database</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- TAB 3: Data Table & Export -->
+        <div class="tab-pane" id="paneTable">
+            <div class="card">
+                <div class="export-actions">
+                    <h2 style="color:var(--accent); font-size:1.1rem;">Stored Records Database (<span id="recordCount">0</span>)</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="exportBtn" class="action-btn">📥 Export JSON File</button>
+                        <button id="clearBtn" class="secondary-btn">🗑️ Clear DB</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>GPS Location (Lat, Lon)</th>
+                                <th>Radius</th>
+                                <th>Date & Time</th>
+                                <th>Description</th>
+                                <th>Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr><td colspan="6" style="text-align: center; color: var(--text-muted); font-style: italic;">No records found.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script Logic -->
+    <script>
+        const DB_NAME = 'TabbedNatureGPSDB_v3';
+        const STORE_NAME = 'locations';
+        let db = null;
+        let map = null;
+        let currentLayerGroup = null;
+        let debounceTimer = null;
+
+        // Theme Switcher Handler
+        const themeSelect = document.getElementById('themeSelect');
+        themeSelect.addEventListener('change', (e) => {
+            document.body.setAttribute('data-theme', e.target.value);
+            localStorage.setItem('nature_gps_theme', e.target.value);
+        });
+        const savedTheme = localStorage.getItem('nature_gps_theme');
+        if(savedTheme) {
+            themeSelect.value = savedTheme;
+            document.body.setAttribute('data-theme', savedTheme);
+        }
+
+        // Tab Switching Logic
+        function switchTab(index) {
+            const panes = [document.getElementById('paneMap'), document.getElementById('paneEntry'), document.getElementById('paneTable')];
+            const buttons = document.querySelectorAll('.tab-btn');
+            
+            panes.forEach((p, idx) => {
+                if(idx === index) {
+                    p.classList.add('active');
+                    buttons[idx].classList.add('active');
+                } else {
+                    p.classList.remove('active');
+                    buttons[idx].classList.remove('active');
+                }
+            });
+
+            // Refresh Leaflet map sizing if switching back to Map tab
+            if(index === 0 && map) {
+                setTimeout(() => map.invalidateSize(), 100);
+            }
+        }
+
+        // 1. Initialize IndexedDB
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, 1);
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    loadRecords();
+                    resolve(db);
+                };
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+                    if (!database.objectStoreNames.contains(STORE_NAME)) {
+                        database.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+            });
+        }
+
+        // Reverse Geocode Function to fetch location details from lat/lon
+        async function reverseGeocodeAndAutoFill(lat, lon) {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                const data = await res.json();
+                
+                if(data && data.display_name) {
+                    const fullName = data.display_name;
+                    // Extract short title (first part of comma-separated address or place name)
+                    const shortName = data.name || fullName.split(',')[0] || "Pinned Location";
+                    
+                    document.getElementById('locName').value = shortName;
+                    document.getElementById('searchQuery').value = fullName;
+                    document.getElementById('description').value = `Auto-discovered location area near ${shortName}.`;
+                    document.getElementById('comments').value = `Coordinates: ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+                } else {
+                    document.getElementById('locName').value = "Custom Pin";
+                    document.getElementById('searchQuery').value = `Lat: ${lat}, Lon: ${lon}`;
+                }
+            } catch(err) {
+                console.error("Reverse geocoding error:", err);
+                document.getElementById('locName').value = "Custom Pin";
+                document.getElementById('searchQuery').value = `Lat: ${lat}, Lon: ${lon}`;
+            }
+        }
+
+        // 2. Initialize Leaflet Map with Click listener
+        function initMap() {
+            map = L.map('map').setView([20, 0], 2);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            currentLayerGroup = L.layerGroup().addTo(map);
+
+            // Click map to capture GPS coordinates directly and auto-reverse geocode
+            map.on('click', async (e) => {
+                const lat = e.latlng.lat;
+                const lon = e.latlng.lng;
+                document.getElementById('lat').value = lat.toFixed(6);
+                document.getElementById('lon').value = lon.toFixed(6);
+                
+                const radius = parseInt(document.getElementById('radius').value) || 500;
+                updateMapMarker(lat, lon, radius, "Selected Map Point");
+                
+                // Auto-fill form fields using reverse geocode
+                await reverseGeocodeAndAutoFill(lat, lon);
+
+                // Jump automatically to data entry screen for smooth experience
+                switchTab(1);
+            });
+        }
+
+        // 3. Current Live GPS Toggle Listener
+        const currentGpsCheckbox = document.getElementById('useCurrentGpsCheckbox');
+        currentGpsCheckbox.addEventListener('change', async (e) => {
+            if(!e.target.checked) return;
+
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported by your browser.");
+                e.target.checked = false;
+                return;
+            }
+
+            e.target.checked = false;
+            const originalLabel = e.target.nextElementSibling.textContent;
+            e.target.nextElementSibling.textContent = "📍 Acquiring high-speed live GPS & reverse geocoding...";
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    
+                    document.getElementById('lat').value = lat.toFixed(6);
+                    document.getElementById('lon').value = lon.toFixed(6);
+                    
+                    const radius = parseInt(document.getElementById('radius').value) || 500;
+                    updateMapMarker(lat, lon, radius, "Live GPS Location");
+                    
+                    // Auto-fill form text fields with reverse geocode data
+                    await reverseGeocodeAndAutoFill(lat, lon);
+                    
+                    e.target.nextElementSibling.textContent = originalLabel;
+                    
+                    // Switch immediately to Map tab to show active position
+                    switchTab(0);
+                },
+                (error) => {
+                    alert(`Failed to get GPS location: ${error.message}`);
+                    e.target.nextElementSibling.textContent = originalLabel;
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        });
+
+        // 4. Fast Typeahead Suggestion Engine (Nominatim Search)
+        const searchQueryInput = document.getElementById('searchQuery');
+        const suggestionsBox = document.getElementById('suggestionsBox');
+
+        searchQueryInput.addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            const query = e.target.value.trim();
+            if(query.length < 3) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+
+            debounceTimer = setTimeout(async () => {
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`);
+                    const data = await res.json();
+                    
+                    if(data && data.length > 0) {
+                        suggestionsBox.innerHTML = data.map(item => `
+                            <div class="suggestion-item" data-lat="${item.lat}" data-lon="${item.lon}" data-name="${item.display_name.replace(/"/g, '&quot;')}">
+                                📍 ${item.display_name}
+                            </div>
+                        `).join('');
+                        suggestionsBox.style.display = 'block';
+                    } else {
+                        suggestionsBox.style.display = 'none';
+                    }
+                } catch(err) {
+                    console.error("Suggestion lookup error", err);
+                }
+            }, 250); // Lightning fast debounce limit
+        });
+
+        // Handle suggestion click selection
+        suggestionsBox.addEventListener('click', (e) => {
+            const item = e.target.closest('.suggestion-item');
+            if(!item) return;
+
+            const lat = parseFloat(item.getAttribute('data-lat'));
+            const lon = parseFloat(item.getAttribute('data-lon'));
+            const name = item.getAttribute('data-name');
+
+            document.getElementById('lat').value = lat;
+            document.getElementById('lon').value = lon;
+            document.getElementById('locName').value = name.split(',')[0]; 
+            searchQueryInput.value = name;
+            document.getElementById('description').value = `Selected region: ${name}`;
+            document.getElementById('comments').value = `Coordinates: ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+            suggestionsBox.style.display = 'none';
+
+            const radius = parseInt(document.getElementById('radius').value) || 500;
+            updateMapMarker(lat, lon, radius, name);
+            switchTab(0); // Jump back to map to review selection
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', (e) => {
+            if(!e.target.closest('#searchQuery') && !e.target.closest('#suggestionsBox')) {
+                suggestionsBox.style.display = 'none';
+            }
+        });
+
+        // 5. Form Submit Handler
+        document.addEventListener('DOMContentLoaded', async () => {
+            initMap();
+            await initDB();
+
+            document.getElementById('trackerForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const record = {
+                    name: document.getElementById('locName').value,
+                    gpsLocation: {
+                        lat: parseFloat(document.getElementById('lat').value),
+                        lon: parseFloat(document.getElementById('lon').value)
+                    },
+                    radius: parseFloat(document.getElementById('radius').value),
+                    description: document.getElementById('description').value,
+                    comments: document.getElementById('comments').value,
+                    date: new Date().toLocaleDateString(),
+                    time: new Date().toLocaleTimeString()
+                };
+
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.add(record);
+
+                request.onsuccess = () => {
+                    document.getElementById('trackerForm').reset();
+                    document.getElementById('radius').value = 500;
+                    loadRecords();
+                    alert("Location saved successfully to IndexedDB!");
+                    switchTab(2); // Jump to data table tab to inspect record
+                };
+                request.onerror = () => {
+                    alert("Error saving record to database.");
+                };
+            });
+
+            // Export JSON
+            document.getElementById('exportBtn').addEventListener('click', () => {
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.getAll();
+
+                request.onsuccess = () => {
+                    const records = request.result;
+                    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(records, null, 2));
+                    const downloadAnchor = document.createElement('a');
+                    downloadAnchor.setAttribute("href", dataStr);
+                    downloadAnchor.setAttribute("download", `nature_gps_export_${Date.now()}.json`);
+                    document.body.appendChild(downloadAnchor);
+                    downloadAnchor.click();
+                    downloadAnchor.remove();
+                };
+            });
+
+            // Clear DB
+            document.getElementById('clearBtn').addEventListener('click', () => {
+                if (confirm("Are you sure you want to clear all stored records?")) {
+                    const transaction = db.transaction([STORE_NAME], 'readwrite');
+                    const store = transaction.objectStore(STORE_NAME);
+                    store.clear().onsuccess = () => {
+                        loadRecords();
+                        currentLayerGroup.clearLayers();
+                    };
+                }
+            });
+        });
+
+        // 6. Update Map View with Marker & Radius Circle
+        function updateMapMarker(lat, lon, radius, title) {
+            currentLayerGroup.clearLayers();
+            map.setView([lat, lon], 14);
+
+            L.marker([lat, lon]).addTo(currentLayerGroup)
+                .bindPopup(`<b>${title}</b><br>Lat: ${lat}, Lon: ${lon}`)
+                .openPopup();
+
+            const computedAccent = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#38b000';
+
+            L.circle([lat, lon], {
+                radius: radius,
+                color: computedAccent,
+                fillColor: computedAccent,
+                fillOpacity: 0.25
+            }).addTo(currentLayerGroup);
+        }
+
+        // 7. Load & Render Records into Data Table
+        function loadRecords() {
+            const transaction = db.transaction([STORE_NAME], 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.getAll();
+
+            request.onsuccess = () => {
+                const records = request.result;
+                document.getElementById('recordCount').textContent = records.length;
+                const tbody = document.getElementById('tableBody');
+                
+                if (records.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); font-style: italic;">No records found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = records.reverse().map(rec => `
+                    <tr style="cursor: pointer;" onclick="focusRecordOnMap(${rec.gpsLocation.lat}, ${rec.gpsLocation.lon}, ${rec.radius}, '${rec.name.replace(/'/g, "\\'")}')" title="Click to view on Map">
+                        <td><strong>${rec.name}</strong></td>
+                        <td style="color: var(--accent);">${rec.gpsLocation.lat.toFixed(4)}, ${rec.gpsLocation.lon.toFixed(4)}</td>
+                        <td>${rec.radius}m</td>
+                        <td>${rec.date} <span style="font-size:0.75rem; color:var(--text-muted);">${rec.time}</span></td>
+                        <td>${rec.description || '-'}</td>
+                        <td>${rec.comments || '-'}</td>
+                    </tr>
+                `).join('');
+            };
+        }
+
+        // Focus record on map and jump to tab 1
+        window.focusRecordOnMap = function(lat, lon, radius, name) {
+            updateMapMarker(lat, lon, radius, name);
+            switchTab(0);
+        }
+    </script>
+</body>
+</html>
