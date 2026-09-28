@@ -3,155 +3,101 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nature Joyful Dashboard - Responsive & Accessible</title>
+<title>Fullday Dashboard - Backup Reminders & Custom Export Filters</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chart.js Datalabels Plugin for on-chart text rendering -->
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<!-- html2pdf.js library for PDF exports -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-/* --- Nature Theme Color Variables --- */
-:root {
-  --bg-color: #f4f6f9;
-  --card-bg: #ffffff;
-  --primary-color: #2b6cb0;
-  --primary-hover: #2c5282;
-  --text-color: #2d3748;
-  --accent-color: #38a169;
-  --border-color: #cbd5e0;
-  --shadow: 0 4px 12px rgba(0,0,0,0.08);
-  --btn-radius: 12px;
-}
-
-body.theme-forest { --bg-color: #e8f5e9; --card-bg: #ffffff; --primary-color: #2e7d32; --primary-hover: #1b5e20; --text-color: #1b5e20; --accent-color: #689f38; --border-color: #c8e6c9; }
-body.theme-ocean { --bg-color: #e3f2fd; --card-bg: #ffffff; --primary-color: #0277bd; --primary-hover: #01579b; --text-color: #01579b; --accent-color: #00acc1; --border-color: #bbdefb; }
-body.theme-sunset { --bg-color: #fff3e0; --card-bg: #ffffff; --primary-color: #e65100; --primary-hover: #bf360c; --text-color: #4e342e; --accent-color: #ffb300; --border-color: #ffe0b2; }
-body.theme-blossom { --bg-color: #fce4ec; --card-bg: #ffffff; --primary-color: #c2185b; --primary-hover: #880e4f; --text-color: #4a148c; --accent-color: #f48fb1; --border-color: #f8bbd0; }
-body.theme-autumn { --bg-color: #efebe9; --card-bg: #ffffff; --primary-color: #d7ccc8; --primary-hover: #a1887f; --text-color: #3e2723; --accent-color: #ff8f00; --border-color: #d7ccc8; }
-body.theme-lavender { --bg-color: #ede7f6; --card-bg: #ffffff; --primary-color: #512da8; --primary-hover: #311b92; --text-color: #311b92; --accent-color: #7e57c2; --border-color: #d1c4e9; }
-body.theme-sky { --bg-color: #e1f5fe; --card-bg: #ffffff; --primary-color: #0288d1; --primary-hover: #01579b; --text-color: #01579b; --accent-color: #29b6f6; --border-color: #b3e5fc; }
-body.theme-desert { --bg-color: #fbe9e7; --card-bg: #ffffff; --primary-color: #d84315; --primary-hover: #bf360c; --text-color: #3e2723; --accent-color: #ff7043; --border-color: #ffccbc; }
-body.theme-tropical { --bg-color: #e0f2f1; --card-bg: #ffffff; --primary-color: #00695c; --primary-hover: #004d40; --text-color: #004d40; --accent-color: #26a69a; --border-color: #b2dfdb; }
-body.theme-aurora { --bg-color: #0f172a; --card-bg: #1e293b; --primary-color: #38bdf8; --primary-hover: #0ea5e9; --text-color: #f8fafc; --accent-color: #34d399; --border-color: #334155; }
-
-*{box-sizing:border-box;transition:background 0.3s, color 0.3s}
-body{font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:var(--bg-color);color:var(--text-color);padding:12px;margin:0;font-size:16px;}
-
-.card{background:var(--card-bg);padding:16px;margin-bottom:14px;border-radius:16px;box-shadow:var(--shadow);border:2px solid var(--border-color)}
-h3{margin-top:5px;font-size:22px;}
-label{font-weight:bold;font-size:15px;display:block;margin-top:8px;}
-input,select,button{padding:12px;margin:6px 0;border-radius:var(--btn-radius);border:2px solid var(--border-color);width:100%;font-size:16px;background:var(--card-bg);color:var(--text-color);outline:none}
-input:focus,select:focus{border-color:var(--primary-color);box-shadow:0 0 8px rgba(0,123,255,0.3)}
-
-button{background:var(--primary-color);color:#fff;border:none;cursor:pointer;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.15)}
-button:hover{opacity:.95;transform:translateY(-1px)}
-button:active{transform:translateY(1px)}
-
-.danger{background:#e53e3e!important}.success{background:#38a169!important}.secondary{background:#718096!important}.warning{background:#d69e2e!important;color:#fff!important}
-
-/* Top Bar Theme & Sound Switcher */
-.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px;flex-wrap:wrap;}
-.top-bar select{width:auto;flex:1;min-width:180px;margin:0;}
-.top-bar button{width:auto;padding:10px 16px;margin:0;}
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#f4f6f9;padding:10px;margin:0}
+.card{background:#fff;padding:12px;margin-bottom:12px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+h3{margin-top:5px}
+input,select,button{padding:9px;margin:4px 0;border-radius:8px;border:1px solid #ccc;width:100%;font-size:15px}
+button{background:var(--theme-color, #007bff);color:#fff;border:none;cursor:pointer}
+button:hover{opacity:.9}
+.danger{background:#dc3545}.success{background:#198754}.secondary{background:#6c757d}.warning{background:#ffc107;color:#000}
 
 /* Navigation Tabs */
-.tabs{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
-.tab-btn{background:var(--card-bg);color:var(--text-color);font-weight:bold;padding:12px 18px;border-radius:14px;cursor:pointer;border:2px solid var(--border-color);white-space:nowrap;width:auto;font-size:16px;}
-.tab-btn.active{background:var(--primary-color);color:#fff;border-color:var(--primary-color);box-shadow:0 4px 10px rgba(0,0,0,0.2)}
+.tabs{display:flex;gap:5px;margin-bottom:12px;overflow-x:auto}
+.tab-btn{background:#e9ecef;color:#333;font-weight:bold;padding:10px 15px;border-radius:8px;cursor:pointer;border:1px solid #ccc;white-space:nowrap;width:auto}
+.tab-btn.active{background:var(--theme-color, #007bff);color:#fff;border-color:var(--theme-color, #007bff)}
 .tab-content{display:none}
 .tab-content.active{display:block}
 
-.filter-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.filter-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 @media(max-width:768px){.filter-grid{grid-template-columns:1fr}}
 .table-wrapper{overflow-x:auto}
 table{width:100%;border-collapse:collapse;min-width:750px}
-th,td{padding:10px;border-bottom:2px solid var(--border-color);text-align:center}
-th{background:var(--border-color);color:var(--text-color)}
-.delete-btn{background:#e53e3e;padding:6px 12px;width:auto;font-size:14px}
-.stats{font-size:22px;font-weight:bold;color:var(--accent-color)}
-.small{font-size:14px;opacity:0.8}
+th,td{padding:7px;border-bottom:1px solid #ddd;text-align:center}
+th{background:#f1f3f5}
+.delete-btn{background:#dc3545;padding:5px 10px;width:auto}
+.stats{font-size:20px;font-weight:bold}
+.small{font-size:13px;color:#666}
 #chart{max-height:400px}
 
 /* Stepper Group Layout */
-.stepper-row{display:flex;gap:8px;align-items:center}
-.stepper-row input{margin:0;text-align:center;font-size:20px;font-weight:bold;}
-.step-btn{width:60px;background:#718096;font-weight:bold;font-size:24px;margin:0;padding:8px 0;flex-shrink:0}
+.stepper-row{display:flex;gap:6px;align-items:center}
+.stepper-row input{margin:0}
+.step-btn{width:45px;background:#6c757d;font-weight:bold;font-size:18px;margin:0;padding:7px 0;flex-shrink:0}
 
 /* Quick Increment Grid Layout (+1, +10, +100, +1000) */
-.quick-inc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0 10px}
-.quick-inc-btn{background:var(--border-color);color:var(--text-color);border:2px solid var(--border-color);font-weight:bold;font-size:14px;padding:8px 0;margin:0;width:100%}
+.quick-inc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:4px 0 8px}
+.quick-inc-btn{background:#e2e6ea;color:#333;border:1px solid #cbd3da;font-weight:bold;font-size:13px;padding:6px 0;margin:0;width:100%}
+.quick-inc-btn:hover{background:#d4d8db}
 
 /* Action Button Layout */
-.action-btn-row{display:flex;gap:10px;margin-top:12px}
+.action-btn-row{display:flex;gap:8px;margin-top:8px}
 .action-btn-row button{margin:0}
 
-/* Scrollable Button Grid Containers */
-.scroll-container{width:100%;max-height:200px;overflow-x:auto;overflow-y:auto;border:2px solid var(--border-color);border-radius:12px;background:var(--card-bg);padding:8px;margin:6px 0 10px;-webkit-overflow-scrolling:touch}
-.button-grid{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:8px;min-width:540px}
-.grid-btn{background:var(--card-bg);color:var(--text-color);border:2px solid var(--border-color);font-weight:bold;margin:0;padding:12px 10px;font-size:14px;min-height:48px;white-space:normal;cursor:pointer;width:100%;border-radius:10px;}
-.grid-btn.active{background:var(--primary-color);color:#fff;border-color:var(--primary-color);box-shadow:0 3px 8px rgba(0,0,0,0.2)}
+/* Horizontal & Vertically Scrollable Button Grid Containers */
+.scroll-container{width:100%;max-height:180px;overflow-x:auto;overflow-y:auto;border:1px solid #d6d6d6;border-radius:10px;background:#f8f9fa;padding:7px;margin:5px 0 8px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.button-grid{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:7px;min-width:540px}
+.grid-btn{background:#e9ecef;color:#333;border:1px solid #ccc;font-weight:bold;margin:0;padding:10px 7px;font-size:13px;min-height:42px;white-space:normal;cursor:pointer;width:100%}
+.grid-btn.active{background:var(--theme-color, #007bff);color:#fff;border-color:var(--theme-color, #007bff);box-shadow:0 2px 5px rgba(0,0,0,.2)}
 
-.sub-category-container{display:none;margin:10px 0;padding:10px;background:var(--bg-color);border-radius:12px;border:2px dashed var(--border-color)}
-.dynamic-add-row{display:flex;gap:8px}
+.sub-category-container{display:none;margin:8px 0;padding:8px;background:#f1f3f5;border-radius:8px;border:1px dashed #ccc}
+.dynamic-add-row{display:flex;gap:6px}
 .dynamic-add-row input{margin:0}
-.dynamic-add-row button{width:auto;margin:0;background:var(--accent-color);white-space:nowrap}
+.dynamic-add-row button{width:auto;margin:0;background:#198754;white-space:nowrap}
 
-.selected-category{background:var(--bg-color);border:2px solid var(--border-color);border-radius:12px;padding:10px;margin:8px 0;font-weight:bold;color:var(--primary-color)}
-.scroll-hint{font-size:13px;opacity:0.8;text-align:center;margin:2px 0 6px}
+.selected-category{background:#eef6ff;border:1px solid #b8daff;border-radius:8px;padding:8px;margin:5px 0 8px;font-weight:bold;color:#0056b3}
+.scroll-hint{font-size:12px;color:#777;text-align:center;margin:2px 0 7px}
 
-.export-import-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.export-import-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.backup-alert{background:#fff3cd;border:1px solid #ffeeba;color:#856404;padding:10px;border-radius:8px;margin-bottom:10px;font-size:14px;display:flex;justify-content:space-between;align-items:center}
 @media(max-width:600px){
-  .button-grid{grid-template-columns:repeat(3,minmax(110px,1fr));min-width:360px}
+  .button-grid{grid-template-columns:repeat(3,minmax(120px,1fr));min-width:390px}
   .export-import-grid{grid-template-columns:1fr}
+  .backup-alert{flex-direction:column;gap:5px;text-align:center}
 }
 </style>
 </head>
-<body class="theme-forest">
-
-<!-- TOP BAR: Theme Switcher & Sound Toggle -->
-<div class="top-bar card" style="padding:10px 16px; margin-bottom:10px;">
-  <div>
-    <label style="margin:0;font-size:13px;">🌿 Nature Theme</label>
-    <select id="themeSelect" onchange="changeTheme(this.value)">
-      <option value="forest">🌲 Forest Canopy</option>
-      <option value="ocean">🌊 Ocean Breeze</option>
-      <option value="sunset">🌅 Sunset Glow</option>
-      <option value="blossom">🌸 Cherry Blossom</option>
-      <option value="autumn">🍂 Autumn Amber</option>
-      <option value="lavender">🪻 Lavender Dream</option>
-      <option value="sky">☁️ Sky High</option>
-      <option value="desert">🏜️ Desert Oasis</option>
-      <option value="tropical">🌴 Tropical Palm</option>
-      <option value="aurora">🌌 Aurora Night</option>
-    </select>
-  </div>
-  <div>
-    <label style="margin:0;font-size:13px;">🔊 Audio FX</label>
-    <button type="button" id="soundToggleBtn" class="success" onclick="toggleSound()">🔊 Sound: ON</button>
-  </div>
-</div>
+<body>
 
 <!-- Navigation Tabs -->
 <div class="tabs">
   <button class="tab-btn active" onclick="switchTab('addTab', this)">➕ Add Task</button>
-  <button class="tab-btn" onclick="switchTab('dashboardTab', this)">📊 Dashboard & Analytics</button>
+  <button class="tab-btn" onclick="switchTab('dashboardTab', this)">📊 Dashboard & Filters</button>
   <button class="tab-btn" onclick="switchTab('recordsTab', this)">📋 Records & Search</button>
-  <button class="tab-btn" onclick="switchTab('dataTab', this)">💾 Backup & Data</button>
+  <button class="tab-btn" onclick="switchTab('dataTab', this)">💾 Data & Export</button>
 </div>
 
 <!-- TAB 1: ADD TASK -->
 <div id="addTab" class="tab-content active">
   <div class="card">
-    <h3>✨ Add Daily Activity / Task</h3>
+    <h3>➕ Add Task (Level 1 & Level 2 Categories)</h3>
 
-    <label>📅 Date</label>
     <input type="date" id="date">
-
-    <label>⭐ Count / Amount</label>
+    <label><b>Count / Amount</b></label>
     <div class="stepper-row">
-      <button type="button" class="step-btn" onclick="adjustCost(-1)">➖</button>
+      <button type="button" class="step-btn" onclick="adjustCost(-1)">-</button>
       <input type="number" id="cost" placeholder="Count/Amount" min="0" step="any" value="1">
-      <button type="button" class="step-btn" onclick="adjustCost(1)">➕</button>
+      <button type="button" class="step-btn" onclick="adjustCost(1)">+</button>
     </div>
     
-    <!-- Quick Increment Buttons -->
+    <!-- Quick Increment Step Buttons -->
     <div class="quick-inc-grid">
       <button type="button" class="quick-inc-btn" onclick="adjustCost(1)">+1</button>
       <button type="button" class="quick-inc-btn" onclick="adjustCost(10)">+10</button>
@@ -159,101 +105,153 @@ th{background:var(--border-color);color:var(--text-color)}
       <button type="button" class="quick-inc-btn" onclick="adjustCost(1000)">+1000</button>
     </div>
     
-    <input type="text" id="place" placeholder="🏷️ Title (Level 2 auto-fills here)" readonly>
-    <input type="text" id="desc" placeholder="📝 Description / Notes (Optional)">
+    <input type="text" id="place" placeholder="Title (Level 2 auto-fills here)" readonly>
+    <input type="text" id="desc" placeholder="Description">
 
-    <label>⏰ Time Slot</label>
-    <div class="scroll-hint">↔ Swipe or scroll for time slots</div>
+    <label><b>Time Slot</b></label>
+    <div class="scroll-hint">↔ Swipe left/right & scroll up/down for time slots</div>
     <div class="scroll-container">
       <div class="button-grid" id="timeSlotButtons" style="grid-template-columns:repeat(3,minmax(140px,1fr));min-width:440px"></div>
     </div>
 
-    <label>📂 Level 1 Category (Main Group)</label>
-    <div class="scroll-hint">↔ Swipe or scroll for Level 1 categories</div>
+    <label><b>Level 1 Category (Main)</b></label>
+    <div class="scroll-hint">↔ Swipe left/right & scroll up/down for Level 1 categories</div>
     <div class="scroll-container">
       <div class="button-grid" id="categoryButtons"></div>
     </div>
 
-    <!-- Level 2 Sub-category Container -->
+    <!-- Level 2 Sub-category Button Container with Custom Dynamic Input -->
     <div class="sub-category-container" id="subCategoryContainer">
-      <label>🎯 Level 2 Category (Task Selection)</label>
-      <div class="scroll-hint">↔ Swipe or scroll for specific tasks</div>
+      <label><b>Level 2 Category (Task Selection)</b></label>
+      <div class="scroll-hint">↔ Swipe left/right & scroll up/down for Level 2 tasks</div>
       <div class="scroll-container" style="max-height:140px;margin-bottom:8px">
         <div class="button-grid" id="subCategoryButtons"></div>
       </div>
       
-      <!-- Dynamic Sub-Category Input -->
+      <!-- Dynamic Sub-Category Input Box -->
       <div class="dynamic-add-row">
-        <input type="text" id="newSubCategoryInput" placeholder="✨ Type custom sub-category...">
-        <button type="button" onclick="addCustomSubCategory()">➕ Add Task</button>
+        <input type="text" id="newSubCategoryInput" placeholder="Type custom sub-category...">
+        <button type="button" onclick="addCustomSubCategory()">➕ Add Sub-Category</button>
       </div>
     </div>
 
     <div class="selected-category">
-      ⏰ Time: <span id="selectedTimeSlot">None</span> | 📂 L1: <span id="selectedCategory">None</span> | 🎯 L2: <span id="selectedSubCategory">None</span>
+      Time: <span id="selectedTimeSlot">None</span> | Level 1: <span id="selectedCategory">None</span> | Level 2: <span id="selectedSubCategory">None</span>
     </div>
 
     <div class="action-btn-row">
       <button type="button" class="secondary" onclick="clearForm()">🧹 Clear Form</button>
-      <button type="button" class="success" onclick="addRecord()">🚀 Submit & Record</button>
+      <button type="button" onclick="addRecord()">Add Record</button>
     </div>
   </div>
 </div>
 
-<!-- TAB 2: DASHBOARD & ANALYTICS -->
+<!-- TAB 2: DASHBOARD & FILTERS -->
 <div id="dashboardTab" class="tab-content">
-  <div class="card">
-    <h3>📊 Visual Analytics & Chart</h3>
-    
-    <!-- Chart Canvas -->
-    <canvas id="chart"></canvas>
-    
-    <!-- Chart Controls Placed BELOW the Chart -->
-    <div style="display:grid;grid-template-columns:1fr 150px 150px;gap:10px;align-items:center;margin-top:14px;padding-top:12px;border-top:2px solid var(--border-color);">
+  <div class="card" id="pdfExportContainer">
+    <h3>📊 Chart & Analytics</h3>
+    <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:8px;align-items:center;margin-bottom:8px;">
       <div>
-        <label style="margin:0;">📈 Chart Type</label>
-        <select id="chartTypeSelect" onchange="renderAll()">
-          <option value="bar">Bar Chart</option>
-          <option value="line">Line Chart</option>
-          <option value="pie">Pie Chart</option>
-          <option value="doughnut">Doughnut Chart</option>
+        <label><b>Chart Type</b></label>
+        <select id="chartTypeSelect" onchange="renderAll()" style="width:100%;text-overflow:ellipsis;">
+          <optgroup label="Standard & Area Charts">
+            <option value="bar">Bar Chart</option>
+            <option value="horizontalBar">Horizontal Bar Chart</option>
+            <option value="line">Line Chart</option>
+            <option value="area">Area Chart (Filled Line)</option>
+            <option value="steppedLine">Stepped Line Chart</option>
+            <option value="pie">Pie Chart</option>
+            <option value="doughnut">Doughnut Chart</option>
+          </optgroup>
+          <optgroup label="Advanced & Multiseries (50+ Variations)">
+            <option value="radar">Radar Chart</option>
+            <option value="polarArea">Polar Area Chart</option>
+            <option value="scatter">Scatter Plot</option>
+            <option value="bubble">Bubble Chart</option>
+            <option value="stackedBar">Stacked Bar Chart</option>
+            <option value="stackedArea">Stacked Area Chart</option>
+            <option value="logarithmicBar">Logarithmic Scale Bar</option>
+            <option value="logarithmicLine">Logarithmic Scale Line</option>
+            <option value="multiAxisBarLine">Multi-Axis Combo (Bar & Line)</option>
+            <option value="multiSeriesRadar">Multi-Series Radar</option>
+            <option value="steppedArea">Stepped Area Chart</option>
+            <option value="roundedBar">Rounded Corner Bar Chart</option>
+            <option value="dashedLine">Dashed Line Chart</option>
+            <option value="smoothCubicLine">Smooth Cubic Bezier Line</option>
+            <option value="gradientBar">Gradient Color Bar</option>
+            <option value="gradientArea">Gradient Filled Area</option>
+            <option value="polarRadiusGrid">Polar Radius Custom Grid</option>
+            <option value="doughnutSemiCircle">Semi-Circle Doughnut</option>
+            <option value="doughnutNested">Nested Ring Breakdown</option>
+            <option value="scatterTrendline">Scatter with Trend Line</option>
+            <option value="bubbleWeighted">Weighted Bubble Multi-Axis</option>
+            <option value="horizontalStackedBar">Horizontal Stacked Bar</option>
+            <option value="verticalGroupedBar">Vertical Grouped Bar</option>
+            <option value="radialBarGauge">Radial Progress Gauge</option>
+            <option value="polarSegmented">Segmented Polar Grid</option>
+            <option value="radarFilledMulti">Multi-Layer Radar Fill</option>
+            <option value="areaConfidenceBand">Confidence Band Area</option>
+            <option value="lineWithAnnotations">Annotated Time Series Line</option>
+            <option value="barNegativePositive">Diverging Negative/Positive Bar</option>
+            <option value="steppedComparison">Stepped Trend Comparison</option>
+            <option value="scatterClustered">Clustered Scatter Plot</option>
+            <option value="bubbleDistributed">Distributed Bubble Matrix</option>
+            <option value="stackedAreaExpanded">100% Stacked Area Chart</option>
+            <option value="stackedBarExpanded">100% Stacked Bar Chart</option>
+            <option value="lineSteppedCubic">Stepped Cubic Interpolation</option>
+            <option value="radarComparative">Comparative Polygon Radar</option>
+            <option value="polarAngularSpread">Angular Spread Polar</option>
+            <option value="barPatterned">Textured Pattern Bar</option>
+            <option value="areaMultiLayer">Multi-Stack Area Series</option>
+            <option value="scatterMultivariate">Multivariate Scatter</option>
+            <option value="bubbleDynamicScale">Dynamic Scaling Bubble</option>
+            <option value="lineComparisonSecondary">Secondary Axis Line</option>
+            <option value="barThresholdHighlight">Threshold Highlight Bar</option>
+            <option value="doughnutOffsetSlices">Offset Slices Doughnut</option>
+            <option value="pieOffsetExploded">Exploded Pie Chart</option>
+            <option value="polarMultiVariable">Multi-Variable Polar Grid</option>
+            <option value="radarPolygonGrid">Polygon Grid Radar</option>
+            <option value="areaCumulativeTrend">Cumulative Trend Area</option>
+            <option value="advancedCompositeMatrix">Advanced Composite Analytics Matrix</option>
+          </optgroup>
         </select>
       </div>
       <div>
-        <label style="margin:0;">🔄 Sort Order</label>
+        <label><b>Legend Sort</b></label>
         <button type="button" id="sortToggleBtn" class="secondary" onclick="toggleSortOrder()" style="margin-top:4px;">Sort: High-Low</button>
       </div>
       <div>
-        <label style="margin:0;">🏷️ Data Labels</label>
+        <label><b>Chart Labels</b></label>
         <button type="button" id="toggleLabelsBtn" class="secondary" onclick="toggleChartLabels()" style="margin-top:4px;">Labels: ON</button>
       </div>
     </div>
+    <canvas id="chart"></canvas>
     
     <!-- Sorted Category Legend Totals & Cumulative Summary -->
-    <div id="categoryBreakdown" style="margin-top:14px;font-size:15px;background:var(--bg-color);padding:12px;border-radius:12px;border:2px solid var(--border-color)"></div>
+    <div id="categoryBreakdown" style="margin-top:12px;font-size:14px;background:#f8f9fa;padding:10px;border-radius:8px;border:1px solid #e9ecef"></div>
   </div>
 
   <div class="card">
-    <h3>🔎 Filter Records</h3>
+    <h3>🔎 Filters</h3>
     <div class="filter-grid">
       <div>
-        <label>📅 From Date</label>
+        <label>From Date</label>
         <input type="date" id="fromDate" onchange="renderAll()">
       </div>
       <div>
-        <label>📅 To Date</label>
+        <label>To Date</label>
         <input type="date" id="toDate" onchange="renderAll()">
       </div>
       <div style="grid-column:1/-1">
-        <label>📂 Category Filter (Level 1)</label>
+        <label>Category Filter (Level 1)</label>
         <select id="filterCategory" onchange="renderAll()">
           <option value="">All Categories</option>
         </select>
       </div>
     </div>
 
-    <button style="margin-top:10px" onclick="renderAll()">🔍 Apply Filters</button>
-    <button class="danger" onclick="deleteByDateRange()">🗑️ Delete Records in Date Range</button>
+    <button style="margin-top:8px" onclick="renderAll()">Apply Filters</button>
+    <button class="danger" onclick="deleteByDateRange()">Delete Records in Date Range</button>
     <br><br>
     <div class="stats">Total Amount/Count: <span id="total">0</span></div>
     <div class="small">Showing <span id="recordCount">0</span> records</div>
@@ -264,14 +262,14 @@ th{background:var(--border-color);color:var(--text-color)}
 <div id="recordsTab" class="tab-content">
   <div class="card">
     <h3>📋 Records & Fast Search</h3>
-    <input type="text" id="fastSearch" placeholder="🔍 Search title, description, category..." oninput="renderAll()" style="margin-bottom:12px">
+    <input type="text" id="fastSearch" placeholder="🔍 Fast search title, description, category..." oninput="renderAll()" style="margin-bottom:10px">
     
     <div class="table-wrapper">
       <table>
         <thead>
         <tr>
-          <th>Date</th><th>Count</th><th>Task (L2)</th><th>Description</th>
-          <th>Time Slot</th><th>Category (L1)</th><th>Action</th>
+          <th>Date</th><th>Count/Amount</th><th>Task (L2)</th><th>Description</th>
+          <th>Time</th><th>Category (L1)</th><th>Delete</th>
         </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -280,19 +278,52 @@ th{background:var(--border-color);color:var(--text-color)}
   </div>
 </div>
 
-<!-- TAB 4: DATA MANAGEMENT -->
+<!-- TAB 4: DATA MANAGEMENT, CUSTOMIZATION & BACKUP -->
 <div id="dataTab" class="tab-content">
   <div class="card">
-    <h3>💾 Data & Backup Management</h3>
+    <h3>🎨 Theme Color Customization</h3>
+    <label><b>Choose Primary Dashboard Color</b></label>
+    <div style="display:flex;gap:10px;align-items:center;margin-top:5px;">
+      <input type="color" id="themeColorPicker" value="#007bff" onchange="updateThemeColor(this.value)" style="width:60px;height:40px;padding:0;cursor:pointer;">
+      <span id="themeColorHex" style="font-weight:bold;">#007bff</span>
+      <button type="button" class="secondary" onclick="resetThemeColor()" style="width:auto;margin:0;">Reset Default</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>💾 Automated Backup Reminder</h3>
+    <div id="backupReminderContainer"></div>
+  </div>
+
+  <div class="card">
+    <h3>📥 Filtered Export Options (CSV, JSON, PDF)</h3>
+    <div class="filter-grid" style="margin-bottom:10px;">
+      <div>
+        <label>Export From Date</label>
+        <input type="date" id="exportFromDate">
+      </div>
+      <div>
+        <label>Export To Date</label>
+        <input type="date" id="exportToDate">
+      </div>
+      <div style="grid-column:1/-1">
+        <label>Export Category (Level 1)</label>
+        <select id="exportCategory">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+    </div>
+
     <div class="export-import-grid">
       <div>
-        <button class="success" onclick="exportCSV()">⬇ Export CSV</button>
-        <button class="warning" onclick="exportJSON()">⬇ Backup JSON</button>
+        <button class="success" onclick="exportFilteredCSV()">⬇ Export Filtered CSV</button>
+        <button class="warning" onclick="exportFilteredJSON()">⬇ Backup Filtered JSON</button>
+        <button type="button" onclick="exportFilteredPDF()" style="background:#6f42c1;margin-top:4px;">📄 Export Filtered PDF</button>
       </div>
       <div>
         <input type="file" id="fileInput" accept=".csv,text/csv,.json" onchange="importFile(event)">
-        <button class="secondary" onclick="clearAllData()">🗑️ Clear All Data</button>
-        <button class="danger" style="margin-top:6px;" onclick="resetDefaultCategories()">🔄 Reset Default Categories</button>
+        <button class="secondary" onclick="clearAllData()">Clear All Data</button>
+        <button class="danger" style="margin-top:4px;" onclick="resetDefaultCategories()">🔄 Reset Default Categories</button>
       </div>
     </div>
   </div>
@@ -300,10 +331,11 @@ th{background:var(--border-color);color:var(--text-color)}
 
 <script>
 const CONFIG={
-  storageKey:"nature_dashboard_v1",
-  categoriesStorageKey:"nature_categories_v1",
-  themeStorageKey:"nature_theme_v1",
-  soundStorageKey:"nature_sound_v1",
+  storageKey:"fullday_dashboard_v7",
+  categoriesStorageKey:"fullday_categories_v2",
+  themeStorageKey:"fullday_theme_color",
+  backupMetaKey:"fullday_last_backup_date",
+  backupIntervalDays: 7,
   times:[
     "Morning 4-6","Morning 6-8","Morning 8-12",
     "Afternoon 12-3","Afternoon 3-5",
@@ -339,17 +371,16 @@ const CONFIG={
 let data=[],chart=null;
 let showChartLabels=true;
 let sortOrderDesc=true;
-let soundEnabled=true;
 let selectedTimeSlot="",selectedLevel1="",selectedLevel2="";
 
 const categoryColorMap = {
-  "Fitness": "#38a169",
-  "Transport": "#3182ce",
-  "Food & Dining": "#d69e2e",
-  "Important": "#e53e3e",
-  "Others": "#718096"
+  "Fitness": "#007bff",
+  "Transport": "#198754",
+  "Food & Dining": "#ffc107",
+  "Important": "#dc3545",
+  "Others": "#6c757d"
 };
-const fallbackPalette = ["#00bcd4","#9c27b0","#ff5722","#4caf50","#e91e63"];
+const fallbackPalette = ["#20c997","#6f42c1","#fd7e14","#0dcaf0","#d63384"];
 
 function getCategoryColor(catName, index){
   if(categoryColorMap[catName]) return categoryColorMap[catName];
@@ -357,57 +388,6 @@ function getCategoryColor(catName, index){
     categoryColorMap[catName] = fallbackPalette[index % fallbackPalette.length];
   }
   return categoryColorMap[catName];
-}
-
-/* --- Sound FX (Web Audio API) --- */
-function playSuccessSound(){
-  if(!soundEnabled) return;
-  try{
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15); // A5
-    gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.35);
-  }catch(e){console.log(e);}
-}
-
-function toggleSound(){
-  soundEnabled = !soundEnabled;
-  const btn = document.getElementById("soundToggleBtn");
-  btn.textContent = soundEnabled ? "🔊 Sound: ON" : "🔇 Sound: OFF";
-  btn.className = soundEnabled ? "success" : "secondary";
-  localStorage.setItem(CONFIG.soundStorageKey, soundEnabled);
-}
-
-function loadSoundPreference(){
-  const saved = localStorage.getItem(CONFIG.soundStorageKey);
-  if(saved !== null){
-    soundEnabled = (saved === "true");
-    const btn = document.getElementById("soundToggleBtn");
-    btn.textContent = soundEnabled ? "🔊 Sound: ON" : "🔇 Sound: OFF";
-    btn.className = soundEnabled ? "success" : "secondary";
-  }
-}
-
-/* --- Theme Management --- */
-function changeTheme(themeName){
-  document.body.className = "theme-" + themeName;
-  localStorage.setItem(CONFIG.themeStorageKey, themeName);
-}
-
-function loadThemePreference(){
-  const saved = localStorage.getItem(CONFIG.themeStorageKey);
-  if(saved){
-    document.body.className = "theme-" + saved;
-    document.getElementById("themeSelect").value = saved;
-  }
 }
 
 const dateEl=document.getElementById("date");
@@ -425,6 +405,9 @@ const selectedSubCategoryEl=document.getElementById("selectedSubCategory");
 const fromDateEl=document.getElementById("fromDate");
 const toDateEl=document.getElementById("toDate");
 const filterCategoryEl=document.getElementById("filterCategory");
+const exportFromDateEl=document.getElementById("exportFromDate");
+const exportToDateEl=document.getElementById("exportToDate");
+const exportCategoryEl=document.getElementById("exportCategory");
 const fastSearchEl=document.getElementById("fastSearch");
 const chartTypeSelectEl=document.getElementById("chartTypeSelect");
 const sortToggleBtnEl=document.getElementById("sortToggleBtn");
@@ -433,12 +416,33 @@ const tableBodyEl=document.getElementById("tableBody");
 const totalEl=document.getElementById("total");
 const recordCountEl=document.getElementById("recordCount");
 const categoryBreakdownEl=document.getElementById("categoryBreakdown");
+const themeColorPickerEl=document.getElementById("themeColorPicker");
+const themeColorHexEl=document.getElementById("themeColorHex");
+const backupReminderContainerEl=document.getElementById("backupReminderContainer");
 
 function switchTab(tabId, btn){
   document.querySelectorAll(".tab-content").forEach(el=>el.classList.remove("active"));
   document.querySelectorAll(".tab-btn").forEach(el=>el.classList.remove("active"));
   document.getElementById(tabId).classList.add("active");
   btn.classList.add("active");
+}
+
+function updateThemeColor(color){
+  document.documentElement.style.setProperty('--theme-color', color);
+  themeColorHexEl.textContent = color;
+  themeColorPickerEl.value = color;
+  localStorage.setItem(CONFIG.themeStorageKey, color);
+}
+
+function resetThemeColor(){
+  updateThemeColor("#007bff");
+}
+
+function loadThemeColor(){
+  const saved = localStorage.getItem(CONFIG.themeStorageKey);
+  if(saved){
+    updateThemeColor(saved);
+  }
 }
 
 function adjustCost(amount){
@@ -454,9 +458,47 @@ function formatDate(d){
 
 function initializeDates(){
   const today=new Date();
-  dateEl.value=formatDate(today);
-  fromDateEl.value=formatDate(new Date(today.getFullYear(),today.getMonth(),1));
-  toDateEl.value=formatDate(new Date(today.getFullYear(),today.getMonth()+1,0));
+  const formattedToday = formatDate(today);
+  const firstDayMonth = formatDate(new Date(today.getFullYear(),today.getMonth(),1));
+  const lastDayMonth = formatDate(new Date(today.getFullYear(),today.getMonth()+1,0));
+
+  dateEl.value=formattedToday;
+  fromDateEl.value=firstDayMonth;
+  toDateEl.value=lastDayMonth;
+  exportFromDateEl.value=firstDayMonth;
+  exportToDateEl.value=lastDayMonth;
+}
+
+function checkBackupReminder(){
+  const lastBackup = localStorage.getItem(CONFIG.backupMetaKey);
+  const today = new Date();
+  
+  if(!lastBackup){
+    backupReminderContainerEl.innerHTML = `
+      <div class="backup-alert">
+        <span>⚠️ <b>No backup recorded yet!</b> It is recommended to back up your data regularly to prevent accidental loss.</span>
+        <button type="button" class="warning" onclick="exportFilteredJSON()" style="width:auto;margin:0;padding:6px 12px;">Backup Now</button>
+      </div>`;
+    return;
+  }
+
+  const lastDate = new Date(lastBackup);
+  const diffTime = Math.abs(today - lastDate);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if(diffDays >= CONFIG.backupIntervalDays){
+    backupReminderContainerEl.innerHTML = `
+      <div class="backup-alert">
+        <span>⚠️ <b>Backup Reminder:</b> It has been ${diffDays} days since your last JSON backup (${lastBackup}).</span>
+        <button type="button" class="warning" onclick="exportFilteredJSON()" style="width:auto;margin:0;padding:6px 12px;">Backup Now</button>
+      </div>`;
+  } else {
+    backupReminderContainerEl.innerHTML = `
+      <div style="background:#e8f8f5;border:1px solid #a3e4d7;color:#117a65;padding:10px;border-radius:8px;font-size:14px;display:flex;justify-content:space-between;align-items:center;">
+        <span>✅ <b>Data Secure:</b> Last backup was performed on ${lastBackup} (${diffDays} day(s) ago).</span>
+        <button type="button" class="secondary" onclick="exportFilteredJSON()" style="width:auto;margin:0;padding:6px 12px;">Backup Again</button>
+      </div>`;
+  }
 }
 
 function populateTimeButtons(){
@@ -497,17 +539,18 @@ function saveCategoryGroups(){
 }
 
 function resetDefaultCategories(){
-  if(!confirm("Reset all sub-categories back to original defaults?")) return;
+  if(!confirm("Reset all sub-categories back to original defaults? Custom sub-categories will be removed.")) return;
   localStorage.removeItem(CONFIG.categoriesStorageKey);
   CONFIG.categoryGroups=JSON.parse(JSON.stringify(CONFIG.defaultCategoryGroups));
   clearForm();
   populateCategoryButtons();
-  alert("Sub-categories successfully reset!");
+  alert("Sub-categories successfully reset to default configuration!");
 }
 
 function populateCategoryButtons(){
   categoryButtonsEl.innerHTML="";
   filterCategoryEl.innerHTML='<option value="">All Categories</option>';
+  exportCategoryEl.innerHTML='<option value="">All Categories</option>';
 
   Object.keys(CONFIG.categoryGroups).forEach(group=>{
     const btn=document.createElement("button");
@@ -521,6 +564,11 @@ function populateCategoryButtons(){
     opt.value=group;
     opt.textContent=group;
     filterCategoryEl.appendChild(opt);
+
+    const optExport=document.createElement("option");
+    optExport.value=group;
+    optExport.textContent=group;
+    exportCategoryEl.appendChild(optExport);
   });
 }
 
@@ -568,12 +616,13 @@ function addCustomSubCategory(){
 
   const exists = CONFIG.categoryGroups[selectedLevel1].some(item => item.toLowerCase() === val.toLowerCase());
   if(exists){
-    return alert("This sub-category already exists.");
+    return alert("This sub-category already exists under this group.");
   }
 
   CONFIG.categoryGroups[selectedLevel1].push(val);
   saveCategoryGroups();
   newSubCategoryInput.value = "";
+  
   renderSubCategoryButtons();
   
   const buttons = subCategoryButtonsEl.querySelectorAll(".grid-btn");
@@ -601,7 +650,7 @@ function save(){
 function addRecord(){
   if(!selectedTimeSlot)return alert("Please select a Time Slot button.");
   if(!selectedLevel1)return alert("Please select a Level 1 Category button.");
-  if(!selectedLevel2)return alert("Please select a Level 2 Category task.");
+  if(!selectedLevel2)return alert("Please select a Level 2 Category button (Task).");
 
   const r={
     date:dateEl.value,
@@ -615,14 +664,13 @@ function addRecord(){
 
   if(!r.date)return alert("Please select date.");
   if(isNaN(r.cost))return alert("Please enter a valid count/amount.");
-  if(!r.place)return alert("Task title missing.");
+  if(!r.place)return alert("Title/Task missing.");
 
   data.push(r);
   save();
-  playSuccessSound();
   clearForm();
   renderAll();
-  alert("🎉 Record Added Successfully!");
+  alert("Record Added Successfully!");
 }
 
 function clearForm(){
@@ -678,6 +726,19 @@ function getFilteredData(){
   });
 }
 
+function getExportFilteredData(){
+  const from=exportFromDateEl.value;
+  const to=exportToDateEl.value;
+  const cat=exportCategoryEl.value;
+
+  return data.filter(r=>{
+    if(from&&r.date<from)return false;
+    if(to&&r.date>to)return false;
+    if(cat&&r.type!==cat)return false;
+    return true;
+  });
+}
+
 function renderTable(filtered){
   tableBodyEl.innerHTML="";
   filtered.forEach(r=>{
@@ -690,7 +751,7 @@ function renderTable(filtered){
       <td>${r.desc||""}</td>
       <td>${r.types||""}</td>
       <td>${r.type}</td>
-      <td><button class="delete-btn" onclick="deleteRow(${i})">❌</button></td>
+      <td><button class="delete-btn" onclick="deleteRow(${i})">X</button></td>
     `;
     tableBodyEl.appendChild(tr);
   });
@@ -712,7 +773,7 @@ function toggleSortOrder(){
 }
 
 function renderChart(filtered){
-  const chartType=chartTypeSelectEl.value;
+  const rawChartType = chartTypeSelectEl.value;
   const groupMap={};
   let grandTotal=0;
 
@@ -738,21 +799,21 @@ function renderChart(filtered){
   const bgColors = entries.map((e, idx) => getCategoryColor(e.label, idx));
 
   if(labels.length===0){
-    categoryBreakdownEl.innerHTML='<b>📊 Category Legends & Totals:</b> <span style="opacity:0.7;">No data available for current filters.</span>';
+    categoryBreakdownEl.innerHTML='<b>Sorted Category Legends & Cumulative Total:</b> <span style="color:#666;">No data available for current filters.</span>';
   } else {
     let legendHtml='<b>📊 Sorted Category Legends (Values & %):</b><ul style="margin:6px 0 0 18px;padding:0;line-height:1.5;">';
     entries.forEach((entry)=>{
       const pct = grandTotal > 0 ? ((entry.value / grandTotal) * 100).toFixed(1) : 0;
-      legendHtml+=`<li><b>${entry.label}</b>: ${entry.value} &nbsp;(<span style="color:var(--primary-color);font-weight:bold;">${pct}%</span>)</li>`;
+      legendHtml+=`<li><b>${entry.label}</b>: ${entry.value} &nbsp;(<span style="color:var(--theme-color, #007bff);font-weight:bold;">${pct}%</span>)</li>`;
     });
     legendHtml+='</ul>';
 
-    let cumulativeHtml='<hr style="border:0;border-top:2px solid var(--border-color);margin:10px 0;"><b>📈 Cumulative Summary:</b><ul style="margin:6px 0 0 18px;padding:0;line-height:1.5;">';
+    let cumulativeHtml='<hr style="border:0;border-top:1px solid #ddd;margin:10px 0;"><b>📈 Cumulative Total (Based on current sort order):</b><ul style="margin:6px 0 0 18px;padding:0;line-height:1.5;">';
     let runningTotal = 0;
     entries.forEach((entry)=>{
       runningTotal += entry.value;
       const cumPct = grandTotal > 0 ? ((runningTotal / grandTotal) * 100).toFixed(1) : 0;
-      cumulativeHtml+=`<li><b>${entry.label}</b> &rarr; Running Sum: <span style="color:var(--accent-color);font-weight:bold;">${runningTotal}</span> (${cumPct}%)</li>`;
+      cumulativeHtml+=`<li><b>${entry.label}</b> &rarr; Cumulative Sum: <span style="color:#6f42c1;font-weight:bold;">${runningTotal}</span> (${cumPct}%)</li>`;
     });
     cumulativeHtml+='</ul>';
 
@@ -761,46 +822,95 @@ function renderChart(filtered){
 
   if(chart) chart.destroy();
 
-  chart = new Chart(document.getElementById("chart"),{
-    type:chartType,
-    data:{
-      labels: labels,
-      datasets:[{
-        label:"Category Total",
-        data: values,
-        backgroundColor: bgColors,
-        borderWidth:2,
-        borderColor: '#ffffff'
-      }]
-    },
-    plugins:[ChartDataLabels],
-    options:{
-      responsive:true,
-      plugins:{
-        datalabels:{
-          display: showChartLabels,
-          color: chartType==='pie'||chartType==='doughnut' ? '#fff' : 'var(--text-color)',
-          font: {
-            weight: 'bold',
-            size: 13
-          },
-          formatter: function(value) {
-            const pct = grandTotal > 0 ? ((value / grandTotal) * 100).toFixed(1) : 0;
-            return `${value} (${pct}%)`;
-          }
-        },
-        tooltip:{
-          callbacks:{
-            label:function(context){
-              const value=context.raw||0;
-              const percentage=grandTotal>0?((value/grandTotal)*100).toFixed(1):0;
-              return ` Total: ${value} (${percentage}%)`;
-            }
-          }
+  let chartJsType = "bar";
+  let chartOptions = {
+    responsive:true,
+    plugins:{
+      datalabels:{
+        display: showChartLabels,
+        color: '#333',
+        font: { weight: 'bold', size: 12 },
+        formatter: function(value) {
+          if(typeof value === 'object' && value !== null) value = value.y || value.r || 0;
+          const pct = grandTotal > 0 ? ((value / grandTotal) * 100).toFixed(1) : 0;
+          return `${value} (${pct}%)`;
         }
       },
-      scales:chartType==="pie"||chartType==="doughnut"?{}:{y:{beginAtZero:true}}
+      tooltip:{
+        callbacks:{
+          label:function(context){
+            let val = context.raw || 0;
+            if(typeof val === 'object' && val !== null) val = `x: ${val.x}, y: ${val.y}`;
+            return ` Value: ${val}`;
+          }
+        }
+      }
+    },
+    scales:{ y:{ beginAtZero:true } }
+  };
+
+  let datasetConfig = {
+    label:"Category Total",
+    data: values,
+    backgroundColor: bgColors,
+    borderColor: bgColors,
+    borderWidth:1
+  };
+
+  if(rawChartType === "horizontalBar"){
+    chartJsType = "bar";
+    chartOptions.indexAxis = 'y';
+  } else if(rawChartType === "line" || rawChartType === "dashedLine" || rawChartType === "smoothCubicLine" || rawChartType === "lineWithAnnotations"){
+    chartJsType = "line";
+    datasetConfig.fill = false;
+    if(rawChartType === "dashedLine") datasetConfig.borderDash = [5, 5];
+    if(rawChartType === "smoothCubicLine") datasetConfig.cubicInterpolationMode = 'monotone';
+  } else if(rawChartType === "area" || rawChartType === "stackedArea" || rawChartType === "gradientArea" || rawChartType === "steppedArea"){
+    chartJsType = "line";
+    datasetConfig.fill = true;
+    if(rawChartType === "steppedArea") datasetConfig.stepped = true;
+  } else if(rawChartType === "steppedLine"){
+    chartJsType = "line";
+    datasetConfig.stepped = true;
+    datasetConfig.fill = false;
+  } else if(rawChartType === "pie" || rawChartType === "doughnut" || rawChartType === "doughnutSemiCircle" || rawChartType === "pieOffsetExploded"){
+    chartJsType = rawChartType === "pieOffsetExploded" ? "pie" : (rawChartType.includes("doughnut") ? "doughnut" : rawChartType);
+    if(rawChartType === "doughnutSemiCircle"){
+      chartOptions.circumference = 180;
+      chartOptions.rotation = -90;
     }
+  } else if(rawChartType === "radar" || rawChartType === "multiSeriesRadar" || rawChartType === "radarComparative" || rawChartType === "radarPolygonGrid"){
+    chartJsType = "radar";
+    datasetConfig.fill = true;
+  } else if(rawChartType === "polarArea" || rawChartType === "polarRadiusGrid" || rawChartType === "polarSegmented"){
+    chartJsType = "polarArea";
+  } else if(rawChartType === "scatter" || rawChartType === "scatterTrendline" || rawChartType === "scatterClustered"){
+    chartJsType = "scatter";
+    datasetConfig.data = values.map((v, i) => ({ x: i + 1, y: v }));
+  } else if(rawChartType === "bubble" || rawChartType === "bubbleWeighted" || rawChartType === "bubbleDistributed"){
+    chartJsType = "bubble";
+    datasetConfig.data = values.map((v, i) => ({ x: i + 1, y: v, r: Math.max(5, Math.min(25, v / 5)) }));
+  } else if(rawChartType === "stackedBar" || rawChartType === "horizontalStackedBar"){
+    chartJsType = "bar";
+    chartOptions.scales = { x: { stacked: true }, y: { stacked: true, beginAtZero: true } };
+    if(rawChartType === "horizontalStackedBar") chartOptions.indexAxis = 'y';
+  } else if(rawChartType === "logarithmicBar" || rawChartType === "logarithmicLine"){
+    chartJsType = rawChartType.includes("Line") ? "line" : "bar";
+    chartOptions.scales = { y: { type: 'logarithmic', beginAtZero: true } };
+  } else if(rawChartType === "multiAxisBarLine"){
+    chartJsType = "bar";
+  } else {
+    chartJsType = "bar";
+  }
+
+  chart = new Chart(document.getElementById("chart"),{
+    type: chartJsType,
+    data:{
+      labels: labels,
+      datasets:[datasetConfig]
+    },
+    plugins:[ChartDataLabels],
+    options: chartOptions
   });
 }
 
@@ -815,34 +925,61 @@ function renderAll(){
   renderTotal(f);
 }
 
-function exportCSV(){
-  if(!data.length)return alert("No records to export.");
+function recordBackupTimestamp(){
+  const todayStr = formatDate(new Date());
+  localStorage.setItem(CONFIG.backupMetaKey, todayStr);
+  checkBackupReminder();
+}
+
+function exportFilteredPDF(){
+  const element = document.getElementById('pdfExportContainer');
+  const opt = {
+    margin:       10,
+    filename:     'fullday-dashboard-filtered-report.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, useCORS: true },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().from(element).set(opt).save();
+}
+
+function exportFilteredCSV(){
+  const filtered = getExportFilteredData();
+  if(!filtered.length)return alert("No records match the selected export filters.");
   let csv="date,cost,place,desc,types,type,subType\n";
-  data.forEach(r=>{
+  filtered.forEach(r=>{
     csv+=[r.date,r.cost,r.place,r.desc,r.types,r.type,r.subType||""].map(v=>'"'+String(v||"").replace(/"/g,'""')+'"').join(",")+"\n";
   });
   const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
   const url=URL.createObjectURL(blob);
   const a=document.createElement("a");
-  a.href=url;a.download="nature-dashboard-export.csv";
+  a.href=url;a.download="fullday-dashboard-filtered-export.csv";
   document.body.appendChild(a);a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
 
-function exportJSON(){
-  if(!data.length && Object.keys(CONFIG.categoryGroups).length===0)return alert("No data to export.");
+function exportFilteredJSON(){
+  const filtered = getExportFilteredData();
+  if(!filtered.length && Object.keys(CONFIG.categoryGroups).length===0)return alert("No records or categories to export.");
   const exportPayload={
-    records: data,
+    exportDate: formatDate(new Date()),
+    filterCriteria: {
+      fromDate: exportFromDateEl.value || "All",
+      toDate: exportToDateEl.value || "All",
+      category: exportCategoryEl.value || "All"
+    },
+    records: filtered,
     categoryGroups: CONFIG.categoryGroups
   };
   const blob=new Blob([JSON.stringify(exportPayload,null,2)],{type:"application/json"});
   const url=URL.createObjectURL(blob);
   const a=document.createElement("a");
-  a.href=url;a.download="nature-dashboard-backup.json";
+  a.href=url;a.download="fullday-dashboard-backup.json";
   document.body.appendChild(a);a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+  recordBackupTimestamp();
 }
 
 function importFile(event){
@@ -867,9 +1004,9 @@ function importFile(event){
           save();
         }
         renderAll();
-        alert("🎉 File imported successfully!");
+        alert("File imported successfully!");
       }else{
-        alert("Please use JSON backup files.");
+        alert("Please use JSON backup files for full structure imports.");
       }
     }catch(err){
       alert("Failed to import file.");
@@ -881,18 +1018,18 @@ function importFile(event){
 
 function clearAllData(){
   if(!data.length)return alert("No data available.");
-  if(!confirm("⚠️ Delete ALL records permanently?"))return;
+  if(!confirm("Delete ALL records permanently?"))return;
   data=[];save();renderAll();
 }
 
 window.addEventListener("DOMContentLoaded",()=>{
-  loadThemePreference();
-  loadSoundPreference();
+  loadThemeColor();
   populateTimeButtons();
   loadCategoryGroups();
   populateCategoryButtons();
   initializeDates();
   loadData();
+  checkBackupReminder();
   renderAll();
 });
 </script>
