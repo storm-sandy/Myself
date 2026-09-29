@@ -252,13 +252,14 @@ body {
     min-height: 100vh;
     padding: 15px;
     transition: background 0.4s ease;
+    overflow-x: hidden;
 }
 
 .calculator {
     background: var(--calc-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    padding: 20px;
+    padding: 16px;
     border-radius: 24px;
     width: 100%;
     max-width: 440px;
@@ -267,20 +268,21 @@ body {
     flex-direction: column;
     border: 1px solid var(--calc-border);
     transition: background 0.4s ease, border 0.4s ease, box-shadow 0.4s ease;
+    max-height: 95vh;
 }
 
 #display {
     width: 100%;
-    height: 75px;
-    font-size: 32px;
+    height: 65px;
+    font-size: 30px;
     font-weight: 500;
     text-align: right;
-    padding: 15px;
+    padding: 12px;
     border: none;
     border-radius: 14px;
     background: var(--display-bg);
     color: var(--display-text);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     outline: none;
     box-shadow: inset 0 2px 6px rgba(0,0,0,0.2);
     transition: background 0.4s ease, color 0.4s ease;
@@ -289,13 +291,13 @@ body {
 .controls {
     display: flex;
     gap: 6px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     justify-content: space-between;
 }
 
 .controls button, .controls select {
     flex: 1;
-    height: 36px;
+    height: 32px;
     font-size: 11px;
     font-weight: 600;
     border-radius: 10px;
@@ -325,7 +327,7 @@ body {
 .sound-controls {
     display: flex;
     gap: 6px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     align-items: center;
 }
 
@@ -338,7 +340,7 @@ body {
 
 .sound-controls select {
     flex: 1;
-    height: 36px;
+    height: 32px;
     font-size: 11px;
     font-weight: 600;
     border-radius: 10px;
@@ -361,13 +363,13 @@ body {
 .grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-    flex-grow: 1;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 button {
-    height: 52px;
-    font-size: 16px;
+    height: 46px;
+    font-size: 15px;
     font-weight: 500;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
@@ -402,42 +404,50 @@ button[onclick*="/"]:hover, button[onclick*="*"]:hover, button[onclick*="-"]:hov
 .history {
     background: var(--history-bg);
     color: var(--history-text);
-    height: 85px;
-    overflow: auto;
-    margin-top: 15px;
-    font-size: 13px;
-    padding: 10px;
-    border-radius: 12px;
+    height: 65px;
+    overflow-y: auto;
+    margin-top: 10px;
+    font-size: 12px;
+    padding: 8px;
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: inset 0 2px 6px rgba(0,0,0,0.15);
     backdrop-filter: blur(8px);
     transition: background 0.4s ease, color 0.4s ease;
 }
 
+/* Scientific buttons are hidden by default via visibility/opacity/display grid handling */
 .scientific {
     display: none;
+}
+
+.calculator.scientific-mode .scientific {
+    display: block;
 }
 
 @media(max-width: 480px) {
     body {
         padding: 0;
+        align-items: flex-end;
     }
     .calculator {
         width: 100vw;
-        height: 100vh;
         max-width: none;
-        border-radius: 0;
-        padding: 15px;
-        justify-content: flex-end;
-        border: none;
+        border-radius: 24px 24px 0 0;
+        padding: 12px;
+        max-height: 96vh;
+        border-bottom: none;
     }
     button {
-        height: 56px;
-        font-size: 17px;
+        height: 44px;
+        font-size: 15px;
     }
     #display {
-        font-size: 36px;
-        height: 85px;
+        font-size: 30px;
+        height: 65px;
+    }
+    .history {
+        height: 55px;
     }
 }
 </style>
@@ -541,6 +551,7 @@ let historyBox = document.getElementById("history");
 let angleBtn = document.getElementById("angleBtn");
 let themeSelect = document.getElementById("themeSelect");
 let soundSelect = document.getElementById("soundSelect");
+let calcContainer = document.getElementById("calcContainer");
 
 let degreeMode = true;
 let memory = 0;
@@ -559,10 +570,9 @@ function getAudioContext() {
     return audioCtx;
 }
 
-// Master trigger checking current dropdown category selection
 function triggerSound() {
     let mode = soundSelect.value;
-    if (mode === 'off') return; // Do nothing if No Sound is chosen
+    if (mode === 'off') return;
 
     let variants = {
         animals: ['wolf', 'owl', 'frog', 'lion', 'whale'],
@@ -592,7 +602,6 @@ function playSynthesizedSound(type) {
         osc.connect(gain);
         gain.connect(ctx.destination);
 
-        // Individual unique sound profile generators
         if (type === 'wolf') {
             osc.type = 'sine';
             osc.frequency.setValueAtTime(300, now);
@@ -667,7 +676,6 @@ function playSynthesizedSound(type) {
             gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
             osc.start(now); osc.stop(now + 0.07);
         } else if (type === 'cricket_night' || type === 'moth_flutter') {
-            // High frequency quick flutter tick
             osc.type = 'sine';
             osc.frequency.setValueAtTime(4800, now);
             osc.frequency.linearRampToValueAtTime(5200, now + 0.03);
@@ -675,12 +683,9 @@ function playSynthesizedSound(type) {
             gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
             osc.start(now); osc.stop(now + 0.04);
         } else {
-            // Noise buffer generator for ambient environmental soundscapes (Water, Wind, Fire, Forest, etc.)
             playNoiseSound(type);
         }
-    } catch (e) {
-        // Fallback for audio restrictions
-    }
+    } catch (e) {}
 }
 
 function playNoiseSound(type) {
@@ -835,10 +840,11 @@ function logFunc(){ display.value = Math.log10(display.value); }
 function sqrtFunc(){ display.value = Math.sqrt(display.value); }
 
 function setMode(mode){
-    let sci = document.querySelectorAll(".scientific");
-    sci.forEach(btn => {
-        btn.style.display = (mode === "scientific") ? "block" : "none";
-    });
+    if (mode === "scientific") {
+        calcContainer.classList.add("scientific-mode");
+    } else {
+        calcContainer.classList.remove("scientific-mode");
+    }
 }
 
 setMode("simple");
@@ -860,7 +866,6 @@ function saveSoundMode(soundMode) {
     triggerSound();
 }
 
-// Load saved preferences on startup
 window.addEventListener("DOMContentLoaded", () => {
     const savedTheme = localStorage.getItem("calc_glass_theme");
     if (savedTheme !== null) {
