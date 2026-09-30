@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b7a4b">
+<title>IssueTrack Pro — Ticket & Daily Progress Manager</title>
+<style>
+:root{--p:#0b7a4b;--p2:#075c39;--bg:#eef5f1;--card:rgba(255,255,255,.84);--text:#17221d;--muted:#66756d;--line:#d7e2dc;--danger:#c62828;--warn:#b86b00;--ok:#087f46;--shadow:0 10px 30px rgba(20,70,45,.10);--r:16px}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--text);background:linear-gradient(135deg,#e9f5ef,#f8fbfa)}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}
+.top{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.head{display:flex;gap:12px;align-items:center;padding:12px max(14px,calc((100% - 1500px)/2));flex-wrap:wrap}
+.brand{font-size:20px;font-weight:800;color:var(--p);white-space:nowrap}.sub{font-size:12px;color:var(--muted)}
+.search{flex:1;min-width:180px}.search input{width:100%}
+.actions{display:flex;gap:7px;flex-wrap:wrap}
+.btn{padding:9px 12px;border-radius:11px;background:#edf4f0;color:var(--text);font-weight:650;border:1px solid var(--line)}
+.btn.primary{background:var(--p);color:#fff;border-color:var(--p)}.btn.danger{background:#fff0f0;color:var(--danger);border-color:#f1cccc}
+.btn.small{padding:6px 9px;font-size:12px}.btn:active{transform:translateY(1px)}
+.tabs{display:flex;gap:4px;overflow:auto;padding:0 max(10px,calc((100% - 1500px)/2));scrollbar-width:none}
+.tab{padding:11px 14px;border-bottom:3px solid transparent;white-space:nowrap;color:var(--muted);font-weight:700;background:transparent}
+.tab.active{color:var(--p);border-color:var(--p)}
+main{max-width:1500px;margin:auto;padding:18px}
+.page{display:none}.page.active{display:block}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{background:var(--card);border:1px solid rgba(210,225,217,.9);border-radius:var(--r);box-shadow:var(--shadow);padding:16px}
+.card h2,.card h3{margin:0 0 12px}.muted{color:var(--muted)}.stat{font-size:29px;font-weight:850}.statlabel{font-size:12px;color:var(--muted);font-weight:700}
+form .grid{margin-bottom:10px}.field label{display:block;font-size:12px;font-weight:750;color:var(--muted);margin:0 0 5px}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);outline:none}
+textarea{min-height:92px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(11,122,75,.10)}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:850px;background:#fff}th,td{padding:10px 9px;border-bottom:1px solid #e7eee9;text-align:left;font-size:13px;vertical-align:top}th{background:#f2f7f4;position:sticky;top:0;z-index:1;font-size:12px;color:#53635b}
+.badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800;background:#edf3ef}.open{color:#006b3f;background:#e4f7ed}.progress{color:#835100;background:#fff1d6}.blocked{color:#a62222;background:#ffe5e5}.closed{color:#53635b;background:#e9eeec}.low{background:#e9f4ff;color:#12619c}.high{background:#fff0d8;color:#8b5700}.critical{background:#ffe2e2;color:#b11e1e}
+.ticket{border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}.ticket+.ticket{margin-top:9px}.tickettitle{font-weight:800}.meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}
+.progressbar{height:9px;background:#e6eee9;border-radius:20px;overflow:hidden}.progressbar>i{display:block;height:100%;background:var(--p);border-radius:20px}
+.kpi{display:flex;justify-content:space-between;gap:10px}.empty{text-align:center;padding:30px;color:var(--muted)}
+.timeline{border-left:3px solid #d6e5dc;margin:8px 0 0 7px;padding-left:18px}.event{position:relative;padding:0 0 16px}.event:before{content:"";position:absolute;width:10px;height:10px;background:var(--p);border-radius:50%;left:-25px;top:4px;border:3px solid #eaf5ef}.event b{font-size:13px}.event small{color:var(--muted)}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:80;padding:20px;align-items:center;justify-content:center}.modal.show{display:flex}.modalbox{width:min(900px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;padding:18px;box-shadow:0 25px 70px rgba(0,0,0,.25)}
+.toast{position:fixed;right:15px;bottom:15px;z-index:100;background:#17221d;color:#fff;padding:11px 15px;border-radius:11px;display:none}.toast.show{display:block}
+.notice{padding:10px 12px;border-radius:10px;background:#eef7f2;color:#315b48;font-size:12px}
+hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+@media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:1fr 1fr}.head{padding:10px}.tabs{padding:0 6px}main{padding:11px}}
+@media(max-width:620px){.g2,.g3,.g4{grid-template-columns:1fr}.brand{font-size:18px}.actions{width:100%}.actions .btn{flex:1}.card{padding:13px}.stat{font-size:24px}}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="head">
+  <div><div class="brand">IssueTrack Pro</div><div class="sub">Tickets • Daily Logs • Progress • Resources</div></div>
+  <div class="search"><input id="globalSearch" placeholder="Search tickets, logs, people, resources…" oninput="renderAll()"></div>
+  <div class="actions">
+   <button class="btn primary" onclick="openTicket()">＋ New Ticket</button>
+   <button class="btn" onclick="backupJSON()">Backup</button>
+  </div>
+ </div>
+ <nav class="tabs" id="tabs">
+  <button class="tab active" data-page="dashboard">Dashboard</button>
+  <button class="tab" data-page="tickets">Tickets</button>
+  <button class="tab" data-page="logs">Daily Logs</button>
+  <button class="tab" data-page="progress">Progress</button>
+  <button class="tab" data-page="people">People</button>
+  <button class="tab" data-page="resources">Resources</button>
+  <button class="tab" data-page="reports">Reports</button>
+  <button class="tab" data-page="data">Data / SQLite</button>
+  <button class="tab" data-page="settings">Settings</button>
+ </nav>
+</header>
+
+<main>
+<section id="dashboard" class="page active">
+ <div class="grid g4">
+  <div class="card kpi"><div><div class="statlabel">Total Tickets</div><div class="stat" id="kTotal">0</div></div><span>🎫</span></div>
+  <div class="card kpi"><div><div class="statlabel">Open / Progress</div><div class="stat" id="kOpen">0</div></div><span>🔄</span></div>
+  <div class="card kpi"><div><div class="statlabel">Blocked</div><div class="stat" id="kBlocked">0</div></div><span>⛔</span></div>
+  <div class="card kpi"><div><div class="statlabel">Closed</div><div class="stat" id="kClosed">0</div></div><span>✅</span></div>
+ </div>
+ <div class="grid g2" style="margin-top:14px">
+  <div class="card"><h3>Work Queue</h3><div id="queue"></div></div>
+  <div class="card"><h3>Recent Activity</h3><div id="recent"></div></div>
+ </div>
+ <div class="card" style="margin-top:14px"><h3>Ticket Health</h3><div id="health"></div></div>
+</section>
+
+<section id="tickets" class="page">
+ <div class="card">
+  <div class="row between"><div><h2>Tickets</h2><div class="muted">Create, assign, update, block and close issues.</div></div><button class="btn primary" onclick="openTicket()">＋ New Ticket</button></div>
+  <hr>
+  <div class="grid g4">
+   <div class="field"><label>Status</label><select id="filterStatus" onchange="renderTickets()"><option value="">All</option><option>Open</option><option>In Progress</option><option>Blocked</option><option>Closed</option></select></div>
+   <div class="field"><label>Priority</label><select id="filterPriority" onchange="renderTickets()"><option value="">All</option><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></div>
+   <div class="field"><label>Assignee</label><select id="filterAssignee" onchange="renderTickets()"></select></div>
+   <div class="field"><label>Manager</label><select id="filterManager" onchange="renderTickets()"></select></div>
+  </div>
+  <div id="ticketList" style="margin-top:12px"></div>
+ </div>
+</section>
+
+<section id="logs" class="page">
+ <div class="card"><div class="row between"><div><h2>Daily Logs</h2><div class="muted">One or more work updates can be recorded against every ticket.</div></div><button class="btn primary" onclick="openLog()">＋ Add Daily Log</button></div><hr>
+  <div class="grid g3"><div class="field"><label>Ticket</label><select id="logFilterTicket" onchange="renderLogs()"></select></div><div class="field"><label>From</label><input type="date" id="logFrom" onchange="renderLogs()"></div><div class="field"><label>To</label><input type="date" id="logTo" onchange="renderLogs()"></div></div>
+  <div id="logList" style="margin-top:12px"></div>
+ </div>
+</section>
+
+<section id="progress" class="page">
+ <div class="card"><h2>Progress & Closing</h2><div class="muted">Track planned work, actual work, blockers and completion evidence.</div><hr><div id="progressList"></div></div>
+</section>
+
+<section id="people" class="page">
+ <div class="grid g2">
+  <div class="card"><h2>People / Roles</h2><form id="personForm" onsubmit="savePerson(event)"><input type="hidden" id="personId">
+   <div class="grid g2"><div class="field"><label>Name *</label><input id="personName" required></div><div class="field"><label>Role</label><select id="personRole"><option>Assignee</option><option>Manager</option><option>Reporter</option><option>QA</option><option>Developer</option><option>Support</option><option>Other</option></select></div></div>
+   <div class="grid g2"><div class="field"><label>Email</label><input id="personEmail" type="email"></div><div class="field"><label>Department / Team</label><input id="personTeam"></div></div>
+   <button class="btn primary">Save Person</button> <button type="button" class="btn" onclick="resetPerson()">Clear</button>
+  </form></div>
+  <div class="card"><h2>People Directory</h2><div id="peopleList"></div></div>
+ </div>
+</section>
+
+<section id="resources" class="page">
+ <div class="grid g2">
+  <div class="card"><h2>Resource Master</h2><form id="resourceForm" onsubmit="saveResource(event)"><input type="hidden" id="resourceId">
+   <div class="grid g2"><div class="field"><label>Resource Name *</label><input id="resourceName" required></div><div class="field"><label>Type</label><select id="resourceType"><option>Software</option><option>Hardware</option><option>Environment</option><option>Document</option><option>Access</option><option>Vendor</option><option>Other</option></select></div></div>
+   <div class="grid g2"><div class="field"><label>Owner</label><input id="resourceOwner"></div><div class="field"><label>Reference / URL</label><input id="resourceRef"></div></div>
+   <button class="btn primary">Save Resource</button> <button type="button" class="btn" onclick="resetResource()">Clear</button>
+  </form></div>
+  <div class="card"><h2>Resources</h2><div id="resourceList"></div></div>
+ </div>
+</section>
+
+<section id="reports" class="page">
+ <div class="card"><h2>Reports & Analytics</h2><div class="grid g3" style="margin-top:12px">
+  <div class="card"><div class="statlabel">Average Progress</div><div class="stat" id="avgProg">0%</div></div>
+  <div class="card"><div class="statlabel">Logs Recorded</div><div class="stat" id="logCount">0</div></div>
+  <div class="card"><div class="statlabel">High / Critical</div><div class="stat" id="highCount">0</div></div>
+ </div><hr><div id="reportTable"></div></div>
+</section>
+
+<section id="data" class="page">
+ <div class="grid g2">
+  <div class="card"><h2>Data Backup & Restore</h2><div class="notice">The app stores data locally. JSON is the complete portable backup. CSV exports are useful for Excel/Sheets.</div><hr>
+   <div class="row"><button class="btn primary" onclick="backupJSON()">Export JSON</button><button class="btn" onclick="exportTicketsCSV()">Tickets CSV</button><button class="btn" onclick="exportLogsCSV()">Logs CSV</button><button class="btn" onclick="exportPeopleCSV()">People CSV</button></div><hr>
+   <label class="btn">Import JSON <input id="jsonImport" type="file" accept=".json,application/json" hidden onchange="importJSON(event)"></label>
+   <label class="btn">Import CSV <input id="csvImport" type="file" accept=".csv,text/csv" hidden onchange="importCSV(event)"></label>
+  </div>
+  <div class="card"><h2>SQLite</h2><div class="notice">Uses sql.js when available. If you keep <b>vendor/sql-wasm.js</b> and <b>vendor/sql-wasm.wasm</b> beside this file, SQLite can run fully offline.</div><hr>
+   <div class="row"><button class="btn primary" onclick="exportSQLite()">Export SQLite .db</button><label class="btn">Import SQLite <input id="sqliteImport" type="file" accept=".db,.sqlite,.sqlite3" hidden onchange="importSQLite(event)"></label></div>
+   <p id="sqliteStatus" class="muted"></p>
+  </div>
+ </div>
+ <div class="card" style="margin-top:14px"><h2>SQL Console</h2><textarea id="sqlBox" placeholder="SELECT * FROM tickets ORDER BY updated_at DESC;"></textarea><button class="btn primary" onclick="runSQL()" style="margin-top:8px">Run SQL</button><div id="sqlResult" style="margin-top:12px"></div></div>
+</section>
+
+<section id="settings" class="page">
+ <div class="card"><h2>Settings</h2><div class="grid g3">
+  <div class="field"><label>Company / Project Name</label><input id="projectName" onchange="saveSetting('projectName',this.value)"></div>
+  <div class="field"><label>Theme</label><select id="theme" onchange="setTheme(this.value)"><option value="green">Green</option><option value="blue">Blue</option></select></div>
+  <div class="field"><label>Ticket Number Prefix</label><input id="prefix" onchange="saveSetting('prefix',this.value)"></div>
+ </div><hr><button class="btn danger" onclick="resetAll()">Delete All Local Data</button></div>
+</section>
+</main>
+
+<div class="modal" id="ticketModal"><div class="modalbox"><div class="row between"><h2 id="ticketModalTitle">New Ticket</h2><button class="btn" onclick="closeModal('ticketModal')">✕</button></div>
+<form id="ticketForm" onsubmit="saveTicket(event)"><input type="hidden" id="ticketId">
+<div class="grid g2"><div class="field"><label>Title *</label><input id="ticketTitle" required></div><div class="field"><label>Project / Module</label><input id="ticketProject"></div></div>
+<div class="grid g4"><div class="field"><label>Priority</label><select id="ticketPriority"><option>Low</option><option selected>Medium</option><option>High</option><option>Critical</option></select></div><div class="field"><label>Status</label><select id="ticketStatus"><option>Open</option><option>In Progress</option><option>Blocked</option><option>Closed</option></select></div><div class="field"><label>Assignee</label><select id="ticketAssignee"></select></div><div class="field"><label>Manager</label><select id="ticketManager"></select></div></div>
+<div class="grid g3"><div class="field"><label>Reporter</label><select id="ticketReporter"></select></div><div class="field"><label>Start Date</label><input type="date" id="ticketStart"></div><div class="field"><label>Due Date</label><input type="date" id="ticketDue"></div></div>
+<div class="grid g2"><div class="field"><label>Planned Hours</label><input type="number" min="0" step=".25" id="ticketPlanned" value="0"></div><div class="field"><label>Progress %</label><input type="number" min="0" max="100" id="ticketProgress" value="0"></div></div>
+<div class="field"><label>Description / Acceptance Criteria</label><textarea id="ticketDesc"></textarea></div>
+<div class="field"><label>Blocker / Dependency</label><textarea id="ticketBlocker" placeholder="Optional"></textarea></div>
+<div class="row" style="margin-top:10px"><button class="btn primary">Save Ticket</button><button type="button" class="btn" onclick="closeModal('ticketModal')">Cancel</button></div>
+</form></div></div>
+
+<div class="modal" id="logModal"><div class="modalbox"><div class="row between"><h2>Add Daily Log</h2><button class="btn" onclick="closeModal('logModal')">✕</button></div>
+<form id="logForm" onsubmit="saveLog(event)"><input type="hidden" id="logId">
+<div class="grid g2"><div class="field"><label>Ticket *</label><select id="logTicket" required></select></div><div class="field"><label>Date *</label><input type="date" id="logDate" required></div></div>
+<div class="grid g3"><div class="field"><label>Hours</label><input type="number" min="0" step=".25" id="logHours" value="0"></div><div class="field"><label>Progress % after update</label><input type="number" min="0" max="100" id="logProgress" value="0"></div><div class="field"><label>Work Type</label><select id="logType"><option>Development</option><option>Testing</option><option>Analysis</option><option>Support</option><option>Meeting</option><option>Deployment</option><option>Documentation</option><option>Other</option></select></div></div>
+<div class="field"><label>What was done? *</label><textarea id="logWork" required></textarea></div>
+<div class="field"><label>Issues / Blockers</label><textarea id="logBlocker"></textarea></div>
+<div class="field"><label>Next Action</label><textarea id="logNext"></textarea></div>
+<div class="row"><button class="btn primary">Save Log</button><button type="button" class="btn" onclick="closeModal('logModal')">Cancel</button></div>
+</form></div></div>
+
+<div class="modal" id="detailModal"><div class="modalbox"><div class="row between"><h2 id="detailTitle"></h2><button class="btn" onclick="closeModal('detailModal')">✕</button></div><div id="detailBody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* IssueTrack Pro - dependency-free core; sql.js is loaded dynamically for SQLite */
+const KEY='issuetrack_pro_v1';
+let db={tickets:[],logs:[],people:[],resources:[],settings:{projectName:'IssueTrack Pro',prefix:'ISS',theme:'green'},seq:1};
+let sqlModule=null;
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toISOString().slice(0,10);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x)db={...db,...x,settings:{...db.settings,...x.settings}}}catch(e){}}
+function save(){localStorage.setItem(KEY,JSON.stringify(db));}
+function toast(x){$('toast').textContent=x;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}
+function closeModal(id){$(id).classList.remove('show')}
+function openModal(id){$(id).classList.add('show')}
+function setTab(page){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.page===page));document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===page));renderAll()}
+document.querySelectorAll('.tab').forEach(x=>x.onclick=()=>setTab(x.dataset.page));
+function personOptions(role=''){let a=db.people.filter(p=>!role||p.role===role||role==='any');return '<option value="">— None —</option>'+a.map(p=>`<option value="${p.id}">${esc(p.name)}${p.role?' · '+esc(p.role):''}</option>`).join('')}
+function ticketOptions(){return '<option value="">— Select ticket —</option>'+db.tickets.map(t=>`<option value="${t.id}">${esc(t.code)} — ${esc(t.title)}</option>`).join('')}
+function openTicket(id=''){refreshSelects();$('ticketForm').reset();$('ticketId').value=id;
+ if(id){let t=db.tickets.find(x=>x.id===id);if(!t)return;$('ticketModalTitle').textContent='Edit Ticket';['ticketTitle','ticketProject','ticketPriority','ticketStatus','ticketAssignee','ticketManager','ticketReporter','ticketStart','ticketDue','ticketPlanned','ticketProgress','ticketDesc','ticketBlocker'].forEach(k=>{let f=$(k);let map={ticketTitle:'title',ticketProject:'project',ticketPriority:'priority',ticketStatus:'status',ticketAssignee:'assignee',ticketManager:'manager',ticketReporter:'reporter',ticketStart:'start',ticketDue:'due',ticketPlanned:'planned',ticketProgress:'progress',ticketDesc:'desc',ticketBlocker:'blocker'};f.value=t[map[k]]??''})}
+ else{$('ticketModalTitle').textContent='New Ticket';$('ticketStart').value=today();$('ticketPriority').value='Medium';$('ticketStatus').value='Open';$('ticketProgress').value=0}
+ openModal('ticketModal')}
+function saveTicket(e){e.preventDefault();let id=$('ticketId').value;let t={id:id||uid(),code:id?(db.tickets.find(x=>x.id===id)?.code):`${db.settings.prefix}-${String(db.seq++).padStart(4,'0')}`,title:$('ticketTitle').value.trim(),project:$('ticketProject').value.trim(),priority:$('ticketPriority').value,status:$('ticketStatus').value,assignee:$('ticketAssignee').value,manager:$('ticketManager').value,reporter:$('ticketReporter').value,start:$('ticketStart').value,due:$('ticketDue').value,planned:+$('ticketPlanned').value||0,progress:Math.max(0,Math.min(100,+$('ticketProgress').value||0)),desc:$('ticketDesc').value.trim(),blocker:$('ticketBlocker').value.trim(),updated_at:new Date().toISOString()};
+ if(t.status==='Closed')t.progress=100;
+ if(id){let i=db.tickets.findIndex(x=>x.id===id);db.tickets[i]=t}else db.tickets.unshift(t);save();closeModal('ticketModal');renderAll();toast(id?'Ticket updated':'Ticket created')}
+function deleteTicket(id){if(!confirm('Delete this ticket and all its daily logs?'))return;db.tickets=db.tickets.filter(t=>t.id!==id);db.logs=db.logs.filter(l=>l.ticket!==id);save();renderAll();toast('Ticket deleted')}
+function openLog(ticketId=''){refreshSelects();$('logForm').reset();$('logId').value='';$('logDate').value=today();$('logProgress').value= ticketId?(db.tickets.find(t=>t.id===ticketId)?.progress||0):0;if(ticketId)$('logTicket').value=ticketId;openModal('logModal')}
+function saveLog(e){e.preventDefault();let ticket=$('logTicket').value;if(!ticket)return;let l={id:uid(),ticket,date:$('logDate').value,hours:+$('logHours').value||0,progress:Math.max(0,Math.min(100,+$('logProgress').value||0)),type:$('logType').value,work:$('logWork').value.trim(),blocker:$('logBlocker').value.trim(),next:$('logNext').value.trim(),created_at:new Date().toISOString()};db.logs.unshift(l);let t=db.tickets.find(x=>x.id===ticket);if(t){t.progress=l.progress;t.updated_at=new Date().toISOString();if(l.blocker)t.blocker=l.blocker;if(l.progress>=100)t.status='Closed';else if(t.status==='Open')t.status='In Progress'}save();closeModal('logModal');renderAll();toast('Daily log added')}
+function openDetail(id){let t=db.tickets.find(x=>x.id===id);if(!t)return;let logs=db.logs.filter(l=>l.ticket===id).sort((a,b)=>(b.date+a.created_at).localeCompare(a.date+b.created_at));let name=id=>db.people.find(p=>p.id===id)?.name||'—';$('detailTitle').textContent=`${t.code} — ${t.title}`;$('detailBody').innerHTML=`
+<div class="grid g4"><div><b>Status</b><br>${badge(t.status)}</div><div><b>Priority</b><br>${badge(t.priority)}</div><div><b>Assignee</b><br>${esc(name(t.assignee))}</div><div><b>Manager</b><br>${esc(name(t.manager))}</div></div>
+<hr><div class="progressbar"><i style="width:${t.progress}%"></i></div><p><b>${t.progress}%</b> complete · Planned ${t.planned}h · Logged ${logs.reduce((a,l)=>a+l.hours,0)}h</p>
+<p>${esc(t.desc||'No description')}</p>${t.blocker?`<div class="notice"><b>Blocker:</b> ${esc(t.blocker)}</div>`:''}
+<div class="row" style="margin-top:12px"><button class="btn primary" onclick="closeModal('detailModal');openLog('${t.id}')">＋ Daily Log</button><button class="btn" onclick="closeModal('detailModal');openTicket('${t.id}')">Edit</button></div>
+<h3 style="margin-top:18px">Daily Timeline</h3><div class="timeline">${logs.length?logs.map(l=>`<div class="event"><b>${esc(l.date)} · ${l.progress}% · ${l.hours}h · ${esc(l.type)}</b><div>${esc(l.work)}</div>${l.blocker?`<small>Blocker: ${esc(l.blocker)}</small>`:''}${l.next?`<small>Next: ${esc(l.next)}</small>`:''}</div>`).join(''):'<div class="empty">No logs yet.</div>'}</div>`;openModal('detailModal')}
+function badge(x){let c=String(x||'').toLowerCase().replaceAll(' ','');return `<span class="badge ${c}">${esc(x||'—')}</span>`}
+function norm(v){return String(v??'').toLocaleLowerCase().trim()}
+function searchTextTicket(t){let an=db.people.find(p=>p.id===t.assignee)?.name||'',mn=db.people.find(p=>p.id===t.manager)?.name||'',rn=db.people.find(p=>p.id===t.reporter)?.name||'';return [t.code,t.title,t.project,t.priority,t.status,t.desc,t.blocker,t.start,t.due,an,mn,rn].map(norm).join(' ')}
+function searchTextLog(l){let t=db.tickets.find(x=>x.id===l.ticket);return [l.date,l.type,l.work,l.blocker,l.next,t?.code,t?.title,t?.project].map(norm).join(' ')}
+function filteredTickets(){let q=norm($('globalSearch').value),s=$('filterStatus')?.value||'',p=$('filterPriority')?.value||'',a=$('filterAssignee')?.value||'',m=$('filterManager')?.value||'';return db.tickets.filter(t=>(!q||searchTextTicket(t).includes(q))&&(!s||t.status===s)&&(!p||t.priority===p)&&(!a||t.assignee===a)&&(!m||t.manager===m))}
+function renderTickets(){if(!$('ticketList'))return;let a=filteredTickets();$('ticketList').innerHTML=a.length?a.map(t=>`<div class="ticket"><div class="row between"><div><div class="tickettitle">${esc(t.code)} — ${esc(t.title)}</div><div class="meta">${badge(t.status)} ${badge(t.priority)} <span class="badge">${esc(t.project||'No project')}</span></div></div><div class="row"><button class="btn small" onclick="openDetail('${t.id}')">Open</button><button class="btn small" onclick="openTicket('${t.id}')">Edit</button><button class="btn small" onclick="openLog('${t.id}')">＋ Log</button><button class="btn small danger" onclick="deleteTicket('${t.id}')">Delete</button></div></div><div class="muted" style="margin:8px 0">Assignee: ${esc(db.people.find(p=>p.id===t.assignee)?.name||'—')} · Manager: ${esc(db.people.find(p=>p.id===t.manager)?.name||'—')} · Due: ${esc(t.due||'—')}</div><div class="progressbar"><i style="width:${t.progress}%"></i></div><div class="muted" style="font-size:11px;margin-top:4px">${t.progress}% complete · Updated ${new Date(t.updated_at).toLocaleString()}</div></div>`).join(''):'<div class="empty">No tickets match the current search/filters.</div>'}
+function renderLogs(){let a=db.logs.slice().sort((x,y)=>(y.date+y.created_at).localeCompare(x.date+x.created_at)),ticket=$('logFilterTicket')?.value||'',from=$('logFrom')?.value||'',to=$('logTo')?.value||'',q=norm($('globalSearch').value);a=a.filter(l=>(!ticket||l.ticket===ticket)&&(!from||l.date>=from)&&(!to||l.date<=to)&&(!q||searchTextLog(l).includes(q)));$('logList').innerHTML=a.length?`<div class="tablewrap"><table><thead><tr><th>Date</th><th>Ticket</th><th>Hours</th><th>Progress</th><th>Type</th><th>Work</th><th>Next / Blocker</th></tr></thead><tbody>${a.map(l=>{let t=db.tickets.find(x=>x.id===l.ticket);return `<tr><td>${esc(l.date)}</td><td><button class="btn small" onclick="openDetail('${l.ticket}')">${esc(t?.code||'')}</button><br>${esc(t?.title||'')}</td><td>${l.hours}</td><td>${l.progress}%</td><td>${esc(l.type)}</td><td>${esc(l.work)}</td><td>${l.next?'Next: '+esc(l.next):''}${l.blocker?'<br>Blocker: '+esc(l.blocker):''}</td></tr>`}).join('')}</tbody></table></div>`:'<div class="empty">No daily logs match the current search/filter.</div>'}
+function renderProgress(){let a=db.tickets.filter(t=>t.status!=='Closed'||t.progress<100).sort((x,y)=>y.progress-x.progress);$('progressList').innerHTML=a.length?a.map(t=>`<div class="ticket"><div class="row between"><div><b>${esc(t.code)} — ${esc(t.title)}</b><div class="meta">${badge(t.status)} ${badge(t.priority)}</div></div><b>${t.progress}%</b></div><div class="progressbar" style="margin:10px 0"><i style="width:${t.progress}%"></i></div><div class="row between muted"><span>${esc(db.people.find(p=>p.id===t.assignee)?.name||'Unassigned')} · Due ${esc(t.due||'—')}</span><span>${db.logs.filter(l=>l.ticket===t.id).length} logs</span></div><div class="row" style="margin-top:8px"><button class="btn small" onclick="openLog('${t.id}')">Add Log</button><button class="btn small" onclick="openTicket('${t.id}')">Update</button><button class="btn small" onclick="openDetail('${t.id}')">Timeline</button></div></div>`).join(''):'<div class="empty">All tickets are closed.</div>'}
+function renderPeople(){let q=$('globalSearch').value.toLowerCase();let a=db.people.filter(p=>JSON.stringify(p).toLowerCase().includes(q));$('peopleList').innerHTML=a.length?`<div class="tablewrap"><table><thead><tr><th>Name</th><th>Role</th><th>Team</th><th>Email</th><th></th></tr></thead><tbody>${a.map(p=>`<tr><td><b>${esc(p.name)}</b></td><td>${esc(p.role)}</td><td>${esc(p.team)}</td><td>${esc(p.email)}</td><td><button class="btn small" onclick="editPerson('${p.id}')">Edit</button> <button class="btn small danger" onclick="deletePerson('${p.id}')">Delete</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No people added.</div>'}
+function savePerson(e){e.preventDefault();let id=$('personId').value,p={id:id||uid(),name:$('personName').value.trim(),role:$('personRole').value,email:$('personEmail').value.trim(),team:$('personTeam').value.trim()};if(id)db.people[db.people.findIndex(x=>x.id===id)]=p;else db.people.push(p);save();resetPerson();renderAll();toast('Person saved')}
+function editPerson(id){let p=db.people.find(x=>x.id===id);$('personId').value=p.id;$('personName').value=p.name;$('personRole').value=p.role;$('personEmail').value=p.email;$('personTeam').value=p.team}
+function resetPerson(){$('personForm').reset();$('personId').value=''}
+function deletePerson(id){if(confirm('Delete person?')){db.people=db.people.filter(x=>x.id!==id);save();renderAll()}}
+function renderResources(){let q=$('globalSearch').value.toLowerCase();let a=db.resources.filter(r=>JSON.stringify(r).toLowerCase().includes(q));$('resourceList').innerHTML=a.length?`<div class="tablewrap"><table><thead><tr><th>Name</th><th>Type</th><th>Owner</th><th>Reference</th><th></th></tr></thead><tbody>${a.map(r=>`<tr><td><b>${esc(r.name)}</b></td><td>${esc(r.type)}</td><td>${esc(r.owner)}</td><td>${r.ref?`<a href="${esc(r.ref)}" target="_blank" rel="noopener">${esc(r.ref)}</a>`:'—'}</td><td><button class="btn small" onclick="editResource('${r.id}')">Edit</button> <button class="btn small danger" onclick="deleteResource('${r.id}')">Delete</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No resources added.</div>'}
+function saveResource(e){e.preventDefault();let id=$('resourceId').value,r={id:id||uid(),name:$('resourceName').value.trim(),type:$('resourceType').value,owner:$('resourceOwner').value.trim(),ref:$('resourceRef').value.trim()};if(id)db.resources[db.resources.findIndex(x=>x.id===id)]=r;else db.resources.push(r);save();resetResource();renderAll();toast('Resource saved')}
+function editResource(id){let r=db.resources.find(x=>x.id===id);$('resourceId').value=r.id;$('resourceName').value=r.name;$('resourceType').value=r.type;$('resourceOwner').value=r.owner;$('resourceRef').value=r.ref}
+function resetResource(){$('resourceForm').reset();$('resourceId').value=''}
+function deleteResource(id){if(confirm('Delete resource?')){db.resources=db.resources.filter(x=>x.id!==id);save();renderAll()}}
+function refreshSelects(){let ass=personOptions('Assignee'),man=personOptions('Manager'),all=personOptions('any');['ticketAssignee','filterAssignee'].forEach(id=>{let f=$(id);if(f){let old=f.value;f.innerHTML=ass;f.value=old}});['ticketManager','filterManager'].forEach(id=>{let f=$(id);if(f){let old=f.value;f.innerHTML=man;f.value=old}});if($('ticketReporter'))$('ticketReporter').innerHTML=all;if($('logTicket'))$('logTicket').innerHTML=ticketOptions();if($('logFilterTicket')){let old=$('logFilterTicket').value;$('logFilterTicket').innerHTML='<option value="">All tickets</option>'+ticketOptions().replace('<option value="">— Select ticket —</option>','');$('logFilterTicket').value=old}}
+function renderDashboard(){let t=db.tickets;$('kTotal').textContent=t.length;$('kOpen').textContent=t.filter(x=>x.status==='Open'||x.status==='In Progress').length;$('kBlocked').textContent=t.filter(x=>x.status==='Blocked').length;$('kClosed').textContent=t.filter(x=>x.status==='Closed').length;let q=t.filter(x=>x.status!=='Closed').sort((a,b)=>b.priority.localeCompare(a.priority));$('queue').innerHTML=q.length?q.slice(0,8).map(x=>`<div class="ticket"><div class="row between"><b>${esc(x.code)}</b>${badge(x.priority)}</div><div>${esc(x.title)}</div><div class="progressbar" style="margin-top:7px"><i style="width:${x.progress}%"></i></div><small class="muted">${x.progress}% · ${esc(db.people.find(p=>p.id===x.assignee)?.name||'Unassigned')}</small></div>`).join(''):'<div class="empty">No open work.</div>';let r=db.logs.slice().sort((a,b)=>(b.date+b.created_at).localeCompare(a.date+a.created_at)).slice(0,7);$('recent').innerHTML=r.length?r.map(x=>{let t=db.tickets.find(t=>t.id===x.ticket);return `<div class="event"><b>${esc(x.date)} · ${esc(t?.code||'')}</b><div>${esc(x.work)}</div><small>${x.progress}% · ${x.hours}h</small></div>`}).join(''):'<div class="empty">No activity.</div>';let counts=['Open','In Progress','Blocked','Closed'].map(s=>[s,t.filter(x=>x.status===s).length]);$('health').innerHTML=counts.map(([s,n])=>`<div class="kpi" style="margin:8px 0"><span>${badge(s)}</span><b>${n}</b></div>`).join('')}
+function renderReports(){let avg=db.tickets.length?Math.round(db.tickets.reduce((a,t)=>a+t.progress,0)/db.tickets.length):0;$('avgProg').textContent=avg+'%';$('logCount').textContent=db.logs.length;$('highCount').textContent=db.tickets.filter(t=>t.priority==='High'||t.priority==='Critical').length;let rows=db.tickets.map(t=>{let ls=db.logs.filter(l=>l.ticket===t.id);return {code:t.code,title:t.title,status:t.status,progress:t.progress,logs:ls.length,hours:ls.reduce((a,l)=>a+l.hours,0),assignee:db.people.find(p=>p.id===t.assignee)?.name||''}});$('reportTable').innerHTML=rows.length?`<div class="tablewrap"><table><thead><tr><th>Ticket</th><th>Title</th><th>Status</th><th>Progress</th><th>Logs</th><th>Hours</th><th>Assignee</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.code)}</td><td>${esc(r.title)}</td><td>${badge(r.status)}</td><td>${r.progress}%</td><td>${r.logs}</td><td>${r.hours}</td><td>${esc(r.assignee)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No report data.</div>'}
+function renderSettings(){$('projectName').value=db.settings.projectName||'';$('prefix').value=db.settings.prefix||'ISS';$('theme').value=db.settings.theme||'green'}
+function renderAll(){refreshSelects();renderDashboard();renderTickets();renderLogs();renderProgress();renderPeople();renderResources();renderReports();renderSettings()}
+function saveSetting(k,v){db.settings[k]=v||'';save();if(k==='prefix')toast('Prefix saved')}
+function setTheme(v){db.settings.theme=v;save();document.documentElement.style.setProperty('--p',v==='blue'?'#1769aa':'#0b7a4b');document.documentElement.style.setProperty('--p2',v==='blue'?'#0d4f80':'#075c39')}
+function backupJSON(){let blob=new Blob([JSON.stringify({...db,exported_at:new Date().toISOString()},null,2)],{type:'application/json'});download(blob,'issuetrack_backup.json');toast('JSON backup exported')}
+function download(blob,name){let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function csv(rows){if(!rows.length)return '';let keys=Object.keys(rows[0]);let q=v=>`"${String(v??'').replaceAll('"','""')}"`;return [keys.map(q).join(','),...rows.map(r=>keys.map(k=>q(r[k])).join(','))].join('\\n')}
+function exportTicketsCSV(){download(new Blob([csv(db.tickets)],{type:'text/csv'}),'tickets.csv')}
+function exportLogsCSV(){download(new Blob([csv(db.logs)],{type:'text/csv'}),'daily_logs.csv')}
+function exportPeopleCSV(){download(new Blob([csv(db.people)],{type:'text/csv'}),'people.csv')}
+function importJSON(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!confirm('Replace current local data with this backup?'))return;db={...db,...x};save();renderAll();toast('JSON restored')}catch(err){alert('Invalid JSON backup')}};r.readAsText(f);e.target.value=''}
+function parseCSV(s){let lines=s.trim().split(/\\r?\\n/);if(lines.length<2)return[];let parse=l=>{let a=[],cur='',q=false;for(let i=0;i<l.length;i++){let c=l[i];if(c==='"'&&l[i+1]==='"'){cur+='"';i++}else if(c==='"')q=!q;else if(c===','&&!q){a.push(cur);cur=''}else cur+=c}a.push(cur);return a};let h=parse(lines[0]);return lines.slice(1).map(x=>{let a=parse(x),o={};h.forEach((k,i)=>o[k]=a[i]??'');return o})}
+function importCSV(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{let rows=parseCSV(r.result);if(!rows.length)return;let headers=Object.keys(rows[0]);if(headers.includes('title'))db.tickets.push(...rows.map(x=>({...x,id:x.id||uid(),planned:+x.planned||0,progress:+x.progress||0})));else if(headers.includes('work'))db.logs.push(...rows.map(x=>({...x,id:x.id||uid(),hours:+x.hours||0,progress:+x.progress||0})));else if(headers.includes('name'))db.people.push(...rows.map(x=>({...x,id:x.id||uid()})));save();renderAll();toast('CSV imported; verify fields')} ;r.readAsText(f);e.target.value=''}
+async function loadSQL(){if(sqlModule)return sqlModule;try{let s=document.createElement('script');s.src='../vendor/sql-wasm.js';document.head.appendChild(s);await new Promise((res,rej)=>{s.onload=res;s.onerror=rej});if(!window.initSqlJs)throw Error();sqlModule=await window.initSqlJs({locateFile:f=>'../vendor/'+f});$('sqliteStatus').textContent='SQLite engine loaded from vendor/';return sqlModule}catch(e){$('sqliteStatus').textContent='SQLite engine not loaded. Add vendor/sql-wasm.js + vendor/sql-wasm.wasm beside this HTML, or use JSON/CSV.';return null}}
+function makeSQLite(){let SQL=sqlModule;if(!SQL)return null;let s=new SQL.Database();s.run(`CREATE TABLE tickets(id TEXT PRIMARY KEY,code TEXT,title TEXT,project TEXT,priority TEXT,status TEXT,assignee TEXT,manager TEXT,reporter TEXT,start TEXT,due TEXT,planned REAL,progress INTEGER,description TEXT,blocker TEXT,updated_at TEXT);CREATE TABLE logs(id TEXT PRIMARY KEY,ticket_id TEXT,date TEXT,hours REAL,progress INTEGER,type TEXT,work TEXT,blocker TEXT,next_action TEXT,created_at TEXT);CREATE TABLE people(id TEXT PRIMARY KEY,name TEXT,role TEXT,email TEXT,team TEXT);CREATE TABLE resources(id TEXT PRIMARY KEY,name TEXT,type TEXT,owner TEXT,reference TEXT);`);let ins=(table,cols,rows)=>{let st=s.prepare(`INSERT INTO ${table}(${cols.join(',')}) VALUES (${cols.map(()=>'?').join(',')})`);rows.forEach(r=>st.run(cols.map(c=>r[c]??'')));st.free()};ins('tickets',['id','code','title','project','priority','status','assignee','manager','reporter','start','due','planned','progress','description','blocker','updated_at'],db.tickets.map(t=>[t.id,t.code,t.title,t.project,t.priority,t.status,t.assignee,t.manager,t.reporter,t.start,t.due,t.planned,t.progress,t.desc,t.blocker,t.updated_at]));ins('logs',['id','ticket_id','date','hours','progress','type','work','blocker','next_action','created_at'],db.logs.map(l=>[l.id,l.ticket,l.date,l.hours,l.progress,l.type,l.work,l.blocker,l.next,l.created_at]));ins('people',['id','name','role','email','team'],db.people.map(p=>[p.id,p.name,p.role,p.email,p.team]));ins('resources',['id','name','type','owner','reference'],db.resources.map(r=>[r.id,r.name,r.type,r.owner,r.ref]));return s}
+async function exportSQLite(){let SQL=await loadSQL();if(!SQL){toast('SQLite engine unavailable');return}let s=makeSQLite();if(!s)return;download(new Blob([s.export()],{type:'application/x-sqlite3'}),'issuetrack.db');s.close();toast('SQLite database exported')}
+async function importSQLite(e){let f=e.target.files[0];if(!f)return;let SQL=await loadSQL();if(!SQL)return;let buf=await f.arrayBuffer();try{let s=new SQL.Database(new Uint8Array(buf));let get=(q)=>{let x=s.exec(q);if(!x.length)return[];let h=x[0].columns;return x[0].values.map(v=>Object.fromEntries(h.map((k,i)=>[k,v[i]])))};let ts=get('SELECT * FROM tickets'),ls=get('SELECT * FROM logs'),ps=get('SELECT * FROM people'),rs=get('SELECT * FROM resources');db.tickets=ts.map(t=>({...t,desc:t.description,planned:+t.planned||0,progress:+t.progress||0}));db.logs=ls.map(l=>({...l,ticket:l.ticket_id,next:l.next_action,hours:+l.hours||0,progress:+l.progress||0}));db.people=ps;db.resources=rs.map(r=>({...r,ref:r.reference}));save();renderAll();s.close();toast('SQLite imported')}catch(err){alert('Could not read SQLite database: '+err.message)}e.target.value=''}
+async function runSQL(){let SQL=await loadSQL();if(!SQL)return;let s=makeSQLite();try{let x=s.exec($('sqlBox').value);if(!x.length){$('sqlResult').innerHTML='<div class="notice">Query executed successfully.</div>';return}let d=x[0],html='<div class="tablewrap"><table><thead><tr>'+d.columns.map(c=>`<th>${esc(c)}</th>`).join('')+'</tr></thead><tbody>'+d.values.map(r=>'<tr>'+r.map(v=>`<td>${esc(v)}</td>`).join('')+'</tr>').join('')+'</tbody></table></div>';$('sqlResult').innerHTML=html}catch(e){$('sqlResult').innerHTML='<div class="notice" style="color:#a22">SQL error: '+esc(e.message)+'</div>'}finally{s.close()}}
+function resetAll(){if(confirm('Delete ALL IssueTrack local data? This cannot be undone unless you have a backup.')){localStorage.removeItem(KEY);location.reload()}}
+load();setTheme(db.settings.theme||'green');$('sqliteStatus').textContent='SQLite is available through local vendor files when installed.';renderAll();
+</script>
+</body>
+</html>
