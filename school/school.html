@@ -248,7 +248,7 @@ function schemaView(){$('schema').textContent=q(`SELECT name,sql FROM sqlite_mas
 function dbInfo(){$('dbInfo').textContent='SQLite database: school_management.db\\nSize: '+db.export().byteLength.toLocaleString()+' bytes\\nStorage: Browser localStorage\\n\\nRows:\\n'+T.map(t=>`  ${t}: ${q(`SELECT COUNT(*) c FROM ${t}`)[0].c}`).join('\\n')}
 
 async function start(){
-const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/sql-wasm.js';sc.onload=async()=>{SQL=await initSqlJs({locateFile:f=>'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/'+f});let z=localStorage.getItem('schoolSQLiteDB');db=z?new SQL.Database(bytes(z)):new SQL.Database();schemaInit();['a_date','f_date','h_date'].forEach(i=>$(i).value=now());allRender()};sc.onerror=()=>alert('SQLite engine could not be loaded. Open this file with internet access once.');document.head.appendChild(sc)}
+const sc=document.createElement('script');sc.src='../vendor/sql-wasm.js';sc.onload=async()=>{SQL=await initSqlJs({locateFile:f=>'../vendor/'+f});let z=localStorage.getItem('schoolSQLiteDB');db=z?new SQL.Database(bytes(z)):new SQL.Database();schemaInit();['a_date','f_date','h_date'].forEach(i=>$(i).value=now());allRender()};sc.onerror=()=>alert('SQLite engine could not be loaded. Open this file with internet access once.');document.head.appendChild(sc)}
 start();
 </script>
 </body>
