@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#4caf50">
+<title>KidSprint — School Agile Adventure</title>
+<style>
+:root{
+ --bg:#f4fbf1;--card:#fff;--ink:#18321f;--muted:#63806a;--primary:#3f8f45;
+ --primary2:#69b35d;--accent:#f4b942;--danger:#d9534f;--line:#dbe9d8;
+ --shadow:0 5px 18px rgba(43,84,48,.10);--radius:18px;
+}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+button,input,select,textarea{font:inherit} button{cursor:pointer}
+.top{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);padding:10px 14px}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:1250px;margin:auto}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:1.18rem}.logo b{font-size:1.8rem}
+.top-actions{display:flex;gap:6px;flex-wrap:wrap}.iconbtn,.tab,.btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 12px;color:var(--ink);font-weight:700}
+.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}.btn.warn{background:var(--accent)}.btn.danger{background:#fff0ef;color:#a82e2b;border-color:#f2c2c0}
+.btn.small{padding:6px 9px;font-size:.88rem}.iconbtn{padding:8px 10px}
+.tabs{max-width:1250px;margin:8px auto 0;display:flex;gap:6px;overflow:auto;padding-bottom:2px}.tab{white-space:nowrap}.tab.active{background:var(--primary);color:#fff}
+main{max-width:1250px;margin:auto;padding:14px}.page{display:none}.page.active{display:block}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+.hero h1{margin:0 0 5px;font-size:clamp(1.4rem,4vw,2rem)}.hero p{margin:0;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px;box-shadow:var(--shadow)}
+.stat{display:flex;align-items:center;gap:12px}.stat .emoji{font-size:2rem}.num{font-size:1.65rem;font-weight:900}.muted{color:var(--muted);font-size:.9rem}
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}label{font-weight:750;font-size:.9rem}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:10px;background:#fff;color:var(--ink)}textarea{min-height:90px;resize:vertical}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.section-head h2,.section-head h3{margin:0}
+.list{display:grid;gap:8px}.item{border:1px solid var(--line);border-radius:14px;padding:11px;background:#fff}
+.item-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.item-title{font-weight:850}.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}.chip{border-radius:999px;padding:4px 8px;font-size:.78rem;background:#edf7eb;color:#286b31;font-weight:700}
+.progress{height:10px;background:#e8f0e6;border-radius:99px;overflow:hidden}.progress>i{display:block;height:100%;background:var(--primary2);border-radius:99px}
+.badge{padding:4px 8px;border-radius:999px;font-size:.78rem;font-weight:800;background:#eef4ff;color:#385b92}.done{background:#e9f8ec;color:#277237}.late{background:#fff0ef;color:#a82e2b}
+.kidgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}.avatar{font-size:2.2rem}
+.empty{text-align:center;padding:25px;color:var(--muted)}table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#18321f;color:#fff;padding:11px 16px;border-radius:999px;z-index:100;display:none;box-shadow:0 5px 20px #0003}
+.modal{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;z-index:80;padding:15px}.modal.open{display:flex}.modalbox{background:var(--card);max-width:600px;width:100%;max-height:90vh;overflow:auto;border-radius:20px;padding:18px}
+.theme-list{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.theme{padding:12px;border:2px solid var(--line);border-radius:14px;background:var(--bg);text-align:left}
+.check{display:flex;align-items:center;gap:8px}.check input{width:auto}
+.sound-on{background:#e8f7e9!important;color:#25672d!important}
+.smalltext{font-size:.78rem;color:var(--muted)}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+@media(max-width:600px){.grid{grid-template-columns:1fr 1fr}.form{grid-template-columns:1fr}.field.full{grid-column:auto}.brand{align-items:flex-start}.tabs{margin-top:7px}main{padding:10px}.hero{padding:14px}.card{padding:12px}table{display:block;overflow:auto;white-space:nowrap}}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="brand">
+  <div class="logo"><b>🌱</b> KidSprint <span class="smalltext">School Agile Adventure</span></div>
+  <div class="top-actions">
+   <button class="iconbtn" data-action="sound" id="soundBtn">🔊 Sound</button>
+   <button class="iconbtn" data-action="theme">🌳 Theme</button>
+   <button class="iconbtn" data-action="storage">💾 Storage</button>
+  </div>
+ </div>
+ <nav class="tabs">
+  <button class="tab active" data-page="home">🏡 Home</button>
+  <button class="tab" data-page="sprint">🚀 My Sprint</button>
+  <button class="tab" data-page="tasks">📝 Tasks</button>
+  <button class="tab" data-page="team">👨‍👩‍👧 Team</button>
+  <button class="tab" data-page="logs">📔 Daily Log</button>
+  <button class="tab" data-page="reports">📊 Reports</button>
+  <button class="tab" data-page="data">🗃️ Data</button>
+ </nav>
+</header>
+
+<main>
+<section id="home" class="page active">
+ <div class="hero">
+  <h1>🌈 Welcome to your School Adventure!</h1>
+  <p>Plan a little, learn a little, help your team, and celebrate progress.</p>
+  <div class="actions"><button class="btn primary" data-go="sprint">🚀 Start Today's Sprint</button><button class="btn warn" data-go="tasks">✨ Add a Task</button></div>
+ </div>
+ <div class="grid" id="stats"></div>
+ <div class="grid2" style="margin-top:12px">
+  <div class="card"><div class="section-head"><h3>🌟 Today's Mission</h3><span id="todayDate" class="badge"></span></div><div id="todayMission"></div></div>
+  <div class="card"><div class="section-head"><h3>🏆 Little Wins</h3></div><div id="wins"></div></div>
+ </div>
+</section>
+
+<section id="sprint" class="page">
+ <div class="hero"><h1>🚀 Daily Sprint</h1><p>A short school-day plan. Pick a few tasks and move them from To Do → Doing → Done.</p></div>
+ <div class="grid2">
+  <div class="card">
+   <div class="section-head"><h3>🗓️ Sprint Plan</h3><span id="sprintDate" class="badge"></span></div>
+   <div class="form">
+    <div class="field full"><label>🎯 Sprint goal</label><input id="sprintGoal" placeholder="Example: Finish maths worksheet"></div>
+    <div class="field"><label>⏰ Start</label><input id="sprintStart" type="time" value="09:00"></div>
+    <div class="field"><label>🏁 End</label><input id="sprintEnd" type="time" value="16:00"></div>
+   </div>
+   <div class="actions"><button class="btn primary" data-action="saveSprint">💾 Save Sprint</button><button class="btn" data-action="newSprint">🔄 New Today</button></div>
+  </div>
+  <div class="card"><h3>🌱 Sprint Progress</h3><div id="sprintProgress" style="margin-top:10px"></div><div id="sprintTasks" class="list" style="margin-top:10px"></div></div>
+ </div>
+</section>
+
+<section id="tasks" class="page">
+ <div class="card">
+  <div class="section-head"><h2>📝 School Tasks</h2><button class="btn primary" data-action="focusTask">➕ New Task</button></div>
+  <div class="form">
+   <div class="field"><label>Task name</label><input id="taskTitle" placeholder="Read chapter 2"></div>
+   <div class="field"><label>Subject</label><input id="taskSubject" placeholder="Maths / English"></div>
+   <div class="field"><label>Assignee</label><select id="taskAssignee"></select></div>
+   <div class="field"><label>Priority</label><select id="taskPriority"><option>Normal</option><option>Important</option><option>Super Important</option></select></div>
+   <div class="field"><label>Due date</label><input id="taskDue" type="date"></div>
+   <div class="field"><label>Status</label><select id="taskStatus"><option>To Do</option><option>Doing</option><option>Done</option></select></div>
+   <div class="field full"><label>Helpful note</label><textarea id="taskNote" placeholder="What will make this task easier?"></textarea></div>
+  </div>
+  <div class="actions"><button class="btn primary" data-action="addTask">🌟 Add Task</button><button class="btn" data-action="clearTask">Clear</button></div>
+ </div>
+ <div class="card" style="margin-top:12px"><div class="section-head"><h3>📋 Task Board</h3><input id="taskSearch" style="max-width:250px" placeholder="🔎 Search tasks"></div><div id="taskBoard" class="list"></div></div>
+</section>
+
+<section id="team" class="page">
+ <div class="grid2">
+  <div class="card">
+   <h2>👨‍👩‍👧 Scrum Team</h2><p class="muted">Add kids, parents, teachers, mentors or helpers.</p>
+   <div class="form">
+    <div class="field"><label>Name</label><input id="memberName" placeholder="Aarav"></div>
+    <div class="field"><label>Role</label><select id="memberRole"><option>Kid</option><option>Parent</option><option>Teacher</option><option>Mentor</option><option>Helper</option></select></div>
+    <div class="field"><label>Class / subject</label><input id="memberClass" placeholder="Class 5 / Science"></div>
+    <div class="field"><label>Avatar</label><select id="memberAvatar"><option>🧒</option><option>👧</option><option>👦</option><option>👩</option><option>👨</option><option>🧑‍🏫</option><option>👨‍👩‍👧</option></select></div>
+   </div>
+   <div class="actions"><button class="btn primary" data-action="addMember">👋 Add Team Member</button></div>
+  </div>
+  <div class="card"><h3>🌳 Our Team Rules</h3><ul><li>Be kind and listen.</li><li>Keep tasks small.</li><li>Ask for help early.</li><li>Celebrate learning, not just marks.</li><li>Parents and teachers guide; kids participate.</li></ul></div>
+ </div>
+ <div class="card" style="margin-top:12px"><div class="section-head"><h3>🧑‍🤝‍🧑 Team Members</h3></div><div id="teamList" class="kidgrid"></div></div>
+</section>
+
+<section id="logs" class="page">
+ <div class="card">
+  <div class="section-head"><h2>📔 Daily Learning Log</h2><span class="badge">Today</span></div>
+  <div class="form">
+   <div class="field"><label>Who?</label><select id="logMember"></select></div>
+   <div class="field"><label>Mood</label><select id="logMood"><option>😀 Great</option><option>🙂 Good</option><option>😐 Okay</option><option>😴 Tired</option><option>🤔 Need Help</option></select></div>
+   <div class="field full"><label>What did I learn / do?</label><textarea id="logText" placeholder="Today I learned..."></textarea></div>
+   <div class="field"><label>Minutes learned</label><input id="logMinutes" type="number" min="0" value="30"></div>
+   <div class="field"><label>Next tiny step</label><input id="logNext" placeholder="Revise 5 sums"></div>
+  </div>
+  <div class="actions"><button class="btn primary" data-action="addLog">📚 Save Daily Log</button></div>
+ </div>
+ <div class="card" style="margin-top:12px"><h3>📚 Recent Logs</h3><div id="logList" class="list"></div></div>
+</section>
+
+<section id="reports" class="page">
+ <div class="hero"><h1>📊 Kid-Friendly Reports</h1><p>Simple progress pictures for kids, parents and teachers.</p></div>
+ <div class="grid" id="reportStats"></div>
+ <div class="grid2" style="margin-top:12px">
+  <div class="card"><h3>🗓️ Sprint Report</h3><div id="sprintReport"></div></div>
+  <div class="card"><h3>🌱 Learning Time</h3><div id="learningReport"></div></div>
+ </div>
+ <div class="card" style="margin-top:12px"><h3>🏅 Achievements</h3><div id="achievements" class="chips"></div></div>
+</section>
+
+<section id="data" class="page">
+ <div class="grid2">
+  <div class="card">
+   <h2>💾 Data & Storage</h2>
+   <p>Choose where the app saves its data.</p>
+   <div class="actions">
+    <button class="btn primary" data-action="setIDB">🟢 IndexedDB</button>
+    <button class="btn" data-action="setSQLite">🗃️ SQLite WASM</button>
+   </div>
+   <p id="storageInfo" class="muted"></p>
+   <p class="smalltext">SQLite mode expects <b>vendor/sql-wasm.js</b> and <b>vendor/sql-wasm.wasm</b> beside this app or a configured SQLite WASM file. IndexedDB works directly offline.</p>
+  </div>
+  <div class="card">
+   <h3>📦 Backup & Restore</h3>
+   <div class="actions">
+    <button class="btn" data-action="exportJSON">⬇️ Export JSON</button>
+    <button class="btn" data-action="exportCSV">📄 Export CSV</button>
+    <label class="btn">⬆️ Import JSON<input id="importFile" type="file" accept=".json" hidden></label>
+    <button class="btn danger" data-action="clearAll">🧹 Clear All</button>
+   </div>
+  </div>
+ </div>
+ <div class="card" style="margin-top:12px"><h3>🛠️ SQLite Status</h3><div id="sqliteStatus"></div></div>
+</section>
+</main>
+
+<div class="modal" id="themeModal"><div class="modalbox"><div class="section-head"><h2>🌳 Nature Themes</h2><button class="btn small" data-action="closeTheme">Close</button></div><div id="themeList" class="theme-list"></div></div></div>
+<div class="modal" id="storageModal"><div class="modalbox"><div class="section-head"><h2>💾 Storage</h2><button class="btn small" data-action="closeStorage">Close</button></div><p>Select a storage engine. Your data stays in the browser unless you export it.</p><div class="actions"><button class="btn primary" data-action="setIDB">🟢 IndexedDB</button><button class="btn" data-action="setSQLite">🗃️ SQLite WASM</button></div><div id="storageModalMsg" class="muted" style="margin-top:10px"></div></div></div>
+<div id="toast" class="toast"></div>
+
+<script>
+/* KidSprint — single-file school Agile/Scrum planner.
+   IndexedDB is the default. SQLite WASM is optional and uses local vendor/sql-wasm.js.
+*/
+const DB_NAME='KidSprintIDB', DB_VER=1;
+const stores=['members','tasks','logs','sprints','settings'];
+const today=()=>new Date().toISOString().slice(0,10);
+let state={members:[],tasks:[],logs:[],sprints:[],settings:{storage:'indexeddb',theme:'Meadow',sound:true,officeMode:false}};
+let idb=null, sqlDb=null, sqlReady=false;
+
+const themes={
+ 'Meadow': ['#f4fbf1','#18321f','#3f8f45','#69b35d','#f4b942','#dbe9d8'],
+ 'Forest': ['#eef7ed','#19351f','#2f6f3e','#5b9d50','#d9a441','#d3e5d1'],
+ 'Ocean': ['#eef9fb','#17343a','#177e89','#49a6a9','#f1bd5b','#cfe7e8'],
+ 'Sunrise': ['#fff8ed','#4a2d18','#d46b2c','#ed9d4c','#f2c14e','#f0ddc5'],
+ 'Lavender': ['#f7f2fb','#30253c','#7653a6','#9b78c7','#e4b64f','#e2d8ef'],
+ 'Bamboo': ['#f3faf4','#203622','#4c8c4a','#78b96a','#e0ad48','#d6e8d5'],
+ 'Rainforest': ['#eef8f2','#123d2a','#16805b','#50a878','#e6bb49','#cee5d7'],
+ 'Desert': ['#fff7ea','#4b321e','#b66b32','#d99551','#e7b949','#eed9bd'],
+ 'Mountain': ['#f3f7fb','#223044','#486b91','#7798b9','#e4b64e','#d5dfeb'],
+ 'Wildflower': ['#fff5f7','#422d35','#b04d70','#d982a1','#e7b84c','#ead2da']
+};
+
+function $(id){return document.getElementById(id)}
+function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function uid(prefix){return prefix+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
+function showToast(t){let x=$('toast');x.textContent=t;x.style.display='block';clearTimeout(window._toast);window._toast=setTimeout(()=>x.style.display='none',2200)}
+function speakClick(){if(!state.settings.sound)return;try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;let c=new C(),o=c.createOscillator(),g=c.createGain();o.frequency.value=520;g.gain.setValueAtTime(.025,c.currentTime);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.09);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.09)}catch(e){}}
+function saveState(){return Promise.all(['members','tasks','logs','sprints','settings'].map(k=>idbPut(k,state[k])))}
+
+function openIDB(){
+ return new Promise((resolve,reject)=>{
+  const r=indexedDB.open(DB_NAME,DB_VER);
+  r.onupgradeneeded=e=>{const db=e.target.result;stores.forEach(s=>{if(!db.objectStoreNames.contains(s))db.createObjectStore(s,{keyPath:'id'})})};
+  r.onsuccess=()=>{idb=r.result;resolve(r.result)};r.onerror=()=>reject(r.error);
+ })
+}
+function idbPut(store,obj){
+ return new Promise((resolve,reject)=>{let tx=idb.transaction(store,'readwrite');tx.objectStore(store).put(obj);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)})
+}
+function idbAll(store){
+ return new Promise((resolve,reject)=>{let tx=idb.transaction(store,'readonly'),r=tx.objectStore(store).getAll();r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})
+}
+function idbClear(){return Promise.all(stores.map(s=>new Promise((res,rej)=>{let t=idb.transaction(s,'readwrite');t.objectStore(s).clear();t.oncomplete=res;t.onerror=()=>rej(t.error)})))}
+
+async function loadIDB(){
+ await openIDB();
+ for(const k of stores){const arr=await idbAll(k); if(k==='settings'){if(arr[0])state.settings={...state.settings,...arr[0]}}else state[k]=arr}
+ state.settings.storage='indexeddb';
+ await idbPut('settings',{id:'settings',...state.settings});
+}
+
+async function initSQLite(){
+ if(sqlReady)return true;
+ try{
+  if(!window.initSqlJs){
+   await new Promise((resolve,reject)=>{
+    const s=document.createElement('script');s.src='../vendor/sql-wasm.js';s.onload=resolve;s.onerror=reject;document.head.appendChild(s)
+   });
+  }
+  const SQL=await initSqlJs({locateFile:f=>'vendor/'+f});
+  const saved=localStorage.getItem('kidsprint_sqlite_db');
+  sqlDb=saved?new SQL.Database(Uint8Array.from(atob(saved),c=>c.charCodeAt(0))):new SQL.Database();
+  sqlDb.run(`CREATE TABLE IF NOT EXISTS members(id TEXT PRIMARY KEY,name TEXT,role TEXT,className TEXT,avatar TEXT);
+             CREATE TABLE IF NOT EXISTS tasks(id TEXT PRIMARY KEY,title TEXT,subject TEXT,assignee TEXT,priority TEXT,due TEXT,status TEXT,note TEXT);
+             CREATE TABLE IF NOT EXISTS logs(id TEXT PRIMARY KEY,date TEXT,member TEXT,mood TEXT,text TEXT,minutes INTEGER,nextStep TEXT);
+             CREATE TABLE IF NOT EXISTS sprints(id TEXT PRIMARY KEY,date TEXT,goal TEXT,startTime TEXT,endTime TEXT);
+             CREATE TABLE IF NOT EXISTS settings(id TEXT PRIMARY KEY,storage TEXT,theme TEXT,sound INTEGER,officeMode INTEGER);`);
+  sqlReady=true;return true;
+ }catch(e){sqlReady=false;$('sqliteStatus').innerHTML='<span class="late">SQLite WASM not loaded. Put sql-wasm.js + sql-wasm.wasm in vendor/.</span>';return false}
+}
+function sqliteRows(table){return sqlDb.exec('SELECT * FROM '+table)[0]?.values||[]}
+function syncFromSQLite(){
+ const maps={
+ members:['id','name','role','className','avatar'],tasks:['id','title','subject','assignee','priority','due','status','note'],
+ logs:['id','date','member','mood','text','minutes','nextStep'],sprints:['id','date','goal','startTime','endTime'],settings:['id','storage','theme','sound','officeMode']
+ };
+ for(const [t,cols] of Object.entries(maps)){
+  const rows=sqliteRows(t);state[t]=rows.map(r=>Object.fromEntries(cols.map((c,i)=>[c,r[i]])));
+ }
+ if(state.settings[0])state.settings={...state.settings,...state.settings[0],sound:!!state.settings[0].sound,officeMode:!!state.settings[0].officeMode};
+}
+function saveSQLite(){
+ if(!sqlReady)return;
+ const tables=['members','tasks','logs','sprints','settings'];tables.forEach(t=>sqlDb.run('DELETE FROM '+t));
+ const put=(t,cols,rows)=>rows.forEach(o=>sqlDb.run(`INSERT INTO ${t}(${cols.join(',')}) VALUES(${cols.map(()=>'?').join(',')})`,cols.map(c=>o[c]??null)));
+ put('members',['id','name','role','className','avatar'],state.members);
+ put('tasks',['id','title','subject','assignee','priority','due','status','note'],state.tasks);
+ put('logs',['id','date','member','mood','text','minutes','nextStep'],state.logs);
+ put('sprints',['id','date','goal','startTime','endTime'],state.sprints);
+ put('settings',['id','storage','theme','sound','officeMode'],[{id:'settings',...state.settings,sound:state.settings.sound?1:0,officeMode:state.settings.officeMode?1:0}]);
+ const data=sqlDb.export();localStorage.setItem('kidsprint_sqlite_db',btoa(String.fromCharCode(...data)));
+}
+async function persist(){if(state.settings.storage==='sqlite'){saveSQLite()}else await saveState()}
+async function setStorage(mode){
+ if(mode==='sqlite'){
+  const ok=await initSQLite();if(!ok){showToast('SQLite files not found — using IndexedDB');return}
+  state.settings.storage='sqlite';syncFromSQLite();showToast('SQLite WASM storage selected');
+ }else{state.settings.storage='indexeddb';await saveState();showToast('IndexedDB storage selected')}
+ await persist();renderAll();$('storageModal').classList.remove('open')
+}
+
+function applyTheme(name){
+ let t=themes[name]||themes.Meadow;document.documentElement.style.setProperty('--bg',t[0]);document.documentElement.style.setProperty('--ink',t[1]);document.documentElement.style.setProperty('--primary',t[2]);document.documentElement.style.setProperty('--primary2',t[3]);document.documentElement.style.setProperty('--accent',t[4]);document.documentElement.style.setProperty('--line',t[5]);
+ state.settings.theme=name;persist();renderThemeList()
+}
+function renderThemeList(){$('themeList').innerHTML=Object.keys(themes).map(n=>`<button class="theme" data-theme="${esc(n)}"><b>${n}</b><br><span class="smalltext">${state.settings.theme===n?'✓ Selected':'Tap to use'}</span></button>`).join('')}
+
+function go(page){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===page));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.page===page));window.scrollTo({top:0,behavior:'smooth'});renderAll()}
+function memberOptions(selected=''){return state.members.map(m=>`<option value="${esc(m.id)}" ${m.id===selected?'selected':''}>${esc(m.avatar)} ${esc(m.name)} — ${esc(m.role)}</option>`).join('')}
+function refreshMemberSelects(){['taskAssignee','logMember'].forEach(id=>{let x=$(id),old=x.value;x.innerHTML='<option value="">Choose...</option>'+memberOptions(old)})}
+
+function addMember(){
+ const name=$('memberName').value.trim();if(!name)return showToast('Please enter a name');
+ state.members.push({id:uid('mem'),name,role:$('memberRole').value,className:$('memberClass').value.trim(),avatar:$('memberAvatar').value});
+ $('memberName').value='';$('memberClass').value='';persist();renderAll();showToast('Team member added 🌟')
+}
+function addTask(){
+ const title=$('taskTitle').value.trim();if(!title)return showToast('Please enter a task');
+ state.tasks.push({id:uid('task'),title,subject:$('taskSubject').value.trim(),assignee:$('taskAssignee').value,due:$('taskDue').value||today(),priority:$('taskPriority').value,status:$('taskStatus').value,note:$('taskNote').value.trim()});
+ ['taskTitle','taskSubject','taskNote'].forEach(x=>$(x).value='');persist();renderAll();showToast('Task added 🚀')
+}
+function addLog(){
+ const text=$('logText').value.trim();if(!text)return showToast('Write one thing you learned');
+ state.logs.unshift({id:uid('log'),date:today(),member:$('logMember').value,mood:$('logMood').value,text,minutes:Number($('logMinutes').value)||0,nextStep:$('logNext').value.trim()});
+ $('logText').value='';$('logNext').value='';persist();renderAll();showToast('Daily log saved 📚')
+}
+function saveSprint(){
+ let s=state.sprints.find(x=>x.date===today());if(!s){s={id:uid('spr'),date:today()};state.sprints.push(s)}
+ s.goal=$('sprintGoal').value.trim();s.startTime=$('sprintStart').value;s.endTime=$('sprintEnd').value;persist();renderAll();showToast('Sprint saved 🌱')
+}
+function newSprint(){$('sprintGoal').value='';$('sprintStart').value='09:00';$('sprintEnd').value='16:00'}
+function updateTask(id,status){let t=state.tasks.find(x=>x.id===id);if(t){t.status=status;persist();renderAll();showToast(status==='Done'?'Great job! ⭐':'Task updated')}}
+function deleteTask(id){if(confirm('Remove this task?')){state.tasks=state.tasks.filter(x=>x.id!==id);persist();renderAll()}}
+function deleteMember(id){if(confirm('Remove this team member?')){state.members=state.members.filter(x=>x.id!==id);persist();renderAll()}}
+function deleteLog(id){if(confirm('Delete this log?')){state.logs=state.logs.filter(x=>x.id!==id);persist();renderAll()}}
+
+function renderStats(){
+ const done=state.tasks.filter(x=>x.status==='Done').length, total=state.tasks.length, mins=state.logs.reduce((a,b)=>a+(Number(b.minutes)||0),0);
+ $('stats').innerHTML=[
+  ['📚',total,'Tasks'],['⭐',done,'Finished'],['⏱️',mins,'Learning minutes'],['🧑‍🤝‍🧑',state.members.length,'Team members']
+ ].map(x=>`<div class="card stat"><div class="emoji">${x[0]}</div><div><div class="num">${x[1]}</div><div class="muted">${x[2]}</div></div></div>`).join('');
+ $('todayDate').textContent=today();
+ let s=state.sprints.find(x=>x.date===today());$('todayMission').innerHTML=s?.goal?`<b>${esc(s.goal)}</b><div class="muted" style="margin-top:5px">${esc(s.startTime||'')} – ${esc(s.endTime||'')}</div>`:'No mission yet. Tap “Start Today’s Sprint”.';
+ $('wins').innerHTML=done?`⭐ You completed <b>${done}</b> task${done>1?'s':''}! Keep going.`:'🌱 Every small step counts. Complete your first task today!';
+}
+function renderSprint(){
+ let s=state.sprints.find(x=>x.date===today());$('sprintDate').textContent=today();
+ $('sprintGoal').value=s?.goal||'';$('sprintStart').value=s?.startTime||'09:00';$('sprintEnd').value=s?.endTime||'16:00';
+ const total=state.tasks.length,done=state.tasks.filter(x=>x.status==='Done').length,pct=total?Math.round(done/total*100):0;
+ $('sprintProgress').innerHTML=`<div class="section-head"><b>${done}/${total} completed</b><b>${pct}%</b></div><div class="progress"><i style="width:${pct}%"></i></div>`;
+ $('sprintTasks').innerHTML=state.tasks.slice(0,8).map(t=>`<div class="item"><div class="item-head"><span class="item-title">${esc(t.title)}</span><span class="badge ${t.status==='Done'?'done':''}">${esc(t.status)}</span></div></div>`).join('')||'<div class="empty">Add a few tasks to make your sprint.</div>';
+}
+function renderTasks(){
+ const q=$('taskSearch').value.toLowerCase();let arr=state.tasks.filter(t=>`${t.title} ${t.subject} ${t.note}`.toLowerCase().includes(q));
+ $('taskBoard').innerHTML=arr.map(t=>{
+  const m=state.members.find(x=>x.id===t.assignee);
+  return `<div class="item"><div class="item-head"><div><div class="item-title">${esc(t.title)}</div><div class="muted">${esc(t.subject||'No subject')} · Due ${esc(t.due||'')}</div></div><span class="badge ${t.status==='Done'?'done':t.status==='Doing'?'':'late'}">${esc(t.status)}</span></div>
+  <div class="chips"><span class="chip">${esc(t.priority)}</span>${m?`<span class="chip">${esc(m.avatar)} ${esc(m.name)}</span>`:''}</div>${t.note?`<div class="muted" style="margin-top:6px">${esc(t.note)}</div>`:''}
+  <div class="actions"><button class="btn small" data-taskstatus="${t.id}" data-status="To Do">🌱 To Do</button><button class="btn small" data-taskstatus="${t.id}" data-status="Doing">🚀 Doing</button><button class="btn small" data-taskstatus="${t.id}" data-status="Done">⭐ Done</button><button class="btn small danger" data-deletetask="${t.id}">Delete</button></div></div>`
+ }).join('')||'<div class="empty">No tasks yet. Add your first school task!</div>';
+}
+function renderTeam(){
+ $('teamList').innerHTML=state.members.map(m=>`<div class="item"><div class="avatar">${esc(m.avatar)}</div><div class="item-title">${esc(m.name)}</div><div class="chips"><span class="chip">${esc(m.role)}</span>${m.className?`<span class="chip">${esc(m.className)}</span>`:''}</div><div class="actions"><button class="btn small danger" data-deletemember="${m.id}">Remove</button></div></div>`).join('')||'<div class="empty">Add your first Scrum team member.</div>';
+ refreshMemberSelects();
+}
+function renderLogs(){
+ $('logList').innerHTML=state.logs.slice(0,15).map(l=>{let m=state.members.find(x=>x.id===l.member);return `<div class="item"><div class="item-head"><b>${esc(l.mood)} ${esc(m?.name||'Team member')}</b><span class="badge">${esc(l.date)}</span></div><div style="margin-top:5px">${esc(l.text)}</div><div class="muted" style="margin-top:5px">⏱️ ${Number(l.minutes)||0} min · Next: ${esc(l.nextStep||'—')}</div><div class="actions"><button class="btn small danger" data-deletelog="${l.id}">Delete</button></div></div>`}).join('')||'<div class="empty">No daily logs yet.</div>';
+}
+function renderReports(){
+ const done=state.tasks.filter(x=>x.status==='Done').length,total=state.tasks.length,mins=state.logs.reduce((a,b)=>a+(Number(b.minutes)||0),0),pct=total?Math.round(done/total*100):0;
+ $('reportStats').innerHTML=[['🌟',done,'Finished'],['📋',total,'Total tasks'],['⏱️',mins,'Learning minutes'],['📈',pct+'%','Task completion']].map(x=>`<div class="card stat"><div class="emoji">${x[0]}</div><div><div class="num">${x[1]}</div><div class="muted">${x[2]}</div></div></div>`).join('');
+ $('sprintReport').innerHTML=`<div class="progress"><i style="width:${pct}%"></i></div><p><b>${done}</b> of <b>${total}</b> tasks finished.</p>`;
+ $('learningReport').innerHTML=state.logs.slice(0,7).map(l=>`<div class="item"><b>${esc(l.date)}</b> — ${esc(l.mood)}<br><span class="muted">${Number(l.minutes)||0} minutes · ${esc(l.text)}</span></div>`).join('')||'<div class="empty">Start logging your learning.</div>';
+ let a=[];if(done>=1)a.push('⭐ First Finish');if(done>=5)a.push('🏅 5 Tasks');if(mins>=60)a.push('⏱️ One Hour Learner');if(state.logs.length>=3)a.push('📔 Daily Logger');if(state.members.length>=3)a.push('🧑‍🤝‍🧑 Team Builder');
+ $('achievements').innerHTML=a.length?a.map(x=>`<span class="chip">${x}</span>`).join(''):'<span class="muted">Your first badge is waiting!</span>';
+}
+function renderData(){$('storageInfo').textContent='Current storage: '+(state.settings.storage==='sqlite'?'SQLite WASM':'IndexedDB')+' · Theme: '+state.settings.theme+' · Sound: '+(state.settings.sound?'On':'Off');$('sqliteStatus').innerHTML=sqlReady?'🟢 SQLite WASM engine ready.':'⚪ SQLite WASM is optional and not loaded yet.'}
+function renderAll(){renderStats();renderSprint();renderTasks();renderTeam();renderLogs();renderReports();renderData();renderThemeList();document.body.classList.toggle('office',!!state.settings.officeMode);$('soundBtn').textContent=state.settings.sound?'🔊 Sound':'🔇 Sound Off'}
+
+function exportJSON(){const data={app:'KidSprint',version:1,exportedAt:new Date().toISOString(),...state};download('kidsprint_backup.json','application/json',JSON.stringify(data,null,2))}
+function exportCSV(){
+ const rows=[['Type','ID','Date','Name/Title','Role/Subject','Status/Mood','Minutes','Notes']];
+ state.members.forEach(x=>rows.push(['Member',x.id,'',x.name,x.role,'','',x.className]));
+ state.tasks.forEach(x=>rows.push(['Task',x.id,x.due,x.title,x.subject,x.status,'',x.note]));
+ state.logs.forEach(x=>rows.push(['Log',x.id,x.date,state.members.find(m=>m.id===x.member)?.name||'',x.mood,'',x.minutes,x.text+' | Next: '+x.nextStep]));
+ const csv=rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');download('kidsprint_report.csv','text/csv',csv)
+}
+function download(name,type,data){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+async function importJSON(file){
+ try{let d=JSON.parse(await file.text());if(!d||!Array.isArray(d.tasks))throw Error('Invalid backup');state.members=d.members||[];state.tasks=d.tasks||[];state.logs=d.logs||[];state.sprints=d.sprints||[];state.settings={...state.settings,...(d.settings||{})};await persist();applyTheme(state.settings.theme);renderAll();showToast('Backup imported successfully 📦')}catch(e){showToast('Could not import this file')}
+}
+async function clearAll(){if(!confirm('Clear all KidSprint data? Export a backup first.'))return;state.members=[];state.tasks=[];state.logs=[];state.sprints=[];await persist();renderAll();showToast('Data cleared')}
+
+document.addEventListener('click',async e=>{
+ const b=e.target.closest('button,[data-action]');if(b){speakClick()}
+ if(e.target.closest('.tab'))go(e.target.closest('.tab').dataset.page);
+ if(e.target.closest('[data-go]'))go(e.target.closest('[data-go]').dataset.go);
+ const a=b?.dataset.action;
+ if(a==='sound'){state.settings.sound=!state.settings.sound;persist();renderAll()}
+ if(a==='theme'){$('themeModal').classList.add('open');renderThemeList()}
+ if(a==='storage'){$('storageModal').classList.add('open')}
+ if(a==='closeTheme')$('themeModal').classList.remove('open');
+ if(a==='closeStorage')$('storageModal').classList.remove('open');
+ if(a==='addMember')addMember();
+ if(a==='addTask')addTask();
+ if(a==='clearTask'){['taskTitle','taskSubject','taskNote'].forEach(x=>$(x).value='')}
+ if(a==='focusTask'){go('tasks');setTimeout(()=>$('taskTitle').focus(),50)}
+ if(a==='addLog')addLog();
+ if(a==='saveSprint')saveSprint();
+ if(a==='newSprint')newSprint();
+ if(a==='setIDB')await setStorage('indexeddb');
+ if(a==='setSQLite')await setStorage('sqlite');
+ if(a==='exportJSON')exportJSON();if(a==='exportCSV')exportCSV();if(a==='clearAll')clearAll();
+ if(b?.dataset.theme){applyTheme(b.dataset.theme);showToast('Theme changed 🌿')}
+ if(b?.dataset.taskstatus)updateTask(b.dataset.taskstatus,b.dataset.status);
+ if(b?.dataset.deletetask)deleteTask(b.dataset.deletetask);
+ if(b?.dataset.deletemember)deleteMember(b.dataset.deletemember);
+ if(b?.dataset.deletelog)deleteLog(b.dataset.deletelog);
+});
+$('taskSearch').addEventListener('input',renderTasks);
+$('importFile').addEventListener('change',e=>e.target.files[0]&&importJSON(e.target.files[0]));
+
+async function boot(){
+ try{await loadIDB()}catch(e){showToast('IndexedDB unavailable in this browser')}
+ applyTheme(state.settings.theme);renderAll();
+}
+boot();
+</script>
+</body>
+</html>
