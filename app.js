@@ -22,7 +22,9 @@ function autoCacheAllFiles() {
     "./style.css",
     "./app.js",
     "./manifest.json",
-    "./icon.png"
+    "./icon.png",
+    "./vendor/sql-wasm.js",
+    "./vendor/sql-wasm.wasm"
   ]);
 
   // Automatically find every single link or page referenced in your HTML elements
