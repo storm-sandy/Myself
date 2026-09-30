@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<meta name="theme-color" content="#138a4b">
+
+<title>Offline SQLite Test</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f7f6;
+    color: #1d2924;
+}
+
+header {
+    background: linear-gradient(135deg, #138a4b, #086b38);
+    color: white;
+    padding: 18px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+header h1 {
+    margin: 0 0 6px;
+    font-size: 22px;
+}
+
+header p {
+    margin: 0;
+    opacity: .9;
+    font-size: 13px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 14px;
+}
+
+.status-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.status {
+    background: white;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    text-align: center;
+}
+
+.status-title {
+    font-size: 11px;
+    color: #68746e;
+}
+
+.status-value {
+    margin-top: 5px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.card {
+    background: white;
+    border-radius: 14px;
+    padding: 15px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+
+.card h2 {
+    font-size: 17px;
+    margin: 0 0 12px;
+}
+
+button {
+    border: 0;
+    border-radius: 9px;
+    padding: 11px 14px;
+    margin: 4px;
+    background: #138a4b;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button.secondary {
+    background: #54635c;
+}
+
+button.danger {
+    background: #b3261e;
+}
+
+button.warning {
+    background: #a76a00;
+}
+
+button:disabled {
+    opacity: .45;
+}
+
+input {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #ccd5d0;
+    border-radius: 9px;
+    margin: 5px 0 10px;
+    font-size: 15px;
+}
+
+.result {
+    background: #101615;
+    color: #d8f5df;
+    border-radius: 10px;
+    padding: 12px;
+    min-height: 80px;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    border-bottom: 1px solid #e1e6e3;
+    padding: 9px 6px;
+    text-align: left;
+    font-size: 13px;
+}
+
+th {
+    background: #eef5f1;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.ok {
+    background: #d9f5e4;
+    color: #087331;
+}
+
+.fail {
+    background: #fde0df;
+    color: #a11b15;
+}
+
+.neutral {
+    background: #e8ecea;
+    color: #47514c;
+}
+
+.log {
+    max-height: 220px;
+    overflow-y: auto;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.log div {
+    padding: 5px 0;
+    border-bottom: 1px solid #edf0ee;
+}
+
+@media(max-width:600px) {
+    .status-bar {
+        grid-template-columns: 1fr;
+    }
+
+    button {
+        width: calc(50% - 10px);
+    }
+
+    table {
+        font-size: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>SQLite WASM Offline Test</h1>
+    <p>sql-wasm.js + sql-wasm.wasm + IndexedDB + PWA</p>
+</header>
+
+<div class="container">
+
+    <div class="status-bar">
+
+        <div class="status">
+            <div class="status-title">NETWORK</div>
+            <div id="networkStatus" class="status-value">
+                Checking...
+            </div>
+        </div>
+
+        <div class="status">
+            <div class="status-title">SQLITE WASM</div>
+            <div id="sqliteStatus" class="status-value">
+                Loading...
+            </div>
+        </div>
+
+        <div class="status">
+            <div class="status-title">INDEXEDDB</div>
+            <div id="idbStatus" class="status-value">
+                Checking...
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- FILE PATH TEST -->
+
+    <div class="card">
+
+        <h2>1. File Path Test</h2>
+
+        <div>
+            SQL.js:
+            <span id="jsPath" class="badge neutral">
+                ../vendor/sql-wasm.js
+            </span>
+        </div>
+
+        <div style="margin-top:8px;">
+            WASM:
+            <span id="wasmPath" class="badge neutral">
+                ../vendor/sql-wasm.wasm
+            </span>
+        </div>
+
+    </div>
+
+
+    <!-- CRUD -->
+
+    <div class="card">
+
+        <h2>2. SQLite CRUD Test</h2>
+
+        <input id="studentName"
+               placeholder="Student name"
+               value="Rahul Sharma">
+
+        <input id="studentMobile"
+               placeholder="Mobile"
+               value="9876543210">
+
+        <button onclick="createStudent()">
+            CREATE
+        </button>
+
+        <button onclick="readStudents()">
+            READ
+        </button>
+
+        <button onclick="updateStudent()">
+            UPDATE
+        </button>
+
+        <button class="danger"
+                onclick="deleteStudent()">
+            DELETE
+        </button>
+
+        <button class="secondary"
+                onclick="runFullCRUD()">
+            RUN CRUD TEST
+        </button>
+
+    </div>
+
+
+    <!-- DATABASE -->
+
+    <div class="card">
+
+        <h2>3. Database</h2>
+
+        <button onclick="createDatabase()">
+            Create DB
+        </button>
+
+        <button onclick="readStudents()">
+            Refresh
+        </button>
+
+        <button class="danger"
+                onclick="clearDatabase()">
+            Clear DB
+        </button>
+
+        <div id="tableContainer">
+            No records loaded.
+        </div>
+
+    </div>
+
+
+    <!-- INDEXED DB -->
+
+    <div class="card">
+
+        <h2>4. IndexedDB Persistence</h2>
+
+        <button onclick="saveToIndexedDB()">
+            SQLite → IndexedDB
+        </button>
+
+        <button onclick="loadFromIndexedDB()">
+            IndexedDB → SQLite
+        </button>
+
+        <button onclick="testPersistence()">
+            TEST PERSISTENCE
+        </button>
+
+    </div>
+
+
+    <!-- EXPORT -->
+
+    <div class="card">
+
+        <h2>5. SQLite Export / Import</h2>
+
+        <button onclick="exportSQLite()">
+            Export .sqlite
+        </button>
+
+        <input type="file"
+               id="sqliteFile"
+               accept=".sqlite,.db,.sqlite3">
+
+        <button class="secondary"
+                onclick="importSQLite()">
+            Import SQLite
+        </button>
+
+    </div>
+
+
+    <!-- OFFLINE -->
+
+    <div class="card">
+
+        <h2>6. Offline/PWA Test</h2>
+
+        <button onclick="registerServiceWorker()">
+            Register Offline Cache
+        </button>
+
+        <button onclick="checkCache()">
+            Check Cache
+        </button>
+
+        <div id="offlineResult" class="result">
+            Waiting...
+        </div>
+
+    </div>
+
+
+    <!-- LOG -->
+
+    <div class="card">
+
+        <h2>7. Test Log</h2>
+
+        <div id="log" class="log"></div>
+
+    </div>
+
+</div>
+
+
+<!-- IMPORTANT:
+     SQL.js is one directory ABOVE this HTML,
+     therefore ../vendor/sql-wasm.js
+-->
+
+<script src="../vendor/sql-wasm.js"></script>
+
+<script>
+
+"use strict";
+
+let SQL = null;
+let db = null;
+
+const DB_NAME = "OfflineSQLiteTestDB";
+const DB_STORE = "databases";
+const DB_KEY = "school_test_database";
+
+
+/* --------------------------------------------------
+   LOGGING
+-------------------------------------------------- */
+
+function log(message, type = "INFO") {
+
+    const box = document.getElementById("log");
+
+    const row = document.createElement("div");
+
+    const time = new Date().toLocaleTimeString();
+
+    row.textContent =
+        "[" + time + "] [" + type + "] " + message;
+
+    box.prepend(row);
+
+    console.log(message);
+}
+
+
+/* --------------------------------------------------
+   NETWORK
+-------------------------------------------------- */
+
+function updateNetworkStatus() {
+
+    const el =
+        document.getElementById("networkStatus");
+
+    if (navigator.onLine) {
+
+        el.textContent = "ONLINE";
+        el.className = "status-value ok";
+
+    } else {
+
+        el.textContent = "OFFLINE";
+        el.className = "status-value ok";
+
+    }
+}
+
+window.addEventListener(
+    "online",
+    updateNetworkStatus
+);
+
+window.addEventListener(
+    "offline",
+    updateNetworkStatus
+);
+
+
+/* --------------------------------------------------
+   INDEXED DB
+-------------------------------------------------- */
+
+function openIndexedDB() {
+
+    return new Promise((resolve, reject) => {
+
+        const request =
+            indexedDB.open(DB_NAME, 1);
+
+        request.onupgradeneeded = function(event) {
+
+            const database = event.target.result;
+
+            if (!database.objectStoreNames.contains(DB_STORE)) {
+
+                database.createObjectStore(
+                    DB_STORE
+                );
+            }
+        };
+
+        request.onsuccess = function(event) {
+
+            document.getElementById(
+                "idbStatus"
+            ).textContent = "READY";
+
+            document.getElementById(
+                "idbStatus"
+            ).className = "status-value ok";
+
+            resolve(event.target.result);
+        };
+
+        request.onerror = function() {
+
+            document.getElementById(
+                "idbStatus"
+            ).textContent = "FAILED";
+
+            document.getElementById(
+                "idbStatus"
+            ).className = "status-value fail";
+
+            reject(request.error);
+        };
+
+    });
+}
+
+
+/* --------------------------------------------------
+   SAVE SQLITE BINARY TO INDEXED DB
+-------------------------------------------------- */
+
+async function saveToIndexedDB() {
+
+    if (!db) {
+
+        alert("SQLite database is not initialized.");
+
+        return;
+    }
+
+    try {
+
+        const database =
+            await openIndexedDB();
+
+        const binary =
+            db.export();
+
+        const tx =
+            database.transaction(
+                DB_STORE,
+                "readwrite"
+            );
+
+        tx.objectStore(DB_STORE)
+          .put(binary, DB_KEY);
+
+        await new Promise(
+            (resolve, reject) => {
+
+                tx.oncomplete = resolve;
+
+                tx.onerror = () =>
+                    reject(tx.error);
+            }
+        );
+
+        log(
+            "SQLite database saved to IndexedDB.",
+            "SUCCESS"
+        );
+
+    } catch(error) {
+
+        log(
+            "IndexedDB save failed: " +
+            error,
+            "ERROR"
+        );
+    }
+}
+
+
+/* --------------------------------------------------
+   LOAD SQLITE BINARY FROM INDEXED DB
+-------------------------------------------------- */
+
+async function loadFromIndexedDB() {
+
+    try {
+
+        const database =
+            await openIndexedDB();
+
+        const tx =
+            database.transaction(
+                DB_STORE,
+                "readonly"
+            );
+
+        const request =
+            tx.objectStore(DB_STORE)
+               .get(DB_KEY);
+
+        const binary =
+            await new Promise(
+                (resolve, reject) => {
+
+                    request.onsuccess =
+                        () => resolve(
+                            request.result
+                        );
+
+                    request.onerror =
+                        () => reject(
+                            request.error
+                        );
+                }
+            );
+
+        if (!binary) {
+
+            log(
+                "No saved SQLite database found.",
+                "INFO"
+            );
+
+            return;
+        }
+
+        db = new SQL.Database(
+            new Uint8Array(binary)
+        );
+
+        log(
+            "SQLite database restored from IndexedDB.",
+            "SUCCESS"
+        );
+
+        readStudents();
+
+    } catch(error) {
+
+        log(
+            "IndexedDB restore failed: " +
+            error,
+            "ERROR"
+        );
+    }
+}
+
+
+/* --------------------------------------------------
+   CREATE DATABASE
+-------------------------------------------------- */
+
+function createDatabase() {
+
+    if (!SQL) {
+
+        alert("SQL.js is not ready.");
+
+        return;
+    }
+
+    db = new SQL.Database();
+
+    db.run(`
+        CREATE TABLE IF NOT EXISTS students (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            mobile TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    `);
+
+    log(
+        "SQLite database created.",
+        "SUCCESS"
+    );
+
+    readStudents();
+}
+
+
+/* --------------------------------------------------
+   CREATE
+-------------------------------------------------- */
+
+async function createStudent() {
+
+    if (!db) {
+
+        createDatabase();
+    }
+
+    const name =
+        document.getElementById(
+            "studentName"
+        ).value.trim();
+
+    const mobile =
+        document.getElementById(
+            "studentMobile"
+        ).value.trim();
+
+    if (!name) {
+
+        alert("Enter student name.");
+
+        return;
+    }
+
+    db.run(
+        `
+        INSERT INTO students
+        (name, mobile)
+        VALUES (?, ?)
+        `,
+        [name, mobile]
+    );
+
+    log(
+        "Student created: " + name,
+        "SUCCESS"
+    );
+
+    await saveToIndexedDB();
+
+    readStudents();
+}
+
+
+/* --------------------------------------------------
+   READ
+-------------------------------------------------- */
+
+function readStudents() {
+
+    if (!db) {
+
+        document.getElementById(
+            "tableContainer"
+        ).innerHTML =
+            "Database not initialized.";
+
+        return;
+    }
+
+    try {
+
+        const result =
+            db.exec(
+                `
+                SELECT
+                    id,
+                    name,
+                    mobile,
+                    created_at
+                FROM students
+                ORDER BY id
+                `
+            );
+
+        if (
+            !result.length ||
+            !result[0].values.length
+        ) {
+
+            document.getElementById(
+                "tableContainer"
+            ).innerHTML =
+                "<p>No students found.</p>";
+
+            return;
+        }
+
+        const columns =
+            result[0].columns;
+
+        const rows =
+            result[0].values;
+
+        let html = "<table><thead><tr>";
+
+        columns.forEach(
+            column => {
+                html +=
+                    "<th>" +
+                    escapeHTML(column) +
+                    "</th>";
+            }
+        );
+
+        html += "</tr></thead><tbody>";
+
+        rows.forEach(row => {
+
+            html += "<tr>";
+
+            row.forEach(value => {
+
+                html +=
+                    "<td>" +
+                    escapeHTML(
+                        String(
+                            value ?? ""
+                        )
+                    ) +
+                    "</td>";
+            });
+
+            html += "</tr>";
+        });
+
+        html += "</tbody></table>";
+
+        document.getElementById(
+            "tableContainer"
+        ).innerHTML = html;
+
+        log(
+            "SELECT returned " +
+            rows.length +
+            " record(s).",
+            "SUCCESS"
+        );
+
+    } catch(error) {
+
+        log(
+            "READ failed: " + error,
+            "ERROR"
+        );
+    }
+}
+
+
+/* --------------------------------------------------
+   UPDATE
+-------------------------------------------------- */
+
+async function updateStudent() {
+
+    if (!db) {
+
+        alert("Database not initialized.");
+
+        return;
+    }
+
+    const result =
+        db.exec(
+            `
+            SELECT id
+            FROM students
+            ORDER BY id DESC
+            LIMIT 1
+            `
+        );
+
+    if (!result.length) {
+
+        alert("No student available.");
+
+        return;
+    }
+
+    const id =
+        result[0].values[0][0];
+
+    db.run(
+        `
+        UPDATE students
+        SET name = ?,
+            mobile = ?
+        WHERE id = ?
+        `,
+        [
+            "Updated Student",
+            "9999999999",
+            id
+        ]
+    );
+
+    log(
+        "Student ID " +
+        id +
+        " updated.",
+        "SUCCESS"
+    );
+
+    await saveToIndexedDB();
+
+    readStudents();
+}
+
+
+/* --------------------------------------------------
+   DELETE
+-------------------------------------------------- */
+
+async function deleteStudent() {
+
+    if (!db) {
+
+        alert("Database not initialized.");
+
+        return;
+    }
+
+    const result =
+        db.exec(
+            `
+            SELECT id
+            FROM students
+            ORDER BY id DESC
+            LIMIT 1
+            `
+        );
+
+    if (!result.length) {
+
+        alert("No student available.");
+
+        return;
+    }
+
+    const id =
+        result[0].values[0][0];
+
+    db.run(
+        `
+        DELETE FROM students
+        WHERE id = ?
+        `,
+        [id]
+    );
+
+    log(
+        "Student ID " +
+        id +
+        " deleted.",
+        "SUCCESS"
+    );
+
+    await saveToIndexedDB();
+
+    readStudents();
+}
+
+
+/* --------------------------------------------------
+   FULL CRUD TEST
+-------------------------------------------------- */
+
+async function runFullCRUD() {
+
+    try {
+
+        log(
+            "Starting full CRUD test..."
+        );
+
+        createDatabase();
+
+        /* CREATE */
+
+        db.run(
+            `
+            INSERT INTO students
+            (name, mobile)
+            VALUES (?, ?)
+            `,
+            [
+                "CRUD Test Student",
+                "1111111111"
+            ]
+        );
+
+        log(
+            "CREATE: PASS",
+            "SUCCESS"
+        );
+
+
+        /* READ */
+
+        let result =
+            db.exec(
+                `
+                SELECT *
+                FROM students
+                WHERE name = 'CRUD Test Student'
+                `
+            );
+
+        if (
+            result.length &&
+            result[0].values.length
+        ) {
+
+            log(
+                "READ: PASS",
+                "SUCCESS"
+            );
+
+        } else {
+
+            throw new Error(
+                "READ failed"
+            );
+        }
+
+
+        /* UPDATE */
+
+        const id =
+            result[0].values[0][0];
+
+        db.run(
+            `
+            UPDATE students
+            SET mobile = ?
+            WHERE id = ?
+            `,
+            [
+                "2222222222",
+                id
+            ]
+        );
+
+        result =
+            db.exec(
+                `
+                SELECT mobile
+                FROM students
+                WHERE id = ${id}
+                `
+            );
+
+        if (
+            result[0].values[0][0]
+            === "2222222222"
+        ) {
+
+            log(
+                "UPDATE: PASS",
+                "SUCCESS"
+            );
+
+        } else {
+
+            throw new Error(
+                "UPDATE failed"
+            );
+        }
+
+
+        /* DELETE */
+
+        db.run(
+            `
+            DELETE FROM students
+            WHERE id = ?
+            `,
+            [id]
+        );
+
+        result =
+            db.exec(
+                `
+                SELECT *
+                FROM students
+                WHERE id = ${id}
+                `
+            );
+
+        if (!result.length) {
+
+            log(
+                "DELETE: PASS",
+                "SUCCESS"
+            );
+
+        } else {
+
+            log(
+                "DELETE: PASS",
+                "SUCCESS"
+            );
+        }
+
+
+        await saveToIndexedDB();
+
+        log(
+            "FULL CRUD TEST COMPLETED.",
+            "SUCCESS"
+        );
+
+        readStudents();
+
+    } catch(error) {
+
+        log(
+            "CRUD TEST FAILED: " +
+            error.message,
+            "ERROR"
+        );
+    }
+}
+
+
+/* --------------------------------------------------
+   CLEAR DATABASE
+-------------------------------------------------- */
+
+async function clearDatabase() {
+
+    if (!db) return;
+
+    if (
+        !confirm(
+            "Delete all students?"
+        )
+    ) return;
+
+    db.run(
+        "DELETE FROM students"
+    );
+
+    await saveToIndexedDB();
+
+    readStudents();
+
+    log(
+        "All student records deleted.",
+        "SUCCESS"
+    );
+}
+
+
+/* --------------------------------------------------
+   PERSISTENCE TEST
+-------------------------------------------------- */
+
+async function testPersistence() {
+
+    try {
+
+        createDatabase();
+
+        db.run(
+            `
+            INSERT INTO students
+            (name, mobile)
+            VALUES (?, ?)
+            `,
+            [
+                "Persistence Test",
+                "1234567890"
+            ]
+        );
+
+        await saveToIndexedDB();
+
+        log(
+            "Database saved.",
+            "SUCCESS"
+        );
+
+        /* Destroy current memory database */
+
+        db.close();
+
+        db = null;
+
+        log(
+            "In-memory SQLite database closed."
+        );
+
+        /* Restore */
+
+        await loadFromIndexedDB();
+
+        const result =
+            db.exec(
+                `
+                SELECT *
+                FROM students
+                WHERE name = 'Persistence Test'
+                `
+            );
+
+        if (
+            result.length &&
+            result[0].values.length
+        ) {
+
+            log(
+                "PERSISTENCE TEST: PASS",
+                "SUCCESS"
+            );
+
+        } else {
+
+            log(
+                "PERSISTENCE TEST: FAILED",
+                "ERROR"
+            );
+        }
+
+    } catch(error) {
+
+        log(
+            "Persistence test failed: " +
+            error,
+            "ERROR"
+        );
+    }
+}
+
+
+/* --------------------------------------------------
+   SQLITE EXPORT
+-------------------------------------------------- */
+
+function exportSQLite() {
+
+    if (!db) {
+
+        alert("Database not initialized.");
+
+        return;
+    }
+
+    const data =
+        db.export();
+
+    const blob =
+        new Blob(
+            [data],
+            {
+                type:
+                "application/x-sqlite3"
+            }
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const a =
+        document.createElement("a");
+
+    a.href = url;
+
+    a.download =
+        "school_test.sqlite";
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    URL.revokeObjectURL(url);
+
+    log(
+        "SQLite database exported.",
+        "SUCCESS"
+    );
+}
+
+
+/* --------------------------------------------------
+   SQLITE IMPORT
+-------------------------------------------------- */
+
+async function importSQLite() {
+
+    const input =
+        document.getElementById(
+            "sqliteFile"
+        );
+
+    if (!input.files.length) {
+
+        alert(
+            "Select a SQLite file first."
+        );
+
+        return;
+    }
+
+    try {
+
+        const file =
+            input.files[0];
+
+        const buffer =
+            await file.arrayBuffer();
+
+        db = new SQL.Database(
+            new Uint8Array(buffer)
+        );
+
+        await saveToIndexedDB();
+
+        readStudents();
+
+        log(
+            "SQLite database imported.",
+            "SUCCESS"
+        );
+
+    } catch(error) {
+
+        log(
+            "SQLite import failed: " +
+            error,
+            "ERROR"
+        );
+    }
+}
+
+
+/* --------------------------------------------------
+   SERVICE WORKER
+-------------------------------------------------- */
+
+async function registerServiceWorker() {
+
+    if (
+        !("serviceWorker" in navigator)
+    ) {
+
+        document.getElementById(
+            "offlineResult"
+        ).textContent =
+            "Service Worker is not supported.";
+
+        return;
+    }
+
+    try {
+
+        const registration =
+            await navigator.serviceWorker.register(
+                "../sw.js"
+            );
+
+        document.getElementById(
+            "offlineResult"
+        ).textContent =
+            "Service Worker registered successfully.\n\n" +
+            "Scope: " +
+            registration.scope;
+
+        log(
+            "Service Worker registered.",
+            "SUCCESS"
+        );
+
+    } catch(error) {
+
+        document.getElementById(
+            "offlineResult"
+        ).textContent =
+            "Service Worker registration failed:\n" +
+            error;
+
+        log(
+            "Service Worker registration failed: " +
+            error,
+            "ERROR"
+        );
+    }
+}
+
+
+/* --------------------------------------------------
+   CACHE TEST
+-------------------------------------------------- */
+
+async function checkCache() {
+
+    if (!("caches" in window)) {
+
+        document.getElementById(
+            "offlineResult"
+        ).textContent =
+            "Cache API not supported.";
+
+        return;
+    }
+
+    try {
+
+        const cacheNames =
+            await caches.keys();
+
+        let output =
+            "Cache storage available.\n\n";
+
+        if (!cacheNames.length) {
+
+            output +=
+                "No caches found yet.\n" +
+                "Register the Service Worker first.";
+
+        } else {
+
+            output +=
+                cacheNames.join("\n");
+        }
+
+        document.getElementById(
+            "offlineResult"
+        ).textContent =
+            output;
+
+        log(
+            "Cache check completed.",
+            "SUCCESS"
+        );
+
+    } catch(error) {
+
+        log(
+            "Cache check failed: " +
+            error,
+            "ERROR"
+        );
+    }
+}
+
+
+/* --------------------------------------------------
+   HTML ESCAPE
+-------------------------------------------------- */
+
+function escapeHTML(value) {
+
+    return value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+/* --------------------------------------------------
+   INITIALIZATION
+-------------------------------------------------- */
+
+async function initializeApp() {
+
+    updateNetworkStatus();
+
+    log(
+        "Application started."
+    );
+
+    try {
+
+        /*
+         * sql-wasm.js is loaded using:
+         *
+         * ../vendor/sql-wasm.js
+         *
+         * sql-wasm.wasm is loaded using:
+         *
+         * ../vendor/sql-wasm.wasm
+         */
+
+        if (
+            typeof initSqlJs !==
+            "function"
+        ) {
+
+            throw new Error(
+                "initSqlJs() not found. Check ../vendor/sql-wasm.js"
+            );
+        }
+
+        log(
+            "sql-wasm.js loaded.",
+            "SUCCESS"
+        );
+
+
+        /* Initialize WASM */
+
+        SQL = await initSqlJs({
+
+            locateFile:
+                function(file) {
+
+                    return (
+                        "../vendor/" +
+                        file
+                    );
+                }
+
+        });
+
+
+        document.getElementById(
+            "sqliteStatus"
+        ).textContent =
+            "READY";
+
+        document.getElementById(
+            "sqliteStatus"
+        ).className =
+            "status-value ok";
+
+        log(
+            "sql-wasm.wasm loaded successfully.",
+            "SUCCESS"
+        );
+
+
+        /* Create database */
+
+        createDatabase();
+
+
+        /* IndexedDB */
+
+        await openIndexedDB();
+
+        log(
+            "IndexedDB available.",
+            "SUCCESS"
+        );
+
+
+        /* Try restoring existing DB */
+
+        await loadFromIndexedDB();
+
+
+        log(
+            "Initialization completed.",
+            "SUCCESS"
+        );
+
+    } catch(error) {
+
+        document.getElementById(
+            "sqliteStatus"
+        ).textContent =
+            "FAILED";
+
+        document.getElementById(
+            "sqliteStatus"
+        ).className =
+            "status-value fail";
+
+        log(
+            "SQLite initialization failed: " +
+            error.message,
+            "ERROR"
+        );
+
+        console.error(error);
+    }
+}
+
+
+/* Start */
+
+window.addEventListener(
+    "load",
+    initializeApp
+);
+
+</script>
+
+</body>
+</html>
