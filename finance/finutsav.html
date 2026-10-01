@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UtsavSpend Bharat - Occasion & Celebration Expense Command Center</title>
+    <!-- Chart.js UMD stable build CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #fdf4f8;
+            --bg-card: #ffffff;
+            --text-main: #831843;
+            --text-muted: #9d174d;
+            --accent: #db2777;
+            --accent-hover: #be185d;
+            --border-color: #fbcfe8;
+            --sidebar-bg: #fce7f3;
+        }
+
+        /* 10 Celebration & Nature Themes Definitions */
+        [data-theme="celebration"] {
+            --bg-primary: #fdf4f8;
+            --bg-card: #ffffff;
+            --text-main: #831843;
+            --text-muted: #9d174d;
+            --accent: #db2777;
+            --accent-hover: #be185d;
+            --border-color: #fbcfe8;
+            --sidebar-bg: #fce7f3;
+        }
+        [data-theme="festive"] {
+            --bg-primary: #fffbeb;
+            --bg-card: #ffffff;
+            --text-main: #78350f;
+            --text-muted: #92400e;
+            --accent: #d97706;
+            --accent-hover: #b45309;
+            --border-color: #fde68a;
+            --sidebar-bg: #fef3c7;
+        }
+        [data-theme="royal"] {
+            --bg-primary: #faf5ff;
+            --bg-card: #ffffff;
+            --text-main: #581c87;
+            --text-muted: #6b21a8;
+            --accent: #9333ea;
+            --accent-hover: #7e22ce;
+            --border-color: #e9d5ff;
+            --sidebar-bg: #f3e8ff;
+        }
+        [data-theme="emerald"] {
+            --bg-primary: #ecfdf5;
+            --bg-card: #ffffff;
+            --text-main: #065f46;
+            --text-muted: #047857;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --border-color: #a7f3d0;
+            --sidebar-bg: #d1fae5;
+        }
+        [data-theme="ocean"] {
+            --bg-primary: #f0f9ff;
+            --bg-card: #ffffff;
+            --text-main: #0369a1;
+            --text-muted: #0284c7;
+            --accent: #0ea5e9;
+            --accent-hover: #0284c7;
+            --border-color: #bae6fd;
+            --sidebar-bg: #e0f2fe;
+        }
+        [data-theme="sunset"] {
+            --bg-primary: #fff7ed;
+            --bg-card: #ffffff;
+            --text-main: #9a3412;
+            --text-muted: #c2410c;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --border-color: #ffedd5;
+            --sidebar-bg: #fed7aa;
+        }
+        [data-theme="sakura"] {
+            --bg-primary: #fff1f2;
+            --bg-card: #ffffff;
+            --text-main: #9f1239;
+            --text-muted: #be123c;
+            --accent: #f43f5e;
+            --accent-hover: #e11d48;
+            --border-color: #ffe4e6;
+            --sidebar-bg: #fecdd3;
+        }
+        [data-theme="midnight"] {
+            --bg-primary: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --border-color: #334155;
+            --sidebar-bg: #334155;
+        }
+        [data-theme="amber"] {
+            --bg-primary: #fefce8;
+            --bg-card: #ffffff;
+            --text-main: #713f12;
+            --text-muted: #854d0e;
+            --accent: #eab308;
+            --accent-hover: #ca8a04;
+            --border-color: #fef08a;
+            --sidebar-bg: #fef9c3;
+        }
+        [data-theme="alpine"] {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #334155;
+            --text-muted: #475569;
+            --accent: #64748b;
+            --accent-hover: #475569;
+            --border-color: #e2e8f0;
+            --sidebar-bg: #f1f5f9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-muted);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1280px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 12px; }
+        .gap-4 { gap: 16px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; }
+        @media(max-width: 1024px) { .grid-3 { grid-template-columns: 1fr; } }
+
+        .theme-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-accent:hover { background-color: var(--accent-hover); }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-outline:hover { background: var(--sidebar-bg); }
+
+        label.form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            font-size: 14px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            outline: none;
+        }
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(219, 39, 119, 0.2);
+        }
+
+        .tabs-header {
+            display: flex;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--border-color);
+            gap: 8px;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 8px 8px 0 0;
+            transition: 0.2s;
+        }
+        .tab-btn.active-tab {
+            color: var(--text-main);
+            border-bottom-color: var(--accent);
+            background-color: var(--bg-card);
+        }
+        .hidden { display: none !important; }
+
+        .table-container { overflow-x: auto; width: 100%; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th { font-weight: 600; color: var(--text-main); }
+
+        .badge-cat {
+            background-color: var(--sidebar-bg);
+            color: var(--text-main);
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .icon-box {
+            padding: 12px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .console-box {
+            background-color: #292524;
+            color: #f59e0b;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            min-height: 160px;
+            max-height: 320px;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 16px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+        }
+    </style>
+</head>
+<body data-theme="celebration">
+
+    <!-- Header & Navigation Bar -->
+    <header>
+        <div class="header-container">
+            <div class="flex items-center gap-3">
+                <div class="icon-box" style="background-color: var(--accent); color: white;">
+                    <i class="fa-solid fa-cake-candles"></i>
+                </div>
+                <div>
+                    <h1 style="font-size: 18px; font-weight: bold; color: var(--text-main);">UtsavSpend Bharat</h1>
+                    <p style="font-size: 11px; color: var(--text-muted);">Occasions, Festivals, Weddings, Rituals & Celebrations Command Center</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4" style="flex-wrap: wrap;">
+                <!-- Themes Selector Dropdown -->
+                <div class="flex items-center gap-2">
+                    <label class="form-label" style="margin: 0;"><i class="fa-solid fa-palette" style="color: var(--accent);"></i> Theme:</label>
+                    <select id="themeSelector" onchange="changeTheme(this.value)" class="form-control" style="width: 160px; padding: 6px 10px;">
+                        <option value="celebration">🎉 Celebration Pink</option>
+                        <option value="festive">🪔 Festive Amber</option>
+                        <option value="royal">👑 Royal Purple</option>
+                        <option value="emerald">🌿 Emerald Green</option>
+                        <option value="ocean">🌊 Ocean Breeze</option>
+                        <option value="sunset">🌅 Sunset Orange</option>
+                        <option value="sakura">🌸 Sakura Blossom</option>
+                        <option value="midnight">🌙 Midnight Slate</option>
+                        <option value="amber">☀️ Golden Sunlit</option>
+                        <option value="alpine">⛰️ Alpine Slate</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-2" style="background: var(--sidebar-bg); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 8px;">
+                    <button onclick="exportCSV()" class="btn-outline">
+                        <i class="fa-solid fa-file-csv" style="color: #16a34a;"></i> Export CSV
+                    </button>
+                    <label class="btn-outline" style="cursor: pointer;">
+                        <i class="fa-solid fa-upload" style="color: var(--accent);"></i> Import CSV
+                        <input type="file" id="csvFileInput" accept=".csv" onchange="importCSV(event)" style="display: none;">
+                    </label>
+                    <button onclick="exportDatabaseDump()" class="btn-outline">
+                        <i class="fa-solid fa-database" style="color: #9333ea;"></i> Dump DB JSON
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main>
+        <div class="tabs-header" id="tabHeaders">
+            <button onclick="switchTab('dashboard')" class="tab-btn active-tab" data-target="dashboard">
+                <i class="fa-solid fa-chart-pie"></i> Occasions Summary Dashboard
+            </button>
+            <button onclick="switchTab('expenses')" class="tab-btn" data-target="expenses">
+                <i class="fa-solid fa-gift"></i> Occasion Expense Tracker
+            </button>
+            <button onclick="switchTab('console')" class="tab-btn" data-target="console">
+                <i class="fa-solid fa-terminal"></i> SQLite Console & DB Management
+            </button>
+        </div>
+
+        <!-- ================= TAB 1: EXECUTIVE SUMMARY ================= -->
+        <div id="tab-dashboard" class="flex" style="flex-direction: column; gap: 24px;">
+            <div class="grid-4">
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Total Occasion Spends</p>
+                        <h3 id="sumTotalSpend" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">₹0</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Annual Celebration Budget</span>
+                    </div>
+                    <div class="icon-box" style="background-color: var(--sidebar-bg); color: var(--accent);">
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Weddings & Anniversaries</p>
+                        <h3 id="sumWeddingSpend" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">₹0</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Major family milestones</span>
+                    </div>
+                    <div class="icon-box" style="background-color: var(--sidebar-bg); color: var(--accent);">
+                        <i class="fa-solid fa-ring"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Festivals & Rituals</p>
+                        <h3 id="sumFestivalSpend" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">₹0</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Diwali, Hawan & Pooja</span>
+                    </div>
+                    <div class="icon-box" style="background-color: var(--sidebar-bg); color: var(--accent);">
+                        <i class="fa-solid fa-fire-flame-curved"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Logged Entries</p>
+                        <h3 id="sumTotalCount" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">0 Items</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Transactions in DB</span>
+                    </div>
+                    <div class="icon-box" style="background-color: var(--sidebar-bg); color: var(--text-main);">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card" style="border-left: 4px solid var(--accent);">
+                <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 4px; color: var(--text-main);">
+                    <i class="fa-solid fa-lightbulb" style="color: var(--accent); margin-right: 6px;"></i>Celebration & Expense Insights
+                </h4>
+                <p id="insightText" style="font-size: 13px; color: var(--text-muted);">Analyzing occasion and festival expenditure data...</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="theme-card">
+                    <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 16px; color: var(--text-main);">Occasion Spends by Category (₹)</h4>
+                    <div style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="occasionCategoryChart"></canvas>
+                    </div>
+                </div>
+                <div class="theme-card">
+                    <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 16px; color: var(--text-main);">Payment Mode Distribution</h4>
+                    <div style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="paymentModeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: EXPENSES TRACKER ================= -->
+        <div id="tab-expenses" class="hidden grid-3">
+            <div class="theme-card">
+                <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 16px; color: var(--text-main);">
+                    <i class="fa-solid fa-plus-circle" style="margin-right: 6px;"></i>Log Occasion Expense
+                </h3>
+                <form id="occasionExpenseForm" onsubmit="addOccasionExpense(event)" style="display: flex; flex-direction: column; gap: 14px;">
+                    <div>
+                        <label class="form-label">Date</label>
+                        <input type="date" id="expDate" required class="form-control">
+                    </div>
+                    <div>
+                        <label class="form-label">Occasion Title / Description</label>
+                        <input type="text" id="expTitle" placeholder="e.g. Aarav's 5th Birthday, Annual Satyanarayan Hawan" required class="form-control">
+                    </div>
+                    <div>
+                        <label class="form-label">Amount (₹)</label>
+                        <input type="number" id="expAmount" placeholder="e.g. 15000" required min="1" step="0.01" class="form-control">
+                    </div>
+                    <div>
+                        <label class="form-label">Occasion Category</label>
+                        <select id="expCategory" class="form-control">
+                            <option value="Birthday Celebrations">🎂 Birthday Celebrations</option>
+                            <option value="Anniversaries">🥂 Anniversaries</option>
+                            <option value="Weddings & Engagements">💍 Weddings, Receptions & Engagements</option>
+                            <option value="Parties & Get-Togethers">🎉 Parties & Friends Get-Togethers</option>
+                            <option value="Family Meetings & Reunions">👨‍👩‍👧‍👦 Family Meetings & Reunions</option>
+                            <option value="Festivals">🪔 Festivals (Diwali, Holi, Eid, Christmas, etc.)</option>
+                            <option value="Hawan & Ritual Ceremonies">🔥 Hawan, Pooja & Religious Ceremonies</option>
+                            <option value="Cultural & Community Activities">🎭 Cultural & Community Activities</option>
+                            <option value="Guest Visits & Hospitality">☕ Guest Visits & Hospitality</option>
+                            <option value="Milestones & Achievements">🏆 Milestones & Celebration Events</option>
+                            <option value="Other Occasions">🎈 Other Social Gatherings</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Payment Mode</label>
+                        <select id="expMode" class="form-control">
+                            <option value="UPI (GPay/PhonePe)">📱 UPI (GPay / PhonePe / Paytm)</option>
+                            <option value="Credit Card">💳 Credit Card</option>
+                            <option value="Debit Card">💳 Debit Card</option>
+                            <option value="Net Banking">💻 Net Banking</option>
+                            <option value="Cash">💵 Cash</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Notes</label>
+                        <input type="text" id="expNotes" placeholder="e.g. Venue booking & catering advance" class="form-control">
+                    </div>
+                    <button type="submit" class="btn-accent" style="width: 100%; margin-top: 6px;">Save Occasion Expense</button>
+                </form>
+            </div>
+
+            <div class="theme-card">
+                <div class="flex justify-between items-center" style="margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="font-size: 16px; font-weight: bold; color: var(--text-main);">
+                        <i class="fa-solid fa-list-check" style="margin-right: 6px;"></i>Occasion Expenses Ledger
+                    </h3>
+                    <input type="text" id="searchFilter" onkeyup="filterLedger()" placeholder="Search description..." class="form-control" style="width: 220px; padding: 6px 10px;">
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description / Notes</th>
+                                <th>Category</th>
+                                <th>Mode</th>
+                                <th>Amount</th>
+                                <th style="text-align: center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="occasionExpenseTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: SQLITE CONSOLE SIMULATOR ================= -->
+        <div id="tab-console" class="hidden flex" style="flex-direction: column; gap: 24px;">
+            <div class="theme-card">
+                <div class="flex justify-between items-center" style="margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h3 style="font-size: 16px; font-weight: bold; color: var(--text-main);">
+                            <i class="fa-solid fa-database" style="margin-right: 6px;"></i>SQLite In-Memory Console & DB Storage
+                        </h3>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Query your relational table: <code style="background: var(--sidebar-bg); padding: 2px 4px; border-radius: 4px; color: var(--accent);">occasion_expenses</code></p>
+                    </div>
+                    <div class="flex gap-2" style="flex-wrap: wrap;">
+                        <button onclick="loadSampleQuery('SELECT * FROM occasion_expenses;')" class="btn-outline">SELECT All</button>
+                        <button onclick="loadSampleQuery('SELECT category, SUM(amount) as total_spent FROM occasion_expenses GROUP BY category;')" class="btn-outline">Category Summary SQL</button>
+                        <button onclick="loadSampleQuery('SELECT * FROM occasion_expenses WHERE category = \'Weddings & Engagements\';')" class="btn-outline">Weddings Only</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <textarea id="sqlQueryInput" rows="3" class="form-control" style="font-family: monospace; background-color: #292524; color: #f59e0b; border-color: #444;" placeholder="Enter SQL query..."></textarea>
+                    <div class="flex justify-between items-center" style="flex-wrap: wrap; gap: 10px;">
+                        <span style="font-size: 11px; color: var(--text-muted);"><i class="fa-solid fa-circle-info" style="margin-right: 4px;"></i>Supports SQL selectors & CSV exports.</span>
+                        <button onclick="executeSQL()" class="btn-accent flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i> Run SQL Query
+                        </button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <p class="form-label" style="margin-bottom: 8px;">Console Output Result Window</p>
+                    <div id="sqlOutputContainer" class="console-box">
+                        <span style="color: #78716c;">-- SQLite simulator engine initialized. Ready for occasion queries...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        UtsavSpend Bharat &copy; 2026 | Dedicated Occasion, Festival & Celebration Command Center
+    </footer>
+
+    <!-- Application JavaScript Engine -->
+    <script>
+        let occasionExpensesData = JSON.parse(localStorage.getItem('utsavspend_occasion_expenses')) || [
+            { id: 1, date: '2026-10-01', title: 'Diwali Family Get-Together & Sweets', amount: 8500, category: 'Festivals', mode: 'UPI (GPay/PhonePe)', notes: 'Gift boxes & snacks' },
+            { id: 2, date: '2026-10-05', title: 'Satyanarayan Hawan at Home', amount: 5500, category: 'Hawan & Ritual Ceremonies', mode: 'Cash', notes: 'Pandit ji dakshina & puja samagri' },
+            { id: 3, date: '2026-10-10', title: 'Aarav 10th Birthday Party', amount: 18000, category: 'Birthday Celebrations', mode: 'Credit Card', notes: 'Cake, decorations & dinner' },
+            { id: 4, date: '2026-10-15', title: 'Sharma Family Wedding Reception', amount: 45000, category: 'Weddings & Engagements', mode: 'Net Banking', notes: 'Shagun & outfit shopping' },
+            { id: 5, date: '2026-10-20', title: 'College Friends Reunion Dinner', amount: 6200, category: 'Parties & Get-Togethers', mode: 'UPI (GPay/PhonePe)', notes: 'Restaurant bill split' }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('utsavspend_theme') || 'celebration';
+            document.body.setAttribute('data-theme', savedTheme);
+            const selector = document.getElementById('themeSelector');
+            if(selector) selector.value = savedTheme;
+
+            document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
+            renderAll();
+        });
+
+        function changeTheme(themeName) {
+            document.body.setAttribute('data-theme', themeName);
+            localStorage.setItem('utsavspend_theme', themeName);
+            renderCharts();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active-tab');
+                if(btn.getAttribute('data-target') === tabId) {
+                    btn.classList.add('active-tab');
+                }
+            });
+
+            if(tabId === 'dashboard') {
+                setTimeout(() => renderCharts(), 50);
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('utsavspend_occasion_expenses', JSON.stringify(occasionExpensesData));
+        }
+
+        function addOccasionExpense(e) {
+            e.preventDefault();
+            const newEntry = {
+                id: Date.now(),
+                date: document.getElementById('expDate').value,
+                title: document.getElementById('expTitle').value,
+                amount: parseFloat(document.getElementById('expAmount').value),
+                category: document.getElementById('expCategory').value,
+                mode: document.getElementById('expMode').value,
+                notes: document.getElementById('expNotes').value || '-'
+            };
+            occasionExpensesData.unshift(newEntry);
+            saveData();
+            renderAll();
+            document.getElementById('occasionExpenseForm').reset();
+            document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
+            alert('Occasion expense logged successfully!');
+        }
+
+        function deleteOccasionExpense(id) {
+            occasionExpensesData = occasionExpensesData.filter(item => item.id !== id);
+            saveData();
+            renderAll();
+        }
+
+        function filterLedger() {
+            const query = document.getElementById('searchFilter').value.toLowerCase();
+            const rows = document.querySelectorAll('#occasionExpenseTableBody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        function renderAll() {
+            const tableBody = document.getElementById('occasionExpenseTableBody');
+            tableBody.innerHTML = occasionExpensesData.length === 0 ? `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No occasion expenses logged yet.</td></tr>` : 
+                occasionExpensesData.map(item => `
+                    <tr>
+                        <td style="font-weight: 500;">${item.date}</td>
+                        <td style="font-weight: 600;">${item.title} <div style="font-size: 11px; color: var(--text-muted); font-weight: normal;">${item.notes}</div></td>
+                        <td><span class="badge-cat">${item.category}</span></td>
+                        <td style="font-size: 12px; color: var(--text-muted);">${item.mode}</td>
+                        <td style="font-weight: bold; color: var(--accent);">₹${item.amount.toLocaleString('en-IN')}</td>
+                        <td style="text-align: center;"><button onclick="deleteOccasionExpense(${item.id})" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px;"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `).join('');
+
+            const totalSpend = occasionExpensesData.reduce((acc, curr) => acc + curr.amount, 0);
+            const weddingSpend = occasionExpensesData.filter(i => i.category === 'Weddings & Engagements' || i.category === 'Anniversaries').reduce((acc, curr) => acc + curr.amount, 0);
+            const festivalSpend = occasionExpensesData.filter(i => i.category === 'Festivals' || i.category === 'Hawan & Ritual Ceremonies').reduce((acc, curr) => acc + curr.amount, 0);
+            const totalCount = occasionExpensesData.length;
+
+            document.getElementById('sumTotalSpend').innerText = `₹${totalSpend.toLocaleString('en-IN')}`;
+            document.getElementById('sumWeddingSpend').innerText = `₹${weddingSpend.toLocaleString('en-IN')}`;
+            document.getElementById('sumFestivalSpend').innerText = `₹${festivalSpend.toLocaleString('en-IN')}`;
+            document.getElementById('sumTotalCount').innerText = `${totalCount} Items`;
+
+            generateInsights(totalSpend, weddingSpend);
+            renderCharts();
+        }
+
+        function generateInsights(totalSpend, weddingSpend) {
+            let msg = "";
+            if (weddingSpend > 30000) {
+                msg += `💍 Significant investments in weddings and anniversaries (₹${weddingSpend.toLocaleString('en-IN')}). Major family celebrations are well funded! `;
+            } else {
+                msg += `🎉 Occasion spending is distributed evenly across social gatherings and rituals. `;
+            }
+            if (totalSpend > 200000) {
+                msg += `⚠️️ Annual celebration expenditure limit approaching threshold. Keep party and guest hospitality expenses in check.`;
+            } else {
+                msg += `👍 Celebration finances are running safely within target budget.`;
+            }
+            document.getElementById('insightText').innerText = msg;
+        }
+
+        let categoryChartInstance = null;
+        let modeChartInstance = null;
+
+        function renderCharts() {
+            if (typeof Chart === 'undefined') return;
+
+            const catMap = {};
+            const modeMap = {};
+
+            occasionExpensesData.forEach(item => {
+                catMap[item.category] = (catMap[item.category] || 0) + item.amount;
+                modeMap[item.mode] = (modeMap[item.mode] || 0) + item.amount;
+            });
+
+            const computedAccent = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#db2777';
+
+            // Category Chart
+            const ctxCat = document.getElementById('occasionCategoryChart');
+            if (ctxCat) {
+                if(categoryChartInstance) categoryChartInstance.destroy();
+                categoryChartInstance = new Chart(ctxCat.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(catMap).length ? Object.keys(catMap) : ['No Data'],
+                        datasets: [{
+                            data: Object.values(catMap).length ? Object.values(catMap) : [1],
+                            backgroundColor: [computedAccent, '#be185d', '#9d174d', '#f43f5e', '#fb7185', '#d97706', '#9333ea', '#10b981', '#0ea5e9', '#f97316']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
+                    }
+                });
+            }
+
+            // Payment Mode Chart
+            const ctxMode = document.getElementById('paymentModeChart');
+            if (ctxMode) {
+                if(modeChartInstance) modeChartInstance.destroy();
+                modeChartInstance = new Chart(ctxMode.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(modeMap).length ? Object.keys(modeMap) : ['No Data'],
+                        datasets: [{
+                            label: 'Amount (₹)',
+                            data: Object.values(modeMap).length ? Object.values(modeMap) : [0],
+                            backgroundColor: computedAccent,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        function exportCSV() {
+            if(occasionExpensesData.length === 0) { alert('No data.'); return; }
+            let csvContent = "data:text/csv;charset=utf-8,ID,Date,Title,Amount,Category,PaymentMode,Notes\r\n";
+            occasionExpensesData.forEach(item => {
+                csvContent += [item.id, item.date, `"${item.title}"`, item.amount, `"${item.category}"`, `"${item.mode}"`, `"${item.notes}"`].join(",") + "\r\n";
+            });
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", "utsavspend_occasion_expenses.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function importCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split("\n");
+                let count = 0;
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    const row = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(",");
+                    if (row.length >= 6) {
+                        const clean = row.map(val => val.replace(/^"(.*)"$/, '$1').trim());
+                        occasionExpensesData.push({
+                            id: Date.now() + i,
+                            date: clean[1] || new Date().toISOString().split('T')[0],
+                            title: clean[2] || 'Imported Occasion',
+                            amount: parseFloat(clean[3]) || 0,
+                            category: clean[4] || 'Other Occasions',
+                            mode: clean[5] || 'UPI',
+                            notes: clean[6] || 'CSV'
+                        });
+                        count++;
+                    }
+                }
+                saveData();
+                renderAll();
+                alert(`Successfully imported ${count} occasion items!`);
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function exportDatabaseDump() {
+            const dbDump = { database_name: "utsav_spends.sqlite.db", version: "1.0", tables: { occasion_expenses: occasionExpensesData } };
+            const link = document.createElement('a');
+            link.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dbDump, null, 2)));
+            link.setAttribute("download", "utsavspend_database_backup.json");
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+
+        function loadSampleQuery(query) { document.getElementById('sqlQueryInput').value = query; }
+
+        function executeSQL() {
+            const query = document.getElementById('sqlQueryInput').value.trim().toLowerCase();
+            const out = document.getElementById('sqlOutputContainer');
+            if(!query) { out.innerHTML = `<span style="color: #ef4444;">Enter a query.</span>`; return; }
+
+            if (query.includes('select')) {
+                if (query.includes('group by category')) {
+                    const summary = {};
+                    occasionExpensesData.forEach(item => { summary[item.category] = (summary[item.category] || 0) + item.amount; });
+                    let html = `<div style="color: #f59e0b; font-weight: bold; margin-bottom: 8px;">--- Results ---</div><table><thead><tr><th>Category</th><th>Total</th></tr></thead><tbody>`;
+                    for (let cat in summary) { html += `<tr><td>${cat}</td><td style="color: #4ade80;">₹${summary[cat].toLocaleString('en-IN')}</td></tr>`; }
+                    out.innerHTML = html + `</tbody></table>`;
+                } else {
+                    let dataset = [...occasionExpensesData];
+                    if (query.includes("weddings & engagements")) dataset = dataset.filter(i => i.category === 'Weddings & Engagements');
+                    let html = `<div style="color: #f59e0b; font-weight: bold; margin-bottom: 8px;">--- Results (${dataset.length} rows) ---</div><table><thead><tr><th>Date</th><th>Title</th><th>Category</th><th>Amount</th></tr></thead><tbody>`;
+                    dataset.forEach(row => { html += `<tr><td>${row.date}</td><td>${row.title}</td><td>${row.category}</td><td>₹${row.amount}</td></tr>`; });
+                    out.innerHTML = html + `</tbody></table>`;
+                }
+            } else {
+                out.innerHTML = `<span style="color: #4ade80;">Query executed successfully.</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
