@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nature Scheduler - Alarms & IndexedDB</title>
+    <title>Nature Scheduler - Tabbed Workspace & IndexedDB</title>
     
     <!-- FullCalendar v6 Global CDN -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
@@ -99,7 +99,7 @@
             <span class="text-3xl">⏰</span>
             <div>
                 <div id="alarmTitle" class="text-sm font-bold">Upcoming Event Alarm!</div>
-                <div id="alarmTimeMsg" class="text-xs opacity-90">Starts in 15 minutes</div>
+                <div id="alarmTimeMsg" class="text-xs opacity-90">Starts in 5 minutes</div>
             </div>
         </div>
         <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-950/20">
@@ -116,45 +116,58 @@
         </div>
     </div>
 
-    <!-- Top Header Bar -->
+    <!-- Top Header Bar with Tab Navigation -->
     <header class="border-b px-4 py-3 md:px-6 flex items-center justify-between shadow-sm shrink-0 flex-wrap gap-3">
         <div class="flex items-center space-x-2 md:space-x-3">
             <div class="bg-blue-600 text-white p-2 rounded-lg text-lg">🌿</div>
             <div>
                 <h1 class="text-base md:text-xl tracking-tight">Nature Scheduler</h1>
-                <p class="text-[10px] md:text-xs opacity-75 hidden sm:block">IndexedDB Nature Scheduler & Alarm Controls</p>
+                <p class="text-[10px] md:text-xs opacity-75 hidden sm:block">Tabbed Workspace & IndexedDB Alarm Suite</p>
             </div>
         </div>
 
-        <div id="weatherBadge" class="flex items-center space-x-2 px-3 py-1.5 rounded-xl border bg-black/5 border-black/10 text-xs shadow-inner">
-            <span id="weatherIcon" class="text-base">☀️</span>
-            <div>
-                <div id="weatherCondition" class="leading-tight">Sunny Day • 24°C</div>
-                <div id="weatherLocation" class="text-[10px] opacity-70">Sunlit Valley</div>
-            </div>
-        </div>
+        <!-- Main Tab Navigation -->
+        <nav class="flex items-center space-x-1 bg-black/5 p-1 rounded-xl">
+            <button onclick="switchTab('calendar')" id="tab-btn-calendar" class="px-3 py-1.5 rounded-lg text-xs bg-blue-600 text-white transition shadow-sm font-bold">📅 Calendar</button>
+            <button onclick="switchTab('alarms')" id="tab-btn-alarms" class="px-3 py-1.5 rounded-lg text-xs hover:bg-black/10 transition font-bold">⏰ Alarms</button>
+            <button onclick="switchTab('filters')" id="tab-btn-filters" class="px-3 py-1.5 rounded-lg text-xs hover:bg-black/10 transition font-bold">🏷️ Filters</button>
+            <button onclick="switchTab('settings')" id="tab-btn-settings" class="px-3 py-1.5 rounded-lg text-xs hover:bg-black/10 transition font-bold">⚙️ Settings</button>
+        </nav>
 
-        <button onclick="openAddEventModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm px-3.5 py-2 rounded-lg shadow transition">+ Add Event</button>
+        <div class="flex items-center space-x-2">
+            <div id="weatherBadge" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl border bg-black/5 border-black/10 text-xs shadow-inner">
+                <span id="weatherIcon" class="text-base">☀️</span>
+                <div>
+                    <div id="weatherCondition" class="leading-tight">Sunny Day • 24°C</div>
+                    <div id="weatherLocation" class="text-[10px] opacity-70">Sunlit Valley</div>
+                </div>
+            </div>
+            <button onclick="openAddEventModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm px-3.5 py-2 rounded-lg shadow transition">+ Event</button>
+        </div>
     </header>
 
-    <!-- Main Workspace Layout -->
-    <main class="flex-1 flex flex-col overflow-hidden">
+    <!-- Main Tabbed Workspace Area -->
+    <main class="flex-1 flex flex-col overflow-hidden relative">
         
-        <!-- Calendar Container -->
-        <section class="h-[58%] min-h-[340px] p-3 md:p-4 border-b flex flex-col bg-panel shrink-0">
-            <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2 border-b border-black/10">
-                <div class="flex items-center space-x-1.5 bg-black/5 p-1 rounded-xl">
-                    <button onclick="changeCalendarView('dayGridMonth')" id="btn-month" class="px-3 py-1.5 rounded-lg text-xs bg-blue-600 text-white transition shadow-sm">Month</button>
-                    <button onclick="changeCalendarView('timeGridWeek')" id="btn-week" class="px-3 py-1.5 rounded-lg text-xs hover:bg-black/10 transition">Week</button>
-                    <button onclick="changeCalendarView('timeGridDay')" id="btn-day" class="px-3 py-1.5 rounded-lg text-xs hover:bg-black/10 transition">Day</button>
-                    <button onclick="changeCalendarView('listWeek')" id="btn-list" class="px-3 py-1.5 rounded-lg text-xs hover:bg-black/10 transition">List</button>
+        <!-- TAB 1: Calendar Workspace -->
+        <section id="tab-content-calendar" class="flex-1 flex flex-col p-3 md:p-4 bg-panel overflow-hidden">
+            <!-- Calendar Navigation & Dynamic Month/Year Header -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2 border-b border-black/10 shrink-0">
+                <div class="flex items-center space-x-3">
+                    <h2 id="calendarMonthYearTitle" class="text-sm md:text-lg font-bold tracking-tight text-blue-600 dark:text-blue-400">Loading...</h2>
+                    <div class="flex items-center space-x-1.5 bg-black/5 p-1 rounded-xl">
+                        <button onclick="changeCalendarView('dayGridMonth')" id="cal-btn-month" class="px-3 py-1.5 rounded-lg text-xs bg-blue-600 text-white transition shadow-sm">Month</button>
+                        <button onclick="changeCalendarView('timeGridWeek')" id="cal-btn-week" class="px-3 py-1.5 rounded-lg text-xs hover:bg-black/10 transition">Week</button>
+                        <button onclick="changeCalendarView('timeGridDay')" id="cal-btn-day" class="px-3 py-1.5 rounded-lg text-xs hover:bg-black/10 transition">Day</button>
+                        <button onclick="changeCalendarView('listWeek')" id="cal-btn-list" class="px-3 py-1.5 rounded-lg text-xs hover:bg-black/10 transition">List</button>
+                    </div>
                 </div>
                 
                 <div class="flex items-center space-x-2 text-xs">
-                    <button onclick="calendar.today()" class="px-3 py-1.5 rounded-lg bg-black/5 hover:bg-black/10 transition border border-black/10">Today</button>
+                    <button onclick="calendar.today(); updateMonthYearHeader();" class="px-3 py-1.5 rounded-lg bg-black/5 hover:bg-black/10 transition border border-black/10">Today</button>
                     <div class="flex space-x-1">
-                        <button onclick="calendar.prev()" class="px-2.5 py-1.5 rounded-lg bg-black/5 hover:bg-black/10 transition border border-black/10">&larr; Prev</button>
-                        <button onclick="calendar.next()" class="px-2.5 py-1.5 rounded-lg bg-black/5 hover:bg-black/10 transition border border-black/10">Next &rarr;</button>
+                        <button onclick="calendar.prev(); updateMonthYearHeader();" class="px-2.5 py-1.5 rounded-lg bg-black/5 hover:bg-black/10 transition border border-black/10">&larr; Prev</button>
+                        <button onclick="calendar.next(); updateMonthYearHeader();" class="px-2.5 py-1.5 rounded-lg bg-black/5 hover:bg-black/10 transition border border-black/10">Next &rarr;</button>
                     </div>
                 </div>
             </div>
@@ -162,84 +175,118 @@
             <div id="calendar" class="flex-1 min-w-[320px]"></div>
         </section>
 
-        <!-- Bottom GUI Settings Cards -->
-        <section class="h-[42%] flex-1 p-3 md:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 overflow-y-auto bg-black/5">
-            
-            <!-- GUI Card 1: Nature Themes -->
-            <div class="bg-panel p-4 rounded-xl border shadow-sm flex flex-col justify-between">
-                <div>
-                    <h2 class="text-xs uppercase tracking-wider opacity-70 mb-2 flex items-center gap-1.5">🌿 Theme Appearance</h2>
-                    <select id="themeSelect" onchange="changeTheme(this.value)" class="w-full border rounded-lg px-3 py-2 text-xs md:text-sm focus:outline-none shadow-sm cursor-pointer">
-                        <option value="theme-day">☀️ 1. Day Light (Sunny Valley)</option>
-                        <option value="theme-midnight">🌌 2. Midnight (Cosmic Ridge)</option>
-                        <option value="theme-forest">🌲 3. Forest Wood (Ancient Woods)</option>
-                        <option value="theme-ocean">🌊 4. Ocean Deep (Coral Blue)</option>
-                        <option value="theme-sunset">🏜️ 5. Sunset Glow (Desert Horizon)</option>
-                        <option value="theme-autumn">🍁 6. Autumn Amber (Golden Maple)</option>
-                        <option value="theme-winter">❄️ 7. Winter Frost (Glacial Ice)</option>
-                        <option value="theme-mountain">⛰️ 8. Mountain Mist (Highland Fog)</option>
-                        <option value="theme-sakura">🌸 9. Sakura Blossom (Spring Petals)</option>
-                        <option value="theme-volcano">🌋 10. Volcanic Ash (Basalt Stone)</option>
-                    </select>
+        <!-- TAB 2: Alarms & Reminders Manager -->
+        <section id="tab-content-alarms" class="hidden flex-1 flex flex-col p-4 md:p-6 bg-panel overflow-y-auto">
+            <div class="max-w-2xl w-full mx-auto space-y-4">
+                <div class="flex items-center justify-between border-b pb-3">
+                    <div>
+                        <h2 class="text-base md:text-lg font-bold flex items-center gap-2">⏰ Active Alarm Registry</h2>
+                        <p class="text-xs opacity-75">Review scheduled reminders, configured offsets, and audio settings.</p>
+                    </div>
+                    <button onclick="testAlarmAudio()" class="bg-black/10 hover:bg-black/20 text-xs px-3 py-2 rounded-lg transition">🔊 Test Chime</button>
                 </div>
-                <p class="text-[10px] opacity-60 mt-2">Choose from 10 distinct regional biomes.</p>
+                <div id="alarmsListContainer" class="space-y-2.5">
+                    <!-- Populated dynamically -->
+                </div>
             </div>
+        </section>
 
-            <!-- GUI Card 2: Filter Categories -->
-            <div class="bg-panel p-4 rounded-xl border shadow-sm flex flex-col justify-between">
-                <div>
-                    <h2 class="text-xs uppercase tracking-wider opacity-70 mb-2 flex items-center gap-1.5">🏷️ Filter Categories</h2>
-                    <div class="grid grid-cols-2 gap-1.5 text-xs">
-                        <label class="flex items-center space-x-1.5 cursor-pointer">
-                            <input type="checkbox" checked class="rounded text-blue-600" onchange="filterEvents('Work', this.checked)">
-                            <span class="w-2 h-2 rounded-full bg-blue-500"></span><span>Work</span>
-                        </label>
-                        <label class="flex items-center space-x-1.5 cursor-pointer">
-                            <input type="checkbox" checked class="rounded text-green-600" onchange="filterEvents('Personal', this.checked)">
-                            <span class="w-2 h-2 rounded-full bg-green-500"></span><span>Personal</span>
-                        </label>
-                        <label class="flex items-center space-x-1.5 cursor-pointer">
-                            <input type="checkbox" checked class="rounded text-purple-600" onchange="filterEvents('Meeting', this.checked)">
-                            <span class="w-2 h-2 rounded-full bg-purple-500"></span><span>Meeting</span>
-                        </label>
-                        <label class="flex items-center space-x-1.5 cursor-pointer">
-                            <input type="checkbox" checked class="rounded text-red-600" onchange="filterEvents('Urgent', this.checked)">
-                            <span class="w-2 h-2 rounded-full bg-red-500"></span><span>Urgent</span>
-                        </label>
-                        <label class="flex items-center space-x-1.5 cursor-pointer col-span-2">
-                            <input type="checkbox" checked class="rounded text-amber-600" onchange="filterEvents('Health', this.checked)">
-                            <span class="w-2 h-2 rounded-full bg-amber-500"></span><span>Health</span>
-                        </label>
+        <!-- TAB 3: Categories & Filters Screen -->
+        <section id="tab-content-filters" class="hidden flex-1 flex flex-col p-4 md:p-6 bg-panel overflow-y-auto">
+            <div class="max-w-2xl w-full mx-auto space-y-4">
+                <div class="border-b pb-3">
+                    <h2 class="text-base md:text-lg font-bold flex items-center gap-2">🏷️ Event Category Filters & Summary</h2>
+                    <p class="text-xs opacity-75">Toggle category visibility and inspect event distribution across biomes.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="p-4 rounded-xl border bg-black/5 space-y-3">
+                        <h3 class="text-xs uppercase tracking-wider opacity-75 font-bold">Category Visibility Toggles</h3>
+                        <div class="space-y-2 text-xs">
+                            <label class="flex items-center space-x-2 cursor-pointer p-2 rounded-lg hover:bg-black/5">
+                                <input type="checkbox" checked class="rounded text-blue-600" onchange="filterEvents('Work', this.checked)">
+                                <span class="w-3 h-3 rounded-full bg-blue-500"></span><span class="font-bold">Work</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer p-2 rounded-lg hover:bg-black/5">
+                                <input type="checkbox" checked class="rounded text-green-600" onchange="filterEvents('Personal', this.checked)">
+                                <span class="w-3 h-3 rounded-full bg-green-500"></span><span class="font-bold">Personal</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer p-2 rounded-lg hover:bg-black/5">
+                                <input type="checkbox" checked class="rounded text-purple-600" onchange="filterEvents('Meeting', this.checked)">
+                                <span class="w-3 h-3 rounded-full bg-purple-500"></span><span class="font-bold">Meeting</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer p-2 rounded-lg hover:bg-black/5">
+                                <input type="checkbox" checked class="rounded text-red-600" onchange="filterEvents('Urgent', this.checked)">
+                                <span class="w-3 h-3 rounded-full bg-red-500"></span><span class="font-bold">Urgent</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer p-2 rounded-lg hover:bg-black/5">
+                                <input type="checkbox" checked class="rounded text-amber-600" onchange="filterEvents('Health', this.checked)">
+                                <span class="w-3 h-3 rounded-full bg-amber-500"></span><span class="font-bold">Health</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="p-4 rounded-xl border bg-black/5 space-y-3 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xs uppercase tracking-wider opacity-75 font-bold mb-2">Quick Stats</h3>
+                            <div id="categoryStats" class="text-xs space-y-1.5 opacity-90">
+                                <div>Total Events: <span id="statTotalEvents">0</span></div>
+                                <div>Alarms Enabled: <span id="statActiveAlarms">0</span></div>
+                            </div>
+                        </div>
+                        <p class="text-[10px] opacity-60">Filters apply instantly to active calendar views.</p>
                     </div>
                 </div>
-                <p class="text-[10px] opacity-60 mt-2">Toggle event visibility instantly.</p>
             </div>
+        </section>
 
-            <!-- GUI Card 3: Custom Alarm Sound -->
-            <div class="bg-panel p-4 rounded-xl border shadow-sm flex flex-col justify-between">
-                <div>
-                    <h2 class="text-xs uppercase tracking-wider opacity-70 mb-2 flex items-center gap-1.5">⏰ Custom Alarm Audio</h2>
-                    <input type="file" id="customAudioInput" accept="audio/*" onchange="handleCustomAudioUpload(event)" class="w-full text-[11px] mb-2 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
-                    <div id="audioFileName" class="text-[10px] opacity-75 truncate mb-2">Using default chime</div>
+        <!-- TAB 4: Biome & System Settings -->
+        <section id="tab-content-settings" class="hidden flex-1 flex flex-col p-4 md:p-6 bg-panel overflow-y-auto">
+            <div class="max-w-2xl w-full mx-auto space-y-4">
+                <div class="border-b pb-3">
+                    <h2 class="text-base md:text-lg font-bold flex items-center gap-2">⚙️ Biome Appearance & Maintenance</h2>
+                    <p class="text-xs opacity-75">Configure regional themes, custom audio files, backup exports, and IndexedDB storage.</p>
                 </div>
-                <button onclick="testAlarmAudio()" class="w-full bg-black/10 hover:bg-black/20 py-1.5 px-3 rounded-lg text-xs transition">🔊 Test Alarm Sound</button>
-            </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Theme Selector Card -->
+                    <div class="p-4 rounded-xl border bg-black/5 space-y-3">
+                        <h3 class="text-xs uppercase tracking-wider opacity-75 font-bold">🌿 Theme Appearance</h3>
+                        <select id="themeSelect" onchange="changeTheme(this.value)" class="w-full border rounded-lg px-3 py-2 text-xs md:text-sm focus:outline-none shadow-sm cursor-pointer">
+                            <option value="theme-day">☀️ 1. Day Light (Sunny Valley)</option>
+                            <option value="theme-midnight">🌌 2. Midnight (Cosmic Ridge)</option>
+                            <option value="theme-forest">🌲 3. Forest Wood (Ancient Woods)</option>
+                            <option value="theme-ocean">🌊 4. Ocean Deep (Coral Blue)</option>
+                            <option value="theme-sunset">🏜️ 5. Sunset Glow (Desert Horizon)</option>
+                            <option value="theme-autumn">🍁 6. Autumn Amber (Golden Maple)</option>
+                            <option value="theme-winter">❄️ 7. Winter Frost (Glacial Ice)</option>
+                            <option value="theme-mountain">⛰️ 8. Mountain Mist (Highland Fog)</option>
+                            <option value="theme-sakura">🌸 9. Sakura Blossom (Spring Petals)</option>
+                            <option value="theme-volcano">🌋 10. Volcanic Ash (Basalt Stone)</option>
+                        </select>
+                        <p class="text-[10px] opacity-60">Choose from 10 distinct regional biomes.</p>
+                    </div>
 
-            <!-- GUI Card 4: Backup, Restore & Maintenance -->
-            <div class="bg-panel p-4 rounded-xl border shadow-sm flex flex-col justify-between">
-                <div>
-                    <h2 class="text-xs uppercase tracking-wider opacity-70 mb-2 flex items-center gap-1.5">📥 Backup & Maintenance</h2>
-                    <div class="flex space-x-2 mb-2">
-                        <button onclick="exportCalendarJSON()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs py-1.5 px-2 rounded-lg shadow transition">Export</button>
-                        <label class="flex-1 bg-black/10 hover:bg-black/20 text-xs py-1.5 px-2 rounded-lg text-center cursor-pointer transition">
-                            Import
-                            <input type="file" accept=".json" onchange="importCalendarJSON(event)" class="hidden">
-                        </label>
+                    <!-- Custom Audio Card -->
+                    <div class="p-4 rounded-xl border bg-black/5 space-y-3">
+                        <h3 class="text-xs uppercase tracking-wider opacity-75 font-bold">⏰ Custom Alarm Audio</h3>
+                        <input type="file" id="customAudioInput" accept="audio/*" onchange="handleCustomAudioUpload(event)" class="w-full text-[11px] mb-1 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+                        <div id="audioFileName" class="text-[10px] opacity-75 truncate">Using default chime</div>
+                        <button onclick="testAlarmAudio()" class="w-full bg-black/10 hover:bg-black/20 py-1.5 px-3 rounded-lg text-xs transition">🔊 Test Alarm Sound</button>
+                    </div>
+
+                    <!-- Backup & Maintenance Card -->
+                    <div class="p-4 rounded-xl border bg-black/5 space-y-3 sm:col-span-2">
+                        <h3 class="text-xs uppercase tracking-wider opacity-75 font-bold">📥 Backup, Restore & Storage</h3>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="exportCalendarJSON()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs py-2 px-3 rounded-lg shadow transition">Export JSON Backup</button>
+                            <label class="bg-black/10 hover:bg-black/20 text-xs py-2 px-3 rounded-lg text-center cursor-pointer transition">
+                                Import JSON Backup
+                                <input type="file" accept=".json" onchange="importCalendarJSON(event)" class="hidden">
+                            </label>
+                            <button onclick="clearAllEvents()" class="ml-auto text-xs text-red-500 hover:opacity-80 py-2 px-3 rounded-lg bg-red-500/10 border border-red-500/20 transition">🗑️ Clear IndexedDB Data</button>
+                        </div>
                     </div>
                 </div>
-                <button onclick="clearAllEvents()" class="w-full text-center text-xs text-red-500 hover:opacity-80 py-1.5 px-2 rounded-lg bg-red-500/10 border border-red-500/20 transition">🗑️ Clear Data</button>
             </div>
-
         </section>
 
     </main>
@@ -354,23 +401,6 @@
             'Health': '#f59e0b'    // Amber
         };
 
-        const defaultEvents = [
-            { 
-                id: '1', 
-                title: 'Daily Standup', 
-                start: new Date().toISOString().split('T')[0] + 'T09:00:00', 
-                backgroundColor: '#2563eb', 
-                borderColor: '#2563eb', 
-                extendedProps: { 
-                    category: 'Work', 
-                    recurrence: 'daily',
-                    alarmEnabled: true,
-                    alarmOffset: 5,
-                    snoozeDuration: 10
-                } 
-            }
-        ];
-
         const themeWeatherMap = {
             'theme-day': { icon: '☀️', condition: 'Sunny Day • 24°C', location: 'Sunlit Valley' },
             'theme-midnight': { icon: '🌌', condition: 'Clear Starlight • 12°C', location: 'Cosmic Ridge' },
@@ -383,6 +413,43 @@
             'theme-sakura': { icon: '🌸', condition: 'Spring Petals • 20°C', location: 'Spring Petals' },
             'theme-volcano': { icon: '🌋', condition: 'Basalt Warmth • 35°C', location: 'Basalt Stone' }
         };
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            ['calendar', 'alarms', 'filters', 'settings'].forEach(id => {
+                const contentEl = document.getElementById(`tab-content-${id}`);
+                const btnEl = document.getElementById(`tab-btn-${id}`);
+                if (id === tabId) {
+                    contentEl.classList.remove('hidden');
+                    contentEl.classList.add('flex');
+                    btnEl.className = "px-3 py-1.5 rounded-lg text-xs bg-blue-600 text-white transition shadow-sm font-bold";
+                } else {
+                    contentEl.classList.remove('flex');
+                    contentEl.classList.add('hidden');
+                    btnEl.className = "px-3 py-1.5 rounded-lg text-xs hover:bg-black/10 transition font-bold";
+                }
+            });
+
+            if (tabId === 'calendar' && calendar) {
+                calendar.updateSize();
+                updateMonthYearHeader();
+            } else if (tabId === 'alarms') {
+                renderAlarmsRegistry();
+            } else if (tabId === 'filters') {
+                updateCategoryStats();
+            }
+        }
+
+        function updateMonthYearHeader() {
+            if (!calendar) return;
+            const currentDate = calendar.getDate();
+            const options = { month: 'long', year: 'numeric' };
+            const formatted = currentDate.toLocaleDateString('en-US', options);
+            const titleEl = document.getElementById('calendarMonthYearTitle');
+            if (titleEl) {
+                titleEl.innerText = formatted;
+            }
+        }
 
         // IndexedDB Helper Functions
         function initDB() {
@@ -453,7 +520,8 @@
             
             const savedTheme = localStorage.getItem('fullcalendar_nature_theme') || 'theme-day';
             document.body.className = `${savedTheme} h-screen flex flex-col overflow-hidden transition-colors duration-300`;
-            document.getElementById('themeSelect').value = savedTheme;
+            const themeSelectEl = document.getElementById('themeSelect');
+            if (themeSelectEl) themeSelectEl.value = savedTheme;
             updateWeatherBadge(savedTheme);
 
             // Toggle Label Sync
@@ -468,12 +536,6 @@
             try {
                 await initDB();
                 let savedEvents = await getAllEventsFromDB();
-                if (!savedEvents || savedEvents.length === 0) {
-                    for (const defEvent of defaultEvents) {
-                        await saveEventToDB(defEvent);
-                    }
-                    savedEvents = defaultEvents;
-                }
 
                 calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'dayGridMonth',
@@ -483,8 +545,11 @@
                     selectable: true,
                     nowIndicator: true,
                     dayMaxEvents: true,
-                    events: savedEvents,
+                    events: savedEvents || [],
 
+                    datesSet: function() {
+                        updateMonthYearHeader();
+                    },
                     select: function(info) {
                         openAddEventModal(info.startStr, info.endStr);
                         calendar.unselect();
@@ -534,6 +599,7 @@
                 });
 
                 calendar.render();
+                updateMonthYearHeader();
                 startAlarmSystem();
             } catch (err) {
                 console.error("Initialization error with IndexedDB:", err);
@@ -556,15 +622,16 @@
 
         function changeCalendarView(viewName) {
             calendar.changeView(viewName);
-            ['btn-month', 'btn-week', 'btn-day', 'btn-list'].forEach(id => {
+            ['cal-btn-month', 'cal-btn-week', 'cal-btn-day', 'cal-btn-list'].forEach(id => {
                 const btn = document.getElementById(id);
                 btn.className = "px-3 py-1.5 rounded-lg text-xs hover:bg-black/10 transition";
             });
             
-            const activeId = viewName === 'dayGridMonth' ? 'btn-month' :
-                             viewName === 'timeGridWeek' ? 'btn-week' :
-                             viewName === 'timeGridDay' ? 'btn-day' : 'btn-list';
+            const activeId = viewName === 'dayGridMonth' ? 'cal-btn-month' :
+                             viewName === 'timeGridWeek' ? 'cal-btn-week' :
+                             viewName === 'timeGridDay' ? 'cal-btn-day' : 'cal-btn-list';
             document.getElementById(activeId).className = "px-3 py-1.5 rounded-lg text-xs bg-blue-600 text-white transition shadow-sm";
+            updateMonthYearHeader();
         }
 
         function changeTheme(themeName) {
@@ -660,6 +727,7 @@
                     }
 
                     alert(`Successfully imported ${importedEvents.length} events!`);
+                    updateMonthYearHeader();
                 } catch (error) {
                     alert("Failed to parse JSON backup file. Make sure it's a valid calendar export.");
                 }
@@ -723,6 +791,45 @@
 
             triggeredAlarms.delete(currentRingingEvent.id);
             dismissAlarm();
+        }
+
+        function renderAlarmsRegistry() {
+            const container = document.getElementById('alarmsListContainer');
+            if (!calendar) return;
+            const events = calendar.getEvents();
+
+            if (events.length === 0) {
+                container.innerHTML = `<div class="text-xs opacity-70 p-4 rounded-xl border bg-black/5 text-center">No events scheduled.</div>`;
+                return;
+            }
+
+            container.innerHTML = events.map(ev => {
+                const props = ev.extendedProps || {};
+                const enabled = props.alarmEnabled !== false;
+                const offset = props.alarmOffset ?? 5;
+                const startDate = ev.start ? new Date(ev.start).toLocaleString() : 'No date';
+                return `
+                    <div class="p-3 rounded-xl border bg-black/5 flex items-center justify-between text-xs gap-3">
+                        <div>
+                            <div class="font-bold">${ev.title}</div>
+                            <div class="opacity-75 text-[11px]">${startDate} • Alert: ${offset === 0 ? 'At start' : offset + 'm before'}</div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-1 rounded text-[10px] ${enabled ? 'bg-green-500/20 text-green-500 border border-green-500/30' : 'bg-red-500/20 text-red-500 border border-red-500/30'}">
+                                ${enabled ? 'Alarm Active' : 'Disabled'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateCategoryStats() {
+            if (!calendar) return;
+            const events = calendar.getEvents();
+            document.getElementById('statTotalEvents').innerText = events.length;
+            const activeAlarmsCount = events.filter(ev => (ev.extendedProps?.alarmEnabled !== false)).length;
+            document.getElementById('statActiveAlarms').innerText = activeAlarmsCount;
         }
 
         // Modal Form Management with Alarm Options & Current Date Default
@@ -863,6 +970,7 @@
             }
 
             closeModal();
+            updateMonthYearHeader();
         }
 
         async function deleteCurrentEvent() {
@@ -883,10 +991,11 @@
         }
 
         async function clearAllEvents() {
-            if (confirm("Remove all saved entries?")) {
+            if (confirm("Remove all saved entries from IndexedDB?")) {
                 await clearAllEventsFromDB();
                 calendar.getEvents().forEach(ev => ev.remove());
                 triggeredAlarms.clear();
+                alert("All event data cleared successfully.");
             }
         }
     </script>
