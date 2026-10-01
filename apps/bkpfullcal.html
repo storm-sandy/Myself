@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nature Scheduler - Alarms & IndexedDB</title>
+    
+    <!-- FullCalendar v6 Global CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* Force bold font theme across all elements */
+        *, body, button, input, select, label, span, p, h1, h2, h3, .fc * {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 700 !important;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .fc-event {
+            cursor: pointer;
+            touch-action: none;
+        }
+        .fc-event-resizer {
+            width: 14px !important;
+            height: 14px !important;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+        }
+
+        #dateTooltip {
+            pointer-events: none;
+            transition: opacity 0.15s ease-in-out;
+            z-index: 100;
+        }
+
+        /* ================= 10 NATURE THEMES PALETTE ================= */
+        body.theme-day { background-color: #f8fafc; color: #0f172a; }
+        body.theme-day header, body.theme-day .bg-panel { background-color: #ffffff; color: #0f172a; border-color: #e2e8f0; }
+        body.theme-day .fc { --fc-border-color: #e2e8f0; --fc-page-bg-color: #ffffff; --fc-neutral-text-color: #0f172a; color: #0f172a; }
+
+        body.theme-midnight { background-color: #030712; color: #f3f4f6; }
+        body.theme-midnight header, body.theme-midnight .bg-panel { background-color: #0f172a; color: #f3f4f6; border-color: #1e293b; }
+        body.theme-midnight .fc { --fc-border-color: #1e293b; --fc-page-bg-color: #0f172a; --fc-neutral-text-color: #f3f4f6; color: #f3f4f6; }
+        body.theme-midnight input, body.theme-midnight select { background-color: #1e293b; color: #ffffff; border-color: #334155; }
+
+        body.theme-forest { background-color: #022c22; color: #ecfdf5; }
+        body.theme-forest header, body.theme-forest .bg-panel { background-color: #064e3b; color: #ecfdf5; border-color: #047857; }
+        body.theme-forest .fc { --fc-border-color: #047857; --fc-page-bg-color: #064e3b; --fc-neutral-text-color: #ecfdf5; color: #ecfdf5; }
+        body.theme-forest input, body.theme-forest select { background-color: #022c22; color: #ecfdf5; border-color: #047857; }
+
+        body.theme-ocean { background-color: #082f49; color: #f0f9ff; }
+        body.theme-ocean header, body.theme-ocean .bg-panel { background-color: #0369a1; color: #f0f9ff; border-color: #0284c7; }
+        body.theme-ocean .fc { --fc-border-color: #0284c7; --fc-page-bg-color: #0369a1; --fc-neutral-text-color: #f0f9ff; color: #f0f9ff; }
+        body.theme-ocean input, body.theme-ocean select { background-color: #082f49; color: #f0f9ff; border-color: #0284c7; }
+
+        body.theme-sunset { background-color: #451a03; color: #fff7ed; }
+        body.theme-sunset header, body.theme-sunset .bg-panel { background-color: #7c2d12; color: #fff7ed; border-color: #9a3412; }
+        body.theme-sunset .fc { --fc-border-color: #9a3412; --fc-page-bg-color: #7c2d12; --fc-neutral-text-color: #fff7ed; color: #fff7ed; }
+        body.theme-sunset input, body.theme-sunset select { background-color: #451a03; color: #fff7ed; border-color: #9a3412; }
+
+        body.theme-autumn { background-color: #422006; color: #fef3c7; }
+        body.theme-autumn header, body.theme-autumn .bg-panel { background-color: #78350f; color: #fef3c7; border-color: #92400e; }
+        body.theme-autumn .fc { --fc-border-color: #92400e; --fc-page-bg-color: #78350f; --fc-neutral-text-color: #fef3c7; color: #fef3c7; }
+        body.theme-autumn input, body.theme-autumn select { background-color: #422006; color: #fef3c7; border-color: #92400e; }
+
+        body.theme-winter { background-color: #0f172a; color: #f8fafc; }
+        body.theme-winter header, body.theme-winter .bg-panel { background-color: #1e293b; color: #f8fafc; border-color: #334155; }
+        body.theme-winter .fc { --fc-border-color: #334155; --fc-page-bg-color: #1e293b; --fc-neutral-text-color: #f8fafc; color: #f8fafc; }
+        body.theme-winter input, body.theme-winter select { background-color: #0f172a; color: #f8fafc; border-color: #334155; }
+
+        body.theme-mountain { background-color: #18181b; color: #f4f4f5; }
+        body.theme-mountain header, body.theme-mountain .bg-panel { background-color: #27272a; color: #f4f4f5; border-color: #3f3f46; }
+        body.theme-mountain .fc { --fc-border-color: #3f3f46; --fc-page-bg-color: #27272a; --fc-neutral-text-color: #f4f4f5; color: #f4f4f5; }
+        body.theme-mountain input, body.theme-mountain select { background-color: #18181b; color: #f4f4f5; border-color: #3f3f46; }
+
+        body.theme-sakura { background-color: #4c0519; color: #ffe4e6; }
+        body.theme-sakura header, body.theme-sakura .bg-panel { background-color: #881337; color: #ffe4e6; border-color: #9f1239; }
+        body.theme-sakura .fc { --fc-border-color: #9f1239; --fc-page-bg-color: #881337; --fc-neutral-text-color: #ffe4e6; color: #ffe4e6; }
+        body.theme-sakura input, body.theme-sakura select { background-color: #4c0519; color: #ffe4e6; border-color: #9f1239; }
+
+        body.theme-volcano { background-color: #1c1917; color: #f5f5f4; }
+        body.theme-volcano header, body.theme-volcano .bg-panel { background-color: #292524; color: #f5f5f4; border-color: #44403c; }
+        body.theme-volcano .fc { --fc-border-color: #44403c; --fc-page-bg-color: #292524; --fc-neutral-text-color: #f5f5f4; color: #f5f5f4; }
+        body.theme-volcano input, body.theme-volcano select { background-color: #1c1917; color: #f5f5f4; border-color: #44403c; }
+    </style>
+</head>
+<body class="theme-day h-screen flex flex-col overflow-hidden transition-colors duration-300">
+
+    <!-- Floating Hover Tooltip -->
+    <div id="dateTooltip" class="fixed hidden bg-black/85 text-white text-[11px] px-3 py-2 rounded-lg shadow-xl backdrop-blur-md z-50 border border-white/20"></div>
+
+    <!-- Active Alarm Notification Banner with Snooze Options -->
+    <div id="alarmBanner" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-slate-950 px-5 py-4 rounded-2xl shadow-2xl flex flex-col gap-3 border-2 border-amber-300 animate-bounce max-w-sm w-full">
+        <div class="flex items-center space-x-3">
+            <span class="text-3xl">⏰</span>
+            <div>
+                <div id="alarmTitle" class="text-sm font-bold">Upcoming Event Alarm!</div>
+                <div id="alarmTimeMsg" class="text-xs opacity-90">Starts in 15 minutes</div>
+            </div>
+        </div>
+        <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-950/20">
+            <div class="flex items-center space-x-1">
+                <select id="snoozeTimeSelect" class="bg-slate-950 text-amber-300 text-xs px-2 py-1.5 rounded-lg border border-amber-400 focus:outline-none">
+                    <option value="5">5m</option>
+                    <option value="10" selected>10m</option>
+                    <option value="15">15m</option>
+                    <option value="30">30m</option>
+                </select>
+                <button onclick="snoozeActiveAlarm()" class="bg-slate-950 text-amber-300 px-3 py-1.5 rounded-lg text-xs hover:bg-slate-800 transition">Snooze</button>
+            </div>
+            <button onclick="dismissAlarm()" class="bg-slate-950 text-white px-3.5 py-1.5 rounded-lg text-xs hover:bg-slate-800 transition font-bold">Dismiss</button>
+        </div>
+    </div>
+
+    <!-- Top Header Bar -->
+    <header class="border-b px-4 py-3 md:px-6 flex items-center justify-between shadow-sm shrink-0 flex-wrap gap-3">
+        <div class="flex items-center space-x-2 md:space-x-3">
+            <div class="bg-blue-600 text-white p-2 rounded-lg text-lg">🌿</div>
+            <div>
+                <h1 class="text-base md:text-xl tracking-tight">Nature Scheduler</h1>
+                <p class="text-[10px] md:text-xs opacity-75 hidden sm:block">IndexedDB Nature Scheduler & Alarm Controls</p>
+            </div>
+        </div>
+
+        <div id="weatherBadge" class="flex items-center space-x-2 px-3 py-1.5 rounded-xl border bg-black/5 border-black/10 text-xs shadow-inner">
+            <span id="weatherIcon" class="text-base">☀️</span>
+            <div>
+                <div id="weatherCondition" class="leading-tight">Sunny Day • 24°C</div>
+                <div id="weatherLocation" class="text-[10px] opacity-70">Sunlit Valley</div>
+            </div>
+        </div>
+
+        <button onclick="openAddEventModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm px-3.5 py-2 rounded-lg shadow transition">+ Add Event</button>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        
+        <!-- Calendar Container -->
+        <section class="h-[58%] min-h-[340px] p-3 md:p-4 border-b flex flex-col bg-panel shrink-0">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2 border-b border-black/10">
+                <div class="flex items-center space-x-1.5 bg-black/5 p-1 rounded-xl">
+                    <button onclick="changeCalendarView('dayGridMonth')" id="btn-month" class="px-3 py-1.5 rounded-lg text-xs bg-blue-600 text-white transition shadow-sm">Month</button>
+                    <button onclick="changeCalendarView('timeGridWeek')" id="btn-week" class="px-3 py-1.5 rounded-lg text-xs hover:bg-black/10 transition">Week</button>
+                    <button onclick="changeCalendarView('timeGridDay')" id="btn-day" class="px-3 py-1.5 rounded-lg text-xs hover:bg-black/10 transition">Day</button>
+                    <button onclick="changeCalendarView('listWeek')" id="btn-list" class="px-3 py-1.5 rounded-lg text-xs hover:bg-black/10 transition">List</button>
+                </div>
+                
+                <div class="flex items-center space-x-2 text-xs">
+                    <button onclick="calendar.today()" class="px-3 py-1.5 rounded-lg bg-black/5 hover:bg-black/10 transition border border-black/10">Today</button>
+                    <div class="flex space-x-1">
+                        <button onclick="calendar.prev()" class="px-2.5 py-1.5 rounded-lg bg-black/5 hover:bg-black/10 transition border border-black/10">&larr; Prev</button>
+                        <button onclick="calendar.next()" class="px-2.5 py-1.5 rounded-lg bg-black/5 hover:bg-black/10 transition border border-black/10">Next &rarr;</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="calendar" class="flex-1 min-w-[320px]"></div>
+        </section>
+
+        <!-- Bottom GUI Settings Cards -->
+        <section class="h-[42%] flex-1 p-3 md:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 overflow-y-auto bg-black/5">
+            
+            <!-- GUI Card 1: Nature Themes -->
+            <div class="bg-panel p-4 rounded-xl border shadow-sm flex flex-col justify-between">
+                <div>
+                    <h2 class="text-xs uppercase tracking-wider opacity-70 mb-2 flex items-center gap-1.5">🌿 Theme Appearance</h2>
+                    <select id="themeSelect" onchange="changeTheme(this.value)" class="w-full border rounded-lg px-3 py-2 text-xs md:text-sm focus:outline-none shadow-sm cursor-pointer">
+                        <option value="theme-day">☀️ 1. Day Light (Sunny Valley)</option>
+                        <option value="theme-midnight">🌌 2. Midnight (Cosmic Ridge)</option>
+                        <option value="theme-forest">🌲 3. Forest Wood (Ancient Woods)</option>
+                        <option value="theme-ocean">🌊 4. Ocean Deep (Coral Blue)</option>
+                        <option value="theme-sunset">🏜️ 5. Sunset Glow (Desert Horizon)</option>
+                        <option value="theme-autumn">🍁 6. Autumn Amber (Golden Maple)</option>
+                        <option value="theme-winter">❄️ 7. Winter Frost (Glacial Ice)</option>
+                        <option value="theme-mountain">⛰️ 8. Mountain Mist (Highland Fog)</option>
+                        <option value="theme-sakura">🌸 9. Sakura Blossom (Spring Petals)</option>
+                        <option value="theme-volcano">🌋 10. Volcanic Ash (Basalt Stone)</option>
+                    </select>
+                </div>
+                <p class="text-[10px] opacity-60 mt-2">Choose from 10 distinct regional biomes.</p>
+            </div>
+
+            <!-- GUI Card 2: Filter Categories -->
+            <div class="bg-panel p-4 rounded-xl border shadow-sm flex flex-col justify-between">
+                <div>
+                    <h2 class="text-xs uppercase tracking-wider opacity-70 mb-2 flex items-center gap-1.5">🏷️ Filter Categories</h2>
+                    <div class="grid grid-cols-2 gap-1.5 text-xs">
+                        <label class="flex items-center space-x-1.5 cursor-pointer">
+                            <input type="checkbox" checked class="rounded text-blue-600" onchange="filterEvents('Work', this.checked)">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span><span>Work</span>
+                        </label>
+                        <label class="flex items-center space-x-1.5 cursor-pointer">
+                            <input type="checkbox" checked class="rounded text-green-600" onchange="filterEvents('Personal', this.checked)">
+                            <span class="w-2 h-2 rounded-full bg-green-500"></span><span>Personal</span>
+                        </label>
+                        <label class="flex items-center space-x-1.5 cursor-pointer">
+                            <input type="checkbox" checked class="rounded text-purple-600" onchange="filterEvents('Meeting', this.checked)">
+                            <span class="w-2 h-2 rounded-full bg-purple-500"></span><span>Meeting</span>
+                        </label>
+                        <label class="flex items-center space-x-1.5 cursor-pointer">
+                            <input type="checkbox" checked class="rounded text-red-600" onchange="filterEvents('Urgent', this.checked)">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span><span>Urgent</span>
+                        </label>
+                        <label class="flex items-center space-x-1.5 cursor-pointer col-span-2">
+                            <input type="checkbox" checked class="rounded text-amber-600" onchange="filterEvents('Health', this.checked)">
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span><span>Health</span>
+                        </label>
+                    </div>
+                </div>
+                <p class="text-[10px] opacity-60 mt-2">Toggle event visibility instantly.</p>
+            </div>
+
+            <!-- GUI Card 3: Custom Alarm Sound -->
+            <div class="bg-panel p-4 rounded-xl border shadow-sm flex flex-col justify-between">
+                <div>
+                    <h2 class="text-xs uppercase tracking-wider opacity-70 mb-2 flex items-center gap-1.5">⏰ Custom Alarm Audio</h2>
+                    <input type="file" id="customAudioInput" accept="audio/*" onchange="handleCustomAudioUpload(event)" class="w-full text-[11px] mb-2 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+                    <div id="audioFileName" class="text-[10px] opacity-75 truncate mb-2">Using default chime</div>
+                </div>
+                <button onclick="testAlarmAudio()" class="w-full bg-black/10 hover:bg-black/20 py-1.5 px-3 rounded-lg text-xs transition">🔊 Test Alarm Sound</button>
+            </div>
+
+            <!-- GUI Card 4: Backup, Restore & Maintenance -->
+            <div class="bg-panel p-4 rounded-xl border shadow-sm flex flex-col justify-between">
+                <div>
+                    <h2 class="text-xs uppercase tracking-wider opacity-70 mb-2 flex items-center gap-1.5">📥 Backup & Maintenance</h2>
+                    <div class="flex space-x-2 mb-2">
+                        <button onclick="exportCalendarJSON()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs py-1.5 px-2 rounded-lg shadow transition">Export</button>
+                        <label class="flex-1 bg-black/10 hover:bg-black/20 text-xs py-1.5 px-2 rounded-lg text-center cursor-pointer transition">
+                            Import
+                            <input type="file" accept=".json" onchange="importCalendarJSON(event)" class="hidden">
+                        </label>
+                    </div>
+                </div>
+                <button onclick="clearAllEvents()" class="w-full text-center text-xs text-red-500 hover:opacity-80 py-1.5 px-2 rounded-lg bg-red-500/10 border border-red-500/20 transition">🗑️ Clear Data</button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Modal Form for Event Management, Alarms & Recurrence -->
+    <div id="eventModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 overflow-y-auto">
+        <div class="bg-panel rounded-xl shadow-2xl w-full max-w-md p-5 md:p-6 border my-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalTitle" class="text-base md:text-lg font-bold">Event Editor</h3>
+                <button onclick="closeModal()" class="text-xl px-2 py-1">&times;</button>
+            </div>
+            
+            <form id="eventForm" onsubmit="handleFormSubmit(event)" class="space-y-3">
+                <input type="hidden" id="eventOriginalId">
+                <div>
+                    <label class="block text-[11px] uppercase tracking-wider opacity-75 mb-1">Event Title</label>
+                    <input type="text" id="eventTitleInput" required placeholder="e.g., Team Planning" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider opacity-75 mb-1">Start Time</label>
+                        <input type="datetime-local" id="eventStartInput" required class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider opacity-75 mb-1">End Time</label>
+                        <input type="datetime-local" id="eventEndInput" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider opacity-75 mb-1">Category</label>
+                        <select id="eventCategoryInput" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none cursor-pointer">
+                            <option value="Work">Work</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Meeting">Meeting</option>
+                            <option value="Urgent">Urgent</option>
+                            <option value="Health">Health</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider opacity-75 mb-1">Recurrence Rule</label>
+                        <select id="eventRecurrenceInput" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none cursor-pointer">
+                            <option value="none">None (One-time)</option>
+                            <option value="daily">Daily Repeat</option>
+                            <option value="weekly">Weekly Repeat</option>
+                            <option value="monthly">Monthly Repeat</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- FULLY VISIBLE ALARM MANAGEMENT PANEL -->
+                <div class="p-3.5 bg-blue-500/10 rounded-xl border border-blue-500/30 space-y-3">
+                    <div class="flex items-center justify-between border-b border-blue-500/20 pb-2">
+                        <span class="text-xs uppercase tracking-wider font-bold flex items-center gap-1.5 text-blue-600 dark:text-blue-400">⏰ Alarm Status & Controls</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="alarmEnabledInput" checked class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                            <span class="ml-2 text-xs font-bold" id="alarmToggleLabel">Enabled</span>
+                        </label>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider opacity-75 mb-1">Alert Timing</label>
+                            <select id="alarmOffsetInput" class="w-full border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none cursor-pointer">
+                                <option value="0">At start time</option>
+                                <option value="5" selected>5 mins before</option>
+                                <option value="15">15 mins before</option>
+                                <option value="30">30 mins before</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider opacity-75 mb-1">Default Snooze</label>
+                            <select id="alarmSnoozeDurationInput" class="w-full border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none cursor-pointer">
+                                <option value="5">5 minutes</option>
+                                <option value="10" selected>10 minutes</option>
+                                <option value="15">15 minutes</option>
+                                <option value="30">30 minutes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-3 border-t border-black/10">
+                    <button type="button" id="deleteEventBtn" onclick="deleteCurrentEvent()" class="hidden text-red-500 text-xs md:text-sm font-bold px-2 py-1">Delete</button>
+                    <div class="flex space-x-2 ml-auto">
+                        <button type="button" onclick="closeModal()" class="px-3 py-2 text-xs md:text-sm opacity-80">Cancel</button>
+                        <button type="submit" class="px-4 py-2 text-xs md:text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow transition">Save Event</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script Application Logic -->
+    <script>
+        let calendar;
+        let db;
+        let activeEventToEdit = null;
+        let alarmCheckInterval = null;
+        let triggeredAlarms = new Set();
+        let currentRingingEvent = null;
+        let customAudioDataUrl = localStorage.getItem('fullcalendar_custom_alarm_audio') || null;
+
+        const categoryColorMap = {
+            'Work': '#2563eb',     // Blue
+            'Personal': '#10b981', // Green
+            'Meeting': '#8b5cf6',  // Purple
+            'Urgent': '#ef4444',   // Red
+            'Health': '#f59e0b'    // Amber
+        };
+
+        const defaultEvents = [
+            { 
+                id: '1', 
+                title: 'Daily Standup', 
+                start: new Date().toISOString().split('T')[0] + 'T09:00:00', 
+                backgroundColor: '#2563eb', 
+                borderColor: '#2563eb', 
+                extendedProps: { 
+                    category: 'Work', 
+                    recurrence: 'daily',
+                    alarmEnabled: true,
+                    alarmOffset: 5,
+                    snoozeDuration: 10
+                } 
+            }
+        ];
+
+        const themeWeatherMap = {
+            'theme-day': { icon: '☀️', condition: 'Sunny Day • 24°C', location: 'Sunlit Valley' },
+            'theme-midnight': { icon: '🌌', condition: 'Clear Starlight • 12°C', location: 'Cosmic Ridge' },
+            'theme-forest': { icon: '🌲', condition: 'Misty Canopy • 18°C', location: 'Ancient Woods' },
+            'theme-ocean': { icon: '🌊', condition: 'Coastal Breeze • 21°C', location: 'Coral Blue' },
+            'theme-sunset': { icon: '🏜️', condition: 'Warm Dusk • 29°C', location: 'Desert Horizon' },
+            'theme-autumn': { icon: '🍁', condition: 'Crisp Air • 15°C', location: 'Golden Maple' },
+            'theme-winter': { icon: '❄️', condition: 'Glacial Wind • -2°C', location: 'Glacial Ice' },
+            'theme-mountain': { icon: '⛰️', condition: 'Highland Fog • 10°C', location: 'Highland Fog' },
+            'theme-sakura': { icon: '🌸', condition: 'Spring Petals • 20°C', location: 'Spring Petals' },
+            'theme-volcano': { icon: '🌋', condition: 'Basalt Warmth • 35°C', location: 'Basalt Stone' }
+        };
+
+        // IndexedDB Helper Functions
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('NatureSchedulerDB', 2);
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+                    if (!database.objectStoreNames.contains('events')) {
+                        database.createObjectStore('events', { keyPath: 'id' });
+                    }
+                };
+            });
+        }
+
+        function getAllEventsFromDB() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction('events', 'readonly');
+                const store = transaction.objectStore('events');
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function saveEventToDB(eventObj) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction('events', 'readwrite');
+                const store = transaction.objectStore('events');
+                const request = store.put(eventObj);
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function deleteEventFromDB(id) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction('events', 'readwrite');
+                const store = transaction.objectStore('events');
+                const request = store.delete(id);
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function clearAllEventsFromDB() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction('events', 'readwrite');
+                const store = transaction.objectStore('events');
+                const request = store.clear();
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function toLocalDateTimeString(date) {
+            const d = new Date(date);
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const calendarEl = document.getElementById('calendar');
+            
+            const savedTheme = localStorage.getItem('fullcalendar_nature_theme') || 'theme-day';
+            document.body.className = `${savedTheme} h-screen flex flex-col overflow-hidden transition-colors duration-300`;
+            document.getElementById('themeSelect').value = savedTheme;
+            updateWeatherBadge(savedTheme);
+
+            // Toggle Label Sync
+            document.getElementById('alarmEnabledInput').addEventListener('change', (e) => {
+                document.getElementById('alarmToggleLabel').innerText = e.target.checked ? 'Enabled' : 'Disabled';
+            });
+
+            if (customAudioDataUrl) {
+                document.getElementById('audioFileName').innerText = "Loaded custom audio ✓";
+            }
+
+            try {
+                await initDB();
+                let savedEvents = await getAllEventsFromDB();
+                if (!savedEvents || savedEvents.length === 0) {
+                    for (const defEvent of defaultEvents) {
+                        await saveEventToDB(defEvent);
+                    }
+                    savedEvents = defaultEvents;
+                }
+
+                calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    headerToolbar: false,
+                    navLinks: true,
+                    editable: true,
+                    selectable: true,
+                    nowIndicator: true,
+                    dayMaxEvents: true,
+                    events: savedEvents,
+
+                    select: function(info) {
+                        openAddEventModal(info.startStr, info.endStr);
+                        calendar.unselect();
+                    },
+                    eventClick: function(info) {
+                        openEditEventModal(info.event);
+                    },
+                    eventDrop: async function(info) {
+                        await persistEvent(info.event);
+                    },
+                    eventResize: async function(info) {
+                        await persistEvent(info.event);
+                    },
+
+                    dateDidMount: function(arg) {
+                        const cellEl = arg.el;
+                        const dateStr = arg.date.toISOString().split('T')[0];
+
+                        cellEl.addEventListener('mouseenter', (e) => {
+                            const dayEvents = calendar.getEvents().filter(ev => {
+                                if (!ev.start) return false;
+                                return ev.start.toISOString().split('T')[0] === dateStr;
+                            });
+
+                            const tooltip = document.getElementById('dateTooltip');
+                            let content = `<div class="font-bold border-b border-white/20 pb-1 mb-1">${arg.date.toDateString()}</div>`;
+                            if (dayEvents.length > 0) {
+                                content += dayEvents.map(ev => `<div>• ${ev.title}</div>`).join('');
+                            } else {
+                                content += `<div class="opacity-75">No scheduled events</div>`;
+                            }
+
+                            tooltip.innerHTML = content;
+                            tooltip.style.left = `${e.pageX + 12}px`;
+                            tooltip.style.top = `${e.pageY + 12}px`;
+                            tooltip.classList.remove('hidden');
+                        });
+                        cellEl.addEventListener('mousemove', (e) => {
+                            const tooltip = document.getElementById('dateTooltip');
+                            tooltip.style.left = `${e.pageX + 12}px`;
+                            tooltip.style.top = `${e.pageY + 12}px`;
+                        });
+                        cellEl.addEventListener('mouseleave', () => {
+                            document.getElementById('dateTooltip').classList.add('hidden');
+                        });
+                    }
+                });
+
+                calendar.render();
+                startAlarmSystem();
+            } catch (err) {
+                console.error("Initialization error with IndexedDB:", err);
+            }
+        });
+
+        async function persistEvent(eventInstance) {
+            const eventObj = {
+                id: eventInstance.id,
+                title: eventInstance.title,
+                start: eventInstance.startStr,
+                end: eventInstance.endStr,
+                allDay: eventInstance.allDay,
+                backgroundColor: eventInstance.backgroundColor,
+                borderColor: eventInstance.borderColor,
+                extendedProps: eventInstance.extendedProps
+            };
+            await saveEventToDB(eventObj);
+        }
+
+        function changeCalendarView(viewName) {
+            calendar.changeView(viewName);
+            ['btn-month', 'btn-week', 'btn-day', 'btn-list'].forEach(id => {
+                const btn = document.getElementById(id);
+                btn.className = "px-3 py-1.5 rounded-lg text-xs hover:bg-black/10 transition";
+            });
+            
+            const activeId = viewName === 'dayGridMonth' ? 'btn-month' :
+                             viewName === 'timeGridWeek' ? 'btn-week' :
+                             viewName === 'timeGridDay' ? 'btn-day' : 'btn-list';
+            document.getElementById(activeId).className = "px-3 py-1.5 rounded-lg text-xs bg-blue-600 text-white transition shadow-sm";
+        }
+
+        function changeTheme(themeName) {
+            document.body.className = `${themeName} h-screen flex flex-col overflow-hidden transition-colors duration-300`;
+            localStorage.setItem('fullcalendar_nature_theme', themeName);
+            updateWeatherBadge(themeName);
+        }
+
+        function updateWeatherBadge(themeName) {
+            const weather = themeWeatherMap[themeName] || themeWeatherMap['theme-day'];
+            document.getElementById('weatherIcon').innerText = weather.icon;
+            document.getElementById('weatherCondition').innerText = weather.condition;
+            document.getElementById('weatherLocation').innerText = weather.location;
+        }
+
+        // Custom Audio Handlers
+        function handleCustomAudioUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                alert("Please select an audio file under 5MB.");
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                customAudioDataUrl = e.target.result;
+                localStorage.setItem('fullcalendar_custom_alarm_audio', customAudioDataUrl);
+                document.getElementById('audioFileName').innerText = `Loaded: ${file.name}`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function testAlarmAudio() {
+            playAlarmChime();
+        }
+
+        function playAlarmChime() {
+            try {
+                if (customAudioDataUrl) {
+                    const customAudio = new Audio(customAudioDataUrl);
+                    customAudio.play().catch(err => playSynthesizedChime());
+                } else {
+                    playSynthesizedChime();
+                }
+            } catch (e) {
+                playSynthesizedChime();
+            }
+        }
+
+        function playSynthesizedChime() {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.6);
+        }
+
+        // Backup and Restore (JSON Export & Import)
+        async function exportCalendarJSON() {
+            const events = await getAllEventsFromDB();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(events, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `calendar_backup_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        async function importCalendarJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const importedEvents = JSON.parse(e.target.result);
+                    if (!Array.isArray(importedEvents)) {
+                        throw new Error("Invalid JSON format");
+                    }
+
+                    await clearAllEventsFromDB();
+                    calendar.getEvents().forEach(ev => ev.remove());
+
+                    for (const ev of importedEvents) {
+                        await saveEventToDB(ev);
+                        calendar.addEvent(ev);
+                    }
+
+                    alert(`Successfully imported ${importedEvents.length} events!`);
+                } catch (error) {
+                    alert("Failed to parse JSON backup file. Make sure it's a valid calendar export.");
+                }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // Alarm Monitoring Engine with Snooze & Enable/Disable
+        function startAlarmSystem() {
+            if (alarmCheckInterval) clearInterval(alarmCheckInterval);
+            alarmCheckInterval = setInterval(() => {
+                const now = new Date();
+                calendar.getEvents().forEach(ev => {
+                    if (!ev.start) return;
+                    
+                    const props = ev.extendedProps || {};
+                    if (props.alarmEnabled === false) return;
+
+                    const eventTime = new Date(ev.start);
+                    const offsetMinutes = parseInt(props.alarmOffset ?? 5, 10);
+                    const targetAlertTime = new Date(eventTime.getTime() - (offsetMinutes * 60000));
+                    
+                    const diffMs = targetAlertTime - now;
+                    const diffMinutes = diffMs / 60000;
+
+                    if (diffMinutes >= -0.25 && diffMinutes <= 0.25 && !triggeredAlarms.has(ev.id)) {
+                        triggeredAlarms.add(ev.id);
+                        currentRingingEvent = ev;
+                        triggerAlarmUI(ev.title, offsetMinutes);
+                    }
+                });
+            }, 5000);
+        }
+
+        function triggerAlarmUI(title, offsetMinutes) {
+            const banner = document.getElementById('alarmBanner');
+            document.getElementById('alarmTitle').innerText = `Reminder: "${title}"`;
+            document.getElementById('alarmTimeMsg').innerText = offsetMinutes === 0 ? `Starting right now!` : `Scheduled in ${offsetMinutes} minutes`;
+            banner.classList.remove('hidden');
+            playAlarmChime();
+        }
+
+        function dismissAlarm() {
+            document.getElementById('alarmBanner').classList.add('hidden');
+            currentRingingEvent = null;
+        }
+
+        async function snoozeActiveAlarm() {
+            if (!currentRingingEvent) {
+                dismissAlarm();
+                return;
+            }
+
+            const snoozeMinutes = parseInt(document.getElementById('snoozeTimeSelect').value, 10);
+            const currentStart = new Date(currentRingingEvent.start);
+            const newStart = new Date(currentStart.getTime() + (snoozeMinutes * 60000));
+
+            currentRingingEvent.setStart(newStart);
+            await persistEvent(currentRingingEvent);
+
+            triggeredAlarms.delete(currentRingingEvent.id);
+            dismissAlarm();
+        }
+
+        // Modal Form Management with Alarm Options & Current Date Default
+        function openAddEventModal(startStr = '', endStr = '') {
+            activeEventToEdit = null;
+            document.getElementById('modalTitle').innerText = 'Add Event & Alarm';
+            document.getElementById('eventOriginalId').value = '';
+            document.getElementById('eventTitleInput').value = '';
+            
+            const now = new Date();
+            const defaultStart = startStr ? startStr.slice(0, 16) : toLocalDateTimeString(now);
+            const defaultEnd = endStr ? endStr.slice(0, 16) : toLocalDateTimeString(new Date(now.getTime() + 3600000));
+
+            document.getElementById('eventStartInput').value = defaultStart;
+            document.getElementById('eventEndInput').value = defaultEnd;
+            document.getElementById('eventCategoryInput').value = 'Work';
+            document.getElementById('eventRecurrenceInput').value = 'none';
+            
+            // Alarm defaults
+            const alarmToggle = document.getElementById('alarmEnabledInput');
+            alarmToggle.checked = true;
+            document.getElementById('alarmToggleLabel').innerText = 'Enabled';
+            document.getElementById('alarmOffsetInput').value = '5';
+            document.getElementById('alarmSnoozeDurationInput').value = '10';
+            
+            document.getElementById('deleteEventBtn').classList.add('hidden');
+            document.getElementById('eventModal').classList.remove('hidden');
+            document.getElementById('eventModal').classList.add('flex');
+        }
+
+        function openEditEventModal(event) {
+            activeEventToEdit = event;
+            document.getElementById('modalTitle').innerText = 'Edit / Delete Event';
+            document.getElementById('eventOriginalId').value = event.id;
+            document.getElementById('eventTitleInput').value = event.title;
+            document.getElementById('eventStartInput').value = event.startStr ? event.startStr.slice(0, 16) : '';
+            document.getElementById('eventEndInput').value = event.endStr ? event.endStr.slice(0, 16) : '';
+            
+            const props = event.extendedProps || {};
+            document.getElementById('eventCategoryInput').value = props.category || 'Work';
+            document.getElementById('eventRecurrenceInput').value = props.recurrence || 'none';
+            
+            const isEnabled = props.alarmEnabled !== false;
+            const alarmToggle = document.getElementById('alarmEnabledInput');
+            alarmToggle.checked = isEnabled;
+            document.getElementById('alarmToggleLabel').innerText = isEnabled ? 'Enabled' : 'Disabled';
+            
+            document.getElementById('alarmOffsetInput').value = props.alarmOffset ?? 5;
+            document.getElementById('alarmSnoozeDurationInput').value = props.snoozeDuration ?? 10;
+
+            document.getElementById('deleteEventBtn').classList.remove('hidden');
+            document.getElementById('eventModal').classList.remove('hidden');
+            document.getElementById('eventModal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('eventModal').classList.remove('flex');
+            document.getElementById('eventModal').classList.add('hidden');
+            activeEventToEdit = null;
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const title = document.getElementById('eventTitleInput').value;
+            const startStr = document.getElementById('eventStartInput').value;
+            const endStr = document.getElementById('eventEndInput').value;
+            const category = document.getElementById('eventCategoryInput').value;
+            const recurrence = document.getElementById('eventRecurrenceInput').value;
+            const alarmEnabled = document.getElementById('alarmEnabledInput').checked;
+            const alarmOffset = parseInt(document.getElementById('alarmOffsetInput').value, 10);
+            const snoozeDuration = parseInt(document.getElementById('alarmSnoozeDurationInput').value, 10);
+
+            let color = categoryColorMap[category] || '#2563eb';
+            const extendedProps = { category, recurrence, alarmEnabled, alarmOffset, snoozeDuration };
+
+            if (activeEventToEdit) {
+                activeEventToEdit.setProp('title', title);
+                activeEventToEdit.setStart(startStr);
+                activeEventToEdit.setEnd(endStr ? endStr : null);
+                activeEventToEdit.setProp('backgroundColor', color);
+                activeEventToEdit.setProp('borderColor', color);
+                activeEventToEdit.setExtendedProp('category', category);
+                activeEventToEdit.setExtendedProp('recurrence', recurrence);
+                activeEventToEdit.setExtendedProp('alarmEnabled', alarmEnabled);
+                activeEventToEdit.setExtendedProp('alarmOffset', alarmOffset);
+                activeEventToEdit.setExtendedProp('snoozeDuration', snoozeDuration);
+                
+                triggeredAlarms.delete(activeEventToEdit.id);
+                await persistEvent(activeEventToEdit);
+            } else {
+                const newId = String(Date.now());
+                const newEventData = {
+                    id: newId,
+                    title: title,
+                    start: startStr,
+                    end: endStr ? endStr : null,
+                    backgroundColor: color,
+                    borderColor: color,
+                    extendedProps: extendedProps
+                };
+
+                calendar.addEvent(newEventData);
+                await saveEventToDB(newEventData);
+
+                if (recurrence !== 'none') {
+                    let baseStartDate = new Date(startStr);
+                    let baseEndDate = endStr ? new Date(endStr) : null;
+
+                    for (let i = 1; i <= 4; i++) {
+                        let nextStart = new Date(baseStartDate);
+                        let nextEnd = baseEndDate ? new Date(baseEndDate) : null;
+
+                        if (recurrence === 'daily') {
+                            nextStart.setDate(nextStart.getDate() + i);
+                            if (nextEnd) nextEnd.setDate(nextEnd.getDate() + i);
+                        } else if (recurrence === 'weekly') {
+                            nextStart.setDate(nextStart.getDate() + (i * 7));
+                            if (nextEnd) nextEnd.setDate(nextEnd.getDate() + (i * 7));
+                        } else if (recurrence === 'monthly') {
+                            nextStart.setMonth(nextStart.getMonth() + i);
+                            if (nextEnd) nextEnd.setMonth(nextEnd.getMonth() + i);
+                        }
+
+                        const recurringEventData = {
+                            id: String(Date.now() + i),
+                            title: title,
+                            start: nextStart.toISOString(),
+                            end: nextEnd ? nextEnd.toISOString() : null,
+                            backgroundColor: color,
+                            borderColor: color,
+                            extendedProps: extendedProps
+                        };
+
+                        calendar.addEvent(recurringEventData);
+                        await saveEventToDB(recurringEventData);
+                    }
+                }
+            }
+
+            closeModal();
+        }
+
+        async function deleteCurrentEvent() {
+            if (activeEventToEdit) {
+                const eventId = activeEventToEdit.id;
+                activeEventToEdit.remove();
+                await deleteEventFromDB(eventId);
+                closeModal();
+            }
+        }
+
+        function filterEvents(category, isVisible) {
+            calendar.getEvents().forEach(ev => {
+                if (ev.extendedProps.category === category) {
+                    ev.setProp('display', isVisible ? 'auto' : 'none');
+                }
+            });
+        }
+
+        async function clearAllEvents() {
+            if (confirm("Remove all saved entries?")) {
+                await clearAllEventsFromDB();
+                calendar.getEvents().forEach(ev => ev.remove());
+                triggeredAlarms.clear();
+            }
+        }
+    </script>
+</body>
+</html>
