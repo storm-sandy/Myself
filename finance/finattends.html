@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StarKid Attendance Tracker</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            DEFAULT: 'var(--brand-primary)',
+                            dark: 'var(--brand-dark)',
+                            light: 'var(--brand-light)',
+                            bg: 'var(--brand-bg)'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --brand-primary: #8b5cf6; /* Vibrant Purple (Default) */
+            --brand-dark: #7c3aed;
+            --brand-light: #ede9fe;
+            --brand-bg: #f5f3ff;
+        }
+        body.theme-rainbow { --brand-primary: #ec4899; --brand-dark: #db2777; --brand-light: #fce7f3; --brand-bg: #fdf2f8; }
+        body.theme-space { --brand-primary: #6366f1; --brand-dark: #4f46e5; --brand-light: #e0e7ff; --brand-bg: #eef2ff; }
+        body.theme-dinosaur { --brand-primary: #10b981; --brand-dark: #059669; --brand-light: #d1fae5; --brand-bg: #ecfdf5; }
+        body.theme-ocean { --brand-primary: #0ea5e9; --brand-dark: #0284c7; --brand-light: #e0f2fe; --brand-bg: #f0f9ff; }
+        body.theme-sunshine { --brand-primary: #f59e0b; --brand-dark: #d97706; --brand-light: #fef3c7; --brand-bg: #fffbeb; }
+    </style>
+</head>
+<body class="bg-indigo-50/50 text-slate-800 min-h-screen flex flex-col font-sans theme-space" id="appBody">
+
+    <!-- Header -->
+    <header id="headerBg" class="bg-indigo-600 text-white shadow-lg transition-colors duration-300">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div id="headerIconBg" class="bg-indigo-700 p-3 rounded-2xl shadow-inner transition-colors duration-300">
+                    <i class="fa-solid fa-graduation-cap text-2xl text-yellow-300 animate-bounce"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black tracking-tight flex items-center gap-2">
+                        StarKid Attendance <span class="bg-yellow-400 text-indigo-950 text-xs px-2 py-0.5 rounded-full font-bold uppercase shadow-sm">School 2026</span>
+                    </h1>
+                    <p class="text-xs text-indigo-100 font-medium">Track school days, fun moods, and golden star streaks!</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Theme Selector -->
+                <div class="relative">
+                    <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-indigo-700/90 hover:bg-indigo-700 text-indigo-100 border border-indigo-400/40 text-xs font-bold rounded-xl px-3 py-2 focus:outline-none transition cursor-pointer shadow-sm">
+                        <option value="space">🚀 Outer Space</option>
+                        <option value="rainbow">🌈 Rainbow Magic</option>
+                        <option value="dinosaur">🦖 Dino Jungle</option>
+                        <option value="ocean">🐳 Ocean Explorer</option>
+                        <option value="sunshine">☀️ Sunshine Days</option>
+                    </select>
+                </div>
+
+                <button onclick="exportJSON()" class="bg-indigo-700/90 hover:bg-indigo-700 text-indigo-100 font-bold px-3 py-2 rounded-xl shadow transition flex items-center gap-1.5 text-xs border border-indigo-400/40" title="Export Backup">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> Backup
+                </button>
+                <button onclick="document.getElementById('importFile').click()" class="bg-indigo-700/90 hover:bg-indigo-700 text-indigo-100 font-bold px-3 py-2 rounded-xl shadow transition flex items-center gap-1.5 text-xs border border-indigo-400/40" title="Restore Backup">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Restore
+                </button>
+                <input type="file" id="importFile" accept=".json" onchange="importJSON(event)" class="hidden">
+                
+                <button onclick="openModal()" class="bg-yellow-400 hover:bg-yellow-300 text-indigo-950 font-black px-4 py-2 rounded-xl shadow-md transition flex items-center gap-2 text-xs">
+                    <i class="fa-solid fa-plus-circle text-base"></i> Add Day Log
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full space-y-6">
+
+        <!-- Student Profile & Quick Check-in Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Student Card -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-indigo-100 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Student Profile</span>
+                        <span id="studentGradeBadge" class="bg-indigo-50 text-indigo-700 text-xs px-2 py-0.5 rounded-lg font-bold">Grade 5-B</span>
+                    </div>
+                    <div class="mt-2 flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-yellow-100 border-2 border-yellow-300 flex items-center justify-center text-xl shadow-inner">
+                            🎒
+                        </div>
+                        <div>
+                            <h2 id="studentNameDisplay" class="font-bold text-slate-800 text-base">Aarav Sharma</h2>
+                            <p class="text-xs text-slate-400">Roll No: 14</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500">
+                    <span>Teacher: Mrs. D'Souza</span>
+                    <button onclick="editStudentInfo()" class="text-indigo-600 hover:underline font-bold"><i class="fa-solid fa-pen"></i> Edit</button>
+                </div>
+            </div>
+
+            <!-- Streak Counter Card -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-yellow-100 flex flex-col justify-between">
+                <div>
+                    <p class="text-xs font-bold text-yellow-600 uppercase tracking-wider flex items-center gap-1">
+                        <i class="fa-solid fa-fire text-orange-500"></i> Attendance Streak
+                    </p>
+                    <div class="mt-3 flex items-baseline gap-2">
+                        <span id="streakCount" class="text-4xl font-black text-slate-800">0</span>
+                        <span class="text-sm font-bold text-yellow-600">School Days! 🌟</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400 mt-2">Keep coming to school to grow your star streak!</p>
+            </div>
+
+            <!-- Month Summary Card -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-emerald-100 flex flex-col justify-between">
+                <div>
+                    <p class="text-xs font-bold text-emerald-600 uppercase tracking-wider">This Month Present</p>
+                    <div class="mt-3 flex items-baseline gap-2">
+                        <span id="statMonthPresent" class="text-4xl font-black text-slate-800">0</span>
+                        <span class="text-sm font-bold text-emerald-600">days</span>
+                    </div>
+                </div>
+                <p id="statMonthPercentage" class="text-xs text-slate-400 mt-2">100% attendance rate</p>
+            </div>
+
+            <!-- Quick Today Punch Box -->
+            <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-5 rounded-2xl shadow-md flex flex-col justify-between">
+                <div>
+                    <p class="text-xs font-bold text-indigo-200 uppercase tracking-wider">Today's Quick Check-In</p>
+                    <p id="todayStatusText" class="text-lg font-black mt-2">Not marked yet today</p>
+                </div>
+                <div class="mt-4 flex gap-2">
+                    <button onclick="markTodayPresent()" class="flex-1 bg-yellow-400 hover:bg-yellow-300 text-indigo-950 font-black py-2 px-3 rounded-xl text-xs shadow transition flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-check"></i> Present Today!
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Calendar Heat-Map Section -->
+        <div class="bg-white rounded-2xl shadow-sm border-2 border-slate-100 p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-slate-100 pb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-days text-indigo-600"></i> School Attendance Calendar
+                    </h2>
+                    <p class="text-xs text-slate-500">Click any date to log attendance, mood, or school events!</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="changeMonth(-1)" class="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                    <span id="calendarMonthLabel" class="font-black text-slate-700 text-sm w-36 text-center">October 2026</span>
+                    <button onclick="changeMonth(1)" class="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                </div>
+            </div>
+
+            <!-- Kid-Friendly Legend -->
+            <div class="flex flex-wrap items-center gap-3 text-xs font-medium text-slate-600">
+                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-emerald-500 inline-block shadow-xs"></span> Present</span>
+                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-blue-500 inline-block shadow-xs"></span> School Trip</span>
+                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-amber-500 inline-block shadow-xs"></span> Late</span>
+                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-rose-500 inline-block shadow-xs"></span> Sick / Absent</span>
+                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-purple-500 inline-block shadow-xs"></span> Half Day</span>
+                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-slate-200 inline-block shadow-xs"></span> Holiday / Weekend</span>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="grid grid-cols-7 gap-2 text-center">
+                <div class="text-xs font-black text-indigo-400 py-1">Mon</div>
+                <div class="text-xs font-black text-indigo-400 py-1">Tue</div>
+                <div class="text-xs font-black text-indigo-400 py-1">Wed</div>
+                <div class="text-xs font-black text-indigo-400 py-1">Thu</div>
+                <div class="text-xs font-black text-indigo-400 py-1">Fri</div>
+                <div class="text-xs font-black text-indigo-400 py-1">Sat</div>
+                <div class="text-xs font-black text-indigo-400 py-1">Sun</div>
+            </div>
+            <div id="calendarGrid" class="grid grid-cols-7 gap-2">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Toolbar / Filters -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border-2 border-slate-100">
+            <div class="relative w-full sm:w-80">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                    <i class="fa-solid fa-search"></i>
+                </span>
+                <input type="text" id="searchInput" oninput="renderTable()" placeholder="Search date, mood, remarks..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+                <span class="text-xs font-bold text-slate-400 mr-1">Filter:</span>
+                <button onclick="filterByTag('All')" id="filter-All" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white transition shadow-sm">All</button>
+                <button onclick="filterByTag('Present')" id="filter-Present" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Present</button>
+                <button onclick="filterByTag('School Trip')" id="filter-School Trip" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Trip</button>
+                <button onclick="filterByTag('Sick / Absent')" id="filter-Sick / Absent" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Absent</button>
+            </div>
+        </div>
+
+        <!-- Attendance Logs Table -->
+        <div class="bg-white rounded-2xl shadow-sm border-2 border-slate-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-black text-slate-400 uppercase tracking-wider">
+                            <th class="py-3.5 px-4">Date</th>
+                            <th class="py-3.5 px-4">Daily Mood</th>
+                            <th class="py-3.5 px-4">Status</th>
+                            <th class="py-3.5 px-4">Teacher / Homework Notes</th>
+                            <th class="py-3.5 px-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody" class="divide-y divide-slate-100 text-sm">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="emptyState" class="hidden text-center py-12">
+                <i class="fa-solid fa-face-smile text-5xl text-indigo-200 mb-3 animate-bounce"></i>
+                <p class="text-slate-600 font-bold">No school attendance records found yet!</p>
+                <p class="text-slate-400 text-xs mt-1">Click "Add Day Log" or click any date on the calendar.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <div id="attendanceModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all border-4 border-indigo-100">
+            <div class="bg-indigo-50 px-6 py-4 border-b border-indigo-100 flex justify-between items-center">
+                <h3 id="modalTitle" class="font-black text-indigo-950 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-star text-yellow-500"></i> Add School Day Log
+                </h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="attendanceForm" onsubmit="saveAttendance(event)" class="p-6 space-y-4">
+                <input type="hidden" id="logId">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">School Date *</label>
+                    <input type="date" id="logDate" required class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-indigo-500">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Attendance Status</label>
+                        <select id="logStatus" class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-indigo-500 bg-white">
+                            <option value="Present">🟢 Present in School</option>
+                            <option value="School Trip">🔵 School Field Trip</option>
+                            <option value="Late">🟡 Late Arrival</option>
+                            <option value="Sick / Absent">🔴 Sick / Absent</option>
+                            <option value="Half Day">🟣 Half Day</option>
+                            <option value="Holiday">⚪ Holiday / Weekend</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Daily Mood</label>
+                        <select id="logMood" class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-indigo-500 bg-white">
+                            <option value="😊 Super Happy">😊 Super Happy</option>
+                            <option value="🥳 Excited for Trip">🥳 Excited for Trip</option>
+                            <option value="🎨 Creative & Artsy">🎨 Creative & Artsy</option>
+                            <option value="😴 Sleepy / Tired">😴 Sleepy / Tired</option>
+                            <option value="🤒 Sick / Resting">🤒 Sick / Resting</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Teacher Remarks / Homework / Notes</label>
+                    <textarea id="logRemarks" rows="3" placeholder="e.g., Science project submitted, Math quiz tomorrow..." class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-indigo-500"></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2.5 border-2 border-slate-200 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-50 transition">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-black shadow-md transition">Save Star Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Student Profile Modal -->
+    <div id="profileModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border-4 border-yellow-100 p-6 space-y-4">
+            <h3 class="font-black text-slate-800 text-lg">Edit Student Profile</h3>
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Student Name</label>
+                <input type="text" id="editNameInput" class="w-full px-3 py-2 border-2 border-slate-200 rounded-xl text-sm font-bold">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Grade / Class</label>
+                <input type="text" id="editGradeInput" class="w-full px-3 py-2 border-2 border-slate-200 rounded-xl text-sm font-bold">
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeProfileModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="saveStudentProfile()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-xs text-slate-400 font-medium">
+        StarKid Attendance Tracker &bull; Designed for Happy School Days 🎒✨
+    </footer>
+
+    <!-- Application Script -->
+    <script>
+        let student = JSON.parse(localStorage.getItem('studentAttendance_profile')) || { name: 'Aarav Sharma', grade: 'Grade 5-B' };
+        let logs = JSON.parse(localStorage.getItem('studentAttendance_logs')) || [
+            { id: '1', date: '2026-10-01', status: 'Present', mood: '😊 Super Happy', remarks: 'Science lab experiment completed' },
+            { id: '2', date: '2026-09-30', status: 'School Trip', mood: '🥳 Excited for Trip', remarks: 'Visited Nehru Planetarium' },
+            { id: '3', date: '2026-09-29', status: 'Present', mood: '🎨 Creative & Artsy', remarks: 'Won 1st prize in drawing competition' },
+            { id: '4', date: '2026-09-28', status: 'Sick / Absent', mood: '🤒 Sick / Resting', remarks: 'Mild fever, doctor advised rest' }
+        ];
+
+        let currentFilter = 'All';
+        let calendarDate = new Date();
+
+        const statusBadges = {
+            'Present': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+            'School Trip': 'bg-blue-50 text-blue-700 border-blue-200',
+            'Late': 'bg-amber-50 text-amber-700 border-amber-200',
+            'Sick / Absent': 'bg-rose-50 text-rose-700 border-rose-200',
+            'Half Day': 'bg-purple-50 text-purple-700 border-purple-200',
+            'Holiday': 'bg-slate-100 text-slate-600 border-slate-200'
+        };
+
+        const heatmapColors = {
+            'Present': 'bg-emerald-500 text-white hover:bg-emerald-600',
+            'School Trip': 'bg-blue-500 text-white hover:bg-blue-600',
+            'Late': 'bg-amber-500 text-white hover:bg-amber-600',
+            'Sick / Absent': 'bg-rose-500 text-white hover:bg-rose-600',
+            'Half Day': 'bg-purple-500 text-white hover:bg-purple-600',
+            'Holiday': 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+        };
+
+        function init() {
+            const savedTheme = localStorage.getItem('studentAttendance_theme') || 'space';
+            document.getElementById('themeSelector').value = savedTheme;
+            applyThemeClasses(savedTheme);
+
+            document.getElementById('studentNameDisplay').innerText = student.name;
+            document.getElementById('studentGradeBadge').innerText = student.grade;
+
+            renderTable();
+            updateStats();
+            renderCalendar();
+            checkTodayStatus();
+        }
+
+        function changeTheme(themeName) {
+            localStorage.setItem('studentAttendance_theme', themeName);
+            applyThemeClasses(themeName);
+        }
+
+        function applyThemeClasses(themeName) {
+            const body = document.getElementById('appBody');
+            body.className = `bg-indigo-50/50 text-slate-800 min-h-screen flex flex-col font-sans theme-${themeName}`;
+
+            const header = document.getElementById('headerBg');
+            const iconBg = document.getElementById('headerIconBg');
+            
+            const themeColorMap = {
+                space: { bg: 'bg-indigo-600', bgDark: 'bg-indigo-700', icon: 'fa-graduation-cap' },
+                rainbow: { bg: 'bg-pink-600', bgDark: 'bg-pink-700', icon: 'fa-rainbow' },
+                dinosaur: { bg: 'bg-emerald-600', bgDark: 'bg-emerald-700', icon: 'fa-paw' },
+                ocean: { bg: 'bg-sky-600', bgDark: 'bg-sky-700', icon: 'fa-water' },
+                sunshine: { bg: 'bg-amber-500', bgDark: 'bg-amber-600', icon: 'fa-sun' }
+            };
+
+            const conf = themeColorMap[themeName] || themeColorMap['space'];
+            header.className = `${conf.bg} text-white shadow-lg transition-colors duration-300`;
+            iconBg.className = `${conf.bgDark} p-3 rounded-2xl shadow-inner transition-colors duration-300`;
+            iconBg.innerHTML = `<i class="fa-solid ${conf.icon} text-2xl text-yellow-300 animate-bounce"></i>`;
+        }
+
+        function exportJSON() {
+            const backupData = {
+                app: "StarKid Attendance Tracker",
+                version: "2.0",
+                exportDate: new Date().toISOString(),
+                student: student,
+                logs: logs
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+            const downloadAnchor = document.createElement('a');
+            const dateStr = new Date().toISOString().split('T')[0];
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `starkid_attendance_${dateStr}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (!parsed.logs || !Array.isArray(parsed.logs)) throw new Error("Invalid backup structure.");
+                    if (confirm(`Import ${parsed.logs.length} school attendance logs?`)) {
+                        logs = parsed.logs;
+                        if (parsed.student) student = parsed.student;
+                        localStorage.setItem('studentAttendance_logs', JSON.stringify(logs));
+                        localStorage.setItem('studentAttendance_profile', JSON.stringify(student));
+                        init();
+                        alert("Data successfully restored! 🌟");
+                    }
+                } catch (err) {
+                    alert("Import failed: " + err.message);
+                } finally {
+                    event.target.value = '';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function markTodayPresent() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const existing = logs.find(l => l.date === todayStr);
+            if (existing) {
+                existing.status = 'Present';
+            } else {
+                logs.unshift({
+                    id: Date.now().toString(),
+                    date: todayStr,
+                    status: 'Present',
+                    mood: '😊 Super Happy',
+                    remarks: 'Quick marked present today!'
+                });
+            }
+            localStorage.setItem('studentAttendance_logs', JSON.stringify(logs));
+            init();
+            alert("Awesome! Marked Present for today! 🌟🎉");
+        }
+
+        function checkTodayStatus() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayLog = logs.find(l => l.date === todayStr);
+            const textEl = document.getElementById('todayStatusText');
+            if (todayLog) {
+                textEl.innerText = `Status: ${todayLog.status} ${todayLog.mood.split(' ')[0]}`;
+            } else {
+                textEl.innerText = 'Not marked yet today!';
+            }
+        }
+
+        function changeMonth(direction) {
+            calendarDate.setMonth(calendarDate.getMonth() + direction);
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const label = document.getElementById('calendarMonthLabel');
+            grid.innerHTML = '';
+
+            const year = calendarDate.getFullYear();
+            const month = calendarDate.getMonth();
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            label.innerText = `${monthNames[month]} ${year}`;
+
+            const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
+            const totalDays = new Date(year, month + 1, 0).getDate();
+
+            const logMap = {};
+            logs.forEach(l => { logMap[l.date] = l; });
+
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'h-16 rounded-xl bg-slate-50/50 border border-transparent';
+                grid.appendChild(emptyCell);
+            }
+
+            for (let day = 1; day <= totalDays; day++) {
+                const dayStr = String(day).padStart(2, '0');
+                const monthStr = String(month + 1).padStart(2, '0');
+                const fullDateStr = `${year}-${monthStr}-${dayStr}`;
+
+                const log = logMap[fullDateStr];
+                const cell = document.createElement('div');
+
+                let colorClass = 'bg-slate-50 text-slate-600 border-2 border-slate-200 hover:bg-slate-100';
+                let emoji = '';
+
+                if (log) {
+                    colorClass = heatmapColors[log.status] || 'bg-slate-200 text-slate-700';
+                    emoji = log.mood ? log.mood.split(' ')[0] : '⭐';
+                }
+
+                cell.className = `h-16 rounded-2xl flex flex-col justify-between p-1.5 text-xs font-bold cursor-pointer transition shadow-xs ${colorClass}`;
+                cell.title = `${fullDateStr}${log ? ' - ' + log.status : ''}`;
+                cell.innerHTML = `
+                    <div class="flex justify-between items-center w-full">
+                        <span class="text-[10px] opacity-80">${emoji}</span>
+                        <span>${day}</span>
+                    </div>
+                    <span class="text-[9px] truncate text-center font-normal opacity-90">${log ? log.status : ''}</span>
+                `;
+                cell.onclick = () => { openModalForDate(fullDateStr, log); };
+                grid.appendChild(cell);
+            }
+        }
+
+        function openModalForDate(dateStr, existingLog) {
+            if (existingLog) {
+                editLog(existingLog.id);
+            } else {
+                openModal();
+                document.getElementById('logDate').value = dateStr;
+            }
+        }
+
+        function filterByTag(tag) {
+            currentFilter = tag;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+            const activeBtn = document.getElementById(`filter-${tag}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+                activeBtn.classList.add('bg-indigo-600', 'text-white');
+            }
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('attendanceTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+
+            tbody.innerHTML = '';
+            let filtered = logs.filter(log => {
+                const matchesTag = currentFilter === 'All' || log.status === currentFilter;
+                const matchesSearch = log.date.toLowerCase().includes(search) || 
+                                      (log.mood && log.mood.toLowerCase().includes(search)) || 
+                                      (log.remarks && log.remarks.toLowerCase().includes(search));
+                return matchesTag && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filtered.forEach(log => {
+                const badgeClass = statusBadges[log.status] || 'bg-slate-50 text-slate-700 border-slate-200';
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/80 transition';
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-bold text-slate-800">
+                        ${escapeHtml(log.date)}
+                    </td>
+                    <td class="py-3 px-4 font-medium text-slate-700 text-sm">
+                        ${escapeHtml(log.mood || '😊 Super Happy')}
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${badgeClass}">
+                            ${escapeHtml(log.status)}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-xs text-slate-500 max-w-xs truncate">
+                        ${escapeHtml(log.remarks || '-')}
+                    </td>
+                    <td class="py-3 px-4 text-right space-x-1">
+                        <button onclick="editLog('${log.id}')" class="text-slate-400 hover:text-indigo-600 transition p-1.5" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteLog('${log.id}')" class="text-slate-400 hover:text-rose-600 transition p-1.5" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateStats() {
+            let monthPresent = 0;
+            const now = new Date();
+            let currentMonthLogs = 0;
+            let totalSchoolDaysInMonth = 0;
+
+            logs.forEach(l => {
+                const logDate = new Date(l.date);
+                if (logDate.getFullYear() === now.getFullYear() && logDate.getMonth() === now.getMonth()) {
+                    totalSchoolDaysInMonth++;
+                    if (l.status === 'Present' || l.status === 'School Trip' || l.status === 'Late') {
+                        monthPresent++;
+                    }
+                }
+            });
+
+            document.getElementById('statMonthPresent').innerText = monthPresent;
+            let rate = totalSchoolDaysInMonth > 0 ? Math.round((monthPresent / totalSchoolDaysInMonth) * 100) : 100;
+            document.getElementById('statMonthPercentage').innerText = `${rate}% attendance rate`;
+
+            // Calculate streak
+            let streak = 0;
+            let d = new Date();
+            while (true) {
+                const dateStr = d.toISOString().split('T')[0];
+                const found = logs.find(l => l.date === dateStr);
+                if (found && (found.status === 'Present' || found.status === 'School Trip')) {
+                    streak++;
+                    d.setDate(d.getDate() - 1);
+                } else if (!found && d.toDateString() === new Date().toDateString()) {
+                    // today not marked yet, skip check
+                    d.setDate(d.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+            document.getElementById('streakCount').innerText = streak;
+        }
+
+        function openModal() {
+            document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-star text-yellow-500"></i> Add School Day Log';
+            document.getElementById('attendanceForm').reset();
+            document.getElementById('logId').value = '';
+            document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('attendanceModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('attendanceModal').classList.add('hidden');
+        }
+
+        function editLog(id) {
+            const log = logs.find(l => l.id === id);
+            if (!log) return;
+            document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-star text-yellow-500"></i> Edit School Day Log';
+            document.getElementById('logId').value = log.id;
+            document.getElementById('logDate').value = log.date;
+            document.getElementById('logStatus').value = log.status;
+            document.getElementById('logMood').value = log.mood || '😊 Super Happy';
+            document.getElementById('logRemarks').value = log.remarks || '';
+            document.getElementById('attendanceModal').classList.remove('hidden');
+        }
+
+        function saveAttendance(event) {
+            event.preventDefault();
+            const id = document.getElementById('logId').value;
+            const data = {
+                id: id ? id : Date.now().toString(),
+                date: document.getElementById('logDate').value,
+                status: document.getElementById('logStatus').value,
+                mood: document.getElementById('logMood').value,
+                remarks: document.getElementById('logRemarks').value.trim()
+            };
+
+            if (id) {
+                const index = logs.findIndex(l => l.id === id);
+                if (index !== -1) logs[index] = data;
+            } else {
+                logs.unshift(data);
+            }
+
+            localStorage.setItem('studentAttendance_logs', JSON.stringify(logs));
+            closeModal();
+            renderTable();
+            updateStats();
+            renderCalendar();
+            checkTodayStatus();
+        }
+
+        function deleteLog(id) {
+            if (confirm('Are you sure you want to delete this school record?')) {
+                logs = logs.filter(l => l.id !== id);
+                localStorage.setItem('studentAttendance_logs', JSON.stringify(logs));
+                renderTable();
+                updateStats();
+                renderCalendar();
+                checkTodayStatus();
+            }
+        }
+
+        function editStudentInfo() {
+            document.getElementById('editNameInput').value = student.name;
+            document.getElementById('editGradeInput').value = student.grade;
+            document.getElementById('profileModal').classList.remove('hidden');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.add('hidden');
+        }
+
+        function saveStudentProfile() {
+            student.name = document.getElementById('editNameInput').value.trim() || 'Student';
+            student.grade = document.getElementById('editGradeInput').value.trim() || 'Grade 5';
+            localStorage.setItem('studentAttendance_profile', JSON.stringify(student));
+            document.getElementById('studentNameDisplay').innerText = student.name;
+            document.getElementById('studentGradeBadge').innerText = student.grade;
+            closeProfileModal();
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        init();
+    </script>
+</body>
+</html>
