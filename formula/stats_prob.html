@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#17365d">
+<title>Complete Probability Formula Book</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#182230}
+header{background:#17365d;color:white;padding:16px;position:sticky;top:0;z-index:10}
+h1{margin:0 0 4px;font-size:22px}.sub{font-size:13px;opacity:.9}
+.controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+input,button{padding:10px 12px;border:0;border-radius:10px;font-size:14px}
+input{flex:1;min-width:210px}button{background:white;color:#17365d;font-weight:bold}
+nav{display:flex;gap:7px;overflow:auto;padding:9px;background:#fff;position:sticky;top:91px;z-index:9;border-bottom:1px solid #ddd}
+nav button{white-space:nowrap;background:#eaf1f8}nav button.active{background:#2563eb;color:white}
+main{max-width:1200px;margin:auto;padding:15px}.section{display:none}.section.active{display:block}
+h2{font-size:20px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.card{background:#fff;border:1px solid #dfe6ee;border-radius:14px;padding:15px;box-shadow:0 2px 8px #0001}
+h3{margin:0 0 8px;color:#17365d;font-size:16px}.formula{background:#f1f6ff;padding:11px;border-radius:9px;font-size:17px;font-weight:bold;line-height:1.7}
+.note{font-size:12.5px;color:#667085;margin-top:7px;line-height:1.45}.badge{display:inline-block;background:#e7effc;color:#2563eb;border-radius:20px;padding:4px 7px;font-size:11px;margin-bottom:7px}
+.hidden{display:none!important}footer{text-align:center;padding:25px;color:#667085;font-size:12px}
+@media print{header,nav{position:static}.section{display:block}.card{break-inside:avoid;box-shadow:none}body{background:white}}
+</style>
+</head>
+<body>
+<header>
+<h1>🎲 Complete Probability Formula Book</h1>
+<div class="sub">Std 1–10 • Classical probability • Counting • Conditional probability • Bayes • Independent events • Expected value</div>
+<div class="controls">
+<input id="search" placeholder="Search: conditional, Bayes, dice, cards, binomial..." oninput="searchCards()">
+<button onclick="window.print()">🖨 Print / PDF</button><button onclick="clearSearch()">Clear</button>
+</div>
+</header>
+<nav>
+<button class="active" onclick="show('all',this)">All</button>
+<button onclick="show('basic',this)">Basic</button>
+<button onclick="show('counting',this)">Counting</button>
+<button onclick="show('conditional',this)">Conditional</button>
+<button onclick="show('advanced',this)">Advanced</button>
+<button onclick="show('distributions',this)">Distributions</button>
+<button onclick="show('quick',this)">Quick Sheet</button>
+</nav>
+<main>
+
+<section class="section active" data-cat="basic"><h2>1. Basic Probability</h2><div class="grid">
+<div class="card"><h3>Probability of an event</h3><div class="formula">P(E) = Number of favourable outcomes / Total number of equally likely outcomes</div></div>
+<div class="card"><h3>Range of probability</h3><div class="formula">0 ≤ P(E) ≤ 1</div></div>
+<div class="card"><h3>Impossible event</h3><div class="formula">P(∅) = 0</div></div>
+<div class="card"><h3>Sure event</h3><div class="formula">P(S) = 1</div></div>
+<div class="card"><h3>Complement</h3><div class="formula">P(E') = 1 − P(E)</div></div>
+<div class="card"><h3>Complement form</h3><div class="formula">P(E) + P(E') = 1</div></div>
+<div class="card"><h3>Odds in favour</h3><div class="formula">Odds = favourable : unfavourable</div></div>
+<div class="card"><h3>Odds against</h3><div class="formula">Odds against = unfavourable : favourable</div></div>
+<div class="card"><h3>Empirical probability</h3><div class="formula">P(E) ≈ frequency of E / total trials</div><div class="note">Used when probability is estimated from experiments.</div></div>
+<div class="card"><h3>Expected frequency</h3><div class="formula">Expected frequency = n × P(E)</div></div>
+</div></section>
+
+<section class="section" data-cat="counting"><h2>2. Counting Principles</h2><div class="grid">
+<div class="card"><h3>Fundamental counting principle</h3><div class="formula">If one task has m ways and another has n ways:<br>Total = m × n</div></div>
+<div class="card"><h3>Factorial</h3><div class="formula">n! = n(n−1)(n−2)...3×2×1<br>0! = 1</div></div>
+<div class="card"><h3>Permutation</h3><div class="formula">nPᵣ = n!/(n−r)!</div></div>
+<div class="card"><h3>Combination</h3><div class="formula">nCᵣ = n!/[r!(n−r)!]</div></div>
+<div class="card"><h3>Relation</h3><div class="formula">nPᵣ = r! × nCᵣ</div></div>
+<div class="card"><h3>Symmetry of combinations</h3><div class="formula">nCᵣ = nCₙ₋ᵣ</div></div>
+<div class="card"><h3>Pascal relation</h3><div class="formula">nCᵣ = (n−1)Cᵣ + (n−1)Cᵣ₋₁</div></div>
+<div class="card"><h3>Combination with repetition</h3><div class="formula">Number = C(n+r−1,r)</div><div class="note">For selecting r objects from n types when repetition is allowed.</div></div>
+</div></section>
+
+<section class="section" data-cat="conditional"><h2>3. Conditional & Compound Probability</h2><div class="grid">
+<div class="card"><h3>Conditional probability</h3><div class="formula">P(A|B) = P(A∩B) / P(B)</div><div class="note">P(B) ≠ 0.</div></div>
+<div class="card"><h3>Intersection from conditional probability</h3><div class="formula">P(A∩B) = P(A|B)P(B)</div></div>
+<div class="card"><h3>Multiplication theorem</h3><div class="formula">P(A∩B)=P(A)P(B|A)</div></div>
+<div class="card"><h3>Alternative multiplication form</h3><div class="formula">P(A∩B)=P(B)P(A|B)</div></div>
+<div class="card"><h3>Independent events</h3><div class="formula">P(A∩B)=P(A)P(B)</div></div>
+<div class="card"><h3>Independence condition</h3><div class="formula">P(A|B)=P(A)</div></div>
+<div class="card"><h3>Union — general rule</h3><div class="formula">P(A∪B)=P(A)+P(B)−P(A∩B)</div></div>
+<div class="card"><h3>Mutually exclusive events</h3><div class="formula">P(A∩B)=0</div></div>
+<div class="card"><h3>Union of mutually exclusive events</h3><div class="formula">P(A∪B)=P(A)+P(B)</div></div>
+<div class="card"><h3>Three-event inclusion-exclusion</h3><div class="formula">P(A∪B∪C)=P(A)+P(B)+P(C)−P(A∩B)−P(B∩C)−P(C∩A)+P(A∩B∩C)</div></div>
+<div class="card"><h3>Complement of a union</h3><div class="formula">P((A∪B)')=P(A'∩B')</div></div>
+<div class="card"><h3>Complement of an intersection</h3><div class="formula">P((A∩B)')=P(A'∪B')</div></div>
+</div></section>
+
+<section class="section" data-cat="advanced"><h2>4. Bayes Theorem & Total Probability</h2><div class="grid">
+<div class="card"><span class="badge">Bayes</span><h3>Bayes theorem</h3><div class="formula">P(A|B)=P(B|A)P(A)/P(B)</div></div>
+<div class="card"><h3>Bayes with partition</h3><div class="formula">P(Aᵢ|B)=P(B|Aᵢ)P(Aᵢ) / ΣP(B|Aⱼ)P(Aⱼ)</div></div>
+<div class="card"><h3>Total probability theorem</h3><div class="formula">P(B)=Σ P(B|Aᵢ)P(Aᵢ)</div><div class="note">A₁,A₂,... form a mutually exclusive and exhaustive partition.</div></div>
+<div class="card"><h3>Two-case total probability</h3><div class="formula">P(B)=P(B|A)P(A)+P(B|A')P(A')</div></div>
+<div class="card"><h3>Posterior odds</h3><div class="formula">Posterior odds = Prior odds × Likelihood ratio</div></div>
+</div></section>
+
+<section class="section" data-cat="distributions"><h2>5. Random Variables & Probability Distributions</h2><div class="grid">
+<div class="card"><h3>Discrete probability distribution</h3><div class="formula">ΣP(X=xᵢ)=1</div></div>
+<div class="card"><h3>Expected value</h3><div class="formula">E(X)=ΣxᵢP(X=xᵢ)</div></div>
+<div class="card"><h3>Expected value of a function</h3><div class="formula">E[g(X)]=Σg(xᵢ)P(X=xᵢ)</div></div>
+<div class="card"><h3>Variance</h3><div class="formula">Var(X)=E(X²)−[E(X)]²</div></div>
+<div class="card"><h3>Standard deviation</h3><div class="formula">σ=√Var(X)</div></div>
+<div class="card"><h3>Linearity of expectation</h3><div class="formula">E(aX+b)=aE(X)+b</div></div>
+<div class="card"><h3>Variance scaling</h3><div class="formula">Var(aX+b)=a²Var(X)</div></div>
+<div class="card"><span class="badge">Binomial</span><h3>Binomial probability</h3><div class="formula">P(X=k)=C(n,k)pᵏ(1−p)ⁿ⁻ᵏ</div></div>
+<div class="card"><h3>Binomial mean</h3><div class="formula">E(X)=np</div></div>
+<div class="card"><h3>Binomial variance</h3><div class="formula">Var(X)=np(1−p)</div></div>
+<div class="card"><h3>Binomial standard deviation</h3><div class="formula">σ=√[np(1−p)]</div></div>
+<div class="card"><span class="badge">Geometric</span><h3>Geometric probability</h3><div class="formula">P(X=k)=(1−p)ᵏ⁻¹p</div></div>
+<div class="card"><h3>Geometric mean</h3><div class="formula">E(X)=1/p</div></div>
+<div class="card"><h3>Geometric variance</h3><div class="formula">Var(X)=(1−p)/p²</div></div>
+<div class="card"><span class="badge">Poisson</span><h3>Poisson probability</h3><div class="formula">P(X=k)=e⁻λ λᵏ/k!</div></div>
+<div class="card"><h3>Poisson mean and variance</h3><div class="formula">E(X)=λ<br>Var(X)=λ</div></div>
+</div></section>
+
+<section class="section" data-cat="basic"><h2>6. Standard School Examples</h2><div class="grid">
+<div class="card"><h3>Coin — one toss</h3><div class="formula">P(H)=1/2<br>P(T)=1/2</div></div>
+<div class="card"><h3>Two coins — exactly one head</h3><div class="formula">P(exactly 1 H)=2/4=1/2</div></div>
+<div class="card"><h3>Die — one number</h3><div class="formula">P(any specified number)=1/6</div></div>
+<div class="card"><h3>Die — even number</h3><div class="formula">P(even)=3/6=1/2</div></div>
+<div class="card"><h3>Die — number greater than 4</h3><div class="formula">P(5 or 6)=2/6=1/3</div></div>
+<div class="card"><h3>Deck of cards</h3><div class="formula">52 cards<br>4 suits × 13 cards<br>26 red + 26 black</div></div>
+<div class="card"><h3>One ace from a deck</h3><div class="formula">P(Ace)=4/52=1/13</div></div>
+<div class="card"><h3>One king from a deck</h3><div class="formula">P(King)=4/52=1/13</div></div>
+<div class="card"><h3>Red card</h3><div class="formula">P(red)=26/52=1/2</div></div>
+<div class="card"><h3>Queen</h3><div class="formula">P(Queen)=4/52=1/13</div></div>
+</div></section>
+
+<section class="section active" data-cat="quick"><h2>Quick Probability Formula Sheet</h2><div class="grid">
+<div class="card"><h3>Basic</h3><div class="formula">P(E)=favourable/total<br>0≤P(E)≤1<br>P(E')=1−P(E)</div></div>
+<div class="card"><h3>Union</h3><div class="formula">P(A∪B)=P(A)+P(B)−P(A∩B)</div></div>
+<div class="card"><h3>Conditional</h3><div class="formula">P(A|B)=P(A∩B)/P(B)</div></div>
+<div class="card"><h3>Independent</h3><div class="formula">P(A∩B)=P(A)P(B)</div></div>
+<div class="card"><h3>Bayes</h3><div class="formula">P(A|B)=P(B|A)P(A)/P(B)</div></div>
+<div class="card"><h3>Counting</h3><div class="formula">nPᵣ=n!/(n−r)!<br>nCᵣ=n!/[r!(n−r)!]</div></div>
+<div class="card"><h3>Expected value</h3><div class="formula">E(X)=ΣxP(X=x)</div></div>
+<div class="card"><h3>Variance</h3><div class="formula">Var(X)=E(X²)−[E(X)]²</div></div>
+<div class="card"><h3>Binomial</h3><div class="formula">P(X=k)=C(n,k)pᵏqⁿ⁻ᵏ<br>q=1−p</div></div>
+<div class="card"><h3>Three events</h3><div class="formula">P(A∪B∪C)=ΣP(single)−ΣP(pair)+P(A∩B∩C)</div></div>
+</div></section>
+
+</main>
+<footer>Complete Probability Formula Book • Single offline HTML • Suitable for school revision and introductory higher-level probability.</footer>
+<script>
+function show(cat,btn){
+ document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+ btn.classList.add('active');
+ document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',cat==='all'||s.dataset.cat===cat));
+ document.querySelectorAll('.card').forEach(c=>c.classList.remove('hidden'));
+ document.getElementById('search').value='';
+}
+function searchCards(){
+ const q=document.getElementById('search').value.toLowerCase().trim();
+ document.querySelectorAll('.section').forEach(s=>{
+  let found=false;
+  s.querySelectorAll('.card').forEach(c=>{
+   const ok=c.innerText.toLowerCase().includes(q);
+   c.classList.toggle('hidden',!ok);if(ok)found=true;
+  });
+  s.classList.toggle('active',!q||found);
+ });
+ if(q)document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+}
+function clearSearch(){document.getElementById('search').value='';show('all',document.querySelector('nav button'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#17365d">
+<title>Data Science & Machine Learning Formula Book</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#182230}
+header{background:#17365d;color:#fff;padding:16px;position:sticky;top:0;z-index:20}
+h1{margin:0 0 4px;font-size:22px}.sub{font-size:13px;opacity:.9}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+input,button{border:0;border-radius:10px;padding:10px 12px;font-size:14px}
+input{flex:1;min-width:220px}button{background:#fff;color:#17365d;font-weight:bold;cursor:pointer}
+nav{display:flex;gap:7px;overflow:auto;padding:9px;background:#fff;position:sticky;top:91px;z-index:19;border-bottom:1px solid #ddd}
+nav button{white-space:nowrap;background:#eaf1f8}nav button.active{background:#2563eb;color:#fff}
+main{max-width:1300px;margin:auto;padding:15px}.section{display:none}.section.active{display:block}
+h2{font-size:20px;margin:8px 0 14px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:12px}
+.card{background:#fff;border:1px solid #dfe6ee;border-radius:14px;padding:15px;box-shadow:0 2px 8px #0001}
+h3{color:#17365d;font-size:16px;margin:0 0 8px}.formula{font-size:16px;font-weight:bold;background:#f1f6ff;border-radius:9px;padding:11px;line-height:1.65}
+.note{font-size:12.5px;color:#667085;margin-top:7px;line-height:1.45}.badge{display:inline-block;background:#e7effc;color:#2563eb;padding:4px 7px;border-radius:20px;font-size:11px;margin-bottom:7px}
+.hidden{display:none!important}footer{text-align:center;padding:25px;color:#667085;font-size:12px}
+@media print{header,nav{position:static}.section{display:block}.card{break-inside:avoid;box-shadow:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header>
+<h1>📊 Complete Data Science & Machine Learning Formula Book</h1>
+<div class="sub">Statistics • Probability • Linear Algebra • Calculus • Data preprocessing • Regression • Classification • Clustering • PCA • Neural Networks • Evaluation</div>
+<div class="controls">
+<input id="search" placeholder="Search: entropy, RMSE, PCA, gradient descent, Bayes..." oninput="searchCards()">
+<button onclick="window.print()">🖨 Print / PDF</button><button onclick="clearSearch()">Clear</button>
+</div>
+</header>
+<nav>
+<button class="active" onclick="show('all',this)">All</button>
+<button onclick="show('stats',this)">Statistics</button>
+<button onclick="show('prob',this)">Probability</button>
+<button onclick="show('linear',this)">Linear Algebra</button>
+<button onclick="show('calculus',this)">Calculus</button>
+<button onclick="show('preprocess',this)">Preprocessing</button>
+<button onclick="show('regression',this)">Regression</button>
+<button onclick="show('classification',this)">Classification</button>
+<button onclick="show('unsupervised',this)">Unsupervised</button>
+<button onclick="show('nn',this)">Neural Nets</button>
+<button onclick="show('evaluation',this)">Evaluation</button>
+<button onclick="show('quick',this)">Quick Sheet</button>
+</nav>
+<main>
+
+<section class="section active" data-cat="stats"><h2>1. Descriptive Statistics</h2><div class="grid">
+<div class="card"><h3>Mean</h3><div class="formula">x̄ = (Σxᵢ)/n</div></div>
+<div class="card"><h3>Weighted mean</h3><div class="formula">x̄w = Σwᵢxᵢ / Σwᵢ</div></div>
+<div class="card"><h3>Median</h3><div class="formula">Odd n: x₍(n+1)/2₎<br>Even n: [x₍n/2₎ + x₍n/2+1₎]/2</div></div>
+<div class="card"><h3>Range</h3><div class="formula">Range = max(x) − min(x)</div></div>
+<div class="card"><h3>Population variance</h3><div class="formula">σ² = Σ(xᵢ−μ)²/N</div></div>
+<div class="card"><h3>Sample variance</h3><div class="formula">s² = Σ(xᵢ−x̄)²/(n−1)</div></div>
+<div class="card"><h3>Population standard deviation</h3><div class="formula">σ = √[Σ(xᵢ−μ)²/N]</div></div>
+<div class="card"><h3>Sample standard deviation</h3><div class="formula">s = √[Σ(xᵢ−x̄)²/(n−1)]</div></div>
+<div class="card"><h3>Coefficient of variation</h3><div class="formula">CV = σ/μ × 100%</div></div>
+<div class="card"><h3>Z-score</h3><div class="formula">z = (x−μ)/σ</div></div>
+<div class="card"><h3>Percentile position</h3><div class="formula">Position ≈ (p/100)(n+1)</div><div class="note">Common interpolation convention; software may use different percentile definitions.</div></div>
+<div class="card"><h3>IQR</h3><div class="formula">IQR = Q₃ − Q₁</div></div>
+<div class="card"><h3>Outlier fences</h3><div class="formula">Lower = Q₁−1.5IQR<br>Upper = Q₃+1.5IQR</div></div>
+</div></section>
+
+<section class="section active" data-cat="prob"><h2>2. Probability & Distributions</h2><div class="grid">
+<div class="card"><h3>Basic probability</h3><div class="formula">P(A)=favourable outcomes/total outcomes</div></div>
+<div class="card"><h3>Complement</h3><div class="formula">P(Aᶜ)=1−P(A)</div></div>
+<div class="card"><h3>Union</h3><div class="formula">P(A∪B)=P(A)+P(B)−P(A∩B)</div></div>
+<div class="card"><h3>Conditional probability</h3><div class="formula">P(A|B)=P(A∩B)/P(B)</div></div>
+<div class="card"><h3>Independent events</h3><div class="formula">P(A∩B)=P(A)P(B)</div></div>
+<div class="card"><h3>Bayes theorem</h3><div class="formula">P(A|B)=P(B|A)P(A)/P(B)</div></div>
+<div class="card"><h3>Expected value</h3><div class="formula">E[X]=ΣxP(X=x)</div></div>
+<div class="card"><h3>Variance</h3><div class="formula">Var(X)=E[X²]−E[X]²</div></div>
+<div class="card"><h3>Covariance</h3><div class="formula">Cov(X,Y)=E[(X−μx)(Y−μy)]</div></div>
+<div class="card"><h3>Correlation</h3><div class="formula">ρ = Cov(X,Y)/(σxσy)</div></div>
+<div class="card"><span class="badge">Binomial</span><h3>Binomial PMF</h3><div class="formula">P(X=k)=C(n,k)pᵏ(1−p)ⁿ⁻ᵏ</div></div>
+<div class="card"><h3>Binomial mean & variance</h3><div class="formula">E[X]=np<br>Var(X)=np(1−p)</div></div>
+<div class="card"><span class="badge">Normal</span><h3>Normal PDF</h3><div class="formula">f(x)=1/(σ√2π) · exp[−(x−μ)²/(2σ²)]</div></div>
+<div class="card"><h3>Standard normal transformation</h3><div class="formula">Z=(X−μ)/σ</div></div>
+<div class="card"><span class="badge">Poisson</span><h3>Poisson PMF</h3><div class="formula">P(X=k)=e⁻λ λᵏ/k!</div></div>
+<div class="card"><h3>Poisson mean & variance</h3><div class="formula">E[X]=λ<br>Var(X)=λ</div></div>
+</div></section>
+
+<section class="section active" data-cat="stats"><h2>3. Statistical Inference & Hypothesis Testing</h2><div class="grid">
+<div class="card"><h3>Standard error of mean</h3><div class="formula">SE(x̄)=σ/√n<br>Estimated: s/√n</div></div>
+<div class="card"><h3>Confidence interval for mean</h3><div class="formula">x̄ ± z* σ/√n</div><div class="note">For known population σ under standard assumptions.</div></div>
+<div class="card"><h3>t-statistic for one mean</h3><div class="formula">t=(x̄−μ₀)/(s/√n)</div></div>
+<div class="card"><h3>Two-sample mean difference</h3><div class="formula">t=(x̄₁−x̄₂)/SE(x̄₁−x̄₂)</div></div>
+<div class="card"><h3>One-proportion z test</h3><div class="formula">z=(p̂−p₀)/√[p₀(1−p₀)/n]</div></div>
+<div class="card"><h3>Chi-square statistic</h3><div class="formula">χ²=Σ(O−E)²/E</div></div>
+<div class="card"><h3>F-statistic</h3><div class="formula">F = variance₁ / variance₂</div></div>
+<div class="card"><h3>ANOVA F ratio</h3><div class="formula">F = MS_between / MS_within</div></div>
+<div class="card"><h3>p-value rule</h3><div class="formula">Reject H₀ if p-value ≤ α</div></div>
+<div class="card"><h3>Type I error</h3><div class="formula">P(reject H₀ | H₀ true)=α</div></div>
+<div class="card"><h3>Type II error</h3><div class="formula">β=P(fail to reject H₀ | H₁ true)</div></div>
+<div class="card"><h3>Power</h3><div class="formula">Power = 1−β</div></div>
+</div></section>
+
+<section class="section active" data-cat="linear"><h2>4. Linear Algebra</h2><div class="grid">
+<div class="card"><h3>Vector addition</h3><div class="formula">a+b=[a₁+b₁,...,aₙ+bₙ]</div></div>
+<div class="card"><h3>Dot product</h3><div class="formula">a·b=Σaᵢbᵢ</div></div>
+<div class="card"><h3>Vector norm</h3><div class="formula">||x||₂=√(Σxᵢ²)</div></div>
+<div class="card"><h3>L1 norm</h3><div class="formula">||x||₁=Σ|xᵢ|</div></div>
+<div class="card"><h3>Cosine similarity</h3><div class="formula">cosθ=(a·b)/(||a||||b||)</div></div>
+<div class="card"><h3>Euclidean distance</h3><div class="formula">d(x,y)=√Σ(xᵢ−yᵢ)²</div></div>
+<div class="card"><h3>Manhattan distance</h3><div class="formula">d(x,y)=Σ|xᵢ−yᵢ|</div></div>
+<div class="card"><h3>Matrix multiplication</h3><div class="formula">(AB)ᵢⱼ=ΣₖAᵢₖBₖⱼ</div></div>
+<div class="card"><h3>Transpose</h3><div class="formula">(Aᵀ)ᵢⱼ=Aⱼᵢ</div></div>
+<div class="card"><h3>Inverse of 2×2 matrix</h3><div class="formula">A⁻¹=1/(ad−bc)[[d,−b],[-c,a]]</div></div>
+<div class="card"><h3>Determinant 2×2</h3><div class="formula">det(A)=ad−bc</div></div>
+<div class="card"><h3>Eigenvalue equation</h3><div class="formula">Av=λv</div></div>
+<div class="card"><h3>Characteristic equation</h3><div class="formula">det(A−λI)=0</div></div>
+<div class="card"><h3>Trace</h3><div class="formula">tr(A)=Σaᵢᵢ = Σ eigenvalues</div></div>
+<div class="card"><h3>Projection of a onto b</h3><div class="formula">proj_b(a)=(a·b)/(b·b) · b</div></div>
+<div class="card"><h3>Matrix norm — Frobenius</h3><div class="formula">||A||F=√(ΣᵢΣⱼaᵢⱼ²)</div></div>
+</div></section>
+
+<section class="section active" data-cat="calculus"><h2>5. Calculus for Data Science & ML</h2><div class="grid">
+<div class="card"><h3>Derivative — power rule</h3><div class="formula">d(xⁿ)/dx = nxⁿ⁻¹</div></div>
+<div class="card"><h3>Product rule</h3><div class="formula">(fg)'=f'g+fg'</div></div>
+<div class="card"><h3>Quotient rule</h3><div class="formula">(f/g)'=(f'g−fg')/g²</div></div>
+<div class="card"><h3>Chain rule</h3><div class="formula">d f(g(x))/dx=f'(g(x))g'(x)</div></div>
+<div class="card"><h3>Exponential</h3><div class="formula">d(eˣ)/dx=eˣ</div></div>
+<div class="card"><h3>Logarithm</h3><div class="formula">d(ln x)/dx=1/x</div></div>
+<div class="card"><h3>Sigmoid derivative</h3><div class="formula">σ'(z)=σ(z)[1−σ(z)]</div></div>
+<div class="card"><h3>ReLU derivative</h3><div class="formula">ReLU'(x)=1 if x&gt;0; 0 if x&lt;0</div></div>
+<div class="card"><h3>Gradient</h3><div class="formula">∇f=[∂f/∂x₁,...,∂f/∂xₙ]ᵀ</div></div>
+<div class="card"><h3>Hessian</h3><div class="formula">Hᵢⱼ=∂²f/(∂xᵢ∂xⱼ)</div></div>
+<div class="card"><h3>Gradient descent</h3><div class="formula">θₜ₊₁=θₜ−η∇J(θₜ)</div></div>
+<div class="card"><h3>Gradient ascent</h3><div class="formula">θₜ₊₁=θₜ+η∇J(θₜ)</div></div>
+<div class="card"><h3>First-order Taylor approximation</h3><div class="formula">f(x+Δx)≈f(x)+∇f(x)ᵀΔx</div></div>
+<div class="card"><h3>Convexity condition</h3><div class="formula">Hessian ⪰ 0 ⇒ convex (twice differentiable case)</div></div>
+</div></section>
+
+<section class="section active" data-cat="preprocess"><h2>6. Data Preprocessing & Feature Scaling</h2><div class="grid">
+<div class="card"><h3>Min-max normalization</h3><div class="formula">x'=(x−x_min)/(x_max−x_min)</div></div>
+<div class="card"><h3>Min-max to [a,b]</h3><div class="formula">x'=a+(x−x_min)(b−a)/(x_max−x_min)</div></div>
+<div class="card"><h3>Standardization</h3><div class="formula">z=(x−μ)/σ</div></div>
+<div class="card"><h3>Robust scaling</h3><div class="formula">x'=(x−median)/IQR</div></div>
+<div class="card"><h3>Mean imputation</h3><div class="formula">x_missing → mean(observed x)</div></div>
+<div class="card"><h3>Median imputation</h3><div class="formula">x_missing → median(observed x)</div></div>
+<div class="card"><h3>One-hot encoding</h3><div class="formula">Category k → binary vector e_k</div></div>
+<div class="card"><h3>Train-test split</h3><div class="formula">N = N_train + N_test</div></div>
+<div class="card"><h3>Sampling fraction</h3><div class="formula">fraction = sample size / population size</div></div>
+<div class="card"><h3>Class weight</h3><div class="formula">w_c = N/(K·N_c)</div><div class="note">Common balanced-class weighting formula.</div></div>
+</div></section>
+
+<section class="section active" data-cat="regression"><h2>7. Linear & Polynomial Regression</h2><div class="grid">
+<div class="card"><h3>Simple linear regression</h3><div class="formula">ŷ=β₀+β₁x</div></div>
+<div class="card"><h3>Multiple linear regression</h3><div class="formula">ŷ=β₀+β₁x₁+⋯+β_px_p</div></div>
+<div class="card"><h3>Matrix regression</h3><div class="formula">ŷ=Xβ</div></div>
+<div class="card"><h3>OLS estimate</h3><div class="formula">β̂=(XᵀX)⁻¹Xᵀy</div><div class="note">Assuming XᵀX is invertible.</div></div>
+<div class="card"><h3>Residual</h3><div class="formula">eᵢ=yᵢ−ŷᵢ</div></div>
+<div class="card"><h3>SSE</h3><div class="formula">SSE=Σ(yᵢ−ŷᵢ)²</div></div>
+<div class="card"><h3>MSE</h3><div class="formula">MSE=(1/n)Σ(yᵢ−ŷᵢ)²</div></div>
+<div class="card"><h3>RMSE</h3><div class="formula">RMSE=√MSE</div></div>
+<div class="card"><h3>MAE</h3><div class="formula">MAE=(1/n)Σ|yᵢ−ŷᵢ|</div></div>
+<div class="card"><h3>R²</h3><div class="formula">R²=1−SSE/SST</div></div>
+<div class="card"><h3>SST</h3><div class="formula">SST=Σ(yᵢ−ȳ)²</div></div>
+<div class="card"><h3>Adjusted R²</h3><div class="formula">R²_adj=1−(1−R²)(n−1)/(n−p−1)</div></div>
+<div class="card"><h3>Ridge regression</h3><div class="formula">minβ ||y−Xβ||² + λ||β||²</div></div>
+<div class="card"><h3>Lasso regression</h3><div class="formula">minβ ||y−Xβ||² + λ||β||₁</div></div>
+<div class="card"><h3>Elastic Net</h3><div class="formula">Loss + λ₁||β||₁ + λ₂||β||²</div></div>
+</div></section>
+
+<section class="section active" data-cat="classification"><h2>8. Logistic Regression & Classification</h2><div class="grid">
+<div class="card"><h3>Logit / linear score</h3><div class="formula">z=β₀+βᵀx</div></div>
+<div class="card"><h3>Sigmoid</h3><div class="formula">σ(z)=1/(1+e⁻ᶻ)</div></div>
+<div class="card"><h3>Log-odds</h3><div class="formula">log[p/(1−p)] = β₀+βᵀx</div></div>
+<div class="card"><h3>Binary cross-entropy</h3><div class="formula">L=−[y log p +(1−y)log(1−p)]</div></div>
+<div class="card"><h3>Dataset BCE</h3><div class="formula">J=−(1/n)Σ[yᵢlog pᵢ +(1−yᵢ)log(1−pᵢ)]</div></div>
+<div class="card"><h3>Softmax</h3><div class="formula">P(y=k|x)=eᶻᵏ/Σⱼeᶻʲ</div></div>
+<div class="card"><h3>Multiclass cross-entropy</h3><div class="formula">L=−Σₖ yₖlog pₖ</div></div>
+<div class="card"><h3>Odds ratio</h3><div class="formula">OR=e^βⱼ</div><div class="note">For a one-unit increase in feature xⱼ, holding other variables fixed.</div></div>
+<div class="card"><h3>Naive Bayes</h3><div class="formula">P(y|x₁...xₙ) ∝ P(y)∏P(xᵢ|y)</div></div>
+<div class="card"><h3>Perceptron prediction</h3><div class="formula">ŷ=sign(wᵀx+b)</div></div>
+<div class="card"><h3>Hinge loss</h3><div class="formula">L=max(0,1−y f(x))</div></div>
+<div class="card"><h3>Support Vector Machine objective</h3><div class="formula">min ½||w||² + CΣξᵢ</div></div>
+</div></section>
+
+<section class="section active" data-cat="evaluation"><h2>9. Classification Evaluation Metrics</h2><div class="grid">
+<div class="card"><h3>Accuracy</h3><div class="formula">(TP+TN)/(TP+TN+FP+FN)</div></div>
+<div class="card"><h3>Precision</h3><div class="formula">TP/(TP+FP)</div></div>
+<div class="card"><h3>Recall / Sensitivity</h3><div class="formula">TP/(TP+FN)</div></div>
+<div class="card"><h3>Specificity</h3><div class="formula">TN/(TN+FP)</div></div>
+<div class="card"><h3>False positive rate</h3><div class="formula">FPR=FP/(FP+TN)=1−specificity</div></div>
+<div class="card"><h3>False negative rate</h3><div class="formula">FNR=FN/(FN+TP)=1−recall</div></div>
+<div class="card"><h3>F1 score</h3><div class="formula">F1=2PR/(P+R)</div></div>
+<div class="card"><h3>Balanced accuracy</h3><div class="formula">(Sensitivity+Specificity)/2</div></div>
+<div class="card"><h3>Jaccard score</h3><div class="formula">TP/(TP+FP+FN)</div></div>
+<div class="card"><h3>Matthews correlation coefficient</h3><div class="formula">MCC=(TP·TN−FP·FN)/√[(TP+FP)(TP+FN)(TN+FP)(TN+FN)]</div></div>
+<div class="card"><h3>Log loss</h3><div class="formula">−(1/n)Σ[yᵢlog pᵢ +(1−yᵢ)log(1−pᵢ)]</div></div>
+<div class="card"><h3>Mean squared error</h3><div class="formula">MSE=(1/n)Σ(yᵢ−ŷᵢ)²</div></div>
+</div></section>
+
+<section class="section active" data-cat="evaluation"><h2>10. ROC, AUC & Ranking Metrics</h2><div class="grid">
+<div class="card"><h3>ROC coordinates</h3><div class="formula">x=FPR<br>y=TPR</div></div>
+<div class="card"><h3>TPR</h3><div class="formula">TPR=TP/(TP+FN)</div></div>
+<div class="card"><h3>AUC</h3><div class="formula">AUC = area under ROC curve</div></div>
+<div class="card"><h3>Precision-Recall curve</h3><div class="formula">x=Recall<br>y=Precision</div></div>
+<div class="card"><h3>Top-k accuracy</h3><div class="formula">Correct if true class is among top k predicted classes</div></div>
+<div class="card"><h3>Lift</h3><div class="formula">Lift = response rate in selected group / overall response rate</div></div>
+</div></section>
+
+<section class="section active" data-cat="unsupervised"><h2>11. Clustering & Distance Measures</h2><div class="grid">
+<div class="card"><h3>K-means objective</h3><div class="formula">J=ΣₖΣ_{xᵢ∈Cₖ} ||xᵢ−μₖ||²</div></div>
+<div class="card"><h3>K-means centroid</h3><div class="formula">μₖ=(1/|Cₖ|)Σ_{xᵢ∈Cₖ}xᵢ</div></div>
+<div class="card"><h3>Euclidean distance</h3><div class="formula">d(x,y)=√Σ(xᵢ−yᵢ)²</div></div>
+<div class="card"><h3>Manhattan distance</h3><div class="formula">d(x,y)=Σ|xᵢ−yᵢ|</div></div>
+<div class="card"><h3>Minkowski distance</h3><div class="formula">d(x,y)=(Σ|xᵢ−yᵢ|ᵖ)¹/ᵖ</div></div>
+<div class="card"><h3>Cosine distance</h3><div class="formula">d_cos=1−(x·y)/(||x||||y||)</div></div>
+<div class="card"><h3>Silhouette coefficient</h3><div class="formula">s=(b−a)/max(a,b)</div><div class="note">a = mean intra-cluster distance; b = lowest mean distance to another cluster.</div></div>
+<div class="card"><h3>DBSCAN core point</h3><div class="formula">At least MinPts points within ε-neighborhood</div></div>
+</div></section>
+
+<section class="section active" data-cat="unsupervised"><h2>12. PCA & Dimensionality Reduction</h2><div class="grid">
+<div class="card"><h3>Centered data</h3><div class="formula">X_c = X − column means</div></div>
+<div class="card"><h3>Covariance matrix</h3><div class="formula">Σ = X_cᵀX_c/(n−1)</div></div>
+<div class="card"><h3>PCA eigenvalue equation</h3><div class="formula">Σv=λv</div></div>
+<div class="card"><h3>Principal component score</h3><div class="formula">Z=X_cW</div></div>
+<div class="card"><h3>Explained variance ratio</h3><div class="formula">EVRᵢ=λᵢ/Σⱼλⱼ</div></div>
+<div class="card"><h3>Cumulative explained variance</h3><div class="formula">CEVₖ=Σᵢ₌₁ᵏλᵢ/Σⱼλⱼ</div></div>
+<div class="card"><h3>Low-dimensional reconstruction</h3><div class="formula">X̂=ZWᵀ + μ</div></div>
+</div></section>
+
+<section class="section active" data-cat="nn"><h2>13. Neural Networks & Deep Learning</h2><div class="grid">
+<div class="card"><h3>Neuron</h3><div class="formula">z=wᵀx+b<br>a=f(z)</div></div>
+<div class="card"><h3>Layer equation</h3><div class="formula">aˡ=f(Wˡaˡ⁻¹+bˡ)</div></div>
+<div class="card"><h3>Sigmoid</h3><div class="formula">σ(z)=1/(1+e⁻ᶻ)</div></div>
+<div class="card"><h3>Tanh</h3><div class="formula">tanh(z)=(eᶻ−e⁻ᶻ)/(eᶻ+e⁻ᶻ)</div></div>
+<div class="card"><h3>ReLU</h3><div class="formula">ReLU(x)=max(0,x)</div></div>
+<div class="card"><h3>Leaky ReLU</h3><div class="formula">f(x)=max(αx,x)</div></div>
+<div class="card"><h3>Softmax</h3><div class="formula">softmax(z)ᵢ=eᶻⁱ/Σⱼeᶻʲ</div></div>
+<div class="card"><h3>Binary cross-entropy</h3><div class="formula">L=−[ylogŷ+(1−y)log(1−ŷ)]</div></div>
+<div class="card"><h3>Mean squared error</h3><div class="formula">MSE=(1/n)Σ(y−ŷ)²</div></div>
+<div class="card"><h3>Backpropagation</h3><div class="formula">∂L/∂W = chain rule through network layers</div></div>
+<div class="card"><h3>Weight update</h3><div class="formula">W←W−η∂L/∂W</div></div>
+<div class="card"><h3>L2 regularization</h3><div class="formula">L_reg=L+λΣw²</div></div>
+<div class="card"><h3>L1 regularization</h3><div class="formula">L_reg=L+λΣ|w|</div></div>
+<div class="card"><h3>Dropout keep probability</h3><div class="formula">At training: randomly retain units with probability p</div><div class="note">Implementation uses an appropriate scaling convention, often inverted dropout.</div></div>
+</div></section>
+
+<section class="section active" data-cat="nn"><h2>14. Optimization Algorithms</h2><div class="grid">
+<div class="card"><h3>Gradient descent</h3><div class="formula">θₜ₊₁=θₜ−ηgₜ</div></div>
+<div class="card"><h3>Momentum</h3><div class="formula">vₜ=βvₜ₋₁+gₜ<br>θₜ₊₁=θₜ−ηvₜ</div></div>
+<div class="card"><h3>RMSProp</h3><div class="formula">sₜ=βsₜ₋₁+(1−β)gₜ²<br>θ←θ−ηgₜ/(√sₜ+ε)</div></div>
+<div class="card"><h3>Adam</h3><div class="formula">mₜ=β₁mₜ₋₁+(1−β₁)gₜ<br>vₜ=β₂vₜ₋₁+(1−β₂)gₜ²</div></div>
+<div class="card"><h3>Adam bias correction</h3><div class="formula">m̂ₜ=mₜ/(1−β₁ᵗ)<br>v̂ₜ=vₜ/(1−β₂ᵗ)</div></div>
+<div class="card"><h3>Adam parameter update</h3><div class="formula">θₜ₊₁=θₜ−η m̂ₜ/(√v̂ₜ+ε)</div></div>
+<div class="card"><h3>Learning-rate decay</h3><div class="formula">ηₜ=η₀/(1+kt)</div><div class="note">One common decay schedule; many schedules exist.</div></div>
+</div></section>
+
+<section class="section active" data-cat="stats"><h2>15. Information Theory & Feature Selection</h2><div class="grid">
+<div class="card"><h3>Entropy</h3><div class="formula">H(X)=−ΣₓP(x)log₂P(x)</div></div>
+<div class="card"><h3>Binary entropy</h3><div class="formula">H(p)=−p log₂p−(1−p)log₂(1−p)</div></div>
+<div class="card"><h3>Joint entropy</h3><div class="formula">H(X,Y)=−Σₓ,ᵧP(x,y)log P(x,y)</div></div>
+<div class="card"><h3>Conditional entropy</h3><div class="formula">H(Y|X)=H(X,Y)−H(X)</div></div>
+<div class="card"><h3>Mutual information</h3><div class="formula">I(X;Y)=H(X)+H(Y)−H(X,Y)</div></div>
+<div class="card"><h3>KL divergence</h3><div class="formula">D_KL(P||Q)=ΣP(x)log[P(x)/Q(x)]</div></div>
+<div class="card"><h3>Information gain</h3><div class="formula">IG=H(parent)−Σₖ(nₖ/n)H(childₖ)</div></div>
+<div class="card"><h3>Gini impurity</h3><div class="formula">Gini=1−Σₖpₖ²</div></div>
+<div class="card"><h3>Cross-entropy</h3><div class="formula">H(P,Q)=−ΣₓP(x)log Q(x)</div></div>
+</div></section>
+
+<section class="section active" data-cat="evaluation"><h2>16. Model Selection & Validation</h2><div class="grid">
+<div class="card"><h3>k-fold cross-validation mean score</h3><div class="formula">CV_score=(1/k)Σₖ scoreₖ</div></div>
+<div class="card"><h3>Bias-variance decomposition</h3><div class="formula">Expected test error ≈ Bias² + Variance + Irreducible noise</div></div>
+<div class="card"><h3>AIC</h3><div class="formula">AIC=2k−2ln(L̂)</div></div>
+<div class="card"><h3>BIC</h3><div class="formula">BIC=k ln(n)−2ln(L̂)</div></div>
+<div class="card"><h3>Log-likelihood</h3><div class="formula">ℓ(θ)=Σᵢlog p(xᵢ|θ)</div></div>
+<div class="card"><h3>Maximum likelihood</h3><div class="formula">θ̂_MLE=argmax_θ L(θ)</div></div>
+<div class="card"><h3>MAP estimation</h3><div class="formula">θ̂_MAP=argmax_θ P(θ|D)</div></div>
+<div class="card"><h3>MAP proportional form</h3><div class="formula">P(θ|D)∝P(D|θ)P(θ)</div></div>
+</div></section>
+
+<section class="section active" data-cat="quick"><h2>17. Ultimate Quick Sheet</h2><div class="grid">
+<div class="card"><h3>Mean / variance</h3><div class="formula">x̄=Σx/n<br>s²=Σ(x−x̄)²/(n−1)</div></div>
+<div class="card"><h3>Z-score</h3><div class="formula">z=(x−μ)/σ</div></div>
+<div class="card"><h3>Conditional probability</h3><div class="formula">P(A|B)=P(A∩B)/P(B)</div></div>
+<div class="card"><h3>Bayes</h3><div class="formula">P(A|B)=P(B|A)P(A)/P(B)</div></div>
+<div class="card"><h3>Correlation</h3><div class="formula">ρ=Cov(X,Y)/(σxσy)</div></div>
+<div class="card"><h3>Dot product</h3><div class="formula">a·b=Σaᵢbᵢ</div></div>
+<div class="card"><h3>Euclidean distance</h3><div class="formula">√Σ(xᵢ−yᵢ)²</div></div>
+<div class="card"><h3>Gradient descent</h3><div class="formula">θ←θ−η∇J(θ)</div></div>
+<div class="card"><h3>Linear regression</h3><div class="formula">ŷ=Xβ<br>β̂=(XᵀX)⁻¹Xᵀy</div></div>
+<div class="card"><h3>Logistic sigmoid</h3><div class="formula">σ(z)=1/(1+e⁻ᶻ)</div></div>
+<div class="card"><h3>Cross-entropy</h3><div class="formula">−Σylogŷ</div></div>
+<div class="card"><h3>RMSE</h3><div class="formula">√[(1/n)Σ(y−ŷ)²]</div></div>
+<div class="card"><h3>R²</h3><div class="formula">1−SSE/SST</div></div>
+<div class="card"><h3>Precision / Recall</h3><div class="formula">P=TP/(TP+FP)<br>R=TP/(TP+FN)</div></div>
+<div class="card"><h3>F1</h3><div class="formula">2PR/(P+R)</div></div>
+<div class="card"><h3>Entropy</h3><div class="formula">−Σp log₂p</div></div>
+<div class="card"><h3>K-means</h3><div class="formula">Σ||xᵢ−μₖ||²</div></div>
+<div class="card"><h3>PCA explained variance</h3><div class="formula">λᵢ/Σλ</div></div>
+<div class="card"><h3>Neural neuron</h3><div class="formula">a=f(wᵀx+b)</div></div>
+<div class="card"><h3>Adam</h3><div class="formula">θ←θ−ηm̂/(√v̂+ε)</div></div>
+</div></section>
+
+</main>
+<footer>Complete Data Science & Machine Learning Formula Book • Single offline HTML • Formula reference for study, interviews and revision.</footer>
+<script>
+function show(cat,btn){
+ document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+ btn.classList.add('active');
+ document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',cat==='all'||s.dataset.cat===cat));
+ document.querySelectorAll('.card').forEach(c=>c.classList.remove('hidden'));
+ document.getElementById('search').value='';
+}
+function searchCards(){
+ const q=document.getElementById('search').value.toLowerCase().trim();
+ document.querySelectorAll('.section').forEach(s=>{
+  let found=false;
+  s.querySelectorAll('.card').forEach(c=>{
+   const ok=c.innerText.toLowerCase().includes(q);
+   c.classList.toggle('hidden',!ok); if(ok)found=true;
+  });
+  s.classList.toggle('active',!q||found);
+ });
+ if(q)document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+}
+function clearSearch(){document.getElementById('search').value='';show('all',document.querySelector('nav button'))}
+</script>
+</body>
+</html>

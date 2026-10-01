@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Statistics Formulas & Guide</title>
+    <!-- MathJax for rendering LaTeX formulas dynamically -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent-color: #2563eb;
+            --accent-light: #eff6ff;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin: 0;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            color: var(--accent-color);
+            margin: 0;
+        }
+
+        .tag {
+            background: var(--accent-light);
+            color: var(--accent-color);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.6rem;
+            border-radius: 9999px;
+            text-transform: uppercase;
+        }
+
+        .formula-box {
+            background-color: var(--accent-light);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            font-size: 1.25rem;
+            margin: 0.75rem 0;
+            overflow-x: auto;
+        }
+
+        .explanation {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .variables {
+            margin-top: 0.75rem;
+            padding-left: 1.25rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .variables li {
+            margin-bottom: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Basic Statistics Formula Reference</h1>
+        <p>Essential mathematical formulas for descriptive statistics and basic probability.</p>
+    </header>
+
+    <div class="grid">
+        <!-- Mean -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <h2>Arithmetic Mean</h2>
+                    <span class="tag">Central Tendency</span>
+                </div>
+                <div class="formula-box">
+                    $$\bar{x} = \frac{\sum_{i=1}^{n} x_i}{n}$$
+                </div>
+                <p class="explanation">
+                    The mathematical average of a dataset, calculated by taking the sum of all data points divided by the total count of observations.
+                </p>
+            </div>
+            <ul class="variables">
+                <li><strong>\(\bar{x}\)</strong> = Sample mean</li>
+                <li><strong>\(\sum x_i\)</strong> = Sum of all individual observations</li>
+                <li><strong>\(n\)</strong> = Total number of observations</li>
+            </ul>
+        </div>
+
+        <!-- Median -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <h2>Median</h2>
+                    <span class="tag">Central Tendency</span>
+                </div>
+                <div class="formula-box">
+                    $$\text{Position} = \frac{n + 1}{2}$$
+                </div>
+                <p class="explanation">
+                    The middle value of an ordered dataset. If \(n\) is odd, it is the middle value. If \(n\) is even, it is the average of the two central values.
+                </p>
+            </div>
+            <ul class="variables">
+                <li><strong>\(n\)</strong> = Total count of ordered data values</li>
+                <li>Robust against extreme outliers compared to the mean.</li>
+            </ul>
+        </div>
+
+        <!-- Mode -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <h2>Mode</h2>
+                    <span class="tag">Central Tendency</span>
+                </div>
+                <div class="formula-box">
+                    $$\text{Mode} = \text{Most Frequent } x_i$$
+                </div>
+                <p class="explanation">
+                    The value that appears most frequently in a dataset. A dataset can have one mode (unimodal), multiple modes (multimodal), or no mode at all.
+                </p>
+            </div>
+            <ul class="variables">
+                <li>Applicable to both numerical and categorical data.</li>
+            </ul>
+        </div>
+
+        <!-- Range -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <h2>Range</h2>
+                    <span class="tag">Dispersion</span>
+                </div>
+                <div class="formula-box">
+                    $$R = x_{\text{max}} - x_{\text{min}}$$
+                </div>
+                <p class="explanation">
+                    The total spread of the data, calculated by subtracting the smallest data point from the largest data point.
+                </p>
+            </div>
+            <ul class="variables">
+                <li><strong>\(x_{\text{max}}\)</strong> = Highest value in dataset</li>
+                <li><strong>\(x_{\text{min}}\)</strong> = Lowest value in dataset</li>
+            </ul>
+        </div>
+
+        <!-- Sample Variance -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <h2>Sample Variance</h2>
+                    <span class="tag">Dispersion</span>
+                </div>
+                <div class="formula-box">
+                    $$s^2 = \frac{\sum_{i=1}^{n} (x_i - \bar{x})^2}{n - 1}$$
+                </div>
+                <p class="explanation">
+                    Measures the average squared deviation of data points from their mean. We divide by \(n - 1\) (Bessel's correction) to prevent underestimating population variance.
+                </p>
+            </div>
+            <ul class="variables">
+                <li><strong>\(s^2\)</strong> = Sample variance</li>
+                <li><strong>\(x_i\)</strong> = Each value in the sample</li>
+                <li><strong>\(\bar{x}\)</strong> = Sample mean</li>
+            </ul>
+        </div>
+
+        <!-- Standard Deviation -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <h2>Standard Deviation</h2>
+                    <span class="tag">Dispersion</span>
+                </div>
+                <div class="formula-box">
+                    $$s = \sqrt{s^2} = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n - 1}}$$
+                </div>
+                <p class="explanation">
+                    The square root of variance. Represents the typical or average distance of data points from the sample mean in original measurement units.
+                </p>
+            </div>
+            <ul class="variables">
+                <li><strong>\(s\)</strong> = Sample standard deviation</li>
+                <li><strong>\(\sigma\)</strong> = Population standard deviation symbol</li>
+            </ul>
+        </div>
+
+        <!-- Z-Score -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <h2>Z-Score (Standard Score)</h2>
+                    <span class="tag">Position</span>
+                </div>
+                <div class="formula-box">
+                    $$z = \frac{x - \mu}{\sigma}$$
+                </div>
+                <p class="explanation">
+                    Indicates how many standard deviations a raw data point (\(x\)) lies above or below the population mean (\(\mu\)).
+                </p>
+            </div>
+            <ul class="variables">
+                <li><strong>\(x\)</strong> = Raw observation value</li>
+                <li><strong>\(\mu\)</strong> = Population mean</li>
+                <li><strong>\(\sigma\)</strong> = Population standard deviation</li>
+            </ul>
+        </div>
+
+        <!-- Probability -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <h2>Classical Probability</h2>
+                    <span class="tag">Probability</span>
+                </div>
+                <div class="formula-box">
+                    $$P(A) = \frac{n(A)}{n(S)}$$
+                </div>
+                <p class="explanation">
+                    The likelihood of event \(A\) occurring out of all equally likely possible outcomes in a sample space.
+                </p>
+            </div>
+            <ul class="variables">
+                <li><strong>\(P(A)\)</strong> = Probability of event A</li>
+                <li><strong>\(n(A)\)</strong> = Favorable outcomes for event A</li>
+                <li><strong>\(n(S)\)</strong> = Total outcomes in sample space S</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

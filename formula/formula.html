@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="forest">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formula Index & Titles</title>
+    <style>
+        /* ==================== 10 NATURE THEMES ==================== */
+        :root[data-theme="forest"] {
+            --bg: #f3f6f3; --card: #ffffff; --text: #1d2e21; --muted: #526656;
+            --primary: #2d5a32; --header-bg: #2d5a32; --header-text: #ffffff;
+            --border: #d4ded5; --hover: #eaf1eb;
+        }
+        :root[data-theme="ocean"] {
+            --bg: #f0f5f8; --card: #ffffff; --text: #0f2c3f; --muted: #4b6b82;
+            --primary: #1b6b93; --header-bg: #1b6b93; --header-text: #ffffff;
+            --border: #d0e0eb; --hover: #e4f0f7;
+        }
+        :root[data-theme="moss"] {
+            --bg: #f4f5f0; --card: #ffffff; --text: #2b302a; --muted: #60695e;
+            --primary: #4a5d4e; --header-bg: #4a5d4e; --header-text: #ffffff;
+            --border: #d8ded6; --hover: #eaede8;
+        }
+        :root[data-theme="bamboo"] {
+            --bg: #f6f8f2; --card: #ffffff; --text: #223315; --muted: #586e48;
+            --primary: #52792e; --header-bg: #52792e; --header-text: #ffffff;
+            --border: #dae5cd; --hover: #edf4e5;
+        }
+        :root[data-theme="autumn"] {
+            --bg: #f9f5f0; --card: #ffffff; --text: #361f14; --muted: #735342;
+            --primary: #a04926; --header-bg: #a04926; --header-text: #ffffff;
+            --border: #ebdcd3; --hover: #f7ede6;
+        }
+        :root[data-theme="mist"] {
+            --bg: #f2f4f6; --card: #ffffff; --text: #1e2830; --muted: #5a6673;
+            --primary: #4a6378; --header-bg: #4a6378; --header-text: #ffffff;
+            --border: #d5dce2; --hover: #e8eeF3;
+        }
+        :root[data-theme="sunset"] {
+            --bg: #faf4f2; --card: #ffffff; --text: #3b1c1c; --muted: #784a4a;
+            --primary: #b84a39; --header-bg: #b84a39; --header-text: #ffffff;
+            --border: #f0d8d4; --hover: #fceee8;
+        }
+        :root[data-theme="desert"] {
+            --bg: #f9f6f0; --card: #ffffff; --text: #332819; --muted: #6e5c46;
+            --primary: #8c6d3b; --header-bg: #8c6d3b; --header-text: #ffffff;
+            --border: #e8ded0; --hover: #f5efe6;
+        }
+        :root[data-theme="birch"] {
+            --bg: #f7f6f4; --card: #ffffff; --text: #292522; --muted: #635c56;
+            --primary: #5c5248; --header-bg: #5c5248; --header-text: #ffffff;
+            --border: #e3deda; --hover: #efece8;
+        }
+        :root[data-theme="meadow"] {
+            --bg: #f5f7f2; --card: #ffffff; --text: #1d2c1f; --muted: #526956;
+            --primary: #3b7a57; --header-bg: #3b7a57; --header-text: #ffffff;
+            --border: #d2e3d7; --hover: #e6f2eb;
+        }
+
+        /* ==================== BASE STYLES ==================== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        @media(min-width: 640px) {
+            header { padding: 1.25rem 2rem; }
+        }
+
+        .header-wrap {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.875rem;
+        }
+
+        @media(min-width: 768px) {
+            .header-wrap {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        h1 { font-size: 1.25rem; font-weight: 700; }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        @media(min-width: 480px) {
+            .controls {
+                flex-direction: row;
+            }
+        }
+
+        @media(min-width: 768px) {
+            .controls {
+                max-width: 460px;
+            }
+        }
+
+        select, input {
+            padding: 0.625rem 0.875rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 0.95rem;
+            outline: none;
+            background-color: var(--card);
+            color: var(--text);
+            width: 100%;
+        }
+
+        select { cursor: pointer; }
+
+        main {
+            flex: 1;
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1rem 0.75rem;
+        }
+
+        @media(min-width: 640px) {
+            main { padding: 1.5rem; }
+        }
+
+        .table-container {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+            min-width: 320px;
+        }
+
+        th {
+            background-color: var(--hover);
+            color: var(--text);
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover td { background-color: var(--hover); }
+        tr:last-child td { border-bottom: none; }
+
+        .idx-col { width: 50px; font-weight: 600; color: var(--muted); text-align: center; }
+        .title-col { font-weight: 600; }
+        
+        /* Subject Links Style */
+        .subject-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            background-color: var(--hover);
+            border: 1px solid var(--border);
+            display: inline-block;
+            transition: opacity 0.15s;
+            white-space: nowrap;
+        }
+        .subject-link:hover { opacity: 0.8; text-decoration: underline; }
+
+        .no-results {
+            display: none;
+            padding: 2.5rem 1rem;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-wrap">
+            <h1>Formula Directory</h1>
+            <div class="controls">
+                <!-- Theme Selector (10 Nature Themes) -->
+                <select id="themeSelect" onchange="changeTheme(this.value)" aria-label="Select Nature Theme">
+                    <option value="forest">🌲 Forest</option>
+                    <option value="ocean">🌊 Ocean</option>
+                    <option value="moss">🍃 Moss & Stone</option>
+                    <option value="bamboo">🎋 Bamboo Grove</option>
+                    <option value="autumn">🍁 Autumn Foliage</option>
+                    <option value="mist">🌫️ Mountain Mist</option>
+                    <option value="sunset">🌅 Sunset Flora</option>
+                    <option value="desert">🏜️ Desert Sand</option>
+                    <option value="birch">🪵 Birch Wood</option>
+                    <option value="meadow">🌾 Meadow Green</option>
+                </select>
+
+                <!-- Fast Search Box -->
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Search formula title..."
+                    aria-label="Search formula title"
+                >
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="table-container">
+            <table id="formulaTable">
+                <thead>
+                    <tr>
+                        <th class="idx-col">#</th>
+                        <th>Formula Title</th>
+                        <th>Subject</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- STATISTICS -->
+                    <tr>
+                        <td class="idx-col">1</td>
+                        <td class="title-col">Basic Statistics</td>
+                        <td><a href="stat.html" class="subject-link">Statistics</a></td>
+                    </tr>
+                    <tr>
+                        <td class="idx-col">2</td>
+                        <td class="title-col">Complete Statistics Book</td>
+                        <td><a href="statsbk.html" class="subject-link">Statistics</a></td>
+                    </tr>
+                    <tr>
+                        <td class="idx-col">3</td>
+                        <td class="title-col">Basic Statistics Book</td>
+                        <td><a href="statbasic.html" class="subject-link">Statistics</a></td>
+                    </tr>
+
+                    <!-- MACHINE LEARNING -->
+                    <tr>
+                        <td class="idx-col">4</td>
+                        <td class="title-col">Permutations and Combinations</td>
+                        <td><a href="stats_pc.html" class="subject-link">Permutations</a></td>
+                    </tr>
+                    <tr>
+                        <td class="idx-col">5</td>
+                        <td class="title-col">Probability</td>
+                        <td><a href="stats_prob.html" class="subject-link">Probability</a></td>
+                    </tr>
+                    <tr>
+                        <td class="idx-col">6</td>
+                        <td class="title-col">Basics</td>
+                        <td><a href="physics_1.html" class="subject-link">Physics</a></td>
+                    </tr>
+
+                    <!-- MATHEMATICS -->
+                    <tr>
+                        <td class="idx-col">7</td>
+                        <td class="title-col">Std 1-10</td>
+                        <td><a href="physics_2.html" class="subject-link">Physics</a></td>
+                    </tr>
+                    <tr>
+                        <td class="idx-col">8</td>
+                        <td class="title-col">Trigonometry</td>
+                        <td><a href="math_trig.html" class="subject-link">Maths</a></td>
+                    </tr>
+                    <tr>
+                        <td class="idx-col">9</td>
+                        <td class="title-col">Algebra</td>
+                        <td><a href="math_alg.html" class="subject-link">Maths</a></td>
+                    </tr>
+
+                    <!-- PHYSICS -->
+                    <tr>
+                        <td class="idx-col">10</td>
+                        <td class="title-col">Derivatives</td>
+                        <td><a href="math_derv.html" class="subject-link">Maths</a></td>
+                    </tr>
+                    <tr>
+                        <td class="idx-col">11</td>
+                        <td class="title-col">Std 1-10</td>
+                        <td><a href="math_form.html" class="subject-link">Maths</a></td>
+                    </tr>
+                    <tr>
+                        <td class="idx-col">12</td>
+                        <td class="title-col">Limits</td>
+                        <td><a href="math_lim.html" class="subject-link">Maths</a></td>
+                    </tr>
+                    
+                                        <tr>
+                        <td class="idx-col">13</td>
+                        <td class="title-col">Logarithm</td>
+                        <td><a href="math_log.html" class="subject-link">Maths</a></td>
+                    </tr>
+                    
+                                                            <tr>
+                        <td class="idx-col">14</td>
+                        <td class="title-col">Machine Learning</td>
+                        <td><a href="ds_ml.html" class="subject-link">Datascience</a></td>
+                    </tr>
+                    
+                    
+                    
+                </tbody>
+            </table>
+            
+            <div id="noResults" class="no-results">No matching formulas found.</div>
+        </div>
+    </main>
+
+    <script>
+        // --- 1. Theme Switcher ---
+        function changeTheme(themeName) {
+            document.documentElement.setAttribute('data-theme', themeName);
+        }
+
+        // --- 2. Lightning Fast Search Filter ---
+        const searchInput = document.getElementById('searchInput');
+        const rows = document.getElementById('tableBody').getElementsByTagName('tr');
+        const noResults = document.getElementById('noResults');
+
+        // Pre-cache row text for sub-millisecond filtering speed
+        const cachedRows = Array.from(rows).map(row => ({
+            element: row,
+            text: row.cells[1].textContent.toLowerCase() + " " + row.cells[2].textContent.toLowerCase()
+        }));
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim().toLowerCase();
+            let visibleCount = 0;
+
+            for (let i = 0; i < cachedRows.length; i++) {
+                if (query === '' || cachedRows[i].text.includes(query)) {
+                    cachedRows[i].element.style.display = '';
+                    visibleCount++;
+                } else {
+                    cachedRows[i].element.style.display = 'none';
+                }
+            }
+
+            noResults.style.display = (visibleCount === 0) ? 'block' : 'none';
+        });
+    </script>
+</body>
+</html>
