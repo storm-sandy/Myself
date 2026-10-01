@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Offline SQLite Explorer</title>
+<style>
+body{margin:0;font-family:Arial;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+#top-panel{background:#f4f4f4;padding:10px;display:flex;flex-wrap:wrap;gap:15px;align-items:center;border-bottom:1px solid #ccc;box-sizing:border-box;}
+#main{flex:1;display:flex;flex-direction:column;padding:10px;overflow:hidden;box-sizing:border-box;}
+textarea{width:100%;height:150px;font-family:monospace;font-size:14px;box-sizing:border-box;}
+button{padding:6px 12px;margin:3px;cursor:pointer;}
+.table-btn{display:inline-block;margin:2px;padding:4px 8px;}
+#tables{display:inline-flex;flex-wrap:wrap;gap:5px;max-height:80px;overflow-y:auto;vertical-align:middle;}
+#results{flex:1;overflow:auto;margin-top:10px;}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid #ccc;padding:6px}
+.status{padding:6px;background:#eee;margin:5px 0}
+.panel-section{display:flex;align-items:center;gap:8px;border-right:1px solid #ddd;padding-right:15px;}
+.panel-section:last-child{border-right:none;}
+h3,h2{margin:0 0 5px 0;}
+</style>
+</head>
+<body>
+
+<div id="top-panel">
+  <div class="panel-section">
+    <div>
+      <h3>SQLite Database</h3>
+      <input type="file" id="dbfile">
+    </div>
+  </div>
+  <div class="panel-section">
+    <div>
+      <button onclick="showTables()">Refresh Tables</button>
+      <div id="tables"></div>
+    </div>
+  </div>
+  <div class="panel-section" style="font-size:12px; color:#555;">
+    <div>
+      <b>Offline setup:</b> Place beside <code>sql-wasm.js</code> & <code>sql-wasm.wasm</code>
+    </div>
+  </div>
+</div>
+
+<div id="main">
+  <h2>Offline SQLite Query Browser</h2>
+
+  <div class="status" id="status">Ready</div>
+
+  <textarea id="sql">SELECT name FROM sqlite_master WHERE type='table';</textarea>
+
+  <div style="margin-top:5px;">
+    <button onclick="runQuery()">Run Query</button>
+    <button onclick="exportCSV()">Export CSV</button>
+  </div>
+
+  <div id="results"></div>
+</div>
+
+<script src="../vendor/sql-wasm.js"></script>
+
+<script>
+let SQL;
+let db;
+let lastResult=null;
+
+async function init(){
+ try{
+   SQL = await initSqlJs({
+     locateFile:file => "../vendor/sql-wasm.wasm"
+   });
+   document.getElementById("status").innerText =
+   "SQLite Engine Loaded";
+ }catch(err){
+   document.getElementById("status").innerText =
+   "Cannot load sql-wasm.js / sql-wasm.wasm";
+ }
+}
+
+document.getElementById("dbfile")
+.addEventListener("change", async function(e){
+
+ const file=e.target.files[0];
+ if(!file) return;
+
+ const buffer=await file.arrayBuffer();
+
+ db=new SQL.Database(
+ new Uint8Array(buffer)
+ );
+
+ document.getElementById("status").innerText =
+ "Database Loaded: "+file.name;
+
+ showTables();
+});
+
+function showTables(){
+
+ if(!db) return;
+
+ try{
+
+ const res=db.exec(`
+ SELECT name
+ FROM sqlite_master
+ WHERE type='table'
+ ORDER BY name
+ `);
+
+ let html="";
+
+ if(res.length){
+
+  res[0].values.forEach(row=>{
+
+   const t=row[0];
+
+   html += `
+   <button class="table-btn"
+   onclick="openTable('${t}')">
+   ${t}
+   </button>`;
+  });
+ }
+
+ document.getElementById("tables").innerHTML=html;
+
+ }catch(err){
+  console.log(err);
+ }
+}
+
+function openTable(table){
+
+ document.getElementById("sql").value =
+ "SELECT * FROM " + table + " LIMIT 100;";
+
+ runQuery();
+}
+
+function runQuery(){
+
+ if(!db){
+  alert("Load a SQLite file first");
+  return;
+ }
+
+ try{
+
+ const sql=
+ document.getElementById("sql").value;
+
+ const result=db.exec(sql);
+
+ if(result.length===0){
+
+  document.getElementById("results").innerHTML=
+  "<b>Query Executed Successfully</b>";
+
+  return;
+ }
+
+ lastResult=result[0];
+
+ renderTable(result[0]);
+
+ }
+ catch(err){
+
+  document.getElementById("results").innerHTML=
+  "<pre>"+err+"</pre>";
+ }
+}
+
+function renderTable(data){
+
+ let html="<table><tr>";
+
+ data.columns.forEach(col=>{
+  html+="<th>"+col+"</th>";
+ });
+
+ html+="</tr>";
+
+ data.values.forEach(row=>{
+
+  html+="<tr>";
+
+  row.forEach(cell=>{
+   html+="<td>"+cell+"</td>";
+  });
+
+  html+="</tr>";
+ });
+
+ html+="</table>";
+
+ document.getElementById("results").innerHTML=html;
+}
+
+function exportCSV(){
+
+ if(!lastResult){
+  alert("No query result");
+  return;
+ }
+
+ let csv="";
+
+ csv += lastResult.columns.join(",") + "\n";
+
+ lastResult.values.forEach(row=>{
+  csv += row.join(",") + "\n";
+ });
+
+ const blob=
+ new Blob([csv],{type:"text/csv"});
+
+ const a=document.createElement("a");
+
+ a.href=URL.createObjectURL(blob);
+
+ a.download="query_result.csv";
+
+ a.click();
+}
+
+init();
+</script>
+
+</body>
+</html>
