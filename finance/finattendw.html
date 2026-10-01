@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OfficeAttendance Tracker</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        // Tailwind Theme Config Loader
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            DEFAULT: 'var(--brand-primary)',
+                            dark: 'var(--brand-dark)',
+                            light: 'var(--brand-light)',
+                            bg: 'var(--brand-bg)'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Nature Theme Palettes */
+        :root {
+            --brand-primary: #059669; /* Forest Canopy (Default) */
+            --brand-dark: #047857;
+            --brand-light: #d1fae5;
+            --brand-bg: #f0fdf4;
+        }
+        body.theme-forest { --brand-primary: #059669; --brand-dark: #047857; --brand-light: #d1fae5; --brand-bg: #f0fdf4; }
+        body.theme-ocean { --brand-primary: #0284c7; --brand-dark: #0369a1; --brand-light: #e0f2fe; --brand-bg: #f0f9ff; }
+        body.theme-autumn { --brand-primary: #d97706; --brand-dark: #b45309; --brand-light: #fef3c7; --brand-bg: #fffbeb; }
+        body.theme-desert { --brand-primary: #ca8a04; --brand-dark: #a16207; --brand-light: #fef9c3; --brand-bg: #fefce8; }
+        body.theme-mountain { --brand-primary: #475569; --brand-dark: #334155; --brand-light: #f1f5f9; --brand-bg: #f8fafc; }
+        body.theme-blossom { --brand-primary: #db2777; --brand-dark: #be185d; --brand-light: #fce7f3; --brand-bg: #fdf2f8; }
+        body.theme-glacier { --brand-primary: #0d9488; --brand-dark: #0f766e; --brand-light: #ccfbf1; --brand-bg: #f0fdfa; }
+        body.theme-sunset { --brand-primary: #ea580c; --brand-dark: #c2410c; --brand-light: #ffedd5; --brand-bg: #fff7ed; }
+        body.theme-rainforest { --brand-primary: #15803d; --brand-dark: #166534; --brand-light: #dcfce7; --brand-bg: #f7fee7; }
+        body.theme-earth { --brand-primary: #78350f; --brand-dark: #451a03; --brand-light: #fef3c7; --brand-bg: #fffbeb; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans theme-forest" id="appBody">
+
+    <!-- Header -->
+    <header id="headerBg" class="bg-emerald-600 text-white shadow-md transition-colors duration-300">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div id="headerIconBg" class="bg-emerald-700 p-2.5 rounded-xl shadow-inner transition-colors duration-300">
+                    <i class="fa-solid fa-building text-2xl text-emerald-200"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">OfficeAttendance Tracker</h1>
+                    <p class="text-xs text-emerald-100">Badge timing, office presence & commute logging</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Nature Theme Selector -->
+                <div class="relative">
+                    <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-emerald-700/80 hover:bg-emerald-700 text-emerald-100 border border-emerald-500/40 text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none transition cursor-pointer">
+                        <option value="forest">🌲 Forest Canopy</option>
+                        <option value="ocean">🌊 Ocean Breeze</option>
+                        <option value="autumn">🍁 Autumn Amber</option>
+                        <option value="desert">🏜️ Desert Sand</option>
+                        <option value="mountain">⛰️ Misty Mountain</option>
+                        <option value="blossom">🌸 Cherry Blossom</option>
+                        <option value="glacier">🧊 Alpine Glacier</option>
+                        <option value="sunset">🌅 Sunset Horizon</option>
+                        <option value="rainforest">🌴 Tropical Rainforest</option>
+                        <option value="earth">🌍 Earth Clay</option>
+                    </select>
+                </div>
+
+                <button onclick="exportJSON()" class="bg-emerald-700/80 hover:bg-emerald-700 text-emerald-100 font-semibold px-3 py-2 rounded-xl shadow transition flex items-center gap-2 text-xs border border-emerald-500/40" title="Export Backup">
+                    <i class="fa-solid fa-download"></i> Export
+                </button>
+                <button onclick="document.getElementById('importFile').click()" class="bg-emerald-700/80 hover:bg-emerald-700 text-emerald-100 font-semibold px-3 py-2 rounded-xl shadow transition flex items-center gap-2 text-xs border border-emerald-500/40" title="Import Backup">
+                    <i class="fa-solid fa-upload"></i> Import
+                </button>
+                <input type="file" id="importFile" accept=".json" onchange="importJSON(event)" class="hidden">
+                
+                <button onclick="openModal()" class="bg-white text-emerald-700 hover:bg-emerald-50 font-semibold px-4 py-2 rounded-xl shadow transition flex items-center gap-2 text-xs ml-1">
+                    <i class="fa-solid fa-plus"></i> Add Office Log
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full space-y-6">
+
+        <!-- Live Badge Clock Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Quick Badge Control Box -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between md:col-span-1">
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Office Badge Status</p>
+                    <div id="punchStateIndicator" class="mt-2 flex items-center gap-2">
+                        <span id="statusDot" class="h-3 w-3 rounded-full bg-slate-300"></span>
+                        <span id="statusText" class="font-bold text-slate-700 text-sm">Out of Office</span>
+                    </div>
+                    <p id="currentPunchTime" class="text-xs text-slate-400 mt-1">Ready to badge in</p>
+                </div>
+                <div class="mt-6">
+                    <button id="punchBtn" onclick="togglePunch()" class="w-full py-2.5 px-4 rounded-xl text-white font-semibold text-sm shadow transition bg-emerald-600 hover:bg-emerald-700 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-id-card"></i> Badge In
+                    </button>
+                </div>
+            </div>
+
+            <!-- Metrics Summary Cards -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase">Today's Office Hours</p>
+                    <p id="stat-today" class="text-2xl font-bold text-slate-800 mt-2">0.0 <span class="text-xs font-normal text-slate-500">hrs</span></p>
+                </div>
+                <p class="text-xs text-slate-400 mt-2"><i class="fa-solid fa-clock mr-1"></i> Workplace duration</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <p id="weekLabel" class="text-xs font-medium text-emerald-600 uppercase">This Week</p>
+                    <p id="stat-week" class="text-2xl font-bold text-slate-800 mt-2">0.0 <span class="text-xs font-normal text-slate-500">hrs</span></p>
+                </div>
+                <p class="text-xs text-slate-400 mt-2"><i class="fa-solid fa-chart-line mr-1"></i> Office & WFH total</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <p id="monthLabelHead" class="text-xs font-medium text-purple-600 uppercase">This Month</p>
+                    <p id="stat-month" class="text-2xl font-bold text-slate-800 mt-2">0.0 <span class="text-xs font-normal text-slate-500">hrs</span></p>
+                </div>
+                <p class="text-xs text-slate-400 mt-2"><i class="fa-solid fa-calendar-days mr-1"></i> Accumulated monthly</p>
+            </div>
+        </div>
+
+        <!-- Monthly Calendar Heat-Map Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-slate-100 pb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i id="calendarIconTitle" class="fa-solid fa-calendar-alt text-emerald-600"></i> Office Attendance Heat-Map
+                    </h2>
+                    <p class="text-xs text-slate-500">Visual attendance overview across office days</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="changeMonth(-1)" class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                    <span id="calendarMonthLabel" class="font-bold text-slate-700 text-sm w-36 text-center">October 2026</span>
+                    <button onclick="changeMonth(1)" class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="flex flex-wrap items-center gap-4 text-xs text-slate-600">
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span> Office Present</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-teal-500 inline-block"></span> WFH</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-blue-500 inline-block"></span> Client Site</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-500 inline-block"></span> Late</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-indigo-500 inline-block"></span> Overtime</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-rose-500 inline-block"></span> Leave</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-slate-100 border border-slate-200 inline-block"></span> No Record</span>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="grid grid-cols-7 gap-2 text-center">
+                <div class="text-xs font-semibold text-slate-400 py-1">Mon</div>
+                <div class="text-xs font-semibold text-slate-400 py-1">Tue</div>
+                <div class="text-xs font-semibold text-slate-400 py-1">Wed</div>
+                <div class="text-xs font-semibold text-slate-400 py-1">Thu</div>
+                <div class="text-xs font-semibold text-slate-400 py-1">Fri</div>
+                <div class="text-xs font-semibold text-slate-400 py-1">Sat</div>
+                <div class="text-xs font-semibold text-slate-400 py-1">Sun</div>
+            </div>
+            <div id="calendarGrid" class="grid grid-cols-7 gap-2">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Toolbar / Filters -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+            <div class="relative w-full sm:w-80">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                    <i class="fa-solid fa-search"></i>
+                </span>
+                <input type="text" id="searchInput" oninput="renderTable()" placeholder="Search date, commute, remarks..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+                <span class="text-xs font-medium text-slate-500 mr-1">Filter:</span>
+                <button onclick="filterByTag('All')" id="filter-All" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-600 text-white transition">All</button>
+                <button onclick="filterByTag('Office Present')" id="filter-Office Present" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Office Present</button>
+                <button onclick="filterByTag('WFH')" id="filter-WFH" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition">WFH</button>
+                <button onclick="filterByTag('Client Site')" id="filter-Client Site" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Client Site</button>
+                <button onclick="filterByTag('Late')" id="filter-Late" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Late</button>
+            </div>
+        </div>
+
+        <!-- Attendance Logs Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                            <th class="py-3.5 px-4">Date</th>
+                            <th class="py-3.5 px-4">Badge In / Out</th>
+                            <th class="py-3.5 px-4">Commute & Location</th>
+                            <th class="py-3.5 px-4">Total Hours</th>
+                            <th class="py-3.5 px-4">Status</th>
+                            <th class="py-3.5 px-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody" class="divide-y divide-slate-100 text-sm">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="emptyState" class="hidden text-center py-12">
+                <i class="fa-solid fa-building-circle-xmark text-4xl text-slate-300 mb-3"></i>
+                <p class="text-slate-500 font-medium">No office attendance records found.</p>
+                <p class="text-slate-400 text-xs mt-1">Use Badge In above or click "Add Office Log".</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <div id="attendanceModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform transition-all">
+            <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+                <h3 id="modalTitle" class="font-bold text-slate-800 text-lg">Add Office Attendance Log</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="attendanceForm" onsubmit="saveAttendance(event)" class="p-6 space-y-4">
+                <input type="hidden" id="logId">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Date *</label>
+                    <input type="date" id="logDate" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Badge In Time *</label>
+                        <input type="time" id="punchInTime" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Badge Out Time</label>
+                        <input type="time" id="punchOutTime" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Status / Mode</label>
+                        <select id="logStatus" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                            <option value="Office Present">Office Present</option>
+                            <option value="WFH">WFH (Work From Home)</option>
+                            <option value="Client Site">Client Site</option>
+                            <option value="Late">Late</option>
+                            <option value="Overtime">Overtime</option>
+                            <option value="Leave">Leave</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Commute / Travel</label>
+                        <select id="logCommute" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                            <option value="Local Train / Metro">🚆 Local Train / Metro</option>
+                            <option value="Company Cab">🚐 Company Cab</option>
+                            <option value="Personal Car / Bike">🚗 Personal Car / Bike</option>
+                            <option value="Auto / Taxi">🚕 Auto / Taxi</option>
+                            <option value="Walk / WFH">🏠 Walk / WFH</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Desk / Bay / Project Notes</label>
+                    <textarea id="logRemarks" rows="2" placeholder="e.g., Desk 4B, Floor 3, Meeting at client office..." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition">Save Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-xs text-slate-400">
+        OfficeAttendance Tracker &bull; Local Storage PWA Ready
+    </footer>
+
+    <!-- Application Script -->
+    <script>
+        let logs = JSON.parse(localStorage.getItem('officeAttendance_logs')) || [
+            { id: '1', date: '2026-10-01', punchIn: '09:00', punchIn: '09:15', punchOut: '18:15', status: 'Office Present', commute: 'Local Train / Metro', remarks: 'Desk 12A, Floor 2' },
+            { id: '2', date: '2026-09-30', punchIn: '09:30', punchOut: '18:30', status: 'WFH', commute: 'Walk / WFH', remarks: 'Sprint planning sync' },
+            { id: '3', date: '2026-09-29', punchIn: '10:00', punchOut: '19:00', status: 'Late', commute: 'Auto / Taxi', remarks: 'Heavy rain delay' },
+            { id: '4', date: '2026-09-28', punchIn: '09:00', punchOut: '18:00', status: 'Office Present', commute: 'Company Cab', remarks: 'Team catchup' }
+        ];
+
+        let activePunch = JSON.parse(localStorage.getItem('officeAttendance_activePunch')) || null;
+        let currentFilter = 'All';
+        let calendarDate = new Date();
+
+        const statusBadges = {
+            'Office Present': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+            'WFH': 'bg-teal-50 text-teal-700 border-teal-200',
+            'Client Site': 'bg-blue-50 text-blue-700 border-blue-200',
+            'Late': 'bg-amber-50 text-amber-700 border-amber-200',
+            'Overtime': 'bg-indigo-50 text-indigo-700 border-indigo-200',
+            'Leave': 'bg-rose-50 text-rose-700 border-rose-200'
+        };
+
+        const heatmapColors = {
+            'Office Present': 'bg-emerald-500 text-white hover:bg-emerald-600',
+            'WFH': 'bg-teal-500 text-white hover:bg-teal-600',
+            'Client Site': 'bg-blue-500 text-white hover:bg-blue-600',
+            'Late': 'bg-amber-500 text-white hover:bg-amber-600',
+            'Overtime': 'bg-indigo-500 text-white hover:bg-indigo-600',
+            'Leave': 'bg-rose-500 text-white hover:bg-rose-600'
+        };
+
+        function init() {
+            const savedTheme = localStorage.getItem('officeAttendance_theme') || 'forest';
+            document.getElementById('themeSelector').value = savedTheme;
+            applyThemeClasses(savedTheme);
+
+            renderTable();
+            updateStats();
+            updatePunchWidget();
+            renderCalendar();
+        }
+
+        // --- Theme Management ---
+        function changeTheme(themeName) {
+            localStorage.setItem('officeAttendance_theme', themeName);
+            applyThemeClasses(themeName);
+        }
+
+        function applyThemeClasses(themeName) {
+            const body = document.getElementById('appBody');
+            body.className = `bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans theme-${themeName}`;
+
+            const header = document.getElementById('headerBg');
+            const iconBg = document.getElementById('headerIconBg');
+            
+            const themeColorMap = {
+                forest: { bg: 'bg-emerald-600', bgDark: 'bg-emerald-700', textLight: 'text-emerald-100', icon: 'fa-building' },
+                ocean: { bg: 'bg-sky-600', bgDark: 'bg-sky-700', textLight: 'text-sky-100', icon: 'fa-water' },
+                autumn: { bg: 'bg-amber-600', bgDark: 'bg-amber-700', textLight: 'text-amber-100', icon: 'fa-leaf' },
+                desert: { bg: 'bg-yellow-600', bgDark: 'bg-yellow-700', textLight: 'text-yellow-100', icon: 'fa-sun' },
+                mountain: { bg: 'bg-slate-700', bgDark: 'bg-slate-800', textLight: 'text-slate-200', icon: 'fa-mountain' },
+                blossom: { bg: 'bg-pink-600', bgDark: 'bg-pink-700', textLight: 'text-pink-100', icon: 'fa-spa' },
+                glacier: { bg: 'bg-teal-600', bgDark: 'bg-teal-700', textLight: 'text-teal-100', icon: 'fa-snowflake' },
+                sunset: { bg: 'bg-orange-600', bgDark: 'bg-orange-700', textLight: 'text-orange-100', icon: 'fa-fire' },
+                rainforest: { bg: 'bg-green-700', bgDark: 'bg-green-800', textLight: 'text-green-100', icon: 'fa-tree' },
+                earth: { bg: 'bg-amber-800', bgDark: 'bg-amber-900', textLight: 'text-amber-100', icon: 'fa-globe' }
+            };
+
+            const conf = themeColorMap[themeName] || themeColorMap['forest'];
+            header.className = `${conf.bg} text-white shadow-md transition-colors duration-300`;
+            iconBg.className = `${conf.bgDark} p-2.5 rounded-xl shadow-inner transition-colors duration-300`;
+            iconBg.innerHTML = `<i class="fa-solid ${conf.icon} text-2xl ${conf.textLight}"></i>`;
+        }
+        // ------------------------
+
+        function exportJSON() {
+            const backupData = {
+                app: "OfficeAttendance Tracker",
+                version: "1.2",
+                exportDate: new Date().toISOString(),
+                activePunch: activePunch,
+                logs: logs
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+            const downloadAnchor = document.createElement('a');
+            const dateStr = new Date().toISOString().split('T')[0];
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `office_attendance_backup_${dateStr}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (!parsed.logs || !Array.isArray(parsed.logs)) throw new Error("Invalid backup file structure.");
+                    if (confirm(`Import ${parsed.logs.length} office attendance logs? This will replace your current logs.`)) {
+                        logs = parsed.logs;
+                        activePunch = parsed.activePunch || null;
+                        localStorage.setItem('officeAttendance_logs', JSON.stringify(logs));
+                        if (activePunch) localStorage.setItem('officeAttendance_activePunch', JSON.stringify(activePunch));
+                        else localStorage.removeItem('officeAttendance_activePunch');
+                        init();
+                        alert("Office attendance data successfully imported!");
+                    }
+                } catch (err) {
+                    alert("Failed to import backup: " + err.message);
+                } finally {
+                    event.target.value = '';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function togglePunch() {
+            const now = new Date();
+            const timeStr = now.toTimeString().substring(0, 5);
+            const dateStr = now.toISOString().split('T')[0];
+
+            if (!activePunch) {
+                activePunch = { date: dateStr, punchIn: timeStr, timestamp: now.getTime() };
+                localStorage.setItem('officeAttendance_activePunch', JSON.stringify(activePunch));
+            } else {
+                const hoursWorked = calculateHours(activePunch.punchIn, timeStr);
+                const newLog = {
+                    id: Date.now().toString(),
+                    date: activePunch.date,
+                    punchIn: activePunch.punchIn,
+                    punchOut: timeStr,
+                    status: 'Office Present',
+                    commute: 'Local Train / Metro',
+                    remarks: 'Clocked via live badge'
+                };
+                logs.unshift(newLog);
+                localStorage.setItem('officeAttendance_logs', JSON.stringify(logs));
+                activePunch = null;
+                localStorage.removeItem('officeAttendance_activePunch');
+            }
+            updatePunchWidget();
+            renderTable();
+            updateStats();
+            renderCalendar();
+        }
+
+        function updatePunchWidget() {
+            const btn = document.getElementById('punchBtn');
+            const statusText = document.getElementById('statusText');
+            const statusDot = document.getElementById('statusDot');
+            const currentPunchTime = document.getElementById('currentPunchTime');
+
+            if (activePunch) {
+                btn.className = 'w-full py-2.5 px-4 rounded-xl text-white font-semibold text-sm shadow transition bg-rose-600 hover:bg-rose-700 flex items-center justify-center gap-2';
+                btn.innerHTML = '<i class="fa-solid fa-id-card-clip"></i> Badge Out';
+                statusText.innerText = 'Badge Active In Office';
+                statusDot.className = 'h-3 w-3 rounded-full bg-emerald-500 animate-pulse';
+                currentPunchTime.innerText = `Badged in at ${activePunch.punchIn}`;
+            } else {
+                btn.className = 'w-full py-2.5 px-4 rounded-xl text-white font-semibold text-sm shadow transition bg-emerald-600 hover:bg-emerald-700 flex items-center justify-center gap-2';
+                btn.innerHTML = '<i class="fa-solid fa-id-card"></i> Badge In';
+                statusText.innerText = 'Out of Office';
+                statusDot.className = 'h-3 w-3 rounded-full bg-slate-300';
+                currentPunchTime.innerText = 'Ready to badge in';
+            }
+        }
+
+        function calculateHours(inTime, outTime) {
+            if (!inTime || !outTime) return 0;
+            const [inH, inM] = inTime.split(':').map(Number);
+            const [outH, outM] = outTime.split(':').map(Number);
+            let diff = (outH * 60 + outM) - (inH * 60 + inM);
+            if (diff < 0) diff += 24 * 60;
+            return Math.round((diff / 60) * 10) / 10;
+        }
+
+        function changeMonth(direction) {
+            calendarDate.setMonth(calendarDate.getMonth() + direction);
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const label = document.getElementById('calendarMonthLabel');
+            grid.innerHTML = '';
+
+            const year = calendarDate.getFullYear();
+            const month = calendarDate.getMonth();
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            label.innerText = `${monthNames[month]} ${year}`;
+
+            const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
+            const totalDays = new Date(year, month + 1, 0).getDate();
+
+            const logMap = {};
+            logs.forEach(l => { logMap[l.date] = l; });
+
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'h-14 rounded-lg bg-slate-50/50 border border-transparent';
+                grid.appendChild(emptyCell);
+            }
+
+            for (let day = 1; day <= totalDays; day++) {
+                const dayStr = String(day).padStart(2, '0');
+                const monthStr = String(month + 1).padStart(2, '0');
+                const fullDateStr = `${year}-${monthStr}-${dayStr}`;
+
+                const log = logMap[fullDateStr];
+                const cell = document.createElement('div');
+
+                let colorClass = 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100';
+                let tooltip = `${fullDateStr}: No record`;
+
+                if (log) {
+                    colorClass = heatmapColors[log.status] || 'bg-slate-200 text-slate-700';
+                    tooltip = `${fullDateStr} - ${log.status} (${calculateHours(log.punchIn, log.punchOut)} hrs)`;
+                }
+
+                cell.className = `h-14 rounded-xl flex flex-col justify-between p-1.5 text-xs font-semibold cursor-pointer transition shadow-xs ${colorClass}`;
+                cell.title = tooltip;
+                cell.innerHTML = `
+                    <span class="text-right w-full">${day}</span>
+                    <span class="text-[10px] truncate text-center font-normal opacity-90">${log ? log.status : ''}</span>
+                `;
+                cell.onclick = () => { openModalForDate(fullDateStr, log); };
+                grid.appendChild(cell);
+            }
+        }
+
+        function openModalForDate(dateStr, existingLog) {
+            if (existingLog) {
+                editLog(existingLog.id);
+            } else {
+                openModal();
+                document.getElementById('logDate').value = dateStr;
+            }
+        }
+
+        function filterByTag(tag) {
+            currentFilter = tag;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-600', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+            const activeBtn = document.getElementById(`filter-${tag}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+                activeBtn.classList.add('bg-emerald-600', 'text-white');
+            }
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('attendanceTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+
+            tbody.innerHTML = '';
+            let filtered = logs.filter(log => {
+                const matchesTag = currentFilter === 'All' || log.status === currentFilter;
+                const matchesSearch = log.date.toLowerCase().includes(search) || 
+                                      (log.commute && log.commute.toLowerCase().includes(search)) || 
+                                      (log.remarks && log.remarks.toLowerCase().includes(search));
+                return matchesTag && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filtered.forEach(log => {
+                const badgeClass = statusBadges[log.status] || 'bg-slate-50 text-slate-700 border-slate-200';
+                const hours = calculateHours(log.punchIn, log.punchOut);
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/80 transition';
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-semibold text-slate-800">
+                        ${escapeHtml(log.date)}
+                        <div class="text-xs font-normal text-slate-400 truncate max-w-xs">${escapeHtml(log.remarks || '')}</div>
+                    </td>
+                    <td class="py-3 px-4 text-xs text-slate-600">
+                        <div><i class="fa-solid fa-arrow-right-to-bracket text-emerald-600 mr-1"></i> ${escapeHtml(log.punchIn)}</div>
+                        <div class="mt-0.5"><i class="fa-solid fa-arrow-right-from-bracket text-rose-600 mr-1"></i> ${escapeHtml(log.punchOut || 'Active')}</div>
+                    </td>
+                    <td class="py-3 px-4 text-xs text-slate-600">
+                        <span class="font-medium text-slate-700"><i class="fa-solid fa-route mr-1 text-slate-400"></i> ${escapeHtml(log.commute || 'Standard')}</span>
+                    </td>
+                    <td class="py-3 px-4 font-medium text-slate-700">${hours > 0 ? hours + ' hrs' : '-'}</td>
+                    <td class="py-3 px-4">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${badgeClass}">
+                            ${escapeHtml(log.status)}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-right space-x-2">
+                        <button onclick="editLog('${log.id}')" class="text-slate-400 hover:text-emerald-600 transition p-1" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteLog('${log.id}')" class="text-slate-400 hover:text-rose-600 transition p-1" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateStats() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            let todayHours = 0;
+            logs.filter(l => l.date === todayStr).forEach(l => { todayHours += calculateHours(l.punchIn, l.punchOut); });
+            if (activePunch && activePunch.date === todayStr) {
+                todayHours += calculateHours(activePunch.punchIn, new Date().toTimeString().substring(0, 5));
+            }
+            document.getElementById('stat-today').innerHTML = `${Math.round(todayHours * 10) / 10} <span class="text-xs font-normal text-slate-500">hrs</span>`;
+
+            let monthHours = 0;
+            const now = new Date();
+            logs.forEach(l => {
+                const logDate = new Date(l.date);
+                if (logDate.getFullYear() === now.getFullYear() && logDate.getMonth() === now.getMonth()) {
+                    monthHours += calculateHours(l.punchIn, l.punchOut);
+                }
+            });
+
+            let currentWeekHours = 0;
+            const startOfWeek = new Date();
+            startOfWeek.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
+            startOfWeek.setHours(0,0,0,0);
+
+            logs.forEach(l => {
+                const logDate = new Date(l.date);
+                if (logDate >= startOfWeek) currentWeekHours += calculateHours(l.punchIn, l.punchOut);
+            });
+            if (activePunch) currentWeekHours += calculateHours(activePunch.punchIn, new Date().toTimeString().substring(0, 5));
+
+            document.getElementById('stat-week').innerHTML = `${Math.round(currentWeekHours * 10) / 10} <span class="text-xs font-normal text-slate-500">hrs</span>`;
+            document.getElementById('stat-month').innerHTML = `${Math.round(monthHours * 10) / 10} <span class="text-xs font-normal text-slate-500">hrs</span>`;
+        }
+
+        function openModal() {
+            document.getElementById('modalTitle').innerText = 'Add Office Attendance Log';
+            document.getElementById('attendanceForm').reset();
+            document.getElementById('logId').value = '';
+            document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('punchInTime').value = '09:00';
+            document.getElementById('punchOutTime').value = '18:00';
+            document.getElementById('attendanceModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('attendanceModal').classList.add('hidden');
+        }
+
+        function editLog(id) {
+            const log = logs.find(l => l.id === id);
+            if (!log) return;
+            document.getElementById('modalTitle').innerText = 'Edit Office Attendance Log';
+            document.getElementById('logId').value = log.id;
+            document.getElementById('logDate').value = log.date;
+            document.getElementById('punchInTime').value = log.punchIn;
+            document.getElementById('punchOutTime').value = log.punchOut || '';
+            document.getElementById('logStatus').value = log.status;
+            document.getElementById('logCommute').value = log.commute || 'Local Train / Metro';
+            document.getElementById('logRemarks').value = log.remarks || '';
+            document.getElementById('attendanceModal').classList.remove('hidden');
+        }
+
+        function saveAttendance(event) {
+            event.preventDefault();
+            const id = document.getElementById('logId').value;
+            const data = {
+                id: id ? id : Date.now().toString(),
+                date: document.getElementById('logDate').value,
+                punchIn: document.getElementById('punchInTime').value,
+                punchOut: document.getElementById('punchOutTime').value,
+                status: document.getElementById('logStatus').value,
+                commute: document.getElementById('logCommute').value,
+                remarks: document.getElementById('logRemarks').value.trim()
+            };
+
+            if (id) {
+                const index = logs.findIndex(l => l.id === id);
+                if (index !== -1) logs[index] = data;
+            } else {
+                logs.unshift(data);
+            }
+
+            localStorage.setItem('officeAttendance_logs', JSON.stringify(logs));
+            closeModal();
+            renderTable();
+            updateStats();
+            renderCalendar();
+        }
+
+        function deleteLog(id) {
+            if (confirm('Are you sure you want to delete this office record?')) {
+                logs = logs.filter(l => l.id !== id);
+                localStorage.setItem('officeAttendance_logs', JSON.stringify(logs));
+                renderTable();
+                updateStats();
+                renderCalendar();
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        init();
+    </script>
+</body>
+</html>
