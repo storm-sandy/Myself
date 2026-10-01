@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swayam Work Manager & Task Command Center</title>
+    <!-- Chart.js UMD stable build CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --border-color: #cbd5e1;
+            --sidebar-bg: #f1f5f9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-muted);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-container {
+            max-width: 1380px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1380px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 12px; }
+        .gap-4 { gap: 16px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; }
+        @media(max-width: 1100px) { .grid-3 { grid-template-columns: 1fr; } }
+
+        .theme-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-accent:hover { background-color: var(--accent-hover); }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-outline:hover { background: #f1f5f9; }
+
+        label.form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            font-size: 14px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            outline: none;
+        }
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+        }
+
+        .tabs-header {
+            display: flex;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--border-color);
+            gap: 8px;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 8px 8px 0 0;
+            transition: 0.2s;
+        }
+        .tab-btn.active-tab {
+            color: var(--text-main);
+            border-bottom-color: var(--accent);
+            background-color: var(--bg-card);
+        }
+        .hidden { display: none !important; }
+
+        .table-container { overflow-x: auto; width: 100%; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+        th, td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+        th { font-weight: 600; color: var(--text-main); background-color: var(--bg-primary); }
+
+        .icon-box {
+            padding: 12px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .console-box {
+            background-color: #0f172a;
+            color: #38bdf8;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            min-height: 160px;
+            max-height: 320px;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 16px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+        }
+    </style>
+</head>
+<body data-theme="modern">
+
+    <!-- Header & Navigation Bar -->
+    <header>
+        <div class="header-container">
+            <div class="flex items-center gap-3">
+                <div class="icon-box" style="background-color: var(--accent); color: white;">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+                <div>
+                    <h1 style="font-size: 18px; font-weight: bold; color: var(--text-main);">Swayam Work & Task Manager</h1>
+                    <p style="font-size: 11px; color: var(--text-muted);">Workflows, Duration Analytics, Stakeholders & Domain Hub</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4" style="flex-wrap: wrap;">
+                <div class="flex items-center gap-2" style="background: #f8fafc; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 8px;">
+                    <button onclick="exportCSV()" class="btn-outline">
+                        <i class="fa-solid fa-file-csv" style="color: #16a34a;"></i> Export CSV
+                    </button>
+                    <label class="btn-outline" style="cursor: pointer;">
+                        <i class="fa-solid fa-upload" style="color: #0284c7;"></i> Import CSV
+                        <input type="file" id="csvFileInput" accept=".csv" onchange="importCSV(event)" style="display: none;">
+                    </label>
+                    <button onclick="exportDatabaseDump()" class="btn-outline">
+                        <i class="fa-solid fa-database" style="color: #9333ea;"></i> Dump DB JSON
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <label for="themeSelect" class="form-label" style="margin-bottom:0;"><i class="fa-solid fa-palette"></i> Theme:</label>
+                    <select id="themeSelect" onchange="switchTheme(this.value)" class="form-control" style="width: auto; padding: 6px 10px;">
+                        <option value="modern">🏙️ Modern Urban Slate</option>
+                        <option value="forest">🌲 Lush Forest</option>
+                        <option value="monsoon">🌧️ Monsoon Rain</option>
+                        <option value="sunset">🌅 Western Ghats Sunset</option>
+                        <option value="ocean">🌊 Coastal Ocean Wave</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main>
+        <div class="tabs-header" id="tabHeaders">
+            <button onclick="switchTab('dashboard')" class="tab-btn active-tab" data-target="dashboard">
+                <i class="fa-solid fa-chart-pie"></i> Executive Summary
+            </button>
+            <button onclick="switchTab('tasks')" class="tab-btn" data-target="tasks">
+                <i class="fa-solid fa-tasks"></i> Task & Work Manager
+            </button>
+            <button onclick="switchTab('console')" class="tab-btn" data-target="console">
+                <i class="fa-solid fa-terminal"></i> Database & SQL Console
+            </button>
+        </div>
+
+        <!-- ================= TAB 1: EXECUTIVE SUMMARY ================= -->
+        <div id="tab-dashboard" class="flex" style="flex-direction: column; gap: 24px;">
+            <div class="grid-4">
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Total Work Duration</p>
+                        <h3 id="sumTotalDuration" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">0 Hrs</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Cumulative Task Hours</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #dbeafe; color: #2563eb;">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Completion Rate</p>
+                        <h3 id="sumCompletionRate" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">0%</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Completed vs Active</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #d1fae5; color: #059669;">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Active Tasks</p>
+                        <h3 id="sumActiveTasks" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">0</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">In Progress / Pending</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #fef3c7; color: #d97706;">
+                        <i class="fa-solid fa-spinner"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Average Rating</p>
+                        <h3 id="sumAvgRating" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">0.0 ★</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Quality & Output</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #ede9fe; color: #7c3aed;">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card" style="border-left: 4px solid var(--accent);">
+                <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 4px; color: var(--text-main);">
+                    <i class="fa-solid fa-lightbulb" style="color: var(--accent); margin-right: 6px;"></i>Workstream Insights & Execution Notes
+                </h4>
+                <p id="insightText" style="font-size: 13px; color: var(--text-muted);">Analyzing active project workloads and resource allocations...</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="theme-card">
+                    <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 16px; color: var(--text-main);">Task Duration Share by Category (Hours)</h4>
+                    <div style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="durationChart"></canvas>
+                    </div>
+                </div>
+                <div class="theme-card">
+                    <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 16px; color: var(--text-main);">Task Type Counts & Distribution</h4>
+                    <div style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="typeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: TASK & WORK MANAGER ================= -->
+        <div id="tab-tasks" class="hidden grid-3">
+            <div class="theme-card">
+                <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 16px; color: var(--text-main);">
+                    <i class="fa-solid fa-plus-circle" style="margin-right: 6px;"></i>Log / Update Task
+                </h3>
+                <form id="taskForm" onsubmit="saveTask(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                    <input type="hidden" id="taskId">
+                    
+                    <div class="grid-2" style="gap: 10px;">
+                        <div>
+                            <label class="form-label">Task Date</label>
+                            <input type="date" id="taskDate" required class="form-control">
+                        </div>
+                        <div>
+                            <label class="form-label">Domain</label>
+                            <input type="text" id="taskDomain" placeholder="e.g. Data Engineering" required class="form-control">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Category</label>
+                        <input type="text" id="taskCategory" placeholder="e.g. ETL Pipeline, Dashboarding" required class="form-control">
+                    </div>
+
+                    <div>
+                        <label class="form-label">Task Title / Description</label>
+                        <input type="text" id="taskTitle" placeholder="e.g. Build monthly sales aggregation script" required class="form-control">
+                    </div>
+
+                    <div class="grid-2" style="gap: 10px;">
+                        <div>
+                            <label class="form-label">Task Type</label>
+                            <select id="taskType" class="form-control">
+                                <option value="Development">💻 Development</option>
+                                <option value="Testing">🧪 Testing & QA</option>
+                                <option value="Maintenance">🔧 Maintenance</option>
+                                <option value="Planning">📊 Planning</option>
+                                <option value="Research">📚 Research</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Task Level</label>
+                            <select id="taskLevel" class="form-control">
+                                <option value="Strategic">🚀 Strategic</option>
+                                <option value="Operational">⚙️ Operational</option>
+                                <option value="Routine">🔄 Routine</option>
+                                <option value="Ad-hoc">⚡ Ad-hoc</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid-2" style="gap: 10px;">
+                        <div>
+                            <label class="form-label">Status</label>
+                            <select id="taskStatus" class="form-control">
+                                <option value="Pending">⏳ Pending</option>
+                                <option value="In Progress">🔄 In Progress</option>
+                                <option value="Completed">✅ Completed</option>
+                                <option value="On Hold">⏸️ On Hold</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Duration (Hours)</label>
+                            <input type="number" id="taskDuration" placeholder="e.g. 3.5" required min="0.25" step="0.25" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="grid-2" style="gap: 10px;">
+                        <div>
+                            <label class="form-label">Task Owner</label>
+                            <input type="text" id="taskOwner" placeholder="e.g. Self / Alex" required class="form-control">
+                        </div>
+                        <div>
+                            <label class="form-label">Assigned To</label>
+                            <input type="text" id="taskAssign" placeholder="e.g. Team Dev Pool" required class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="grid-2" style="gap: 10px;">
+                        <div>
+                            <label class="form-label">Team Leader</label>
+                            <input type="text" id="taskTl" placeholder="e.g. Priya Sharma" class="form-control">
+                        </div>
+                        <div>
+                            <label class="form-label">Project Manager</label>
+                            <input type="text" id="taskPm" placeholder="e.g. Rajesh Kumar" class="form-control">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Rating (1-5)</label>
+                        <select id="taskRating" class="form-control">
+                            <option value="5">⭐⭐⭐⭐⭐ (5 - Exceptional)</option>
+                            <option value="4">⭐⭐⭐⭐ (4 - High Quality)</option>
+                            <option value="3">⭐⭐⭐ (3 - Satisfactory)</option>
+                            <option value="2">⭐⭐ (2 - Needs Revision)</option>
+                            <option value="1">⭐ (1 - Blocked / Poor)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-accent" style="width: 100%; margin-top: 6px;">Save Task Entry</button>
+                </form>
+            </div>
+
+            <div class="theme-card">
+                <div class="flex justify-between items-center" style="margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="font-size: 16px; font-weight: bold; color: var(--text-main);">
+                        <i class="fa-solid fa-list-check" style="margin-right: 6px;"></i>Task Ledger
+                    </h3>
+                    <input type="text" id="searchFilter" onkeyup="renderTasks()" placeholder="Search title, category, owner..." class="form-control" style="width: 240px; padding: 6px 10px;">
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date & Domain</th>
+                                <th>Category & Title</th>
+                                <th>Type / Level</th>
+                                <th>Duration / Status</th>
+                                <th>Stakeholders (Owner / Assign / TL / PM)</th>
+                                <th>Rating</th>
+                                <th style="text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="taskTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: SQLITE CONSOLE SIMULATOR ================= -->
+        <div id="tab-console" class="hidden flex" style="flex-direction: column; gap: 24px;">
+            <div class="theme-card">
+                <div class="flex justify-between items-center" style="margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h3 style="font-size: 16px; font-weight: bold; color: var(--text-main);">
+                            <i class="fa-solid fa-database" style="margin-right: 6px;"></i>SQLite In-Memory Console & DB Storage
+                        </h3>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Query your relational table: <code style="background: #f1f5f9; padding: 2px 4px; border-radius: 4px; color: var(--accent);">swayam_work_manager_ledger</code></p>
+                    </div>
+                    <button onclick="runSQLQuery()" class="btn-accent" style="padding: 6px 14px; font-size: 12px;">Run Query</button>
+                </div>
+                <textarea id="sqlInput" class="form-control" rows="3" style="font-family: monospace; font-size: 13px; margin-bottom: 12px;">SELECT domain, category, title, duration, status, task_owner FROM swayam_work_manager_ledger ORDER BY date DESC;</textarea>
+                <div id="sqlOutput" class="console-box">Ready for SQL execution...</div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Swayam Work & Task Manager &bull; Powered by StarKid Analytics Framework &bull; Persistent LocalStorage DB</p>
+    </footer>
+
+    <!-- Application Script -->
+    <script>
+        // Theme Definitions
+        const themes = {
+            modern: { '--bg-primary': '#f8fafc', '--bg-card': '#ffffff', '--text-main': '#0f172a', '--text-muted': '#475569', '--accent': '#0284c7', '--accent-hover': '#0369a1', '--border-color': '#cbd5e1' },
+            forest: { '--bg-primary': '#f0fdf4', '--bg-card': '#ffffff', '--text-main': '#14532d', '--text-muted': '#166534', '--accent': '#16a34a', '--accent-hover': '#15803d', '--border-color': '#bbf7d0' },
+            monsoon: { '--bg-primary': '#f8fafc', '--bg-card': '#ffffff', '--text-main': '#1e293b', '--text-muted': '#334155', '--accent': '#475569', '--accent-hover': '#334155', '--border-color': '#94a3b8' },
+            sunset: { '--bg-primary': '#fff7ed', '--bg-card': '#ffffff', '--text-main': '#7c2d12', '--text-muted': '#9a3412', '--accent': '#ea580c', '--accent-hover': '#c2410c', '--border-color': '#fed7aa' },
+            ocean: { '--bg-primary': '#eff6ff', '--bg-card': '#ffffff', '--text-main': '#1e3a8a', '--text-muted': '#1e40af', '--accent': '#2563eb', '--accent-hover': '#1d4ed8', '--border-color': '#bfdbfe' }
+        };
+
+        function switchTheme(themeName) {
+            const t = themes[themeName];
+            if (!t) return;
+            document.body.setAttribute('data-theme', themeName);
+            for (const [key, val] of Object.entries(t)) {
+                document.documentElement.style.setProperty(key, val);
+            }
+            localStorage.setItem('swayam_task_theme', themeName);
+        }
+
+        const savedTheme = localStorage.getItem('swayam_task_theme') || 'modern';
+        document.getElementById('themeSelect').value = savedTheme;
+        switchTheme(savedTheme);
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tabs-header .tab-btn').forEach(btn => {
+                btn.classList.remove('active-tab');
+                if (btn.getAttribute('data-target') === tabName) btn.classList.add('active-tab');
+            });
+            ['dashboard', 'tasks', 'console'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            if (tabName === 'dashboard') updateDashboard();
+        }
+
+        let tasksList = JSON.parse(localStorage.getItem('swayam_work_manager_ledger')) || [
+            { id: 1, date: '2026-10-01', domain: 'Data Engineering', category: 'ETL Pipeline', title: 'Optimize Daily Python Batch Load', type: 'Development', level: 'Strategic', status: 'Completed', duration: 4.0, task_owner: 'Self', task_assign: 'Data Team', task_tl: 'Priya Sharma', task_pm: 'Rajesh Kumar', rating: '5' },
+            { id: 2, date: '2026-09-30', domain: 'Analytics', category: 'Dashboarding', title: 'Refactor Swayam PWA UI Components', type: 'Development', level: 'Operational', status: 'In Progress', duration: 3.0, task_owner: 'Self', task_assign: 'Frontend Pool', task_tl: 'Priya Sharma', task_pm: 'Rajesh Kumar', rating: '4' }
+        ];
+
+        function saveData() {
+            localStorage.setItem('swayam_work_manager_ledger', JSON.stringify(tasksList));
+            updateDashboard();
+        }
+
+        function saveTask(e) {
+            e.preventDefault();
+            const id = document.getElementById('taskId').value;
+            const newItem = {
+                id: id ? parseInt(id) : Date.now(),
+                date: document.getElementById('taskDate').value,
+                domain: document.getElementById('taskDomain').value,
+                category: document.getElementById('taskCategory').value,
+                title: document.getElementById('taskTitle').value,
+                type: document.getElementById('taskType').value,
+                level: document.getElementById('taskLevel').value,
+                status: document.getElementById('taskStatus').value,
+                duration: parseFloat(document.getElementById('taskDuration').value) || 1.0,
+                task_owner: document.getElementById('taskOwner').value,
+                task_assign: document.getElementById('taskAssign').value,
+                task_tl: document.getElementById('taskTl').value,
+                task_pm: document.getElementById('taskPm').value,
+                rating: document.getElementById('taskRating').value
+            };
+
+            if (id) {
+                const idx = tasksList.findIndex(t => t.id === parseInt(id));
+                if (idx !== -1) tasksList[idx] = newItem;
+            } else {
+                tasksList.unshift(newItem);
+            }
+
+            document.getElementById('taskForm').reset();
+            document.getElementById('taskId').value = '';
+            document.getElementById('taskDate').value = new Date().toISOString().split('T')[0];
+            saveData();
+            renderTasks();
+        }
+
+        function editTask(id) {
+            const t = tasksList.find(item => item.id === id);
+            if (!t) return;
+            document.getElementById('taskId').value = t.id;
+            document.getElementById('taskDate').value = t.date;
+            document.getElementById('taskDomain').value = t.domain;
+            document.getElementById('taskCategory').value = t.category;
+            document.getElementById('taskTitle').value = t.title;
+            document.getElementById('taskType').value = t.type;
+            document.getElementById('taskLevel').value = t.level;
+            document.getElementById('taskStatus').value = t.status;
+            document.getElementById('taskDuration').value = t.duration;
+            document.getElementById('taskOwner').value = t.task_owner;
+            document.getElementById('taskAssign').value = t.task_assign;
+            document.getElementById('taskTl').value = t.task_tl || '';
+            document.getElementById('taskPm').value = t.task_pm || '';
+            document.getElementById('taskRating').value = t.rating;
+            switchTab('tasks');
+        }
+
+        function deleteTask(id) {
+            if (confirm('Delete this task entry?')) {
+                tasksList = tasksList.filter(item => item.id !== id);
+                saveData();
+                renderTasks();
+            }
+        }
+
+        function renderTasks() {
+            const query = (document.getElementById('searchFilter').value || '').toLowerCase();
+            const tbody = document.getElementById('taskTableBody');
+            tbody.innerHTML = '';
+
+            const filtered = tasksList.filter(t => 
+                t.title.toLowerCase().includes(query) || 
+                t.category.toLowerCase().includes(query) ||
+                t.domain.toLowerCase().includes(query) ||
+                t.task_owner.toLowerCase().includes(query) ||
+                t.task_assign.toLowerCase().includes(query)
+            );
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">No tasks matching search criteria.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(t => {
+                let statusColor = 'background: #fef3c7; color: #d97706;';
+                if (t.status === 'Completed') statusColor = 'background: #d1fae5; color: #059669;';
+                else if (t.status === 'In Progress') statusColor = 'background: #dbeafe; color: #2563eb;';
+                else if (t.status === 'On Hold') statusColor = 'background: #f1f5f9; color: #475569;';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div style="font-weight: 700; color: var(--text-main);">${t.domain}</div>
+                        <div style="font-size: 11px; color: var(--text-muted);">${t.date}</div>
+                    </td>
+                    <td>
+                        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent);">${t.category}</div>
+                        <div style="font-weight: 600; color: var(--text-main); margin-top: 2px;">${t.title}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600; color: var(--text-main);">${t.type}</div>
+                        <span style="font-size: 11px; color: var(--text-muted);">${t.level}</span>
+                    </td>
+                    <td>
+                        <div style="font-weight: 700; color: var(--text-main);">${t.duration} hrs</div>
+                        <span style="padding: 2px 6px; border-radius: 9999px; font-size: 10px; font-weight: 600; ${statusColor} display:inline-block; margin-top: 4px;">${t.status}</span>
+                    </td>
+                    <td style="font-size: 12px;">
+                        <div><b>Owner:</b> ${t.task_owner}</div>
+                        <div><b>Assign:</b> ${t.task_assign}</div>
+                        <div style="color: var(--text-muted); font-size: 11px;"><b>TL:</b> ${t.task_tl || '-'} | <b>PM:</b> ${t.task_pm || '-'}</div>
+                    </td>
+                    <td style="font-weight: bold; color: #d97706; white-space: nowrap;">${'★'.repeat(parseInt(t.rating || 0))}</td>
+                    <td style="text-align: center; white-space: nowrap;">
+                        <button onclick="editTask(${t.id})" class="btn-outline" style="padding: 4px 8px;"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteTask(${t.id})" class="btn-outline" style="padding: 4px 8px; color: #dc2626; border-color: #fca5a5;"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        let durationChartInstance = null;
+        let typeChartInstance = null;
+
+        function updateDashboard() {
+            const totalTasks = tasksList.length;
+            const totalDuration = tasksList.reduce((acc, curr) => acc + (parseFloat(curr.duration) || 0), 0);
+            const completedCount = tasksList.filter(t => t.status === 'Completed').length;
+            const activeCount = tasksList.filter(t => t.status === 'In Progress' || t.status === 'Pending').length;
+            const completionRate = totalTasks > 0 ? Math.round((completedCount / totalTasks) * 100) : 0;
+
+            let avgRating = 0;
+            if (totalTasks > 0) {
+                const sum = tasksList.reduce((acc, curr) => acc + parseInt(curr.rating || 0), 0);
+                avgRating = (sum / totalTasks).toFixed(1);
+            }
+
+            document.getElementById('sumTotalDuration').innerText = totalDuration + ' Hrs';
+            document.getElementById('sumCompletionRate').innerText = completionRate + '%';
+            document.getElementById('sumActiveTasks').innerText = activeCount;
+            document.getElementById('sumAvgRating').innerText = avgRating + ' ★';
+
+            let insight = "Workstreams are operating smoothly. Continue tracking task durations and stakeholder deliverables.";
+            if (activeCount > 5) {
+                insight = "⚠️ High volume of active tasks in progress. Review assignments with Team Leaders and Project Managers.";
+            } else if (completionRate >= 80 && totalTasks > 0) {
+                insight = "🌟 Outstanding task completion rate across active domains!";
+            }
+            document.getElementById('insightText').innerText = insight;
+
+            // 1. Task Duration Share by Category (Hours)
+            const durationMap = {};
+            tasksList.forEach(t => {
+                durationMap[t.category] = (durationMap[t.category] || 0) + (parseFloat(t.duration) || 0);
+            });
+
+            const ctxDuration = document.getElementById('durationChart').getContext('2d');
+            if (durationChartInstance) durationChartInstance.destroy();
+            durationChartInstance = new Chart(ctxDuration, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(durationMap),
+                    datasets: [{
+                        data: Object.values(durationMap),
+                        backgroundColor: ['#0284c7', '#16a34a', '#d97706', '#9333ea', '#db2777', '#0d9488']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // 2. Task Type Counts & Distribution
+            const typeMap = {};
+            tasksList.forEach(t => {
+                typeMap[t.type] = (typeMap[t.type] || 0) + 1;
+            });
+
+            const ctxType = document.getElementById('typeChart').getContext('2d');
+            if (typeChartInstance) typeChartInstance.destroy();
+            typeChartInstance = new Chart(ctxType, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(typeMap),
+                    datasets: [{
+                        label: 'Task Count',
+                        data: Object.values(typeMap),
+                        backgroundColor: ['#0284c7', '#9333ea', '#16a34a', '#d97706', '#db2777']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function runSQLQuery() {
+            const output = document.getElementById('sqlOutput');
+            try {
+                output.innerText = JSON.stringify(tasksList, null, 2);
+            } catch (err) {
+                output.innerText = "SQL Error: " + err.message;
+            }
+        }
+
+        function exportCSV() {
+            let csv = 'ID,Date,Domain,Category,Title,Type,Level,Status,Duration,TaskOwner,TaskAssign,TaskTL,TaskPM,Rating\n';
+            tasksList.forEach(t => {
+                csv += `"${t.id}","${t.date}","${t.domain}","${t.category}","${t.title}","${t.type}","${t.level}","${t.status}","${t.duration}","${t.task_owner}","${t.task_assign}","${t.task_tl || ''}","${t.task_pm || ''}","${t.rating}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'swayam_work_manager_ledger.csv');
+            a.click();
+        }
+
+        function exportDatabaseDump() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tasksList, null, 2));
+            const a = document.createElement('a');
+            a.setAttribute('href', dataStr);
+            a.setAttribute('download', 'swayam_work_manager_db.json');
+            a.click();
+        }
+
+        document.getElementById('taskDate').value = new Date().toISOString().split('T')[0];
+        renderTasks();
+        updateDashboard();
+    </script>
+</body>
+</html>
