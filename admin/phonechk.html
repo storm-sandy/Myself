@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mobile Memory Inspector</title>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    background:#f4f4f4;
+    padding:15px;
+}
+
+h1{
+    text-align:center;
+}
+
+.card{
+    background:white;
+    padding:15px;
+    margin:10px 0;
+    border-radius:10px;
+    box-shadow:0 2px 5px rgba(0,0,0,.15);
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    font-size:16px;
+}
+
+pre{
+    white-space:pre-wrap;
+    word-break:break-word;
+}
+</style>
+</head>
+<body>
+
+<h1>📱 Mobile Memory Inspector</h1>
+
+<div class="card">
+<h3>Device Info</h3>
+<pre id="device"></pre>
+</div>
+
+<div class="card">
+<h3>Storage Info</h3>
+<pre id="storage"></pre>
+</div>
+
+<div class="card">
+<h3>Cache Storage</h3>
+<pre id="cache"></pre>
+</div>
+
+<div class="card">
+<h3>IndexedDB</h3>
+<pre id="idb"></pre>
+</div>
+
+<div class="card">
+<h3>Refresh Details</h3>
+<pre id="refresh"></pre>
+</div>
+
+<button onclick="loadInfo()">
+Refresh Data
+</button>
+
+<script>
+
+async function loadInfo(){
+
+/* DEVICE */
+
+let device = `
+User Agent:
+${navigator.userAgent}
+
+Platform:
+${navigator.platform}
+
+Language:
+${navigator.language}
+
+CPU Cores:
+${navigator.hardwareConcurrency || "N/A"}
+
+Device Memory:
+${navigator.deviceMemory || "N/A"} GB
+
+Screen:
+${screen.width} x ${screen.height}
+`;
+
+document.getElementById("device").textContent=device;
+
+
+/* STORAGE */
+
+let estimate="N/A";
+
+if(navigator.storage){
+
+try{
+
+const s=
+await navigator.storage.estimate();
+
+estimate=`
+Used:
+${(s.usage/1024/1024).toFixed(2)} MB
+
+Quota:
+${(s.quota/1024/1024).toFixed(2)} MB
+`;
+
+}catch(e){}
+
+}
+
+let storage=`
+LocalStorage Keys:
+${localStorage.length}
+
+SessionStorage Keys:
+${sessionStorage.length}
+
+Cookies:
+${document.cookie || "None"}
+
+${estimate}
+`;
+
+document.getElementById("storage").textContent=storage;
+
+
+/* CACHE STORAGE */
+
+let cacheText="Not Supported";
+
+if("caches" in window){
+
+try{
+
+const keys=
+await caches.keys();
+
+cacheText=`Caches Found: ${keys.length}\n\n`;
+
+for(let k of keys){
+
+const c=
+await caches.open(k);
+
+const req=
+await c.keys();
+
+cacheText+=`
+${k}
+Entries: ${req.length}
+
+`;
+
+}
+
+}catch(e){
+
+cacheText=e.message;
+
+}
+
+}
+
+document.getElementById("cache").textContent=cacheText;
+
+
+/* INDEXED DB */
+
+let dbText="Not Supported";
+
+if(indexedDB.databases){
+
+try{
+
+const dbs=
+await indexedDB.databases();
+
+dbText=
+`Databases Found: ${dbs.length}\n\n`;
+
+dbs.forEach(db=>{
+
+dbText+=`
+Name: ${db.name}
+Version: ${db.version}
+
+`;
+
+});
+
+}catch(e){
+
+dbText=e.message;
+
+}
+
+}
+
+document.getElementById("idb").textContent=dbText;
+
+
+/* REFRESH */
+
+let nav=
+performance.getEntriesByType(
+"navigation"
+)[0];
+
+let refresh=`
+Page Loaded:
+${new Date().toLocaleString()}
+
+Document Last Modified:
+${document.lastModified}
+
+Navigation Type:
+${nav ? nav.type : "Unknown"}
+
+Page URL:
+${location.href}
+`;
+
+document.getElementById("refresh")
+.textContent=refresh;
+
+}
+
+loadInfo();
+
+</script>
+
+</body>
+</html>
