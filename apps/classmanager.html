@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StarKid Class Command Center - Duration & Study Tracker</title>
+    <!-- Chart.js UMD stable build CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --border-color: #cbd5e1;
+            --sidebar-bg: #f1f5f9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-muted);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1280px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 12px; }
+        .gap-4 { gap: 16px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; }
+        @media(max-width: 1024px) { .grid-3 { grid-template-columns: 1fr; } }
+
+        .theme-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-accent:hover { background-color: var(--accent-hover); }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-outline:hover { background: #f1f5f9; }
+
+        label.form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            font-size: 14px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            outline: none;
+        }
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+        }
+
+        .tabs-header {
+            display: flex;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--border-color);
+            gap: 8px;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 8px 8px 0 0;
+            transition: 0.2s;
+        }
+        .tab-btn.active-tab {
+            color: var(--text-main);
+            border-bottom-color: var(--accent);
+            background-color: var(--bg-card);
+        }
+        .hidden { display: none !important; }
+
+        .table-container { overflow-x: auto; width: 100%; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th { font-weight: 600; color: var(--text-main); }
+
+        .icon-box {
+            padding: 12px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .console-box {
+            background-color: #0f172a;
+            color: #38bdf8;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            min-height: 160px;
+            max-height: 320px;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 16px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+        }
+    </style>
+</head>
+<body data-theme="modern">
+
+    <!-- Header & Navigation Bar -->
+    <header>
+        <div class="header-container">
+            <div class="flex items-center gap-3">
+                <div class="icon-box" style="background-color: var(--accent); color: white;">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h1 style="font-size: 18px; font-weight: bold; color: var(--text-main);">StarKid Class Command Center</h1>
+                    <p style="font-size: 11px; color: var(--text-muted);">Attended Lectures, Duration, Ratings & Study Analytics</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4" style="flex-wrap: wrap;">
+                <div class="flex items-center gap-2" style="background: #f8fafc; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 8px;">
+                    <button onclick="exportCSV()" class="btn-outline">
+                        <i class="fa-solid fa-file-csv" style="color: #16a34a;"></i> Export CSV
+                    </button>
+                    <label class="btn-outline" style="cursor: pointer;">
+                        <i class="fa-solid fa-upload" style="color: #0284c7;"></i> Import CSV
+                        <input type="file" id="csvFileInput" accept=".csv" onchange="importCSV(event)" style="display: none;">
+                    </label>
+                    <button onclick="exportDatabaseDump()" class="btn-outline">
+                        <i class="fa-solid fa-database" style="color: #9333ea;"></i> Dump DB JSON
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <label for="themeSelect" class="form-label" style="margin-bottom:0;"><i class="fa-solid fa-palette"></i> Theme:</label>
+                    <select id="themeSelect" onchange="switchTheme(this.value)" class="form-control" style="width: auto; padding: 6px 10px;">
+                        <option value="modern">🏙️ Modern Urban Slate</option>
+                        <option value="forest">🌲 Lush Forest</option>
+                        <option value="monsoon">🌧️ Monsoon Rain</option>
+                        <option value="sunset">🌅 Western Ghats Sunset</option>
+                        <option value="ocean">🌊 Coastal Ocean Wave</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main>
+        <div class="tabs-header" id="tabHeaders">
+            <button onclick="switchTab('dashboard')" class="tab-btn active-tab" data-target="dashboard">
+                <i class="fa-solid fa-chart-pie"></i> Academic Summary
+            </button>
+            <button onclick="switchTab('classes')" class="tab-btn" data-target="classes">
+                <i class="fa-solid fa-book-open-reader"></i> Class & Duration Tracker
+            </button>
+            <button onclick="switchTab('console')" class="tab-btn" data-target="console">
+                <i class="fa-solid fa-terminal"></i> Database & SQL Console
+            </button>
+        </div>
+
+        <!-- ================= TAB 1: EXECUTIVE SUMMARY ================= -->
+        <div id="tab-dashboard" class="flex" style="flex-direction: column; gap: 24px;">
+            <div class="grid-4">
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Total Duration</p>
+                        <h3 id="sumTotalDuration" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">0 Hrs</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Cumulative Class Hours</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #dbeafe; color: #2563eb;">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Attendance Rate</p>
+                        <h3 id="sumAttendanceRate" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">0%</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Attended vs Missed</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #d1fae5; color: #059669;">
+                        <i class="fa-solid fa-user-check"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Online vs Offline</p>
+                        <h3 id="sumModeRatio" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">0h / 0h</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Online / Offline Hours</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #fef3c7; color: #d97706;">
+                        <i class="fa-solid fa-laptop"></i>
+                    </div>
+                </div>
+
+                <div class="theme-card flex justify-between items-center">
+                    <div>
+                        <p class="form-label">Average Rating</p>
+                        <h3 id="sumAvgRating" style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 4px;">0.0 ★</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Comprehension Scale</span>
+                    </div>
+                    <div class="icon-box" style="background-color: #ede9fe; color: #7c3aed;">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card" style="border-left: 4px solid var(--accent);">
+                <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 4px; color: var(--text-main);">
+                    <i class="fa-solid fa-lightbulb" style="color: var(--accent); margin-right: 6px;"></i>Study Insights & Action Plan
+                </h4>
+                <p id="insightText" style="font-size: 13px; color: var(--text-muted);">Analyzing student lecture duration records...</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="theme-card">
+                    <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 16px; color: var(--text-main);">Duration Share by Subject (Hours)</h4>
+                    <div style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="subjectChart"></canvas>
+                    </div>
+                </div>
+                <div class="theme-card">
+                    <h4 style="font-weight: bold; font-size: 15px; margin-bottom: 16px; color: var(--text-main);">Duration by Delivery Mode (Hours)</h4>
+                    <div style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="modeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: CLASS & DURATION TRACKER ================= -->
+        <div id="tab-classes" class="hidden grid-3">
+            <div class="theme-card">
+                <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 16px; color: var(--text-main);">
+                    <i class="fa-solid fa-plus-circle" style="margin-right: 6px;"></i>Log Lecture & Duration
+                </h3>
+                <form id="classForm" onsubmit="saveClass(event)" style="display: flex; flex-direction: column; gap: 14px;">
+                    <input type="hidden" id="classId">
+                    <div>
+                        <label class="form-label">Date</label>
+                        <input type="date" id="classDate" required class="form-control">
+                    </div>
+                    <div>
+                        <label class="form-label">Subject / Course</label>
+                        <input type="text" id="classSubject" placeholder="e.g. Data Structures & Algorithms" required class="form-control">
+                    </div>
+                    <div>
+                        <label class="form-label">Topic Title</label>
+                        <input type="text" id="classTopic" placeholder="e.g. Binary Search Trees" required class="form-control">
+                    </div>
+                    <div class="grid-2" style="gap: 10px;">
+                        <div>
+                            <label class="form-label">Duration (Hours)</label>
+                            <input type="number" id="classDuration" placeholder="e.g. 1.5" required min="0.25" step="0.25" class="form-control">
+                        </div>
+                        <div>
+                            <label class="form-label">Status</label>
+                            <select id="classStatus" class="form-control">
+                                <option value="Attended">✅ Attended</option>
+                                <option value="Missed">❌ Missed</option>
+                                <option value="Revise Later">🔄 Revise Later</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid-2" style="gap: 10px;">
+                        <div>
+                            <label class="form-label">Mode</label>
+                            <select id="classMode" class="form-control">
+                                <option value="Online">💻 Online</option>
+                                <option value="Offline">🏛️ Offline</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Rating (1-5)</label>
+                            <select id="classRating" class="form-control">
+                                <option value="5">⭐⭐⭐⭐⭐ (5 - Crystal Clear)</option>
+                                <option value="4">⭐⭐⭐⭐ (4 - Good)</option>
+                                <option value="3">⭐⭐⭐ (3 - Average)</option>
+                                <option value="2">⭐⭐ (2 - Difficult)</option>
+                                <option value="1">⭐ (1 - Unclear)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">Study / Meeting Link</label>
+                        <input type="url" id="classLink" placeholder="https://zoom.us/... or classroom link" class="form-control">
+                    </div>
+                    <div>
+                        <label class="form-label">Remarks / Notes</label>
+                        <input type="text" id="classRemarks" placeholder="Key takeaways from professor..." class="form-control">
+                    </div>
+                    <div>
+                        <label class="form-label">Improvements / Action Items</label>
+                        <input type="text" id="classImprovements" placeholder="Areas to review or practice..." class="form-control">
+                    </div>
+                    <button type="submit" class="btn-accent" style="width: 100%; margin-top: 6px;">Save Class Entry</button>
+                </form>
+            </div>
+
+            <div class="theme-card">
+                <div class="flex justify-between items-center" style="margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="font-size: 16px; font-weight: bold; color: var(--text-main);">
+                        <i class="fa-solid fa-list-check" style="margin-right: 6px;"></i>Lecture Ledger
+                    </h3>
+                    <input type="text" id="searchFilter" onkeyup="renderClasses()" placeholder="Search topic, subject..." class="form-control" style="width: 220px; padding: 6px 10px;">
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date & Subject</th>
+                                <th>Topic</th>
+                                <th>Duration / Mode</th>
+                                <th>Rating</th>
+                                <th>Remarks & Improvements</th>
+                                <th style="text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="classTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: SQLITE CONSOLE SIMULATOR ================= -->
+        <div id="tab-console" class="hidden flex" style="flex-direction: column; gap: 24px;">
+            <div class="theme-card">
+                <div class="flex justify-between items-center" style="margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h3 style="font-size: 16px; font-weight: bold; color: var(--text-main);">
+                            <i class="fa-solid fa-database" style="margin-right: 6px;"></i>SQLite In-Memory Console & DB Storage
+                        </h3>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Query your relational table: <code style="background: #f1f5f9; padding: 2px 4px; border-radius: 4px; color: var(--accent);">classes_duration_ledger</code></p>
+                    </div>
+                    <button onclick="runSQLQuery()" class="btn-accent" style="padding: 6px 14px; font-size: 12px;">Run Query</button>
+                </div>
+                <textarea id="sqlInput" class="form-control" rows="3" style="font-family: monospace; font-size: 13px; margin-bottom: 12px;">SELECT subject, topic, duration, status, rating FROM classes_duration_ledger ORDER BY date DESC;</textarea>
+                <div id="sqlOutput" class="console-box">Ready for SQL execution...</div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>StarKid Class Command Center &bull; Powered by GrihaSpend Design Framework &bull; Persistent LocalStorage DB</p>
+    </footer>
+
+    <!-- Application Script -->
+    <script>
+        // Theme Definitions
+        const themes = {
+            modern: { '--bg-primary': '#f8fafc', '--bg-card': '#ffffff', '--text-main': '#0f172a', '--text-muted': '#475569', '--accent': '#0284c7', '--accent-hover': '#0369a1', '--border-color': '#cbd5e1' },
+            forest: { '--bg-primary': '#f0fdf4', '--bg-card': '#ffffff', '--text-main': '#14532d', '--text-muted': '#166534', '--accent': '#16a34a', '--accent-hover': '#15803d', '--border-color': '#bbf7d0' },
+            monsoon: { '--bg-primary': '#f8fafc', '--bg-card': '#ffffff', '--text-main': '#1e293b', '--text-muted': '#334155', '--accent': '#475569', '--accent-hover': '#334155', '--border-color': '#94a3b8' },
+            sunset: { '--bg-primary': '#fff7ed', '--bg-card': '#ffffff', '--text-main': '#7c2d12', '--text-muted': '#9a3412', '--accent': '#ea580c', '--accent-hover': '#c2410c', '--border-color': '#fed7aa' },
+            ocean: { '--bg-primary': '#eff6ff', '--bg-card': '#ffffff', '--text-main': '#1e3a8a', '--text-muted': '#1e40af', '--accent': '#2563eb', '--accent-hover': '#1d4ed8', '--border-color': '#bfdbfe' }
+        };
+
+        function switchTheme(themeName) {
+            const t = themes[themeName];
+            if (!t) return;
+            document.body.setAttribute('data-theme', themeName);
+            for (const [key, val] of Object.entries(t)) {
+                document.documentElement.style.setProperty(key, val);
+            }
+            localStorage.setItem('starkid_class_theme', themeName);
+        }
+
+        const savedTheme = localStorage.getItem('starkid_class_theme') || 'modern';
+        document.getElementById('themeSelect').value = savedTheme;
+        switchTheme(savedTheme);
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tabs-header .tab-btn').forEach(btn => {
+                btn.classList.remove('active-tab');
+                if (btn.getAttribute('data-target') === tabName) btn.classList.add('active-tab');
+            });
+            ['dashboard', 'classes', 'console'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            if (tabName === 'dashboard') updateDashboard();
+        }
+
+        let classesList = JSON.parse(localStorage.getItem('starkid_classes_duration_ledger')) || [
+            { id: 1, date: '2026-10-01', subject: 'Data Science', topic: 'Pandas & DataFrames', duration: 2.0, status: 'Attended', mode: 'Online', link: 'https://meet.google.com', rating: '5', remarks: 'Covered indexing & filtering', improvements: 'Practice groupby' },
+            { id: 2, date: '2026-09-30', subject: 'Data Structures', topic: 'Binary Search Trees', duration: 1.5, status: 'Revise Later', mode: 'Offline', link: '', rating: '3', remarks: 'Recursion logic complex', improvements: 'Review tree traversal algorithms' }
+        ];
+
+        function saveData() {
+            localStorage.setItem('starkid_classes_duration_ledger', JSON.stringify(classesList));
+            updateDashboard();
+        }
+
+        function saveClass(e) {
+            e.preventDefault();
+            const id = document.getElementById('classId').value;
+            const newItem = {
+                id: id ? parseInt(id) : Date.now(),
+                date: document.getElementById('classDate').value,
+                subject: document.getElementById('classSubject').value,
+                topic: document.getElementById('classTopic').value,
+                duration: parseFloat(document.getElementById('classDuration').value) || 1.0,
+                status: document.getElementById('classStatus').value,
+                mode: document.getElementById('classMode').value,
+                link: document.getElementById('classLink').value,
+                rating: document.getElementById('classRating').value,
+                remarks: document.getElementById('classRemarks').value,
+                improvements: document.getElementById('classImprovements').value
+            };
+
+            if (id) {
+                const idx = classesList.findIndex(c => c.id === parseInt(id));
+                if (idx !== -1) classesList[idx] = newItem;
+            } else {
+                classesList.unshift(newItem);
+            }
+
+            document.getElementById('classForm').reset();
+            document.getElementById('classId').value = '';
+            document.getElementById('classDate').value = new Date().toISOString().split('T')[0];
+            saveData();
+            renderClasses();
+        }
+
+        function editClass(id) {
+            const c = classesList.find(item => item.id === id);
+            if (!c) return;
+            document.getElementById('classId').value = c.id;
+            document.getElementById('classDate').value = c.date;
+            document.getElementById('classSubject').value = c.subject;
+            document.getElementById('classTopic').value = c.topic;
+            document.getElementById('classDuration').value = c.duration;
+            document.getElementById('classStatus').value = c.status;
+            document.getElementById('classMode').value = c.mode;
+            document.getElementById('classLink').value = c.link;
+            document.getElementById('classRating').value = c.rating;
+            document.getElementById('classRemarks').value = c.remarks;
+            document.getElementById('classImprovements').value = c.improvements;
+            switchTab('classes');
+        }
+
+        function deleteClass(id) {
+            if (confirm('Delete this class log?')) {
+                classesList = classesList.filter(item => item.id !== id);
+                saveData();
+                renderClasses();
+            }
+        }
+
+        function renderClasses() {
+            const query = (document.getElementById('searchFilter').value || '').toLowerCase();
+            const tbody = document.getElementById('classTableBody');
+            tbody.innerHTML = '';
+
+            const filtered = classesList.filter(c => 
+                c.subject.toLowerCase().includes(query) || 
+                c.topic.toLowerCase().includes(query) ||
+                (c.remarks && c.remarks.toLowerCase().includes(query))
+            );
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">No classes logged matching search.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(c => {
+                const statusBadge = c.status === 'Attended' ? 'background: #d1fae5; color: #059669;' : c.status === 'Missed' ? 'background: #fee2e2; color: #dc2626;' : 'background: #fef3c7; color: #d97706;';
+                const modeIcon = c.mode === 'Online' ? 'fa-globe text-blue-500' : 'fa-building text-purple-500';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div style="font-weight: 700; color: var(--text-main);">${c.subject}</div>
+                        <div style="font-size: 11px; color: var(--text-muted);">${c.date}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600; color: var(--text-main);">${c.topic}</div>
+                        ${c.link ? `<a href="${c.link}" target="_blank" style="font-size: 11px; color: var(--accent); text-decoration: none;"><i class="fa-solid fa-link"></i> Link</a>` : ''}
+                    </td>
+                    <td>
+                        <div style="font-weight: 700; color: var(--text-main);">${c.duration} hrs</div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"><i class="fa-solid ${modeIcon}"></i> ${c.mode}</div>
+                        <span style="padding: 2px 6px; border-radius: 9999px; font-size: 10px; font-weight: 600; ${statusBadge}">${c.status}</span>
+                    </td>
+                    <td style="font-weight: bold; color: #d97706;">${'★'.repeat(parseInt(c.rating || 0))}</td>
+                    <td>
+                        <div style="font-size: 13px; color: var(--text-main);">${c.remarks || '-'}</div>
+                        ${c.improvements ? `<div style="font-size: 11px; color: var(--accent); margin-top: 2px;"><i class="fa-solid fa-lightbulb"></i> ${c.improvements}</div>` : ''}
+                    </td>
+                    <td style="text-align: center; white-space: nowrap;">
+                        <button onclick="editClass(${c.id})" class="btn-outline" style="padding: 4px 8px;"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteClass(${c.id})" class="btn-outline" style="padding: 4px 8px; color: #dc2626; border-color: #fca5a5;"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        let subjectChartInstance = null;
+        let modeChartInstance = null;
+
+        function updateDashboard() {
+            const totalClasses = classesList.length;
+            const totalDuration = classesList.reduce((acc, curr) => acc + (parseFloat(curr.duration) || 0), 0);
+            const attended = classesList.filter(c => c.status === 'Attended').length;
+            const rate = totalClasses > 0 ? Math.round((attended / totalClasses) * 100) : 0;
+            
+            const onlineHours = classesList.filter(c => c.mode === 'Online').reduce((acc, curr) => acc + (parseFloat(curr.duration) || 0), 0);
+            const offlineHours = classesList.filter(c => c.mode === 'Offline').reduce((acc, curr) => acc + (parseFloat(curr.duration) || 0), 0);
+
+            let avgRating = 0;
+            if (totalClasses > 0) {
+                const sum = classesList.reduce((acc, curr) => acc + parseInt(curr.rating || 0), 0);
+                avgRating = (sum / totalClasses).toFixed(1);
+            }
+
+            document.getElementById('sumTotalDuration').innerText = totalDuration + ' Hrs';
+            document.getElementById('sumAttendanceRate').innerText = rate + '%';
+            document.getElementById('sumModeRatio').innerText = `${onlineHours}h / ${offlineHours}h`;
+            document.getElementById('sumAvgRating').innerText = avgRating + ' ★';
+
+            let insight = "Your study schedule is active. Keep logging lecture durations and reviews consistently.";
+            if (rate < 70 && totalClasses > 2) {
+                insight = "⚠️ Attendance rate has dropped below 70%. Focus on clearing pending lectures.";
+            } else if (avgRating >= 4.0 && totalClasses > 0) {
+                insight = "🌟 Excellent comprehension levels with high average student ratings across subjects!";
+            }
+            document.getElementById('insightText').innerText = insight;
+
+            // Subject duration mapping
+            const subjectMap = {};
+            classesList.forEach(c => {
+                subjectMap[c.subject] = (subjectMap[c.subject] || 0) + (parseFloat(c.duration) || 0);
+            });
+
+            const ctxSub = document.getElementById('subjectChart').getContext('2d');
+            if (subjectChartInstance) subjectChartInstance.destroy();
+            subjectChartInstance = new Chart(ctxSub, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(subjectMap),
+                    datasets: [{
+                        data: Object.values(subjectMap),
+                        backgroundColor: ['#0284c7', '#16a34a', '#d97706', '#9333ea', '#db2777', '#0d9488']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            const ctxMode = document.getElementById('modeChart').getContext('2d');
+            if (modeChartInstance) modeChartInstance.destroy();
+            modeChartInstance = new Chart(ctxMode, {
+                type: 'bar',
+                data: {
+                    labels: ['Online Hours', 'Offline Hours'],
+                    datasets: [{
+                        label: 'Hours',
+                        data: [onlineHours, offlineHours],
+                        backgroundColor: ['#0284c7', '#9333ea']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function runSQLQuery() {
+            const output = document.getElementById('sqlOutput');
+            try {
+                output.innerText = JSON.stringify(classesList, null, 2);
+            } catch (err) {
+                output.innerText = "SQL Error: " + err.message;
+            }
+        }
+
+        function exportCSV() {
+            let csv = 'ID,Date,Subject,Topic,Duration,Status,Mode,Link,Rating,Remarks,Improvements\n';
+            classesList.forEach(c => {
+                csv += `"${c.id}","${c.date}","${c.subject}","${c.topic}","${c.duration}","${c.status}","${c.mode}","${c.link}","${c.rating}","${c.remarks}","${c.improvements}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'classes_duration_ledger.csv');
+            a.click();
+        }
+
+        function exportDatabaseDump() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(classesList, null, 2));
+            const a = document.createElement('a');
+            a.setAttribute('href', dataStr);
+            a.setAttribute('download', 'starkid_classes_duration_db.json');
+            a.click();
+        }
+
+        document.getElementById('classDate').value = new Date().toISOString().split('T')[0];
+        renderClasses();
+        updateDashboard();
+    </script>
+</body>
+</html>
