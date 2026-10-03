@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Ludo - Entry Safe Zone Edition</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            font-family: 'Comic Sans MS', 'Bubblegum Sans', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: #fff;
+        }
+        h1 {
+            color: #f1c40f;
+            text-shadow: 2px 2px #000;
+            margin: 5px 0 10px 0;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            color: #2f3542;
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .setup-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            text-align: center;
+            width: 100%;
+        }
+        .setup-screen select, .name-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            border: 2px solid #2e86de;
+            font-family: inherit;
+            outline: none;
+        }
+        .name-inputs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            margin-top: 5px;
+        }
+        .name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .board-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1 / 1;
+            border: 4px solid #2e86de;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+            transition: transform 0.5s ease-in-out;
+        }
+        .board-wrapper.flipped {
+            transform: rotate(180deg);
+        }
+        .board-wrapper.flipped canvas {
+            transform: rotate(180deg);
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            cursor: pointer;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+        .status {
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: #2f3542;
+            text-align: center;
+            min-height: 45px;
+        }
+        .action-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .dice {
+            width: 55px;
+            height: 55px;
+            background: #fff;
+            border: 3px solid #2e86de;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            color: #000;
+        }
+        .dice.rolling {
+            animation: shake 0.2s infinite;
+        }
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .btn {
+            background-color: #2ed573;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #26af5f;
+            transition: all 0.1s ease;
+            font-family: inherit;
+        }
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #26af5f;
+        }
+        .btn:disabled {
+            background-color: #a4b0be;
+            box-shadow: 0 4px 0 #747d8c;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-flip {
+            background-color: #3742fa;
+            box-shadow: 0 4px 0 #2f3542;
+        }
+        
+        .rankings-panel {
+            width: 100%;
+            background: #f1f2f6;
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        .rankings-panel h4 {
+            margin: 0 0 5px 0;
+            color: #2f3542;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-bottom: 1px solid #dfe4ea;
+            font-weight: bold;
+        }
+        .ranking-item:last-child { border-bottom: none; }
+
+        .winner-display {
+            width: 100%;
+            background: #d4edda;
+            border: 2px solid #2ed573;
+            color: #155724;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 10px;
+            animation: bounce 0.5s infinite alternate;
+        }
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-3px); }
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 5px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .token-sample {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 2px solid white;
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <h1>🎲 Pro Ludo Arena (Safe Entry Spots) 👑</h1>
+    
+    <div class="game-container">
+        <!-- Setup Screen -->
+        <div class="setup-screen" id="setupScreen">
+            <h3>Ludo Game Setup</h3>
+            <label style="font-size: 0.95rem; font-weight: bold; text-align: left; width: 100%;">Select Players Mode:</label>
+            <select id="playerCount" onchange="updateNameInputs()">
+                <option value="1">1 Player (vs Robot 🤖)</option>
+                <option value="2">2 Players</option>
+                <option value="3">3 Players</option>
+                <option value="4" selected>4 Players</option>
+            </select>
+            
+            <label style="font-size: 0.95rem; font-weight: bold; text-align: left; width: 100%; margin-top: 5px;">Enter Player Names:</label>
+            <div class="name-inputs-container" id="nameInputsContainer"></div>
+
+            <button class="btn" style="margin-top: 10px;" onclick="startGame()">START LUDO</button>
+        </div>
+
+        <!-- Main Game Area -->
+        <div id="gameArea" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <div class="board-wrapper" id="boardWrapper">
+                <canvas id="ludoCanvas" width="400" height="400"></canvas>
+            </div>
+
+            <div class="controls">
+                <div class="status" id="status">Player 1's Turn! Roll the dice.</div>
+                
+                <div class="action-bar">
+                    <div class="dice" id="diceBox">🎲</div>
+                    <button class="btn" id="rollBtn" onclick="rollDice()">ROLL</button>
+                    <button class="btn btn-flip" onclick="flipBoard()" title="Flip board">🔄 Flip</button>
+                </div>
+
+                <!-- Winner Display Box -->
+                <div id="winnerBox" class="winner-display hidden"></div>
+
+                <!-- Live Rankings Panel -->
+                <div class="rankings-panel">
+                    <h4>🏆 Live Rankings (Tokens Home)</h4>
+                    <div id="rankingsList"></div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                    <button class="btn" style="background-color: #ffa502; box-shadow: 0 4px 0 #e67e22; font-size: 0.85rem; padding: 6px 12px;" onclick="resetGameSetup()">New Setup</button>
+                </div>
+                <div class="legend" id="legend"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const defaultNames = ["Red", "Green", "Yellow", "Blue"];
+        let totalPlayers = 4;
+        let playerNames = [];
+        let playerTokens = []; 
+        let currentPlayerIndex = 0;
+        let isRolling = false;
+        let isFlipped = false;
+        let gameOver = false;
+        let lastRolledValue = 0;
+        let waitingForUserMove = false;
+
+        const baseColors = ['#e74c3c', '#2ecc71', '#f1c40f', '#3498db'];
+
+        function updateNameInputs() {
+            let count = parseInt(document.getElementById('playerCount').value);
+            let container = document.getElementById('nameInputsContainer');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < count; i++) {
+                let defName = (count === 1 && i === 1) ? "Robot 🤖" : defaultNames[i];
+                container.innerHTML += `
+                    <div class="name-row">
+                        <span class="token-sample" style="background:${baseColors[i]}; flex-shrink: 0;"></span>
+                        <input type="text" class="name-input" id="pName_${i}" value="${defName}" placeholder="Player ${i+1} Name">
+                    </div>`;
+            }
+        }
+        updateNameInputs();
+
+        function startGame() {
+            let selectedCount = parseInt(document.getElementById('playerCount').value);
+            playerNames = [];
+            for (let i = 0; i < selectedCount; i++) {
+                let val = document.getElementById(`pName_${i}`).value.trim();
+                playerNames.push(val !== "" ? val : defaultNames[i]);
+            }
+            if (selectedCount === 1) {
+                playerNames.push("Robot 🤖");
+                totalPlayers = 2;
+            } else {
+                totalPlayers = selectedCount;
+            }
+
+            playerTokens = [];
+            for (let p = 0; p < totalPlayers; p++) {
+                let tokens = [];
+                for (let t = 0; t < 4; t++) {
+                    tokens.push({ id: t, pos: -1 }); 
+                }
+                playerTokens.push(tokens);
+            }
+
+            currentPlayerIndex = 0;
+            isFlipped = false;
+            gameOver = false;
+            lastRolledValue = 0;
+            waitingForUserMove = false;
+
+            document.getElementById('boardWrapper').classList.remove('flipped');
+            document.getElementById('winnerBox').classList.add('hidden');
+            document.getElementById('rollBtn').style.display = 'block';
+
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('gameArea').classList.remove('hidden');
+
+            buildLegend();
+            updateRankings();
+            document.getElementById('status').innerHTML = `<b>${playerNames[currentPlayerIndex]}'s Turn! Roll.</b>`;
+            drawBoard();
+        }
+
+        function resetGameSetup() {
+            document.getElementById('gameArea').classList.add('hidden');
+            document.getElementById('setupScreen').classList.remove('hidden');
+        }
+
+        function flipBoard() {
+            isFlipped = !isFlipped;
+            const wrapper = document.getElementById('boardWrapper');
+            if (isFlipped) wrapper.classList.add('flipped');
+            else wrapper.classList.remove('flipped');
+        }
+
+        function buildLegend() {
+            const legendEl = document.getElementById('legend');
+            legendEl.innerHTML = '';
+            for (let i = 0; i < totalPlayers; i++) {
+                legendEl.innerHTML += `
+                    <div class="player-info">
+                        <span class="token-sample" style="background:${baseColors[i]}"></span> ${playerNames[i]}
+                    </div>`;
+            }
+        }
+
+        function updateRankings() {
+            let rankingsList = document.getElementById('rankingsList');
+            let sorted = [];
+            for (let i = 0; i < totalPlayers; i++) {
+                let homeCount = playerTokens[i].filter(t => t.pos === 56).length;
+                let totalSteps = playerTokens[i].reduce((sum, t) => sum + (t.pos >= 0 ? t.pos : 0), 0);
+                sorted.push({ name: playerNames[i], homeCount: homeCount, score: totalSteps, index: i });
+            }
+            sorted.sort((a, b) => b.homeCount - a.homeCount || b.score - a.score);
+
+            let html = '';
+            sorted.forEach((p, idx) => {
+                html += `
+                    <div class="ranking-item">
+                        <span>${idx + 1}. <span class="token-sample" style="background:${baseColors[p.index]}; width:10px;height:10px;"></span> ${p.name}</span>
+                        <span>🏡 ${p.homeCount}/4 Home</span>
+                    </div>`;
+            });
+            rankingsList.innerHTML = html;
+        }
+
+        const trackPath = [
+            {x: 1, y: 6}, {x: 2, y: 6}, {x: 3, y: 6}, {x: 4, y: 6}, {x: 5, y: 6},
+            {x: 6, y: 5}, {x: 6, y: 4}, {x: 6, y: 3}, {x: 6, y: 2}, {x: 6, y: 1}, {x: 6, y: 0},
+            {x: 7, y: 0}, {x: 8, y: 0},
+            {x: 8, y: 1}, {x: 8, y: 2}, {x: 8, y: 3}, {x: 8, y: 4}, {x: 8, y: 5},
+            {x: 9, y: 6}, {x: 10, y: 6}, {x: 11, y: 6}, {x: 12, y: 6}, {x: 13, y: 6}, {x: 14, y: 6},
+            {x: 14, y: 7}, {x: 14, y: 8},
+            {x: 13, y: 8}, {x: 12, y: 8}, {x: 11, y: 8}, {x: 10, y: 8}, {x: 9, y: 8},
+            {x: 8, y: 9}, {x: 8, y: 10}, {x: 8, y: 11}, {x: 8, y: 12}, {x: 8, y: 13}, {x: 8, y: 14},
+            {x: 7, y: 14}, {x: 6, y: 14},
+            {x: 6, y: 13}, {x: 6, y: 12}, {x: 6, y: 11}, {x: 6, y: 10}, {x: 6, y: 9},
+            {x: 5, y: 8}, {x: 4, y: 8}, {x: 3, y: 8}, {x: 2, y: 8}, {x: 1, y: 8}, {x: 0, y: 8},
+            {x: 0, y: 7}, {x: 0, y: 6}
+        ];
+
+        const homePaths = [
+            [{x:1, y:7}, {x:2, y:7}, {x:3, y:7}, {x:4, y:7}, {x:5, y:7}], // Red
+            [{x:7, y:1}, {x:7, y:2}, {x:7, y:3}, {x:7, y:4}, {x:7, y:5}], // Green
+            [{x:13, y:7}, {x:12, y:7}, {x:11, y:7}, {x:10, y:7}, {x:9, y:7}], // Yellow
+            [{x:7, y:13}, {x:7, y:12}, {x:7, y:11}, {x:7, y:10}, {x:7, y:9}]  // Blue
+        ];
+
+        // Global start indices for each player (where pos = 0 lands on board)
+        const startOffsets = [0, 13, 26, 39];
+
+        function getGlobalTrackIndex(playerIdx, pos) {
+            return (pos + startOffsets[playerIdx]) % 52;
+        }
+
+        function drawBoard(movableTokenIds = []) {
+            const canvas = document.getElementById('ludoCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let size = canvas.width;
+            let cs = size / 15;
+
+            // 1. Draw 4 Home Yards (Bases)
+            ctx.fillStyle = '#e74c3c'; ctx.fillRect(0, 0, cs * 6, cs * 6); // Red
+            ctx.fillStyle = '#2ecc71'; ctx.fillRect(cs * 9, 0, cs * 6, cs * 6); // Green
+            ctx.fillStyle = '#f1c40f'; ctx.fillRect(cs * 9, cs * 9, cs * 6, cs * 6); // Yellow
+            ctx.fillStyle = '#3498db'; ctx.fillRect(0, cs * 9, cs * 6, cs * 6); // Blue
+
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(cs * 1, cs * 1, cs * 4, cs * 4);
+            ctx.fillRect(cs * 10, cs * 1, cs * 4, cs * 4);
+            ctx.fillRect(cs * 10, cs * 10, cs * 4, cs * 4);
+            ctx.fillRect(cs * 1, cs * 10, cs * 4, cs * 4);
+
+            let baseCircles = [[1.5,1.5],[3.5,1.5],[1.5,3.5],[3.5,3.5]];
+            for(let b of baseCircles) {
+                ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.arc(b[0]*cs, b[1]*cs, cs*0.6, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#2ecc71'; ctx.beginPath(); ctx.arc((b[0]+9)*cs, b[1]*cs, cs*0.6, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#f1c40f'; ctx.beginPath(); ctx.arc((b[0]+9)*cs, (b[1]+9)*cs, cs*0.6, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#3498db'; ctx.beginPath(); ctx.arc(b[0]*cs, (b[1]+9)*cs, cs*0.6, 0, Math.PI*2); ctx.fill();
+            }
+
+            // 2. Draw Home Paths
+            for(let pt of homePaths[0]) { ctx.fillStyle = '#e74c3c'; ctx.fillRect(pt.x * cs, pt.y * cs, cs, cs); }
+            for(let pt of homePaths[1]) { ctx.fillStyle = '#2ecc71'; ctx.fillRect(pt.x * cs, pt.y * cs, cs, cs); }
+            for(let pt of homePaths[2]) { ctx.fillStyle = '#f1c40f'; ctx.fillRect(pt.x * cs, pt.y * cs, cs, cs); }
+            for(let pt of homePaths[3]) { ctx.fillStyle = '#3498db'; ctx.fillRect(pt.x * cs, pt.y * cs, cs, cs); }
+
+            // 3. Draw Center Home Triangles
+            ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.moveTo(cs*6, cs*6); ctx.lineTo(cs*7.5, cs*7.5); ctx.lineTo(cs*6, cs*9); ctx.fill();
+            ctx.fillStyle = '#2ecc71'; ctx.beginPath(); ctx.moveTo(cs*6, cs*6); ctx.lineTo(cs*7.5, cs*7.5); ctx.lineTo(cs*9, cs*6); ctx.fill();
+            ctx.fillStyle = '#f1c40f'; ctx.beginPath(); ctx.moveTo(cs*9, cs*6); ctx.lineTo(cs*7.5, cs*7.5); ctx.lineTo(cs*9, cs*9); ctx.fill();
+            ctx.fillStyle = '#3498db'; ctx.beginPath(); ctx.moveTo(cs*6, cs*9); ctx.lineTo(cs*7.5, cs*7.5); ctx.lineTo(cs*9, cs*9); ctx.fill();
+
+            ctx.strokeStyle = '#dcdde1';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 15; i++) {
+                ctx.beginPath(); ctx.moveTo(i * cs, 0); ctx.lineTo(i * cs, size); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0, i * cs); ctx.lineTo(size, i * cs); ctx.stroke();
+            }
+
+            // Standard Star Safe spots ⭐ + Starting Exit safe spots ⭐
+            let globalSafeIndices = [0, 8, 13, 21, 26, 34, 39, 47, startOffsets[0], startOffsets[1], startOffsets[2], startOffsets[3]];
+            
+            ctx.font = `${cs*0.55}px Arial`;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            
+            let drawnSafeCoords = new Set();
+            for(let gIdx of globalSafeIndices) {
+                let pt = trackPath[gIdx % 52];
+                let key = `${pt.x},${pt.y}`;
+                if (!drawnSafeCoords.has(key)) {
+                    drawnSafeCoords.add(key);
+                    ctx.fillText('⭐', (pt.x + 0.5) * cs, (pt.y + 0.5) * cs);
+                }
+            }
+
+            // 4. Draw Stronger 3D Pawns
+            for (let p = 0; p < totalPlayers; p++) {
+                playerTokens[p].forEach((token, tIdx) => {
+                    let coords = getTokenCoordinates(p, token, cs);
+                    if (coords) {
+                        let isHighlighted = (p === currentPlayerIndex && waitingForUserMove && movableTokenIds.includes(tIdx));
+
+                        if (isHighlighted) {
+                            ctx.fillStyle = '#ff4757'; 
+                            ctx.beginPath();
+                            ctx.arc(coords.x, coords.y, cs * 0.45, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+
+                        ctx.lineWidth = 2.5;
+                        ctx.strokeStyle = '#2f3542';
+                        ctx.fillStyle = baseColors[p];
+                        
+                        ctx.beginPath();
+                        ctx.arc(coords.x, coords.y, cs * 0.38, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+
+                        ctx.fillStyle = '#ffffff';
+                        ctx.beginPath();
+                        ctx.arc(coords.x - cs * 0.08, coords.y - cs * 0.08, cs * 0.12, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.fillStyle = '#2f3542';
+                        ctx.font = 'bold 10px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(tIdx + 1, coords.x, coords.y);
+                    }
+                });
+            }
+        }
+
+        function getTokenCoordinates(playerIdx, token, cs) {
+            if (token.pos === -1) {
+                let baseOffsets = [
+                    [[1.5,1.5],[3.5,1.5],[1.5,3.5],[3.5,3.5]], 
+                    [[10.5,1.5],[12.5,1.5],[10.5,3.5],[12.5,3.5]], 
+                    [[10.5,10.5],[12.5,10.5],[10.5,12.5],[12.5,12.5]], 
+                    [[1.5,10.5],[3.5,10.5],[1.5,12.5],[3.5,12.5]]  
+                ];
+                let off = baseOffsets[playerIdx][token.id];
+                return { x: off[0] * cs, y: off[1] * cs };
+            }
+
+            if (token.pos === 56) {
+                let homeCenters = [
+                    {x: 6.8, y: 7.5}, {x: 7.5, y: 6.8}, {x: 8.2, y: 7.5}, {x: 7.5, y: 8.2}
+                ];
+                let hc = homeCenters[playerIdx];
+                return { x: hc.x * cs, y: hc.y * cs };
+            }
+
+            if (token.pos >= 51 && token.pos <= 55) {
+                let hp = homePaths[playerIdx][token.pos - 51];
+                return { x: (hp.x + 0.5) * cs, y: (hp.y + 0.5) * cs };
+            }
+
+            let globalIdx = getGlobalTrackIndex(playerIdx, token.pos);
+            let pt = trackPath[globalIdx] || {x: 7, y: 7};
+            return { x: (pt.x + 0.5) * cs, y: (pt.y + 0.5) * cs };
+        }
+
+        const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+
+        function rollDice() {
+            if (isRolling || gameOver || waitingForUserMove) return;
+            isRolling = true;
+            document.getElementById('rollBtn').disabled = true;
+            
+            const diceBox = document.getElementById('diceBox');
+            diceBox.classList.add('rolling');
+
+            let rollCount = 0;
+            const rollInterval = setInterval(() => {
+                let tempRoll = Math.floor(Math.random() * 6) + 1;
+                diceBox.innerText = diceFaces[tempRoll - 1];
+                rollCount++;
+
+                if (rollCount > 10) {
+                    clearInterval(rollInterval);
+                    diceBox.classList.remove('rolling');
+                    
+                    lastRolledValue = Math.floor(Math.random() * 6) + 1;
+                    diceBox.innerText = diceFaces[lastRolledValue - 1];
+                    
+                    handleTurnLogic(lastRolledValue);
+                }
+            }, 50);
+        }
+
+        function getMovableTokens(pIdx, diceVal) {
+            return playerTokens[pIdx].filter(t => {
+                if (t.pos === -1 && diceVal === 6) return true;
+                if (t.pos >= 0 && t.pos + diceVal <= 56) return true;
+                return false;
+            });
+        }
+
+        function handleTurnLogic(diceVal) {
+            let playerName = playerNames[currentPlayerIndex];
+            let movable = getMovableTokens(currentPlayerIndex, diceVal);
+
+            if (movable.length === 0) {
+                document.getElementById('status').innerHTML = `<b>${playerName} has no moves with ${diceVal}. Passing turn.</b>`;
+                setTimeout(nextTurn, 1200);
+                return;
+            }
+
+            if (playerName.includes("Robot") || movable.length === 1) {
+                let chosen = movable[0];
+                moveTokenStepByStep(currentPlayerIndex, chosen.id, diceVal);
+            } else {
+                waitingForUserMove = true;
+                document.getElementById('status').innerHTML = `<b>${playerName}: Tap one of your glowing pawns to move!</b>`;
+                drawBoard(movable.map(t => t.id));
+            }
+        }
+
+        document.getElementById('ludoCanvas').addEventListener('click', (e) => {
+            if (!waitingForUserMove || gameOver) return;
+
+            const canvas = e.target;
+            const rect = canvas.getBoundingClientRect();
+            let clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            let clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
+            let cs = canvas.width / 15;
+
+            let movable = getMovableTokens(currentPlayerIndex, lastRolledValue);
+
+            for (let t of movable) {
+                let coords = getTokenCoordinates(currentPlayerIndex, t, cs);
+                let distance = Math.hypot(coords.x - clickX, coords.y - clickY);
+                if (distance <= cs * 0.75) {
+                    waitingForUserMove = false;
+                    moveTokenStepByStep(currentPlayerIndex, t.id, lastRolledValue);
+                    break;
+                }
+            }
+        });
+
+        function moveTokenStepByStep(pIdx, tId, steps) {
+            let token = playerTokens[pIdx][tId];
+            
+            if (token.pos === -1 && steps === 6) {
+                token.pos = 0;
+                checkCaptures(pIdx, tId);
+                drawBoard();
+                updateRankings();
+                finalizeTurn(true); 
+                return;
+            }
+
+            let stepCount = 0;
+            let moveInterval = setInterval(() => {
+                if (stepCount < steps && token.pos + 1 <= 56) {
+                    token.pos++;
+                    stepCount++;
+                    drawBoard();
+                    updateRankings();
+                } else {
+                    clearInterval(moveInterval);
+                    checkCaptures(pIdx, tId);
+                    checkWinCondition();
+                }
+            }, 180);
+        }
+
+        function checkCaptures(pIdx, tId) {
+            let activeToken = playerTokens[pIdx][tId];
+            if (activeToken.pos < 0 || activeToken.pos >= 51) return; // Inside home path or base = safe
+
+            let activeGlobalIdx = getGlobalTrackIndex(pIdx, activeToken.pos);
+
+            // Safe zones include standard star safe spots AND all players' starting exit spots
+            let globalSafeIndices = [0, 8, 13, 21, 26, 34, 39, 47, startOffsets[0], startOffsets[1], startOffsets[2], startOffsets[3]];
+            if (globalSafeIndices.includes(activeGlobalIdx)) return;
+
+            let capturedAny = false;
+
+            for (let otherP = 0; otherP < totalPlayers; otherP++) {
+                if (otherP === pIdx) continue;
+
+                playerTokens[otherP].forEach(otherToken => {
+                    if (otherToken.pos >= 0 && otherToken.pos < 51) {
+                        let otherGlobalIdx = getGlobalTrackIndex(otherP, otherToken.pos);
+                        if (activeGlobalIdx === otherGlobalIdx) {
+                            otherToken.pos = -1; // Send back to base
+                            capturedAny = true;
+                            document.getElementById('status').innerHTML = `🔥 <b>${playerNames[pIdx]} captured ${playerNames[otherP]}'s pawn!</b>`;
+                        }
+                    }
+                });
+            }
+
+            if (capturedAny) {
+                drawBoard();
+                updateRankings();
+            }
+        }
+
+        function checkWinCondition() {
+            let homeCount = playerTokens[currentPlayerIndex].filter(t => t.pos === 56).length;
+            if (homeCount === 4) {
+                gameOver = true;
+                let playerName = playerNames[currentPlayerIndex];
+                document.getElementById('status').innerHTML = `🎉 Game Over! 🎉`;
+                let winnerBox = document.getElementById('winnerBox');
+                winnerBox.innerHTML = `👑 LUDO CHAMPION: ${playerName}! 👑`;
+                winnerBox.classList.remove('hidden');
+                document.getElementById('rollBtn').style.display = 'none';
+                return;
+            }
+
+            finalizeTurn(lastRolledValue === 6);
+        }
+
+        function finalizeTurn(rollAgain) {
+            if (gameOver) return;
+
+            if (rollAgain) {
+                document.getElementById('status').innerHTML = `<b>${playerNames[currentPlayerIndex]} rolled a 6! Roll Again!</b>`;
+                isRolling = false;
+                document.getElementById('rollBtn').disabled = false;
+                if (playerNames[currentPlayerIndex].includes("Robot")) {
+                    setTimeout(rollDice, 1000);
+                }
+                return;
+            }
+
+            nextTurn();
+        }
+
+        function nextTurn() {
+            currentPlayerIndex = (currentPlayerIndex + 1) % totalPlayers;
+            document.getElementById('status').innerHTML = `<b>${playerNames[currentPlayerIndex]}'s Turn!</b>`;
+            isRolling = false;
+            waitingForUserMove = false;
+            document.getElementById('rollBtn').disabled = false;
+            drawBoard();
+
+            if (!gameOver && playerNames[currentPlayerIndex].includes("Robot")) {
+                setTimeout(rollDice, 1000);
+            }
+        }
+
+        window.onresize = () => {
+            if (!document.getElementById('gameArea').classList.contains('hidden')) {
+                drawBoard();
+            }
+        };
+    </script>
+</body>
+</html>
