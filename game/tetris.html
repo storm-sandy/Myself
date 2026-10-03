@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Classic Tetris Fullscreen Arcade</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            touch-action: none;
+        }
+
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            background-color: #121417;
+            background-image: 
+                radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(45deg, #181c22 25%, transparent 25%), 
+                linear-gradient(-45deg, #181c22 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #0e1013 75%), 
+                linear-gradient(-45deg, transparent 75%, #0e1013 75%);
+            background-size: 20px 20px, 40px 40px, 40px 40px, 40px 40px, 40px 40px;
+            background-position: 0 0, 0 0, 0 20px, 20px -20px, -20px 0px;
+            
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        h1 {
+            margin: 0 0 4px 0;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            text-align: center;
+            z-index: 10;
+        }
+
+        /* Master Container holding arcade layout */
+        .master-container {
+            display: flex;
+            position: relative;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            height: calc(100vh - 35px);
+            max-width: 600px;
+            padding: 5px;
+            z-index: 10;
+        }
+
+        /* Side Wing Panels filling the side screens */
+        .side-wing {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #14161a;
+            border: 2px solid #282c34;
+            border-radius: 6px;
+            width: 90px;
+            height: 70vh;
+            max-height: 450px;
+            padding: 8px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+        }
+
+        .wing-box {
+            background: #1a1e24;
+            border: 1px solid #333842;
+            border-radius: 4px;
+            width: 100%;
+            padding: 6px 4px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .wing-box h3 {
+            font-size: 0.45rem;
+            color: #888;
+            margin: 0 0 4px 0;
+            letter-spacing: 1px;
+        }
+
+        .wing-canvas-container {
+            width: 64px;
+            height: 64px;
+            background: #000;
+            border: 1px solid #222;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #nextCanvas {
+            display: block;
+        }
+
+        .wing-value {
+            font-size: 0.7rem;
+            color: #00ffcc;
+            font-weight: bold;
+        }
+
+        /* Main Game Board & Top Dashboard Container */
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            background: #181818;
+            border: 3px solid #333;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.9);
+            width: 100%;
+            max-width: 320px;
+            height: 100%;
+            max-height: 80vh;
+        }
+
+        canvas#tetris {
+            display: block;
+            background-color: #000;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Top Dashboard Panel */
+        .top-dashboard {
+            width: 100%;
+            background-color: #121212;
+            border-bottom: 2px solid #282828;
+            padding: 4px;
+            display: flex;
+            justify-content: space-between;
+            gap: 3px;
+            box-sizing: border-box;
+        }
+
+        .panel {
+            background: #202020;
+            padding: 3px 4px;
+            border: 1px solid #383838;
+            text-align: center;
+            flex: 1;
+        }
+
+        .panel h2 {
+            font-size: 0.45rem;
+            margin: 0 0 1px 0;
+            color: #888;
+        }
+
+        .panel span {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        /* Floating & Draggable Gamepad Style Navigation */
+        .floating-gamepad {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            width: 160px;
+            background-color: rgba(22, 22, 22, 0.95);
+            border: 2px solid #444;
+            border-radius: 8px;
+            padding: 6px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            cursor: move;
+        }
+
+        .gamepad-header {
+            font-size: 0.55rem;
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 4px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border-bottom: 1px dashed #333;
+            padding-bottom: 2px;
+        }
+
+        .gamepad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+        }
+
+        .ctrl-btn {
+            background-color: #2c2c2c;
+            color: #fff;
+            border: 2px solid #4a4a4a;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            font-weight: bold;
+            padding: 10px 0;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 3px #111;
+            transition: background 0.1s, transform 0.05s;
+            text-align: center;
+        }
+
+        .ctrl-btn:active, .ctrl-btn.active-touch {
+            background-color: #4a4a4a;
+            transform: translateY(2px);
+            box-shadow: 0 1px #000;
+        }
+
+        .ctrl-btn.wide {
+            grid-column: span 3;
+            background-color: #0b3d91;
+            border-color: #1d5fbc;
+            font-size: 0.7rem;
+            padding: 8px 0;
+        }
+
+        .ctrl-btn.wide:active, .ctrl-btn.wide.active-touch {
+            background-color: #1d5fbc;
+        }
+
+        @media (max-width: 380px) {
+            .side-wing { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>TETRIS ARCADE</h1>
+    
+    <div class="master-container">
+        <div class="side-wing">
+            <div class="wing-box">
+                <h3>NEXT PIECE</h3>
+                <div class="wing-canvas-container">
+                    <canvas id="nextCanvas" width="64" height="64"></canvas>
+                </div>
+            </div>
+            <div class="wing-box">
+                <h3>STATUS</h3>
+                <div class="wing-value" style="color: #00ff00;">ONLINE</div>
+            </div>
+        </div>
+
+        <div class="game-container">
+            <div class="top-dashboard">
+                <div class="panel">
+                    <h2>SCORE</h2>
+                    <span id="score">0</span>
+                </div>
+                <div class="panel">
+                    <h2>LINES</h2>
+                    <span id="lines">0</span>
+                </div>
+                <div class="panel">
+                    <h2>LEVEL</h2>
+                    <span id="level">1</span>
+                </div>
+            </div>
+            <!-- Canvas expanded width to 330px to remove left/right inner black dead columns -->
+            <canvas id="tetris" width="330" height="600"></canvas>
+        </div>
+
+        <div class="side-wing">
+            <div class="wing-box">
+                <h3>HI-SCORE</h3>
+                <div class="wing-value" id="hiScore">0</div>
+            </div>
+            <div class="wing-box">
+                <h3>MODE</h3>
+                <div class="wing-value" style="color: #ff00ff;">CLASSIC</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-gamepad" id="floatingGamepad">
+        <div class="gamepad-header">☰ PAD</div>
+        <div class="gamepad-grid">
+            <button class="ctrl-btn" id="btn-left">←</button>
+            <button class="ctrl-btn" id="btn-rotate">↻</button>
+            <button class="ctrl-btn" id="btn-right">→</button>
+            <button class="ctrl-btn" id="btn-down" style="grid-column: span 3; font-size: 0.7rem; padding: 7px 0;">↓ SOFT DROP</button>
+            <button class="ctrl-btn wide" id="btn-drop">⤓ HARD DROP</button>
+        </div>
+    </div>
+
+<script>
+    const canvas = document.getElementById('tetris');
+    const context = canvas.getContext('2d');
+    context.scale(30, 30);
+
+    const nextCanvas = document.getElementById('nextCanvas');
+    const nextContext = nextCanvas.getContext('2d');
+    nextContext.scale(16, 16);
+
+    const ROWS = 20;
+    const COLS = 11; // Expanded to 11 columns to fill the canvas width entirely from edge to edge
+
+    const COLORS = [
+        null,
+        '#FF0D72', // T
+        '#0DC2FF', // I
+        '#0DFF72', // S
+        '#F538FF', // Z
+        '#FF8E0D', // L
+        '#FFE138', // O
+        '#3877FF'  // J
+    ];
+
+    const SHAPES = [
+        null,
+        [[0, 1, 0], [1, 1, 1], [0, 0, 0]], 
+        [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], 
+        [[0, 1, 1], [1, 1, 0], [0, 0, 0]], 
+        [[1, 1, 0], [0, 1, 1], [0, 0, 0]], 
+        [[0, 0, 1], [1, 1, 1], [0, 0, 0]], 
+        [[1, 1], [1, 1]],                  
+        [[1, 0, 0], [1, 1, 1], [0, 0, 0]]  
+    ];
+
+    function createMatrix(w, h) {
+        const matrix = [];
+        while (h--) {
+            matrix.push(new Array(w).fill(0));
+        }
+        return matrix;
+    }
+
+    const arena = createMatrix(COLS, ROWS);
+
+    const player = {
+        pos: { x: 0, y: 0 },
+        matrix: null,
+        score: 0,
+        lines: 0,
+        level: 1,
+        type: 0
+    };
+
+    let nextPieceType = Math.floor(Math.random() * 7) + 1;
+    let hiScore = 0;
+    let dropCounter = 0;
+    let dropInterval = 1000;
+    let lastTime = 0;
+    let gameOver = false;
+
+    function resetPlayer() {
+        player.type = nextPieceType;
+        player.matrix = SHAPES[player.type];
+        nextPieceType = Math.floor(Math.random() * 7) + 1;
+        
+        player.pos.y = 0;
+        player.pos.x = Math.floor((COLS - player.matrix[0].length) / 2);
+
+        if (collide(arena, player)) {
+            gameOver = true;
+        }
+    }
+
+    function collide(arena, player) {
+        const [m, o] = [player.matrix, player.pos];
+        for (let y = 0; y < m.length; ++y) {
+            for (let x = 0; x < m[y].length; ++x) {
+                if (m[y][x] !== 0 &&
+                   (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function merge(arena, player) {
+        player.matrix.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value !== 0) {
+                    arena[y + player.pos.y][x + player.pos.x] = player.type;
+                }
+            });
+        });
+    }
+
+    function arenaSweep() {
+        let rowCount = 0;
+        outer: for (let y = arena.length - 1; y > 0; --y) {
+            for (let x = 0; x < arena[y].length; ++x) {
+                if (arena[y][x] === 0) {
+                    continue outer;
+                }
+            }
+            const row = arena.splice(y, 1)[0].fill(0);
+            arena.unshift(row);
+            ++y;
+            rowCount++;
+        }
+
+        if (rowCount > 0) {
+            const linePoints = [0, 40, 100, 300, 1200];
+            player.score += linePoints[rowCount] * player.level;
+            player.lines += rowCount;
+            
+            player.level = Math.floor(player.lines / 10) + 1;
+            dropInterval = Math.max(100, 1000 - (player.level - 1) * 90);
+
+            if (player.score > hiScore) {
+                hiScore = player.score;
+                document.getElementById('hiScore').innerText = hiScore;
+            }
+
+            updateScore();
+        }
+    }
+
+    function rotate(matrix, dir) {
+        const h = matrix.length;
+        for (let y = 0; y < h; ++y) {
+            for (let x = 0; x < y; ++x) {
+                [matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]];
+            }
+        }
+        if (dir > 0) {
+            matrix.forEach(row => row.reverse());
+        } else {
+            matrix.reverse();
+        }
+    }
+
+    function playerRotate(dir) {
+        const posX = player.pos.x;
+        let offset = 1;
+        rotate(player.matrix, dir);
+        while (collide(arena, player)) {
+            player.pos.x += offset;
+            offset = -(offset + (offset > 0 ? 1 : -1));
+            if (offset > player.matrix[0].length) {
+                rotate(player.matrix, -dir);
+                player.pos.x = posX;
+                return;
+            }
+        }
+    }
+
+    function playerMove(dir) {
+        player.pos.x += dir;
+        if (collide(arena, player)) {
+            player.pos.x -= dir;
+        }
+    }
+
+    function playerDrop() {
+        player.pos.y++;
+        if (collide(arena, player)) {
+            player.pos.y--;
+            merge(arena, player);
+            resetPlayer();
+            arenaSweep();
+        }
+        dropCounter = 0;
+    }
+
+    function playerHardDrop() {
+        while (!collide(arena, player)) {
+            player.pos.y++;
+        }
+        player.pos.y--;
+        merge(arena, player);
+        resetPlayer();
+        arenaSweep();
+        dropCounter = 0;
+    }
+
+    function getGhostY() {
+        const originalY = player.pos.y;
+        while (!collide(arena, player)) {
+            player.pos.y++;
+        }
+        const ghostY = player.pos.y - 1;
+        player.pos.y = originalY;
+        return ghostY;
+    }
+
+    function drawMatrix(matrix, offset, ctx = context, isGhost = false) {
+        matrix.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value !== 0) {
+                    ctx.fillStyle = isGhost ? 'rgba(255, 255, 255, 0.15)' : COLORS[value];
+                    ctx.fillRect(x + offset.x, y + offset.y, 1, 1);
+                    
+                    if (!isGhost && ctx === context) {
+                        ctx.lineWidth = 0.05;
+                        ctx.strokeStyle = '#000';
+                        ctx.strokeRect(x + offset.x, y + offset.y, 1, 1);
+                    }
+                }
+            });
+        });
+    }
+
+    function drawNext() {
+        nextContext.fillStyle = '#000';
+        nextContext.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+        const matrix = SHAPES[nextPieceType];
+        const w = matrix[0].length;
+        const h = matrix.length;
+        const offsetX = (4 - w) / 2;
+        const offsetY = (4 - h) / 2;
+        drawMatrix(matrix, { x: offsetX, y: offsetY }, nextContext);
+    }
+
+    function draw() {
+        context.fillStyle = '#000';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        context.strokeStyle = '#151515';
+        context.lineWidth = 0.02;
+        for (let i = 0; i <= COLS; i++) {
+            context.beginPath();
+            context.moveTo(i, 0);
+            context.lineTo(i, ROWS);
+            context.stroke();
+        }
+        for (let j = 0; j <= ROWS; j++) {
+            context.beginPath();
+            context.moveTo(0, j);
+            context.lineTo(COLS, j);
+            context.stroke();
+        }
+
+        drawMatrix(arena, { x: 0, y: 0 });
+        
+        if (!gameOver) {
+            const ghostY = getGhostY();
+            drawMatrix(player.matrix, { x: player.pos.x, y: ghostY }, context, true);
+            drawMatrix(player.matrix, player.pos);
+        } else {
+            context.fillStyle = 'rgba(0, 0, 0, 0.85)';
+            context.fillRect(0, 0, COLS, ROWS);
+
+            context.fillStyle = '#FF0D72';
+            context.font = '1px "Courier New"';
+            context.textAlign = 'center';
+            context.fillText('GAME OVER', COLS / 2, ROWS / 2 - 1);
+
+            context.fillStyle = '#FFF';
+            context.font = '0.45px "Courier New"';
+            context.fillText('Tap Drop to Restart', COLS / 2, ROWS / 2 + 1);
+        }
+        drawNext();
+    }
+
+    function updateScore() {
+        document.getElementById('score').innerText = player.score;
+        document.getElementById('lines').innerText = player.lines;
+        document.getElementById('level').innerText = player.level;
+    }
+
+    function update(time = 0) {
+        const deltaTime = time - lastTime;
+        lastTime = time;
+
+        if (!gameOver) {
+            dropCounter += deltaTime;
+            if (dropCounter > dropInterval) {
+                playerDrop();
+            }
+        }
+
+        draw();
+        requestAnimationFrame(update);
+    }
+
+    function restartGame() {
+        arena.forEach(row => row.fill(0));
+        player.score = 0;
+        player.lines = 0;
+        player.level = 1;
+        dropInterval = 1000;
+        updateScore();
+        gameOver = false;
+        resetPlayer();
+    }
+
+    document.addEventListener('keydown', event => {
+        if (gameOver) {
+            if (event.key === 'Enter') restartGame();
+            return;
+        }
+        if (event.key === 'ArrowLeft') playerMove(-1);
+        else if (event.key === 'ArrowRight') playerMove(1);
+        else if (event.key === 'ArrowDown') playerDrop();
+        else if (event.key === 'ArrowUp') playerRotate(1);
+        else if (event.key === ' ') playerHardDrop();
+    });
+
+    function setupButton(id, action) {
+        const btn = document.getElementById(id);
+        let interval = null;
+
+        const trigger = (e) => {
+            e.stopPropagation();
+            if (gameOver) {
+                if (id === 'btn-drop' || id === 'btn-down') restartGame();
+                return;
+            }
+            action();
+        };
+
+        btn.addEventListener('pointerdown', (e) => {
+            trigger(e);
+            btn.classList.add('active-touch');
+            if (id === 'btn-left' || id === 'btn-right' || id === 'btn-down') {
+                interval = setInterval(action, 140);
+            }
+        });
+
+        const clear = () => {
+            btn.classList.remove('active-touch');
+            if (interval) {
+                clearInterval(interval);
+                interval = null;
+            }
+        };
+
+        btn.addEventListener('pointerup', clear);
+        btn.addEventListener('pointerleave', clear);
+        btn.addEventListener('pointercancel', clear);
+    }
+
+    setupButton('btn-left', () => playerMove(-1));
+    setupButton('btn-right', () => playerMove(1));
+    setupButton('btn-down', () => playerDrop());
+    setupButton('btn-rotate', () => playerRotate(1));
+    setupButton('btn-drop', () => {
+        if (gameOver) restartGame();
+        else playerHardDrop();
+    });
+
+    const gamepad = document.getElementById('floatingGamepad');
+    let isDragging = false;
+    let startX, startY, initialX, initialY;
+
+    gamepad.addEventListener('pointerdown', (e) => {
+        if (e.target.tagName === 'BUTTON') return;
+
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        
+        const rect = gamepad.getBoundingClientRect();
+        initialX = rect.left;
+        initialY = rect.top;
+
+        gamepad.setPointerCapture(e.pointerId);
+    });
+
+    gamepad.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        let newX = initialX + dx;
+        let newY = initialY + dy;
+
+        const maxX = window.innerWidth - gamepad.offsetWidth;
+        const maxY = window.innerHeight - gamepad.offsetHeight;
+
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
+
+        gamepad.style.left = `${newX}px`;
+        gamepad.style.top = `${newY}px`;
+        gamepad.style.right = 'auto';
+        gamepad.style.bottom = 'auto';
+    });
+
+    const stopDragging = (e) => {
+        if (isDragging) {
+            isDragging = false;
+            try { gamepad.releasePointerCapture(e.pointerId); } catch (err) {}
+        }
+    };
+
+    gamepad.addEventListener('pointerup', stopDragging);
+    gamepad.addEventListener('pointercancel', stopDragging);
+
+    resetPlayer();
+    updateScore();
+    update();
+</script>
+
+</body>
+</html>
