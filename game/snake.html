@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Snake & Ladder - Live Rankings Edition!</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            font-family: 'Comic Sans MS', 'Bubblegum Sans', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        h1 {
+            color: #ff4757;
+            text-shadow: 2px 2px #fff;
+            margin: 5px 0 10px 0;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .setup-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            text-align: center;
+            width: 100%;
+        }
+        .setup-screen select, .name-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            border: 2px solid #ffa502;
+            font-family: inherit;
+            outline: none;
+        }
+        .name-inputs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            margin-top: 5px;
+        }
+        .name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .board-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1 / 1;
+            border: 4px solid #ffa502;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+            transition: transform 0.5s ease-in-out;
+        }
+        .board-wrapper.flipped {
+            transform: rotate(180deg);
+        }
+        .board-wrapper.flipped .cell-content-wrapper,
+        .board-wrapper.flipped .token-container {
+            transform: rotate(180deg);
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+        .cell {
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            border: 1px solid rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .cell-content-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 100%;
+            height: 100%;
+            padding: 2px;
+            transition: transform 0.5s ease-in-out;
+        }
+        .cell:nth-child(even) { background-color: #f1f2f6; }
+        .cell:nth-child(odd) { background-color: #dfe4ea; }
+        
+        .cell.ladder-start { background-color: #d4edda !important; }
+        .cell.snake-start { background-color: #f8d7da !important; }
+
+        .cell-badge {
+            font-size: 0.5rem;
+            line-height: 1;
+            font-weight: bold;
+        }
+
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+        .status {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2f3542;
+            text-align: center;
+            min-height: 40px;
+        }
+        .action-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .dice {
+            width: 55px;
+            height: 55px;
+            background: #fff;
+            border: 3px solid #ff4757;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .dice.rolling {
+            animation: shake 0.2s infinite;
+        }
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .btn {
+            background-color: #2ed573;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #26af5f;
+            transition: all 0.1s ease;
+            font-family: inherit;
+        }
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #26af5f;
+        }
+        .btn:disabled {
+            background-color: #a4b0be;
+            box-shadow: 0 4px 0 #747d8c;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-flip {
+            background-color: #3742fa;
+            box-shadow: 0 4px 0 #2f3542;
+        }
+        
+        /* Rankings & Winner Panel */
+        .rankings-panel {
+            width: 100%;
+            background: #f1f2f6;
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        .rankings-panel h4 {
+            margin: 0 0 5px 0;
+            color: #2f3542;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-bottom: 1px solid #dfe4ea;
+            font-weight: bold;
+        }
+        .ranking-item:last-child { border-bottom: none; }
+
+        .winner-display {
+            width: 100%;
+            background: #d4edda;
+            border: 2px solid #2ed573;
+            color: #155724;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 10px;
+            animation: bounce 0.5s infinite alternate;
+        }
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-3px); }
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 5px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .token-sample {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 2px solid white;
+        }
+        
+        .token-1 { background-color: #ff4757; }
+        .token-2 { background-color: #2e86de; }
+        .token-3 { background-color: #eccc68; }
+        .token-4 { background-color: #2ed573; }
+        .token-5 { background-color: #9b59b6; }
+
+        .token-container {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 28px;
+            gap: 1px;
+            justify-content: flex-end;
+            z-index: 10;
+            transition: transform 0.5s ease-in-out;
+        }
+        .token {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            border: 1px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <h1>🐍 Snake & Ladder Arena 🪜</h1>
+    
+    <div class="game-container">
+        <!-- Setup Screen -->
+        <div class="setup-screen" id="setupScreen">
+            <h3>Game Setup</h3>
+            <label style="font-size: 0.95rem; font-weight: bold; text-align: left; width: 100%;">Select Players Mode:</label>
+            <select id="playerCount" onchange="updateNameInputs()">
+                <option value="1">1 Player (vs Robot 🤖)</option>
+                <option value="2" selected>2 Players</option>
+                <option value="3">3 Players</option>
+                <option value="4">4 Players</option>
+                <option value="5">5 Players</option>
+            </select>
+            
+            <label style="font-size: 0.95rem; font-weight: bold; text-align: left; width: 100%; margin-top: 5px;">Enter Player Names:</label>
+            <div class="name-inputs-container" id="nameInputsContainer">
+                <!-- Dynamically generated name fields -->
+            </div>
+
+            <button class="btn" style="margin-top: 10px;" onclick="startGame()">START GAME</button>
+        </div>
+
+        <!-- Main Game Area -->
+        <div id="gameArea" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <div class="board-wrapper" id="boardWrapper">
+                <canvas id="boardCanvas" width="400" height="400"></canvas>
+                <div class="board" id="board"></div>
+            </div>
+
+            <div class="controls">
+                <div class="status" id="status">Player 1's Turn! Roll the dice.</div>
+                
+                <div class="action-bar">
+                    <div class="dice" id="diceBox">🎲</div>
+                    <button class="btn" id="rollBtn" onclick="rollDice()">ROLL</button>
+                    <button class="btn btn-flip" onclick="flipBoard()" title="Flip board">🔄 Flip</button>
+                </div>
+
+                <!-- Winner Display Box -->
+                <div id="winnerBox" class="winner-display hidden"></div>
+
+                <!-- Live Rankings Panel -->
+                <div class="rankings-panel">
+                    <h4>🏆 Live Rankings</h4>
+                    <div id="rankingsList"></div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                    <button class="btn" style="background-color: #ffa502; box-shadow: 0 4px 0 #e67e22; font-size: 0.85rem; padding: 6px 12px;" onclick="resetGameSetup()">New Setup</button>
+                </div>
+                <div class="legend" id="legend"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const defaultNames = ["Alex", "Bob", "Charlie", "David", "Emma"];
+        let totalPlayers = 2;
+        let playerNames = [];
+        let playerPositions = [];
+        let currentPlayerIndex = 0;
+        let isRolling = false;
+        let isFlipped = false;
+        let gameOver = false;
+        
+        let snakes = {};
+        let ladders = {};
+        const cells = {};
+
+        // Generate Board Grid HTML
+        const boardEl = document.getElementById('board');
+        for (let row = 9; row >= 0; row--) {
+            for (let col = 0; col < 10; col++) {
+                let cellNum = (row % 2 === 1) ? (row * 10 + (10 - col)) : (row * 10 + col + 1);
+                
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.id = `cell-${cellNum}`;
+                
+                const contentWrapper = document.createElement('div');
+                contentWrapper.className = 'cell-content-wrapper';
+                contentWrapper.id = `content-${cellNum}`;
+                cell.appendChild(contentWrapper);
+
+                boardEl.appendChild(cell);
+                cells[cellNum] = cell;
+            }
+        }
+
+        // Initialize Name Input Fields on load
+        function updateNameInputs() {
+            let count = parseInt(document.getElementById('playerCount').value);
+            let container = document.getElementById('nameInputsContainer');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < count; i++) {
+                let defName = (count === 1 && i === 1) ? "Robot 🤖" : defaultNames[i];
+                container.innerHTML += `
+                    <div class="name-row">
+                        <span class="token-sample token-${i + 1}" style="flex-shrink: 0;"></span>
+                        <input type="text" class="name-input" id="pName_${i}" value="${defName}" placeholder="Player ${i+1} Name">
+                    </div>`;
+            }
+        }
+        updateNameInputs();
+
+        function generateRandomSnakesAndLadders() {
+            snakes = {};
+            ladders = {};
+            let usedSquares = new Set([1, 100]);
+
+            while (Object.keys(ladders).length < 5) {
+                let start = Math.floor(Math.random() * 75) + 2; 
+                let end = start + Math.floor(Math.random() * (98 - start)) + 5;
+                if (end > 99) end = 99;
+                if (end - start < 12) continue;
+
+                if (!usedSquares.has(start) && !usedSquares.has(end)) {
+                    ladders[start] = end;
+                    usedSquares.add(start);
+                    usedSquares.add(end);
+                }
+            }
+
+            while (Object.keys(snakes).length < 5) {
+                let highPos = Math.floor(Math.random() * 80) + 20; 
+                let lowPos = Math.floor(Math.random() * (highPos - 10)) + 2;
+                if (highPos - lowPos < 12) continue;
+
+                if (!usedSquares.has(highPos) && !usedSquares.has(lowPos)) {
+                    snakes[highPos] = lowPos;
+                    usedSquares.add(highPos);
+                    usedSquares.add(lowPos);
+                }
+            }
+        }
+
+        function updateCellVisuals() {
+            for (let i = 1; i <= 100; i++) {
+                let cell = cells[i];
+                let contentWrapper = document.getElementById(`content-${i}`);
+                cell.classList.remove('ladder-start', 'snake-start');
+
+                let html = `<span style="font-size:0.6rem; color:#57606f; font-weight:bold;">${i}</span>`;
+                if (ladders[i]) {
+                    cell.classList.add('ladder-start');
+                    html += `<span class="cell-badge" style="color: #218c74;">🪜L${ladders[i]}</span>`;
+                } else if (snakes[i]) {
+                    cell.classList.add('snake-start');
+                    html += `<span class="cell-badge" style="color: #b33939;">🐍S${snakes[i]}</span>`;
+                }
+                contentWrapper.innerHTML = html;
+            }
+        }
+
+        function startGame() {
+            totalPlayers = parseInt(document.getElementById('playerCount').value);
+            playerNames = [];
+            for (let i = 0; i < totalPlayers; i++) {
+                let val = document.getElementById(`pName_${i}`).value.trim();
+                playerNames.push(val !== "" ? val : `Player ${i+1}`);
+            }
+            if (totalPlayers === 1) {
+                playerNames.push("Robot 🤖");
+                totalPlayers = 2;
+            }
+
+            playerPositions = new Array(totalPlayers).fill(1);
+            currentPlayerIndex = 0;
+            isFlipped = false;
+            gameOver = false;
+            
+            document.getElementById('boardWrapper').classList.remove('flipped');
+            document.getElementById('winnerBox').classList.add('hidden');
+            document.getElementById('rollBtn').style.display = 'block';
+
+            generateRandomSnakesAndLadders();
+            updateCellVisuals();
+
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('gameArea').classList.remove('hidden');
+
+            buildLegend();
+            updateTokens();
+            updateRankings();
+            document.getElementById('status').innerHTML = `<b>${playerNames[currentPlayerIndex]}'s Turn!</b>`;
+            setTimeout(drawGraphics, 50);
+        }
+
+        function resetGameSetup() {
+            document.getElementById('gameArea').classList.add('hidden');
+            document.getElementById('setupScreen').classList.remove('hidden');
+        }
+
+        function flipBoard() {
+            isFlipped = !isFlipped;
+            const wrapper = document.getElementById('boardWrapper');
+            if (isFlipped) wrapper.classList.add('flipped');
+            else wrapper.classList.remove('flipped');
+        }
+
+        function buildLegend() {
+            const legendEl = document.getElementById('legend');
+            legendEl.innerHTML = '';
+            for (let i = 0; i < totalPlayers; i++) {
+                legendEl.innerHTML += `
+                    <div class="player-info">
+                        <span class="token-sample token-${i + 1}"></span> ${playerNames[i]}
+                    </div>`;
+            }
+        }
+
+        function updateRankings() {
+            let rankingsList = document.getElementById('rankingsList');
+            let sorted = [];
+            for (let i = 0; i < totalPlayers; i++) {
+                sorted.push({ name: playerNames[i], pos: playerPositions[i], index: i });
+            }
+            sorted.sort((a, b) => b.pos - a.pos);
+
+            let html = '';
+            sorted.forEach((p, idx) => {
+                html += `
+                    <div class="ranking-item">
+                        <span>${idx + 1}. <span class="token-sample token-${p.index + 1}" style="width:10px;height:10px;"></span> ${p.name}</span>
+                        <span>Square ${p.pos}</span>
+                    </div>`;
+            });
+            rankingsList.innerHTML = html;
+        }
+
+        function drawGraphics() {
+            const canvas = document.getElementById('boardCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const getCoords = (cellNum) => {
+                const cell = cells[cellNum];
+                const rect = cell.getBoundingClientRect();
+                const wrapperRect = canvas.getBoundingClientRect();
+                return {
+                    x: ((rect.left + rect.width / 2) - wrapperRect.left) * (canvas.width / wrapperRect.width),
+                    y: ((rect.top + rect.height / 2) - wrapperRect.top) * (canvas.height / wrapperRect.height)
+                };
+            };
+
+            // Draw Ladders
+            for (let start in ladders) {
+                let p1 = getCoords(parseInt(start));
+                let p2 = getCoords(ladders[start]);
+
+                let angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+                let perpX = Math.cos(angle + Math.PI / 2) * 5;
+                let perpY = Math.sin(angle + Math.PI / 2) * 5;
+
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#8e44ad';
+                ctx.beginPath();
+                ctx.moveTo(p1.x + perpX, p1.y + perpY);
+                ctx.lineTo(p2.x + perpX, p2.y + perpY);
+                ctx.moveTo(p1.x - perpX, p1.y - perpY);
+                ctx.lineTo(p2.x - perpX, p2.y - perpY);
+                ctx.stroke();
+
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#9b59b6';
+                let steps = 5;
+                for (let i = 1; i < steps; i++) {
+                    let rx1 = p1.x + (p2.x - p1.x) * (i / steps) + perpX;
+                    let ry1 = p1.y + (p2.y - p1.y) * (i / steps) + perpY;
+                    let rx2 = p1.x + (p2.x - p1.x) * (i / steps) - perpX;
+                    let ry2 = p1.y + (p2.y - p1.y) * (i / steps) - perpY;
+                    ctx.beginPath();
+                    ctx.moveTo(rx1, ry1);
+                    ctx.lineTo(rx2, ry2);
+                    ctx.stroke();
+                }
+            }
+
+            // Draw Snakes
+            for (let headPosStr in snakes) {
+                let headPos = parseInt(headPosStr);
+                let tailPos = snakes[headPosStr];
+
+                let pHead = getCoords(headPos); 
+                let pTail = getCoords(tailPos); 
+
+                let numDots = 20;
+                let dotColors = ['#e74c3c', '#f1c40f', '#2ecc71', '#3498db', '#9b59b6'];
+                for (let i = 0; i <= numDots; i++) {
+                    let t = i / numDots;
+                    let midX = (1 - t) * (1 - t) * pTail.x + 2 * (1 - t) * t * ((pTail.x + pHead.x)/2 + 20) + t * t * pHead.x;
+                    let midY = (1 - t) * (1 - t) * pTail.y + 2 * (1 - t) * t * ((pTail.y + pHead.y)/2 - 20) + t * t * pHead.y;
+
+                    ctx.fillStyle = dotColors[i % dotColors.length];
+                    ctx.beginPath();
+                    ctx.arc(midX, midY, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.fillStyle = '#e74c3c';
+                ctx.beginPath();
+                ctx.arc(pHead.x, pHead.y, 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(pHead.x - 3, pHead.y - 2, 2.5, 0, Math.PI * 2);
+                ctx.arc(pHead.x + 3, pHead.y - 2, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(pHead.x - 3, pHead.y - 2, 1, 0, Math.PI * 2);
+                ctx.arc(pHead.x + 3, pHead.y - 2, 1, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function updateTokens() {
+            for (let i = 1; i <= 100; i++) {
+                let container = cells[i].querySelector('.token-container');
+                if (container) container.remove();
+            }
+
+            for (let p = 0; p < totalPlayers; p++) {
+                let pos = playerPositions[p];
+                let cell = cells[pos];
+                
+                let container = cell.querySelector('.token-container');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.className = 'token-container';
+                    cell.appendChild(container);
+                }
+
+                const token = document.createElement('div');
+                token.className = `token token-${p + 1}`;
+                container.appendChild(token);
+            }
+        }
+
+        const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+
+        function rollDice() {
+            if (isRolling || gameOver) return;
+            isRolling = true;
+            document.getElementById('rollBtn').disabled = true;
+            
+            const diceBox = document.getElementById('diceBox');
+            diceBox.classList.add('rolling');
+
+            let rollCount = 0;
+            const rollInterval = setInterval(() => {
+                let tempRoll = Math.floor(Math.random() * 6) + 1;
+                diceBox.innerText = diceFaces[tempRoll - 1];
+                rollCount++;
+
+                if (rollCount > 10) {
+                    clearInterval(rollInterval);
+                    diceBox.classList.remove('rolling');
+                    
+                    const diceVal = Math.floor(Math.random() * 6) + 1;
+                    diceBox.innerText = diceFaces[diceVal - 1];
+                    
+                    animateMovement(diceVal);
+                }
+            }, 50);
+        }
+
+        function animateMovement(diceVal) {
+            let targetPos = playerPositions[currentPlayerIndex] + diceVal;
+            if (targetPos > 100) targetPos = 100;
+
+            let stepInterval = setInterval(() => {
+                if (playerPositions[currentPlayerIndex] < targetPos) {
+                    playerPositions[currentPlayerIndex]++;
+                    updateTokens();
+                    updateRankings();
+                } else {
+                    clearInterval(stepInterval);
+                    checkSnakeOrLadder();
+                }
+            }, 200);
+        }
+
+        function checkSnakeOrLadder() {
+            let statusEl = document.getElementById('status');
+            let playerName = playerNames[currentPlayerIndex];
+            let currentPos = playerPositions[currentPlayerIndex];
+            let message = `${playerName} rolled and moved.`;
+
+            if (ladders[currentPos]) {
+                playerPositions[currentPlayerIndex] = ladders[currentPos];
+                message = `Yay! ${playerName} climbed ladder to ${playerPositions[currentPlayerIndex]}! 🪜`;
+                updateTokens();
+                updateRankings();
+            } else if (snakes[currentPos]) {
+                playerPositions[currentPlayerIndex] = snakes[currentPos];
+                message = `Oops! ${playerName} bit by snake down to ${playerPositions[currentPlayerIndex]}! 🐍`;
+                updateTokens();
+                updateRankings();
+            }
+
+            if (playerPositions[currentPlayerIndex] === 100) {
+                gameOver = true;
+                statusEl.innerHTML = `🎉 Game Over! 🎉`;
+                let winnerBox = document.getElementById('winnerBox');
+                winnerBox.innerHTML = `🏆 WINNER: ${playerName}! 🏆`;
+                winnerBox.classList.remove('hidden');
+                document.getElementById('rollBtn').style.display = 'none';
+                return;
+            }
+
+            // Switch turn safely
+            currentPlayerIndex = (currentPlayerIndex + 1) % totalPlayers;
+            statusEl.innerHTML = `${message}<br><b>${playerNames[currentPlayerIndex]}'s Turn!</b>`;
+            
+            isRolling = false;
+            document.getElementById('rollBtn').disabled = false;
+
+            // Trigger Robot AI automatically if it's the Robot's turn
+            if (!gameOver && playerNames[currentPlayerIndex].includes("Robot")) {
+                setTimeout(rollDice, 1000);
+            }
+        }
+
+        window.onresize = () => {
+            if (!document.getElementById('gameArea').classList.contains('hidden')) {
+                drawGraphics();
+            }
+        };
+    </script>
+</body>
+</html>
