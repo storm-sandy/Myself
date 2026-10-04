@@ -1,710 +1,3627 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StarKid Attendance Tracker</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            DEFAULT: 'var(--brand-primary)',
-                            dark: 'var(--brand-dark)',
-                            light: 'var(--brand-light)',
-                            bg: 'var(--brand-bg)'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        :root {
-            --brand-primary: #8b5cf6; /* Vibrant Purple (Default) */
-            --brand-dark: #7c3aed;
-            --brand-light: #ede9fe;
-            --brand-bg: #f5f3ff;
-        }
-        body.theme-rainbow { --brand-primary: #ec4899; --brand-dark: #db2777; --brand-light: #fce7f3; --brand-bg: #fdf2f8; }
-        body.theme-space { --brand-primary: #6366f1; --brand-dark: #4f46e5; --brand-light: #e0e7ff; --brand-bg: #eef2ff; }
-        body.theme-dinosaur { --brand-primary: #10b981; --brand-dark: #059669; --brand-light: #d1fae5; --brand-bg: #ecfdf5; }
-        body.theme-ocean { --brand-primary: #0ea5e9; --brand-dark: #0284c7; --brand-light: #e0f2fe; --brand-bg: #f0f9ff; }
-        body.theme-sunshine { --brand-primary: #f59e0b; --brand-dark: #d97706; --brand-light: #fef3c7; --brand-bg: #fffbeb; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>StarKid Attendance Tracker - Nature Edition</title>
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+
+/* =========================================================
+   NATURE THEME SYSTEM
+   ========================================================= */
+
+:root {
+    --bg-body:#f4f7f4;
+    --surface:#ffffff;
+    --surface-alt:#f9fbf9;
+    --text-main:#2c3e35;
+    --text-muted:#6b7c73;
+    --primary:#2e7d32;
+    --primary-dark:#1b5e20;
+    --primary-light:#e8f5e9;
+    --accent:#f57f17;
+    --accent-bg:#fffde7;
+    --border:#d4e0d4;
+    --border-light:#eaf0ea;
+    --shadow:0 4px 16px rgba(46,125,50,.08);
+    --radius:16px;
+    --radius-sm:10px;
+}
+
+/* =========================================================
+   THEMES
+   ========================================================= */
+
+body.theme-meadow {
+    --bg-body:#f4f7f4;
+    --surface:#fff;
+    --surface-alt:#f9fbf9;
+    --text-main:#2c3e35;
+    --text-muted:#6b7c73;
+    --primary:#2e7d32;
+    --primary-dark:#1b5e20;
+    --primary-light:#e8f5e9;
+    --accent:#f57f17;
+    --accent-bg:#fffde7;
+    --border:#d4e0d4;
+    --border-light:#eaf0ea;
+    --shadow:0 4px 16px rgba(46,125,50,.08);
+}
+
+body.theme-forest {
+    --bg-body:#111c16;
+    --surface:#1a2c22;
+    --surface-alt:#16241b;
+    --text-main:#e2ede5;
+    --text-muted:#93b09c;
+    --primary:#4caf50;
+    --primary-dark:#388e3c;
+    --primary-light:#1e3825;
+    --accent:#ffb74d;
+    --accent-bg:#332612;
+    --border:#294535;
+    --border-light:#1f3327;
+    --shadow:0 4px 16px rgba(0,0,0,.3);
+}
+
+body.theme-earth {
+    --bg-body:#faf6f0;
+    --surface:#fff;
+    --surface-alt:#f5ede2;
+    --text-main:#4a3b32;
+    --text-muted:#8c786d;
+    --primary:#8d5b4c;
+    --primary-dark:#6e4438;
+    --primary-light:#faece9;
+    --accent:#d4a373;
+    --accent-bg:#fefae0;
+    --border:#e6d7cc;
+    --border-light:#f2eae3;
+    --shadow:0 4px 16px rgba(141,91,76,.08);
+}
+
+body.theme-ocean {
+    --bg-body:#f0f7f9;
+    --surface:#fff;
+    --surface-alt:#f4f9fb;
+    --text-main:#1e3a4c;
+    --text-muted:#5a7d92;
+    --primary:#0288d1;
+    --primary-dark:#01579b;
+    --primary-light:#e1f5fe;
+    --accent:#26a69a;
+    --accent-bg:#e0f2f1;
+    --border:#cbe3ed;
+    --border-light:#e4f1f7;
+    --shadow:0 4px 16px rgba(2,136,209,.08);
+}
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+}
+
+body {
+    background:var(--bg-body);
+    color:var(--text-main);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    transition:.3s;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+header {
+    background:var(--primary);
+    color:#fff;
+    box-shadow:var(--shadow);
+}
+
+.header-container {
+    max-width:1100px;
+    margin:auto;
+    padding:16px 20px;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+}
+
+.brand-box {
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.brand-icon {
+    background:rgba(255,255,255,.2);
+    padding:12px;
+    border-radius:var(--radius);
+    font-size:22px;
+}
+
+.brand-title {
+    font-size:20px;
+    font-weight:800;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.brand-badge {
+    background:var(--accent);
+    color:#212121;
+    font-size:11px;
+    padding:3px 8px;
+    border-radius:20px;
+    font-weight:700;
+    text-transform:uppercase;
+}
+
+.brand-subtitle {
+    font-size:12px;
+    opacity:.85;
+    margin-top:2px;
+}
+
+.header-actions {
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:10px;
+}
+
+/* =========================================================
+   BUTTONS / INPUTS
+   ========================================================= */
+
+select,
+button,
+input {
+    font-size:13px;
+    font-weight:600;
+    border-radius:var(--radius-sm);
+    border:1px solid var(--border);
+    padding:8px 12px;
+    background:var(--surface);
+    color:var(--text-main);
+    transition:.2s;
+    cursor:pointer;
+    outline:none;
+}
+
+textarea {
+    font-family:inherit;
+}
+
+select:focus,
+input:focus,
+textarea:focus {
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px var(--primary-light);
+}
+
+.btn-primary {
+    background:var(--accent);
+    color:#212121;
+    border:none;
+    font-weight:700;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+
+.btn-primary:hover {
+    opacity:.9;
+    transform:translateY(-1px);
+}
+
+.btn-secondary {
+    background:rgba(255,255,255,.15);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.3);
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+}
+
+.btn-secondary:hover {
+    background:rgba(255,255,255,.25);
+}
+
+.btn-action {
+    background:var(--surface);
+    color:var(--text-main);
+    border:1px solid var(--border);
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:7px 12px;
+}
+
+.btn-action:hover {
+    background:var(--surface-alt);
+    border-color:var(--primary);
+}
+
+.btn-danger {
+    background:#ffebee;
+    color:#c62828;
+    border:none;
+}
+
+.btn-danger:hover {
+    background:#ffcdd2;
+}
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+main {
+    max-width:1100px;
+    margin:0 auto;
+    padding:24px 20px;
+    flex-grow:1;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+
+.card {
+    background:var(--surface);
+    border-radius:var(--radius);
+    border:1px solid var(--border);
+    padding:20px;
+    box-shadow:var(--shadow);
+}
+
+/* =========================================================
+   KID BAR
+   ========================================================= */
+
+.kid-bar {
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    align-items:center;
+    gap:14px;
+}
+
+.kid-select-group {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    width:100%;
+    max-width:350px;
+}
+
+.kid-select-group select {
+    flex-grow:1;
+    font-weight:700;
+    padding:10px;
+}
+
+.kid-toolbar-btns {
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+.dashboard-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:16px;
+}
+
+.profile-card {
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.profile-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+}
+
+.profile-tag {
+    background:var(--primary-light);
+    color:var(--primary);
+    font-size:11px;
+    padding:3px 8px;
+    border-radius:6px;
+    font-weight:700;
+}
+
+.profile-body {
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-top:12px;
+}
+
+.avatar-box {
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:var(--accent-bg);
+    border:2px solid var(--accent);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    flex-shrink:0;
+}
+
+.profile-footer {
+    margin-top:16px;
+    padding-top:12px;
+    border-top:1px solid var(--border-light);
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    color:var(--text-muted);
+}
+
+.stat-card {
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.stat-label {
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    color:var(--primary);
+    letter-spacing:.5px;
+}
+
+.stat-value-box {
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    margin-top:10px;
+}
+
+.stat-number {
+    font-size:36px;
+    font-weight:900;
+    line-height:1;
+}
+
+.stat-unit {
+    font-size:13px;
+    font-weight:700;
+    color:var(--primary);
+}
+
+.stat-sub {
+    font-size:12px;
+    color:var(--text-muted);
+    margin-top:8px;
+}
+
+.quick-punch-card {
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        var(--primary-dark)
+    );
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.quick-punch-card .stat-label {
+    color:rgba(255,255,255,.8);
+}
+
+.quick-punch-title {
+    font-size:18px;
+    font-weight:900;
+    margin-top:8px;
+}
+
+/* =========================================================
+   CALENDAR HEADER
+   ========================================================= */
+
+.calendar-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--border-light);
+}
+
+.calendar-nav {
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.calendar-month-title {
+    font-weight:800;
+    font-size:14px;
+    width:140px;
+    text-align:center;
+}
+
+/* =========================================================
+   LEGEND
+   ========================================================= */
+
+.legend-row {
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    font-size:12px;
+    color:var(--text-muted);
+    margin-top:12px;
+    align-items:center;
+}
+
+.legend-dot {
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    display:inline-block;
+}
+
+/* =========================================================
+   FIXED 7-COLUMN CALENDAR
+   ========================================================= */
+
+.calendar-grid-header,
+.calendar-grid {
+
+    display:grid;
+
+    /* IMPORTANT:
+       minmax(0,1fr) prevents columns from expanding */
+    grid-template-columns:
+        repeat(7, minmax(0, 1fr));
+
+    width:100%;
+    max-width:100%;
+
+    gap:6px;
+
+    /* prevents browser overflow */
+    min-width:0;
+}
+
+.calendar-grid-header {
+
+    margin-top:16px;
+
+    text-align:center;
+
+    font-size:11px;
+    font-weight:800;
+
+    color:var(--text-muted);
+
+    text-transform:uppercase;
+
+    overflow:hidden;
+}
+
+.calendar-grid {
+
+    margin-top:6px;
+
+    align-items:stretch;
+
+    overflow:hidden;
+}
+
+/* =========================================================
+   DAY BOX
+   ========================================================= */
+
+.cal-cell {
+
+    width:100%;
+    min-width:0;
+
+    /* Square day box */
+    aspect-ratio:1 / 1;
+
+    border-radius:var(--radius-sm);
+
+    border:1px solid var(--border);
+
+    background:var(--surface-alt);
+
+    padding:5px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+
+    cursor:pointer;
+
+    overflow:hidden;
+
+    transition:
+        border-color .2s,
+        transform .2s,
+        box-shadow .2s;
+}
+
+.cal-cell:hover {
+
+    border-color:var(--primary);
+
+    transform:translateY(-1px);
+
+    box-shadow:
+        0 3px 8px rgba(0,0,0,.08);
+}
+
+/* Empty cells before first day */
+
+.cal-cell.empty-cell {
+
+    visibility:hidden;
+
+    pointer-events:none;
+
+    background:transparent;
+
+    border-color:transparent;
+
+    box-shadow:none;
+}
+
+/* Date + mood */
+
+.cal-cell-top {
+
+    width:100%;
+    min-width:0;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:3px;
+
+    font-size:11px;
+
+    font-weight:700;
+
+    line-height:1;
+}
+
+/* Status */
+
+.cal-cell-bottom {
+
+    width:100%;
+    min-width:0;
+
+    font-size:8px;
+
+    line-height:1.1;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    opacity:.9;
+}
+
+/* =========================================================
+   HEATMAP STATUS COLORS
+   ========================================================= */
+
+.status-present {
+    background:#2e7d32;
+    color:#fff;
+    border-color:#1b5e20;
+}
+
+.status-trip {
+    background:#0288d1;
+    color:#fff;
+    border-color:#01579b;
+}
+
+.status-late {
+    background:#f57f17;
+    color:#fff;
+    border-color:#e65100;
+}
+
+.status-absent {
+    background:#c62828;
+    color:#fff;
+    border-color:#b71c1c;
+}
+
+.status-half {
+    background:#7b1fa2;
+    color:#fff;
+    border-color:#4a148c;
+}
+
+.status-holiday {
+    background:var(--border);
+    color:var(--text-muted);
+    border-color:var(--border);
+}
+
+/* =========================================================
+   FILTER
+   ========================================================= */
+
+.filter-bar {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+}
+
+.search-box {
+    position:relative;
+    width:100%;
+    max-width:300px;
+}
+
+.search-box i {
+    position:absolute;
+    left:12px;
+    top:50%;
+    transform:translateY(-50%);
+    color:var(--text-muted);
+}
+
+.search-box input {
+    width:100%;
+    padding-left:36px;
+}
+
+.filter-buttons {
+    display:flex;
+    gap:6px;
+    overflow-x:auto;
+    width:100%;
+    padding-bottom:4px;
+}
+
+.filter-btn {
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:700;
+    background:var(--surface-alt);
+    color:var(--text-muted);
+    border:1px solid var(--border);
+    white-space:nowrap;
+}
+
+.filter-btn.active {
+    background:var(--primary);
+    color:#fff;
+    border-color:var(--primary);
+}
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.table-container {
+    overflow-x:auto;
+    width:100%;
+    border-radius:var(--radius);
+    border:1px solid var(--border);
+    background:var(--surface);
+}
+
+table {
+    width:100%;
+    border-collapse:collapse;
+    text-align:left;
+    min-width:600px;
+}
+
+th {
+    background:var(--surface-alt);
+    padding:12px 16px;
+    font-size:11px;
+    font-weight:800;
+    color:var(--text-muted);
+    text-transform:uppercase;
+    border-bottom:1px solid var(--border);
+}
+
+td {
+    padding:12px 16px;
+    font-size:13px;
+    border-bottom:1px solid var(--border-light);
+}
+
+tr:last-child td {
+    border-bottom:none;
+}
+
+tr:hover td {
+    background:var(--surface-alt);
+}
+
+/* =========================================================
+   BADGES
+   ========================================================= */
+
+.badge {
+    display:inline-flex;
+    align-items:center;
+    padding:3px 10px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:700;
+    border:1px solid transparent;
+}
+
+.badge-Present {
+    background:#e8f5e9;
+    color:#2e7d32;
+    border-color:#c8e6c9;
+}
+
+.badge-SchoolTrip {
+    background:#e1f5fe;
+    color:#0288d1;
+    border-color:#b3e5fc;
+}
+
+.badge-Late {
+    background:#fffde7;
+    color:#f57f17;
+    border-color:#fff9c4;
+}
+
+.badge-SickAbsent {
+    background:#ffebee;
+    color:#c62828;
+    border-color:#ffcdd2;
+}
+
+.badge-HalfDay {
+    background:#f3e5f5;
+    color:#7b1fa2;
+    border-color:#e1bee7;
+}
+
+.badge-Holiday {
+    background:var(--surface-alt);
+    color:var(--text-muted);
+    border:1px solid var(--border);
+}
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state {
+    text-align:center;
+    padding:40px 20px;
+    color:var(--text-muted);
+}
+
+.empty-state i {
+    font-size:40px;
+    margin-bottom:10px;
+    opacity:.5;
+}
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+.modal-overlay {
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.5);
+
+    backdrop-filter:blur(3px);
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    z-index:100;
+
+    padding:16px;
+}
+
+.modal-overlay.active {
+    display:flex;
+}
+
+.modal-box {
+    background:var(--surface);
+
+    border-radius:var(--radius);
+
+    width:100%;
+    max-width:420px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+
+    border:1px solid var(--border);
+
+    overflow:hidden;
+
+    animation:modalPop .2s ease-out;
+}
+
+@keyframes modalPop {
+
+    from {
+        transform:scale(.95);
+        opacity:0;
+    }
+
+    to {
+        transform:scale(1);
+        opacity:1;
+    }
+}
+
+.modal-header {
+    background:var(--surface-alt);
+    padding:16px 20px;
+    border-bottom:1px solid var(--border);
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.modal-title {
+    font-weight:800;
+    font-size:16px;
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.modal-body {
+    padding:20px;
+
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.form-group {
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.form-group label {
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    color:var(--text-muted);
+}
+
+.form-row {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+footer {
+    text-align:center;
+    padding:20px;
+    font-size:12px;
+    color:var(--text-muted);
+    font-weight:600;
+}
+
+.hidden {
+    display:none !important;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (min-width:768px) {
+
+    .calendar-grid-header,
+    .calendar-grid {
+        gap:8px;
+    }
+
+    .cal-cell {
+        padding:7px;
+    }
+
+    .cal-cell-top {
+        font-size:12px;
+    }
+
+    .cal-cell-bottom {
+        font-size:9px;
+    }
+}
+
+@media (max-width:600px) {
+
+    .header-container {
+        padding:14px;
+    }
+
+    main {
+        padding:14px;
+        gap:14px;
+    }
+
+    .card {
+        padding:14px;
+    }
+
+    .brand-title {
+        font-size:17px;
+    }
+
+    .header-actions {
+        width:100%;
+    }
+
+    .header-actions select,
+    .header-actions button {
+        flex:1;
+    }
+
+    .calendar-header {
+        align-items:flex-start;
+    }
+
+    .calendar-nav {
+        width:100%;
+        justify-content:center;
+    }
+
+    .calendar-month-title {
+        flex:1;
+    }
+
+    .legend-row {
+        gap:8px;
+        font-size:10px;
+    }
+}
+
+@media (max-width:420px) {
+
+    .calendar-grid-header,
+    .calendar-grid {
+        gap:4px;
+    }
+
+    .cal-cell {
+        padding:4px;
+        border-radius:8px;
+    }
+
+    .cal-cell-top {
+        font-size:10px;
+    }
+
+    .cal-cell-bottom {
+        font-size:7px;
+    }
+
+    .calendar-grid-header {
+        font-size:9px;
+    }
+
+    .form-row {
+        grid-template-columns:1fr;
+    }
+}
+
+</style>
 </head>
-<body class="bg-indigo-50/50 text-slate-800 min-h-screen flex flex-col font-sans theme-space" id="appBody">
 
-    <!-- Header -->
-    <header id="headerBg" class="bg-indigo-600 text-white shadow-lg transition-colors duration-300">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div id="headerIconBg" class="bg-indigo-700 p-3 rounded-2xl shadow-inner transition-colors duration-300">
-                    <i class="fa-solid fa-graduation-cap text-2xl text-yellow-300 animate-bounce"></i>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-black tracking-tight flex items-center gap-2">
-                        StarKid Attendance <span class="bg-yellow-400 text-indigo-950 text-xs px-2 py-0.5 rounded-full font-bold uppercase shadow-sm">School 2026</span>
-                    </h1>
-                    <p class="text-xs text-indigo-100 font-medium">Track school days, fun moods, and golden star streaks!</p>
-                </div>
-            </div>
-            
-            <div class="flex flex-wrap items-center gap-2">
-                <!-- Theme Selector -->
-                <div class="relative">
-                    <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-indigo-700/90 hover:bg-indigo-700 text-indigo-100 border border-indigo-400/40 text-xs font-bold rounded-xl px-3 py-2 focus:outline-none transition cursor-pointer shadow-sm">
-                        <option value="space">🚀 Outer Space</option>
-                        <option value="rainbow">🌈 Rainbow Magic</option>
-                        <option value="dinosaur">🦖 Dino Jungle</option>
-                        <option value="ocean">🐳 Ocean Explorer</option>
-                        <option value="sunshine">☀️ Sunshine Days</option>
-                    </select>
-                </div>
+<body class="theme-meadow" id="appBody">
 
-                <button onclick="exportJSON()" class="bg-indigo-700/90 hover:bg-indigo-700 text-indigo-100 font-bold px-3 py-2 rounded-xl shadow transition flex items-center gap-1.5 text-xs border border-indigo-400/40" title="Export Backup">
-                    <i class="fa-solid fa-cloud-arrow-down"></i> Backup
-                </button>
-                <button onclick="document.getElementById('importFile').click()" class="bg-indigo-700/90 hover:bg-indigo-700 text-indigo-100 font-bold px-3 py-2 rounded-xl shadow transition flex items-center gap-1.5 text-xs border border-indigo-400/40" title="Restore Backup">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Restore
-                </button>
-                <input type="file" id="importFile" accept=".json" onchange="importJSON(event)" class="hidden">
-                
-                <button onclick="openModal()" class="bg-yellow-400 hover:bg-yellow-300 text-indigo-950 font-black px-4 py-2 rounded-xl shadow-md transition flex items-center gap-2 text-xs">
-                    <i class="fa-solid fa-plus-circle text-base"></i> Add Day Log
-                </button>
-            </div>
-        </div>
-    </header>
+<!-- =========================================================
+     HEADER
+     ========================================================= -->
 
-    <!-- Main Container -->
-    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full space-y-6">
+<header>
 
-        <!-- Student Profile & Quick Check-in Dashboard -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <!-- Student Card -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-indigo-100 flex flex-col justify-between">
-                <div>
-                    <div class="flex justify-between items-start">
-                        <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Student Profile</span>
-                        <span id="studentGradeBadge" class="bg-indigo-50 text-indigo-700 text-xs px-2 py-0.5 rounded-lg font-bold">Grade 5-B</span>
-                    </div>
-                    <div class="mt-2 flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full bg-yellow-100 border-2 border-yellow-300 flex items-center justify-center text-xl shadow-inner">
-                            🎒
-                        </div>
-                        <div>
-                            <h2 id="studentNameDisplay" class="font-bold text-slate-800 text-base">Aarav Sharma</h2>
-                            <p class="text-xs text-slate-400">Roll No: 14</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500">
-                    <span>Teacher: Mrs. D'Souza</span>
-                    <button onclick="editStudentInfo()" class="text-indigo-600 hover:underline font-bold"><i class="fa-solid fa-pen"></i> Edit</button>
-                </div>
-            </div>
+<div class="header-container">
 
-            <!-- Streak Counter Card -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-yellow-100 flex flex-col justify-between">
-                <div>
-                    <p class="text-xs font-bold text-yellow-600 uppercase tracking-wider flex items-center gap-1">
-                        <i class="fa-solid fa-fire text-orange-500"></i> Attendance Streak
-                    </p>
-                    <div class="mt-3 flex items-baseline gap-2">
-                        <span id="streakCount" class="text-4xl font-black text-slate-800">0</span>
-                        <span class="text-sm font-bold text-yellow-600">School Days! 🌟</span>
-                    </div>
-                </div>
-                <p class="text-xs text-slate-400 mt-2">Keep coming to school to grow your star streak!</p>
-            </div>
+<div class="brand-box">
 
-            <!-- Month Summary Card -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-emerald-100 flex flex-col justify-between">
-                <div>
-                    <p class="text-xs font-bold text-emerald-600 uppercase tracking-wider">This Month Present</p>
-                    <div class="mt-3 flex items-baseline gap-2">
-                        <span id="statMonthPresent" class="text-4xl font-black text-slate-800">0</span>
-                        <span class="text-sm font-bold text-emerald-600">days</span>
-                    </div>
-                </div>
-                <p id="statMonthPercentage" class="text-xs text-slate-400 mt-2">100% attendance rate</p>
-            </div>
+<div class="brand-icon">
+<i class="fa-solid fa-seedling" style="color:var(--accent);"></i>
+</div>
 
-            <!-- Quick Today Punch Box -->
-            <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-5 rounded-2xl shadow-md flex flex-col justify-between">
-                <div>
-                    <p class="text-xs font-bold text-indigo-200 uppercase tracking-wider">Today's Quick Check-In</p>
-                    <p id="todayStatusText" class="text-lg font-black mt-2">Not marked yet today</p>
-                </div>
-                <div class="mt-4 flex gap-2">
-                    <button onclick="markTodayPresent()" class="flex-1 bg-yellow-400 hover:bg-yellow-300 text-indigo-950 font-black py-2 px-3 rounded-xl text-xs shadow transition flex items-center justify-center gap-1">
-                        <i class="fa-solid fa-check"></i> Present Today!
-                    </button>
-                </div>
-            </div>
-        </div>
+<div>
 
-        <!-- Monthly Calendar Heat-Map Section -->
-        <div class="bg-white rounded-2xl shadow-sm border-2 border-slate-100 p-6 space-y-4">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-slate-100 pb-4">
-                <div>
-                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-days text-indigo-600"></i> School Attendance Calendar
-                    </h2>
-                    <p class="text-xs text-slate-500">Click any date to log attendance, mood, or school events!</p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <button onclick="changeMonth(-1)" class="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition"><i class="fa-solid fa-chevron-left text-xs"></i></button>
-                    <span id="calendarMonthLabel" class="font-black text-slate-700 text-sm w-36 text-center">October 2026</span>
-                    <button onclick="changeMonth(1)" class="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition"><i class="fa-solid fa-chevron-right text-xs"></i></button>
-                </div>
-            </div>
+<h1 class="brand-title">
+StarKid Attendance
 
-            <!-- Kid-Friendly Legend -->
-            <div class="flex flex-wrap items-center gap-3 text-xs font-medium text-slate-600">
-                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-emerald-500 inline-block shadow-xs"></span> Present</span>
-                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-blue-500 inline-block shadow-xs"></span> School Trip</span>
-                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-amber-500 inline-block shadow-xs"></span> Late</span>
-                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-rose-500 inline-block shadow-xs"></span> Sick / Absent</span>
-                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-purple-500 inline-block shadow-xs"></span> Half Day</span>
-                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-full bg-slate-200 inline-block shadow-xs"></span> Holiday / Weekend</span>
-            </div>
+<span class="brand-badge">
+Nature 2026
+</span>
 
-            <!-- Calendar Grid -->
-            <div class="grid grid-cols-7 gap-2 text-center">
-                <div class="text-xs font-black text-indigo-400 py-1">Mon</div>
-                <div class="text-xs font-black text-indigo-400 py-1">Tue</div>
-                <div class="text-xs font-black text-indigo-400 py-1">Wed</div>
-                <div class="text-xs font-black text-indigo-400 py-1">Thu</div>
-                <div class="text-xs font-black text-indigo-400 py-1">Fri</div>
-                <div class="text-xs font-black text-indigo-400 py-1">Sat</div>
-                <div class="text-xs font-black text-indigo-400 py-1">Sun</div>
-            </div>
-            <div id="calendarGrid" class="grid grid-cols-7 gap-2">
-                <!-- Populated by JavaScript -->
-            </div>
-        </div>
+</h1>
 
-        <!-- Toolbar / Filters -->
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border-2 border-slate-100">
-            <div class="relative w-full sm:w-80">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                    <i class="fa-solid fa-search"></i>
+<p class="brand-subtitle">
+Nurturing daily school habits & joyful learning
+</p>
+
+</div>
+
+</div>
+
+
+<div class="header-actions">
+
+<select id="themeSelector"
+        onchange="changeTheme(this.value)">
+
+<option value="meadow">
+🌿 Morning Meadow
+</option>
+
+<option value="forest">
+🌲 Deep Forest
+</option>
+
+<option value="earth">
+🍂 Earth & Clay
+</option>
+
+<option value="ocean">
+🌊 Ocean Breeze
+</option>
+
+</select>
+
+
+<button onclick="exportJSON()"
+        class="btn-secondary">
+
+<i class="fa-solid fa-cloud-arrow-down"></i>
+Backup
+
+</button>
+
+
+<button onclick="document.getElementById('importFile').click()"
+        class="btn-secondary">
+
+<i class="fa-solid fa-cloud-arrow-up"></i>
+Restore
+
+</button>
+
+<input type="file"
+       id="importFile"
+       accept=".json"
+       onchange="importJSON(event)"
+       class="hidden">
+
+
+<button onclick="openModal()"
+        class="btn-primary">
+
+<i class="fa-solid fa-circle-plus"></i>
+Add Day Log
+
+</button>
+
+</div>
+
+</div>
+
+</header>
+
+
+<!-- =========================================================
+     MAIN
+     ========================================================= -->
+
+<main>
+
+
+<!-- KID SELECTOR -->
+
+<div class="card kid-bar">
+
+<div class="kid-select-group">
+
+<span style="font-size:12px;font-weight:700;color:var(--text-muted);">
+
+<i class="fa-solid fa-child-reaching"></i>
+Active Kid:
+
+</span>
+
+<select id="kidSwitcher"
+        onchange="switchActiveKid(this.value)">
+</select>
+
+</div>
+
+
+<div class="kid-toolbar-btns">
+
+<button onclick="openKidModal('add')"
+        class="btn-action">
+
+<i class="fa-solid fa-user-plus"></i>
+Add Kid
+
+</button>
+
+
+<button onclick="openKidModal('edit')"
+        class="btn-action">
+
+<i class="fa-solid fa-pen"></i>
+Edit
+
+</button>
+
+
+<button onclick="deleteActiveKid()"
+        class="btn-action btn-danger">
+
+<i class="fa-solid fa-trash"></i>
+
+</button>
+
+</div>
+
+</div>
+
+
+<!-- DASHBOARD -->
+
+<div class="dashboard-grid">
+
+
+<!-- PROFILE -->
+
+<div class="card profile-card">
+
+<div>
+
+<div class="profile-header">
+
+<span class="profile-tag">
+Student Profile
+</span>
+
+<span id="studentGradeBadge"
+      class="profile-tag"
+      style="background:var(--surface-alt);color:var(--text-main);">
+
+Grade 5-B
+
+</span>
+
+</div>
+
+
+<div class="profile-body">
+
+<div id="kidAvatarEmoji"
+     class="avatar-box">
+
+🎒
+
+</div>
+
+<div>
+
+<h2 id="studentNameDisplay"
+    style="font-size:16px;font-weight:800;">
+
+Aarav Sharma
+
+</h2>
+
+<p id="studentRollDisplay"
+   style="font-size:12px;color:var(--text-muted);">
+
+Roll No: 14
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="profile-footer">
+
+<span id="studentTeacherDisplay">
+Teacher: Mrs. D'Souza
+</span>
+
+<span style="color:var(--primary);font-weight:700;">
+Active
+</span>
+
+</div>
+
+</div>
+
+
+<!-- MONTH STAT -->
+
+<div class="card stat-card">
+
+<div>
+
+<span class="stat-label">
+This Month Attendance
+</span>
+
+<div class="stat-value-box">
+
+<span id="statMonthPresent"
+      class="stat-number">
+
+0
+
+</span>
+
+<span class="stat-unit">
+days
+</span>
+
+</div>
+
+</div>
+
+<p id="statMonthPercentage"
+   class="stat-sub">
+
+100% attendance rate
+(Half days = 0.5)
+
+</p>
+
+</div>
+
+
+<!-- QUICK CHECK -->
+
+<div class="card quick-punch-card">
+
+<div>
+
+<span class="stat-label">
+Today's Quick Check-In
+</span>
+
+<p id="todayStatusText"
+   class="quick-punch-title">
+
+Not marked yet today
+
+</p>
+
+</div>
+
+
+<div style="margin-top:16px;display:flex;gap:8px;">
+
+<button onclick="markToday('Present')"
+        class="btn-primary"
+        style="flex:1;padding:10px;background:#fff;color:var(--primary-dark);">
+
+<i class="fa-solid fa-check"></i>
+Full Day
+
+</button>
+
+
+<button onclick="markToday('Half Day')"
+        class="btn-primary"
+        style="flex:1;padding:10px;">
+
+<i class="fa-solid fa-clock-rotate-left"></i>
+Half Day
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     CALENDAR
+     ========================================================= -->
+
+<div class="card">
+
+<div class="calendar-header">
+
+<div>
+
+<h2 style="font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px;">
+
+<i class="fa-solid fa-calendar-days"
+   style="color:var(--primary);"></i>
+
+Attendance Calendar
+
+</h2>
+
+<p style="font-size:12px;color:var(--text-muted);margin-top:2px;">
+
+Tap or click any date to log attendance, mood, or school events
+
+</p>
+
+</div>
+
+
+<div class="calendar-nav">
+
+<button onclick="changeMonth(-1)"
+        class="btn-action">
+
+<i class="fa-solid fa-chevron-left"
+   style="font-size:11px;"></i>
+
+</button>
+
+
+<span id="calendarMonthLabel"
+      class="calendar-month-title">
+
+October 2026
+
+</span>
+
+
+<button onclick="changeMonth(1)"
+        class="btn-action">
+
+<i class="fa-solid fa-chevron-right"
+   style="font-size:11px;"></i>
+
+</button>
+
+</div>
+
+</div>
+
+
+<!-- LEGEND -->
+
+<div class="legend-row">
+
+<span>
+<span class="legend-dot"
+      style="background:#2e7d32;"></span>
+Present
+</span>
+
+<span>
+<span class="legend-dot"
+      style="background:#0288d1;"></span>
+School Trip
+</span>
+
+<span>
+<span class="legend-dot"
+      style="background:#f57f17;"></span>
+Late
+</span>
+
+<span>
+<span class="legend-dot"
+      style="background:#c62828;"></span>
+Absent
+</span>
+
+<span>
+<span class="legend-dot"
+      style="background:#7b1fa2;"></span>
+Half Day
+</span>
+
+<span>
+<span class="legend-dot"
+      style="background:var(--border);"></span>
+Holiday
+</span>
+
+</div>
+
+
+<!-- IMPORTANT:
+     Header has exactly 7 columns -->
+<div class="calendar-grid-header">
+
+<div>Mon</div>
+<div>Tue</div>
+<div>Wed</div>
+<div>Thu</div>
+<div>Fri</div>
+<div>Sat</div>
+<div>Sun</div>
+
+</div>
+
+
+<!-- Calendar cells generated here -->
+
+<div id="calendarGrid"
+     class="calendar-grid">
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     SEARCH / FILTER
+     ========================================================= -->
+
+<div class="card filter-bar">
+
+<div class="search-box">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
+<input type="text"
+       id="searchInput"
+       oninput="renderTable()"
+       placeholder="Search date, mood, notes...">
+
+</div>
+
+
+<div class="filter-buttons">
+
+<button onclick="filterByTag('All')"
+        id="filter-All"
+        class="filter-btn active">
+
+All
+
+</button>
+
+
+<button onclick="filterByTag('Present')"
+        id="filter-Present"
+        class="filter-btn">
+
+Present
+
+</button>
+
+
+<button onclick="filterByTag('Half Day')"
+        id="filter-Half Day"
+        class="filter-btn">
+
+Half Day
+
+</button>
+
+
+<button onclick="filterByTag('School Trip')"
+        id="filter-School Trip"
+        class="filter-btn">
+
+Trip
+
+</button>
+
+
+<button onclick="filterByTag('Sick / Absent')"
+        id="filter-Sick / Absent"
+        class="filter-btn">
+
+Absent
+
+</button>
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     TABLE
+     ========================================================= -->
+
+<div class="table-container">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Date</th>
+<th>Daily Mood</th>
+<th>Status</th>
+<th>Teacher Notes / Homework</th>
+<th style="text-align:right;">
+Actions
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="attendanceTableBody">
+</tbody>
+
+</table>
+
+
+<div id="emptyState"
+     class="empty-state hidden">
+
+<i class="fa-solid fa-face-smile"></i>
+
+<p style="font-weight:700;color:var(--text-main);">
+No school attendance records found!
+</p>
+
+<p style="font-size:12px;margin-top:4px;">
+Click "Add Day Log" or click any calendar date to start.
+</p>
+
+</div>
+
+</div>
+
+</main>
+
+
+<!-- =========================================================
+     ATTENDANCE MODAL
+     ========================================================= -->
+
+<div id="attendanceModal"
+     class="modal-overlay">
+
+<div class="modal-box">
+
+<div class="modal-header">
+
+<h3 id="modalTitle"
+    class="modal-title">
+
+<i class="fa-solid fa-seedling"
+   style="color:var(--accent);"></i>
+
+Add Day Log
+
+</h3>
+
+
+<button onclick="closeModal()"
+        style="border:none;background:transparent;font-size:16px;color:var(--text-muted);">
+
+<i class="fa-solid fa-xmark"></i>
+
+</button>
+
+</div>
+
+
+<form id="attendanceForm"
+      onsubmit="saveAttendance(event)"
+      class="modal-body">
+
+
+<input type="hidden"
+       id="logId">
+
+
+<div class="form-group">
+
+<label>
+School Date *
+</label>
+
+<input type="date"
+       id="logDate"
+       required>
+
+</div>
+
+
+<div class="form-row">
+
+
+<div class="form-group">
+
+<label>Status</label>
+
+<select id="logStatus">
+
+<option value="Present">
+🟢 Present
+</option>
+
+<option value="Half Day">
+🟣 Half Day
+</option>
+
+<option value="School Trip">
+🔵 Field Trip
+</option>
+
+<option value="Late">
+🟡 Late Arrival
+</option>
+
+<option value="Sick / Absent">
+🔴 Absent
+</option>
+
+<option value="Holiday">
+⚪ Holiday
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Mood</label>
+
+<select id="logMood">
+
+<option value="😊 Super Happy">
+😊 Super Happy
+</option>
+
+<option value="🥳 Excited">
+🥳 Excited
+</option>
+
+<option value="🎨 Creative">
+🎨 Creative
+</option>
+
+<option value="😴 Tired">
+😴 Tired
+</option>
+
+<option value="🤒 Sick">
+🤒 Sick
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Teacher Notes / Homework
+</label>
+
+<textarea id="logRemarks"
+          rows="3"
+          placeholder="e.g., Left early for dental checkup..."
+          style="resize:vertical;padding:10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text-main);"></textarea>
+
+</div>
+
+
+<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px;">
+
+<button type="button"
+        onclick="closeModal()"
+        class="btn-action">
+
+Cancel
+
+</button>
+
+
+<button type="submit"
+        class="btn-primary"
+        style="padding:8px 16px;">
+
+Save Log
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     KID MODAL
+     ========================================================= -->
+
+<div id="kidModal"
+     class="modal-overlay">
+
+<div class="modal-box">
+
+<div class="modal-header">
+
+<h3 id="kidModalTitle"
+    class="modal-title">
+
+Add New Kid Profile
+
+</h3>
+
+
+<button onclick="closeKidModal()"
+        style="border:none;background:transparent;font-size:16px;color:var(--text-muted);">
+
+<i class="fa-solid fa-xmark"></i>
+
+</button>
+
+</div>
+
+
+<div class="modal-body">
+
+<input type="hidden"
+       id="editKidId">
+
+
+<div class="form-group">
+
+<label>
+Kid Name *
+</label>
+
+<input type="text"
+       id="kidNameInput"
+       required
+       placeholder="e.g. Diya Sharma">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Grade / Class
+</label>
+
+<input type="text"
+       id="kidGradeInput"
+       placeholder="e.g. Grade 3-A">
+
+</div>
+
+
+<div class="form-row">
+
+<div class="form-group">
+
+<label>
+Roll No
+</label>
+
+<input type="text"
+       id="kidRollInput"
+       placeholder="e.g. 08">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Avatar Emoji
+</label>
+
+<select id="kidEmojiInput">
+
+<option value="🎒">
+🎒 School Bag
+</option>
+
+<option value="🌱">
+🌱 Sprout
+</option>
+
+<option value="🦊">
+🦊 Fox
+</option>
+
+<option value="🦉">
+🦉 Owl
+</option>
+
+<option value="🌻">
+🌻 Sunflower
+</option>
+
+<option value="⭐">
+⭐ Star
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Teacher Name
+</label>
+
+<input type="text"
+       id="kidTeacherInput"
+       placeholder="e.g. Mr. Patil">
+
+</div>
+
+
+<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px;">
+
+<button type="button"
+        onclick="closeKidModal()"
+        class="btn-action">
+
+Cancel
+
+</button>
+
+
+<button type="button"
+        onclick="saveKidProfile()"
+        class="btn-primary"
+        style="padding:8px 16px;">
+
+Save Profile
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<footer>
+
+StarKid Attendance Tracker
+&bull;
+Nature Edition
+&bull;
+Rooted in Simplicity 🌿
+
+</footer>
+
+
+<script>
+
+/* =========================================================
+   DATA
+   ========================================================= */
+
+let kids =
+JSON.parse(localStorage.getItem('starkid_nature_kids')) ||
+[
+    {
+        id:'kid_1',
+        name:'Aarav Sharma',
+        grade:'Grade 5-B',
+        roll:'14',
+        emoji:'🎒',
+        teacher:"Mrs. D'Souza"
+    },
+
+    {
+        id:'kid_2',
+        name:'Diya Sharma',
+        grade:'Grade 3-A',
+        roll:'08',
+        emoji:'🌱',
+        teacher:'Mr. Patil'
+    }
+];
+
+
+let activeKidId =
+localStorage.getItem('starkid_nature_active_kid') ||
+(kids.length ? kids[0].id : 'kid_1');
+
+
+let allLogs =
+JSON.parse(localStorage.getItem('starkid_nature_logs')) ||
+{
+
+    kid_1:[
+        {
+            id:'1',
+            date:'2026-10-01',
+            status:'Present',
+            mood:'😊 Super Happy',
+            remarks:'Planted saplings in school garden'
+        },
+
+        {
+            id:'2',
+            date:'2026-09-30',
+            status:'Half Day',
+            mood:'😴 Tired',
+            remarks:'Left after lunch for dentist'
+        }
+    ],
+
+    kid_2:[
+        {
+            id:'201',
+            date:'2026-10-01',
+            status:'Present',
+            mood:'😊 Super Happy',
+            remarks:'Art & craft session'
+        }
+    ]
+
+};
+
+
+let currentFilter = 'All';
+
+
+/*
+   Calendar starts at current month.
+*/
+let calendarDate = new Date();
+
+
+/* =========================================================
+   HEATMAP CLASS MAP
+   ========================================================= */
+
+const heatmapClassMap = {
+
+    'Present':'status-present',
+
+    'School Trip':'status-trip',
+
+    'Late':'status-late',
+
+    'Sick / Absent':'status-absent',
+
+    'Half Day':'status-half',
+
+    'Holiday':'status-holiday'
+
+};
+
+
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+function init() {
+
+    const savedTheme =
+        localStorage.getItem('starkid_nature_theme') ||
+        'meadow';
+
+    document.getElementById('themeSelector').value =
+        savedTheme;
+
+    applyTheme(savedTheme);
+
+    renderKidSwitcher();
+
+    updateActiveKidDisplay();
+
+    renderTable();
+
+    updateStats();
+
+    renderCalendar();
+
+    checkTodayStatus();
+
+}
+
+
+/* =========================================================
+   THEME
+   ========================================================= */
+
+function changeTheme(themeName) {
+
+    localStorage.setItem(
+        'starkid_nature_theme',
+        themeName
+    );
+
+    applyTheme(themeName);
+
+}
+
+
+function applyTheme(themeName) {
+
+    document.body.className =
+        `theme-${themeName}`;
+
+}
+
+
+/* =========================================================
+   KID SWITCHER
+   ========================================================= */
+
+function renderKidSwitcher() {
+
+    const select =
+        document.getElementById('kidSwitcher');
+
+    select.innerHTML = '';
+
+    if (!kids.length) {
+
+        select.innerHTML =
+            '<option value="">No kids added</option>';
+
+        return;
+    }
+
+    kids.forEach(k => {
+
+        const opt =
+            document.createElement('option');
+
+        opt.value = k.id;
+
+        opt.textContent =
+            `${k.emoji} ${k.name} (${k.grade})`;
+
+        if (k.id === activeKidId) {
+
+            opt.selected = true;
+
+        }
+
+        select.appendChild(opt);
+
+    });
+
+}
+
+
+function switchActiveKid(id) {
+
+    if (!id) return;
+
+    activeKidId = id;
+
+    localStorage.setItem(
+        'starkid_nature_active_kid',
+        activeKidId
+    );
+
+    init();
+
+}
+
+
+function getActiveKid() {
+
+    return kids.find(
+        k => k.id === activeKidId
+    ) ||
+    kids[0] ||
+    {
+        name:'Student',
+        grade:'Grade 5',
+        roll:'1',
+        emoji:'🎒',
+        teacher:'Teacher'
+    };
+
+}
+
+
+/* =========================================================
+   UPDATE PROFILE
+   ========================================================= */
+
+function updateActiveKidDisplay() {
+
+    const kid = getActiveKid();
+
+    if (!kid) return;
+
+    document.getElementById(
+        'studentNameDisplay'
+    ).innerText = kid.name;
+
+    document.getElementById(
+        'studentGradeBadge'
+    ).innerText = kid.grade;
+
+    document.getElementById(
+        'studentRollDisplay'
+    ).innerText =
+        `Roll No: ${kid.roll || '-'}`;
+
+    document.getElementById(
+        'kidAvatarEmoji'
+    ).innerText =
+        kid.emoji || '🎒';
+
+    document.getElementById(
+        'studentTeacherDisplay'
+    ).innerText =
+        `Teacher: ${kid.teacher || 'School'}`;
+
+}
+
+
+/* =========================================================
+   TODAY QUICK CHECK
+   ========================================================= */
+
+function markToday(statusChoice) {
+
+    const todayStr =
+        new Date().toISOString().split('T')[0];
+
+    if (!allLogs[activeKidId]) {
+
+        allLogs[activeKidId] = [];
+
+    }
+
+    const logs =
+        allLogs[activeKidId];
+
+    const existing =
+        logs.find(
+            l => l.date === todayStr
+        );
+
+    if (existing) {
+
+        existing.status =
+            statusChoice;
+
+    } else {
+
+        logs.unshift({
+
+            id:Date.now().toString(),
+
+            date:todayStr,
+
+            status:statusChoice,
+
+            mood:'😊 Super Happy',
+
+            remarks:
+                statusChoice === 'Half Day'
+                ? 'Quick check-in half day'
+                : 'Quick check-in present'
+
+        });
+
+    }
+
+    localStorage.setItem(
+        'starkid_nature_logs',
+        JSON.stringify(allLogs)
+    );
+
+    init();
+
+    alert(
+        `Marked as ${statusChoice} for ${getActiveKid().name} today! 🌿`
+    );
+
+}
+
+
+/* =========================================================
+   TODAY STATUS
+   ========================================================= */
+
+function checkTodayStatus() {
+
+    const todayStr =
+        new Date().toISOString().split('T')[0];
+
+    const logs =
+        allLogs[activeKidId] || [];
+
+    const todayLog =
+        logs.find(
+            l => l.date === todayStr
+        );
+
+    const textEl =
+        document.getElementById(
+            'todayStatusText'
+        );
+
+    if (todayLog) {
+
+        textEl.innerText =
+            `${todayLog.status} (${todayLog.mood.split(' ')[0]})`;
+
+    } else {
+
+        textEl.innerText =
+            'Not checked in today';
+
+    }
+
+}
+
+
+/* =========================================================
+   CHANGE CALENDAR MONTH
+   ========================================================= */
+
+function changeMonth(dir) {
+
+    calendarDate.setMonth(
+        calendarDate.getMonth() + dir
+    );
+
+    renderCalendar();
+
+}
+
+
+/* =========================================================
+   CALENDAR RENDER
+   ========================================================= */
+
+function renderCalendar() {
+
+    const grid =
+        document.getElementById(
+            'calendarGrid'
+        );
+
+    const label =
+        document.getElementById(
+            'calendarMonthLabel'
+        );
+
+    grid.innerHTML = '';
+
+    const year =
+        calendarDate.getFullYear();
+
+    const month =
+        calendarDate.getMonth();
+
+    const monthNames = [
+
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+
+    ];
+
+    label.innerText =
+        `${monthNames[month]} ${year}`;
+
+
+    /*
+       JavaScript:
+       Sunday = 0
+       Monday = 1
+
+       We convert it to:
+       Monday = 0
+       Tuesday = 1
+       ...
+       Sunday = 6
+    */
+
+    const firstDayIndex =
+        (
+            new Date(
+                year,
+                month,
+                1
+            ).getDay() + 6
+        ) % 7;
+
+
+    const totalDays =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+
+    const logs =
+        allLogs[activeKidId] || [];
+
+
+    const logMap = {};
+
+
+    logs.forEach(log => {
+
+        logMap[log.date] = log;
+
+    });
+
+
+    /*
+       IMPORTANT FIX:
+       Empty cells still occupy exactly one
+       of the seven grid columns.
+    */
+
+    for (
+        let i = 0;
+        i < firstDayIndex;
+        i++
+    ) {
+
+        const empty =
+            document.createElement('div');
+
+        empty.className =
+            'cal-cell empty-cell';
+
+        grid.appendChild(empty);
+
+    }
+
+
+    /*
+       Create each actual day.
+    */
+
+    for (
+        let day = 1;
+        day <= totalDays;
+        day++
+    ) {
+
+        const dayStr =
+            String(day).padStart(2,'0');
+
+        const monthStr =
+            String(month + 1).padStart(2,'0');
+
+        const fullDateStr =
+            `${year}-${monthStr}-${dayStr}`;
+
+
+        const log =
+            logMap[fullDateStr];
+
+
+        const cell =
+            document.createElement('div');
+
+
+        let cellClass =
+            'cal-cell';
+
+
+        let emoji = '';
+
+
+        if (log) {
+
+            cellClass +=
+                ` ${heatmapClassMap[log.status] || ''}`;
+
+            emoji =
+                log.mood
+                ? log.mood.split(' ')[0]
+                : '🌱';
+
+        }
+
+
+        cell.className =
+            cellClass;
+
+
+        /*
+           Explicitly keep cell inside
+           its grid column.
+        */
+
+        cell.style.width = '100%';
+
+
+        cell.innerHTML = `
+
+            <div class="cal-cell-top">
+
+                <span>
+                    ${day}
                 </span>
-                <input type="text" id="searchInput" oninput="renderTable()" placeholder="Search date, mood, remarks..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+                <span>
+                    ${emoji}
+                </span>
+
             </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-                <span class="text-xs font-bold text-slate-400 mr-1">Filter:</span>
-                <button onclick="filterByTag('All')" id="filter-All" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white transition shadow-sm">All</button>
-                <button onclick="filterByTag('Present')" id="filter-Present" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Present</button>
-                <button onclick="filterByTag('School Trip')" id="filter-School Trip" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Trip</button>
-                <button onclick="filterByTag('Sick / Absent')" id="filter-Sick / Absent" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Absent</button>
+
+            <div class="cal-cell-bottom">
+                ${log ? escapeHtml(log.status) : ''}
             </div>
-        </div>
 
-        <!-- Attendance Logs Table -->
-        <div class="bg-white rounded-2xl shadow-sm border-2 border-slate-100 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-black text-slate-400 uppercase tracking-wider">
-                            <th class="py-3.5 px-4">Date</th>
-                            <th class="py-3.5 px-4">Daily Mood</th>
-                            <th class="py-3.5 px-4">Status</th>
-                            <th class="py-3.5 px-4">Teacher / Homework Notes</th>
-                            <th class="py-3.5 px-4 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="attendanceTableBody" class="divide-y divide-slate-100 text-sm">
-                        <!-- Populated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-            <div id="emptyState" class="hidden text-center py-12">
-                <i class="fa-solid fa-face-smile text-5xl text-indigo-200 mb-3 animate-bounce"></i>
-                <p class="text-slate-600 font-bold">No school attendance records found yet!</p>
-                <p class="text-slate-400 text-xs mt-1">Click "Add Day Log" or click any date on the calendar.</p>
-            </div>
-        </div>
-    </main>
+        `;
 
-    <!-- Add/Edit Modal -->
-    <div id="attendanceModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all border-4 border-indigo-100">
-            <div class="bg-indigo-50 px-6 py-4 border-b border-indigo-100 flex justify-between items-center">
-                <h3 id="modalTitle" class="font-black text-indigo-950 text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-star text-yellow-500"></i> Add School Day Log
-                </h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form id="attendanceForm" onsubmit="saveAttendance(event)" class="p-6 space-y-4">
-                <input type="hidden" id="logId">
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">School Date *</label>
-                    <input type="date" id="logDate" required class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-indigo-500">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Attendance Status</label>
-                        <select id="logStatus" class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-indigo-500 bg-white">
-                            <option value="Present">🟢 Present in School</option>
-                            <option value="School Trip">🔵 School Field Trip</option>
-                            <option value="Late">🟡 Late Arrival</option>
-                            <option value="Sick / Absent">🔴 Sick / Absent</option>
-                            <option value="Half Day">🟣 Half Day</option>
-                            <option value="Holiday">⚪ Holiday / Weekend</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Daily Mood</label>
-                        <select id="logMood" class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-indigo-500 bg-white">
-                            <option value="😊 Super Happy">😊 Super Happy</option>
-                            <option value="🥳 Excited for Trip">🥳 Excited for Trip</option>
-                            <option value="🎨 Creative & Artsy">🎨 Creative & Artsy</option>
-                            <option value="😴 Sleepy / Tired">😴 Sleepy / Tired</option>
-                            <option value="🤒 Sick / Resting">🤒 Sick / Resting</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Teacher Remarks / Homework / Notes</label>
-                    <textarea id="logRemarks" rows="3" placeholder="e.g., Science project submitted, Math quiz tomorrow..." class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-indigo-500"></textarea>
-                </div>
-                <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2.5 border-2 border-slate-200 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-50 transition">Cancel</button>
-                    <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-black shadow-md transition">Save Star Log</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- Edit Student Profile Modal -->
-    <div id="profileModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border-4 border-yellow-100 p-6 space-y-4">
-            <h3 class="font-black text-slate-800 text-lg">Edit Student Profile</h3>
-            <div>
-                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Student Name</label>
-                <input type="text" id="editNameInput" class="w-full px-3 py-2 border-2 border-slate-200 rounded-xl text-sm font-bold">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Grade / Class</label>
-                <input type="text" id="editGradeInput" class="w-full px-3 py-2 border-2 border-slate-200 rounded-xl text-sm font-bold">
-            </div>
-            <div class="flex justify-end gap-2 pt-2">
-                <button onclick="closeProfileModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold">Cancel</button>
-                <button onclick="saveStudentProfile()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">Save</button>
-            </div>
-        </div>
-    </div>
+        cell.onclick =
+            () => {
 
-    <!-- Footer -->
-    <footer class="text-center py-6 text-xs text-slate-400 font-medium">
-        StarKid Attendance Tracker &bull; Designed for Happy School Days 🎒✨
-    </footer>
+                openModalForDate(
+                    fullDateStr,
+                    log
+                );
 
-    <!-- Application Script -->
-    <script>
-        let student = JSON.parse(localStorage.getItem('studentAttendance_profile')) || { name: 'Aarav Sharma', grade: 'Grade 5-B' };
-        let logs = JSON.parse(localStorage.getItem('studentAttendance_logs')) || [
-            { id: '1', date: '2026-10-01', status: 'Present', mood: '😊 Super Happy', remarks: 'Science lab experiment completed' },
-            { id: '2', date: '2026-09-30', status: 'School Trip', mood: '🥳 Excited for Trip', remarks: 'Visited Nehru Planetarium' },
-            { id: '3', date: '2026-09-29', status: 'Present', mood: '🎨 Creative & Artsy', remarks: 'Won 1st prize in drawing competition' },
-            { id: '4', date: '2026-09-28', status: 'Sick / Absent', mood: '🤒 Sick / Resting', remarks: 'Mild fever, doctor advised rest' }
-        ];
-
-        let currentFilter = 'All';
-        let calendarDate = new Date();
-
-        const statusBadges = {
-            'Present': 'bg-emerald-50 text-emerald-700 border-emerald-200',
-            'School Trip': 'bg-blue-50 text-blue-700 border-blue-200',
-            'Late': 'bg-amber-50 text-amber-700 border-amber-200',
-            'Sick / Absent': 'bg-rose-50 text-rose-700 border-rose-200',
-            'Half Day': 'bg-purple-50 text-purple-700 border-purple-200',
-            'Holiday': 'bg-slate-100 text-slate-600 border-slate-200'
-        };
-
-        const heatmapColors = {
-            'Present': 'bg-emerald-500 text-white hover:bg-emerald-600',
-            'School Trip': 'bg-blue-500 text-white hover:bg-blue-600',
-            'Late': 'bg-amber-500 text-white hover:bg-amber-600',
-            'Sick / Absent': 'bg-rose-500 text-white hover:bg-rose-600',
-            'Half Day': 'bg-purple-500 text-white hover:bg-purple-600',
-            'Holiday': 'bg-slate-200 text-slate-600 hover:bg-slate-300'
-        };
-
-        function init() {
-            const savedTheme = localStorage.getItem('studentAttendance_theme') || 'space';
-            document.getElementById('themeSelector').value = savedTheme;
-            applyThemeClasses(savedTheme);
-
-            document.getElementById('studentNameDisplay').innerText = student.name;
-            document.getElementById('studentGradeBadge').innerText = student.grade;
-
-            renderTable();
-            updateStats();
-            renderCalendar();
-            checkTodayStatus();
-        }
-
-        function changeTheme(themeName) {
-            localStorage.setItem('studentAttendance_theme', themeName);
-            applyThemeClasses(themeName);
-        }
-
-        function applyThemeClasses(themeName) {
-            const body = document.getElementById('appBody');
-            body.className = `bg-indigo-50/50 text-slate-800 min-h-screen flex flex-col font-sans theme-${themeName}`;
-
-            const header = document.getElementById('headerBg');
-            const iconBg = document.getElementById('headerIconBg');
-            
-            const themeColorMap = {
-                space: { bg: 'bg-indigo-600', bgDark: 'bg-indigo-700', icon: 'fa-graduation-cap' },
-                rainbow: { bg: 'bg-pink-600', bgDark: 'bg-pink-700', icon: 'fa-rainbow' },
-                dinosaur: { bg: 'bg-emerald-600', bgDark: 'bg-emerald-700', icon: 'fa-paw' },
-                ocean: { bg: 'bg-sky-600', bgDark: 'bg-sky-700', icon: 'fa-water' },
-                sunshine: { bg: 'bg-amber-500', bgDark: 'bg-amber-600', icon: 'fa-sun' }
             };
 
-            const conf = themeColorMap[themeName] || themeColorMap['space'];
-            header.className = `${conf.bg} text-white shadow-lg transition-colors duration-300`;
-            iconBg.className = `${conf.bgDark} p-3 rounded-2xl shadow-inner transition-colors duration-300`;
-            iconBg.innerHTML = `<i class="fa-solid ${conf.icon} text-2xl text-yellow-300 animate-bounce"></i>`;
-        }
 
-        function exportJSON() {
-            const backupData = {
-                app: "StarKid Attendance Tracker",
-                version: "2.0",
-                exportDate: new Date().toISOString(),
-                student: student,
-                logs: logs
-            };
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
-            const downloadAnchor = document.createElement('a');
-            const dateStr = new Date().toISOString().split('T')[0];
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `starkid_attendance_${dateStr}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
+        grid.appendChild(cell);
 
-        function importJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    if (!parsed.logs || !Array.isArray(parsed.logs)) throw new Error("Invalid backup structure.");
-                    if (confirm(`Import ${parsed.logs.length} school attendance logs?`)) {
-                        logs = parsed.logs;
-                        if (parsed.student) student = parsed.student;
-                        localStorage.setItem('studentAttendance_logs', JSON.stringify(logs));
-                        localStorage.setItem('studentAttendance_profile', JSON.stringify(student));
-                        init();
-                        alert("Data successfully restored! 🌟");
-                    }
-                } catch (err) {
-                    alert("Import failed: " + err.message);
-                } finally {
-                    event.target.value = '';
-                }
-            };
-            reader.readAsText(file);
-        }
+    }
 
-        function markTodayPresent() {
-            const todayStr = new Date().toISOString().split('T')[0];
-            const existing = logs.find(l => l.date === todayStr);
-            if (existing) {
-                existing.status = 'Present';
-            } else {
-                logs.unshift({
-                    id: Date.now().toString(),
-                    date: todayStr,
-                    status: 'Present',
-                    mood: '😊 Super Happy',
-                    remarks: 'Quick marked present today!'
-                });
-            }
-            localStorage.setItem('studentAttendance_logs', JSON.stringify(logs));
-            init();
-            alert("Awesome! Marked Present for today! 🌟🎉");
-        }
+}
 
-        function checkTodayStatus() {
-            const todayStr = new Date().toISOString().split('T')[0];
-            const todayLog = logs.find(l => l.date === todayStr);
-            const textEl = document.getElementById('todayStatusText');
-            if (todayLog) {
-                textEl.innerText = `Status: ${todayLog.status} ${todayLog.mood.split(' ')[0]}`;
-            } else {
-                textEl.innerText = 'Not marked yet today!';
-            }
-        }
 
-        function changeMonth(direction) {
-            calendarDate.setMonth(calendarDate.getMonth() + direction);
-            renderCalendar();
-        }
+/* =========================================================
+   OPEN MODAL FROM CALENDAR
+   ========================================================= */
 
-        function renderCalendar() {
-            const grid = document.getElementById('calendarGrid');
-            const label = document.getElementById('calendarMonthLabel');
-            grid.innerHTML = '';
+function openModalForDate(
+    dateStr,
+    existingLog
+) {
 
-            const year = calendarDate.getFullYear();
-            const month = calendarDate.getMonth();
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            label.innerText = `${monthNames[month]} ${year}`;
+    if (existingLog) {
 
-            const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
-            const totalDays = new Date(year, month + 1, 0).getDate();
+        editLog(existingLog.id);
 
-            const logMap = {};
-            logs.forEach(l => { logMap[l.date] = l; });
+    } else {
 
-            for (let i = 0; i < firstDayIndex; i++) {
-                const emptyCell = document.createElement('div');
-                emptyCell.className = 'h-16 rounded-xl bg-slate-50/50 border border-transparent';
-                grid.appendChild(emptyCell);
-            }
+        openModal();
 
-            for (let day = 1; day <= totalDays; day++) {
-                const dayStr = String(day).padStart(2, '0');
-                const monthStr = String(month + 1).padStart(2, '0');
-                const fullDateStr = `${year}-${monthStr}-${dayStr}`;
+        document.getElementById(
+            'logDate'
+        ).value = dateStr;
 
-                const log = logMap[fullDateStr];
-                const cell = document.createElement('div');
+    }
 
-                let colorClass = 'bg-slate-50 text-slate-600 border-2 border-slate-200 hover:bg-slate-100';
-                let emoji = '';
+}
 
-                if (log) {
-                    colorClass = heatmapColors[log.status] || 'bg-slate-200 text-slate-700';
-                    emoji = log.mood ? log.mood.split(' ')[0] : '⭐';
-                }
 
-                cell.className = `h-16 rounded-2xl flex flex-col justify-between p-1.5 text-xs font-bold cursor-pointer transition shadow-xs ${colorClass}`;
-                cell.title = `${fullDateStr}${log ? ' - ' + log.status : ''}`;
-                cell.innerHTML = `
-                    <div class="flex justify-between items-center w-full">
-                        <span class="text-[10px] opacity-80">${emoji}</span>
-                        <span>${day}</span>
-                    </div>
-                    <span class="text-[9px] truncate text-center font-normal opacity-90">${log ? log.status : ''}</span>
-                `;
-                cell.onclick = () => { openModalForDate(fullDateStr, log); };
-                grid.appendChild(cell);
-            }
-        }
+/* =========================================================
+   FILTER
+   ========================================================= */
 
-        function openModalForDate(dateStr, existingLog) {
-            if (existingLog) {
-                editLog(existingLog.id);
-            } else {
-                openModal();
-                document.getElementById('logDate').value = dateStr;
-            }
-        }
+function filterByTag(tag) {
 
-        function filterByTag(tag) {
-            currentFilter = tag;
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('bg-indigo-600', 'text-white');
-                btn.classList.add('bg-slate-100', 'text-slate-600');
-            });
-            const activeBtn = document.getElementById(`filter-${tag}`);
-            if (activeBtn) {
-                activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
-                activeBtn.classList.add('bg-indigo-600', 'text-white');
-            }
-            renderTable();
-        }
+    currentFilter = tag;
 
-        function renderTable() {
-            const tbody = document.getElementById('attendanceTableBody');
-            const emptyState = document.getElementById('emptyState');
-            const search = document.getElementById('searchInput').value.toLowerCase();
+    document
+        .querySelectorAll('.filter-btn')
+        .forEach(btn =>
+            btn.classList.remove('active')
+        );
 
-            tbody.innerHTML = '';
-            let filtered = logs.filter(log => {
-                const matchesTag = currentFilter === 'All' || log.status === currentFilter;
-                const matchesSearch = log.date.toLowerCase().includes(search) || 
-                                      (log.mood && log.mood.toLowerCase().includes(search)) || 
-                                      (log.remarks && log.remarks.toLowerCase().includes(search));
-                return matchesTag && matchesSearch;
-            });
 
-            if (filtered.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
-            } else {
-                emptyState.classList.add('hidden');
-            }
+    document.getElementById(
+        `filter-${tag}`
+    ).classList.add('active');
 
-            filtered.forEach(log => {
-                const badgeClass = statusBadges[log.status] || 'bg-slate-50 text-slate-700 border-slate-200';
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50/80 transition';
-                tr.innerHTML = `
-                    <td class="py-3 px-4 font-bold text-slate-800">
-                        ${escapeHtml(log.date)}
-                    </td>
-                    <td class="py-3 px-4 font-medium text-slate-700 text-sm">
-                        ${escapeHtml(log.mood || '😊 Super Happy')}
-                    </td>
-                    <td class="py-3 px-4">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${badgeClass}">
-                            ${escapeHtml(log.status)}
-                        </span>
-                    </td>
-                    <td class="py-3 px-4 text-xs text-slate-500 max-w-xs truncate">
-                        ${escapeHtml(log.remarks || '-')}
-                    </td>
-                    <td class="py-3 px-4 text-right space-x-1">
-                        <button onclick="editLog('${log.id}')" class="text-slate-400 hover:text-indigo-600 transition p-1.5" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button onclick="deleteLog('${log.id}')" class="text-slate-400 hover:text-rose-600 transition p-1.5" title="Delete"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
 
-        function updateStats() {
-            let monthPresent = 0;
-            const now = new Date();
-            let currentMonthLogs = 0;
-            let totalSchoolDaysInMonth = 0;
+    renderTable();
 
-            logs.forEach(l => {
-                const logDate = new Date(l.date);
-                if (logDate.getFullYear() === now.getFullYear() && logDate.getMonth() === now.getMonth()) {
-                    totalSchoolDaysInMonth++;
-                    if (l.status === 'Present' || l.status === 'School Trip' || l.status === 'Late') {
-                        monthPresent++;
-                    }
-                }
-            });
+}
 
-            document.getElementById('statMonthPresent').innerText = monthPresent;
-            let rate = totalSchoolDaysInMonth > 0 ? Math.round((monthPresent / totalSchoolDaysInMonth) * 100) : 100;
-            document.getElementById('statMonthPercentage').innerText = `${rate}% attendance rate`;
 
-            // Calculate streak
-            let streak = 0;
-            let d = new Date();
-            while (true) {
-                const dateStr = d.toISOString().split('T')[0];
-                const found = logs.find(l => l.date === dateStr);
-                if (found && (found.status === 'Present' || found.status === 'School Trip')) {
-                    streak++;
-                    d.setDate(d.getDate() - 1);
-                } else if (!found && d.toDateString() === new Date().toDateString()) {
-                    // today not marked yet, skip check
-                    d.setDate(d.getDate() - 1);
-                } else {
-                    break;
-                }
-            }
-            document.getElementById('streakCount').innerText = streak;
-        }
+/* =========================================================
+   TABLE
+   ========================================================= */
 
-        function openModal() {
-            document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-star text-yellow-500"></i> Add School Day Log';
-            document.getElementById('attendanceForm').reset();
-            document.getElementById('logId').value = '';
-            document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('attendanceModal').classList.remove('hidden');
-        }
+function renderTable() {
 
-        function closeModal() {
-            document.getElementById('attendanceModal').classList.add('hidden');
-        }
+    const tbody =
+        document.getElementById(
+            'attendanceTableBody'
+        );
 
-        function editLog(id) {
-            const log = logs.find(l => l.id === id);
-            if (!log) return;
-            document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-star text-yellow-500"></i> Edit School Day Log';
-            document.getElementById('logId').value = log.id;
-            document.getElementById('logDate').value = log.date;
-            document.getElementById('logStatus').value = log.status;
-            document.getElementById('logMood').value = log.mood || '😊 Super Happy';
-            document.getElementById('logRemarks').value = log.remarks || '';
-            document.getElementById('attendanceModal').classList.remove('hidden');
-        }
+    const emptyState =
+        document.getElementById(
+            'emptyState'
+        );
 
-        function saveAttendance(event) {
-            event.preventDefault();
-            const id = document.getElementById('logId').value;
-            const data = {
-                id: id ? id : Date.now().toString(),
-                date: document.getElementById('logDate').value,
-                status: document.getElementById('logStatus').value,
-                mood: document.getElementById('logMood').value,
-                remarks: document.getElementById('logRemarks').value.trim()
-            };
+    const search =
+        document.getElementById(
+            'searchInput'
+        ).value.toLowerCase();
 
-            if (id) {
-                const index = logs.findIndex(l => l.id === id);
-                if (index !== -1) logs[index] = data;
-            } else {
-                logs.unshift(data);
+
+    const logs =
+        allLogs[activeKidId] || [];
+
+
+    tbody.innerHTML = '';
+
+
+    const filtered =
+        logs.filter(log => {
+
+            const matchesTag =
+                currentFilter === 'All' ||
+                log.status === currentFilter;
+
+
+            const matchesSearch =
+
+                log.date
+                    .toLowerCase()
+                    .includes(search)
+
+                ||
+
+                (log.mood &&
+                    log.mood
+                        .toLowerCase()
+                        .includes(search))
+
+                ||
+
+                (log.remarks &&
+                    log.remarks
+                        .toLowerCase()
+                        .includes(search));
+
+
+            return (
+                matchesTag &&
+                matchesSearch
+            );
+
+        });
+
+
+    if (!filtered.length) {
+
+        emptyState.classList.remove(
+            'hidden'
+        );
+
+        return;
+
+    }
+
+
+    emptyState.classList.add(
+        'hidden'
+    );
+
+
+    filtered.forEach(log => {
+
+        const badgeClass =
+            'badge-' +
+            log.status.replace(
+                /[\/\s]/g,
+                ''
+            );
+
+
+        const tr =
+            document.createElement('tr');
+
+
+        tr.innerHTML = `
+
+            <td style="font-weight:700;">
+                ${escapeHtml(log.date)}
+            </td>
+
+            <td>
+                ${escapeHtml(
+                    log.mood ||
+                    '😊 Super Happy'
+                )}
+            </td>
+
+            <td>
+                <span class="badge ${badgeClass}">
+                    ${escapeHtml(log.status)}
+                </span>
+            </td>
+
+            <td style="color:var(--text-muted);font-size:12px;">
+                ${escapeHtml(
+                    log.remarks || '-'
+                )}
+            </td>
+
+            <td style="text-align:right;">
+
+                <button
+                    onclick="editLog('${log.id}')"
+                    class="btn-action"
+                    style="padding:4px 8px;"
+                    title="Edit">
+
+                    <i class="fa-solid fa-pen"></i>
+
+                </button>
+
+                <button
+                    onclick="deleteLog('${log.id}')"
+                    class="btn-action btn-danger"
+                    style="padding:4px 8px;"
+                    title="Delete">
+
+                    <i class="fa-solid fa-trash"></i>
+
+                </button>
+
+            </td>
+
+        `;
+
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* =========================================================
+   MONTH STATISTICS
+   ========================================================= */
+
+function updateStats() {
+
+    let weightedPresentCount = 0;
+
+    const now = new Date();
+
+    let totalSchoolDays = 0;
+
+    const logs =
+        allLogs[activeKidId] || [];
+
+
+    logs.forEach(l => {
+
+        const logDate =
+            new Date(l.date);
+
+
+        if (
+            logDate.getFullYear() ===
+                now.getFullYear() &&
+
+            logDate.getMonth() ===
+                now.getMonth()
+        ) {
+
+            /*
+               Only count actual attendance records.
+            */
+
+            if (
+                [
+                    'Present',
+                    'School Trip',
+                    'Late'
+                ].includes(l.status)
+            ) {
+
+                totalSchoolDays++;
+
+                weightedPresentCount += 1;
+
             }
 
-            localStorage.setItem('studentAttendance_logs', JSON.stringify(logs));
-            closeModal();
-            renderTable();
-            updateStats();
-            renderCalendar();
-            checkTodayStatus();
-        }
+            else if (
+                l.status === 'Half Day'
+            ) {
 
-        function deleteLog(id) {
-            if (confirm('Are you sure you want to delete this school record?')) {
-                logs = logs.filter(l => l.id !== id);
-                localStorage.setItem('studentAttendance_logs', JSON.stringify(logs));
-                renderTable();
-                updateStats();
-                renderCalendar();
-                checkTodayStatus();
+                totalSchoolDays++;
+
+                weightedPresentCount += .5;
+
             }
+
+            else if (
+                l.status === 'Sick / Absent'
+            ) {
+
+                totalSchoolDays++;
+
+            }
+
         }
 
-        function editStudentInfo() {
-            document.getElementById('editNameInput').value = student.name;
-            document.getElementById('editGradeInput').value = student.grade;
-            document.getElementById('profileModal').classList.remove('hidden');
+    });
+
+
+    document.getElementById(
+        'statMonthPresent'
+    ).innerText =
+        weightedPresentCount;
+
+
+    const rate =
+        totalSchoolDays > 0
+
+        ? Math.round(
+            (
+                weightedPresentCount /
+                totalSchoolDays
+            ) * 100
+        )
+
+        : 100;
+
+
+    document.getElementById(
+        'statMonthPercentage'
+    ).innerText =
+        `${rate}% attendance rate (Half days count as 0.5)`;
+
+}
+
+
+/* =========================================================
+   ATTENDANCE MODAL
+   ========================================================= */
+
+function openModal() {
+
+    document.getElementById(
+        'modalTitle'
+    ).innerHTML =
+
+        '<i class="fa-solid fa-seedling" style="color:var(--accent);"></i> Add Day Log';
+
+
+    document.getElementById(
+        'attendanceForm'
+    ).reset();
+
+
+    document.getElementById(
+        'logId'
+    ).value = '';
+
+
+    document.getElementById(
+        'logDate'
+    ).value =
+        new Date()
+        .toISOString()
+        .split('T')[0];
+
+
+    document.getElementById(
+        'attendanceModal'
+    ).classList.add('active');
+
+}
+
+
+function closeModal() {
+
+    document.getElementById(
+        'attendanceModal'
+    ).classList.remove('active');
+
+}
+
+
+/* =========================================================
+   EDIT LOG
+   ========================================================= */
+
+function editLog(id) {
+
+    const logs =
+        allLogs[activeKidId] || [];
+
+
+    const log =
+        logs.find(
+            l => l.id === id
+        );
+
+
+    if (!log) return;
+
+
+    document.getElementById(
+        'modalTitle'
+    ).innerHTML =
+
+        '<i class="fa-solid fa-seedling" style="color:var(--accent);"></i> Edit Day Log';
+
+
+    document.getElementById(
+        'logId'
+    ).value = log.id;
+
+
+    document.getElementById(
+        'logDate'
+    ).value = log.date;
+
+
+    document.getElementById(
+        'logStatus'
+    ).value = log.status;
+
+
+    document.getElementById(
+        'logMood'
+    ).value =
+        log.mood ||
+        '😊 Super Happy';
+
+
+    document.getElementById(
+        'logRemarks'
+    ).value =
+        log.remarks || '';
+
+
+    document.getElementById(
+        'attendanceModal'
+    ).classList.add('active');
+
+}
+
+
+/* =========================================================
+   SAVE ATTENDANCE
+   ========================================================= */
+
+function saveAttendance(event) {
+
+    event.preventDefault();
+
+
+    const id =
+        document.getElementById(
+            'logId'
+        ).value;
+
+
+    if (!allLogs[activeKidId]) {
+
+        allLogs[activeKidId] = [];
+
+    }
+
+
+    const logs =
+        allLogs[activeKidId];
+
+
+    const data = {
+
+        id:
+            id ||
+            Date.now().toString(),
+
+        date:
+            document.getElementById(
+                'logDate'
+            ).value,
+
+        status:
+            document.getElementById(
+                'logStatus'
+            ).value,
+
+        mood:
+            document.getElementById(
+                'logMood'
+            ).value,
+
+        remarks:
+            document.getElementById(
+                'logRemarks'
+            ).value.trim()
+
+    };
+
+
+    if (id) {
+
+        const idx =
+            logs.findIndex(
+                l => l.id === id
+            );
+
+
+        if (idx !== -1) {
+
+            logs[idx] = data;
+
         }
 
-        function closeProfileModal() {
-            document.getElementById('profileModal').classList.add('hidden');
-        }
+    } else {
 
-        function saveStudentProfile() {
-            student.name = document.getElementById('editNameInput').value.trim() || 'Student';
-            student.grade = document.getElementById('editGradeInput').value.trim() || 'Grade 5';
-            localStorage.setItem('studentAttendance_profile', JSON.stringify(student));
-            document.getElementById('studentNameDisplay').innerText = student.name;
-            document.getElementById('studentGradeBadge').innerText = student.grade;
-            closeProfileModal();
-        }
+        logs.unshift(data);
 
-        function escapeHtml(str) {
-            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-        }
+    }
+
+
+    localStorage.setItem(
+        'starkid_nature_logs',
+        JSON.stringify(allLogs)
+    );
+
+
+    closeModal();
+
+    init();
+
+}
+
+
+/* =========================================================
+   DELETE LOG
+   ========================================================= */
+
+function deleteLog(id) {
+
+    if (
+        confirm(
+            'Delete this attendance record?'
+        )
+    ) {
+
+        if (!allLogs[activeKidId])
+            return;
+
+
+        allLogs[activeKidId] =
+            allLogs[activeKidId]
+                .filter(
+                    l => l.id !== id
+                );
+
+
+        localStorage.setItem(
+            'starkid_nature_logs',
+            JSON.stringify(allLogs)
+        );
+
 
         init();
-    </script>
+
+    }
+
+}
+
+
+/* =========================================================
+   KID MODAL
+   ========================================================= */
+
+function openKidModal(mode) {
+
+    const modal =
+        document.getElementById(
+            'kidModal'
+        );
+
+
+    const title =
+        document.getElementById(
+            'kidModalTitle'
+        );
+
+
+    if (mode === 'add') {
+
+        title.innerText =
+            'Add New Kid Profile';
+
+
+        document.getElementById(
+            'editKidId'
+        ).value = '';
+
+
+        document.getElementById(
+            'kidNameInput'
+        ).value = '';
+
+
+        document.getElementById(
+            'kidGradeInput'
+        ).value = '';
+
+
+        document.getElementById(
+            'kidRollInput'
+        ).value = '';
+
+
+        document.getElementById(
+            'kidEmojiInput'
+        ).value = '🌱';
+
+
+        document.getElementById(
+            'kidTeacherInput'
+        ).value = '';
+
+    }
+
+    else {
+
+        title.innerText =
+            'Edit Kid Profile';
+
+
+        const kid =
+            getActiveKid();
+
+
+        if (!kid) return;
+
+
+        document.getElementById(
+            'editKidId'
+        ).value = kid.id;
+
+
+        document.getElementById(
+            'kidNameInput'
+        ).value = kid.name;
+
+
+        document.getElementById(
+            'kidGradeInput'
+        ).value = kid.grade;
+
+
+        document.getElementById(
+            'kidRollInput'
+        ).value = kid.roll || '';
+
+
+        document.getElementById(
+            'kidEmojiInput'
+        ).value =
+            kid.emoji || '🌱';
+
+
+        document.getElementById(
+            'kidTeacherInput'
+        ).value =
+            kid.teacher || '';
+
+    }
+
+
+    modal.classList.add('active');
+
+}
+
+
+function closeKidModal() {
+
+    document.getElementById(
+        'kidModal'
+    ).classList.remove('active');
+
+}
+
+
+/* =========================================================
+   SAVE KID
+   ========================================================= */
+
+function saveKidProfile() {
+
+    const editId =
+        document.getElementById(
+            'editKidId'
+        ).value;
+
+
+    const name =
+        document.getElementById(
+            'kidNameInput'
+        ).value.trim();
+
+
+    const grade =
+        document.getElementById(
+            'kidGradeInput'
+        ).value.trim() ||
+        'Grade 5';
+
+
+    const roll =
+        document.getElementById(
+            'kidRollInput'
+        ).value.trim() ||
+        '1';
+
+
+    const emoji =
+        document.getElementById(
+            'kidEmojiInput'
+        ).value;
+
+
+    const teacher =
+        document.getElementById(
+            'kidTeacherInput'
+        ).value.trim() ||
+        'Teacher';
+
+
+    if (!name) {
+
+        alert(
+            'Please enter a kid name!'
+        );
+
+        return;
+
+    }
+
+
+    if (editId) {
+
+        const kid =
+            kids.find(
+                k => k.id === editId
+            );
+
+
+        if (kid) {
+
+            kid.name = name;
+            kid.grade = grade;
+            kid.roll = roll;
+            kid.emoji = emoji;
+            kid.teacher = teacher;
+
+        }
+
+    }
+
+    else {
+
+        const newId =
+            'kid_' + Date.now();
+
+
+        const newKid = {
+
+            id:newId,
+            name,
+            grade,
+            roll,
+            emoji,
+            teacher
+
+        };
+
+
+        kids.push(newKid);
+
+        allLogs[newId] = [];
+
+        activeKidId = newId;
+
+    }
+
+
+    localStorage.setItem(
+        'starkid_nature_kids',
+        JSON.stringify(kids)
+    );
+
+
+    localStorage.setItem(
+        'starkid_nature_logs',
+        JSON.stringify(allLogs)
+    );
+
+
+    localStorage.setItem(
+        'starkid_nature_active_kid',
+        activeKidId
+    );
+
+
+    closeKidModal();
+
+    init();
+
+}
+
+
+/* =========================================================
+   DELETE KID
+   ========================================================= */
+
+function deleteActiveKid() {
+
+    if (kids.length <= 1) {
+
+        alert(
+            'You must keep at least one kid profile!'
+        );
+
+        return;
+
+    }
+
+
+    const kid =
+        getActiveKid();
+
+
+    if (
+        confirm(
+            `Delete profile for ${kid.name}? All logs will be removed.`
+        )
+    ) {
+
+        kids =
+            kids.filter(
+                k => k.id !== activeKidId
+            );
+
+
+        delete allLogs[activeKidId];
+
+
+        activeKidId =
+            kids[0].id;
+
+
+        localStorage.setItem(
+            'starkid_nature_kids',
+            JSON.stringify(kids)
+        );
+
+
+        localStorage.setItem(
+            'starkid_nature_logs',
+            JSON.stringify(allLogs)
+        );
+
+
+        localStorage.setItem(
+            'starkid_nature_active_kid',
+            activeKidId
+        );
+
+
+        init();
+
+    }
+
+}
+
+
+/* =========================================================
+   EXPORT JSON
+   ========================================================= */
+
+function exportJSON() {
+
+    const backup = {
+
+        app:'StarKid Nature Attendance',
+
+        kids,
+
+        allLogs,
+
+        date:
+            new Date().toISOString()
+
+    };
+
+
+    const dataStr =
+        'data:text/json;charset=utf-8,' +
+        encodeURIComponent(
+            JSON.stringify(
+                backup,
+                null,
+                2
+            )
+        );
+
+
+    const a =
+        document.createElement('a');
+
+
+    a.href = dataStr;
+
+
+    a.download =
+        `starkid_nature_backup_${new Date().toISOString().split('T')[0]}.json`;
+
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+}
+
+
+/* =========================================================
+   IMPORT JSON
+   ========================================================= */
+
+function importJSON(e) {
+
+    const file =
+        e.target.files[0];
+
+
+    if (!file) return;
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(evt) {
+
+            try {
+
+                const parsed =
+                    JSON.parse(
+                        evt.target.result
+                    );
+
+
+                if (
+                    !parsed.kids ||
+                    !parsed.allLogs
+                ) {
+
+                    throw new Error(
+                        'Invalid format'
+                    );
+
+                }
+
+
+                if (
+                    confirm(
+                        'Restore backup data?'
+                    )
+                ) {
+
+                    kids =
+                        parsed.kids;
+
+
+                    allLogs =
+                        parsed.allLogs;
+
+
+                    activeKidId =
+                        kids[0].id;
+
+
+                    localStorage.setItem(
+                        'starkid_nature_kids',
+                        JSON.stringify(kids)
+                    );
+
+
+                    localStorage.setItem(
+                        'starkid_nature_logs',
+                        JSON.stringify(allLogs)
+                    );
+
+
+                    localStorage.setItem(
+                        'starkid_nature_active_kid',
+                        activeKidId
+                    );
+
+
+                    init();
+
+
+                    alert(
+                        'Restored successfully! 🌿'
+                    );
+
+                }
+
+            }
+
+            catch(err) {
+
+                alert(
+                    'Import error: ' +
+                    err.message
+                );
+
+            }
+
+            finally {
+
+                e.target.value = '';
+
+            }
+
+        };
+
+
+    reader.readAsText(file);
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+   ========================================================= */
+
+function escapeHtml(str) {
+
+    return String(str)
+
+        .replace(
+            /&/g,
+            '&amp;'
+        )
+
+        .replace(
+            /</g,
+            '&lt;'
+        )
+
+        .replace(
+            />/g,
+            '&gt;'
+        )
+
+        .replace(
+            /"/g,
+            '&quot;'
+        )
+
+        .replace(
+            /'/g,
+            '&#039;'
+        );
+
+}
+
+
+/* =========================================================
+   START APP
+   ========================================================= */
+
+init();
+
+</script>
+
 </body>
 </html>
