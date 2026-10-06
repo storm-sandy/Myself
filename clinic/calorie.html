@@ -1,0 +1,164 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#168447"><title>🌱 Calorie & Nutrition Calculator</title><style>
+:root{--p:#168447;--p2:#0d6535;--bg:#f4f8f5;--card:#fff;--txt:#17231c;--mut:#66736b;--bd:#dce7df}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,Arial,sans-serif}header{position:sticky;top:0;z-index:5;background:var(--p);color:#fff;padding:13px 16px;box-shadow:0 2px 9px #0002}.head,.wrap{max-width:1150px;margin:auto}.head{display:flex;justify-content:space-between;align-items:center}h1{font-size:20px;margin:0}.sub,.small{font-size:12px;color:var(--mut)}header .sub{color:#e4f5e9}.wrap{padding:14px}.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.card{background:var(--card);border:1px solid var(--bd);border-radius:15px;padding:14px;margin-bottom:14px;box-shadow:0 4px 16px #174b2510}h2{font-size:17px;margin:0 0 12px}.row{display:flex;gap:8px;flex-wrap:wrap}.grow{flex:1;min-width:150px}input,select{width:100%;padding:10px;border:1px solid var(--bd);border-radius:9px;background:var(--card);color:var(--txt)}button,.btn{border:0;border-radius:9px;padding:10px 13px;background:var(--p);color:#fff;font-weight:650;cursor:pointer}.alt{background:#e8f4ec;color:var(--p2)}.red{background:#fbe8e8;color:#b42323}.gray{background:#eef1ef;color:#354039}.tabs{display:flex;gap:7px;overflow:auto;margin-bottom:12px}.tab{white-space:nowrap;background:var(--card);color:var(--txt);border:1px solid var(--bd)}.tab.on{background:var(--p);color:#fff}.foods{max-height:570px;overflow:auto;border:1px solid var(--bd);border-radius:11px;margin-top:11px}.food{display:grid;grid-template-columns:1fr 75px 75px 65px;gap:7px;align-items:center;padding:9px;border-bottom:1px solid var(--bd)}.food:last-child{border:0}.food:hover{background:#f6faf7}.fname{font-weight:650}.num{text-align:right;font-size:12px}.badge{font-size:10px;padding:2px 6px;background:#e7f4eb;color:var(--p2);border-radius:12px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.stat{text-align:center;padding:10px;border:1px solid var(--bd);border-radius:11px}.stat b{display:block;font-size:20px}.stat span{font-size:10px;color:var(--mut)}.meal{border:1px solid var(--bd);border-radius:10px;margin:8px 0;overflow:hidden}.mh{display:flex;justify-content:space-between;background:#f1f7f3;padding:8px;font-weight:700}.mi{display:grid;grid-template-columns:1fr 65px 28px;gap:5px;padding:8px;border-top:1px solid var(--bd);font-size:12px}.empty{text-align:center;padding:22px;color:var(--mut)}footer{text-align:center;color:var(--mut);font-size:11px;padding:12px}@media(max-width:800px){.grid{grid-template-columns:1fr}.food{grid-template-columns:1fr 65px 58px}.food .hideMob{display:none}.stats{grid-template-columns:repeat(2,1fr)}}
+</style></head><body><header><div class="head"><div><h1>🌱 Calorie & Nutrition Calculator</h1><div class="sub">Plant foods + milk/dairy • Vegetarian only • No non-veg</div></div><button class="alt" onclick="dark()">🌙</button></div></header><main class="wrap">
+<div class="tabs"><button class="tab on" onclick="tab('calc',this)">🍽 Calculator</button><button class="tab" onclick="tab('db',this)">📚 Database</button><button class="tab" onclick="tab('custom',this)">➕ Custom Food</button></div>
+<section id="calc"><div class="grid"><div><div class="card"><h2>Add Food</h2><div class="row"><div class="grow"><input id="q" placeholder="🔎 Search rice, dal, apple..." oninput="draw()"></div><div style="width:155px"><select id="cat" onchange="draw()"><option value="">All categories</option></select></div></div><div class="row" style="margin-top:8px"><div style="width:120px"><input id="qty" type="number" value="100" min="1"></div><div style="width:120px"><select id="unit"><option>g</option><option>ml</option></select></div><div style="width:150px"><select id="meal"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option><option>Other</option></select></div></div><div class="small" style="margin-top:7px">Nutrition is calculated from values per 100 g/ml. Values are approximate.</div><div id="list" class="foods"></div></div></div><div><div class="card"><h2>📊 Today's Total</h2><div class="stats"><div class="stat"><b id="cal">0</b><span>kcal</span></div><div class="stat"><b id="pro">0</b><span>Protein g</span></div><div class="stat"><b id="carb">0</b><span>Carbs g</span></div><div class="stat"><b id="fat">0</b><span>Fat g</span></div></div><div style="margin-top:10px" class="small">Fiber: <b id="fib">0</b> g • Sugar: <b id="sug">0</b> g • Sodium: <b id="sod">0</b> mg</div></div><div class="card"><h2>🎯 Targets</h2><div class="row"><label class="grow small">Calories<input id="tcal" type="number" value="2000"></label><label class="grow small">Protein g<input id="tpro" type="number" value="75"></label></div><button style="margin-top:8px" onclick="saveTarget()">Save Targets</button></div><div class="card"><div class="row" style="justify-content:space-between"><h2>🧾 Today's Meals</h2><button class="red" onclick="clearDay()">Clear Day</button></div><div id="meals"></div></div></div></div></section>
+<section id="db" style="display:none"><div class="card"><h2>📚 Food Database</h2><input id="dq" placeholder="Search database..." oninput="dbDraw()"><div id="database" class="foods"></div></div></section>
+<section id="custom" style="display:none"><div class="card"><h2>➕ Add Custom Vegetarian Food</h2><div class="row"><label class="grow">Name<input id="cn"></label><label class="grow">Category<input id="ccat" value="Custom"></label></div><div class="row" style="margin-top:8px"><label class="grow">Calories<input id="ck" type="number"></label><label class="grow">Protein g<input id="cp" type="number"></label><label class="grow">Carbs g<input id="ccb" type="number"></label><label class="grow">Fat g<input id="cf" type="number"></label></div><div class="row" style="margin-top:8px"><label class="grow">Fiber g<input id="cfi" type="number"></label><label class="grow">Sugar g<input id="cs" type="number"></label><label class="grow">Sodium mg<input id="cna" type="number"></label></div><button style="margin-top:9px" onclick="addCustom()">Save Food</button><h2 style="margin-top:20px">Your Foods</h2><div id="customs"></div></div></section>
+<div class="card"><div class="row"><button class="alt" onclick="csv()">📥 Export CSV</button><button class="alt" onclick="backup()">💾 Backup JSON</button><label class="btn alt">📤 Restore<input type="file" accept=".json" hidden onchange="restore(event)"></label><button class="gray" onclick="print()">🖨 Print</button></div></div><footer>Reference nutrition values only. Brand, recipe, cooking method and serving size can change nutrition. Not medical advice.</footer></main>
+<script>
+/* Per 100 g/ml: name|category|kcal|protein|carbs|fat|fiber|sugar|sodium */
+const raw=`Rice white cooked|Grains|130|2.7|28.2|.3|.4|.1|1
+Brown rice cooked|Grains|123|2.7|25.6|1|1.6|.2|4
+Basmati rice cooked|Grains|130|2.7|28|.3|.4|.1|1
+Poha cooked|Grains|110|2.6|23|1|.9|.5|200
+Upma cooked|Grains|120|3|20|3|1.5|1|250
+Oats cooked|Grains|71|2.5|12|1.5|1.7|.3|49
+Rolled oats dry|Grains|389|16.9|66.3|6.9|10.6|.9|2
+Wheat atta|Grains|340|13.2|72.6|2.5|10.7|.4|2
+Ragi flour|Grains|336|7.3|72.6|1.3|11.5|.6|11
+Jowar flour|Grains|329|10.4|72.6|3.1|6.6|2.5|6
+Bajra flour|Grains|361|11.6|67.5|5|11.3|1.5|5
+Barley flour|Grains|345|10|73.5|1.2|15.6|.8|4
+Quinoa cooked|Grains|120|4.4|21.3|1.9|2.8|.9|7
+Corn boiled|Grains|96|3.4|21|.8|2.4|4.5|1
+Whole wheat bread|Grains|247|13|41|4.2|6|5|430
+White bread|Grains|266|8.9|49|3.2|2.7|5|490
+Roti chapati|Grains|297|11|55|4.5|11|1|300
+Paratha plain|Grains|320|7|45|12|5|1|350
+Dosa plain|Grains|168|3.9|29|3.7|1.2|1|250
+Idli|Grains|146|4.5|28|1|1.5|1|200
+Pasta cooked|Grains|157|5.8|30.9|.9|1.8|.6|1
+
+Toor dal cooked|Pulses|116|7|20|.4|6.7|2|2
+Moong dal cooked|Pulses|105|7|19|.4|7.6|1.4|2
+Masoor dal cooked|Pulses|116|9|20|.4|7.9|1.8|2
+Urad dal cooked|Pulses|116|7.9|20|.5|7.9|1.5|4
+Chana dal cooked|Pulses|164|8.9|27.4|2.6|7.6|4.8|7
+Chickpeas cooked|Pulses|164|8.9|27.4|2.6|7.6|4.8|7
+Rajma cooked|Pulses|127|8.7|22.8|.5|6.4|.3|2
+Lobia cooked|Pulses|116|7.7|20.8|.5|6.4|3.3|5
+Green peas cooked|Pulses|84|5.4|15.6|.4|5.5|5.9|3
+Soybeans cooked|Pulses|173|16.6|9.9|9|6|3|2
+Edamame cooked|Pulses|121|11.9|8.9|5.2|5.2|2.2|6
+Soya chunks dry|Pulses|345|52|33|.5|13|7|15
+Besan gram flour|Pulses|387|22|58|6.7|10.8|10|64
+Roasted chana|Pulses|369|22.5|58|5.9|12.2|10|24
+
+Potato boiled|Vegetables|87|1.9|20.1|.1|1.8|.9|6
+Sweet potato boiled|Vegetables|76|1.4|17.7|.1|2.5|5.7|27
+Carrot raw|Vegetables|41|.9|9.6|.2|2.8|4.7|69
+Beetroot raw|Vegetables|43|1.6|9.6|.2|2.8|6.8|78
+Tomato raw|Vegetables|18|.9|3.9|.2|1.2|2.6|5
+Onion raw|Vegetables|40|1.1|9.3|.1|1.7|4.2|4
+Cucumber|Vegetables|15|.7|3.6|.1|.5|1.7|2
+Spinach raw|Vegetables|23|2.9|3.6|.4|2.2|.4|79
+Spinach cooked|Vegetables|23|2.9|3.8|.3|2.4|.4|70
+Broccoli|Vegetables|34|2.8|6.6|.4|2.6|1.7|33
+Cauliflower|Vegetables|25|1.9|5|.3|2|1.9|30
+Cabbage|Vegetables|25|1.3|5.8|.1|2.5|3.2|18
+Capsicum green|Vegetables|20|.9|4.6|.2|1.7|2.4|3
+Brinjal eggplant|Vegetables|25|1|6|.2|3|3.2|2
+Bhindi okra|Vegetables|33|1.9|7.5|.2|3.2|1.5|7
+Bottle gourd lauki|Vegetables|15|.6|3.4|.1|.5|1.2|2
+Bitter gourd karela|Vegetables|17|1|3.7|.2|2.8|.6|5
+Pumpkin|Vegetables|26|1|6.5|.1|.5|2.8|1
+French beans|Vegetables|31|1.8|7|.1|2.7|3.3|6
+Mushroom|Vegetables|22|3.1|3.3|.3|1|.8|5
+Ginger|Vegetables|80|1.8|18|.8|2|1.7|13
+Garlic|Vegetables|149|6.4|33.1|.5|2.1|1|17
+
+Apple|Fruits|52|.3|13.8|.2|2.4|10.4|1
+Banana|Fruits|89|1.1|22.8|.3|2.6|12.2|1
+Orange|Fruits|47|.9|11.8|.1|2.4|9.4|0
+Mosambi sweet lime|Fruits|43|.7|10.5|.2|2.4|8.7|2
+Mango|Fruits|60|.8|15|.4|1.6|13.7|1
+Papaya|Fruits|43|.5|10.8|.3|1.7|7.8|8
+Guava|Fruits|68|2.6|14.3|1|5.4|8.9|2
+Pomegranate|Fruits|83|1.7|18.7|1.2|4|13.7|3
+Watermelon|Fruits|30|.6|7.6|.2|.4|6.2|1
+Muskmelon|Fruits|34|.8|8.2|.2|.9|7.9|16
+Pineapple|Fruits|50|.5|13.1|.1|1.4|9.9|1
+Grapes|Fruits|69|.7|18.1|.2|.9|15.5|2
+Pear|Fruits|57|.4|15.2|.1|3.1|9.8|1
+Kiwi|Fruits|61|1.1|14.7|.5|3|9|3
+Dates|Fruits|282|2.5|75|.4|8|63|2
+Raisins|Fruits|299|3.1|79.2|.5|3.7|59.2|11
+Coconut fresh|Fruits|354|3.3|15.2|33.5|9|6.2|20
+Avocado|Fruits|160|2|8.5|14.7|6.7|.7|7
+
+Almonds|Nuts|579|21.2|21.6|49.9|12.5|4.4|1
+Cashews|Nuts|553|18.2|30.2|43.8|3.3|5.9|12
+Walnuts|Nuts|654|15.2|13.7|65.2|6.7|2.6|2
+Pistachios|Nuts|562|20.2|27.2|45.3|10.6|7.7|1
+Peanuts roasted|Nuts|567|25.8|16.1|49.2|8.5|4.7|18
+Chia seeds|Seeds|486|16.5|42.1|30.7|34.4|.5|16
+Flax seeds|Seeds|534|18.3|28.9|42.2|27.3|1.6|30
+Sunflower seeds|Seeds|584|20.8|20|51.5|8.6|2.6|9
+Pumpkin seeds|Seeds|559|30.2|10.7|49.1|6|1.4|7
+Sesame seeds|Seeds|573|17.7|23.4|49.7|11.8|.3|11
+
+Milk whole|Milk & Dairy|61|3.2|4.8|3.3|0|5|43
+Milk toned|Milk & Dairy|51|3.1|4.9|2|0|5|45
+Milk skimmed|Milk & Dairy|34|3.4|5|.2|0|5|42
+Buffalo milk|Milk & Dairy|97|3.8|5.2|6.9|0|5.2|52
+Buttermilk|Milk & Dairy|40|3.3|4.8|.9|0|4.8|105
+Curd plain|Milk & Dairy|61|3.5|4.7|3.3|0|4.7|46
+Greek yogurt plain|Milk & Dairy|59|10.2|3.6|.4|0|3.6|36
+Paneer full fat|Milk & Dairy|265|18.3|1.2|20.8|0|1.2|22
+Paneer low fat|Milk & Dairy|145|21|6|5|0|3|220
+Cheese|Milk & Dairy|402|25|1.3|33.1|0|.5|621
+Mozzarella|Milk & Dairy|280|28.1|3.1|17.1|0|1|627
+Ghee|Milk & Dairy|900|0|0|100|0|0|0
+Butter|Milk & Dairy|717|.9|.1|81.1|0|.1|11
+
+Tofu firm|Plant Protein|144|17.3|2.8|8.7|.9|.6|14
+Tempeh|Plant Protein|195|19.9|7.6|11|3.9|.8|14
+Soy milk unsweetened|Plant Protein|33|3.3|.7|1.8|.6|.2|36
+Almond milk unsweetened|Plant Protein|15|.6|.6|1.2|.4|.2|60
+
+Olive oil|Oils|884|0|0|100|0|0|2
+Groundnut oil|Oils|884|0|0|100|0|0|0
+Mustard oil|Oils|884|0|0|100|0|0|0
+Sunflower oil|Oils|884|0|0|100|0|0|0
+Coconut oil|Oils|892|0|0|100|0|0|0
+
+Coconut water|Beverages|19|.7|3.7|.2|1.1|2.6|105
+Green tea unsweetened|Beverages|1|.2|.2|0|0|0|1
+Lemon juice|Beverages|22|.4|6.9|.2|.3|2.5|1
+
+Vegetable soup|Prepared|45|2|7|1|2|3|180
+Dal soup|Prepared|80|4.5|12|1.5|3|1.5|180
+Mixed vegetable curry|Prepared|85|2.5|9|4|3|4|180
+Palak paneer|Prepared|130|7|7|8|2|2|220
+Chole cooked dish|Prepared|145|6.5|19|4.5|5|4|250
+Rajma curry|Prepared|140|6.5|19|4|5|3|250
+Vegetable pulao|Prepared|145|3|24|4|2|2|230
+Khichdi|Prepared|120|4|20|2.5|3|1|180
+Curd rice|Prepared|140|3.8|22|4|1|2|180
+Vegetable biryani|Prepared|150|3.5|24|4.5|2.5|2|260
+Idli sambar|Prepared|105|4|18|2|2.5|2|250
+Dosa sambar|Prepared|120|4|18|3.5|2|2|280
+Pav bhaji|Prepared|150|4|22|5|4|5|350
+Vegetable poha|Prepared|130|3|22|3|2.5|2|250
+Vegetable upma|Prepared|140|4|22|4|2.5|2|260
+Sprouts salad|Prepared|70|5|11|1|3|3|80
+Fruit salad|Prepared|60|1|15|.3|2|11|5`;
+let foods=raw.trim().split(/\n+/).map((s,i)=>{let a=s.split('|');return{id:i,name:a[0],cat:a[1],k:+a[2],p:+a[3],c:+a[4],f:+a[5],fi:+a[6],s:+a[7],na:+a[8]}});
+let custom=JSON.parse(localStorage.getItem('cc_custom')||'[]');foods.push(...custom);let log=JSON.parse(localStorage.getItem('cc_log')||'[]');let targets=JSON.parse(localStorage.getItem('cc_targets')||'{"cal":2000,"pro":75}');tcal.value=targets.cal;tpro.value=targets.pro;
+const esc=x=>String(x).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));const today=()=>new Date().toISOString().slice(0,10);const fmt=x=>Number(x||0).toFixed(1).replace('.0','');
+let cats=[...new Set(foods.map(x=>x.cat))];cat.innerHTML='<option value="">All categories</option>'+cats.map(x=>`<option>${esc(x)}</option>`).join('');
+function row(f){return`<div class="food"><div><div class="fname">${esc(f.name)}</div><div class="small"><span class="badge">${esc(f.cat)}</span> ${f.k} kcal • P ${f.p}g • C ${f.c}g • F ${f.f}g /100g</div></div><div class="num">${f.k} kcal</div><div class="num hideMob">${f.f}g fat</div><button onclick="add(${f.id})">＋</button></div>`}
+function draw(){let s=q.value.toLowerCase(),c=cat.value;list.innerHTML=foods.filter(f=>(!s||f.name.toLowerCase().includes(s))&&(!c||f.cat==c)).map(row).join('')||'<div class="empty">No food found</div>'}function add(id){let f=foods.find(x=>x.id===id),n=+qty.value||100,z=n/100;log.push({id:Date.now(),date:today(),foodId:id,name:f.name,meal:meal.value,qty:n,unit:unit.value,k:f.k*z,p:f.p*z,c:f.c*z,f:f.f*z,fi:f.fi*z,s:f.s*z,na:f.na*z});save();all()}
+function save(){localStorage.setItem('cc_log',JSON.stringify(log));localStorage.setItem('cc_custom',JSON.stringify(custom))}function totals(){let a=log.filter(x=>x.date==today()),g=k=>a.reduce((s,x)=>s+(+x[k]||0),0);cal.textContent=fmt(g('k'));pro.textContent=fmt(g('p'));carb.textContent=fmt(g('c'));fat.textContent=fmt(g('f'));fib.textContent=fmt(g('fi'));sug.textContent=fmt(g('s'));sod.textContent=fmt(g('na'));}
+function meals(){let out='',es=log.filter(x=>x.date==today());['Breakfast','Lunch','Dinner','Snack','Other'].forEach(m=>{let a=es.filter(x=>x.meal==m);if(!a.length)return;out+=`<div class="meal"><div class="mh"><span>${m}</span><span>${fmt(a.reduce((s,x)=>s+x.k,0))} kcal</span></div>`;a.forEach(x=>out+=`<div class="mi"><div><b>${esc(x.name)}</b><br><span class="small">${fmt(x.qty)} ${x.unit} • P ${fmt(x.p)}g • C ${fmt(x.c)}g • F ${fmt(x.f)}g</span></div><div>${fmt(x.k)}</div><button class="red" onclick="del(${x.id})">×</button></div>`);out+='</div>'});document.getElementById('meals').innerHTML=out||'<div class="empty">No food added today.</div>'}
+function del(id){log=log.filter(x=>x.id!==id);save();all()}function clearDay(){if(confirm('Clear today?')){log=log.filter(x=>x.date!==today());save();all()}}function dbDraw(){let s=dq.value.toLowerCase();database.innerHTML=foods.filter(f=>!s||f.name.toLowerCase().includes(s)||f.cat.toLowerCase().includes(s)).map(row).join('')}
+function addCustom(){let f={id:'c'+Date.now(),name:cn.value.trim(),cat:ccat.value||'Custom',k:+ck.value||0,p:+cp.value||0,c:+ccb.value||0,f:+cf.value||0,fi:+cfi.value||0,s:+cs.value||0,na:+cna.value||0};if(!f.name)return alert('Enter food name');custom.push(f);foods.push(f);save();cn.value='';all();alert('Custom food saved')}
+function customDraw(){customs.innerHTML=custom.map(f=>`<div class="meal"><div class="mi"><div><b>${esc(f.name)}</b><br><span class="small">${f.k} kcal • P ${f.p}g • C ${f.c}g • F ${f.f}g /100g</span></div><div></div><button class="red" onclick="removeCustom('${f.id}')">×</button></div></div>`).join('')||'<div class="empty">No custom foods.</div>'}function removeCustom(id){custom=custom.filter(f=>f.id!=id);foods=foods.filter(f=>f.id!=id);save();all()}
+function saveTarget(){targets={cal:+tcal.value||2000,pro:+tpro.value||75};localStorage.setItem('cc_targets',JSON.stringify(targets));alert('Targets saved')}
+function tab(id,b){['calc','db','custom'].forEach(x=>document.getElementById(x).style.display=x==id?'block':'none');document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
+function download(name,text,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click()}
+function csv(){let r=[['Date','Meal','Food','Qty','Unit','Calories','Protein','Carbs','Fat','Fiber','Sugar','Sodium']];log.forEach(x=>r.push([x.date,x.meal,x.name,x.qty,x.unit,x.k,x.p,x.c,x.f,x.fi,x.s,x.na]));download('calorie_log.csv',r.map(a=>a.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(',')).join('\n'),'text/csv')}
+function backup(){download('calorie_calculator_backup.json',JSON.stringify({log,custom,targets},null,2),'application/json')}function restore(e){let r=new FileReader;r.onload=()=>{try{let x=JSON.parse(r.result);log=x.log||[];custom=x.custom||[];targets=x.targets||targets;foods=foods.filter(f=>!String(f.id).startsWith('c')).concat(custom);save();all();alert('Restored')}catch(z){alert('Invalid backup')}};r.readAsText(e.target.files[0])}function print(){window.print()}
+function dark(){let d=document.body.classList.toggle('dark');document.documentElement.style.setProperty('--bg',d?'#101713':'#f4f8f5');document.documentElement.style.setProperty('--card',d?'#18221c':'#fff');document.documentElement.style.setProperty('--txt',d?'#eef7f0':'#17231c');document.documentElement.style.setProperty('--mut',d?'#a8b6ad':'#66736b');document.documentElement.style.setProperty('--bd',d?'#304036':'#dce7df');localStorage.setItem('cc_dark',d)}if(localStorage.getItem('cc_dark')==='true')dark();function all(){draw();dbDraw();totals();meals();customDraw()}all();
+</script></body></html>
