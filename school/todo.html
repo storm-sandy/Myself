@@ -1,0 +1,3695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2e7d32">
+<meta name="description" content="Kids friendly daily task manager with SQLite and IndexedDB">
+
+<title>Nature To-Do — Daily Task Manager</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+:root{
+    --primary:#2e7d32;
+    --primary2:#43a047;
+    --accent:#ffb300;
+    --bg:#f4f8f3;
+    --card:#ffffff;
+    --text:#18321d;
+    --muted:#6b7d70;
+    --border:#dce8dc;
+    --danger:#d32f2f;
+    --shadow:0 5px 18px rgba(0,0,0,.08);
+    --radius:18px;
+}
+
+html,body{
+    margin:0;
+    padding:0;
+    min-height:100%;
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+body{
+    min-height:100vh;
+}
+
+/* ---------- Themes ---------- */
+
+body.theme-forest{
+    --primary:#2e7d32;
+    --primary2:#43a047;
+    --accent:#ffb300;
+    --bg:#f4f8f3;
+    --card:#fff;
+    --text:#18321d;
+    --border:#dce8dc;
+}
+
+body.theme-ocean{
+    --primary:#0277bd;
+    --primary2:#039be5;
+    --accent:#ffca28;
+    --bg:#eef8fc;
+    --card:#fff;
+    --text:#123746;
+    --border:#d5eaf2;
+}
+
+body.theme-sunset{
+    --primary:#e65100;
+    --primary2:#fb8c00;
+    --accent:#ffd54f;
+    --bg:#fff7ed;
+    --card:#fff;
+    --text:#4a2815;
+    --border:#f1dfca;
+}
+
+body.theme-mountain{
+    --primary:#455a64;
+    --primary2:#607d8b;
+    --accent:#8bc34a;
+    --bg:#f3f6f7;
+    --card:#fff;
+    --text:#263238;
+    --border:#d9e1e4;
+}
+
+body.theme-sakura{
+    --primary:#c2185b;
+    --primary2:#ec407a;
+    --accent:#ffb74d;
+    --bg:#fff5f9;
+    --card:#fff;
+    --text:#482031;
+    --border:#f0d9e3;
+}
+
+body.theme-autumn{
+    --primary:#8d4b20;
+    --primary2:#b9682d;
+    --accent:#fbc02d;
+    --bg:#fff8ef;
+    --card:#fff;
+    --text:#422918;
+    --border:#ead9c7;
+}
+
+body.theme-spring{
+    --primary:#558b2f;
+    --primary2:#7cb342;
+    --accent:#fdd835;
+    --bg:#f7fbef;
+    --card:#fff;
+    --text:#29401b;
+    --border:#dce9cf;
+}
+
+body.theme-rainforest{
+    --primary:#00695c;
+    --primary2:#00897b;
+    --accent:#c0ca33;
+    --bg:#eef9f6;
+    --card:#fff;
+    --text:#173a35;
+    --border:#d2e9e4;
+}
+
+body.theme-meadow{
+    --primary:#689f38;
+    --primary2:#8bc34a;
+    --accent:#ffca28;
+    --bg:#f7faef;
+    --card:#fff;
+    --text:#30421f;
+    --border:#dfe8d2;
+}
+
+body.theme-nightforest{
+    --primary:#1b5e20;
+    --primary2:#388e3c;
+    --accent:#ffd54f;
+    --bg:#101812;
+    --card:#18251b;
+    --text:#e9f5ea;
+    --muted:#afc4b2;
+    --border:#2c4030;
+    --shadow:0 5px 20px rgba(0,0,0,.35);
+}
+
+/* ---------- Layout ---------- */
+
+.app{
+    max-width:1250px;
+    margin:auto;
+    min-height:100vh;
+}
+
+.header{
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:var(--primary);
+    color:white;
+    padding:12px 15px;
+    box-shadow:0 3px 12px rgba(0,0,0,.18);
+}
+
+.header-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.brand-icon{
+    font-size:32px;
+}
+
+.brand-title{
+    font-size:21px;
+    font-weight:bold;
+}
+
+.brand-sub{
+    font-size:11px;
+    opacity:.85;
+}
+
+.header-actions{
+    display:flex;
+    gap:7px;
+}
+
+.icon-btn{
+    width:40px;
+    height:40px;
+    border:0;
+    border-radius:50%;
+    background:rgba(255,255,255,.18);
+    color:white;
+    font-size:19px;
+    cursor:pointer;
+}
+
+.tabs{
+    display:flex;
+    overflow-x:auto;
+    gap:5px;
+    padding:9px 10px;
+    background:var(--card);
+    border-bottom:1px solid var(--border);
+    position:sticky;
+    top:65px;
+    z-index:40;
+}
+
+.tabs button{
+    flex:0 0 auto;
+    border:0;
+    padding:10px 15px;
+    border-radius:14px;
+    background:transparent;
+    color:var(--muted);
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.tabs button.active{
+    background:var(--primary);
+    color:#fff;
+}
+
+main{
+    padding:15px;
+}
+
+.tab-page{
+    display:none;
+}
+
+.tab-page.active{
+    display:block;
+}
+
+/* ---------- Cards ---------- */
+
+.card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:16px;
+    margin-bottom:15px;
+}
+
+.card-title{
+    font-size:18px;
+    font-weight:bold;
+    margin-bottom:12px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+}
+
+.stat{
+    padding:15px;
+    border-radius:16px;
+    background:var(--bg);
+    border:1px solid var(--border);
+    text-align:center;
+}
+
+.stat-icon{
+    font-size:28px;
+}
+
+.stat-value{
+    font-size:27px;
+    font-weight:bold;
+    margin-top:4px;
+}
+
+.stat-label{
+    color:var(--muted);
+    font-size:12px;
+}
+
+/* ---------- Forms ---------- */
+
+.form-grid{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr 1fr;
+    gap:10px;
+}
+
+label{
+    display:block;
+    font-size:12px;
+    font-weight:bold;
+    color:var(--muted);
+    margin-bottom:5px;
+}
+
+input,select,textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:var(--card);
+    color:var(--text);
+    outline:none;
+    font-size:15px;
+}
+
+textarea{
+    resize:vertical;
+}
+
+input:focus,select:focus,textarea:focus{
+    border-color:var(--primary);
+}
+
+.btn{
+    border:0;
+    padding:11px 15px;
+    border-radius:12px;
+    background:var(--primary);
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.btn:hover{
+    filter:brightness(.95);
+}
+
+.btn.secondary{
+    background:var(--bg);
+    color:var(--text);
+    border:1px solid var(--border);
+}
+
+.btn.warning{
+    background:#f9a825;
+}
+
+.btn.danger{
+    background:var(--danger);
+}
+
+.btn.small{
+    padding:7px 10px;
+    font-size:12px;
+}
+
+/* ---------- Task list ---------- */
+
+.task-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.task{
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    align-items:center;
+    gap:12px;
+    padding:13px;
+    border:1px solid var(--border);
+    border-radius:15px;
+    background:var(--card);
+    transition:.15s;
+}
+
+.task:hover{
+    transform:translateY(-1px);
+    box-shadow:var(--shadow);
+}
+
+.task-check{
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:17px;
+    cursor:pointer;
+    background:#eee;
+    border:2px solid #ccc;
+}
+
+.task-check.complete{
+    background:#43a047;
+    color:white;
+    border-color:#43a047;
+}
+
+.task-check.wip{
+    background:#ffb300;
+    color:white;
+    border-color:#ffb300;
+}
+
+.task-check.pending{
+    background:#90a4ae;
+    color:white;
+    border-color:#90a4ae;
+}
+
+.task-title{
+    font-weight:bold;
+    font-size:15px;
+}
+
+.task-title.completed{
+    text-decoration:line-through;
+    opacity:.6;
+}
+
+.task-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+    margin-top:5px;
+}
+
+.badge{
+    display:inline-block;
+    padding:4px 8px;
+    border-radius:20px;
+    font-size:10px;
+    font-weight:bold;
+}
+
+.badge.complete{
+    background:#e8f5e9;
+    color:#2e7d32;
+}
+
+.badge.wip{
+    background:#fff8e1;
+    color:#ef6c00;
+}
+
+.badge.pending{
+    background:#eceff1;
+    color:#455a64;
+}
+
+.badge.high{
+    background:#ffebee;
+    color:#c62828;
+}
+
+.badge.medium{
+    background:#fff8e1;
+    color:#ef6c00;
+}
+
+.badge.low{
+    background:#e8f5e9;
+    color:#388e3c;
+}
+
+.task-actions{
+    display:flex;
+    gap:5px;
+}
+
+.empty{
+    text-align:center;
+    padding:35px 15px;
+    color:var(--muted);
+}
+
+.empty-icon{
+    font-size:45px;
+}
+
+/* ---------- Status selector ---------- */
+
+.status-buttons{
+    display:flex;
+    gap:6px;
+}
+
+.status-btn{
+    flex:1;
+    padding:10px;
+    border:2px solid var(--border);
+    border-radius:11px;
+    background:var(--card);
+    color:var(--text);
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.status-btn.selected{
+    border-color:var(--primary);
+    background:var(--primary);
+    color:white;
+}
+
+/* ---------- Chart ---------- */
+
+.chart-wrap{
+    position:relative;
+    width:100%;
+    min-height:300px;
+}
+
+canvas{
+    max-width:100%;
+}
+
+/* ---------- Calendar ---------- */
+
+.date-row{
+    display:flex;
+    align-items:end;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.date-row .date-box{
+    flex:1;
+    min-width:160px;
+}
+
+/* ---------- Settings ---------- */
+
+.theme-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+}
+
+.theme-btn{
+    padding:12px 5px;
+    border-radius:15px;
+    border:2px solid var(--border);
+    background:var(--card);
+    color:var(--text);
+    cursor:pointer;
+    text-align:center;
+}
+
+.theme-dot{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    margin:auto auto 7px;
+}
+
+.theme-btn.selected{
+    border-color:var(--primary);
+}
+
+/* ---------- Import/export ---------- */
+
+.export-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+}
+
+/* ---------- Toast ---------- */
+
+#toast{
+    position:fixed;
+    left:50%;
+    bottom:25px;
+    transform:translateX(-50%) translateY(100px);
+    background:#263238;
+    color:#fff;
+    padding:12px 18px;
+    border-radius:30px;
+    z-index:1000;
+    opacity:0;
+    transition:.25s;
+    max-width:90%;
+    text-align:center;
+}
+
+#toast.show{
+    transform:translateX(-50%) translateY(0);
+    opacity:1;
+}
+
+/* ---------- Modal ---------- */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:100;
+    background:rgba(0,0,0,.55);
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    width:100%;
+    max-width:550px;
+    max-height:90vh;
+    overflow:auto;
+    background:var(--card);
+    border-radius:22px;
+    padding:20px;
+}
+
+/* ---------- Desktop ---------- */
+
+@media(min-width:900px){
+    main{
+        padding:22px;
+    }
+}
+
+/* ---------- Mobile ---------- */
+
+@media(max-width:700px){
+
+    .brand-title{
+        font-size:17px;
+    }
+
+    .brand-sub{
+        display:none;
+    }
+
+    .tabs{
+        top:64px;
+    }
+
+    .grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .theme-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .export-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .task{
+        grid-template-columns:auto 1fr;
+    }
+
+    .task-actions{
+        grid-column:2;
+    }
+
+    .task-actions .btn{
+        flex:1;
+    }
+}
+
+@media(max-width:420px){
+
+    main{
+        padding:10px;
+    }
+
+    .card{
+        padding:12px;
+    }
+
+    .stat-value{
+        font-size:22px;
+    }
+
+    .export-grid{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body class="theme-forest">
+
+<div class="app">
+
+<header class="header">
+    <div class="header-row">
+
+        <div class="brand">
+            <div class="brand-icon">🌿</div>
+
+            <div>
+                <div class="brand-title">Nature To-Do</div>
+                <div class="brand-sub">Daily tasks • Progress • Habits</div>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <button class="icon-btn" onclick="showToday()" title="Today">📅</button>
+            <button class="icon-btn" onclick="openQuickAdd()" title="Add task">➕</button>
+        </div>
+
+    </div>
+</header>
+
+<nav class="tabs">
+
+    <button class="active" data-tab="today">
+        📝 Today
+    </button>
+
+    <button data-tab="calendar">
+        📆 Dates
+    </button>
+
+    <button data-tab="charts">
+        📊 Charts
+    </button>
+
+    <button data-tab="reports">
+        📈 Reports
+    </button>
+
+    <button data-tab="data">
+        💾 Data
+    </button>
+
+    <button data-tab="settings">
+        ⚙️ Settings
+    </button>
+
+</nav>
+
+<main>
+
+<!-- =========================================================
+     TODAY
+========================================================= -->
+
+<section id="today" class="tab-page active">
+
+    <div class="card">
+
+        <div class="date-row">
+
+            <div class="date-box">
+                <label>Task date</label>
+                <input type="date" id="taskDate">
+            </div>
+
+            <button class="btn" onclick="showToday()">
+                📅 Today
+            </button>
+
+            <button class="btn secondary" onclick="changeDate(-1)">
+                ◀ Previous
+            </button>
+
+            <button class="btn secondary" onclick="changeDate(1)">
+                Next ▶
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="grid">
+
+        <div class="stat">
+            <div class="stat-icon">📋</div>
+            <div id="totalCount" class="stat-value">0</div>
+            <div class="stat-label">Total</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-icon">✅</div>
+            <div id="completeCount" class="stat-value">0</div>
+            <div class="stat-label">Complete</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-icon">🔄</div>
+            <div id="wipCount" class="stat-value">0</div>
+            <div class="stat-label">WIP</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-icon">⏳</div>
+            <div id="pendingCount" class="stat-value">0</div>
+            <div class="stat-label">Pending</div>
+        </div>
+
+    </div>
+
+    <br>
+
+    <div class="card">
+
+        <div class="card-title">
+            ➕ Add New Task
+        </div>
+
+        <div class="form-grid">
+
+            <div>
+                <label>Task</label>
+                <input id="taskTitle"
+                       placeholder="What do you want to do?">
+            </div>
+
+            <div>
+                <label>Category</label>
+
+                <select id="taskCategory">
+                    <option>School</option>
+                    <option>Homework</option>
+                    <option>Study</option>
+                    <option>Play</option>
+                    <option>Family</option>
+                    <option>Health</option>
+                    <option>Chores</option>
+                    <option>Personal</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Priority</label>
+
+                <select id="taskPriority">
+                    <option>Low</option>
+                    <option selected>Medium</option>
+                    <option>High</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Time</label>
+                <input id="taskTime" type="time">
+            </div>
+
+        </div>
+
+        <br>
+
+        <label>Initial status</label>
+
+        <div class="status-buttons">
+
+            <button class="status-btn selected"
+                    data-status="pending"
+                    onclick="selectAddStatus('pending')">
+                ⏳ Pending
+            </button>
+
+            <button class="status-btn"
+                    data-status="wip"
+                    onclick="selectAddStatus('wip')">
+                🔄 WIP
+            </button>
+
+            <button class="status-btn"
+                    data-status="complete"
+                    onclick="selectAddStatus('complete')">
+                ✅ Complete
+            </button>
+
+        </div>
+
+        <br>
+
+        <button class="btn" onclick="addTask()">
+            🌱 Add Task
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            🌻 Tasks
+        </div>
+
+        <div id="taskList" class="task-list"></div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     DATE VIEW
+========================================================= -->
+
+<section id="calendar" class="tab-page">
+
+    <div class="card">
+
+        <div class="card-title">
+            📆 Date-wise Tasks
+        </div>
+
+        <div class="date-row">
+
+            <div class="date-box">
+                <label>Select date</label>
+                <input type="date" id="calendarDate">
+            </div>
+
+            <button class="btn" onclick="loadCalendarDate()">
+                View Date
+            </button>
+
+        </div>
+
+    </div>
+
+    <div id="dateSummary"></div>
+
+    <div class="card">
+
+        <div class="card-title">
+            🗓️ Recent Days
+        </div>
+
+        <div id="recentDates"></div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     CHARTS
+========================================================= -->
+
+<section id="charts" class="tab-page">
+
+    <div class="card">
+
+        <div class="card-title">
+            📊 Daily Task Statistics
+        </div>
+
+        <div class="date-row">
+
+            <div class="date-box">
+                <label>From</label>
+                <input type="date" id="chartFrom">
+            </div>
+
+            <div class="date-box">
+                <label>To</label>
+                <input type="date" id="chartTo">
+            </div>
+
+            <button class="btn" onclick="drawChart()">
+                🔄 Update Chart
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <canvas id="taskChart" height="110"></canvas>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            📌 Status Summary
+        </div>
+
+        <div id="chartSummary"></div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     REPORTS
+========================================================= -->
+
+<section id="reports" class="tab-page">
+
+    <div class="card">
+
+        <div class="card-title">
+            📈 Task Reports
+        </div>
+
+        <div id="reportStats"></div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            🏆 Productivity
+        </div>
+
+        <div id="productivity"></div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     DATA
+========================================================= -->
+
+<section id="data" class="tab-page">
+
+    <div class="card">
+
+        <div class="card-title">
+            💾 Export Data
+        </div>
+
+        <p style="color:var(--muted)">
+            Keep a backup of your tasks. You can restore your data
+            on another device.
+        </p>
+
+        <div class="export-grid">
+
+            <button class="btn" onclick="exportJSON()">
+                📄 JSON
+            </button>
+
+            <button class="btn" onclick="exportCSV()">
+                📊 CSV
+            </button>
+
+            <button class="btn" onclick="exportSQL()">
+                🗄️ SQL
+            </button>
+
+            <button class="btn" onclick="exportSQLite()">
+                🧱 SQLite DB
+            </button>
+
+            <button class="btn secondary" onclick="copyJSON()">
+                📋 Copy JSON
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            📥 Import Data
+        </div>
+
+        <input type="file"
+               id="importFile"
+               accept=".json,.csv,.sql,.db,.sqlite,.sqlite3"
+               onchange="importFileSelected(event)">
+
+        <br><br>
+
+        <button class="btn" onclick="document.getElementById('importFile').click()">
+            📥 Select Backup
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            🗃️ Database Information
+        </div>
+
+        <div id="dbInfo"></div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            ⚠️ Danger Zone
+        </div>
+
+        <button class="btn danger" onclick="clearAllTasks()">
+            🗑️ Delete All Tasks
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SETTINGS
+========================================================= -->
+
+<section id="settings" class="tab-page">
+
+    <div class="card">
+
+        <div class="card-title">
+            🌳 Nature Themes
+        </div>
+
+        <div class="theme-grid">
+
+            <button class="theme-btn" data-theme="forest"
+                    onclick="setTheme('forest')">
+                <div class="theme-dot" style="background:#2e7d32"></div>
+                🌲 Forest
+            </button>
+
+            <button class="theme-btn" data-theme="ocean"
+                    onclick="setTheme('ocean')">
+                <div class="theme-dot" style="background:#0277bd"></div>
+                🌊 Ocean
+            </button>
+
+            <button class="theme-btn" data-theme="sunset"
+                    onclick="setTheme('sunset')">
+                <div class="theme-dot" style="background:#e65100"></div>
+                🌅 Sunset
+            </button>
+
+            <button class="theme-btn" data-theme="mountain"
+                    onclick="setTheme('mountain')">
+                <div class="theme-dot" style="background:#455a64"></div>
+                🏔️ Mountain
+            </button>
+
+            <button class="theme-btn" data-theme="sakura"
+                    onclick="setTheme('sakura')">
+                <div class="theme-dot" style="background:#c2185b"></div>
+                🌸 Sakura
+            </button>
+
+            <button class="theme-btn" data-theme="autumn"
+                    onclick="setTheme('autumn')">
+                <div class="theme-dot" style="background:#8d4b20"></div>
+                🍂 Autumn
+            </button>
+
+            <button class="theme-btn" data-theme="spring"
+                    onclick="setTheme('spring')">
+                <div class="theme-dot" style="background:#558b2f"></div>
+                🌱 Spring
+            </button>
+
+            <button class="theme-btn" data-theme="rainforest"
+                    onclick="setTheme('rainforest')">
+                <div class="theme-dot" style="background:#00695c"></div>
+                🌴 Rainforest
+            </button>
+
+            <button class="theme-btn" data-theme="meadow"
+                    onclick="setTheme('meadow')">
+                <div class="theme-dot" style="background:#689f38"></div>
+                🌼 Meadow
+            </button>
+
+            <button class="theme-btn" data-theme="nightforest"
+                    onclick="setTheme('nightforest')">
+                <div class="theme-dot" style="background:#1b5e20"></div>
+                🌙 Night Forest
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            ⚙️ Task Settings
+        </div>
+
+        <label>
+            <input type="checkbox"
+                   id="autoCarry"
+                   checked
+                   onchange="saveSettings()"
+                   style="width:auto">
+            Automatically carry pending/WIP tasks to next day
+        </label>
+
+        <br>
+
+        <label>
+            <input type="checkbox"
+                   id="soundEnabled"
+                   checked
+                   onchange="saveSettings()"
+                   style="width:auto">
+            Button sounds
+        </label>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            🧹 Maintenance
+        </div>
+
+        <button class="btn secondary" onclick="runCarryOver()">
+            🔄 Run Pending Carry-over Now
+        </button>
+
+        <button class="btn secondary" onclick="refreshEverything()">
+            ♻️ Refresh Application
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            ℹ️ About
+        </div>
+
+        <p>
+            🌿 <b>Nature To-Do</b>
+        </p>
+
+        <p style="color:var(--muted)">
+            Kids-friendly daily task manager with status tracking,
+            automatic pending-task rollover, statistics,
+            SQLite backup and IndexedDB persistence.
+        </p>
+
+        <p>
+            Database:
+            <b id="databaseMode">Checking...</b>
+        </p>
+
+    </div>
+
+</section>
+
+</main>
+
+</div>
+
+
+<!-- =========================================================
+     EDIT MODAL
+========================================================= -->
+
+<div id="editModal" class="modal">
+
+    <div class="modal-box">
+
+        <div class="card-title">
+            ✏️ Edit Task
+        </div>
+
+        <input type="hidden" id="editId">
+
+        <label>Task</label>
+        <input id="editTitle">
+
+        <br><br>
+
+        <label>Category</label>
+        <select id="editCategory">
+            <option>School</option>
+            <option>Homework</option>
+            <option>Study</option>
+            <option>Play</option>
+            <option>Family</option>
+            <option>Health</option>
+            <option>Chores</option>
+            <option>Personal</option>
+            <option>Other</option>
+        </select>
+
+        <br><br>
+
+        <label>Priority</label>
+        <select id="editPriority">
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+        </select>
+
+        <br><br>
+
+        <label>Status</label>
+
+        <div class="status-buttons">
+
+            <button class="status-btn"
+                    onclick="selectEditStatus('pending')"
+                    data-edit-status="pending">
+                ⏳ Pending
+            </button>
+
+            <button class="status-btn"
+                    onclick="selectEditStatus('wip')"
+                    data-edit-status="wip">
+                🔄 WIP
+            </button>
+
+            <button class="status-btn"
+                    onclick="selectEditStatus('complete')"
+                    data-edit-status="complete">
+                ✅ Complete
+            </button>
+
+        </div>
+
+        <br>
+
+        <label>Time</label>
+        <input type="time" id="editTime">
+
+        <br><br>
+
+        <label>Notes</label>
+        <textarea id="editNotes" rows="4"></textarea>
+
+        <br><br>
+
+        <div style="display:flex;gap:8px">
+
+            <button class="btn" onclick="saveEdit()">
+                💾 Save
+            </button>
+
+            <button class="btn secondary"
+                    onclick="closeEdit()">
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div id="toast"></div>
+
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+
+<script>
+
+/* =========================================================
+   GLOBAL VARIABLES
+========================================================= */
+
+let tasks = [];
+let selectedAddStatus = "pending";
+let selectedEditStatus = "pending";
+
+let db = null;
+let sqliteReady = false;
+let chartInstance = null;
+
+const DB_NAME = "NatureTodoDB";
+const DB_VERSION = 1;
+
+const today = () => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+};
+
+const uid = () => {
+    return Date.now().toString(36) +
+           Math.random().toString(36).substring(2,8);
+};
+
+
+/* =========================================================
+   START APPLICATION
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+    document.getElementById("taskDate").value = today();
+    document.getElementById("calendarDate").value = today();
+
+    const start = new Date();
+    start.setDate(start.getDate()-6);
+
+    document.getElementById("chartFrom").value =
+        formatDate(start);
+
+    document.getElementById("chartTo").value =
+        today();
+
+    loadSettings();
+
+    setupTabs();
+
+    await initSQLite();
+
+    await loadTasks();
+
+    await runCarryOver();
+
+    renderToday();
+
+    updateDatabaseInfo();
+
+});
+
+
+/* =========================================================
+   DATE FUNCTIONS
+========================================================= */
+
+function formatDate(d){
+
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+
+    return `${y}-${m}-${day}`;
+}
+
+function dateObj(str){
+
+    const parts = str.split("-");
+
+    return new Date(
+        Number(parts[0]),
+        Number(parts[1])-1,
+        Number(parts[2])
+    );
+}
+
+function addDays(dateString, amount){
+
+    const d = dateObj(dateString);
+
+    d.setDate(d.getDate()+amount);
+
+    return formatDate(d);
+}
+
+function changeDate(amount){
+
+    const input = document.getElementById("taskDate");
+
+    input.value = addDays(input.value, amount);
+
+    renderToday();
+}
+
+function showToday(){
+
+    document.getElementById("taskDate").value = today();
+
+    activateTab("today");
+
+    renderToday();
+}
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+function setupTabs(){
+
+    document.querySelectorAll(".tabs button")
+        .forEach(btn => {
+
+        btn.addEventListener("click", () => {
+
+            activateTab(btn.dataset.tab);
+
+        });
+
+    });
+
+}
+
+function activateTab(tab){
+
+    document.querySelectorAll(".tabs button")
+        .forEach(b => {
+
+        b.classList.toggle(
+            "active",
+            b.dataset.tab === tab
+        );
+
+    });
+
+    document.querySelectorAll(".tab-page")
+        .forEach(p => {
+
+        p.classList.toggle(
+            "active",
+            p.id === tab
+        );
+
+    });
+
+    if(tab === "charts") drawChart();
+    if(tab === "calendar") renderCalendarPage();
+    if(tab === "reports") renderReports();
+    if(tab === "data") updateDatabaseInfo();
+}
+
+
+/* =========================================================
+   SQLITE
+========================================================= */
+
+async function initSQLite(){
+
+    try{
+
+        let script = document.createElement("script");
+
+        script.src = "vendor/sql-wasm.js";
+
+        await new Promise((resolve,reject)=>{
+
+            script.onload = resolve;
+            script.onerror = reject;
+
+            document.head.appendChild(script);
+
+        });
+
+        if(typeof initSqlJs !== "function"){
+            throw new Error("sql.js unavailable");
+        }
+
+        const SQL = await initSqlJs({
+
+            locateFile: file =>
+                "vendor/" + file
+
+        });
+
+        db = new SQL.Database();
+
+        db.run(`
+            CREATE TABLE IF NOT EXISTS tasks(
+                id TEXT PRIMARY KEY,
+                title TEXT NOT NULL,
+                date TEXT NOT NULL,
+                status TEXT NOT NULL,
+                category TEXT,
+                priority TEXT,
+                time TEXT,
+                notes TEXT,
+                created_at TEXT,
+                updated_at TEXT,
+                carried_from TEXT
+            )
+        `);
+
+        sqliteReady = true;
+
+        document.getElementById("databaseMode")
+            .textContent = "SQLite + IndexedDB";
+
+    }catch(error){
+
+        sqliteReady = false;
+
+        document.getElementById("databaseMode")
+            .textContent = "IndexedDB fallback";
+
+        console.log(
+            "SQLite WASM not available. IndexedDB fallback active.",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   INDEXEDDB
+========================================================= */
+
+function openIDB(){
+
+    return new Promise((resolve,reject)=>{
+
+        const request =
+            indexedDB.open(DB_NAME,DB_VERSION);
+
+        request.onupgradeneeded = event => {
+
+            const database = event.target.result;
+
+            if(!database.objectStoreNames.contains("tasks")){
+
+                const store =
+                    database.createObjectStore(
+                        "tasks",
+                        {keyPath:"id"}
+                    );
+
+                store.createIndex(
+                    "date",
+                    "date",
+                    {unique:false}
+                );
+
+                store.createIndex(
+                    "status",
+                    "status",
+                    {unique:false}
+                );
+
+            }
+
+        };
+
+        request.onsuccess = () =>
+            resolve(request.result);
+
+        request.onerror = () =>
+            reject(request.error);
+
+    });
+
+}
+
+async function idbGetAll(){
+
+    const database = await openIDB();
+
+    return new Promise((resolve,reject)=>{
+
+        const tx =
+            database.transaction("tasks","readonly");
+
+        const store =
+            tx.objectStore("tasks");
+
+        const request = store.getAll();
+
+        request.onsuccess =
+            () => resolve(request.result || []);
+
+        request.onerror =
+            () => reject(request.error);
+
+    });
+
+}
+
+async function idbPut(task){
+
+    const database = await openIDB();
+
+    return new Promise((resolve,reject)=>{
+
+        const tx =
+            database.transaction(
+                "tasks",
+                "readwrite"
+            );
+
+        tx.objectStore("tasks").put(task);
+
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+
+    });
+
+}
+
+async function idbDelete(id){
+
+    const database = await openIDB();
+
+    return new Promise((resolve,reject)=>{
+
+        const tx =
+            database.transaction(
+                "tasks",
+                "readwrite"
+            );
+
+        tx.objectStore("tasks").delete(id);
+
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+
+    });
+
+}
+
+async function idbClear(){
+
+    const database = await openIDB();
+
+    return new Promise((resolve,reject)=>{
+
+        const tx =
+            database.transaction(
+                "tasks",
+                "readwrite"
+            );
+
+        tx.objectStore("tasks").clear();
+
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+
+    });
+
+}
+
+
+/* =========================================================
+   LOAD TASKS
+========================================================= */
+
+async function loadTasks(){
+
+    tasks = await idbGetAll();
+
+    if(sqliteReady){
+
+        try{
+
+            db.run("DELETE FROM tasks");
+
+            for(const task of tasks){
+
+                insertSQLite(task);
+
+            }
+
+        }catch(e){
+
+            console.log(e);
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   SQLITE INSERT
+========================================================= */
+
+function insertSQLite(task){
+
+    db.run(`
+        INSERT OR REPLACE INTO tasks
+        (id,title,date,status,category,priority,time,notes,
+         created_at,updated_at,carried_from)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?)
+    `,[
+        task.id,
+        task.title,
+        task.date,
+        task.status,
+        task.category,
+        task.priority,
+        task.time || "",
+        task.notes || "",
+        task.created_at,
+        task.updated_at,
+        task.carried_from || ""
+    ]);
+
+}
+
+
+/* =========================================================
+   SAVE TASK
+========================================================= */
+
+async function saveTask(task){
+
+    const index =
+        tasks.findIndex(t => t.id === task.id);
+
+    if(index >= 0){
+
+        tasks[index] = task;
+
+    }else{
+
+        tasks.push(task);
+
+    }
+
+    await idbPut(task);
+
+    if(sqliteReady){
+
+        try{
+
+            insertSQLite(task);
+
+        }catch(e){
+
+            console.log(e);
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   DELETE TASK
+========================================================= */
+
+async function deleteTask(id){
+
+    tasks =
+        tasks.filter(t => t.id !== id);
+
+    await idbDelete(id);
+
+    if(sqliteReady){
+
+        try{
+
+            db.run(
+                "DELETE FROM tasks WHERE id=?",
+                [id]
+            );
+
+        }catch(e){}
+
+    }
+
+}
+
+
+/* =========================================================
+   ADD TASK STATUS
+========================================================= */
+
+function selectAddStatus(status){
+
+    selectedAddStatus = status;
+
+    document.querySelectorAll(
+        "#today .status-btn"
+    ).forEach(btn => {
+
+        btn.classList.toggle(
+            "selected",
+            btn.dataset.status === status
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   ADD TASK
+========================================================= */
+
+async function addTask(){
+
+    const title =
+        document.getElementById("taskTitle")
+        .value.trim();
+
+    if(!title){
+
+        toast("Please enter a task 🌱");
+
+        return;
+
+    }
+
+    const date =
+        document.getElementById("taskDate").value;
+
+    const now =
+        new Date().toISOString();
+
+    const task = {
+
+        id:uid(),
+
+        title:title,
+
+        date:date,
+
+        status:selectedAddStatus,
+
+        category:
+            document.getElementById(
+                "taskCategory"
+            ).value,
+
+        priority:
+            document.getElementById(
+                "taskPriority"
+            ).value,
+
+        time:
+            document.getElementById(
+                "taskTime"
+            ).value,
+
+        notes:"",
+
+        created_at:now,
+
+        updated_at:now,
+
+        carried_from:""
+
+    };
+
+    await saveTask(task);
+
+    document.getElementById("taskTitle").value = "";
+    document.getElementById("taskTime").value = "";
+
+    renderToday();
+
+    toast("Task added 🌱");
+
+    sound();
+
+}
+
+
+/* =========================================================
+   RENDER TODAY
+========================================================= */
+
+function renderToday(){
+
+    const date =
+        document.getElementById("taskDate").value;
+
+    const list =
+        tasks
+        .filter(t => t.date === date)
+        .sort((a,b)=>{
+
+            if(a.status === "complete" &&
+               b.status !== "complete") return 1;
+
+            if(a.status !== "complete" &&
+               b.status === "complete") return -1;
+
+            return (a.time || "")
+                .localeCompare(b.time || "");
+
+        });
+
+    renderTaskList(list);
+
+    updateStats(list);
+
+}
+
+
+/* =========================================================
+   TASK LIST
+========================================================= */
+
+function renderTaskList(list){
+
+    const container =
+        document.getElementById("taskList");
+
+    if(!list.length){
+
+        container.innerHTML = `
+            <div class="empty">
+                <div class="empty-icon">🌱</div>
+                <h3>No tasks for this day</h3>
+                <p>Add a task and start your day!</p>
+            </div>
+        `;
+
+        return;
+
+    }
+
+    container.innerHTML =
+        list.map(task => taskHTML(task))
+        .join("");
+
+}
+
+function taskHTML(task){
+
+    let icon = "⏳";
+
+    if(task.status === "complete") icon = "✓";
+    if(task.status === "wip") icon = "🔄";
+
+    const titleClass =
+        task.status === "complete"
+            ? "completed"
+            : "";
+
+    return `
+
+    <div class="task">
+
+        <div class="task-check ${task.status}"
+             onclick="cycleStatus('${task.id}')">
+            ${icon}
+        </div>
+
+        <div>
+
+            <div class="task-title ${titleClass}">
+                ${escapeHTML(task.title)}
+            </div>
+
+            <div class="task-meta">
+
+                <span class="badge ${task.status}">
+                    ${task.status.toUpperCase()}
+                </span>
+
+                <span class="badge ${task.priority.toLowerCase()}">
+                    ${escapeHTML(task.priority)}
+                </span>
+
+                <span class="badge">
+                    ${escapeHTML(task.category)}
+                </span>
+
+                ${
+                    task.time
+                    ? `<span class="badge">⏰ ${task.time}</span>`
+                    : ""
+                }
+
+                ${
+                    task.carried_from
+                    ? `<span class="badge">
+                        ↪ From ${task.carried_from}
+                       </span>`
+                    : ""
+                }
+
+            </div>
+
+        </div>
+
+        <div class="task-actions">
+
+            <button class="btn small secondary"
+                    onclick="openEdit('${task.id}')">
+                ✏️
+            </button>
+
+            <button class="btn small danger"
+                    onclick="removeTask('${task.id}')">
+                🗑️
+            </button>
+
+        </div>
+
+    </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   STATUS CYCLE
+========================================================= */
+
+async function cycleStatus(id){
+
+    const task =
+        tasks.find(t => t.id === id);
+
+    if(!task) return;
+
+    if(task.status === "pending")
+        task.status = "wip";
+
+    else if(task.status === "wip")
+        task.status = "complete";
+
+    else
+        task.status = "pending";
+
+    task.updated_at =
+        new Date().toISOString();
+
+    await saveTask(task);
+
+    renderToday();
+
+    toast(
+        task.status === "complete"
+            ? "Great job! 🎉"
+            : "Task status updated 🔄"
+    );
+
+    sound();
+
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function updateStats(list){
+
+    const total = list.length;
+
+    const complete =
+        list.filter(t=>t.status==="complete").length;
+
+    const wip =
+        list.filter(t=>t.status==="wip").length;
+
+    const pending =
+        list.filter(t=>t.status==="pending").length;
+
+    document.getElementById("totalCount")
+        .textContent = total;
+
+    document.getElementById("completeCount")
+        .textContent = complete;
+
+    document.getElementById("wipCount")
+        .textContent = wip;
+
+    document.getElementById("pendingCount")
+        .textContent = pending;
+
+}
+
+
+/* =========================================================
+   REMOVE
+========================================================= */
+
+async function removeTask(id){
+
+    if(!confirm("Delete this task?")) return;
+
+    await deleteTask(id);
+
+    renderToday();
+
+    toast("Task deleted");
+
+}
+
+
+/* =========================================================
+   EDIT
+========================================================= */
+
+function openEdit(id){
+
+    const task =
+        tasks.find(t=>t.id===id);
+
+    if(!task) return;
+
+    document.getElementById("editId").value = task.id;
+    document.getElementById("editTitle").value = task.title;
+    document.getElementById("editCategory").value = task.category;
+    document.getElementById("editPriority").value = task.priority;
+    document.getElementById("editTime").value = task.time || "";
+    document.getElementById("editNotes").value = task.notes || "";
+
+    selectEditStatus(task.status);
+
+    document.getElementById("editModal")
+        .classList.add("show");
+
+}
+
+function selectEditStatus(status){
+
+    selectedEditStatus = status;
+
+    document.querySelectorAll(
+        "[data-edit-status]"
+    ).forEach(btn=>{
+
+        btn.classList.toggle(
+            "selected",
+            btn.dataset.editStatus === status
+        );
+
+    });
+
+}
+
+function closeEdit(){
+
+    document.getElementById("editModal")
+        .classList.remove("show");
+
+}
+
+async function saveEdit(){
+
+    const id =
+        document.getElementById("editId").value;
+
+    const task =
+        tasks.find(t=>t.id===id);
+
+    if(!task) return;
+
+    task.title =
+        document.getElementById("editTitle").value.trim();
+
+    task.category =
+        document.getElementById("editCategory").value;
+
+    task.priority =
+        document.getElementById("editPriority").value;
+
+    task.time =
+        document.getElementById("editTime").value;
+
+    task.notes =
+        document.getElementById("editNotes").value;
+
+    task.status =
+        selectedEditStatus;
+
+    task.updated_at =
+        new Date().toISOString();
+
+    await saveTask(task);
+
+    closeEdit();
+
+    renderToday();
+
+    toast("Task updated ✨");
+
+}
+
+
+/* =========================================================
+   AUTOMATIC PENDING → NEXT DAY
+========================================================= */
+
+async function runCarryOver(){
+
+    if(!document.getElementById("autoCarry")?.checked)
+        return;
+
+    const todayDate = today();
+
+    const previousDate =
+        addDays(todayDate,-1);
+
+    let changed = false;
+
+    const previousTasks =
+        tasks.filter(t =>
+            t.date === previousDate &&
+            t.status !== "complete"
+        );
+
+    for(const oldTask of previousTasks){
+
+        const alreadyExists =
+            tasks.some(t =>
+                t.carried_from === oldTask.date &&
+                t.title === oldTask.title &&
+                t.date === todayDate
+            );
+
+        if(alreadyExists) continue;
+
+        const newTask = {
+
+            ...oldTask,
+
+            id:uid(),
+
+            date:todayDate,
+
+            status:"pending",
+
+            carried_from:oldTask.date,
+
+            created_at:new Date().toISOString(),
+
+            updated_at:new Date().toISOString()
+
+        };
+
+        await saveTask(newTask);
+
+        changed = true;
+
+    }
+
+    if(changed){
+
+        toast("Pending tasks carried to today 🔄");
+
+    }
+
+}
+
+
+/* =========================================================
+   CALENDAR / DATE VIEW
+========================================================= */
+
+function loadCalendarDate(){
+
+    const date =
+        document.getElementById("calendarDate").value;
+
+    document.getElementById("taskDate").value = date;
+
+    activateTab("today");
+
+    renderToday();
+
+}
+
+function renderCalendarPage(){
+
+    const date =
+        document.getElementById("calendarDate").value;
+
+    const list =
+        tasks.filter(t=>t.date===date);
+
+    document.getElementById("dateSummary")
+        .innerHTML = `
+
+        <div class="grid">
+
+            <div class="stat">
+                <div class="stat-icon">📋</div>
+                <div class="stat-value">${list.length}</div>
+                <div class="stat-label">Tasks</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value">
+                    ${list.filter(t=>t.status==="complete").length}
+                </div>
+                <div class="stat-label">Complete</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-icon">🔄</div>
+                <div class="stat-value">
+                    ${list.filter(t=>t.status==="wip").length}
+                </div>
+                <div class="stat-label">WIP</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-value">
+                    ${list.filter(t=>t.status==="pending").length}
+                </div>
+                <div class="stat-label">Pending</div>
+            </div>
+
+        </div>
+
+        `;
+
+    renderRecentDates();
+
+}
+
+function renderRecentDates(){
+
+    let html = "";
+
+    for(let i=0;i<14;i++){
+
+        const date =
+            addDays(today(),-i);
+
+        const list =
+            tasks.filter(t=>t.date===date);
+
+        const completed =
+            list.filter(t=>t.status==="complete").length;
+
+        const total = list.length;
+
+        html += `
+
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:12px;
+            border-bottom:1px solid var(--border);
+        ">
+
+            <div>
+                <b>${date}</b>
+                <div style="color:var(--muted);font-size:12px">
+                    ${total} tasks
+                </div>
+            </div>
+
+            <div>
+                <span class="badge complete">
+                    ${completed} completed
+                </span>
+
+                <button class="btn small"
+                        onclick="openDate('${date}')">
+                    View
+                </button>
+            </div>
+
+        </div>
+
+        `;
+
+    }
+
+    document.getElementById("recentDates")
+        .innerHTML = html;
+
+}
+
+function openDate(date){
+
+    document.getElementById("taskDate").value = date;
+
+    activateTab("today");
+
+    renderToday();
+
+}
+
+
+/* =========================================================
+   CHART
+========================================================= */
+
+function drawChart(){
+
+    if(typeof Chart === "undefined"){
+
+        document.getElementById("chartSummary")
+            .innerHTML =
+            "<p>Chart library not loaded.</p>";
+
+        return;
+
+    }
+
+    const from =
+        document.getElementById("chartFrom").value;
+
+    const to =
+        document.getElementById("chartTo").value;
+
+    if(!from || !to) return;
+
+    const labels = [];
+
+    const total = [];
+    const complete = [];
+    const wip = [];
+    const pending = [];
+
+    let current = from;
+
+    while(current <= to){
+
+        labels.push(current);
+
+        const dayTasks =
+            tasks.filter(t=>t.date===current);
+
+        total.push(dayTasks.length);
+
+        complete.push(
+            dayTasks.filter(t=>t.status==="complete").length
+        );
+
+        wip.push(
+            dayTasks.filter(t=>t.status==="wip").length
+        );
+
+        pending.push(
+            dayTasks.filter(t=>t.status==="pending").length
+        );
+
+        current = addDays(current,1);
+
+    }
+
+    const canvas =
+        document.getElementById("taskChart");
+
+    if(chartInstance)
+        chartInstance.destroy();
+
+    chartInstance =
+        new Chart(canvas,{
+
+            type:"line",
+
+            data:{
+
+                labels:labels,
+
+                datasets:[
+
+                    {
+                        label:"Total",
+                        data:total,
+                        tension:.3
+                    },
+
+                    {
+                        label:"Complete",
+                        data:complete,
+                        tension:.3
+                    },
+
+                    {
+                        label:"WIP",
+                        data:wip,
+                        tension:.3
+                    },
+
+                    {
+                        label:"Pending",
+                        data:pending,
+                        tension:.3
+                    }
+
+                ]
+
+            },
+
+            options:{
+
+                responsive:true,
+
+                plugins:{
+                    legend:{
+                        position:"bottom"
+                    }
+                },
+
+                scales:{
+                    y:{
+                        beginAtZero:true,
+                        ticks:{
+                            precision:0
+                        }
+                    }
+                }
+
+            }
+
+        });
+
+    const sumTotal =
+        total.reduce((a,b)=>a+b,0);
+
+    const sumComplete =
+        complete.reduce((a,b)=>a+b,0);
+
+    const sumWip =
+        wip.reduce((a,b)=>a+b,0);
+
+    const sumPending =
+        pending.reduce((a,b)=>a+b,0);
+
+    document.getElementById("chartSummary")
+        .innerHTML = `
+
+        <div class="grid">
+
+            <div class="stat">
+                <div class="stat-value">${sumTotal}</div>
+                <div class="stat-label">Total Tasks</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-value">${sumComplete}</div>
+                <div class="stat-label">Completed</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-value">${sumWip}</div>
+                <div class="stat-label">WIP</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-value">${sumPending}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+
+        </div>
+
+        `;
+
+}
+
+
+/* =========================================================
+   REPORTS
+========================================================= */
+
+function renderReports(){
+
+    const total = tasks.length;
+
+    const complete =
+        tasks.filter(t=>t.status==="complete").length;
+
+    const wip =
+        tasks.filter(t=>t.status==="wip").length;
+
+    const pending =
+        tasks.filter(t=>t.status==="pending").length;
+
+    const percentage =
+        total
+        ? Math.round((complete/total)*100)
+        : 0;
+
+    document.getElementById("reportStats")
+        .innerHTML = `
+
+        <div class="grid">
+
+            <div class="stat">
+                <div class="stat-icon">📋</div>
+                <div class="stat-value">${total}</div>
+                <div class="stat-label">All Tasks</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value">${complete}</div>
+                <div class="stat-label">Completed</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-icon">🔄</div>
+                <div class="stat-value">${wip}</div>
+                <div class="stat-label">WIP</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-value">${pending}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+
+        </div>
+
+        `;
+
+    document.getElementById("productivity")
+        .innerHTML = `
+
+        <h3>
+            Completion Rate: ${percentage}%
+        </h3>
+
+        <div style="
+            height:20px;
+            background:var(--bg);
+            border-radius:20px;
+            overflow:hidden;
+        ">
+
+            <div style="
+                height:100%;
+                width:${percentage}%;
+                background:var(--primary);
+            "></div>
+
+        </div>
+
+        <br>
+
+        <p style="color:var(--muted)">
+            Keep completing small tasks every day 🌱
+        </p>
+
+        `;
+
+}
+
+
+/* =========================================================
+   EXPORT JSON
+========================================================= */
+
+function downloadFile(name,type,data){
+
+    const blob =
+        new Blob(
+            [data],
+            {type:type}
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const a =
+        document.createElement("a");
+
+    a.href = url;
+    a.download = name;
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    URL.revokeObjectURL(url);
+
+}
+
+function exportJSON(){
+
+    downloadFile(
+        "nature-todo-backup.json",
+        "application/json",
+        JSON.stringify(
+            {
+                version:1,
+                exported:new Date().toISOString(),
+                tasks:tasks
+            },
+            null,
+            2
+        )
+    );
+
+    toast("JSON exported 📄");
+
+}
+
+
+/* =========================================================
+   CSV
+========================================================= */
+
+function csvEscape(value){
+
+    value =
+        value === null ||
+        value === undefined
+            ? ""
+            : String(value);
+
+    return `"${value.replace(/"/g,'""')}"`;
+
+}
+
+function exportCSV(){
+
+    const headers = [
+        "id",
+        "title",
+        "date",
+        "status",
+        "category",
+        "priority",
+        "time",
+        "notes",
+        "created_at",
+        "updated_at",
+        "carried_from"
+    ];
+
+    let csv =
+        headers.join(",") + "\n";
+
+    tasks.forEach(t=>{
+
+        csv += headers
+            .map(h=>csvEscape(t[h]))
+            .join(",") + "\n";
+
+    });
+
+    downloadFile(
+        "nature-todo.csv",
+        "text/csv",
+        csv
+    );
+
+    toast("CSV exported 📊");
+
+}
+
+
+/* =========================================================
+   SQL EXPORT
+========================================================= */
+
+function exportSQL(){
+
+    let sql = `
+
+CREATE TABLE IF NOT EXISTS tasks (
+id TEXT PRIMARY KEY,
+title TEXT NOT NULL,
+date TEXT NOT NULL,
+status TEXT NOT NULL,
+category TEXT,
+priority TEXT,
+time TEXT,
+notes TEXT,
+created_at TEXT,
+updated_at TEXT,
+carried_from TEXT
+);
+
+`;
+
+    tasks.forEach(t=>{
+
+        const values = [
+            t.id,
+            t.title,
+            t.date,
+            t.status,
+            t.category,
+            t.priority,
+            t.time || "",
+            t.notes || "",
+            t.created_at,
+            t.updated_at,
+            t.carried_from || ""
+        ].map(v=>
+            "'" +
+            String(v ?? "")
+                .replace(/'/g,"''") +
+            "'"
+        );
+
+        sql +=
+            `INSERT OR REPLACE INTO tasks VALUES (${values.join(",")});\n`;
+
+    });
+
+    downloadFile(
+        "nature-todo.sql",
+        "application/sql",
+        sql
+    );
+
+    toast("SQL exported 🗄️");
+
+}
+
+
+/* =========================================================
+   SQLITE EXPORT
+========================================================= */
+
+function exportSQLite(){
+
+    if(!sqliteReady){
+
+        toast(
+            "SQLite WASM unavailable. Use JSON/CSV backup."
+        );
+
+        return;
+
+    }
+
+    try{
+
+        const data =
+            db.export();
+
+        const blob =
+            new Blob(
+                [data],
+                {type:"application/x-sqlite3"}
+            );
+
+        const url =
+            URL.createObjectURL(blob);
+
+        const a =
+            document.createElement("a");
+
+        a.href = url;
+        a.download = "nature-todo.sqlite";
+
+        a.click();
+
+        URL.revokeObjectURL(url);
+
+        toast("SQLite database exported 🧱");
+
+    }catch(e){
+
+        toast("SQLite export failed");
+
+    }
+
+}
+
+
+/* =========================================================
+   COPY JSON
+========================================================= */
+
+async function copyJSON(){
+
+    const data =
+        JSON.stringify(tasks,null,2);
+
+    try{
+
+        await navigator.clipboard.writeText(data);
+
+        toast("JSON copied 📋");
+
+    }catch(e){
+
+        toast("Clipboard unavailable");
+
+    }
+
+}
+
+
+/* =========================================================
+   IMPORT
+========================================================= */
+
+function importFileSelected(event){
+
+    const file =
+        event.target.files[0];
+
+    if(!file) return;
+
+    const name =
+        file.name.toLowerCase();
+
+    const reader =
+        new FileReader();
+
+    reader.onload = async e => {
+
+        try{
+
+            if(name.endsWith(".json")){
+
+                importJSON(
+                    e.target.result
+                );
+
+            }else if(name.endsWith(".csv")){
+
+                importCSV(
+                    e.target.result
+                );
+
+            }else if(name.endsWith(".sql")){
+
+                importSQL(
+                    e.target.result
+                );
+
+            }else if(
+                name.endsWith(".db") ||
+                name.endsWith(".sqlite") ||
+                name.endsWith(".sqlite3")
+            ){
+
+                await importSQLite(
+                    e.target.result
+                );
+
+            }else{
+
+                toast("Unsupported file");
+
+            }
+
+        }catch(error){
+
+            console.error(error);
+
+            toast("Import failed");
+
+        }
+
+    };
+
+    if(
+        name.endsWith(".db") ||
+        name.endsWith(".sqlite") ||
+        name.endsWith(".sqlite3")
+    ){
+
+        reader.readAsArrayBuffer(file);
+
+    }else{
+
+        reader.readAsText(file);
+
+    }
+
+}
+
+
+/* =========================================================
+   IMPORT JSON
+========================================================= */
+
+async function importJSON(text){
+
+    const obj =
+        JSON.parse(text);
+
+    const incoming =
+        Array.isArray(obj)
+            ? obj
+            : obj.tasks;
+
+    if(!Array.isArray(incoming))
+        throw new Error("Invalid JSON");
+
+    for(const task of incoming){
+
+        if(!task.id)
+            task.id = uid();
+
+        await saveTask(task);
+
+    }
+
+    await loadTasks();
+
+    renderToday();
+
+    toast(
+        incoming.length +
+        " tasks imported 📥"
+    );
+
+}
+
+
+/* =========================================================
+   IMPORT CSV
+========================================================= */
+
+function parseCSVLine(line){
+
+    const result = [];
+
+    let current = "";
+    let quoted = false;
+
+    for(let i=0;i<line.length;i++){
+
+        const c = line[i];
+
+        if(c === '"' && line[i+1] === '"'){
+
+            current += '"';
+
+            i++;
+
+        }else if(c === '"'){
+
+            quoted = !quoted;
+
+        }else if(c === "," && !quoted){
+
+            result.push(current);
+
+            current = "";
+
+        }else{
+
+            current += c;
+
+        }
+
+    }
+
+    result.push(current);
+
+    return result;
+
+}
+
+async function importCSV(text){
+
+    const lines =
+        text.trim().split(/\r?\n/);
+
+    if(lines.length < 2)
+        throw new Error("CSV empty");
+
+    const headers =
+        parseCSVLine(lines[0]);
+
+    let count = 0;
+
+    for(let i=1;i<lines.length;i++){
+
+        const values =
+            parseCSVLine(lines[i]);
+
+        const task = {};
+
+        headers.forEach((h,index)=>{
+            task[h] = values[index] || "";
+        });
+
+        if(!task.id)
+            task.id = uid();
+
+        await saveTask(task);
+
+        count++;
+
+    }
+
+    await loadTasks();
+
+    renderToday();
+
+    toast(count+" CSV tasks imported 📥");
+
+}
+
+
+/* =========================================================
+   IMPORT SQL
+========================================================= */
+
+async function importSQL(text){
+
+    if(!sqliteReady){
+
+        toast(
+            "SQLite WASM required for SQL import"
+        );
+
+        return;
+
+    }
+
+    db.run(text);
+
+    const result =
+        db.exec("SELECT * FROM tasks");
+
+    if(!result.length){
+
+        toast("No tasks found in SQL");
+
+        return;
+
+    }
+
+    const columns =
+        result[0].columns;
+
+    const rows =
+        result[0].values;
+
+    for(const row of rows){
+
+        const task = {};
+
+        columns.forEach(
+            (column,index)=>{
+                task[column] = row[index] || "";
+            }
+        );
+
+        if(!task.id)
+            task.id = uid();
+
+        await saveTask(task);
+
+    }
+
+    await loadTasks();
+
+    renderToday();
+
+    toast("SQL imported 🗄️");
+
+}
+
+
+/* =========================================================
+   IMPORT SQLITE
+========================================================= */
+
+async function importSQLite(buffer){
+
+    if(!sqliteReady){
+
+        toast(
+            "SQLite WASM is not available"
+        );
+
+        return;
+
+    }
+
+    const SQL =
+        db.constructor;
+
+    try{
+
+        const newDb =
+            new SQL.Database(
+                new Uint8Array(buffer)
+            );
+
+        const result =
+            newDb.exec(
+                "SELECT * FROM tasks"
+            );
+
+        if(!result.length){
+
+            toast("No tasks table found");
+
+            return;
+
+        }
+
+        const columns =
+            result[0].columns;
+
+        const rows =
+            result[0].values;
+
+        for(const row of rows){
+
+            const task = {};
+
+            columns.forEach(
+                (column,index)=>{
+                    task[column] =
+                        row[index] || "";
+                }
+            );
+
+            if(!task.id)
+                task.id = uid();
+
+            await saveTask(task);
+
+        }
+
+        await loadTasks();
+
+        renderToday();
+
+        toast(
+            rows.length +
+            " SQLite tasks imported 🧱"
+        );
+
+    }catch(e){
+
+        console.error(e);
+
+        toast(
+            "Invalid SQLite database"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DATABASE INFO
+========================================================= */
+
+function updateDatabaseInfo(){
+
+    const size =
+        JSON.stringify(tasks).length;
+
+    document.getElementById("dbInfo")
+        .innerHTML = `
+
+        <p>
+            <b>Tasks:</b> ${tasks.length}
+        </p>
+
+        <p>
+            <b>Storage:</b>
+            IndexedDB
+        </p>
+
+        <p>
+            <b>SQLite:</b>
+            ${sqliteReady
+                ? "Available"
+                : "Fallback mode"}
+        </p>
+
+        <p>
+            <b>Approx. backup size:</b>
+            ${Math.round(size/1024)} KB
+        </p>
+
+        `;
+
+}
+
+
+/* =========================================================
+   CLEAR ALL
+========================================================= */
+
+async function clearAllTasks(){
+
+    if(!confirm(
+        "This will permanently delete ALL tasks. Continue?"
+    )) return;
+
+    tasks = [];
+
+    await idbClear();
+
+    if(sqliteReady){
+
+        try{
+            db.run("DELETE FROM tasks");
+        }catch(e){}
+
+    }
+
+    renderToday();
+
+    updateDatabaseInfo();
+
+    toast("All tasks deleted");
+
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+function saveSettings(){
+
+    const settings = {
+
+        autoCarry:
+            document.getElementById("autoCarry").checked,
+
+        sound:
+            document.getElementById("soundEnabled").checked
+
+    };
+
+    localStorage.setItem(
+        "natureTodoSettings",
+        JSON.stringify(settings)
+    );
+
+}
+
+function loadSettings(){
+
+    try{
+
+        const settings =
+            JSON.parse(
+                localStorage.getItem(
+                    "natureTodoSettings"
+                ) || "{}"
+            );
+
+        if(settings.autoCarry !== undefined){
+
+            document.getElementById(
+                "autoCarry"
+            ).checked = settings.autoCarry;
+
+        }
+
+        if(settings.sound !== undefined){
+
+            document.getElementById(
+                "soundEnabled"
+            ).checked = settings.sound;
+
+        }
+
+    }catch(e){}
+
+    const theme =
+        localStorage.getItem(
+            "natureTodoTheme"
+        ) || "forest";
+
+    setTheme(theme,false);
+
+}
+
+
+/* =========================================================
+   THEMES
+========================================================= */
+
+function setTheme(theme,save=true){
+
+    const themes = [
+        "forest",
+        "ocean",
+        "sunset",
+        "mountain",
+        "sakura",
+        "autumn",
+        "spring",
+        "rainforest",
+        "meadow",
+        "nightforest"
+    ];
+
+    themes.forEach(t=>{
+        document.body.classList.remove(
+            "theme-"+t
+        );
+    });
+
+    document.body.classList.add(
+        "theme-"+theme
+    );
+
+    if(save){
+
+        localStorage.setItem(
+            "natureTodoTheme",
+            theme
+        );
+
+        toast("Theme changed 🌳");
+
+    }
+
+    document.querySelectorAll(
+        ".theme-btn"
+    ).forEach(btn=>{
+
+        btn.classList.toggle(
+            "selected",
+            btn.dataset.theme === theme
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   QUICK ADD
+========================================================= */
+
+function openQuickAdd(){
+
+    activateTab("today");
+
+    document.getElementById("taskTitle")
+        .focus();
+
+}
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+async function refreshEverything(){
+
+    await loadTasks();
+
+    renderToday();
+
+    renderCalendarPage();
+
+    renderReports();
+
+    drawChart();
+
+    updateDatabaseInfo();
+
+    toast("Application refreshed ♻️");
+
+}
+
+
+/* =========================================================
+   SOUND
+========================================================= */
+
+function sound(){
+
+    const checkbox =
+        document.getElementById(
+            "soundEnabled"
+        );
+
+    if(!checkbox || !checkbox.checked)
+        return;
+
+    try{
+
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        const ctx =
+            new AudioContext();
+
+        const oscillator =
+            ctx.createOscillator();
+
+        const gain =
+            ctx.createGain();
+
+        oscillator.frequency.value = 660;
+
+        gain.gain.value = 0.04;
+
+        oscillator.connect(gain);
+
+        gain.connect(ctx.destination);
+
+        oscillator.start();
+
+        oscillator.stop(
+            ctx.currentTime + .08
+        );
+
+    }catch(e){}
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer;
+
+function toast(message){
+
+    const element =
+        document.getElementById("toast");
+
+    element.textContent = message;
+
+    element.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer =
+        setTimeout(
+            ()=>{
+                element.classList.remove("show");
+            },
+            2200
+        );
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   KEYBOARD SHORTCUT
+========================================================= */
+
+document.addEventListener("keydown",event=>{
+
+    if(
+        event.key === "Escape" &&
+        document.getElementById(
+            "editModal"
+        ).classList.contains("show")
+    ){
+
+        closeEdit();
+
+    }
+
+});
+
+
+/* =========================================================
+   HANDLE DATE CHANGE
+========================================================= */
+
+document.getElementById("taskDate")
+    .addEventListener(
+        "change",
+        renderToday
+    );
+
+document.getElementById("calendarDate")
+    .addEventListener(
+        "change",
+        renderCalendarPage
+    );
+
+
+</script>
+
+</body>
+</html>
