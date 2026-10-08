@@ -79,6 +79,11 @@
       }
     }
 
+    .input-container {
+      position: relative;
+      flex: 1;
+    }
+
     .input-group {
       display: flex;
       flex: 1;
@@ -102,6 +107,44 @@
       color: var(--text-muted);
     }
 
+    /* Autocomplete dropdown styles */
+    .autocomplete-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      max-height: 180px;
+      overflow-y: auto;
+      z-index: 1100;
+      display: none;
+    }
+
+    .autocomplete-item {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      color: var(--text-main);
+      cursor: pointer;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .autocomplete-item:last-child {
+      border-bottom: none;
+    }
+
+    .autocomplete-item:hover {
+      background: var(--bg-main);
+      color: var(--accent-blue);
+    }
+
+    .btn-container {
+      display: flex;
+      gap: 0.5rem;
+    }
+
     .btn {
       background: linear-gradient(135deg, var(--accent-blue), #0284C7);
       color: var(--bg-main);
@@ -117,6 +160,11 @@
 
     .btn:hover {
       opacity: 0.9;
+    }
+
+    .btn-clear {
+      background: #334155;
+      color: var(--text-main);
     }
 
     .metrics-bar {
@@ -190,19 +238,28 @@
   <header>
     <div class="top-row">
       <h1>🗺️ Safe Hybrid Multi-Route Finder</h1>
-      <span class="hint-text">💡 Tap map twice or type start/dest locations</span>
+      <span class="hint-text">💡 Tap map twice or search locations</span>
     </div>
 
     <div class="top-row" style="gap: 0.5rem;">
       <div class="inputs-wrapper">
-        <div class="input-group">
-          <input type="text" id="startInput" placeholder="Start (Name or Lat, Lon e.g. 19.2, 73.0)" />
+        <div class="input-container">
+          <div class="input-group">
+            <input type="text" id="startInput" placeholder="Start (Name or Lat, Lon)" autocomplete="off" oninput="handleSearchInput('startInput', 'startResults')" />
+          </div>
+          <div id="startResults" class="autocomplete-results"></div>
         </div>
-        <div class="input-group">
-          <input type="text" id="destInput" placeholder="Destination (Name or Lat, Lon e.g. 19.4, 72.8)" />
+        <div class="input-container">
+          <div class="input-group">
+            <input type="text" id="destInput" placeholder="Destination (Name or Lat, Lon)" autocomplete="off" oninput="handleSearchInput('destInput', 'destResults')" />
+          </div>
+          <div id="destResults" class="autocomplete-results"></div>
         </div>
       </div>
-      <button class="btn" onclick="calculateRoute()">Calculate Routes</button>
+      <div class="btn-container">
+        <button class="btn" onclick="calculateRoute()">Calculate</button>
+        <button class="btn btn-clear" onclick="clearAll()">Clear</button>
+      </div>
     </div>
 
     <div class="metrics-bar">
@@ -238,6 +295,7 @@
     let destMarker = null;
     let routeLayers = [];
     let clickState = 0; 
+    let searchTimeouts = {};
 
     map.on('click', async function(e) {
       const { lat, lng } = e.latlng;
@@ -251,6 +309,57 @@
         document.getElementById('destInput').value = coordStr;
         clickState = 0;
         await fetchAndDisplayRoadRoutes();
+      }
+    });
+
+    // Debounced live search autocomplete
+    function handleSearchInput(inputId, resultsId) {
+      const query = document.getElementById(inputId).value.trim();
+      const resultsContainer = document.getElementById(resultsId);
+
+      clearTimeout(searchTimeouts[inputId]);
+
+      if (query.length < 3) {
+        resultsContainer.style.display = 'none';
+        return;
+      }
+
+      searchTimeouts[inputId] = setTimeout(async () => {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`);
+          const data = await res.json();
+          
+          resultsContainer.innerHTML = '';
+          if (data && data.length > 0) {
+            data.forEach(item => {
+              const div = document.createElement('div');
+              div.className = 'autocomplete-item';
+              div.textContent = item.display_name;
+              div.onclick = () => {
+                document.getElementById(inputId).value = item.display_name;
+                resultsContainer.style.display = 'none';
+                if (inputId === 'startInput') {
+                  setStart(parseFloat(item.lat), parseFloat(item.lon), item.display_name);
+                } else {
+                  setDest(parseFloat(item.lat), parseFloat(item.lon), item.display_name);
+                }
+              };
+              resultsContainer.appendChild(div);
+            });
+            resultsContainer.style.display = 'block';
+          } else {
+            resultsContainer.style.display = 'none';
+          }
+        } catch (err) {
+          console.error("Autocomplete search error:", err);
+        }
+      }, 300);
+    }
+
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.input-container')) {
+        document.querySelectorAll('.autocomplete-results').forEach(el => el.style.display = 'none');
       }
     });
 
@@ -301,6 +410,29 @@
       }
     }
 
+    function clearAll() {
+      document.getElementById('startInput').value = '';
+      document.getElementById('destInput').value = '';
+      document.getElementById('startResults').style.display = 'none';
+      document.getElementById('destResults').style.display = 'none';
+
+      if (startMarker) { map.removeLayer(startMarker); startMarker = null; }
+      if (destMarker) { map.removeLayer(destMarker); destMarker = null; }
+
+      routeLayers.forEach(layer => map.removeLayer(layer));
+      routeLayers = [];
+
+      document.getElementById('shortDist').textContent = '-';
+      document.getElementById('shortTime').textContent = '-';
+      document.getElementById('altDist').textContent = '-';
+      document.getElementById('altTime').textContent = '-';
+      document.getElementById('longDist').textContent = '-';
+      document.getElementById('longTime').textContent = '-';
+
+      clickState = 0;
+      map.setView([19.2183, 73.0858], 11);
+    }
+
     async function fetchAndDisplayRoadRoutes() {
       if (!startMarker || !destMarker) return;
       const s = startMarker.getLatLng();
@@ -318,13 +450,13 @@
 
         routes.sort((a, b) => a.distance - b.distance);
 
-        // 1. Shortest Route (Green) - Absolute shortest path
+        // 1. Shortest Route (Green)
         const shortestRoute = routes[0];
         renderRouteLine(shortestRoute.geometry, '#22C55E', 7, 0.9);
         document.getElementById('shortDist').textContent = (shortestRoute.distance / 1000).toFixed(1) + ' km';
         document.getElementById('shortTime').textContent = formatDuration(shortestRoute.duration);
 
-        // 2. Safe Hybrid Route (Blue) - Compound blend combining internal safe roads & connecting arterial segments
+        // 2. Safe Hybrid Route (Blue)
         const hybridRoute = await fetchHybridBlendedRoute(s, d);
         if (hybridRoute) {
           renderRouteLine(hybridRoute.geometry, '#38BDF8', 5, 0.85);
@@ -335,10 +467,10 @@
           document.getElementById('altTime').textContent = '-';
         }
 
-        // 3. Long Highway Corridor (Orange) - Expressway / Major trunk bypass
+        // 3. Long Highway Corridor (Orange)
         let longRoute = routes.length > 1 ? routes[routes.length - 1] : null;
         if (!longRoute || longRoute.distance <= shortestRoute.distance * 1.08) {
-          longRoute = await fetchViaPointRoute(s, d, 0.09); // Wide highway offset
+          longRoute = await fetchViaPointRoute(s, d, 0.09);
         }
 
         if (longRoute) {
@@ -367,15 +499,12 @@
     }
 
     async function fetchHybridBlendedRoute(start, dest) {
-      // Create a balanced dual-waypoint curve that weaves through internal connectors and connecting main roads
       const dx = dest.lng - start.lng;
       const dy = dest.lat - start.lat;
       
-      // Waypoint 1: Internal safety connector (slight left/right neighborhood bias)
       const wp1Lon = start.lng + dx * 0.35 - dy * 0.022;
       const wp1Lat = start.lat + dy * 0.35 + dx * 0.022;
 
-      // Waypoint 2: Main arterial/highway segment for efficient intermediate progression
       const wp2Lon = start.lng + dx * 0.65 + dy * 0.035;
       const wp2Lat = start.lat + dy * 0.65 - dx * 0.035;
 
