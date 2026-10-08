@@ -1,0 +1,3079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2e7d32">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<title>Nature Medicine Reminder</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+:root{
+  --primary:#2e7d32;
+  --primary2:#1b5e20;
+  --bg:#f1f8f2;
+  --card:#ffffff;
+  --text:#18351d;
+  --muted:#647568;
+  --border:#d5e3d7;
+  --danger:#c62828;
+  --warning:#ef8f00;
+  --success:#2e7d32;
+  --shadow:0 4px 14px rgba(0,0,0,.08);
+}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+}
+
+button,input,select,textarea{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.app{
+  max-width:850px;
+  margin:auto;
+  min-height:100vh;
+  padding-bottom:80px;
+}
+
+/* HEADER */
+
+.header{
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:white;
+  padding:18px 16px 20px;
+  border-radius:0 0 25px 25px;
+  box-shadow:var(--shadow);
+}
+
+.header-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.header h1{
+  margin:0;
+  font-size:22px;
+}
+
+.header p{
+  margin:5px 0 0;
+  opacity:.88;
+  font-size:13px;
+}
+
+.clock{
+  text-align:right;
+  font-weight:700;
+  font-size:15px;
+}
+
+.today-summary{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.summary{
+  background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:14px;
+  padding:10px 5px;
+  text-align:center;
+}
+
+.summary b{
+  display:block;
+  font-size:20px;
+}
+
+.summary span{
+  font-size:11px;
+}
+
+/* TABS */
+
+.tabs{
+  position:sticky;
+  top:0;
+  z-index:20;
+  display:flex;
+  overflow-x:auto;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.tab{
+  min-width:90px;
+  flex:1;
+  border:0;
+  background:none;
+  color:var(--muted);
+  padding:12px 6px;
+  font-size:12px;
+  font-weight:700;
+}
+
+.tab.active{
+  color:var(--primary);
+  border-bottom:3px solid var(--primary);
+}
+
+.tab-icon{
+  display:block;
+  font-size:20px;
+  margin-bottom:3px;
+}
+
+/* CONTENT */
+
+.content{
+  padding:15px;
+}
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:5px 0 12px;
+}
+
+.section-title h2{
+  margin:0;
+  font-size:19px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:17px;
+  padding:15px;
+  margin-bottom:13px;
+  box-shadow:var(--shadow);
+}
+
+.empty{
+  text-align:center;
+  padding:35px 15px;
+  color:var(--muted);
+}
+
+.empty .big{
+  font-size:45px;
+}
+
+/* BUTTONS */
+
+.btn{
+  border:0;
+  border-radius:12px;
+  padding:10px 14px;
+  font-weight:700;
+  color:white;
+  background:var(--primary);
+}
+
+.btn:active{
+  transform:scale(.97);
+}
+
+.btn.secondary{
+  background:#607d64;
+}
+
+.btn.warning{
+  background:var(--warning);
+}
+
+.btn.danger{
+  background:var(--danger);
+}
+
+.btn.light{
+  color:var(--text);
+  background:var(--bg);
+  border:1px solid var(--border);
+}
+
+.btn.small{
+  padding:7px 10px;
+  font-size:12px;
+}
+
+.btn.full{
+  width:100%;
+}
+
+/* MEDICINE CARD */
+
+.med-card{
+  position:relative;
+  overflow:hidden;
+}
+
+.med-header{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+}
+
+.med-icon{
+  width:50px;
+  height:50px;
+  border-radius:15px;
+  background:var(--bg);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:27px;
+  flex:none;
+}
+
+.med-info{
+  flex:1;
+  min-width:0;
+}
+
+.med-name{
+  font-weight:800;
+  font-size:17px;
+}
+
+.med-dose{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:3px;
+}
+
+.med-time{
+  font-size:15px;
+  font-weight:800;
+  margin-top:8px;
+}
+
+.status{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:800;
+  margin-top:7px;
+}
+
+.status.pending{
+  background:#fff4d7;
+  color:#9a6800;
+}
+
+.status.taken{
+  background:#dff3e1;
+  color:#216126;
+}
+
+.status.missed{
+  background:#ffe2e2;
+  color:#a52222;
+}
+
+.status.skipped{
+  background:#e7e7e7;
+  color:#555;
+}
+
+.med-actions{
+  display:flex;
+  gap:7px;
+  margin-top:13px;
+  flex-wrap:wrap;
+}
+
+/* FORMS */
+
+.form-group{
+  margin-bottom:12px;
+}
+
+label{
+  display:block;
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:5px;
+}
+
+input,select,textarea{
+  width:100%;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  border-radius:11px;
+  padding:11px;
+  outline:none;
+}
+
+input:focus,select:focus,textarea:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 2px rgba(46,125,50,.12);
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.grid3{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+@media(max-width:480px){
+  .grid2{
+    grid-template-columns:1fr;
+  }
+}
+
+/* PLAN */
+
+.plan-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:11px 0;
+  border-bottom:1px solid var(--border);
+}
+
+.plan-row:last-child{
+  border-bottom:0;
+}
+
+.plan-row .grow{
+  flex:1;
+}
+
+.plan-name{
+  font-weight:800;
+}
+
+.plan-meta{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:3px;
+}
+
+/* HISTORY */
+
+.history-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:11px 0;
+  border-bottom:1px solid var(--border);
+}
+
+.progress{
+  height:8px;
+  border-radius:10px;
+  background:#e3e9e4;
+  overflow:hidden;
+  margin-top:7px;
+}
+
+.progress div{
+  height:100%;
+  width:0;
+  background:var(--primary);
+}
+
+/* SETTINGS */
+
+.theme-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.theme{
+  border:2px solid var(--border);
+  border-radius:15px;
+  padding:13px;
+  background:var(--card);
+  text-align:left;
+}
+
+.theme.active{
+  border-color:var(--primary);
+}
+
+.theme-preview{
+  height:34px;
+  border-radius:9px;
+  margin-bottom:8px;
+}
+
+.theme-name{
+  font-weight:800;
+  font-size:13px;
+}
+
+.theme-desc{
+  color:var(--muted);
+  font-size:11px;
+}
+
+/* TOGGLE */
+
+.switch{
+  position:relative;
+  width:48px;
+  height:26px;
+  display:inline-block;
+}
+
+.switch input{
+  display:none;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  background:#bbb;
+  border-radius:20px;
+}
+
+.slider:before{
+  content:"";
+  position:absolute;
+  width:20px;
+  height:20px;
+  left:3px;
+  top:3px;
+  background:white;
+  border-radius:50%;
+  transition:.2s;
+}
+
+.switch input:checked + .slider{
+  background:var(--primary);
+}
+
+.switch input:checked + .slider:before{
+  transform:translateX(22px);
+}
+
+/* MODAL */
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:100;
+  background:rgba(0,0,0,.55);
+  padding:15px;
+  overflow:auto;
+}
+
+.modal.show{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal-box{
+  background:var(--card);
+  color:var(--text);
+  width:100%;
+  max-width:520px;
+  border-radius:20px;
+  padding:18px;
+  max-height:92vh;
+  overflow:auto;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
+
+.modal-head h2{
+  margin:0;
+  font-size:19px;
+}
+
+.close{
+  border:0;
+  background:none;
+  font-size:25px;
+}
+
+/* TOAST */
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:25px;
+  transform:translate(-50%,120px);
+  z-index:300;
+  background:#222;
+  color:white;
+  padding:12px 18px;
+  border-radius:30px;
+  font-size:13px;
+  transition:.3s;
+  max-width:90%;
+  text-align:center;
+}
+
+.toast.show{
+  transform:translate(-50%,0);
+}
+
+/* FOOTER */
+
+.footer{
+  text-align:center;
+  color:var(--muted);
+  font-size:11px;
+  padding:15px;
+}
+
+.file-input{
+  display:none;
+}
+
+.danger-zone{
+  border:1px solid #efb0b0;
+  background:#fff7f7;
+}
+
+[data-theme="midnight"] .danger-zone{
+  background:#281c1c;
+}
+
+.notification-banner{
+  padding:11px;
+  border-radius:12px;
+  background:#fff4d7;
+  color:#735300;
+  font-size:12px;
+  margin-bottom:12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header class="header">
+  <div class="header-top">
+    <div>
+      <h1>💊 Medicine Reminder</h1>
+      <p id="dateText">Daily medicine planner</p>
+    </div>
+    <div class="clock" id="clock">--:--</div>
+  </div>
+
+  <div class="today-summary">
+    <div class="summary">
+      <b id="totalToday">0</b>
+      <span>Today's Doses</span>
+    </div>
+    <div class="summary">
+      <b id="takenToday">0</b>
+      <span>Taken</span>
+    </div>
+    <div class="summary">
+      <b id="missedToday">0</b>
+      <span>Missed</span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+
+  <button class="tab active" data-tab="today">
+    <span class="tab-icon">🏠</span>Today
+  </button>
+
+  <button class="tab" data-tab="plan">
+    <span class="tab-icon">💊</span>Plan
+  </button>
+
+  <button class="tab" data-tab="history">
+    <span class="tab-icon">📊</span>History
+  </button>
+
+  <button class="tab" data-tab="data">
+    <span class="tab-icon">💾</span>Data
+  </button>
+
+  <button class="tab" data-tab="settings">
+    <span class="tab-icon">⚙️</span>Settings
+  </button>
+
+</nav>
+
+<main class="content">
+
+<!-- TODAY -->
+
+<section class="page active" id="page-today">
+
+  <div id="notificationBanner"></div>
+
+  <div class="section-title">
+    <h2>Today's Medicines</h2>
+    <button class="btn small" onclick="openAddMedicine()">＋ Add</button>
+  </div>
+
+  <div id="todayList"></div>
+
+</section>
+
+
+<!-- PLAN -->
+
+<section class="page" id="page-plan">
+
+  <div class="section-title">
+    <h2>Medicine Plan</h2>
+    <button class="btn small" onclick="openAddMedicine()">＋ Add Medicine</button>
+  </div>
+
+  <div class="card">
+    <p style="margin:0;color:var(--muted);font-size:13px">
+      Create your daily medicine schedule. You can add multiple reminder times for the same medicine.
+    </p>
+  </div>
+
+  <div id="planList"></div>
+
+</section>
+
+
+<!-- HISTORY -->
+
+<section class="page" id="page-history">
+
+  <div class="section-title">
+    <h2>Intake History</h2>
+  </div>
+
+  <div class="card">
+    <div class="grid3">
+      <div style="text-align:center">
+        <b id="historyTotal">0</b>
+        <small style="display:block;color:var(--muted)">Doses</small>
+      </div>
+
+      <div style="text-align:center">
+        <b id="historyTaken">0</b>
+        <small style="display:block;color:var(--muted)">Taken</small>
+      </div>
+
+      <div style="text-align:center">
+        <b id="historyPercent">0%</b>
+        <small style="display:block;color:var(--muted)">Adherence</small>
+      </div>
+    </div>
+
+    <div class="progress">
+      <div id="historyProgress"></div>
+    </div>
+  </div>
+
+  <div class="section-title">
+    <h2>Recent Days</h2>
+  </div>
+
+  <div class="card" id="historyList"></div>
+
+</section>
+
+
+<!-- DATA -->
+
+<section class="page" id="page-data">
+
+  <div class="section-title">
+    <h2>Data Management</h2>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">📤 Export</h3>
+
+    <button class="btn full" onclick="exportCSV()">
+      📄 Export CSV
+    </button>
+
+    <br><br>
+
+    <button class="btn secondary full" onclick="exportJSON()">
+      💾 Backup JSON
+    </button>
+
+    <p style="font-size:12px;color:var(--muted)">
+      CSV is useful for Excel/Google Sheets. JSON backup contains your complete medicine plans and intake records.
+    </p>
+  </div>
+
+
+  <div class="card">
+    <h3 style="margin-top:0">📥 Import</h3>
+
+    <label class="btn full" style="text-align:center">
+      📄 Import CSV
+      <input
+        class="file-input"
+        type="file"
+        id="csvFile"
+        accept=".csv,text/csv"
+        onchange="importCSV(event)"
+      >
+    </label>
+
+    <br>
+
+    <label class="btn secondary full" style="text-align:center">
+      💾 Restore JSON
+      <input
+        class="file-input"
+        type="file"
+        id="jsonFile"
+        accept=".json,application/json"
+        onchange="importJSON(event)"
+      >
+    </label>
+  </div>
+
+
+  <div class="card">
+    <h3 style="margin-top:0">📊 Quick Export</h3>
+
+    <button class="btn light full" onclick="exportTodayCSV()">
+      Export Today's Record
+    </button>
+
+    <br><br>
+
+    <button class="btn light full" onclick="exportPlanCSV()">
+      Export Medicine Plan
+    </button>
+  </div>
+
+
+  <div class="card danger-zone">
+    <h3 style="margin-top:0;color:var(--danger)">⚠️ Danger Zone</h3>
+
+    <button class="btn danger full" onclick="clearAllData()">
+      Delete All App Data
+    </button>
+  </div>
+
+</section>
+
+
+<!-- SETTINGS -->
+
+<section class="page" id="page-settings">
+
+  <div class="section-title">
+    <h2>Settings</h2>
+  </div>
+
+  <div class="card">
+
+    <h3 style="margin-top:0">🔔 Reminders</h3>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+      <div>
+        <b>Browser Notifications</b>
+        <div style="font-size:12px;color:var(--muted)">
+          Show reminder notifications
+        </div>
+      </div>
+
+      <label class="switch">
+        <input type="checkbox" id="notificationToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <button class="btn full" onclick="requestNotifications()">
+      🔔 Enable Notifications
+    </button>
+
+    <br><br>
+
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <b>Reminder Sound</b>
+        <div style="font-size:12px;color:var(--muted)">
+          Play sound when reminder appears
+        </div>
+      </div>
+
+      <label class="switch">
+        <input type="checkbox" id="soundToggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h3 style="margin-top:0">🌿 Nature Themes</h3>
+
+    <div class="theme-grid" id="themeGrid"></div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h3 style="margin-top:0">ℹ️ About</h3>
+
+    <p style="font-size:13px;color:var(--muted)">
+      Nature Medicine Reminder is an offline-first personal medicine
+      planning and reminder application.
+    </p>
+
+    <p style="font-size:12px;color:var(--muted)">
+      Version 1.0 • Local data storage • CSV/JSON backup
+    </p>
+
+  </div>
+
+</section>
+
+</main>
+
+<div class="footer">
+  💚 Take your medicines on time • Stay healthy
+</div>
+
+</div>
+
+
+<!-- ADD / EDIT MODAL -->
+
+<div class="modal" id="medicineModal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+      <h2 id="modalTitle">Add Medicine</h2>
+      <button class="close" onclick="closeModal()">×</button>
+    </div>
+
+    <input type="hidden" id="editId">
+
+    <div class="form-group">
+      <label>Medicine Name *</label>
+      <input id="medName" placeholder="e.g. Metformin">
+    </div>
+
+    <div class="grid2">
+
+      <div class="form-group">
+        <label>Dosage</label>
+        <input id="medDose" placeholder="e.g. 500 mg">
+      </div>
+
+      <div class="form-group">
+        <label>Form</label>
+        <select id="medForm">
+          <option>Tablet</option>
+          <option>Capsule</option>
+          <option>Syrup</option>
+          <option>Injection</option>
+          <option>Drops</option>
+          <option>Powder</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="form-group">
+      <label>Reminder Times</label>
+      <input id="medTimes" type="text" placeholder="08:00, 13:00, 20:00">
+      <small style="color:var(--muted)">
+        Enter multiple times separated by commas.
+      </small>
+    </div>
+
+    <div class="grid2">
+
+      <div class="form-group">
+        <label>Start Date</label>
+        <input id="startDate" type="date">
+      </div>
+
+      <div class="form-group">
+        <label>End Date</label>
+        <input id="endDate" type="date">
+      </div>
+
+    </div>
+
+    <div class="form-group">
+      <label>Frequency</label>
+
+      <select id="frequency">
+        <option value="daily">Every day</option>
+        <option value="weekdays">Monday-Friday</option>
+        <option value="alternate">Alternate days</option>
+      </select>
+
+    </div>
+
+    <div class="form-group">
+      <label>Instructions</label>
+      <textarea
+        id="instructions"
+        rows="3"
+        placeholder="After food, before food, with water..."
+      ></textarea>
+    </div>
+
+    <div style="display:flex;gap:8px">
+
+      <button class="btn light" style="flex:1" onclick="closeModal()">
+        Cancel
+      </button>
+
+      <button class="btn" style="flex:1" onclick="saveMedicine()">
+        Save Medicine
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- REMINDER MODAL -->
+
+<div class="modal" id="reminderModal">
+
+  <div class="modal-box" style="text-align:center">
+
+    <div style="font-size:55px">💊</div>
+
+    <h2 id="reminderName">Medicine Reminder</h2>
+
+    <p id="reminderDetails"></p>
+
+    <div style="display:flex;gap:8px">
+
+      <button class="btn light" style="flex:1" onclick="snoozeReminder()">
+        😴 Snooze
+      </button>
+
+      <button class="btn" style="flex:1" onclick="takeReminder()">
+        ✓ Taken
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+/* =========================================================
+   MEDICINE REMINDER
+   SINGLE FILE / OFFLINE
+========================================================= */
+
+const DB_NAME = "NatureMedicineReminderDB";
+const DB_VERSION = 1;
+
+let db;
+let currentReminder = null;
+
+const THEMES = {
+
+  forest:{
+    name:"Forest",
+    desc:"Fresh green forest",
+    primary:"#2e7d32",
+    primary2:"#1b5e20",
+    bg:"#f1f8f2"
+  },
+
+  ocean:{
+    name:"Ocean",
+    desc:"Calm blue ocean",
+    primary:"#0277bd",
+    primary2:"#01579b",
+    bg:"#eef8fc"
+  },
+
+  sunrise:{
+    name:"Sunrise",
+    desc:"Warm morning sun",
+    primary:"#ef6c00",
+    primary2:"#e65100",
+    bg:"#fff7ef"
+  },
+
+  lavender:{
+    name:"Lavender",
+    desc:"Peaceful garden",
+    primary:"#7b1fa2",
+    primary2:"#4a148c",
+    bg:"#faf3fc"
+  },
+
+  bamboo:{
+    name:"Bamboo",
+    desc:"Natural bamboo",
+    primary:"#558b2f",
+    primary2:"#33691e",
+    bg:"#f5f9ef"
+  },
+
+  mountain:{
+    name:"Mountain",
+    desc:"Cool mountain air",
+    primary:"#455a64",
+    primary2:"#263238",
+    bg:"#f3f6f7"
+  },
+
+  autumn:{
+    name:"Autumn",
+    desc:"Autumn leaves",
+    primary:"#bf360c",
+    primary2:"#8d2600",
+    bg:"#fff5ef"
+  },
+
+  cherry:{
+    name:"Cherry Blossom",
+    desc:"Soft spring blossom",
+    primary:"#c2185b",
+    primary2:"#880e4f",
+    bg:"#fff5f9"
+  },
+
+  earth:{
+    name:"Earth",
+    desc:"Natural earth tones",
+    primary:"#6d4c41",
+    primary2:"#3e2723",
+    bg:"#faf6f3"
+  },
+
+  nightforest:{
+    name:"Night Forest",
+    desc:"Quiet forest night",
+    primary:"#1565c0",
+    primary2:"#0d47a1",
+    bg:"#101820"
+  }
+
+};
+
+
+/* =========================================================
+   DATABASE
+========================================================= */
+
+function openDB(){
+
+  return new Promise((resolve,reject)=>{
+
+    const request=indexedDB.open(DB_NAME,DB_VERSION);
+
+    request.onupgradeneeded=e=>{
+
+      const database=e.target.result;
+
+      if(!database.objectStoreNames.contains("medicines")){
+
+        database.createObjectStore("medicines",{
+          keyPath:"id"
+        });
+
+      }
+
+      if(!database.objectStoreNames.contains("intakes")){
+
+        const store=database.createObjectStore("intakes",{
+          keyPath:"id"
+        });
+
+        store.createIndex("date","date",{
+          unique:false
+        });
+
+      }
+
+    };
+
+    request.onsuccess=e=>{
+      db=e.target.result;
+      resolve(db);
+    };
+
+    request.onerror=()=>{
+      reject(request.error);
+    };
+
+  });
+
+}
+
+
+function tx(store,mode="readonly"){
+
+  return db.transaction(store,mode).objectStore(store);
+
+}
+
+
+function getAll(store){
+
+  return new Promise((resolve,reject)=>{
+
+    const request=tx(store).getAll();
+
+    request.onsuccess=()=>resolve(request.result || []);
+
+    request.onerror=()=>reject(request.error);
+
+  });
+
+}
+
+
+function put(store,obj){
+
+  return new Promise((resolve,reject)=>{
+
+    const request=tx(store,"readwrite").put(obj);
+
+    request.onsuccess=()=>resolve(obj);
+
+    request.onerror=()=>reject(request.error);
+
+  });
+
+}
+
+
+function remove(store,id){
+
+  return new Promise((resolve,reject)=>{
+
+    const request=tx(store,"readwrite").delete(id);
+
+    request.onsuccess=()=>resolve();
+
+    request.onerror=()=>reject(request.error);
+
+  });
+
+}
+
+
+function clearStore(store){
+
+  return new Promise((resolve,reject)=>{
+
+    const request=tx(store,"readwrite").clear();
+
+    request.onsuccess=()=>resolve();
+
+    request.onerror=()=>reject(request.error);
+
+  });
+
+}
+
+
+/* =========================================================
+   UTILITIES
+========================================================= */
+
+function uid(prefix="id"){
+
+  return prefix+"_"+Date.now()+"_"+Math.random()
+    .toString(36)
+    .substring(2,9);
+
+}
+
+
+function today(){
+
+  const d=new Date();
+
+  return d.getFullYear()+"-"+
+    String(d.getMonth()+1).padStart(2,"0")+"-"+
+    String(d.getDate()).padStart(2,"0");
+
+}
+
+
+function formatDate(date){
+
+  if(!date)return "";
+
+  const d=new Date(date+"T00:00:00");
+
+  return d.toLocaleDateString(undefined,{
+    day:"numeric",
+    month:"short",
+    year:"numeric"
+  });
+
+}
+
+
+function escapeHTML(value){
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+function showToast(message){
+
+  const el=document.getElementById("toast");
+
+  el.textContent=message;
+
+  el.classList.add("show");
+
+  clearTimeout(showToast.timer);
+
+  showToast.timer=setTimeout(()=>{
+    el.classList.remove("show");
+  },2500);
+
+}
+
+
+function csvEscape(value){
+
+  const s=String(value ?? "");
+
+  return '"'+s.replaceAll('"','""')+'"';
+
+}
+
+
+function downloadFile(filename,content,type){
+
+  const blob=new Blob([content],{
+    type:type || "text/plain"
+  });
+
+  const url=URL.createObjectURL(blob);
+
+  const a=document.createElement("a");
+
+  a.href=url;
+  a.download=filename;
+
+  document.body.appendChild(a);
+  a.click();
+
+  a.remove();
+
+  setTimeout(()=>{
+    URL.revokeObjectURL(url);
+  },1000);
+
+}
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+document.querySelectorAll(".tab").forEach(button=>{
+
+  button.addEventListener("click",()=>{
+
+    document.querySelectorAll(".tab")
+      .forEach(x=>x.classList.remove("active"));
+
+    document.querySelectorAll(".page")
+      .forEach(x=>x.classList.remove("active"));
+
+    button.classList.add("active");
+
+    document.getElementById(
+      "page-"+button.dataset.tab
+    ).classList.add("active");
+
+    refreshAll();
+
+  });
+
+});
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+function updateClock(){
+
+  const now=new Date();
+
+  document.getElementById("clock")
+    .textContent=now.toLocaleTimeString([],{
+      hour:"2-digit",
+      minute:"2-digit"
+    });
+
+  document.getElementById("dateText")
+    .textContent=now.toLocaleDateString([],{
+      weekday:"long",
+      day:"numeric",
+      month:"long",
+      year:"numeric"
+    });
+
+}
+
+
+setInterval(updateClock,1000);
+updateClock();
+
+
+/* =========================================================
+   MEDICINE MODAL
+========================================================= */
+
+function openAddMedicine(){
+
+  document.getElementById("modalTitle")
+    .textContent="Add Medicine";
+
+  document.getElementById("editId").value="";
+
+  document.getElementById("medName").value="";
+  document.getElementById("medDose").value="";
+  document.getElementById("medForm").value="Tablet";
+  document.getElementById("medTimes").value="08:00";
+  document.getElementById("startDate").value=today();
+  document.getElementById("endDate").value="";
+  document.getElementById("frequency").value="daily";
+  document.getElementById("instructions").value="";
+
+  document.getElementById("medicineModal")
+    .classList.add("show");
+
+}
+
+
+function openEditMedicine(m){
+
+  document.getElementById("modalTitle")
+    .textContent="Edit Medicine";
+
+  document.getElementById("editId").value=m.id;
+
+  document.getElementById("medName").value=m.name || "";
+  document.getElementById("medDose").value=m.dose || "";
+  document.getElementById("medForm").value=m.form || "Tablet";
+  document.getElementById("medTimes").value=(m.times || []).join(", ");
+  document.getElementById("startDate").value=m.startDate || today();
+  document.getElementById("endDate").value=m.endDate || "";
+  document.getElementById("frequency").value=m.frequency || "daily";
+  document.getElementById("instructions").value=m.instructions || "";
+
+  document.getElementById("medicineModal")
+    .classList.add("show");
+
+}
+
+
+function closeModal(){
+
+  document.getElementById("medicineModal")
+    .classList.remove("show");
+
+}
+
+
+async function saveMedicine(){
+
+  const name=document.getElementById("medName").value.trim();
+
+  if(!name){
+
+    showToast("Please enter medicine name");
+    return;
+
+  }
+
+  const times=document.getElementById("medTimes")
+    .value
+    .split(",")
+    .map(x=>x.trim())
+    .filter(x=>/^\d{1,2}:\d{2}$/.test(x))
+    .map(x=>{
+
+      let [h,m]=x.split(":").map(Number);
+
+      h=Math.min(23,Math.max(0,h));
+      m=Math.min(59,Math.max(0,m));
+
+      return String(h).padStart(2,"0")+":"+
+             String(m).padStart(2,"0");
+
+    });
+
+  if(times.length===0){
+
+    showToast("Enter at least one valid time");
+    return;
+
+  }
+
+  const id=document.getElementById("editId").value || uid("med");
+
+  const medicine={
+
+    id,
+
+    name,
+
+    dose:document.getElementById("medDose").value.trim(),
+
+    form:document.getElementById("medForm").value,
+
+    times:[...new Set(times)].sort(),
+
+    startDate:document.getElementById("startDate").value || today(),
+
+    endDate:document.getElementById("endDate").value || "",
+
+    frequency:document.getElementById("frequency").value,
+
+    instructions:document.getElementById("instructions").value.trim(),
+
+    active:true,
+
+    createdAt:new Date().toISOString(),
+
+    updatedAt:new Date().toISOString()
+
+  };
+
+  await put("medicines",medicine);
+
+  closeModal();
+
+  await generateTodayIntakes();
+
+  refreshAll();
+
+  showToast("Medicine saved ✓");
+
+}
+
+
+/* =========================================================
+   MEDICINE PLAN
+========================================================= */
+
+async function renderPlan(){
+
+  const medicines=await getAll("medicines");
+
+  const container=document.getElementById("planList");
+
+  if(!medicines.length){
+
+    container.innerHTML=`
+      <div class="card empty">
+        <div class="big">💊</div>
+        <b>No medicines planned</b>
+        <p>Add your first medicine and reminder time.</p>
+        <button class="btn" onclick="openAddMedicine()">
+          ＋ Add Medicine
+        </button>
+      </div>
+    `;
+
+    return;
+
+  }
+
+  medicines.sort((a,b)=>
+    (a.name||"").localeCompare(b.name||"")
+  );
+
+  container.innerHTML=medicines.map(m=>`
+
+    <div class="card plan-row">
+
+      <div class="med-icon">💊</div>
+
+      <div class="grow">
+
+        <div class="plan-name">
+          ${escapeHTML(m.name)}
+        </div>
+
+        <div class="plan-meta">
+          ${escapeHTML(m.dose || "Dose not specified")}
+          • ${escapeHTML(m.form || "Medicine")}
+        </div>
+
+        <div class="plan-meta">
+          ⏰ ${m.times.map(escapeHTML).join(" • ")}
+        </div>
+
+        <div class="plan-meta">
+          📅 ${formatDate(m.startDate)}
+          ${m.endDate ? " → "+formatDate(m.endDate) : ""}
+        </div>
+
+        ${
+          m.instructions
+          ? `<div class="plan-meta">
+              📝 ${escapeHTML(m.instructions)}
+             </div>`
+          :""
+        }
+
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:5px">
+
+        <button
+          class="btn small"
+          onclick='editMedicineById(${JSON.stringify(m.id)})'>
+          Edit
+        </button>
+
+        <button
+          class="btn small danger"
+          onclick='deleteMedicine(${JSON.stringify(m.id)})'>
+          Delete
+        </button>
+
+      </div>
+
+    </div>
+
+  `).join("");
+
+}
+
+
+async function editMedicineById(id){
+
+  const medicines=await getAll("medicines");
+
+  const m=medicines.find(x=>x.id===id);
+
+  if(m)openEditMedicine(m);
+
+}
+
+
+async function deleteMedicine(id){
+
+  if(!confirm("Delete this medicine plan?"))return;
+
+  await remove("medicines",id);
+
+  refreshAll();
+
+  showToast("Medicine deleted");
+
+}
+
+
+/* =========================================================
+   INTAKE GENERATION
+========================================================= */
+
+function isMedicineActiveOnDate(m,date){
+
+  if(!m.active)return false;
+
+  if(m.startDate && date<m.startDate)return false;
+
+  if(m.endDate && date>m.endDate)return false;
+
+  const d=new Date(date+"T00:00:00");
+  const day=d.getDay();
+
+  if(m.frequency==="weekdays"){
+
+    if(day===0 || day===6)return false;
+
+  }
+
+  if(m.frequency==="alternate"){
+
+    const start=new Date((m.startDate || date)+"T00:00:00");
+
+    const current=new Date(date+"T00:00:00");
+
+    const diff=Math.floor(
+      (current-start)/(1000*60*60*24)
+    );
+
+    if(diff<0 || diff%2!==0)return false;
+
+  }
+
+  return true;
+
+}
+
+
+async function generateTodayIntakes(){
+
+  const date=today();
+
+  const medicines=await getAll("medicines");
+
+  const intakes=await getAll("intakes");
+
+  for(const m of medicines){
+
+    if(!isMedicineActiveOnDate(m,date))continue;
+
+    for(const time of m.times){
+
+      const exists=intakes.find(x=>
+        x.date===date &&
+        x.medicineId===m.id &&
+        x.time===time
+      );
+
+      if(!exists){
+
+        await put("intakes",{
+
+          id:uid("intake"),
+
+          date,
+
+          medicineId:m.id,
+
+          medicineName:m.name,
+
+          dose:m.dose || "",
+
+          form:m.form || "",
+
+          time,
+
+          status:"pending",
+
+          takenAt:"",
+
+          snoozedUntil:"",
+
+          notes:""
+
+        });
+
+      }
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   INTAKE STATUS
+========================================================= */
+
+function getDoseStatus(item){
+
+  if(item.status==="taken")return"taken";
+
+  if(item.status==="skipped")return"skipped";
+
+  const now=new Date();
+
+  const target=new Date(
+    item.date+"T"+item.time+":00"
+  );
+
+  if(now>target)return"missed";
+
+  return"pending";
+
+}
+
+
+async function renderToday(){
+
+  await generateTodayIntakes();
+
+  const date=today();
+
+  const intakes=(await getAll("intakes"))
+    .filter(x=>x.date===date)
+    .sort((a,b)=>a.time.localeCompare(b.time));
+
+  const container=document.getElementById("todayList");
+
+  if(!intakes.length){
+
+    container.innerHTML=`
+      <div class="card empty">
+        <div class="big">🌿</div>
+        <b>No medicines scheduled today</b>
+        <p>Add a medicine plan from the Plan tab.</p>
+      </div>
+    `;
+
+    updateSummary([]);
+
+    return;
+
+  }
+
+  container.innerHTML=intakes.map(item=>{
+
+    const status=getDoseStatus(item);
+
+    return `
+
+      <div class="card med-card">
+
+        <div class="med-header">
+
+          <div class="med-icon">💊</div>
+
+          <div class="med-info">
+
+            <div class="med-name">
+              ${escapeHTML(item.medicineName)}
+            </div>
+
+            <div class="med-dose">
+              ${escapeHTML(item.dose || "Dose not specified")}
+              ${item.form ? " • "+escapeHTML(item.form) : ""}
+            </div>
+
+            <div class="med-time">
+              ⏰ ${escapeHTML(item.time)}
+            </div>
+
+            <span class="status ${status}">
+              ${
+                status==="taken"
+                ? "✓ TAKEN"
+                : status==="missed"
+                ? "⚠ MISSED"
+                : status==="skipped"
+                ? "SKIPPED"
+                : "PENDING"
+              }
+            </span>
+
+          </div>
+
+        </div>
+
+        <div class="med-actions">
+
+          ${
+            status!=="taken"
+            ? `
+              <button
+                class="btn small"
+                onclick='markTaken(${JSON.stringify(item.id)})'>
+                ✓ Taken
+              </button>
+
+              <button
+                class="btn small warning"
+                onclick='snoozeDose(${JSON.stringify(item.id)})'>
+                😴 Snooze 10m
+              </button>
+
+              <button
+                class="btn small light"
+                onclick='skipDose(${JSON.stringify(item.id)})'>
+                Skip
+              </button>
+            `
+            : `
+              <button
+                class="btn small light"
+                onclick='undoTaken(${JSON.stringify(item.id)})'>
+                ↩ Undo
+              </button>
+            `
+          }
+
+        </div>
+
+      </div>
+
+    `;
+
+  }).join("");
+
+  updateSummary(intakes);
+
+}
+
+
+function updateSummary(intakes){
+
+  let taken=0;
+  let missed=0;
+
+  intakes.forEach(x=>{
+
+    const s=getDoseStatus(x);
+
+    if(s==="taken")taken++;
+
+    if(s==="missed")missed++;
+
+  });
+
+  document.getElementById("totalToday")
+    .textContent=intakes.length;
+
+  document.getElementById("takenToday")
+    .textContent=taken;
+
+  document.getElementById("missedToday")
+    .textContent=missed;
+
+}
+
+
+async function markTaken(id){
+
+  const intakes=await getAll("intakes");
+
+  const item=intakes.find(x=>x.id===id);
+
+  if(!item)return;
+
+  item.status="taken";
+  item.takenAt=new Date().toISOString();
+
+  await put("intakes",item);
+
+  renderToday();
+  renderHistory();
+
+  showToast("Medicine marked as taken ✓");
+
+}
+
+
+async function undoTaken(id){
+
+  const intakes=await getAll("intakes");
+
+  const item=intakes.find(x=>x.id===id);
+
+  if(!item)return;
+
+  item.status="pending";
+  item.takenAt="";
+
+  await put("intakes",item);
+
+  renderToday();
+
+}
+
+
+async function skipDose(id){
+
+  const intakes=await getAll("intakes");
+
+  const item=intakes.find(x=>x.id===id);
+
+  if(!item)return;
+
+  item.status="skipped";
+
+  await put("intakes",item);
+
+  renderToday();
+
+  showToast("Dose skipped");
+
+}
+
+
+async function snoozeDose(id){
+
+  const intakes=await getAll("intakes");
+
+  const item=intakes.find(x=>x.id===id);
+
+  if(!item)return;
+
+  const until=new Date(
+    Date.now()+10*60*1000
+  );
+
+  item.snoozedUntil=until.toISOString();
+
+  await put("intakes",item);
+
+  showToast("Reminder snoozed for 10 minutes");
+
+}
+
+
+/* =========================================================
+   REMINDER ENGINE
+========================================================= */
+
+async function checkReminders(){
+
+  await generateTodayIntakes();
+
+  const date=today();
+
+  const intakes=await getAll("intakes");
+
+  const now=new Date();
+
+  for(const item of intakes){
+
+    if(item.date!==date)continue;
+
+    if(item.status==="taken")continue;
+
+    if(item.status==="skipped")continue;
+
+    const target=new Date(
+      item.date+"T"+item.time+":00"
+    );
+
+    if(now>=target && now-target<90000){
+
+      if(item.snoozedUntil){
+
+        if(new Date(item.snoozedUntil)>now){
+          continue;
+        }
+
+      }
+
+      triggerReminder(item);
+
+    }
+
+  }
+
+}
+
+
+function triggerReminder(item){
+
+  if(currentReminder &&
+     currentReminder.id===item.id){
+    return;
+  }
+
+  currentReminder=item;
+
+  document.getElementById("reminderName")
+    .textContent=item.medicineName;
+
+  document.getElementById("reminderDetails")
+    .textContent=
+      (item.dose ? item.dose+" • " : "")+
+      "Scheduled at "+item.time;
+
+  document.getElementById("reminderModal")
+    .classList.add("show");
+
+  const sound=document.getElementById("soundToggle").checked;
+
+  if(sound){
+
+    try{
+
+      const AudioContext=
+        window.AudioContext ||
+        window.webkitAudioContext;
+
+      const ctx=new AudioContext();
+
+      const oscillator=ctx.createOscillator();
+      const gain=ctx.createGain();
+
+      oscillator.frequency.value=700;
+      oscillator.type="sine";
+
+      gain.gain.value=.08;
+
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+
+      oscillator.start();
+
+      setTimeout(()=>{
+        oscillator.stop();
+        ctx.close();
+      },600);
+
+    }catch(e){}
+
+  }
+
+  const enabled=
+    document.getElementById("notificationToggle").checked;
+
+  if(enabled &&
+     "Notification" in window &&
+     Notification.permission==="granted"){
+
+    try{
+
+      new Notification(
+        "💊 Medicine Reminder",
+        {
+          body:item.medicineName+
+            (item.dose ? " • "+item.dose : "")+
+            "\nTime: "+item.time
+        }
+      );
+
+    }catch(e){}
+
+  }
+
+}
+
+
+async function takeReminder(){
+
+  if(!currentReminder)return;
+
+  const id=currentReminder.id;
+
+  currentReminder=null;
+
+  document.getElementById("reminderModal")
+    .classList.remove("show");
+
+  await markTaken(id);
+
+}
+
+
+async function snoozeReminder(){
+
+  if(!currentReminder)return;
+
+  const id=currentReminder.id;
+
+  currentReminder=null;
+
+  document.getElementById("reminderModal")
+    .classList.remove("show");
+
+  await snoozeDose(id);
+
+}
+
+
+setInterval(checkReminders,30000);
+
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+async function requestNotifications(){
+
+  if(!("Notification" in window)){
+
+    showToast("Notifications are not supported by this browser");
+
+    return;
+
+  }
+
+  try{
+
+    const permission=
+      await Notification.requestPermission();
+
+    if(permission==="granted"){
+
+      document.getElementById("notificationToggle")
+        .checked=true;
+
+      localStorage.setItem(
+        "medicine_notifications",
+        "1"
+      );
+
+      showToast("Notifications enabled ✓");
+
+    }else{
+
+      showToast("Notification permission was not granted");
+
+    }
+
+  }catch(e){
+
+    showToast("Could not enable notifications");
+
+  }
+
+}
+
+
+function loadSettings(){
+
+  const notification=
+    localStorage.getItem("medicine_notifications")==="1";
+
+  const sound=
+    localStorage.getItem("medicine_sound")!=="0";
+
+  document.getElementById("notificationToggle")
+    .checked=notification;
+
+  document.getElementById("soundToggle")
+    .checked=sound;
+
+}
+
+
+document.getElementById("notificationToggle")
+  .addEventListener("change",e=>{
+
+    if(e.target.checked){
+
+      requestNotifications();
+
+    }else{
+
+      localStorage.setItem(
+        "medicine_notifications",
+        "0"
+      );
+
+    }
+
+  });
+
+
+document.getElementById("soundToggle")
+  .addEventListener("change",e=>{
+
+    localStorage.setItem(
+      "medicine_sound",
+      e.target.checked ? "1":"0"
+    );
+
+  });
+
+
+function updateNotificationBanner(){
+
+  const el=document.getElementById("notificationBanner");
+
+  if(!("Notification" in window)){
+
+    el.innerHTML="";
+    return;
+
+  }
+
+  if(Notification.permission!=="granted"){
+
+    el.innerHTML=`
+      <div class="notification-banner">
+        🔔 Enable notifications in Settings so the app can alert you about scheduled medicines.
+        <button
+          class="btn small"
+          style="margin-left:5px"
+          onclick="requestNotifications()">
+          Enable
+        </button>
+      </div>
+    `;
+
+  }else{
+
+    el.innerHTML="";
+
+  }
+
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+async function renderHistory(){
+
+  const intakes=await getAll("intakes");
+
+  const total=intakes.length;
+
+  const taken=intakes.filter(
+    x=>x.status==="taken"
+  ).length;
+
+  const percent=total
+    ? Math.round(taken/total*100)
+    : 0;
+
+  document.getElementById("historyTotal")
+    .textContent=total;
+
+  document.getElementById("historyTaken")
+    .textContent=taken;
+
+  document.getElementById("historyPercent")
+    .textContent=percent+"%";
+
+  document.getElementById("historyProgress")
+    .style.width=percent+"%";
+
+
+  const days={};
+
+  intakes.forEach(item=>{
+
+    if(!days[item.date]){
+      days[item.date]={
+        total:0,
+        taken:0,
+        missed:0
+      };
+    }
+
+    days[item.date].total++;
+
+    const status=getDoseStatus(item);
+
+    if(status==="taken"){
+      days[item.date].taken++;
+    }
+
+    if(status==="missed"){
+      days[item.date].missed++;
+    }
+
+  });
+
+
+  const dates=Object.keys(days)
+    .sort()
+    .reverse()
+    .slice(0,30);
+
+  const list=document.getElementById("historyList");
+
+  if(!dates.length){
+
+    list.innerHTML=`
+      <div class="empty">
+        <div class="big">📊</div>
+        No intake history yet.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  list.innerHTML=dates.map(date=>{
+
+    const d=days[date];
+
+    const pct=d.total
+      ? Math.round(d.taken/d.total*100)
+      : 0;
+
+    return`
+
+      <div class="history-row">
+
+        <div>
+
+          <b>${formatDate(date)}</b>
+
+          <div style="font-size:12px;color:var(--muted)">
+            ${d.taken}/${d.total} taken
+            ${d.missed ? " • "+d.missed+" missed":""}
+          </div>
+
+          <div class="progress" style="width:180px">
+            <div style="width:${pct}%"></div>
+          </div>
+
+        </div>
+
+        <b>${pct}%</b>
+
+      </div>
+
+    `;
+
+  }).join("");
+
+}
+
+
+/* =========================================================
+   CSV EXPORT
+========================================================= */
+
+async function exportCSV(){
+
+  const medicines=await getAll("medicines");
+  const intakes=await getAll("intakes");
+
+  const rows=[];
+
+  rows.push([
+    "record_type",
+    "id",
+    "medicine_id",
+    "medicine_name",
+    "dose",
+    "form",
+    "times",
+    "date",
+    "time",
+    "status",
+    "taken_at",
+    "start_date",
+    "end_date",
+    "frequency",
+    "instructions"
+  ]);
+
+
+  medicines.forEach(m=>{
+
+    rows.push([
+      "medicine",
+      m.id,
+      "",
+      m.name,
+      m.dose,
+      m.form,
+      m.times.join("|"),
+      "",
+      "",
+      "",
+      "",
+      m.startDate,
+      m.endDate,
+      m.frequency,
+      m.instructions
+    ]);
+
+  });
+
+
+  intakes.forEach(i=>{
+
+    rows.push([
+      "intake",
+      i.id,
+      i.medicineId,
+      i.medicineName,
+      i.dose,
+      i.form,
+      "",
+      i.date,
+      i.time,
+      i.status,
+      i.takenAt,
+      "",
+      "",
+      "",
+      i.notes || ""
+    ]);
+
+  });
+
+
+  const csv=rows
+    .map(row=>row.map(csvEscape).join(","))
+    .join("\n");
+
+  downloadFile(
+    "medicine_reminder_backup.csv",
+    csv,
+    "text/csv;charset=utf-8"
+  );
+
+  showToast("CSV exported ✓");
+
+}
+
+
+async function exportTodayCSV(){
+
+  const intakes=await getAll("intakes");
+
+  const date=today();
+
+  const list=intakes.filter(
+    x=>x.date===date
+  );
+
+  const rows=[
+    [
+      "Date",
+      "Time",
+      "Medicine",
+      "Dose",
+      "Form",
+      "Status",
+      "Taken At"
+    ]
+  ];
+
+  list.forEach(x=>{
+
+    rows.push([
+      x.date,
+      x.time,
+      x.medicineName,
+      x.dose,
+      x.form,
+      getDoseStatus(x),
+      x.takenAt
+    ]);
+
+  });
+
+  const csv=rows
+    .map(r=>r.map(csvEscape).join(","))
+    .join("\n");
+
+  downloadFile(
+    "medicine_today_"+date+".csv",
+    csv,
+    "text/csv"
+  );
+
+}
+
+
+async function exportPlanCSV(){
+
+  const medicines=await getAll("medicines");
+
+  const rows=[
+    [
+      "Medicine",
+      "Dose",
+      "Form",
+      "Times",
+      "Start Date",
+      "End Date",
+      "Frequency",
+      "Instructions"
+    ]
+  ];
+
+  medicines.forEach(m=>{
+
+    rows.push([
+      m.name,
+      m.dose,
+      m.form,
+      m.times.join(" | "),
+      m.startDate,
+      m.endDate,
+      m.frequency,
+      m.instructions
+    ]);
+
+  });
+
+  const csv=rows
+    .map(r=>r.map(csvEscape).join(","))
+    .join("\n");
+
+  downloadFile(
+    "medicine_plan.csv",
+    csv,
+    "text/csv"
+  );
+
+}
+
+
+/* =========================================================
+   JSON BACKUP
+========================================================= */
+
+async function exportJSON(){
+
+  const data={
+
+    app:"Nature Medicine Reminder",
+
+    version:1,
+
+    exportedAt:new Date().toISOString(),
+
+    medicines:await getAll("medicines"),
+
+    intakes:await getAll("intakes"),
+
+    settings:{
+
+      theme:
+        localStorage.getItem("medicine_theme") ||
+        "forest",
+
+      notifications:
+        localStorage.getItem(
+          "medicine_notifications"
+        ) || "0",
+
+      sound:
+        localStorage.getItem(
+          "medicine_sound"
+        ) || "1"
+
+    }
+
+  };
+
+  downloadFile(
+    "medicine_reminder_backup.json",
+    JSON.stringify(data,null,2),
+    "application/json"
+  );
+
+  showToast("JSON backup created ✓");
+
+}
+
+
+/* =========================================================
+   CSV IMPORT
+========================================================= */
+
+function parseCSVLine(line){
+
+  const result=[];
+  let current="";
+  let quoted=false;
+
+  for(let i=0;i<line.length;i++){
+
+    const char=line[i];
+
+    if(char==='"'){
+
+      if(quoted && line[i+1]==='"'){
+
+        current+='"';
+        i++;
+
+      }else{
+
+        quoted=!quoted;
+
+      }
+
+    }else if(char==="," && !quoted){
+
+      result.push(current);
+      current="";
+
+    }else{
+
+      current+=char;
+
+    }
+
+  }
+
+  result.push(current);
+
+  return result;
+
+}
+
+
+async function importCSV(event){
+
+  const file=event.target.files[0];
+
+  if(!file)return;
+
+  const text=await file.text();
+
+  const lines=text
+    .split(/\r?\n/)
+    .filter(x=>x.trim());
+
+  if(lines.length<2){
+
+    showToast("CSV file is empty");
+    return;
+
+  }
+
+  const headers=parseCSVLine(lines[0]);
+
+  let medicinesAdded=0;
+  let intakesAdded=0;
+
+  for(let i=1;i<lines.length;i++){
+
+    const values=parseCSVLine(lines[i]);
+
+    const row={};
+
+    headers.forEach((h,index)=>{
+      row[h]=values[index] || "";
+    });
+
+
+    if(row.record_type==="medicine"){
+
+      const medicine={
+
+        id:row.id || uid("med"),
+
+        name:row.medicine_name || "",
+
+        dose:row.dose || "",
+
+        form:row.form || "Tablet",
+
+        times:(row.times || "")
+          .split("|")
+          .map(x=>x.trim())
+          .filter(Boolean),
+
+        startDate:row.start_date || today(),
+
+        endDate:row.end_date || "",
+
+        frequency:row.frequency || "daily",
+
+        instructions:row.instructions || "",
+
+        active:true,
+
+        createdAt:new Date().toISOString(),
+
+        updatedAt:new Date().toISOString()
+
+      };
+
+      if(medicine.name){
+
+        await put("medicines",medicine);
+        medicinesAdded++;
+
+      }
+
+    }
+
+
+    if(row.record_type==="intake"){
+
+      await put("intakes",{
+
+        id:row.id || uid("intake"),
+
+        date:row.date,
+
+        medicineId:row.medicine_id,
+
+        medicineName:row.medicine_name,
+
+        dose:row.dose,
+
+        form:row.form,
+
+        time:row.time,
+
+        status:row.status || "pending",
+
+        takenAt:row.taken_at || "",
+
+        snoozedUntil:"",
+
+        notes:row.notes || ""
+
+      });
+
+      intakesAdded++;
+
+    }
+
+  }
+
+  event.target.value="";
+
+  await generateTodayIntakes();
+
+  refreshAll();
+
+  showToast(
+    `Imported ${medicinesAdded} medicines, ${intakesAdded} records`
+  );
+
+}
+
+
+/* =========================================================
+   JSON IMPORT
+========================================================= */
+
+async function importJSON(event){
+
+  const file=event.target.files[0];
+
+  if(!file)return;
+
+  try{
+
+    const text=await file.text();
+
+    const data=JSON.parse(text);
+
+    if(!data || !Array.isArray(data.medicines)){
+
+      throw new Error("Invalid backup");
+
+    }
+
+    if(!confirm(
+      "Restore this backup? Existing records with the same IDs will be replaced."
+    )){
+
+      event.target.value="";
+      return;
+
+    }
+
+    for(const m of data.medicines){
+
+      await put("medicines",m);
+
+    }
+
+    if(Array.isArray(data.intakes)){
+
+      for(const i of data.intakes){
+
+        await put("intakes",i);
+
+      }
+
+    }
+
+    if(data.settings){
+
+      if(data.settings.theme){
+
+        localStorage.setItem(
+          "medicine_theme",
+          data.settings.theme
+        );
+
+      }
+
+      if(data.settings.notifications){
+
+        localStorage.setItem(
+          "medicine_notifications",
+          data.settings.notifications
+        );
+
+      }
+
+      if(data.settings.sound){
+
+        localStorage.setItem(
+          "medicine_sound",
+          data.settings.sound
+        );
+
+      }
+
+    }
+
+    event.target.value="";
+
+    loadSettings();
+    applyTheme();
+    refreshAll();
+
+    showToast("Backup restored ✓");
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast("Invalid JSON backup");
+
+  }
+
+}
+
+
+/* =========================================================
+   DELETE ALL
+========================================================= */
+
+async function clearAllData(){
+
+  const first=confirm(
+    "Delete ALL medicine plans and intake history?"
+  );
+
+  if(!first)return;
+
+  const second=confirm(
+    "This cannot be undone unless you have a backup. Continue?"
+  );
+
+  if(!second)return;
+
+  await clearStore("medicines");
+  await clearStore("intakes");
+
+  refreshAll();
+
+  showToast("All data deleted");
+
+}
+
+
+/* =========================================================
+   THEMES
+========================================================= */
+
+function renderThemes(){
+
+  const grid=document.getElementById("themeGrid");
+
+  grid.innerHTML=Object.entries(THEMES)
+    .map(([key,t])=>`
+
+      <button
+        class="theme"
+        data-theme-button="${key}"
+        onclick="selectTheme('${key}')">
+
+        <div
+          class="theme-preview"
+          style="background:linear-gradient(135deg,${t.primary},${t.primary2})">
+        </div>
+
+        <div class="theme-name">
+          ${escapeHTML(t.name)}
+        </div>
+
+        <div class="theme-desc">
+          ${escapeHTML(t.desc)}
+        </div>
+
+      </button>
+
+    `).join("");
+
+}
+
+
+function selectTheme(name){
+
+  if(!THEMES[name])return;
+
+  localStorage.setItem(
+    "medicine_theme",
+    name
+  );
+
+  applyTheme();
+
+  showToast(THEMES[name].name+" theme applied");
+
+}
+
+
+function applyTheme(){
+
+  const name=
+    localStorage.getItem("medicine_theme") ||
+    "forest";
+
+  const t=THEMES[name] || THEMES.forest;
+
+  document.documentElement.style
+    .setProperty("--primary",t.primary);
+
+  document.documentElement.style
+    .setProperty("--primary2",t.primary2);
+
+  document.documentElement.style
+    .setProperty("--bg",t.bg);
+
+  document.documentElement.dataset.theme=name;
+
+  document.querySelectorAll(
+    "[data-theme-button]"
+  ).forEach(button=>{
+
+    button.classList.toggle(
+      "active",
+      button.dataset.themeButton===name
+    );
+
+  });
+
+}
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+async function refreshAll(){
+
+  await generateTodayIntakes();
+
+  await renderToday();
+
+  await renderPlan();
+
+  await renderHistory();
+
+  updateNotificationBanner();
+
+}
+
+
+async function init(){
+
+  try{
+
+    await openDB();
+
+    loadSettings();
+
+    renderThemes();
+
+    applyTheme();
+
+    await generateTodayIntakes();
+
+    await refreshAll();
+
+    setTimeout(checkReminders,1500);
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast("Database initialization failed");
+
+  }
+
+}
+
+
+init();
+
+
+/* Refresh when app becomes visible */
+
+document.addEventListener(
+  "visibilitychange",
+  ()=>{
+    if(!document.hidden){
+      refreshAll();
+      checkReminders();
+    }
+  }
+);
+
+
+/* Refresh every minute */
+
+setInterval(()=>{
+
+  refreshAll();
+
+},60000);
+
+</script>
+
+</body>
+</html>
