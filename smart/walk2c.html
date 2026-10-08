@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Advanced Real Road Navigation System</title>
-  
+
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  
+
   <style>
     :root {
       --bg-main: #0F172A;
@@ -87,7 +87,8 @@
       background: var(--bg-main);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      overflow: hidden;
+      overflow: visible; /* Changed from hidden to visible so dropdowns render cleanly */
+      position: relative;
     }
 
     .input-group input {
@@ -98,10 +99,45 @@
       color: var(--text-main);
       font-size: 0.85rem;
       outline: none;
+      border-radius: 8px;
     }
 
     .input-group input::placeholder {
       color: var(--text-muted);
+    }
+
+    /* Autocomplete Suggestions Dropdown */
+    .suggestions-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 3000;
+      display: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+
+    .suggestion-item {
+      padding: 0.65rem 0.85rem;
+      font-size: 0.82rem;
+      color: var(--text-main);
+      cursor: pointer;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.08);
+      transition: background 0.15s;
+    }
+
+    .suggestion-item:last-child {
+      border-bottom: none;
+    }
+
+    .suggestion-item:hover {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-blue);
     }
 
     .btn {
@@ -359,10 +395,12 @@
     <div class="top-row" style="gap: 0.5rem;">
       <div class="inputs-wrapper">
         <div class="input-group">
-          <input type="text" id="startInput" placeholder="Start (Name or Lat, Lon e.g. 19.2, 73.0)" />
+          <input type="text" id="startInput" placeholder="Start (Name or Lat, Lon e.g. 19.2, 73.0)" autocomplete="off" oninput="handleSearchInput('startInput', 'startSuggestions')" />
+          <div id="startSuggestions" class="suggestions-dropdown"></div>
         </div>
         <div class="input-group">
-          <input type="text" id="destInput" placeholder="Destination (Name or Lat, Lon e.g. 19.4, 72.8)" />
+          <input type="text" id="destInput" placeholder="Destination (Name or Lat, Lon e.g. 19.4, 72.8)" autocomplete="off" oninput="handleSearchInput('destInput', 'destSuggestions')" />
+          <div id="destSuggestions" class="suggestions-dropdown"></div>
         </div>
       </div>
       <button class="btn" onclick="calculateRoute()">Calculate</button>
@@ -439,6 +477,70 @@
     let watchId = null;
     let currentStepIndex = 0;
     let allRouteSteps = [];
+    let searchTimeouts = {};
+
+    // Fast debounced text search autocomplete handler
+    function handleSearchInput(inputId, dropdownId) {
+      const query = document.getElementById(inputId).value.trim();
+      const dropdown = document.getElementById(dropdownId);
+
+      if (searchTimeouts[inputId]) {
+        clearTimeout(searchTimeouts[inputId]);
+      }
+
+      if (query.length < 3) {
+        dropdown.style.display = 'none';
+        dropdown.innerHTML = '';
+        return;
+      }
+
+      searchTimeouts[inputId] = setTimeout(async () => {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`);
+          const data = await res.json();
+
+          dropdown.innerHTML = '';
+          if (data && data.length > 0) {
+            data.forEach(item => {
+              const div = document.createElement('div');
+              div.className = 'suggestion-item';
+              div.textContent = item.display_name;
+              div.onclick = (e) => {
+                e.stopPropagation();
+                document.getElementById(inputId).value = item.display_name;
+                dropdown.style.display = 'none';
+                dropdown.innerHTML = '';
+                const lat = parseFloat(item.lat);
+                const lon = parseFloat(item.lon);
+                
+                if (inputId === 'startInput') {
+                  setStart(lat, lon, item.display_name);
+                } else {
+                  setDest(lat, lon, item.display_name);
+                }
+                map.setView([lat, lon], 14);
+              };
+              dropdown.appendChild(div);
+            });
+            dropdown.style.display = 'block';
+          } else {
+            dropdown.style.display = 'none';
+          }
+        } catch (err) {
+          console.error("Autocomplete search error:", err);
+          dropdown.style.display = 'none';
+        }
+      }, 300);
+    }
+
+    // Dismiss search dropdown suggestions when clicking anywhere outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.input-group')) {
+        document.querySelectorAll('.suggestions-dropdown').forEach(d => {
+          d.style.display = 'none';
+        });
+      }
+    });
 
     // Map click handling
     map.on('click', async function(e) {
@@ -574,7 +676,7 @@
         const div = document.createElement('div');
         div.className = `nav-step-item ${idx === currentStepIndex ? 'current' : ''}`;
         div.id = `nav-step-${idx}`;
-        div.onclick = () => focusOnStep(idx); // Click handler to highlight on map
+        div.onclick = () => focusOnStep(idx);
         div.innerHTML = `
           <div class="step-icon">${icon}</div>
           <div class="step-details">
@@ -586,13 +688,12 @@
       });
     }
 
-    // Focus and highlight specific step on the map when clicked
     function focusOnStep(index) {
       if (index < 0 || index >= allRouteSteps.length) return;
       currentStepIndex = index;
-      
+
       const step = allRouteSteps[index];
-      updateActiveStepHud(index, false); // Update HUD without repeating speech
+      updateActiveStepHud(index, false);
 
       if (step.maneuver && step.maneuver.location) {
         const [lon, lat] = step.maneuver.location;
@@ -629,7 +730,6 @@
         speakInstruction(`${instruction}. In ${distanceStr}`);
       }
 
-      // Highlight active item in list
       document.querySelectorAll('.nav-step-item').forEach((el, idx) => {
         if (idx === index) {
           el.classList.add('current');
@@ -670,7 +770,6 @@
       }
     }
 
-    // Toggle Checkbox Synchronization for Navigation Box
     function toggleNavSidebarFromCheckbox(checkbox) {
       const sidebar = document.getElementById('nav-sidebar');
       if (checkbox.checked) {
@@ -752,14 +851,13 @@
       const [stepLon, stepLat] = currentStep.maneuver.location;
       const distMeters = getDistanceFromLatLonInMeters(lat, lon, stepLat, stepLon);
 
-      // If user is within 25 meters of maneuver point, advance to next step
       if (distMeters < 25) {
         updateActiveStepHud(currentStepIndex + 1);
       }
     }
 
     function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
-      const R = 6371000; // Radius of earth in meters
+      const R = 6371000;
       const dLat = deg2rad(lat2 - lat1);
       const dLon = deg2rad(lon2 - lon1);
       const a = 
