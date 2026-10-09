@@ -3,408 +3,275 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#138a4b">
-<title>Contact Management Pro</title>
+<meta name="theme-color" content="#28734b">
+<title>Nature Contacts Pro</title>
 
-<!-- SQLite and Chart libraries -->
+<!-- Online libraries: CSV/JSON/vCard work without SQL.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 :root{
-  --primary:#138a4b;
-  --primary-dark:#086b38;
-  --bg:#f2f8f3;
-  --card:#ffffff;
-  --text:#183526;
-  --muted:#64766a;
-  --border:#d8e7dc;
-  --danger:#c62828;
-  --shadow:0 4px 16px #18352612;
+ --primary:#28734b;--dark:#195336;--bg:#f1f7f1;
+ --card:#fff;--text:#20352a;--muted:#708075;
+ --border:#d9e5da;--danger:#bd4545;
+ --shadow:0 3px 12px #1835260c;
 }
 *{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:system-ui,-apple-system,Arial,sans-serif;
+ font-size:14px;line-height:1.45;
 }
-body[data-theme="forest"]{--primary:#138a4b;--primary-dark:#086b38;--bg:#f2f8f3;--card:#fff;--text:#183526;--border:#d8e7dc}
-body[data-theme="ocean"]{--primary:#087eae;--primary-dark:#075985;--bg:#edf8ff;--card:#fff;--text:#16384c;--border:#cce8f5}
-body[data-theme="sunset"]{--primary:#d45d36;--primary-dark:#a43d20;--bg:#fff4ed;--card:#fff;--text:#512b20;--border:#f3d6c8}
-body[data-theme="lavender"]{--primary:#8054b7;--primary-dark:#603995;--bg:#f7f1ff;--card:#fff;--text:#352348;--border:#e4d5f5}
-body[data-theme="meadow"]{--primary:#719c32;--primary-dark:#496d1b;--bg:#f5f9e9;--card:#fff;--text:#33421e;--border:#dce7c2}
-body[data-theme="rose"]{--primary:#c13f75;--primary-dark:#912653;--bg:#fff1f6;--card:#fff;--text:#51253a;--border:#f2d0df}
-body[data-theme="night"]{--primary:#68bb8b;--primary-dark:#389462;--bg:#15251d;--card:#20352a;--text:#edf8f0;--border:#365343;--muted:#b4cbb9;--shadow:0 4px 16px #0003}
-body[data-theme="sand"]{--primary:#a47a3c;--primary-dark:#795728;--bg:#faf4e8;--card:#fffdf8;--text:#473822;--border:#e9dcc3}
-body[data-theme="sky"]{--primary:#477bd1;--primary-dark:#2c56a0;--bg:#f0f6ff;--card:#fff;--text:#1e3151;--border:#d3e1f7}
-body[data-theme="mint"]{--primary:#179b91;--primary-dark:#08756d;--bg:#edfaf7;--card:#fff;--text:#173e3a;--border:#ccece6}
+body[data-theme="forest"]{--primary:#28734b;--dark:#195336;--bg:#f1f7f1;--card:#fff;--text:#20352a;--muted:#708075;--border:#d9e5da}
+body[data-theme="ocean"]{--primary:#197ba5;--dark:#115775;--bg:#eff8fc;--card:#fff;--text:#193949;--muted:#657f8a;--border:#d3e8f0}
+body[data-theme="meadow"]{--primary:#708f35;--dark:#4d6820;--bg:#f5f8e9;--card:#fff;--text:#334021;--muted:#7a8266;--border:#e0e7c9}
+body[data-theme="mint"]{--primary:#198b80;--dark:#11665e;--bg:#eef9f6;--card:#fff;--text:#21403b;--muted:#708781;--border:#d4ebe5}
+body[data-theme="sunset"]{--primary:#c6633b;--dark:#944326;--bg:#fff5ee;--card:#fff;--text:#4b3025;--muted:#8a776d;--border:#f0d9cd}
+body[data-theme="lavender"]{--primary:#8058ad;--dark:#5c3a82;--bg:#f7f2fc;--card:#fff;--text:#382b48;--muted:#81738f;--border:#e7d9f1}
+body[data-theme="rose"]{--primary:#bd527a;--dark:#8f3557;--bg:#fff3f7;--card:#fff;--text:#492b38;--muted:#8c7480;--border:#f1d9e3}
+body[data-theme="sky"]{--primary:#4b78c1;--dark:#31558f;--bg:#f1f6ff;--card:#fff;--text:#263852;--muted:#728096;--border:#d8e3f5}
+body[data-theme="sand"]{--primary:#a07a43;--dark:#72542d;--bg:#faf5e9;--card:#fffdf8;--text:#493c29;--muted:#847967;--border:#e9dfc8}
+body[data-theme="night"]{--primary:#75c39a;--dark:#274c38;--bg:#15231b;--card:#203328;--text:#eff8f0;--muted:#b1c4b5;--border:#3b5545;--shadow:0 3px 12px #0002}
 
-header{
-  background:var(--primary-dark);
-  color:white;
-  padding:18px 14px;
-}
-.header-inner{max-width:1200px;margin:auto}
-header h1{margin:0 0 5px;font-size:24px}
-header p{margin:0;font-size:13px;opacity:.9}
-main{max-width:1200px;margin:auto;padding:12px}
+header{background:var(--dark);color:white;padding:17px 14px}
+.header-inner,main{max-width:1100px;margin:auto}
+header h1{font-size:22px;margin:0 0 3px}
+header p{margin:0;font-size:12px;opacity:.9}
+main{padding:12px}
 .panel{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:15px;
-  padding:15px;
-  margin-bottom:14px;
-  box-shadow:var(--shadow);
+ background:var(--card);border:1px solid var(--border);
+ border-radius:13px;padding:14px;margin-bottom:13px;
+ box-shadow:var(--shadow);
 }
-h2{font-size:19px;margin:0 0 12px}
-h3{font-size:16px;margin:0 0 10px}
-.muted{color:var(--muted);font-size:13px}
-.stats{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px;
-  margin-bottom:14px;
-}
-.stat{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:13px;
-}
-.stat strong{display:block;font-size:23px;color:var(--primary)}
-.stat span{font-size:12px;color:var(--muted)}
-.tabs{
-  display:flex;
-  gap:7px;
-  overflow-x:auto;
-  padding:3px 0 12px;
-  position:sticky;
-  top:0;
-  z-index:5;
-  background:var(--bg);
-}
-.tab{
-  flex-shrink:0;
-  border:1px solid var(--border);
-  border-radius:9px;
-  padding:10px 13px;
-  background:var(--card);
-  color:var(--text);
-  cursor:pointer;
-}
+h2{font-size:17px;margin:0 0 12px}
+h3{font-size:15px;margin:0 0 7px}
+p{overflow-wrap:anywhere}
+.muted{color:var(--muted);font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:11px}
+.stat strong{display:block;font-size:22px;color:var(--primary)}
+.stat span{font-size:11px;color:var(--muted)}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:3px 0 11px;position:sticky;top:0;z-index:10;background:var(--bg)}
+.tab{flex-shrink:0;border:1px solid var(--border);border-radius:9px;padding:10px 12px;background:var(--card);color:var(--text)}
 .tab.active{background:var(--primary);color:white;border-color:var(--primary)}
 .tab-content{display:none}
 .tab-content.active{display:block}
-label{display:block;font-size:13px;font-weight:bold;margin:10px 0 5px}
-input,select,textarea,button{
-  font:inherit;
-}
-input,select,textarea{
-  width:100%;
-  padding:10px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:var(--card);
-  color:var(--text);
-}
-textarea{min-height:85px;resize:vertical}
-button{cursor:pointer}
-.btn{
-  border:0;
-  border-radius:8px;
-  padding:10px 13px;
-  background:var(--primary);
-  color:white;
-  margin:5px 3px 0 0;
-}
-.btn.secondary{background:#718078}
-.btn.danger{background:var(--danger)}
-.btn.outline{
-  background:transparent;
-  color:var(--primary);
-  border:1px solid var(--primary);
-}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .full{grid-column:1/-1}
+label{display:block;font-weight:650;font-size:12px;margin:10px 0 5px}
+input,select,textarea,button{font:inherit}
+input,select,textarea{
+ width:100%;padding:10px;border:1px solid var(--border);
+ border-radius:8px;background:var(--card);color:var(--text);min-width:0;
+}
+input[type=checkbox]{width:auto;accent-color:var(--primary)}
+textarea{min-height:80px;resize:vertical}
+button{cursor:pointer}
+.btn{display:inline-block;border:0;border-radius:8px;background:var(--primary);color:white;padding:9px 12px;margin:4px 3px 0 0}
+.btn.secondary{background:#78877d}
+.btn.outline{background:transparent;border:1px solid var(--primary);color:var(--primary)}
+.btn.danger{background:var(--danger)}
+.btn.small{font-size:12px;padding:7px 9px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
 .contact-list{display:grid;gap:10px}
-.contact{
-  padding:13px;
-  border:1px solid var(--border);
-  border-radius:12px;
-  background:var(--card);
-}
-.contact-top{display:flex;justify-content:space-between;gap:10px}
-.contact h3{margin:0 0 5px;overflow-wrap:anywhere}
-.contact p{font-size:13px;margin:5px 0;overflow-wrap:anywhere}
-.contact-actions{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
-.contact-actions button{font-size:12px;padding:7px 9px}
-.badge{
-  display:inline-block;
-  padding:4px 8px;
-  border-radius:20px;
-  background:color-mix(in srgb,var(--primary) 13%,transparent);
-  color:var(--primary);
-  font-size:11px;
-}
-.favorite{color:#e3a300}
+.contact{padding:12px;border:1px solid var(--border);border-radius:11px;background:var(--card);min-width:0}
+.contact-head{display:flex;justify-content:space-between;gap:8px}
+.contact h3{overflow-wrap:anywhere}
+.contact p{font-size:12px;margin:5px 0}
+.badge{display:inline-block;padding:4px 8px;border-radius:20px;background:var(--bg);color:var(--primary);font-size:11px}
+.contact-actions{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.contact-actions button{font-size:11px;padding:7px 9px;margin:0}
 .chart-box{height:300px;position:relative}
-.summary-list{display:grid;gap:7px;margin-top:12px}
-.summary-row{
-  display:flex;justify-content:space-between;gap:10px;
-  padding:9px;border:1px solid var(--border);border-radius:8px;
-  font-size:13px;
-}
-.notice{
-  background:color-mix(in srgb,var(--primary) 10%,var(--card));
-  padding:11px;border-radius:9px;font-size:13px;line-height:1.5;
-  margin-bottom:12px;
-}
+.summary-list{display:grid;gap:7px;margin-top:10px}
+.summary-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px;border:1px solid var(--border);border-radius:8px}
+.summary-row>span{overflow-wrap:anywhere}
+.notice{padding:10px;border-radius:9px;background:var(--bg);font-size:12px;margin-bottom:10px}
+.empty{text-align:center;padding:25px 10px;color:var(--muted)}
 hr{border:0;border-top:1px solid var(--border);margin:15px 0}
-.small{font-size:12px}
-.empty{text-align:center;padding:25px;color:var(--muted)}
-#message{position:fixed;bottom:15px;left:12px;right:12px;z-index:99;
-  max-width:600px;margin:auto;padding:12px;border-radius:10px;
-  background:#183526;color:white;display:none;box-shadow:var(--shadow)}
+#message{display:none;position:fixed;bottom:12px;left:12px;right:12px;max-width:550px;margin:auto;background:#243b2d;color:white;padding:12px;border-radius:10px;z-index:100}
+#preview{white-space:pre-wrap;overflow-wrap:anywhere}
+a{color:var(--primary)}
 @media(min-width:700px){
-  .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
-  .contact-list{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .contact-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 </style>
 </head>
-
 <body data-theme="forest">
+
 <header>
-  <div class="header-inner">
-    <h1>📇 Contact Management Pro</h1>
-    <p>Manage contacts, categories, charts, backups and imports</p>
-  </div>
+ <div class="header-inner">
+  <h1>🌿 Nature Contacts Pro</h1>
+  <p>Simple contact manager · Categories · Charts · Import & Export</p>
+ </div>
 </header>
 
 <main>
-  <div class="stats">
-    <div class="stat"><strong id="totalCount">0</strong><span>Total contacts</span></div>
-    <div class="stat"><strong id="favoriteCount">0</strong><span>Favorites</span></div>
-    <div class="stat"><strong id="categoryCount">0</strong><span>Categories used</span></div>
-    <div class="stat"><strong id="phoneCount">0</strong><span>Contacts with phone</span></div>
+ <div class="stats">
+  <div class="stat"><strong id="totalCount">0</strong><span>Total contacts</span></div>
+  <div class="stat"><strong id="favoriteCount">0</strong><span>Favorites</span></div>
+  <div class="stat"><strong id="categoryCount">0</strong><span>Categories used</span></div>
+  <div class="stat"><strong id="phoneCount">0</strong><span>Contacts with phone</span></div>
+ </div>
+
+ <nav class="tabs">
+  <button class="tab active" data-tab="contacts">👥 Contacts</button>
+  <button class="tab" data-tab="add">➕ Add Contact</button>
+  <button class="tab" data-tab="categories">📊 Categories</button>
+  <button class="tab" data-tab="data">📁 Data</button>
+  <button class="tab" data-tab="settings">⚙️ Settings</button>
+ </nav>
+
+ <section id="tab-contacts" class="tab-content active">
+  <div class="panel">
+   <h2>Find Contacts</h2>
+   <label for="search">Search name, phone, email, company or notes</label>
+   <input id="search" placeholder="Start typing to search…">
+   <div class="grid">
+    <div>
+     <label for="filterGroup">Category filter</label>
+     <select id="filterGroup"><option value="">All categories</option></select>
+    </div>
+    <div>
+     <label for="sortBy">Sort contacts</label>
+     <select id="sortBy">
+      <option value="name">Name A–Z</option>
+      <option value="newest">Recently added</option>
+      <option value="company">Company</option>
+      <option value="category">Category</option>
+      <option value="birthday">Birthday</option>
+     </select>
+    </div>
+   </div>
+   <label><input id="favoritesOnly" type="checkbox"> Show favorites only</label>
+   <hr>
+   <h3>Bulk actions</h3>
+   <div class="row">
+    <button class="btn outline" id="selectVisible">Select visible</button>
+    <button class="btn outline" id="clearSelection">Clear selection</button>
+   </div>
+   <label for="bulkCategory">Move selected contacts to category</label>
+   <select id="bulkCategory"></select>
+   <button class="btn" id="applyBulk">Move Selected</button>
+   <span class="muted" id="selectedCount">0 selected</span>
   </div>
 
-  <nav class="tabs" aria-label="Main navigation">
-    <button class="tab active" data-tab="contacts">Contacts</button>
-    <button class="tab" data-tab="add">Add Contact</button>
-    <button class="tab" data-tab="categories">Categories & Chart</button>
-    <button class="tab" data-tab="data">Import / Export</button>
-    <button class="tab" data-tab="settings">Settings</button>
-  </nav>
+  <div class="panel">
+   <h2>Contact List <span class="badge" id="shownCount">0</span></h2>
+   <div id="contactList" class="contact-list"></div>
+  </div>
+ </section>
 
-  <section id="tab-contacts" class="tab-content active">
-    <div class="panel">
-      <h2>Search and Filter</h2>
-      <div class="grid">
-        <div class="full">
-          <label for="search">Search contacts</label>
-          <input id="search" placeholder="Name, phone, email, company, notes…">
-        </div>
-        <div>
-          <label for="filterGroup">Category</label>
-          <select id="filterGroup"><option value="">All categories</option></select>
-        </div>
-        <div>
-          <label for="sortBy">Sort by</label>
-          <select id="sortBy">
-            <option value="name">Name</option>
-            <option value="newest">Recently added</option>
-            <option value="company">Company</option>
-            <option value="category">Category</option>
-          </select>
-        </div>
-      </div>
-      <label style="display:flex;align-items:center;gap:8px">
-        <input id="favoritesOnly" type="checkbox" style="width:auto">
-        Show favorites only
-      </label>
+ <section id="tab-add" class="tab-content">
+  <div class="panel">
+   <h2 id="formTitle">Add Contact</h2>
+   <form id="contactForm">
+    <input type="hidden" id="contactId">
+    <div class="grid">
+     <div><label for="firstName">First name *</label><input id="firstName" required></div>
+     <div><label for="lastName">Last name</label><input id="lastName"></div>
+     <div><label for="nickname">Nickname</label><input id="nickname"></div>
+     <div><label for="phone">Phone number</label><input id="phone" type="tel"></div>
+     <div><label for="phone2">Additional phone</label><input id="phone2" type="tel"></div>
+     <div><label for="email">Email</label><input id="email" type="email"></div>
+     <div><label for="company">Company / Organization</label><input id="company"></div>
+     <div><label for="jobTitle">Job title</label><input id="jobTitle"></div>
+     <div><label for="website">Website</label><input id="website" type="url" placeholder="https://"></div>
+     <div><label for="groupName">Category</label><select id="groupName"></select></div>
+     <div><label for="birthday">Birthday</label><input id="birthday" type="date"></div>
+     <div><label for="address">Street address</label><input id="address"></div>
+     <div><label for="city">City</label><input id="city"></div>
+     <div><label for="state">State</label><input id="state"></div>
+     <div><label for="postal">Postal code</label><input id="postal"></div>
+     <div><label for="country">Country</label><input id="country" value="India"></div>
+     <div class="full"><label for="notes">Notes / Important details</label><textarea id="notes"></textarea></div>
+     <div class="full"><label><input type="checkbox" id="isFavorite"> Mark as favorite ⭐</label></div>
     </div>
+    <button class="btn" type="submit">Save Contact</button>
+    <button class="btn secondary" type="button" id="resetForm">Clear Form</button>
+   </form>
+  </div>
+ </section>
 
-    <div class="panel">
-      <h2>Contacts <span class="badge" id="shownCount">0</span></h2>
-      <div id="contactList" class="contact-list"></div>
-    </div>
-  </section>
+ <section id="tab-categories" class="tab-content">
+  <div class="panel">
+   <h2>📊 Contacts by Category</h2>
+   <p class="muted">Category counts update when you add contacts, move contacts or import records. Tap a chart bar to filter the contact list.</p>
+   <div class="chart-box"><canvas id="categoryChart"></canvas></div>
+   <div id="categorySummary" class="summary-list"></div>
+  </div>
 
-  <section id="tab-add" class="tab-content">
-    <div class="panel">
-      <h2 id="formTitle">Add New Contact</h2>
-      <form id="contactForm">
-        <input type="hidden" id="contactId">
-        <div class="grid">
-          <div>
-            <label for="firstName">First name *</label>
-            <input id="firstName" required>
-          </div>
-          <div>
-            <label for="lastName">Last name</label>
-            <input id="lastName">
-          </div>
-          <div>
-            <label for="nickname">Nickname</label>
-            <input id="nickname">
-          </div>
-          <div>
-            <label for="phone">Phone</label>
-            <input id="phone" type="tel">
-          </div>
-          <div>
-            <label for="phone2">Additional phone</label>
-            <input id="phone2" type="tel">
-          </div>
-          <div>
-            <label for="email">Email</label>
-            <input id="email" type="email">
-          </div>
-          <div>
-            <label for="website">Website</label>
-            <input id="website" type="url" placeholder="https://">
-          </div>
-          <div>
-            <label for="company">Company</label>
-            <input id="company">
-          </div>
-          <div>
-            <label for="jobTitle">Job title</label>
-            <input id="jobTitle">
-          </div>
-          <div>
-            <label for="groupName">Category</label>
-            <input id="groupName" list="categorySuggestions" value="Friends" placeholder="Select or type a category">
-            <datalist id="categorySuggestions"></datalist>
-          </div>
-          <div>
-            <label for="birthday">Birthday</label>
-            <input id="birthday" type="date">
-          </div>
-          <div>
-            <label for="address">Address</label>
-            <input id="address">
-          </div>
-          <div>
-            <label for="city">City</label>
-            <input id="city">
-          </div>
-          <div>
-            <label for="state">State</label>
-            <input id="state">
-          </div>
-          <div>
-            <label for="postal">Postal code</label>
-            <input id="postal">
-          </div>
-          <div>
-            <label for="country">Country</label>
-            <input id="country" value="India">
-          </div>
-          <div class="full">
-            <label for="notes">Notes</label>
-            <textarea id="notes"></textarea>
-          </div>
-          <div class="full">
-            <label style="display:flex;align-items:center;gap:8px">
-              <input id="isFavorite" type="checkbox" style="width:auto">
-              Mark as favorite
-            </label>
-          </div>
-        </div>
-        <button class="btn" type="submit">Save Contact</button>
-        <button class="btn secondary" type="button" id="resetForm">Clear Form</button>
-      </form>
-    </div>
-  </section>
+  <div class="panel">
+   <h2>Manage Categories</h2>
+   <p class="muted">Categories are shared by the contact form, contact cards, filters, bulk actions and charts.</p>
+   <label for="newCategory">New category name</label>
+   <input id="newCategory" placeholder="e.g. Customers, Relatives, Teachers">
+   <button class="btn" id="addCategoryBtn">Add Category</button>
+   <div id="categoryManager" class="summary-list"></div>
+  </div>
+ </section>
 
-  <section id="tab-categories" class="tab-content">
-    <div class="panel">
-      <h2>📊 Contacts by Category</h2>
-      <p class="muted">Select any contact's category from its dropdown. The chart updates automatically.</p>
-      <div class="chart-box"><canvas id="categoryChart"></canvas></div>
-      <div id="categorySummary" class="summary-list"></div>
-    </div>
+ <section id="tab-data" class="tab-content">
+  <div class="panel">
+   <h2>Import Contacts</h2>
+   <div class="notice">Supported formats: CSV, JSON, vCard (.vcf) and SQLite (.db, .sqlite, .sqlite3). Import shows a preview first. Likely duplicate records are skipped by default.</div>
+   <label for="importFile">Choose file</label>
+   <input id="importFile" type="file" accept=".csv,.json,.vcf,.vcard,.db,.sqlite,.sqlite3">
+   <button class="btn" id="previewImport">Preview Import</button>
+   <div id="preview" class="muted"></div>
+   <button class="btn" id="importValid" disabled>Import Contacts</button>
+   <button class="btn secondary" id="cancelImport" disabled>Cancel</button>
+  </div>
 
-    <div class="panel">
-      <h2>Manage Categories</h2>
-      <p class="muted">Create a category here, then assign it to any contact using the category dropdown.</p>
-      <label for="newCategory">New category name</label>
-      <input id="newCategory" placeholder="e.g. Customers, Relatives, Emergency">
-      <button class="btn" id="addCategoryBtn">Add Category</button>
-      <div id="categoryManager" class="summary-list"></div>
-    </div>
-  </section>
+  <div class="panel">
+   <h2>Export Contacts</h2>
+   <label for="exportScope">Export scope</label>
+   <select id="exportScope">
+    <option value="all">All contacts</option>
+    <option value="filtered">Current search and filters</option>
+    <option value="selected">Selected contacts</option>
+   </select>
+   <button class="btn" id="exportCSV">Export CSV</button>
+   <button class="btn" id="exportJSON">Export JSON</button>
+   <button class="btn" id="exportVCF">Export vCard (.vcf)</button>
+   <button class="btn" id="exportSQLite">Export SQLite</button>
+   <hr>
+   <h3>Full Backup / Restore</h3>
+   <button class="btn outline" id="backupJSON">Download Full Backup</button>
+   <label for="restoreFile">Restore backup JSON</label>
+   <input id="restoreFile" type="file" accept=".json,application/json">
+   <button class="btn danger" id="clearAll">Delete All Contacts</button>
+  </div>
+ </section>
 
-  <section id="tab-data" class="tab-content">
-    <div class="panel">
-      <h2>Import Contacts</h2>
-      <div class="notice">
-        Supported formats: CSV, JSON, vCard (.vcf) and SQLite (.db, .sqlite, .sqlite3).
-        Always keep a backup of important contacts.
-      </div>
-      <label for="importFile">Choose import file</label>
-      <input id="importFile" type="file" accept=".csv,.json,.vcf,.vcard,.db,.sqlite,.sqlite3,application/json,text/csv">
-      <button class="btn" id="previewImport">Preview Import</button>
-      <div id="importPreview" class="muted" style="margin-top:12px"></div>
-      <button class="btn" id="importAll" disabled>Import Valid Contacts</button>
-      <button class="btn outline" id="cancelImport" disabled>Cancel Preview</button>
-    </div>
+ <section id="tab-settings" class="tab-content">
+  <div class="panel">
+   <h2>🌱 Nature Themes</h2>
+   <label for="themeSelect">Choose appearance</label>
+   <select id="themeSelect">
+    <option value="forest">🌲 Forest Green</option>
+    <option value="ocean">🌊 Ocean Blue</option>
+    <option value="meadow">🌿 Meadow</option>
+    <option value="mint">🍃 Mint</option>
+    <option value="sunset">🌅 Sunset</option>
+    <option value="lavender">💜 Lavender</option>
+    <option value="rose">🌹 Rose Garden</option>
+    <option value="sky">☁️ Sky Blue</option>
+    <option value="sand">🏜️ Sand</option>
+    <option value="night">🌙 Night Forest</option>
+   </select>
+  </div>
 
-    <div class="panel">
-      <h2>Export Contacts</h2>
-      <p class="muted">Export all contacts or just the currently filtered contacts.</p>
-      <label for="exportScope">Export scope</label>
-      <select id="exportScope">
-        <option value="all">All contacts</option>
-        <option value="filtered">Currently filtered contacts</option>
-      </select>
-      <button class="btn" id="exportCSV">Export CSV</button>
-      <button class="btn" id="exportJSON">Export JSON</button>
-      <button class="btn" id="exportVCF">Export vCard (.vcf)</button>
-      <button class="btn" id="exportSQLite">Export SQLite database</button>
-      <hr>
-      <h3>Backup / Restore</h3>
-      <button class="btn outline" id="backupJSON">Download Full Backup</button>
-      <label for="restoreFile">Restore backup JSON</label>
-      <input id="restoreFile" type="file" accept=".json,application/json">
-      <button class="btn danger" id="clearAll">Delete All Contacts</button>
-    </div>
-  </section>
-
-  <section id="tab-settings" class="tab-content">
-    <div class="panel">
-      <h2>Appearance</h2>
-      <label for="themeSelect">Nature theme</label>
-      <select id="themeSelect">
-        <option value="forest">🌲 Forest Green</option>
-        <option value="ocean">🌊 Ocean Blue</option>
-        <option value="sunset">🌅 Sunset</option>
-        <option value="lavender">💜 Lavender</option>
-        <option value="meadow">🌿 Meadow</option>
-        <option value="rose">🌹 Rose Garden</option>
-        <option value="night">🌙 Night Forest</option>
-        <option value="sand">🏜️ Sand</option>
-        <option value="sky">☁️ Sky Blue</option>
-        <option value="mint">🍃 Mint</option>
-      </select>
-    </div>
-
-    <div class="panel">
-      <h2>Storage Information</h2>
-      <p id="storageInfo" class="muted"></p>
-      <div class="notice">
-        Contact data is stored in this browser on this device. It is not automatically synchronized to another device.
-        Browser data can be lost if site storage is cleared. Export backups regularly.
-      </div>
-      <p class="muted">
-        CSV, JSON and vCard features work locally. SQLite import/export uses SQL.js and needs its library and WASM file to load successfully.
-        Internet access is required for the default CDN libraries.
-      </p>
-    </div>
-  </section>
+  <div class="panel">
+   <h2>Storage & Privacy</h2>
+   <p id="storageInfo" class="muted"></p>
+   <div class="notice">Contacts are saved locally in this browser on this device. They are not automatically synchronized with other devices. Export backups regularly.</div>
+   <p class="muted">CSV, JSON and vCard features run in the browser. SQLite support requires the SQL.js library and its WASM file to load successfully. The default setup uses online CDNs.</p>
+  </div>
+ </section>
 </main>
 
 <div id="message" role="status"></div>
@@ -412,872 +279,890 @@ hr{border:0;border-top:1px solid var(--border);margin:15px 0}
 <script>
 "use strict";
 
-/* -------------------- Storage and state -------------------- */
+/* =====================================================
+   CENTRAL STATE
+   Categories and contacts are saved together.
+   Every tab uses this same state.
+===================================================== */
 
-const STORAGE_KEY = "contact_management_pro_v2";
-const THEME_KEY = "contact_management_theme_v1";
+const STORAGE_KEY="nature_contacts_pro_v3";
+const OLD_KEYS=["contact_management_pro_v2","contact_management_pro_v1"];
+const THEME_KEY="nature_contacts_theme_v1";
 
-const DEFAULT_CATEGORIES = [
-  "Family","Friends","Work","Business",
-  "Doctor","School","Emergency","Other"
+const DEFAULT_CATEGORIES=[
+ "Family","Friends","Work","Business",
+ "Doctor","School","Emergency","Other"
 ];
 
-let contacts = [];
-let categories = [...DEFAULT_CATEGORIES];
-let pendingImport = [];
-let categoryChartInstance = null;
-let sqlPromise = null;
+let contacts=[];
+let categories=[...DEFAULT_CATEGORIES];
+let selectedIds=new Set();
+let pendingImport=[];
+let categoryChartInstance=null;
+let sqlPromise=null;
 
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
 
 function uid(){
-  return "c_" + Date.now().toString(36) + "_" +
-    Math.random().toString(36).slice(2,10);
+ return "c_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,10);
 }
 
-function escapeHTML(value){
-  return String(value ?? "").replace(/[&<>"']/g, ch => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",
-    '"':"&quot;","'":"&#39;"
-  })[ch]);
+function esc(value){
+ return String(value??"").replace(/[&<>"']/g,ch=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ })[ch]);
 }
 
-function normalizeText(value){
-  return String(value ?? "").trim();
-}
+function norm(value){return String(value??"").trim()}
 
 function notify(message){
-  const box = $("message");
-  box.textContent = message;
-  box.style.display = "block";
-  clearTimeout(notify.timer);
-  notify.timer = setTimeout(()=>box.style.display="none",3000);
+ const box=$("message");
+ box.textContent=message;
+ box.style.display="block";
+ clearTimeout(notify.timer);
+ notify.timer=setTimeout(()=>box.style.display="none",3000);
 }
 
-function saveContacts(){
-  try{
-    localStorage.setItem(STORAGE_KEY,JSON.stringify(contacts));
-    refreshStorageInfo();
-    return true;
-  }catch(error){
-    notify("Could not save: browser storage may be full.");
-    return false;
-  }
-}
-
-function loadContacts(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw){
-      const parsed = JSON.parse(raw);
-      if(Array.isArray(parsed)) contacts = parsed.map(normalizeContact);
-    }
-  }catch(error){
-    contacts = [];
-  }
-  rebuildCategories();
+function displayName(c){
+ return [c.firstName,c.lastName].filter(Boolean).join(" ")||"Unnamed";
 }
 
 function normalizeContact(raw={}){
-  const firstName = normalizeText(raw.firstName || raw.first_name || raw.givenName || raw.given_name || raw.name);
-  const lastName = normalizeText(raw.lastName || raw.last_name || raw.familyName || raw.family_name);
-  return {
-    id: normalizeText(raw.id) || uid(),
-    firstName: firstName || "Unnamed",
-    lastName,
-    nickname: normalizeText(raw.nickname),
-    phone: normalizeText(raw.phone || raw.mobile || raw.telephone || raw.tel),
-    phone2: normalizeText(raw.phone2 || raw.mobile2),
-    email: normalizeText(raw.email || raw.emailAddress),
-    website: normalizeText(raw.website || raw.url),
-    company: normalizeText(raw.company || raw.organization || raw.org),
-    jobTitle: normalizeText(raw.jobTitle || raw.job_title || raw.title),
-    groupName: normalizeText(raw.groupName || raw.category || raw.group || raw.label) || "Other",
-    birthday: normalizeText(raw.birthday || raw.birthdate),
-    address: normalizeText(raw.address || raw.street || raw.streetAddress),
-    city: normalizeText(raw.city),
-    state: normalizeText(raw.state || raw.region),
-    postal: normalizeText(raw.postal || raw.postalCode || raw.zip),
-    country: normalizeText(raw.country),
-    notes: normalizeText(raw.notes || raw.note),
-    isFavorite: raw.isFavorite === true || raw.isFavorite === 1 ||
-      raw.favorite === true || raw.favorite === 1 || raw.favorite === "true",
-    createdAt: raw.createdAt || raw.created_at || new Date().toISOString(),
-    updatedAt: raw.updatedAt || raw.updated_at || new Date().toISOString()
-  };
+ const first=norm(raw.firstName||raw.first_name||raw.givenName||raw.given_name||raw.name);
+ return {
+  id:norm(raw.id)||uid(),
+  firstName:first||"Unnamed",
+  lastName:norm(raw.lastName||raw.last_name||raw.familyName||raw.family_name),
+  nickname:norm(raw.nickname),
+  phone:norm(raw.phone||raw.mobile||raw.telephone||raw.tel),
+  phone2:norm(raw.phone2||raw.mobile2),
+  email:norm(raw.email||raw.emailAddress),
+  company:norm(raw.company||raw.organization||raw.org),
+  jobTitle:norm(raw.jobTitle||raw.job_title||raw.title),
+  website:norm(raw.website||raw.url),
+  groupName:norm(raw.groupName||raw.category||raw.group||raw.label)||"Other",
+  birthday:norm(raw.birthday||raw.birthdate),
+  address:norm(raw.address||raw.street||raw.streetAddress),
+  city:norm(raw.city),
+  state:norm(raw.state||raw.region),
+  postal:norm(raw.postal||raw.postalCode||raw.zip),
+  country:norm(raw.country),
+  notes:norm(raw.notes||raw.note),
+  isFavorite:raw.isFavorite===true||raw.isFavorite===1||
+   raw.favorite===true||raw.favorite===1||raw.favorite==="true",
+  createdAt:raw.createdAt||raw.created_at||new Date().toISOString(),
+  updatedAt:raw.updatedAt||raw.updated_at||new Date().toISOString()
+ };
 }
 
+/* One source of truth for all categories. */
 function rebuildCategories(){
-  const set = new Set(DEFAULT_CATEGORIES);
-  categories.forEach(c=>{if(normalizeText(c))set.add(normalizeText(c));});
-  contacts.forEach(c=>{if(c.groupName)set.add(c.groupName);});
-  categories = [...set].sort((a,b)=>a.localeCompare(b));
+ const set=new Set(DEFAULT_CATEGORIES);
+ categories.forEach(c=>{c=norm(c);if(c)set.add(c)});
+ contacts.forEach(c=>{if(c.groupName)set.add(c.groupName)});
+ categories=[...set].sort((a,b)=>a.localeCompare(b));
 }
 
-/* -------------------- Tabs -------------------- */
+function saveData(){
+ rebuildCategories();
+ try{
+  localStorage.setItem(STORAGE_KEY,JSON.stringify({
+   version:3,contacts,categories
+  }));
+  refreshStorageInfo();
+  return true;
+ }catch(error){
+  notify("Storage error. Export a backup and free browser storage.");
+  return false;
+ }
+}
+
+function loadData(){
+ let raw=localStorage.getItem(STORAGE_KEY);
+ if(!raw){
+  for(const key of OLD_KEYS){
+   const old=localStorage.getItem(key);
+   if(old){raw=old;break}
+  }
+ }
+ if(raw){
+  try{
+   const parsed=JSON.parse(raw);
+   if(Array.isArray(parsed)){
+    contacts=parsed.map(normalizeContact);
+   }else{
+    contacts=Array.isArray(parsed.contacts)?parsed.contacts.map(normalizeContact):[];
+    if(Array.isArray(parsed.categories))categories=parsed.categories.map(norm).filter(Boolean);
+   }
+  }catch(e){
+   contacts=[];
+   categories=[...DEFAULT_CATEGORIES];
+   notify("Saved data could not be read. Restore a backup if available.");
+  }
+ }
+ rebuildCategories();
+ saveData();
+}
+
+/* =====================================================
+   TABS
+===================================================== */
 
 document.querySelectorAll(".tab").forEach(button=>{
-  button.addEventListener("click",()=>showTab(button.dataset.tab));
+ button.addEventListener("click",()=>showTab(button.dataset.tab));
 });
 
 function showTab(name){
-  document.querySelectorAll(".tab").forEach(b=>{
-    b.classList.toggle("active",b.dataset.tab===name);
-  });
-  document.querySelectorAll(".tab-content").forEach(section=>{
-    section.classList.toggle("active",section.id==="tab-"+name);
-  });
-  if(name==="categories"){
-    renderCategoryManager();
-    updateCategoryChart();
-  }
+ document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));
+ document.querySelectorAll(".tab-content").forEach(s=>s.classList.toggle("active",s.id==="tab-"+name));
+ if(name==="categories"){
+  renderCategoryManager();
+  updateCategoryChart();
+ }
 }
 
-/* -------------------- Contact form -------------------- */
+/* =====================================================
+   CENTRAL CATEGORY REFRESH
+   Every category dropdown is rebuilt from the same list.
+===================================================== */
 
-const formFields = [
-  "firstName","lastName","nickname","phone","phone2","email",
-  "website","company","jobTitle","groupName","birthday","address",
-  "city","state","postal","country","notes"
+function fillSelect(id,includeAll=false,preferred=""){
+ const el=$(id);
+ if(!el)return;
+ const old=preferred||el.value;
+ let html=includeAll?'<option value="">All categories</option>':"";
+ html+=categories.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join("");
+ el.innerHTML=html;
+ if(old&&categories.includes(old))el.value=old;
+}
+
+function refreshAllCategoryUI(){
+ rebuildCategories();
+ fillSelect("groupName",false,$("groupName").value||"Friends");
+ fillSelect("filterGroup",true,$("filterGroup").value);
+ fillSelect("bulkCategory",false,$("bulkCategory").value||categories[0]);
+ renderCategoryManager();
+}
+
+/* =====================================================
+   CONTACT FORM
+===================================================== */
+
+const fields=[
+ "firstName","lastName","nickname","phone","phone2","email",
+ "company","jobTitle","website","groupName","birthday","address",
+ "city","state","postal","country","notes"
 ];
 
 $("contactForm").addEventListener("submit",event=>{
-  event.preventDefault();
+ event.preventDefault();
+ const id=$("contactId").value;
+ const old=contacts.find(c=>c.id===id);
+ const item={};
+ fields.forEach(f=>item[f]=norm($(f).value));
+ item.id=id||uid();
+ item.groupName=item.groupName||"Other";
+ item.isFavorite=$("isFavorite").checked;
+ item.createdAt=old?.createdAt||new Date().toISOString();
+ item.updatedAt=new Date().toISOString();
 
-  const id = $("contactId").value;
-  const old = contacts.find(c=>c.id===id);
+ if(!item.firstName){notify("Please enter a first name.");return}
 
-  const item = {};
-  formFields.forEach(field=>item[field]=normalizeText($(field).value));
-  item.id = id || uid();
-  item.groupName = item.groupName || "Other";
-  item.isFavorite = $("isFavorite").checked;
-  item.createdAt = old?.createdAt || new Date().toISOString();
-  item.updatedAt = new Date().toISOString();
+ if(old)contacts=contacts.map(c=>c.id===id?normalizeContact(item):c);
+ else contacts.unshift(normalizeContact(item));
 
-  if(!item.firstName){
-    notify("Please enter a first name.");
-    return;
-  }
-
-  if(old){
-    contacts = contacts.map(c=>c.id===id?normalizeContact(item):c);
-  }else{
-    contacts.unshift(normalizeContact(item));
-  }
-
-  rebuildCategories();
-  saveContacts();
-  renderAll();
-  resetForm();
-  showTab("contacts");
-  notify(old?"Contact updated.":"Contact saved.");
+ if(!categories.includes(item.groupName))categories.push(item.groupName);
+ saveData();
+ selectedIds.delete(id);
+ resetForm();
+ renderAll();
+ showTab("contacts");
+ notify(old?"Contact updated.":"Contact saved.");
 });
 
 function resetForm(){
-  $("contactForm").reset();
-  $("contactId").value="";
-  $("country").value="India";
-  $("groupName").value="Friends";
-  $("formTitle").textContent="Add New Contact";
+ $("contactForm").reset();
+ $("contactId").value="";
+ $("country").value="India";
+ $("formTitle").textContent="Add Contact";
+ refreshAllCategoryUI();
+ if(categories.includes("Friends"))$("groupName").value="Friends";
 }
 
 $("resetForm").addEventListener("click",resetForm);
 
 function editContact(id){
-  const c = contacts.find(x=>x.id===id);
-  if(!c)return;
-  $("contactId").value=c.id;
-  formFields.forEach(field=>$(field).value=c[field] || "");
-  $("isFavorite").checked=!!c.isFavorite;
-  $("formTitle").textContent="Edit Contact";
-  showTab("add");
-  window.scrollTo({top:0,behavior:"smooth"});
+ const c=contacts.find(x=>x.id===id);
+ if(!c)return;
+ refreshAllCategoryUI();
+ $("contactId").value=c.id;
+ fields.forEach(f=>$(f).value=c[f]||"");
+ $("isFavorite").checked=!!c.isFavorite;
+ $("formTitle").textContent="Edit Contact";
+ showTab("add");
+ window.scrollTo({top:0,behavior:"smooth"});
 }
 
 function deleteContact(id){
-  const c=contacts.find(x=>x.id===id);
-  if(!c)return;
-  if(!confirm("Delete "+displayName(c)+"?"))return;
-  contacts=contacts.filter(x=>x.id!==id);
-  saveContacts();
-  renderAll();
-  notify("Contact deleted.");
+ const c=contacts.find(x=>x.id===id);
+ if(!c)return;
+ if(!confirm("Delete "+displayName(c)+"?"))return;
+ contacts=contacts.filter(x=>x.id!==id);
+ selectedIds.delete(id);
+ saveData();
+ renderAll();
+ notify("Contact deleted.");
 }
 
 function toggleFavorite(id){
-  const c=contacts.find(x=>x.id===id);
-  if(!c)return;
-  c.isFavorite=!c.isFavorite;
-  c.updatedAt=new Date().toISOString();
-  saveContacts();
-  renderAll();
+ const c=contacts.find(x=>x.id===id);
+ if(!c)return;
+ c.isFavorite=!c.isFavorite;
+ c.updatedAt=new Date().toISOString();
+ saveData();
+ renderAll();
 }
 
-function moveContactCategory(id,newCategory){
-  const c=contacts.find(x=>x.id===id);
-  if(!c)return;
-  newCategory=normalizeText(newCategory);
-  if(!newCategory)return;
-  c.groupName=newCategory;
-  c.updatedAt=new Date().toISOString();
-  rebuildCategories();
-  saveContacts();
-  renderAll();
-  notify("Category changed to "+newCategory+".");
+function moveContactCategory(id,category){
+ const c=contacts.find(x=>x.id===id);
+ category=norm(category);
+ if(!c||!category)return;
+ if(!categories.includes(category))categories.push(category);
+ c.groupName=category;
+ c.updatedAt=new Date().toISOString();
+ saveData();
+ refreshAllCategoryUI();
+ renderAll();
+ notify("Contact moved to "+category+".");
 }
 
-function displayName(c){
-  return [c.firstName,c.lastName].filter(Boolean).join(" ") || "Unnamed";
+/* =====================================================
+   CONTACT SEARCH, FILTER, SORT, RENDER
+===================================================== */
+
+function searchString(c){
+ return [c.firstName,c.lastName,c.nickname,c.phone,c.phone2,c.email,
+ c.company,c.jobTitle,c.groupName,c.address,c.city,c.state,c.postal,
+ c.country,c.notes].join(" ").toLowerCase();
 }
 
-function contactSearchString(c){
-  return [
-    c.firstName,c.lastName,c.nickname,c.phone,c.phone2,c.email,
-    c.company,c.jobTitle,c.groupName,c.address,c.city,c.state,
-    c.postal,c.country,c.notes
-  ].join(" ").toLowerCase();
+function getFilteredContacts(){
+ const query=$("search").value.trim().toLowerCase();
+ const group=$("filterGroup").value;
+ const favorites=$("favoritesOnly").checked;
+ let list=contacts.filter(c=>
+  (!query||searchString(c).includes(query))&&
+  (!group||c.groupName===group)&&
+  (!favorites||c.isFavorite)
+ );
+ const sort=$("sortBy").value;
+ list.sort((a,b)=>{
+  if(sort==="newest")return new Date(b.createdAt)-new Date(a.createdAt);
+  if(sort==="company")return (a.company||"").localeCompare(b.company||"");
+  if(sort==="category")return (a.groupName||"").localeCompare(b.groupName||"");
+  if(sort==="birthday")return (a.birthday||"9999").localeCompare(b.birthday||"9999");
+  return displayName(a).localeCompare(displayName(b));
+ });
+ return list;
 }
-
-/* -------------------- Rendering -------------------- */
 
 function renderContacts(){
-  const query=$("search").value.trim().toLowerCase();
-  const group=$("filterGroup").value;
-  const favOnly=$("favoritesOnly").checked;
-  let list=contacts.filter(c=>{
-    if(query && !contactSearchString(c).includes(query))return false;
-    if(group && c.groupName!==group)return false;
-    if(favOnly && !c.isFavorite)return false;
-    return true;
-  });
+ const list=getFilteredContacts();
+ $("shownCount").textContent=list.length;
+ const container=$("contactList");
 
-  const sort=$("sortBy").value;
-  list.sort((a,b)=>{
-    if(sort==="newest")return new Date(b.createdAt)-new Date(a.createdAt);
-    if(sort==="company")return (a.company||"").localeCompare(b.company||"");
-    if(sort==="category")return (a.groupName||"").localeCompare(b.groupName||"");
-    return displayName(a).localeCompare(displayName(b));
-  });
+ if(!list.length){
+  container.innerHTML='<div class="empty">No contacts found. Add a contact or change your search.</div>';
+ }else{
+  container.innerHTML=list.map(c=>{
+   const id=esc(c.id);
+   const categoryOptions=categories.map(cat=>
+    '<option value="'+esc(cat)+'"'+(cat===c.groupName?' selected':'')+'>'+esc(cat)+'</option>'
+   ).join("");
+   const checked=selectedIds.has(c.id)?"checked":"";
 
-  $("shownCount").textContent=list.length;
-  const container=$("contactList");
-
-  if(!list.length){
-    container.innerHTML='<div class="empty">No contacts found. Add a contact or change your filters.</div>';
-  }else{
-    container.innerHTML=list.map(c=>{
-      const id=escapeHTML(c.id);
-      const categoriesHTML=categories.map(cat=>
-        '<option value="'+escapeHTML(cat)+'"'+
-        (cat===c.groupName?' selected':'')+'>'+escapeHTML(cat)+'</option>'
-      ).join("");
-
-      return `
-      <article class="contact">
-        <div class="contact-top">
-          <div style="min-width:0">
-            <h3>${escapeHTML(displayName(c))}
-              ${c.isFavorite?'<span class="favorite">★</span>':''}
-            </h3>
-            ${c.nickname?'<p>Nickname: '+escapeHTML(c.nickname)+'</p>':''}
-          </div>
-          <span class="badge">${escapeHTML(c.groupName||"Other")}</span>
-        </div>
-        ${c.phone?'<p>📞 <a href="tel:'+escapeHTML(c.phone)+'">'+escapeHTML(c.phone)+'</a></p>':''}
-        ${c.phone2?'<p>📱 '+escapeHTML(c.phone2)+'</p>':''}
-        ${c.email?'<p>✉️ <a href="mailto:'+escapeHTML(c.email)+'">'+escapeHTML(c.email)+'</a></p>':''}
-        ${c.company?'<p>🏢 '+escapeHTML(c.company)+(c.jobTitle?' · '+escapeHTML(c.jobTitle):'')+'</p>':''}
-        ${c.address||c.city?'<p>📍 '+escapeHTML([c.address,c.city,c.state,c.postal,c.country].filter(Boolean).join(", "))+'</p>':''}
-        ${c.birthday?'<p>🎂 '+escapeHTML(c.birthday)+'</p>':''}
-        ${c.notes?'<p>📝 '+escapeHTML(c.notes)+'</p>':''}
-        <label for="cat-${id}">Move to category</label>
-        <select id="cat-${id}" onchange="moveContactCategory('${id}',this.value)">
-          ${categoriesHTML}
-        </select>
-        <div class="contact-actions">
-          <button class="btn" onclick="editContact('${id}')">Edit</button>
-          <button class="btn secondary" onclick="toggleFavorite('${id}')">${c.isFavorite?'★ Unfavorite':'☆ Favorite'}</button>
-          <button class="btn outline" onclick="exportOneVCF('${id}')">Export vCard</button>
-          <button class="btn danger" onclick="deleteContact('${id}')">Delete</button>
-        </div>
-      </article>`;
-    }).join("");
-  }
-
-  updateStats();
-  updateCategoryChart();
-}
-
-function updateStats(){
-  $("totalCount").textContent=contacts.length;
-  $("favoriteCount").textContent=contacts.filter(c=>c.isFavorite).length;
-  $("phoneCount").textContent=contacts.filter(c=>c.phone||c.phone2).length;
-
-  const used=new Set(contacts.map(c=>c.groupName||"Other"));
-  $("categoryCount").textContent=used.size;
-
-  rebuildCategories();
-
-  const selected=$("filterGroup").value;
-  $("filterGroup").innerHTML='<option value="">All categories</option>'+
-    categories.map(c=>'<option value="'+escapeHTML(c)+'">'+escapeHTML(c)+'</option>').join("");
-  if(categories.includes(selected))$("filterGroup").value=selected;
-
-  $("categorySuggestions").innerHTML=categories.map(c=>
-    '<option value="'+escapeHTML(c)+'"></option>'
-  ).join("");
-
-  refreshStorageInfo();
-}
-
-function renderCategoryManager(){
-  rebuildCategories();
-  const counts={};
-  contacts.forEach(c=>{
-    const cat=c.groupName||"Other";
-    counts[cat]=(counts[cat]||0)+1;
-  });
-
-  $("categoryManager").innerHTML=categories.map(cat=>`
-    <div class="summary-row">
-      <span>${escapeHTML(cat)} <span class="muted">(${counts[cat]||0})</span></span>
-      <button class="btn outline" style="margin:0" onclick="renameCategoryPrompt('${escapeHTML(cat).replace(/'/g,"&#39;")}')">Rename</button>
+   return `
+   <article class="contact">
+    <div class="contact-head">
+     <div style="min-width:0">
+      <label style="display:flex;align-items:center;gap:7px;margin:0 0 6px">
+       <input type="checkbox" ${checked} onchange="toggleSelected('${id}',this.checked)">
+       Select
+      </label>
+      <h3>${esc(displayName(c))} ${c.isFavorite?'<span style="color:#e2a900">★</span>':""}</h3>
+      ${c.nickname?'<p>Nickname: '+esc(c.nickname)+'</p>':""}
+     </div>
+     <span class="badge">${esc(c.groupName)}</span>
     </div>
-  `).join("");
+    ${c.phone?'<p>📞 <a href="tel:'+esc(c.phone)+'">'+esc(c.phone)+'</a></p>':""}
+    ${c.phone2?'<p>📱 '+esc(c.phone2)+'</p>':""}
+    ${c.email?'<p>✉️ <a href="mailto:'+esc(c.email)+'">'+esc(c.email)+'</a></p>':""}
+    ${c.company?'<p>🏢 '+esc(c.company)+(c.jobTitle?' · '+esc(c.jobTitle):"")+'</p>':""}
+    ${c.website?'<p>🌐 <a href="'+esc(c.website)+'" target="_blank" rel="noopener">Website</a></p>':""}
+    ${c.birthday?'<p>🎂 '+esc(c.birthday)+'</p>':""}
+    ${c.address||c.city?'<p>📍 '+esc([c.address,c.city,c.state,c.postal,c.country].filter(Boolean).join(", "))+'</p>':""}
+    ${c.notes?'<p>📝 '+esc(c.notes)+'</p>':""}
+    <label for="move-${id}">Move to category</label>
+    <select id="move-${id}" onchange="moveContactCategory('${id}',this.value)">${categoryOptions}</select>
+    <div class="contact-actions">
+     <button class="btn small" onclick="editContact('${id}')">Edit</button>
+     <button class="btn secondary small" onclick="toggleFavorite('${id}')">${c.isFavorite?"Unfavorite":"★ Favorite"}</button>
+     <button class="btn outline small" onclick="exportOneVCF('${id}')">vCard</button>
+     <button class="btn danger small" onclick="deleteContact('${id}')">Delete</button>
+    </div>
+   </article>`;
+  }).join("");
+ }
+
+ updateStats();
+ updateSelectionInfo();
+ updateCategoryChart();
 }
 
-function renameCategoryPrompt(oldName){
-  const newName=normalizeText(prompt("Rename category:",oldName));
-  if(!newName||newName===oldName)return;
-
-  if(categories.some(c=>c.toLowerCase()===newName.toLowerCase())){
-    if(!confirm("That category already exists. Move its contacts into it?"))return;
-  }
-
-  contacts.forEach(c=>{
-    if(c.groupName===oldName){
-      c.groupName=newName;
-      c.updatedAt=new Date().toISOString();
-    }
-  });
-
-  categories=categories.filter(c=>c!==oldName);
-  categories.push(newName);
-  rebuildCategories();
-  saveContacts();
-  renderAll();
-  renderCategoryManager();
-  notify("Category updated.");
+function toggleSelected(id,on){
+ if(on)selectedIds.add(id);else selectedIds.delete(id);
+ updateSelectionInfo();
 }
 
-$("addCategoryBtn").addEventListener("click",()=>{
-  const name=normalizeText($("newCategory").value);
-  if(!name){notify("Enter a category name.");return;}
-  if(categories.some(c=>c.toLowerCase()===name.toLowerCase())){
-    notify("That category already exists.");return;
-  }
-  categories.push(name);
-  rebuildCategories();
-  $("newCategory").value="";
-  updateStats();
-  renderCategoryManager();
-  notify("Category added. You can now assign it to contacts.");
+function updateSelectionInfo(){
+ selectedIds=new Set([...selectedIds].filter(id=>contacts.some(c=>c.id===id)));
+ $("selectedCount").textContent=selectedIds.size+" selected";
+}
+
+$("selectVisible").addEventListener("click",()=>{
+ getFilteredContacts().forEach(c=>selectedIds.add(c.id));
+ renderContacts();
 });
 
-function renderAll(){
-  renderContacts();
-  renderCategoryManager();
+$("clearSelection").addEventListener("click",()=>{
+ selectedIds.clear();
+ renderContacts();
+});
+
+$("applyBulk").addEventListener("click",()=>{
+ const cat=$("bulkCategory").value;
+ if(!selectedIds.size){notify("Select at least one contact.");return}
+ if(!cat){notify("Choose a category.");return}
+ contacts.forEach(c=>{
+  if(selectedIds.has(c.id)){
+   c.groupName=cat;
+   c.updatedAt=new Date().toISOString();
+  }
+ });
+ saveData();
+ renderAll();
+ notify("Moved "+selectedIds.size+" contacts to "+cat+".");
+});
+
+function updateStats(){
+ $("totalCount").textContent=contacts.length;
+ $("favoriteCount").textContent=contacts.filter(c=>c.isFavorite).length;
+ $("phoneCount").textContent=contacts.filter(c=>c.phone||c.phone2).length;
+ $("categoryCount").textContent=new Set(contacts.map(c=>c.groupName)).size;
+ refreshStorageInfo();
 }
 
 ["search","filterGroup","sortBy","favoritesOnly"].forEach(id=>{
-  $(id).addEventListener("input",renderContacts);
-  $(id).addEventListener("change",renderContacts);
+ $(id).addEventListener("input",renderContacts);
+ $(id).addEventListener("change",renderContacts);
 });
 
-/* -------------------- Category chart -------------------- */
+/* =====================================================
+   CATEGORY MANAGER
+===================================================== */
 
-function updateCategoryChart(){
-  const canvas=$("categoryChart");
-  if(!canvas || typeof Chart==="undefined")return;
+$("addCategoryBtn").addEventListener("click",()=>{
+ const name=norm($("newCategory").value);
+ if(!name){notify("Enter a category name.");return}
+ if(categories.some(c=>c.toLowerCase()===name.toLowerCase())){
+  notify("That category already exists.");return;
+ }
+ categories.push(name);
+ saveData();
+ $("newCategory").value="";
+ refreshAllCategoryUI();
+ renderAll();
+ notify("Category added.");
+});
 
-  const counts={};
-  contacts.forEach(c=>{
-    const cat=c.groupName||"Other";
-    counts[cat]=(counts[cat]||0)+1;
-  });
-
-  const used=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]||a.localeCompare(b));
-  const labels=used.length?used:["No contacts"];
-  const values=used.length?used.map(c=>counts[c]):[0];
-
-  if(categoryChartInstance)categoryChartInstance.destroy();
-
-  categoryChartInstance=new Chart(canvas,{
-    type:"bar",
-    data:{
-      labels,
-      datasets:[{
-        label:"Number of contacts",
-        data:values,
-        borderWidth:1,
-        backgroundColor:labels.map((_,i)=>`hsl(${(i*47+135)%360} 55% 55% / 0.75)`),
-        borderColor:labels.map((_,i)=>`hsl(${(i*47+135)%360} 55% 35%)`)
-      }]
-    },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      indexAxis:used.length>5?"y":"x",
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{label:context=>"Contacts: "+context.raw}}
-      },
-      scales:{
-        x:{beginAtZero:true,ticks:{precision:0}},
-        y:{beginAtZero:true,ticks:{precision:0}}
-      },
-      onClick:(event,elements)=>{
-        if(!elements.length||!used.length)return;
-        const category=used[elements[0].index];
-        $("filterGroup").value=category;
-        $("favoritesOnly").checked=false;
-        $("search").value="";
-        renderContacts();
-        showTab("contacts");
-      }
-    }
-  });
-
-  $("categorySummary").innerHTML=used.length
-    ?used.map(cat=>`<div class="summary-row"><span>${escapeHTML(cat)}</span><strong>${counts[cat]}</strong></div>`).join("")
-    :'<p class="muted">No contacts yet. Add contacts to see category counts.</p>';
+function renderCategoryManager(){
+ const counts={};
+ contacts.forEach(c=>counts[c.groupName]=(counts[c.groupName]||0)+1);
+ $("categoryManager").innerHTML=categories.map((cat,i)=>`
+  <div class="summary-row">
+   <span><strong>${esc(cat)}</strong><br><span class="muted">${counts[cat]||0} contacts</span></span>
+   <span>
+    <button class="btn outline small" onclick="renameCategory(${i})">Rename</button>
+    <button class="btn secondary small" onclick="mergeCategory(${i})">Merge</button>
+    <button class="btn danger small" onclick="deleteCategory(${i})">Delete</button>
+   </span>
+  </div>`).join("");
 }
 
-/* -------------------- CSV utilities -------------------- */
+function renameCategory(index){
+ const old=categories[index];
+ if(!old)return;
+ const name=norm(prompt("Rename category:",old));
+ if(!name||name===old)return;
+ const existing=categories.find(c=>c.toLowerCase()===name.toLowerCase());
+ if(existing&&existing!==old){
+  if(!confirm("Category already exists. Merge contacts into "+existing+"?"))return;
+  contacts.forEach(c=>{if(c.groupName===old)c.groupName=existing});
+  categories=categories.filter(c=>c!==old);
+ }else{
+  contacts.forEach(c=>{if(c.groupName===old)c.groupName=name});
+  categories=categories.map(c=>c===old?name:c);
+ }
+ saveData();
+ refreshAllCategoryUI();
+ renderAll();
+ notify("Category renamed.");
+}
 
-function csvEscape(value){
-  let s=String(value??"");
-  if(/^[=+\-@]/.test(s))s="'"+s;
-  return '"'+s.replace(/"/g,'""')+'"';
+function mergeCategory(index){
+ const source=categories[index];
+ if(!source)return;
+ const targets=categories.filter(c=>c!==source);
+ if(!targets.length){notify("Create another category first.");return}
+ const target=prompt("Merge "+source+" into which category?\n\n"+targets.join(", "),targets[0]);
+ if(!target||!targets.includes(target))return;
+ contacts.forEach(c=>{if(c.groupName===source)c.groupName=target});
+ categories=categories.filter(c=>c!==source);
+ saveData();
+ refreshAllCategoryUI();
+ renderAll();
+ notify("Categories merged.");
+}
+
+function deleteCategory(index){
+ const cat=categories[index];
+ if(!cat)return;
+ if(DEFAULT_CATEGORIES.includes(cat)){
+  notify("Default categories cannot be deleted. Rename or merge them instead.");
+  return;
+ }
+ const used=contacts.filter(c=>c.groupName===cat).length;
+ if(!confirm('Delete "'+cat+'"? '+used+' contacts will move to "Other".'))return;
+ contacts.forEach(c=>{
+  if(c.groupName===cat)c.groupName="Other";
+ });
+ categories=categories.filter(c=>c!==cat);
+ saveData();
+ refreshAllCategoryUI();
+ renderAll();
+ notify("Category deleted.");
+}
+
+/* =====================================================
+   CATEGORY CHART
+===================================================== */
+
+function updateCategoryChart(){
+ const canvas=$("categoryChart");
+ if(!canvas||typeof Chart==="undefined")return;
+
+ const counts={};
+ contacts.forEach(c=>{
+  const cat=c.groupName||"Other";
+  counts[cat]=(counts[cat]||0)+1;
+ });
+ const used=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]||a.localeCompare(b));
+ const labels=used.length?used:["No contacts"];
+ const values=used.length?used.map(c=>counts[c]):[0];
+
+ if(categoryChartInstance)categoryChartInstance.destroy();
+
+ categoryChartInstance=new Chart(canvas,{
+  type:"bar",
+  data:{
+   labels,
+   datasets:[{
+    label:"Contacts",
+    data:values,
+    backgroundColor:labels.map((_,i)=>`hsl(${(i*43+130)%360} 48% 56% / .8)`),
+    borderColor:labels.map((_,i)=>`hsl(${(i*43+130)%360} 48% 36%)`),
+    borderWidth:1
+   }]
+  },
+  options:{
+   responsive:true,maintainAspectRatio:false,
+   indexAxis:used.length>5?"y":"x",
+   plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>"Contacts: "+c.raw}}},
+   scales:{x:{beginAtZero:true,ticks:{precision:0}},y:{beginAtZero:true,ticks:{precision:0}}},
+   onClick:(event,elements)=>{
+    if(!elements.length||!used.length)return;
+    $("search").value="";
+    $("favoritesOnly").checked=false;
+    $("filterGroup").value=used[elements[0].index];
+    renderContacts();
+    showTab("contacts");
+   }
+  }
+ });
+
+ $("categorySummary").innerHTML=used.length
+  ?used.map(cat=>`<div class="summary-row"><span>${esc(cat)}</span><strong>${counts[cat]}</strong></div>`).join("")
+  :'<p class="muted">No contacts yet. Add contacts to display category counts.</p>';
+}
+
+/* =====================================================
+   CSV IMPORT / EXPORT
+===================================================== */
+
+function csvEscape(v){
+ let s=String(v??"");
+ if(/^[=+\-@]/.test(s))s="'"+s;
+ return '"'+s.replace(/"/g,'""')+'"';
 }
 
 function parseCSV(text){
-  const rows=[];
-  let row=[],cell="",quoted=false;
-  text=text.replace(/^\uFEFF/,"");
-
-  for(let i=0;i<text.length;i++){
-    const ch=text[i];
-    if(quoted){
-      if(ch==='"'&&text[i+1]==='"'){cell+='"';i++;}
-      else if(ch==='"')quoted=false;
-      else cell+=ch;
-    }else{
-      if(ch==='"')quoted=true;
-      else if(ch===","){row.push(cell);cell="";}
-      else if(ch==="\n"){row.push(cell);rows.push(row);row=[];cell="";}
-      else if(ch!=="\r")cell+=ch;
-    }
+ const rows=[];let row=[],cell="",quoted=false;
+ text=text.replace(/^\uFEFF/,"");
+ for(let i=0;i<text.length;i++){
+  const ch=text[i];
+  if(quoted){
+   if(ch==='"'&&text[i+1]==='"'){cell+='"';i++}
+   else if(ch==='"')quoted=false;
+   else cell+=ch;
+  }else{
+   if(ch==='"')quoted=true;
+   else if(ch===","){row.push(cell);cell=""}
+   else if(ch==="\n"){row.push(cell);rows.push(row);row=[];cell=""}
+   else if(ch!=="\r")cell+=ch;
   }
-  row.push(cell);
-  if(row.some(v=>v!==""))rows.push(row);
-  if(!rows.length)return [];
+ }
+ row.push(cell);
+ if(row.some(v=>v!==""))rows.push(row);
+ if(!rows.length)return [];
 
-  const headers=rows.shift().map(h=>h.trim().toLowerCase().replace(/[^a-z0-9]/g,""));
-  const aliases={
-    firstname:"firstName",givenname:"firstName",name:"firstName",
-    lastname:"lastName",familyname:"lastName",
-    nickname:"nickname",phone:"phone",mobile:"phone",telephone:"phone",
-    phone2:"phone2",email:"email",emailaddress:"email",website:"website",
-    url:"website",company:"company",organization:"company",org:"company",
-    jobtitle:"jobTitle",title:"jobTitle",category:"groupName",group:"groupName",
-    groupname:"groupName",birthday:"birthday",birthdate:"birthday",
-    address:"address",street:"address",city:"city",state:"state",
-    region:"state",postal:"postal",postalcode:"postal",zip:"postal",
-    country:"country",notes:"notes",note:"notes",favorite:"isFavorite",
-    isfavorite:"isFavorite"
-  };
-
-  return rows.map(values=>{
-    const obj={};
-    headers.forEach((h,i)=>{
-      const key=aliases[h]||h;
-      if(values[i]!==undefined)obj[key]=values[i];
-    });
-    return normalizeContact(obj);
-  }).filter(c=>c.firstName!=="Unnamed"||c.phone||c.email);
+ const aliases={
+  firstname:"firstName",givenname:"firstName",name:"firstName",
+  lastname:"lastName",familyname:"lastName",nickname:"nickname",
+  phone:"phone",mobile:"phone",telephone:"phone",phone2:"phone2",
+  email:"email",emailaddress:"email",company:"company",organization:"company",
+  org:"company",jobtitle:"jobTitle",title:"jobTitle",website:"website",
+  url:"website",category:"groupName",group:"groupName",groupname:"groupName",
+  birthday:"birthday",birthdate:"birthday",address:"address",street:"address",
+  city:"city",state:"state",region:"state",postal:"postal",postalcode:"postal",
+  zip:"postal",country:"country",notes:"notes",note:"notes",
+  favorite:"isFavorite",isfavorite:"isFavorite"
+ };
+ const headers=rows.shift().map(h=>h.trim().toLowerCase().replace(/[^a-z0-9]/g,""));
+ return rows.map(values=>{
+  const obj={};
+  headers.forEach((h,i)=>{if(aliases[h])obj[aliases[h]]=values[i]});
+  return normalizeContact(obj);
+ }).filter(c=>c.firstName!=="Unnamed"||c.phone||c.email);
 }
 
-/* -------------------- vCard import/export -------------------- */
+/* =====================================================
+   VCARD IMPORT / EXPORT
+===================================================== */
 
-function vcardEscape(value){
-  return String(value??"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n")
-    .replace(/,/g,"\\,").replace(/;/g,"\\;");
+function vEsc(v){
+ return String(v??"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;");
+}
+function vUnesc(v){
+ return String(v??"").replace(/\\n/gi,"\n").replace(/\\,/g,",").replace(/\\;/g,";").replace(/\\\\/g,"\\");
 }
 
-function vcardUnescape(value){
-  return String(value??"").replace(/\\n/gi,"\n").replace(/\\,/g,",")
-    .replace(/\\;/g,";").replace(/\\\\/g,"\\");
-}
-
-function parseVCard(text){
-  text=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n")
-    .replace(/\n[ \t]/g,"");
-
-  const cards=text.split(/BEGIN:VCARD/i).slice(1);
-  const result=[];
-
-  cards.forEach(card=>{
-    const block=card.split(/END:VCARD/i)[0];
-    const obj={};
-    block.split("\n").forEach(line=>{
-      const colon=line.indexOf(":");
-      if(colon<0)return;
-      const rawKey=line.slice(0,colon).split(";")[0].toUpperCase();
-      const value=vcardUnescape(line.slice(colon+1));
-
-      if(rawKey==="FN")obj.firstName=value;
-      if(rawKey==="N"){
-        const parts=value.split(";");
-        obj.lastName=parts[0]||"";
-        obj.firstName=parts[1]||obj.firstName||"Unnamed";
-      }
-      if(rawKey==="TEL"){
-        if(!obj.phone)obj.phone=value;
-        else if(!obj.phone2)obj.phone2=value;
-      }
-      if(rawKey==="EMAIL")obj.email=value;
-      if(rawKey==="ORG")obj.company=value.replace(/;/g," ");
-      if(rawKey==="TITLE")obj.jobTitle=value;
-      if(rawKey==="URL")obj.website=value;
-      if(rawKey==="BDAY")obj.birthday=value;
-      if(rawKey==="NOTE")obj.notes=value;
-      if(rawKey==="ADR"){
-        const p=value.split(";");
-        obj.address=p[2]||p[1]||"";
-        obj.city=p[3]||"";
-        obj.state=p[4]||"";
-        obj.postal=p[5]||"";
-        obj.country=p[6]||"";
-      }
-      if(rawKey==="CATEGORIES"||rawKey==="X-ABLABEL")obj.groupName=value.split(",")[0];
-    });
-
-    if(obj.firstName||obj.phone||obj.email)result.push(normalizeContact(obj));
+function parseVCF(text){
+ text=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").replace(/\n[ \t]/g,"");
+ return text.split(/BEGIN:VCARD/i).slice(1).map(block=>{
+  const card=block.split(/END:VCARD/i)[0],o={};
+  card.split("\n").forEach(line=>{
+   const i=line.indexOf(":");if(i<0)return;
+   const key=line.slice(0,i).split(";")[0].toUpperCase();
+   const value=vUnesc(line.slice(i+1));
+   if(key==="FN")o.firstName=value;
+   if(key==="N"){
+    const p=value.split(";");
+    o.lastName=p[0]||"";
+    o.firstName=p[1]||o.firstName||"Unnamed";
+   }
+   if(key==="TEL"){if(!o.phone)o.phone=value;else if(!o.phone2)o.phone2=value}
+   if(key==="EMAIL")o.email=value;
+   if(key==="ORG")o.company=value.replace(/;/g," ");
+   if(key==="TITLE")o.jobTitle=value;
+   if(key==="URL")o.website=value;
+   if(key==="BDAY")o.birthday=value;
+   if(key==="NOTE")o.notes=value;
+   if(key==="CATEGORIES")o.groupName=value.split(",")[0];
+   if(key==="ADR"){
+    const p=value.split(";");
+    o.address=p[2]||"";o.city=p[3]||"";o.state=p[4]||"";
+    o.postal=p[5]||"";o.country=p[6]||"";
+   }
   });
-
-  return result;
+  return normalizeContact(o);
+ }).filter(c=>c.firstName!=="Unnamed"||c.phone||c.email);
 }
 
-function contactToVCard(c){
-  const lines=[
-    "BEGIN:VCARD",
-    "VERSION:3.0",
-    "N:"+vcardEscape(c.lastName)+";"+vcardEscape(c.firstName)+";;;",
-    "FN:"+vcardEscape(displayName(c))
-  ];
-  if(c.nickname)lines.push("NICKNAME:"+vcardEscape(c.nickname));
-  if(c.phone)lines.push("TEL;TYPE=CELL:"+vcardEscape(c.phone));
-  if(c.phone2)lines.push("TEL;TYPE=VOICE:"+vcardEscape(c.phone2));
-  if(c.email)lines.push("EMAIL;TYPE=INTERNET:"+vcardEscape(c.email));
-  if(c.company)lines.push("ORG:"+vcardEscape(c.company));
-  if(c.jobTitle)lines.push("TITLE:"+vcardEscape(c.jobTitle));
-  if(c.website)lines.push("URL:"+vcardEscape(c.website));
-  if(c.birthday)lines.push("BDAY:"+vcardEscape(c.birthday));
-  if(c.address||c.city||c.state||c.postal||c.country){
-    lines.push("ADR;TYPE=HOME:;;"+vcardEscape(c.address)+";"+
-      vcardEscape(c.city)+";"+vcardEscape(c.state)+";"+
-      vcardEscape(c.postal)+";"+vcardEscape(c.country));
-  }
-  if(c.notes)lines.push("NOTE:"+vcardEscape(c.notes));
-  if(c.groupName)lines.push("CATEGORIES:"+vcardEscape(c.groupName));
-  lines.push("END:VCARD");
-  return lines.join("\r\n");
+function toVCF(c){
+ const lines=[
+  "BEGIN:VCARD","VERSION:3.0",
+  "N:"+vEsc(c.lastName)+";"+vEsc(c.firstName)+";;;",
+  "FN:"+vEsc(displayName(c))
+ ];
+ if(c.nickname)lines.push("NICKNAME:"+vEsc(c.nickname));
+ if(c.phone)lines.push("TEL;TYPE=CELL:"+vEsc(c.phone));
+ if(c.phone2)lines.push("TEL;TYPE=VOICE:"+vEsc(c.phone2));
+ if(c.email)lines.push("EMAIL;TYPE=INTERNET:"+vEsc(c.email));
+ if(c.company)lines.push("ORG:"+vEsc(c.company));
+ if(c.jobTitle)lines.push("TITLE:"+vEsc(c.jobTitle));
+ if(c.website)lines.push("URL:"+vEsc(c.website));
+ if(c.birthday)lines.push("BDAY:"+vEsc(c.birthday));
+ if(c.address||c.city||c.state||c.postal||c.country)
+  lines.push("ADR;TYPE=HOME:;;"+vEsc(c.address)+";"+vEsc(c.city)+";"+vEsc(c.state)+";"+vEsc(c.postal)+";"+vEsc(c.country));
+ if(c.notes)lines.push("NOTE:"+vEsc(c.notes));
+ if(c.groupName)lines.push("CATEGORIES:"+vEsc(c.groupName));
+ lines.push("END:VCARD");
+ return lines.join("\r\n");
 }
 
-/* -------------------- Download helpers -------------------- */
-
-function downloadBlob(content,mime,filename){
-  const blob=content instanceof Blob?content:new Blob([content],{type:mime});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;a.download=filename;
-  document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),1500);
-}
-
-function exportSet(){
-  if($("exportScope").value==="all")return contacts;
-  const query=$("search").value.trim().toLowerCase();
-  const group=$("filterGroup").value;
-  const favOnly=$("favoritesOnly").checked;
-  return contacts.filter(c=>
-    (!query||contactSearchString(c).includes(query))&&
-    (!group||c.groupName===group)&&
-    (!favOnly||c.isFavorite)
-  );
-}
-
-$("exportCSV").addEventListener("click",()=>{
-  const list=exportSet();
-  const fields=[
-    "firstName","lastName","nickname","phone","phone2","email",
-    "website","company","jobTitle","groupName","birthday","address",
-    "city","state","postal","country","notes","isFavorite"
-  ];
-  const rows=[fields.join(",")];
-  list.forEach(c=>rows.push(fields.map(f=>csvEscape(c[f])).join(",")));
-  downloadBlob("\uFEFF"+rows.join("\r\n"),"text/csv;charset=utf-8","contacts.csv");
-});
-
-$("exportJSON").addEventListener("click",()=>{
-  downloadBlob(JSON.stringify(exportSet(),null,2),"application/json","contacts.json");
-});
-
-$("exportVCF").addEventListener("click",()=>{
-  downloadBlob(exportSet().map(contactToVCard).join("\r\n"),
-    "text/vcard;charset=utf-8","contacts.vcf");
-});
-
-function exportOneVCF(id){
-  const c=contacts.find(x=>x.id===id);
-  if(c)downloadBlob(contactToVCard(c),"text/vcard;charset=utf-8",
-    (displayName(c).replace(/[^a-z0-9_-]/gi,"_")||"contact")+".vcf");
-}
-
-/* -------------------- SQLite import/export -------------------- */
+/* =====================================================
+   SQLITE
+===================================================== */
 
 async function getSQL(){
-  if(sqlPromise)return sqlPromise;
-  if(typeof initSqlJs!=="function")throw new Error("SQL.js library failed to load.");
-  sqlPromise=initSqlJs({
-    locateFile:file=>"https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/"+file
-  });
-  return sqlPromise;
+ if(sqlPromise)return sqlPromise;
+ if(typeof initSqlJs!=="function")throw new Error("SQL.js did not load. Check your internet connection.");
+ sqlPromise=initSqlJs({
+  locateFile:file=>"https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/"+file
+ });
+ return sqlPromise;
+}
+
+async function parseSQLite(bytes){
+ const SQL=await getSQL();
+ const db=new SQL.Database(bytes);
+ try{
+  const t=db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+  if(!t.length||!t[0].values.length)return [];
+  const names=t[0].values.map(r=>r[0]);
+  const table=names.find(n=>n.toLowerCase()==="contacts")||names.find(n=>/contact|person|people/i.test(n))||names[0];
+  const safe=table.replace(/"/g,'""');
+  const result=db.exec('SELECT * FROM "'+safe+'"');
+  if(!result.length)return [];
+  return result[0].values.map(row=>{
+   const o={};
+   result[0].columns.forEach((col,i)=>o[col]=row[i]);
+   return normalizeContact(o);
+  }).filter(c=>c.firstName!=="Unnamed"||c.phone||c.email);
+ }finally{db.close()}
 }
 
 $("exportSQLite").addEventListener("click",async()=>{
-  try{
-    const SQL=await getSQL();
-    const db=new SQL.Database();
-
-    db.run(`CREATE TABLE contacts (
-      id TEXT PRIMARY KEY,
-      firstName TEXT,lastName TEXT,nickname TEXT,
-      phone TEXT,phone2 TEXT,email TEXT,website TEXT,
-      company TEXT,jobTitle TEXT,groupName TEXT,birthday TEXT,
-      address TEXT,city TEXT,state TEXT,postal TEXT,country TEXT,
-      notes TEXT,isFavorite INTEGER,createdAt TEXT,updatedAt TEXT
-    )`);
-
-    const stmt=db.prepare(`INSERT INTO contacts VALUES (
-      $id,$firstName,$lastName,$nickname,$phone,$phone2,$email,$website,
-      $company,$jobTitle,$groupName,$birthday,$address,$city,$state,
-      $postal,$country,$notes,$isFavorite,$createdAt,$updatedAt
-    )`);
-
-    contacts.forEach(c=>{
-      const data={...c,isFavorite:c.isFavorite?1:0};
-      stmt.run(Object.fromEntries(Object.entries(data).map(([k,v])=>["$"+k,v??""])));
-    });
-
-    stmt.free();
-    const bytes=db.export();
-    downloadBlob(new Blob([bytes],{type:"application/x-sqlite3"}),"application/x-sqlite3","contacts.sqlite");
-    db.close();
-    notify("SQLite database exported.");
-  }catch(error){
-    notify("SQLite export failed: "+error.message);
-  }
+ try{
+  const SQL=await getSQL(),db=new SQL.Database();
+  db.run(`CREATE TABLE contacts(
+   id TEXT PRIMARY KEY,firstName TEXT,lastName TEXT,nickname TEXT,
+   phone TEXT,phone2 TEXT,email TEXT,company TEXT,jobTitle TEXT,
+   website TEXT,groupName TEXT,birthday TEXT,address TEXT,city TEXT,
+   state TEXT,postal TEXT,country TEXT,notes TEXT,isFavorite INTEGER,
+   createdAt TEXT,updatedAt TEXT
+  )`);
+  const cols=["id","firstName","lastName","nickname","phone","phone2","email","company","jobTitle","website","groupName","birthday","address","city","state","postal","country","notes","isFavorite","createdAt","updatedAt"];
+  const stmt=db.prepare("INSERT INTO contacts VALUES("+cols.map(()=>"?").join(",")+")");
+  getExportContacts().forEach(c=>stmt.run(cols.map(k=>k==="isFavorite"?(c[k]?1:0):(c[k]??""))));
+  stmt.free();
+  const bytes=db.export();db.close();
+  download(new Blob([bytes],{type:"application/x-sqlite3"}),"contacts.sqlite");
+ }catch(e){notify("SQLite export failed: "+e.message)}
 });
 
-function sqliteRowsToContacts(bytes,SQL){
-  const db=new SQL.Database(bytes);
-  try{
-    const tables=db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
-    if(!tables.length||!tables[0].values.length)return [];
-    const names=tables[0].values.map(row=>row[0]);
-    const preferred=names.find(n=>n.toLowerCase()==="contacts")||
-      names.find(n=>/contact|person|people|addressbook/i.test(n))||names[0];
+/* =====================================================
+   DOWNLOAD AND EXPORT HELPERS
+===================================================== */
 
-    const escaped=preferred.replace(/"/g,'""');
-    const data=db.exec('SELECT * FROM "'+escaped+'"');
-    if(!data.length)return [];
-
-    const cols=data[0].columns;
-    return data[0].values.map(row=>{
-      const obj={};
-      cols.forEach((col,i)=>obj[col]=row[i]);
-      return normalizeContact(obj);
-    }).filter(c=>c.firstName!=="Unnamed"||c.phone||c.email);
-  }finally{
-    db.close();
-  }
+function download(blobOrText,filename,mime="application/octet-stream"){
+ const blob=blobOrText instanceof Blob?blobOrText:new Blob([blobOrText],{type:mime});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1500);
 }
 
-/* -------------------- Import preview -------------------- */
+function getExportContacts(){
+ const scope=$("exportScope").value;
+ if(scope==="selected")return contacts.filter(c=>selectedIds.has(c.id));
+ if(scope==="filtered")return getFilteredContacts();
+ return contacts.slice();
+}
 
-$("previewImport").addEventListener("click",async()=>{
-  const file=$("importFile").files[0];
-  if(!file){notify("Select a file first.");return;}
+const exportFields=["firstName","lastName","nickname","phone","phone2","email","company","jobTitle","website","groupName","birthday","address","city","state","postal","country","notes","isFavorite"];
 
-  try{
-    let parsed=[];
-    const ext=file.name.split(".").pop().toLowerCase();
-
-    if(["db","sqlite","sqlite3"].includes(ext)){
-      const SQL=await getSQL();
-      parsed=sqliteRowsToContacts(new Uint8Array(await file.arrayBuffer()),SQL);
-    }else{
-      const text=await file.text();
-      if(["vcf","vcard"].includes(ext))parsed=parseVCard(text);
-      else if(ext==="csv")parsed=parseCSV(text);
-      else if(ext==="json"){
-        let data=JSON.parse(text);
-        if(!Array.isArray(data))data=data.contacts||data.data||data.items||[];
-        if(!Array.isArray(data))throw new Error("JSON must contain a contact array.");
-        parsed=data.map(normalizeContact).filter(c=>c.firstName!=="Unnamed"||c.phone||c.email);
-      }else{
-        throw new Error("Unsupported file type.");
-      }
-    }
-
-    pendingImport=parsed;
-    const existingKeys=new Set(contacts.map(duplicateKey));
-    const duplicates=parsed.filter(c=>existingKeys.has(duplicateKey(c))).length;
-    $("importPreview").innerHTML=
-      "<p>Detected contacts: <strong>"+parsed.length+"</strong></p>"+
-      "<p>Likely duplicates against existing contacts: <strong>"+duplicates+"</strong></p>"+
-      "<p>Contacts without a name, phone or email are excluded where possible.</p>"+
-      (parsed.length?'<p>Sample: '+escapeHTML(parsed.slice(0,3).map(displayName).join(", "))+'</p>':"");
-    $("importAll").disabled=!parsed.length;
-    $("cancelImport").disabled=false;
-    notify("Import preview ready.");
-  }catch(error){
-    pendingImport=[];
-    $("importPreview").textContent="Import error: "+error.message;
-    $("importAll").disabled=true;
-    $("cancelImport").disabled=true;
-  }
+$("exportCSV").addEventListener("click",()=>{
+ const list=getExportContacts();
+ const rows=[exportFields.join(",")];
+ list.forEach(c=>rows.push(exportFields.map(f=>csvEscape(c[f])).join(",")));
+ download("\uFEFF"+rows.join("\r\n"),"contacts.csv","text/csv;charset=utf-8");
 });
+
+$("exportJSON").addEventListener("click",()=>{
+ download(JSON.stringify(getExportContacts(),null,2),"contacts.json","application/json");
+});
+
+$("exportVCF").addEventListener("click",()=>{
+ download(getExportContacts().map(toVCF).join("\r\n"),"contacts.vcf","text/vcard;charset=utf-8");
+});
+
+function exportOneVCF(id){
+ const c=contacts.find(c=>c.id===id);
+ if(c)download(toVCF(c),(displayName(c).replace(/[^a-z0-9_-]/gi,"_")||"contact")+".vcf","text/vcard;charset=utf-8");
+}
+
+/* =====================================================
+   IMPORT PREVIEW AND DUPLICATE DETECTION
+===================================================== */
 
 function duplicateKey(c){
-  const phone=(c.phone||"").replace(/\D/g,"");
-  const email=(c.email||"").toLowerCase().trim();
-  const name=displayName(c).toLowerCase().trim();
-  if(email)return "e:"+email;
-  if(phone)return "p:"+phone;
-  return "n:"+name;
+ const email=(c.email||"").trim().toLowerCase();
+ const phone=(c.phone||"").replace(/\D/g,"");
+ const name=displayName(c).trim().toLowerCase();
+ if(email)return "e:"+email;
+ if(phone)return "p:"+phone;
+ return "n:"+name;
 }
 
-$("importAll").addEventListener("click",()=>{
-  if(!pendingImport.length)return;
-
+$("previewImport").addEventListener("click",async()=>{
+ const file=$("importFile").files[0];
+ if(!file){notify("Choose an import file first.");return}
+ try{
+  const ext=file.name.split(".").pop().toLowerCase();
+  let parsed;
+  if(["db","sqlite","sqlite3"].includes(ext)){
+   parsed=await parseSQLite(new Uint8Array(await file.arrayBuffer()));
+  }else{
+   const text=await file.text();
+   if(ext==="csv")parsed=parseCSV(text);
+   else if(ext==="vcf"||ext==="vcard")parsed=parseVCF(text);
+   else if(ext==="json"){
+    let data=JSON.parse(text);
+    if(!Array.isArray(data))data=data.contacts||data.data||data.items;
+    if(!Array.isArray(data))throw new Error("JSON must contain a contact array.");
+    parsed=data.map(normalizeContact).filter(c=>c.firstName!=="Unnamed"||c.phone||c.email);
+   }else throw new Error("Unsupported file type.");
+  }
+  pendingImport=parsed;
   const existing=new Set(contacts.map(duplicateKey));
-  let added=0,skipped=0;
-
-  pendingImport.forEach(c=>{
-    const key=duplicateKey(c);
-    if(existing.has(key)){
-      skipped++;
-      return;
-    }
-    const item=normalizeContact(c);
-    item.id=uid();
-    contacts.unshift(item);
-    existing.add(key);
-    added++;
-  });
-
-  rebuildCategories();
-  saveContacts();
-  renderAll();
+  const duplicates=parsed.filter(c=>existing.has(duplicateKey(c))).length;
+  $("preview").textContent=
+   "File: "+file.name+"\nDetected contacts: "+parsed.length+
+   "\nLikely duplicates already in your list: "+duplicates+
+   "\nSample: "+parsed.slice(0,5).map(displayName).join(", ");
+  $("importValid").disabled=!parsed.length;
+  $("cancelImport").disabled=false;
+  notify("Preview ready. Review before importing.");
+ }catch(e){
   pendingImport=[];
-  $("importPreview").textContent="";
-  $("importAll").disabled=true;
+  $("preview").textContent="Import failed: "+e.message;
+  $("importValid").disabled=true;
   $("cancelImport").disabled=true;
-  $("importFile").value="";
-  notify("Imported "+added+" contacts; skipped "+skipped+" likely duplicates.");
+ }
+});
+
+$("importValid").addEventListener("click",()=>{
+ const existing=new Set(contacts.map(duplicateKey));
+ let added=0,skipped=0;
+ pendingImport.forEach(raw=>{
+  const c=normalizeContact(raw),key=duplicateKey(c);
+  if(existing.has(key)){skipped++;return}
+  c.id=uid();
+  contacts.unshift(c);
+  existing.add(key);
+  if(!categories.includes(c.groupName))categories.push(c.groupName);
+  added++;
+ });
+ pendingImport=[];
+ saveData();
+ refreshAllCategoryUI();
+ renderAll();
+ $("preview").textContent="";
+ $("importValid").disabled=true;
+ $("cancelImport").disabled=true;
+ $("importFile").value="";
+ notify("Imported "+added+" contacts; skipped "+skipped+" likely duplicates.");
 });
 
 $("cancelImport").addEventListener("click",()=>{
-  pendingImport=[];
-  $("importPreview").textContent="";
-  $("importAll").disabled=true;
-  $("cancelImport").disabled=true;
+ pendingImport=[];
+ $("preview").textContent="";
+ $("importValid").disabled=true;
+ $("cancelImport").disabled=true;
 });
 
-/* -------------------- Full backup / restore -------------------- */
+/* =====================================================
+   FULL BACKUP / RESTORE
+===================================================== */
 
 $("backupJSON").addEventListener("click",()=>{
-  const backup={
-    app:"Contact Management Pro",
-    version:2,
-    exportedAt:new Date().toISOString(),
-    categories,
-    contacts
-  };
-  downloadBlob(JSON.stringify(backup,null,2),"application/json","contacts_backup.json");
+ download(JSON.stringify({
+  app:"Nature Contacts Pro",version:3,
+  exportedAt:new Date().toISOString(),contacts,categories
+ },null,2),"contacts_full_backup.json","application/json");
 });
 
 $("restoreFile").addEventListener("change",async()=>{
-  const file=$("restoreFile").files[0];
-  if(!file)return;
-
-  try{
-    const data=JSON.parse(await file.text());
-    const imported=Array.isArray(data)?data:data.contacts;
-    if(!Array.isArray(imported))throw new Error("No contacts array found.");
-    if(!confirm("Restore backup? This will replace all current contacts."))return;
-
-    contacts=imported.map(normalizeContact);
-    if(Array.isArray(data.categories))categories=data.categories;
-    rebuildCategories();
-    saveContacts();
-    renderAll();
-    notify("Backup restored.");
-  }catch(error){
-    notify("Restore failed: "+error.message);
-  }finally{
-    $("restoreFile").value="";
-  }
+ const file=$("restoreFile").files[0];
+ if(!file)return;
+ try{
+  const data=JSON.parse(await file.text());
+  const list=Array.isArray(data)?data:data.contacts;
+  if(!Array.isArray(list))throw new Error("No contacts array found.");
+  if(!confirm("Restore backup and replace current contacts and categories?"))return;
+  contacts=list.map(normalizeContact);
+  if(Array.isArray(data.categories))categories=data.categories.map(norm).filter(Boolean);
+  selectedIds.clear();
+  saveData();
+  refreshAllCategoryUI();
+  renderAll();
+  notify("Backup restored.");
+ }catch(e){notify("Restore failed: "+e.message)}
+ finally{$("restoreFile").value=""}
 });
 
 $("clearAll").addEventListener("click",()=>{
-  if(!confirm("Delete ALL contacts? Export a backup first if needed."))return;
-  if(!confirm("Confirm permanent deletion of all contacts from this browser?"))return;
-  contacts=[];
-  rebuildCategories();
-  saveContacts();
-  renderAll();
-  notify("All contacts deleted.");
+ if(!confirm("Delete every contact? Export a backup first if needed."))return;
+ if(!confirm("Are you sure? This cannot be undone."))return;
+ contacts=[];
+ selectedIds.clear();
+ saveData();
+ renderAll();
+ notify("All contacts deleted.");
 });
 
-/* -------------------- Settings -------------------- */
+/* =====================================================
+   THEMES AND INITIALIZATION
+===================================================== */
 
 $("themeSelect").addEventListener("change",()=>{
-  document.body.dataset.theme=$("themeSelect").value;
-  localStorage.setItem(THEME_KEY,$("themeSelect").value);
+ document.body.dataset.theme=$("themeSelect").value;
+ localStorage.setItem(THEME_KEY,$("themeSelect").value);
 });
 
 function refreshStorageInfo(){
-  $("storageInfo").textContent=
-    "Contacts stored in browser localStorage: "+contacts.length+
-    ". This device and browser profile only. Last refreshed: "+
-    new Date().toLocaleString();
+ const bytes=new Blob([localStorage.getItem(STORAGE_KEY)||""]).size;
+ $("storageInfo").textContent=
+  contacts.length+" contacts · "+categories.length+
+  " available categories · Approximate saved data size: "+
+  (bytes<1024?bytes+" bytes":(bytes/1024).toFixed(1)+" KB")+
+  ". Stored in this browser only.";
 }
 
-/* -------------------- Startup -------------------- */
+function renderAll(){
+ refreshAllCategoryUI();
+ renderContacts();
+ renderCategoryManager();
+ updateCategoryChart();
+}
 
 function initialize(){
-  const savedTheme=localStorage.getItem(THEME_KEY)||"forest";
-  document.body.dataset.theme=savedTheme;
-  $("themeSelect").value=savedTheme;
-
-  loadContacts();
-  updateStats();
-  renderAll();
+ const theme=localStorage.getItem(THEME_KEY)||"forest";
+ document.body.dataset.theme=theme;
+ $("themeSelect").value=theme;
+ loadData();
+ refreshAllCategoryUI();
+ renderAll();
 }
 
 initialize();
