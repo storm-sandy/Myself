@@ -1,0 +1,1154 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">  
+<meta name="theme-color" content="#167447">  
+<title>Nari Raksha — Women's Safety</title>  
+  
+<link rel="stylesheet"  
+ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">  
+  
+<style>  
+:root{  
+ --primary:#167447;--bg:#eef8f0;--card:#fff;  
+ --text:#173b2b;--muted:#63796c;--border:#d8e8dc;  
+ --danger:#c62828;  
+}  
+*{box-sizing:border-box}  
+body{  
+ margin:0;font-family:Arial,sans-serif;background:var(--bg);  
+ color:var(--text);line-height:1.45;  
+}  
+header{  
+ background:var(--primary);color:white;text-align:center;padding:15px;  
+}  
+header h1{margin:0;font-size:23px}  
+header p{margin:4px 0 0;font-size:13px}  
+.emergency{  
+ display:grid;grid-template-columns:1fr 1fr;gap:8px;  
+ padding:9px;background:var(--card);  
+}  
+.emergency a{  
+ color:white;text-decoration:none;text-align:center;  
+ padding:12px 5px;border-radius:9px;font-weight:bold;  
+}  
+.call112{background:#c62828}  
+.call181{background:#a51d55}  
+nav{  
+ display:flex;gap:6px;overflow-x:auto;padding:9px;  
+ background:var(--card);position:sticky;top:0;z-index:1000;  
+ border-bottom:1px solid var(--border);  
+}  
+nav button{  
+ white-space:nowrap;background:var(--bg);color:var(--text);  
+ border:1px solid var(--border);padding:10px;border-radius:9px;  
+ font-weight:bold;  
+}  
+nav button.active{background:var(--primary);color:white}  
+main{padding:11px;max-width:1000px;margin:auto}  
+.panel{display:none}  
+.panel.active{display:block}  
+.card{  
+ background:var(--card);border:1px solid var(--border);  
+ padding:14px;border-radius:13px;margin-bottom:12px;  
+ box-shadow:0 2px 6px #00000008;  
+}  
+h2{font-size:20px;margin:3px 0 12px}  
+h3{font-size:16px;margin:5px 0 10px}  
+p{margin:7px 0}  
+.muted{color:var(--muted);font-size:13px}  
+label{display:block;margin-top:10px;font-size:14px;font-weight:bold}  
+input,select,textarea{  
+ display:block;width:100%;padding:11px;margin-top:5px;  
+ border:1px solid var(--border);border-radius:8px;  
+ background:var(--card);color:var(--text);font:inherit;  
+}  
+textarea{min-height:70px}  
+button,.btn{  
+ display:inline-block;border:0;border-radius:8px;  
+ padding:11px 12px;margin:4px 2px 3px 0;  
+ background:var(--primary);color:white;font-weight:bold;  
+ font-size:13px;text-decoration:none;cursor:pointer;  
+}  
+.btn.red{background:#c62828}  
+.btn.blue{background:#1565c0}  
+.btn.dark{background:#455a50}  
+.btn.orange{background:#a85d00}  
+.btn.purple{background:#7953a9}  
+.btn.green{background:#168447}  
+.btn.full{display:block;width:100%;text-align:center}  
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}  
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}  
+.stat{background:var(--bg);padding:11px;border:1px solid var(--border);border-radius:9px;overflow-wrap:anywhere}  
+.stat strong{display:block;font-size:16px}  
+.notice{background:#fff2cc;color:#684900;padding:11px;border-radius:8px;font-size:13px;margin:9px 0}  
+.good{background:#e0f5e5;color:#16582b;padding:10px;border-radius:8px}  
+.warning{background:#fff0e0;color:#873b00;padding:10px;border-radius:8px}  
+#gpsMap,#safetyMap{height:310px;width:100%;border-radius:10px;margin-top:10px;z-index:1}  
+.place{border-bottom:1px solid var(--border);padding:12px 0;overflow-wrap:anywhere}  
+.place:last-child{border-bottom:0}  
+.badge{display:inline-block;padding:3px 7px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg)}  
+.actions{display:flex;flex-wrap:wrap;gap:4px}  
+.helpline{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}  
+.helpline small{display:block;color:var(--muted)}  
+.scheme{padding:11px 0;border-bottom:1px solid var(--border)}  
+.scheme a{color:var(--primary);font-weight:bold}  
+.themegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}  
+.themegrid button{background:var(--bg);color:var(--text);border:1px solid var(--border);text-align:left}  
+footer{text-align:center;padding:16px;color:var(--muted);font-size:12px}  
+hr{border:0;border-top:1px solid var(--border);margin:14px 0}  
+a{overflow-wrap:anywhere}  
+@media(max-width:420px){  
+ nav button{font-size:12px;padding:9px}  
+ .grid2{gap:5px}  
+}  
+</style>  
+</head>  
+  
+<body>  
+  
+<header>  
+ <h1>🛡️ Nari Raksha</h1>  
+ <p>Women's Safety • GPS • Emergency Assistance</p>  
+ <p id="headerGPS">📍 Requesting current location…</p>  
+</header>  
+  
+<div class="emergency">  
+ <a class="call112" href="tel:112">🚨 EMERGENCY 112</a>  
+ <a class="call181" href="tel:181">☎ WOMEN HELPLINE 181</a>  
+ 
+</div>  
+  
+<nav id="tabs">  
+ <button class="active" data-tab="home">🏠 Home</button>  
+ <button data-tab="gps">📍 GPS</button>  
+ <button data-tab="contacts">👥 Contacts</button>  
+ <button data-tab="profile">👤 Profile</button>  
+ <button data-tab="helplines">☎ Helplines</button>  
+ <button data-tab="schemes">🇮🇳 Schemes</button>  
+ <button data-tab="safety">🛡️ Safety</button>  
+ <button data-tab="settings">⚙️ Settings</button>  
+</nav>  
+  
+<main>  
+  
+<!-- HOME -->  
+<section id="home" class="panel active">  
+ <div class="card">  
+  <h2>Welcome to Nari Raksha</h2>  
+  <div class="notice">  
+   <b>Immediate danger?</b> Call 112. Do not wait for GPS,  
+   internet, or WhatsApp.  
+  </div>  
+  <button class="btn red full" onclick="startSOS()">🚨 PREPARE SOS</button>  
+  <button class="btn green full" onclick="openSafetyGPS()">📍 SHOW MY CURRENT GPS ON SAFETY MAP</button>  
+  <button class="btn full" onclick="openTab('contacts')">👥 Manage Trusted Contacts</button>  
+ </div>  
+  
+ <div class="card">  
+  <h3>📍 Current GPS Location</h3>  
+  <div id="homeLocation">Requesting location permission…</div>  
+  <button onclick="getLocation()">Refresh GPS</button>  
+  <button class="btn blue" onclick="shareLocation()">Share My Location</button>  
+  <p class="muted">The app automatically requests location when opened. If permission is denied, use the Refresh GPS button.</p>  
+ </div>  
+  
+ <div class="card">  
+  <h3>Quick Emergency Calls</h3>  
+  <div class="grid2">  
+   <a class="btn red full" href="tel:112">112 Emergency</a>  
+   <a class="btn full" href="tel:181">181 Women</a>  
+   <a class="btn blue full" href="tel:139">139 Railway</a>  
+   <a class="btn orange full" href="tel:1098">1098 Child</a>  
+  </div>  
+ </div>  
+  
+ <div class="card">  
+  <h3>App Status</h3>  
+  <p id="appStatus" class="muted">Starting…</p>  
+  <p class="muted">This is a personal safety tool, not an emergency dispatch service. It cannot guarantee message delivery, background tracking, or rescue.</p>  
+ </div>  
+</section>  
+  
+<!-- GPS -->  
+<section id="gps" class="panel">  
+ <div class="card">  
+  <h2>📍 GPS & Live Location</h2>  
+  <button class="btn green" onclick="getLocation()">Get Current GPS</button>  
+  <button class="btn blue" onclick="startTracking()">Start Live Updates</button>  
+  <button class="btn dark" onclick="stopTracking()">Stop Updates</button>  
+  <button onclick="shareLocation()">Share Location</button>  
+  
+  <p id="gpsStatus" class="muted">Requesting current location…</p>  
+  <div id="gpsDetails">Waiting for GPS…</div>  
+  <div id="gpsMap"></div>  
+  
+  <button class="btn full" onclick="lookupAddress()">Look Up Approximate Address</button>  
+  <button class="btn full" onclick="findNearby()">🏥 Find Nearby Police / Hospitals</button>  
+  <div id="nearbyResults"></div>  
+  
+  <p class="muted">Live updates work while this page remains active and the device/browser permits location access. Background tracking is not guaranteed.</p>  
+ </div>  
+</section>  
+  
+<!-- CONTACTS -->  
+<section id="contacts" class="panel">  
+ <div class="card">  
+  <h2>👥 Five Trusted Contacts</h2>  
+  <p class="muted">For Indian WhatsApp numbers, enter 91 followed by the 10-digit number, without the + sign.</p>  
+  
+  <label>Contact name</label>  
+  <input id="contactName" placeholder="Father, husband, friend…">  
+  
+  <label>Phone number with country code</label>  
+  <input id="contactPhone" type="tel" placeholder="919876543210">  
+  
+  <button onclick="addContact()">Save Contact</button>  
+  <div id="contactList"></div>  
+ </div>  
+  
+ <div class="card">  
+  <h3>🟢 WhatsApp Emergency Messages</h3>  
+  <button class="btn green full" onclick="shareWhatsAppAll()">🟢 Prepare SOS for All Five</button>  
+  <p class="muted">The app opens a prepared message for each contact. You must press Send in WhatsApp. Messages are not silently sent or broadcast.</p>  
+ </div>  
+</section>  
+  
+<!-- PROFILE -->  
+<section id="profile" class="panel">  
+ <div class="card">  
+  <h2>👤 Personal Profile</h2>  
+  
+  <label>Full name</label>  
+  <input id="pName">  
+  
+  <label>Medical information (optional)</label>  
+  <textarea id="pMedical" placeholder="Only include information you want stored on this device"></textarea>  
+  
+  <label>Permanent address</label>  
+  <textarea id="pPermanent"></textarea>  
+  
+  <label>Current address</label>  
+  <textarea id="pCurrent"></textarea>  
+  
+  <label>Other notes</label>  
+  <textarea id="pNotes"></textarea>  
+  
+  <button class="btn full" onclick="saveProfile()">Save Profile</button>  
+  <p class="muted">Sensitive information is saved in local browser storage. It is not encrypted by this app.</p>  
+ </div>  
+  
+ <div class="card">  
+  <h3>Family and Support Network</h3>  
+  
+  <label>Relationship</label>  
+  <input id="familyRelation" placeholder="Mother, brother, husband, friend…">  
+  
+  <label>Name</label>  
+  <input id="familyName">  
+  
+  <label>Phone</label>  
+  <input id="familyPhone" type="tel">  
+  
+  <button onclick="addFamily()">Add Family Member</button>  
+  <div id="familyList"></div>  
+ </div>  
+</section>  
+  
+<!-- HELPLINES -->  
+<section id="helplines" class="panel">  
+ <div class="card">  
+  <h2>☎ Emergency and Support Helplines</h2>  
+  <p class="muted">Numbers and services can change. In immediate danger in India, try 112 first.</p>  
+  <div id="helplineList"></div>  
+ </div>  
+  
+ <div class="card">  
+  <h3>Official Information</h3>  
+  <p>
+  <a target="_blank" rel="noopener"
+   href="https://www.india.gov.in/directory/helpline">
+   Government Emergency Helpline Directory
+</a>
+  
+  </p>  
+  <p><a target="_blank" rel="noopener" href="https://missionshakti.wcd.gov.in/">Mission Shakti</a></p>  
+  <p><a target="_blank" rel="noopener" href="https://www.wcd.gov.in/">Ministry of Women and Child Development</a></p>  
+  <p><a target="_blank" rel="noopener" href="https://nalsa.gov.in/">NALSA Legal Aid</a></p>  
+  <p><a target="_blank" rel="noopener" href="https://shebox.wcd.gov.in/">SHe-Box Workplace Complaint Portal</a></p>  
+  <p><a target="_blank" rel="noopener" href="https://www.india.gov.in/directory/helpline">Government Helpline Directory</a></p>  
+ </div>  
+</section>  
+  
+<!-- SCHEMES -->  
+<section id="schemes" class="panel">  
+ <div class="card">  
+  <h2>🇮🇳 National Women Support Schemes</h2>  
+  <p class="muted">Major national programmes and official information portals are listed below. This cannot guarantee that every scheme is available in every district. Check eligibility, benefits, and application requirements on the official website.</p>  
+  <div id="schemeList"></div>  
+  <hr>  
+  <p><a target="_blank" rel="noopener" href="https://www.myscheme.gov.in/">myScheme — Search Government Schemes</a></p>  
+  <p><a target="_blank" rel="noopener" href="https://missionshakti.wcd.gov.in/">Mission Shakti Official Portal</a></p>  
+  <p><a target="_blank" rel="noopener" href="https://www.wcd.gov.in/">Women and Child Development Ministry</a></p>  
+ </div>  
+</section>  
+  
+<!-- SAFETY -->  
+<section id="safety" class="panel">  
+  
+ <div class="card">  
+  <h2>🛡️ Safety Map & Current GPS</h2>  
+  <button class="btn green full" onclick="showSafetyGPS()">📍 SHOW MY CURRENT GPS MARKER</button>  
+  
+  <div class="grid2">  
+   <button class="btn blue" onclick="centreSafetyMap()">🎯 Centre Map on Me</button>  
+   <button class="btn dark" onclick="openCurrentMap()">🗺️ Open Map App</button>  
+  </div>  
+  
+  <p id="safetyGPSStatus" class="muted">Waiting for GPS…</p>  
+  <div id="safetyGPSInfo" class="stats">  
+   <div class="stat"><span class="muted">Latitude</span><strong>—</strong></div>  
+   <div class="stat"><span class="muted">Longitude</span><strong>—</strong></div>  
+  </div>  
+  <div id="safetyMap"></div>  
+  
+  <p class="muted">The blue marker is your latest GPS position. The accuracy circle is an estimate, not a guaranteed boundary.</p>  
+  <button class="btn red full" onclick="startSOS()">🚨 PREPARE SOS WITH GPS</button>  
+ </div>  
+  
+ <div class="card">  
+  <h3>📌 Save a Safety Place</h3>  
+  <label>Place name</label>  
+  <input id="zoneName" placeholder="Home, trusted shop, meeting point…">  
+  
+  <label>Category</label>  
+  <select id="zoneType">  
+   <option value="safe">🟢 Safe place</option>  
+   <option value="caution">🟠 Caution area</option>  
+   <option value="meeting">🔵 Meeting point</option>  
+   <option value="police">🚓 Police station</option>  
+   <option value="hospital">🏥 Hospital</option>  
+   <option value="other">📌 Other</option>  
+  </select>  
+  
+  <label>Coordinates (latitude, longitude)</label>  
+  <input id="zoneCoords" placeholder="19.076000, 72.877700">  
+  <button class="btn green full" onclick="fillZoneWithCurrentGPS()">📍 Use Current GPS</button>  
+  
+  <label>Address and notes</label>  
+  <textarea id="zoneNotes"></textarea>  
+  
+  <button class="btn full" onclick="addZone()">💾 Save Place</button>  
+  <p class="muted">These are your personal labels, not verified reports of safe or dangerous areas.</p>  
+ </div>  
+  
+ <div class="card">  
+  <h3>🔎 Saved Places</h3>  
+  <label>Search</label>  
+  <input id="zoneSearch" placeholder="Search saved places…" oninput="renderZones()">  
+  
+  <label>Filter</label>  
+  <select id="zoneFilter" onchange="renderZones()">  
+   <option value="all">All places</option>  
+   <option value="safe">Safe places</option>  
+   <option value="caution">Caution areas</option>  
+   <option value="meeting">Meeting points</option>  
+   <option value="police">Police stations</option>  
+   <option value="hospital">Hospitals</option>  
+   <option value="other">Other</option>  
+  </select>  
+  
+  <div class="stats">  
+   <div class="stat">Saved places<strong id="zoneCount">0</strong></div>  
+   <div class="stat">Caution areas<strong id="cautionCount">0</strong></div>  
+  </div>  
+  <div id="zoneList"></div>  
+ </div>  
+  
+ <div class="card">  
+  <h3>⚠️ Optional Proximity Alerts</h3>  
+  <p class="muted">The app checks your location against saved caution areas when GPS updates arrive. It may not work when the page is suspended or closed.</p>  
+  
+  <label>Alert distance</label>  
+  <select id="alertRadius">  
+   <option value="100">100 metres</option>  
+   <option value="250" selected>250 metres</option>  
+   <option value="500">500 metres</option>  
+   <option value="1000">1 kilometre</option>  
+  </select>  
+  
+  <label><input id="proximityEnabled" type="checkbox" style="display:inline;width:auto"> Enable proximity alerts</label>  
+  <button class="btn green full" onclick="enableProximity()">Start GPS & Enable Alerts</button>  
+  <button class="btn dark full" onclick="disableProximity()">Stop Alerts</button>  
+  <div id="proximityStatus" class="muted">Proximity alerts are off.</div>  
+ </div>  
+</section>  
+  
+<!-- SETTINGS -->  
+<section id="settings" class="panel">  
+ <div class="card">  
+  <h2>⚙️ Settings</h2>  
+  <h3>Nature Themes</h3>  
+  <div id="themeGrid" class="themegrid"></div>  
+  
+  <hr>  
+  <h3>Data Management</h3>  
+  <button class="btn green full" onclick="exportJSON()">Export Full Backup (JSON)</button>  
+  <label>Import JSON backup</label>  
+  <input id="importFile" type="file" accept=".json,application/json">  
+  <button class="btn full" onclick="importJSON()">Import Backup</button>  
+  <button class="btn blue full" onclick="exportContactsCSV()">Export Contacts CSV</button>  
+  <button class="btn red full" onclick="clearAppData()">Delete All App Data</button>  
+ </div>  
+  
+ <div class="card">  
+  <h3>Privacy and Safety</h3>  
+  <ul class="muted">  
+   <li>Location is requested automatically on app startup.</li>  
+   <li>GPS permission must be granted in the browser.</li>  
+   <li>Maps, nearby search, and address lookup require internet access.</li>  
+   <li>WhatsApp messages require your confirmation and a manual Send action.</li>  
+   <li>Background GPS is not guaranteed.</li>  
+   <li>Saved personal information is not encrypted by this app.</li>  
+  </ul>  
+ </div>  
+</section>  
+  
+</main>  
+  
+<footer>  
+ Nari Raksha • Personal Safety Companion<br>  
+ Immediate danger in India: call 112.  
+</footer>  
+  
+<!-- Load Leaflet BEFORE application JavaScript -->  
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>  
+  
+<script>  
+"use strict";  
+  
+const STORAGE_KEY="nariRakshaApp_v3";  
+const DEFAULTS={  
+ profile:{name:"",medical:"",permanent:"",current:"",notes:""},  
+ contacts:[],family:[],zones:[],theme:"Forest"  
+};  
+  
+function clone(x){return JSON.parse(JSON.stringify(x))}  
+function loadData(){  
+ try{  
+  const d=JSON.parse(localStorage.getItem(STORAGE_KEY));  
+  return d?Object.assign(clone(DEFAULTS),d):clone(DEFAULTS);  
+ }catch(e){return clone(DEFAULTS)}  
+}  
+let app=loadData();  
+let currentPosition=null;  
+let watchId=null;  
+let gpsMap=null,safetyMap=null;  
+let gpsMarker=null,safetyMarker=null;  
+let gpsCircle=null,safetyCircle=null;  
+let savedLayer=null;  
+let proximityEnabled=false;  
+let lastAlerts={};  
+let nearbySearchTime=0;  
+  
+function saveData(){  
+ try{localStorage.setItem(STORAGE_KEY,JSON.stringify(app))}  
+ catch(e){alert("Unable to save. Browser storage may be full.")}  
+}  
+function esc(v){  
+ return String(v==null?"":v).replace(/[&<>"']/g,c=>({  
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"  
+ }[c]));  
+}  
+function phoneDigits(v){return String(v||"").replace(/\D/g,"")}  
+function validPhone(v){return phoneDigits(v).length>=8&&phoneDigits(v).length<=15}  
+  
+function openTab(id){  
+ document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id===id));  
+ document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));  
+ setTimeout(()=>{  
+  if(id==="gps"&&gpsMap)gpsMap.invalidateSize();  
+  if(id==="safety"&&safetyMap)safetyMap.invalidateSize();  
+ },180);  
+ window.scrollTo({top:0,behavior:"smooth"});  
+}  
+document.querySelectorAll("#tabs button").forEach(b=>{  
+ b.addEventListener("click",()=>openTab(b.dataset.tab));  
+});  
+  
+function mapURL(lat,lon){  
+ return "https://www.google.com/maps?q="+encodeURIComponent(lat+","+lon);  
+}  
+function currentMapURL(){  
+ if(!currentPosition)return "";  
+ return mapURL(currentPosition.coords.latitude,currentPosition.coords.longitude);  
+}  
+function initMaps(){  
+ if(!window.L)return;  
+ if(!gpsMap){  
+  gpsMap=L.map("gpsMap").setView([20.5937,78.9629],5);  
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{  
+   maxZoom:19,  
+   attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'  
+  }).addTo(gpsMap);  
+ }  
+ if(!safetyMap){  
+  safetyMap=L.map("safetyMap").setView([20.5937,78.9629],5);  
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{  
+   maxZoom:19,  
+   attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'  
+  }).addTo(safetyMap);  
+  savedLayer=L.layerGroup().addTo(safetyMap);  
+ }  
+ renderSafetyMarkers();  
+}  
+  
+function setGPSStatus(text){  
+ document.getElementById("gpsStatus").textContent=text;  
+}  
+function locationError(e){  
+ if(e.code===1)return "Location permission denied. Enable location permission in browser settings.";  
+ if(e.code===2)return "Location unavailable. Enable phone location services and try again.";  
+ if(e.code===3)return "GPS request timed out. Try outdoors or near a window.";  
+ return "Could not obtain GPS location.";  
+}  
+function getLocation(){  
+ if(!navigator.geolocation){  
+  setGPSStatus("Geolocation is not supported by this browser.");return;  
+ }  
+ setGPSStatus("Requesting current location…");  
+ navigator.geolocation.getCurrentPosition(  
+  p=>{updatePosition(p);setGPSStatus("GPS obtained successfully.")},  
+  e=>{setGPSStatus(locationError(e));document.getElementById("headerGPS").textContent="📍 Location unavailable";},  
+  {enableHighAccuracy:true,timeout:20000,maximumAge:0}  
+ );  
+}  
+function startTracking(){  
+ if(!navigator.geolocation){setGPSStatus("Geolocation is unavailable.");return}  
+ if(watchId!==null){setGPSStatus("Live GPS updates are already running.");return}  
+ watchId=navigator.geolocation.watchPosition(  
+  p=>{updatePosition(p);setGPSStatus("GPS updated: "+new Date(p.timestamp).toLocaleTimeString())},  
+  e=>setGPSStatus(locationError(e)),  
+  {enableHighAccuracy:true,maximumAge:3000,timeout:20000}  
+ );  
+ setGPSStatus("Live GPS updates started.");  
+}  
+function stopTracking(){  
+ if(watchId!==null)navigator.geolocation.clearWatch(watchId);  
+ watchId=null;  
+ setGPSStatus("Live GPS updates stopped.");  
+}  
+function updatePosition(p){  
+ currentPosition=p;  
+ const c=p.coords,lat=c.latitude,lon=c.longitude;  
+ const link=currentMapURL();  
+ document.getElementById("headerGPS").textContent="📍 GPS: "+lat.toFixed(5)+", "+lon.toFixed(5);  
+ document.getElementById("appStatus").textContent="GPS available • Accuracy estimate ±"+Math.round(c.accuracy)+" m";  
+ document.getElementById("homeLocation").innerHTML=  
+  "<strong>"+lat.toFixed(6)+", "+lon.toFixed(6)+"</strong><br>"+  
+  "Accuracy estimate: ±"+Math.round(c.accuracy)+" metres<br>"+  
+  '<a target="_blank" rel="noopener" href="'+link+'">Open location in map</a>';  
+ document.getElementById("gpsDetails").innerHTML=  
+  "<p><b>Latitude:</b> "+lat.toFixed(6)+"</p>"+  
+  "<p><b>Longitude:</b> "+lon.toFixed(6)+"</p>"+  
+  "<p><b>Accuracy estimate:</b> ±"+Math.round(c.accuracy)+" m</p>"+  
+  "<p><b>Updated:</b> "+new Date(p.timestamp).toLocaleString()+"</p>"+  
+  '<p><a target="_blank" rel="noopener" href="'+link+'">Open map</a></p>';  
+ document.getElementById("safetyGPSInfo").innerHTML=  
+  '<div class="stat"><span class="muted">Latitude</span><strong>'+lat.toFixed(6)+'</strong></div>'+  
+  '<div class="stat"><span class="muted">Longitude</span><strong>'+lon.toFixed(6)+'</strong></div>';  
+ document.getElementById("safetyGPSStatus").textContent=  
+  "GPS updated "+new Date(p.timestamp).toLocaleTimeString()+  
+  " • Accuracy estimate ±"+Math.round(c.accuracy)+" m";  
+ updateMarkers();  
+ renderZones();  
+ checkProximity();  
+}  
+function updateMarkers(){  
+ if(!currentPosition||!window.L)return;  
+ initMaps();  
+ const c=currentPosition.coords,point=[c.latitude,c.longitude];  
+ if(!gpsMarker)gpsMarker=L.marker(point).addTo(gpsMap).bindPopup("Your current GPS position");  
+ else gpsMarker.setLatLng(point);  
+ if(!gpsCircle)gpsCircle=L.circle(point,{radius:c.accuracy,color:"#1565c0",fillOpacity:.10}).addTo(gpsMap);  
+ else{gpsCircle.setLatLng(point);gpsCircle.setRadius(c.accuracy)}  
+ if(!safetyMarker)safetyMarker=L.marker(point).addTo(safetyMap).bindPopup("📍 Your current GPS position");  
+ else safetyMarker.setLatLng(point);  
+ if(!safetyCircle)safetyCircle=L.circle(point,{radius:c.accuracy,color:"#1565c0",fillOpacity:.10}).addTo(safetyMap);  
+ else{ safetyCircle.setLatLng(point);safetyCircle.setRadius(c.accuracy)}  
+}  
+function openSafetyGPS(){  
+ openTab("safety");  
+ if(!currentPosition){getLocation();return}  
+ initMaps();  
+ centreSafetyMap();  
+ if(safetyMarker)safetyMarker.openPopup();  
+}  
+function showSafetyGPS(){  
+ openSafetyGPS();  
+ if(!currentPosition){  
+  document.getElementById("safetyGPSStatus").textContent="Requesting GPS. Allow location permission.";  
+ }  
+}  
+function centreSafetyMap(){  
+ if(!currentPosition){alert("Waiting for GPS. Press Get Current GPS first.");getLocation();return}  
+ initMaps();  
+ safetyMap.setView([currentPosition.coords.latitude,currentPosition.coords.longitude],17);  
+ if(safetyMarker)safetyMarker.openPopup();  
+}  
+function openCurrentMap(){  
+ if(!currentPosition){alert("GPS is not available yet.");getLocation();return}  
+ window.open(currentMapURL(),"_blank");  
+}  
+function shareLocation(){  
+ if(!currentPosition){alert("Get GPS first.");getLocation();return}  
+ const c=currentPosition.coords;  
+ const text="My current location:\nLatitude: "+c.latitude+  
+ "\nLongitude: "+c.longitude+"\nAccuracy estimate: ±"+Math.round(c.accuracy)+  
+ " metres\nMap: "+currentMapURL();  
+ if(navigator.share)navigator.share({title:"My Current Location",text}).catch(()=>{});  
+ else copyText(text);  
+}  
+async function lookupAddress(){  
+ if(!currentPosition){alert("Get GPS first.");return}  
+ const c=currentPosition.coords;  
+ try{  
+  const r=await fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat="+c.latitude+"&lon="+c.longitude);  
+  if(!r.ok)throw Error();  
+  const d=await r.json();  
+  alert(d.display_name||"No address returned.");  
+ }catch(e){alert("Address lookup failed. Check your internet connection.")}  
+}  
+async function findNearby(){  
+ if(!currentPosition){alert("Get GPS first.");return}  
+ if(Date.now()-nearbySearchTime<10000){alert("Please wait a few seconds before searching again.");return}  
+ nearbySearchTime=Date.now();  
+ const c=currentPosition.coords,out=document.getElementById("nearbyResults");  
+ out.textContent="Searching nearby mapped services…";  
+ const q='[out:json][timeout:20];('+  
+ 'node["amenity"~"^(police|hospital|clinic)$"](around:3000,'+c.latitude+','+c.longitude+');'+  
+ 'way["amenity"~"^(police|hospital|clinic)$"](around:3000,'+c.latitude+','+c.longitude+'););out center tags;';  
+ try{  
+  const r=await fetch("https://overpass-api.de/api/interpreter",{  
+   method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},  
+   body:"data="+encodeURIComponent(q)  
+  });  
+  if(!r.ok)throw Error();  
+  const d=await r.json();out.innerHTML="";  
+  (d.elements||[]).slice(0,20).forEach(x=>{  
+   const t=x.tags||{},lat=x.lat||(x.center&&x.center.lat),lon=x.lon||(x.center&&x.center.lon);  
+   if(lat==null||lon==null)return;  
+   const name=t.name||(t.amenity==="police"?"Police station":t.amenity==="hospital"?"Hospital":"Clinic");  
+   const div=document.createElement("div");div.className="place";  
+   div.innerHTML="<strong>"+esc(name)+"</strong><br><span class='muted'>"+esc(t.amenity||"Service")+"</span><br>"+  
+    '<a class="btn" target="_blank" rel="noopener" href="'+mapURL(lat,lon)+'">Directions</a>';  
+   out.appendChild(div);  
+  });  
+  if(!out.innerHTML)out.textContent="No mapped results found. This does not prove that no service is nearby.";  
+ }catch(e){out.textContent="Nearby search failed. Check internet or search in your map app."}  
+}  
+  
+/* SOS / WhatsApp */  
+
+
+function makeSOS() {
+    const name = app.profile.name || "Not provided";
+
+    let locationText = "GPS location unavailable.";
+
+    if (currentPosition) {
+        const c = currentPosition.coords;
+        const lat = c.latitude;
+        const lon = c.longitude;
+
+        const googleMaps =
+            "https://www.google.com/maps?q=" +
+            encodeURIComponent(lat + "," + lon);
+
+        locationText =
+            "MY CURRENT GPS LOCATION\n" +
+            "Latitude: " + lat.toFixed(6) + "\n" +
+            "Longitude: " + lon.toFixed(6) + "\n" +
+            "Accuracy estimate: ±" +
+            Math.round(c.accuracy) + " metres\n" +
+            "OPEN MY LOCATION:\n" + googleMaps;
+    }
+
+    return (
+        "🚨 EMERGENCY SOS 🚨\n\n" +
+        "I MAY BE IN DANGER. PLEASE HELP ME.\n\n" +
+        "Name: " + name + "\n" +
+        locationText + "\n\n" +
+        "Time: " + new Date().toLocaleString() + "\n\n" +
+        "Please call me immediately.\n" +
+        "India Emergency Number: 112"
+    );
+}
+
+function startSOS(){  
+ if(!currentPosition){  
+  if(confirm("GPS is not ready. Request current GPS now?")){  
+   getLocation();  
+   alert("When GPS is ready, press SOS again. If you are in immediate danger, call 112 now.");  
+   return;  
+  }  
+ }  
+ const msg=makeSOS();  
+ if(app.contacts.length){  
+  if(confirm("Prepare WhatsApp SOS messages for your trusted contacts? You must press Send in WhatsApp.")){  
+   shareWhatsAppAll();return;  
+  }  
+ }  
+ if(confirm("Call emergency number 112 now?"))window.location.href="tel:112";  
+}  
+function openWhatsApp(phone,msg){  
+ const p=phoneDigits(phone);  
+ if(!validPhone(p)){alert("Invalid phone number. Include country code.");return}  
+ window.open("https://wa.me/"+p+"?text="+encodeURIComponent(msg),"_blank");  
+}  
+function shareWhatsAppOne(i){  
+ const c=app.contacts[i];if(!c)return;  
+ openWhatsApp(c.phone,makeSOS());  
+}  
+
+function shareWhatsAppAll() {
+    if (!app.contacts.length) {
+        alert("Please add trusted contacts first.");
+        openTab("contacts");
+        return;
+    }
+
+    if (!currentPosition) {
+        alert("GPS is not available yet. Request your current GPS first.");
+        getLocation();
+        return;
+    }
+
+    const message = makeSOS();
+    const contacts = app.contacts.slice(0, 5);
+
+    const messagePreview =
+        "SOS will be prepared for " + contacts.length + " trusted contacts.\n\n" +
+        message +
+        "\n\nWhatsApp will require you to confirm sending.";
+
+    if (!confirm(messagePreview + "\n\nContinue?")) {
+        return;
+    }
+
+    /*
+      Open one prepared WhatsApp chat at a time.
+      The user must press Send in every chat.
+    */
+    let index = 0;
+
+    function openNextContact() {
+        if (index >= contacts.length) {
+            alert(
+                "All available WhatsApp chats have been opened.\n\n" +
+                "Please verify that you pressed Send in every chat."
+            );
+            return;
+        }
+
+        const contact = contacts[index];
+
+        const phone = phoneDigits(contact.phone);
+
+        if (!validPhone(phone)) {
+            index++;
+            openNextContact();
+            return;
+        }
+
+        const url =
+            "https://wa.me/" + phone +
+            "?text=" + encodeURIComponent(message);
+
+        const proceed = confirm(
+            "Contact " + (index + 1) + " of " + contacts.length +
+            "\n" + contact.name +
+            "\n\nPress OK to open WhatsApp with the SOS message.\n" +
+            "Press Send in WhatsApp, return to this app, and continue."
+        );
+
+        if (!proceed) return;
+
+        index++;
+
+        window.open(url, "_blank");
+
+        /*
+          A user gesture is required to open each chat reliably.
+          Return to this page and use the button again if necessary.
+        */
+        setTimeout(() => {
+            if (index < contacts.length) {
+                openNextContact();
+            } else {
+                alert(
+                    "The last WhatsApp chat has been opened.\n" +
+                    "Remember to press Send."
+                );
+            }
+        }, 1500);
+    }
+
+    openNextContact();
+}
+
+  
+/* Contacts */  
+function addContact(){  
+ const name=document.getElementById("contactName").value.trim();  
+ const phone=document.getElementById("contactPhone").value.trim();  
+ if(!name||!phone){alert("Enter name and phone.");return}  
+ if(!validPhone(phone)){alert("Enter a valid phone number with country code.");return}  
+ if(app.contacts.length>=5){alert("Maximum five trusted contacts.");return}  
+ app.contacts.push({name,phone});saveData();  
+ document.getElementById("contactName").value="";  
+ document.getElementById("contactPhone").value="";  
+ renderContacts();  
+}  
+function renderContacts(){  
+ const out=document.getElementById("contactList");out.innerHTML="";  
+ if(!app.contacts.length){out.textContent="No trusted contacts saved.";return}  
+ app.contacts.forEach((c,i)=>{  
+  const d=document.createElement("div");d.className="place";  
+  d.innerHTML="<strong>"+(i+1)+". "+esc(c.name)+"</strong><br>"+esc(c.phone)+  
+   '<div class="actions"><button data-wa="'+i+'">🟢 WhatsApp SOS</button>'+  
+   '<a class="btn blue" href="tel:'+phoneDigits(c.phone)+'">Call</a>'+  
+   '<button class="btn red" data-del="'+i+'">Delete</button></div>';  
+  out.appendChild(d);  
+ });  
+ out.querySelectorAll("[data-wa]").forEach(b=>b.onclick=()=>shareWhatsAppOne(+b.dataset.wa));  
+ out.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{  
+  if(confirm("Delete this contact?")){  
+   app.contacts.splice(+b.dataset.del,1);saveData();renderContacts();  
+  }  
+ });  
+}  
+  
+/* Profile and family */  
+function saveProfile(){  
+ app.profile={  
+  name:document.getElementById("pName").value.trim(),  
+  medical:document.getElementById("pMedical").value.trim(),  
+  permanent:document.getElementById("pPermanent").value.trim(),  
+  current:document.getElementById("pCurrent").value.trim(),  
+  notes:document.getElementById("pNotes").value.trim()  
+ };  
+ saveData();alert("Profile saved.");  
+}  
+function renderProfile(){  
+ const p=app.profile;  
+ const ids={pName:"name",pMedical:"medical",pPermanent:"permanent",pCurrent:"current",pNotes:"notes"};  
+ Object.keys(ids).forEach(id=>document.getElementById(id).value=p[ids[id]]||"");  
+}  
+function addFamily(){  
+ const relation=document.getElementById("familyRelation").value.trim();  
+ const name=document.getElementById("familyName").value.trim();  
+ const phone=document.getElementById("familyPhone").value.trim();  
+ if(!relation||!name){alert("Enter relationship and name.");return}  
+ if(phone&&!validPhone(phone)){alert("Check the phone number.");return}  
+ app.family.push({relation,name,phone});saveData();  
+ ["familyRelation","familyName","familyPhone"].forEach(id=>document.getElementById(id).value="");  
+ renderFamily();  
+}  
+function renderFamily(){  
+ const out=document.getElementById("familyList");out.innerHTML="";  
+ if(!app.family.length){out.textContent="No family members saved.";return}  
+ app.family.forEach((p,i)=>{  
+  const d=document.createElement("div");d.className="place";  
+  d.innerHTML="<strong>"+esc(p.relation)+" — "+esc(p.name)+"</strong><br>"+esc(p.phone||"")+  
+   '<br><button class="btn red" data-family="'+i+'">Delete</button>';  
+  out.appendChild(d);  
+ });  
+ out.querySelectorAll("[data-family]").forEach(b=>b.onclick=()=>{  
+  if(confirm("Delete this family member?")){  
+   app.family.splice(+b.dataset.family,1);saveData();renderFamily();  
+  }  
+ });  
+}  
+  
+/* Helplines */  
+const helplines=[  
+ ["National Emergency","112","Police, fire, medical and emergency response"],  
+ ["Women Helpline","181","Women in distress; availability may vary by state/UT"],  
+ ["Railway assistance","139","Rail Madad; railway assistance and complaints"],  
+ ["Railway security legacy number","182","Legacy number merged into 139; use 139 first"],  
+ ["Child Helpline","1098","Child protection support"],  
+ ["Cybercrime financial fraud","1930","Report financial cybercrime promptly"],  
+ ["Ambulance","108","Ambulance in participating areas; 112 is emergency alternative"],  
+ ["Ambulance","102","National/state ambulance service availability varies"],  
+ ["NALSA legal aid","15100","Legal aid information"],  
+ ["Tele-MANAS","14416","Mental health support"],  
+ ["Tele-Law","14454","Legal advice service information"],  
+ ["National Commission for Women","7827170170","Check current availability on the official government directory"]  
+];  
+function renderHelplines(){  
+ const out=document.getElementById("helplineList");out.innerHTML="";  
+ helplines.forEach(x=>{  
+  const d=document.createElement("div");d.className="helpline";  
+  d.innerHTML="<div><strong>"+esc(x[0])+"</strong><small>"+esc(x[2])+"</small></div>"+  
+   '<a class="btn" href="tel:'+phoneDigits(x[1])+'">'+esc(x[1])+"</a>";  
+  out.appendChild(d);  
+ });  
+}  
+  
+/* National women-support programmes */  
+const schemes=[  
+ ["Mission Shakti","Umbrella programme for women's safety, security and empowerment.","https://missionshakti.wcd.gov.in/"],  
+ ["Women Helpline 181","Support, information and referral to appropriate services.","https://www.wcd.gov.in/offerings/women--helpline--scheme"],  
+ ["One Stop Centre (Sakhi)","Coordinated assistance for eligible women affected by violence.","https://missionshakti.wcd.gov.in/"],  
+ ["Beti Bachao Beti Padhao","Promotes the value, protection and education of girls.","https://www.wcd.gov.in/"],  
+ ["Pradhan Mantri Matru Vandana Yojana","Maternity benefit scheme; verify current eligibility and benefits.","https://pmmvy.wcd.gov.in/"],  
+ ["Shakti Sadan","Shelter and support for eligible women in difficult circumstances.","https://missionshakti.wcd.gov.in/"],  
+ ["Sakhi Niwas","Working women's hostel support where available.","https://missionshakti.wcd.gov.in/"],  
+ ["Palna","Child day-care/crèche services through approved networks.","https://missionshakti.wcd.gov.in/"],  
+ ["Nari Adalat","Community-level gender justice initiative in participating areas.","https://missionshakti.wcd.gov.in/"],  
+ ["Hub for Empowerment of Women","Information and linkages to women's empowerment schemes.","https://missionshakti.wcd.gov.in/"],  
+ ["SHe-Box","Official portal for workplace sexual-harassment complaints.","https://shebox.wcd.gov.in/"],  
+ ["Free legal aid","Contact legal services authorities to check eligibility.","https://nalsa.gov.in/"],  
+ ["Find eligible schemes","Search government schemes by eligibility and location.","https://www.myscheme.gov.in/"]  
+];  
+function renderSchemes(){  
+ const out=document.getElementById("schemeList");out.innerHTML="";  
+ schemes.forEach(s=>{  
+  const d=document.createElement("div");d.className="scheme";  
+  d.innerHTML="<strong>"+esc(s[0])+"</strong><p>"+esc(s[1])+"</p>"+  
+   '<a href="'+s[2]+'" target="_blank" rel="noopener">Official information ↗</a>';  
+  out.appendChild(d);  
+ });  
+}  
+  
+/* Safety zones */  
+const zoneTypes={  
+ safe:"🟢 Safe place",caution:"🟠 Caution area",meeting:"🔵 Meeting point",  
+ police:"🚓 Police station",hospital:"🏥 Hospital",other:"📌 Other"  
+};  
+function fillZoneWithCurrentGPS(){  
+ if(!currentPosition){alert("Get current GPS first.");getLocation();return}  
+ const c=currentPosition.coords;  
+ document.getElementById("zoneCoords").value=c.latitude.toFixed(6)+", "+c.longitude.toFixed(6);  
+}  
+function parseCoords(value){  
+ const m=String(value||"").trim().match(/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/);  
+ if(!m)return null;  
+ const lat=Number(m[1]),lon=Number(m[2]);  
+ if(lat < -90||lat > 90||lon < -180||lon > 180)return null;  
+ return {lat,lon};  
+}  
+function addZone(){  
+ const name=document.getElementById("zoneName").value.trim();  
+ const type=document.getElementById("zoneType").value;  
+ const coordText=document.getElementById("zoneCoords").value.trim();  
+ const notes=document.getElementById("zoneNotes").value.trim();  
+ if(!name){alert("Enter a place name.");return}  
+ let coords=null;  
+ if(coordText){  
+  coords=parseCoords(coordText);  
+  if(!coords){alert("Use latitude, longitude format.");return}  
+ }  
+ app.zones.push({id:String(Date.now())+Math.random().toString(36).slice(2,6),name,type,coords,notes});  
+ saveData();  
+ ["zoneName","zoneCoords","zoneNotes"].forEach(id=>document.getElementById(id).value="");  
+ renderZones();renderSafetyMarkers();alert("Place saved.");  
+}  
+function distanceMetres(a,b){  
+ const rad=x=>x*Math.PI/180,R=6371000;  
+ const dLat=rad(b.lat-a.lat),dLon=rad(b.lon-a.lon);  
+ const h=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2;  
+ return 2*R*Math.asin(Math.sqrt(h));  
+}  
+function fmtDistance(m){  
+ return m==null?"Unavailable":m<1000?Math.round(m)+" m":(m/1000).toFixed(2)+" km";  
+}  
+function renderZones(){  
+ const out=document.getElementById("zoneList");if(!out)return;  
+ const search=(document.getElementById("zoneSearch").value||"").toLowerCase();  
+ const filter=document.getElementById("zoneFilter").value;  
+ document.getElementById("zoneCount").textContent=app.zones.length;  
+ document.getElementById("cautionCount").textContent=app.zones.filter(z=>z.type==="caution").length;  
+ out.innerHTML="";  
+ const list=app.zones.filter(z=>(filter==="all"||z.type===filter)&&  
+  (z.name+" "+(z.notes||"")).toLowerCase().includes(search));  
+ if(!list.length){out.textContent="No matching places.";return}  
+ list.forEach(z=>{  
+  const distance=currentPosition&&z.coords?distanceMetres(  
+   {lat:currentPosition.coords.latitude,lon:currentPosition.coords.longitude},z.coords):null;  
+  const d=document.createElement("div");d.className="place";  
+  d.innerHTML="<strong>"+esc(z.name)+"</strong><br><span class='badge'>"+  
+   esc(zoneTypes[z.type]||z.type)+"</span><p class='muted'>"+  
+   (z.coords?esc(z.coords.lat.toFixed(6)+", "+z.coords.lon.toFixed(6)):"No coordinates")+  
+   "</p>"+(z.coords?"<p><b>Distance:</b> "+fmtDistance(distance)+"</p>":"")+  
+   (z.notes?"<p>"+esc(z.notes)+"</p>":"")+  
+   '<div class="actions">'+  
+   (z.coords?'<button data-show="'+esc(z.id)+'">Show on map</button>':'')+  
+   (z.coords?'<a class="btn blue" target="_blank" rel="noopener" href="'+mapURL(z.coords.lat,z.coords.lon)+'">Directions</a>':'')+  
+   '<button class="btn red" data-zdel="'+esc(z.id)+'">Delete</button></div>';  
+  out.appendChild(d);  
+ });  
+ out.querySelectorAll("[data-show]").forEach(b=>b.onclick=()=>showSavedZone(b.dataset.show));  
+ out.querySelectorAll("[data-zdel]").forEach(b=>b.onclick=()=>{  
+  if(confirm("Delete this saved place?")){  
+   app.zones=app.zones.filter(z=>String(z.id)!==b.dataset.zdel);  
+   saveData();renderZones();renderSafetyMarkers();  
+  }  
+ });  
+}  
+function renderSafetyMarkers(){  
+ if(!safetyMap||!window.L||!savedLayer)return;  
+ savedLayer.clearLayers();  
+ app.zones.forEach(z=>{  
+  if(!z.coords)return;  
+  const color=z.type==="caution"?"#d97706":z.type==="safe"?"#168447":"#1565c0";  
+  L.circleMarker([z.coords.lat,z.coords.lon],{  
+   radius:8,color,fillColor:color,fillOpacity:.85  
+  }).bindPopup("<strong>"+esc(z.name)+"</strong><br>"+esc(zoneTypes[z.type]||z.type))  
+    .addTo(savedLayer);  
+ });  
+}  
+function showSavedZone(id){  
+ const z=app.zones.find(x=>String(x.id)===String(id));  
+ if(!z||!z.coords)return;  
+ openTab("safety");initMaps();  
+ safetyMap.setView([z.coords.lat,z.coords.lon],17);  
+ savedLayer.eachLayer(layer=>{  
+  const p=layer.getLatLng();  
+  if(Math.abs(p.lat-z.coords.lat)<0.000001&&Math.abs(p.lng-z.coords.lon)<0.000001)layer.openPopup();  
+ });  
+}  
+function enableProximity(){  
+ if(!app.zones.some(z=>z.type==="caution"&&z.coords)){  
+  alert("Save a caution area with coordinates first.");return;  
+ }  
+ proximityEnabled=true;  
+ document.getElementById("proximityEnabled").checked=true;  
+ document.getElementById("proximityStatus").textContent="Starting GPS updates…";  
+ startTracking();  
+}  
+function disableProximity(){  
+ proximityEnabled=false;  
+ document.getElementById("proximityEnabled").checked=false;  
+ document.getElementById("proximityStatus").textContent="Proximity alerts off.";  
+}  
+function checkProximity(){  
+ if(!proximityEnabled||!currentPosition)return;  
+ const radius=Number(document.getElementById("alertRadius").value)||250;  
+ const here={lat:currentPosition.coords.latitude,lon:currentPosition.coords.longitude};  
+ const near=app.zones.filter(z=>z.type==="caution"&&z.coords)  
+  .map(z=>({z,d:distanceMetres(here,z.coords)})).filter(x=>x.d<=radius);  
+ if(!near.length){  
+  document.getElementById("proximityStatus").textContent="No saved caution area within "+radius+" m of current GPS.";  
+  return;  
+ }  
+ const item=near[0];  
+ document.getElementById("proximityStatus").textContent=  
+  "⚠️ Caution area nearby: "+item.z.name+" ("+fmtDistance(item.d)+").";  
+ if(!lastAlerts[item.z.id]||Date.now()-lastAlerts[item.z.id]>60000){  
+  lastAlerts[item.z.id]=Date.now();  
+  if(navigator.vibrate)navigator.vibrate([200,100,200]);  
+  alert("⚠️ Saved caution area nearby: "+item.z.name+  
+   "\nApproximate distance: "+fmtDistance(item.d));  
+ }  
+}  
+  
+/* Themes */  
+const themes={  
+ Forest:["#167447","#eef8f0","#ffffff","#173b2b","#63796c","#d8e8dc"],  
+ Ocean:["#087e8b","#e9f8fb","#ffffff","#123d47","#527781","#cde7eb"],  
+ Sky:["#2879c7","#eef6ff","#ffffff","#173858","#61788e","#d7e7f7"],  
+ Lavender:["#7953a9","#f5efff","#ffffff","#392750","#786b88","#e6d9f4"],  
+ Rose:["#b83d6a","#fff0f5","#ffffff","#54243a","#8d6878","#f2d6e1"],  
+ Sunrise:["#c65c22","#fff4e8","#ffffff","#59351e","#8a6a51","#f3dfca"],  
+ Mint:["#348b72","#ecfaf5","#ffffff","#194b3d","#638579","#d3eee4"],  
+ Earth:["#80613e","#f7f0e5","#ffffff","#443422","#7c6b57","#e8dcc9"],  
+ Night:["#34456f","#e9edf7","#ffffff","#202c49","#5c6882","#d2d9eb"],  
+ Meadow:["#64851f","#f2f8e8","#ffffff","#34451c","#71805b","#e0ebcb"]  
+};  
+function applyTheme(name){  
+ const t=themes[name]||themes.Forest;  
+ ["--primary","--bg","--card","--text","--muted","--border"].forEach((k,i)=>  
+  document.documentElement.style.setProperty(k,t[i]));  
+ app.theme=name;saveData();renderThemes();  
+}  
+function renderThemes(){  
+ const out=document.getElementById("themeGrid");out.innerHTML="";  
+ Object.keys(themes).forEach(name=>{  
+  const b=document.createElement("button");  
+  b.textContent=(app.theme===name?"✓ ":"🌿 ")+name;  
+  b.onclick=()=>applyTheme(name);out.appendChild(b);  
+ });  
+}  
+  
+/* Import/export */  
+function downloadFile(filename,content,type){  
+ const blob=new Blob([content],{type});  
+ const url=URL.createObjectURL(blob);  
+ const a=document.createElement("a");a.href=url;a.download=filename;  
+ document.body.appendChild(a);a.click();a.remove();  
+ setTimeout(()=>URL.revokeObjectURL(url),1000);  
+}  
+function exportJSON(){  
+ downloadFile("nari_raksha_backup.json",JSON.stringify({  
+  app:"Nari Raksha",version:3,exportedAt:new Date().toISOString(),data:app  
+ },null,2),"application/json");  
+}  
+async function importJSON(){  
+ const f=document.getElementById("importFile").files[0];  
+ if(!f){alert("Choose a JSON backup.");return}  
+ if(!confirm("Import replaces current data. Continue?"))return;  
+ try{  
+  const parsed=JSON.parse(await f.text()),d=parsed.data||parsed;  
+  if(!d||!d.profile||!Array.isArray(d.contacts)||!Array.isArray(d.family)||!Array.isArray(d.zones))throw Error("Invalid backup");  
+  if(d.contacts.length>5)throw Error("Maximum five trusted contacts");  
+  d.zones=d.zones.map(z=>Object.assign({},z,{id:z.id||String(Date.now()+Math.random())}));  
+  app=Object.assign(clone(DEFAULTS),d);saveData();renderAll();  
+  alert("Backup imported successfully.");  
+ }catch(e){alert("Import failed: "+e.message)}  
+ document.getElementById("importFile").value="";  
+}  
+function exportContactsCSV(){  
+ const rows=[["Name","Phone"],...app.contacts.map(c=>[c.name,c.phone])];  
+ const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\r\n");  
+ downloadFile("nari_raksha_contacts.csv","\uFEFF"+csv,"text/csv;charset=utf-8");  
+}  
+function clearAppData(){  
+ if(!confirm("Delete all app data? Export a backup first if needed."))return;  
+ if(!confirm("This cannot be undone. Continue?"))return;  
+ stopTracking();localStorage.removeItem(STORAGE_KEY);app=clone(DEFAULTS);  
+ renderAll();alert("All saved app data has been deleted.");  
+}  
+function copyText(text){  
+ if(navigator.clipboard&&navigator.clipboard.writeText){  
+  navigator.clipboard.writeText(text).then(()=>alert("Copied."))  
+   .catch(()=>prompt("Copy this text:",text));  
+ }else prompt("Copy this text:",text);  
+}  
+  
+function renderAll(){  
+ renderProfile();renderContacts();renderFamily();renderHelplines();  
+ renderSchemes();renderZones();renderThemes();applyTheme(app.theme||"Forest");  
+}  
+  
+/* Initialize app, map and automatic GPS request. */  
+renderAll();  
+initMaps();  
+setTimeout(()=>{  
+ getLocation();  
+},300);  
+  
+/* Re-render maps correctly when switching tabs. */  
+document.addEventListener("visibilitychange",()=>{  
+ if(!document.hidden){  
+  setTimeout(()=>{  
+   if(gpsMap)gpsMap.invalidateSize();  
+   if(safetyMap)safetyMap.invalidateSize();  
+  },200);  
+ }  
+});  
+</script>  
+</body>  
+</html>  
