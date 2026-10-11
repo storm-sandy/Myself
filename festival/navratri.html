@@ -3,16 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navratri Mahotsav - 9 Navadurga, Garba Hub & Night Safety Guide</title>
+    <title>Shree Navratri & Navadurga Portal - English | हिंदी | ગુજરાતી</title>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
+    
+    <!-- Google Fonts for English, Hindi (Devanagari) & Gujarati -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Noto+Sans+Gujarati:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&family=Rozha+One&display=swap" rel="stylesheet">
+    
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Tone.js for Ambient Audio & Sound Synthesis -->
+    
+    <!-- Tone.js for Audio Synthesizer -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 
     <script>
@@ -30,7 +34,7 @@
                         maroon: {
                             800: '#581c87',
                             900: '#4c0519',
-                            950: '#28030e',
+                            950: '#2a030d',
                         },
                         saffron: {
                             400: '#fb923c',
@@ -39,8 +43,10 @@
                         }
                     },
                     fontFamily: {
-                        cinzel: ['Cinzel', 'serif'],
+                        hindi: ['"Noto Sans Devanagari"', 'sans-serif'],
+                        gujarati: ['"Noto Sans Gujarati"', 'sans-serif'],
                         poppins: ['Poppins', 'sans-serif'],
+                        devanagariHeader: ['"Rozha One"', '"Noto Sans Devanagari"', 'serif'],
                     }
                 }
             }
@@ -49,28 +55,28 @@
 
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #120207;
+            font-family: 'Poppins', 'Noto Sans Devanagari', 'Noto Sans Gujarati', sans-serif;
+            background-color: #1a030a;
             color: #fce7f3;
             overflow-x: hidden;
+            font-feature-settings: "liga" 1, "dlig" 1;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .heading-font {
-            font-family: 'Cinzel', serif;
+        .heading-serif {
+            font-family: 'Rozha One', 'Noto Sans Devanagari', serif;
+            letter-spacing: 0.02em;
         }
 
-        /* Glowing Effects */
         .glow-gold {
-            text-shadow: 0 0 12px rgba(234, 179, 8, 0.7);
-        }
-        .glow-red {
-            text-shadow: 0 0 12px rgba(225, 29, 72, 0.8);
+            text-shadow: 0 0 12px rgba(250, 204, 21, 0.6);
         }
         .card-glow {
             box-shadow: 0 0 25px -5px rgba(234, 179, 8, 0.25);
         }
         .card-glow-red {
-            box-shadow: 0 0 25px -5px rgba(225, 29, 72, 0.3);
+            box-shadow: 0 0 25px -5px rgba(225, 29, 72, 0.35);
         }
 
         /* Custom Scrollbar */
@@ -79,41 +85,38 @@
             height: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #1a050d;
+            background: #150208;
         }
         ::-webkit-scrollbar-thumb {
-            background: #a16207;
+            background: #ca8a04;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #eab308;
+            background: #facc15;
         }
 
-        .tab-btn.active {
-            background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
+        .nav-tab.active {
+            background: linear-gradient(135deg, #b91c1c 0%, #881337 100%);
             border-color: #facc15;
             color: #ffffff;
-            box-shadow: 0 4px 15px rgba(234, 179, 8, 0.4);
+            box-shadow: 0 4px 15px rgba(234, 179, 8, 0.35);
         }
 
-        /* Decorative Background Pattern */
         .mandala-bg {
-            background-image: radial-gradient(circle at 50% 50%, rgba(217, 119, 6, 0.12) 0%, rgba(18, 2, 7, 0.95) 70%);
+            background-image: radial-gradient(circle at 50% 30%, rgba(217, 119, 6, 0.15) 0%, rgba(26, 3, 10, 0.98) 75%);
         }
 
-        /* Pulse animation for SOS */
         @keyframes sos-pulse {
             0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8); }
-            50% { transform: scale(1.05); box-shadow: 0 0 0 18px rgba(239, 68, 68, 0); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
         }
         .sos-btn-animated {
             animation: sos-pulse 2s infinite;
         }
 
-        /* Diya Flame Flicker */
         @keyframes flicker {
-            0%, 100% { transform: scale(1) rotate(-1deg); opacity: 0.9; }
-            50% { transform: scale(1.15) rotate(1deg); opacity: 1; filter: drop-shadow(0 0 8px #f97316); }
+            0%, 100% { transform: scale(1) rotate(-1deg); opacity: 0.95; }
+            50% { transform: scale(1.18) rotate(1deg); opacity: 1; filter: drop-shadow(0 0 10px #f97316); }
         }
         .diya-flame {
             animation: flicker 1.2s infinite ease-in-out;
@@ -123,576 +126,672 @@
 </head>
 <body class="mandala-bg min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-black">
 
-    <!-- TOP HEADER -->
-    <header class="sticky top-0 z-40 bg-maroon-950/90 backdrop-blur-md border-b border-amber-600/40 shadow-lg">
+    <!-- HEADER / NAVIGATION BAR -->
+    <header class="sticky top-0 z-40 bg-maroon-950/95 backdrop-blur-md border-b border-amber-600/40 shadow-xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
             
-            <!-- Logo / Title -->
             <div class="flex items-center gap-3">
-                <div class="relative w-10 h-10 flex items-center justify-center bg-gradient-to-tr from-amber-600 to-red-600 rounded-full p-1 shadow-md">
-                    <i class="fa-solid font-bold text-amber-200 text-xl">ॐ</i>
+                <div class="relative w-11 h-11 flex items-center justify-center bg-gradient-to-tr from-amber-600 via-red-600 to-amber-400 rounded-full p-1 shadow-md">
+                    <span class="heading-serif text-2xl text-amber-100 font-bold">ॐ</span>
                 </div>
                 <div>
-                    <h1 class="heading-font text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-200 tracking-wide glow-gold">
-                        शुभ नवरात्रि | NAVRATRI MAHOTSAV
+                    <h1 id="siteTitle" class="heading-serif text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-200 tracking-wide glow-gold">
+                        Navratri Mahotsav
                     </h1>
-                    <p class="text-xs text-amber-200/80 hidden sm:block">9 Navadurga Avatars • Garba & Raas • Night Safety</p>
+                    <p id="siteSubtitle" class="text-xs text-amber-200/90 font-medium hidden sm:block">
+                        Navadurga • Puja Vidhi • Garba Raas • Late-Night Safety Guide
+                    </p>
                 </div>
             </div>
 
-            <!-- Header Quick Actions -->
-            <div class="flex items-center gap-2 sm:gap-4 ml-auto sm:ml-0">
-                <!-- Search Bar -->
-                <div class="relative">
-                    <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Search Avatar, Puja, Safety..." 
-                           class="bg-maroon-900/80 text-amber-100 placeholder-amber-300/50 text-xs sm:text-sm rounded-full px-4 py-2 pl-9 border border-amber-600/50 focus:outline-none focus:border-amber-400 w-36 sm:w-56 transition-all">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-amber-400 text-xs"></i>
+            <div class="flex items-center gap-2 sm:gap-3 ml-auto sm:ml-0">
+                <!-- Multi-Language Selector Dropdown -->
+                <div class="relative flex items-center bg-maroon-900 border border-amber-500/60 rounded-xl px-2 py-1 shadow">
+                    <i class="fa-solid fa-globe text-amber-400 text-xs mr-2"></i>
+                    <select id="languageSelect" onchange="changeLanguage(this.value)" 
+                            class="bg-transparent text-amber-100 text-xs sm:text-sm font-bold focus:outline-none cursor-pointer pr-2">
+                        <option value="en" class="bg-maroon-950 text-amber-100">English</option>
+                        <option value="hi" class="bg-maroon-950 text-amber-100">हिंदी (Hindi)</option>
+                        <option value="gu" class="bg-maroon-950 text-amber-100">ગુજરાતી (Gujarati)</option>
+                    </select>
                 </div>
 
-                <!-- Chanting Ambient Audio Toggle -->
-                <button id="audioToggleBtn" onclick="toggleAmbientAudio()" class="flex items-center gap-2 bg-gradient-to-r from-amber-700 to-amber-600 hover:from-amber-600 hover:to-amber-500 text-amber-950 font-semibold px-3 py-1.5 rounded-full text-xs sm:text-sm border border-amber-300/60 transition shadow">
-                    <i id="audioIcon" class="fa-solid fa-volume-xmark text-amber-950"></i>
-                    <span id="audioText" class="hidden md:inline">Ambient Bell</span>
+                <!-- Bell Audio Sound Toggle -->
+                <button id="audioToggleBtn" onclick="toggleAmbientAudio()" class="flex items-center gap-1.5 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-maroon-950 font-bold px-3 py-1.5 rounded-xl text-xs sm:text-sm border border-amber-200/80 transition shadow">
+                    <i id="audioIcon" class="fa-solid fa-volume-xmark text-maroon-950"></i>
+                    <span id="audioText" class="hidden md:inline">Temple Bell</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- HERO / BANNER -->
-    <section class="relative overflow-hidden bg-gradient-to-b from-maroon-950 via-amber-950/20 to-maroon-950 py-6 border-b border-amber-800/30">
+    <!-- BANNER HERO SECTION -->
+    <section class="relative overflow-hidden bg-gradient-to-b from-maroon-950 via-amber-950/30 to-maroon-950 py-6 border-b border-amber-800/30">
         <div class="max-w-7xl mx-auto px-4 text-center relative z-10">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs sm:text-sm mb-3">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs sm:text-sm mb-3 font-semibold">
                 <i class="fa-solid fa-dharmachakra text-amber-400 animate-spin" style="animation-duration: 12s;"></i>
-                <span>Jai Mata Di • 9 Sacred Days & Nights</span>
+                <span id="heroBadge">Jai Mata Di • 9 Holy Days & Nights</span>
             </div>
-            <h2 class="heading-font text-2xl sm:text-4xl md:text-5xl font-black text-amber-100 mb-2 glow-gold">
-                नवदुर्गा पूजन, गरबा एवं सुरक्षा निर्देशिका
+            <h2 id="heroHeading" class="heading-serif text-2xl sm:text-4xl md:text-5xl font-bold text-amber-100 mb-2 glow-gold">
+                Navadurga Shakti, Puja Vidhi, Garba & Safety Portal
             </h2>
-            <p class="text-amber-200/90 text-xs sm:text-base max-w-3xl mx-auto leading-relaxed">
-                Explore authentic details of all 9 Divine Avatars from Shailaputri to Siddhidatri, along with Puja Vidhi, Garba dance tutorials, and late-night safety helplines for devotees & dancers.
+            <p id="heroDescription" class="text-amber-200/90 text-xs sm:text-base max-w-3xl mx-auto leading-relaxed">
+                Complete guide to Goddess Durga's 9 forms, daily mantras, Ghatasthapana rituals, Garba steps, and late-night safety helplines for women and visitors.
             </p>
         </div>
     </section>
 
     <!-- TAB NAVIGATION BAR -->
-    <div class="sticky top-[61px] z-30 bg-maroon-950/95 border-b border-amber-600/40 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-2 sm:px-4 py-2 overflow-x-auto no-scrollbar">
-            <div class="flex items-center space-x-2 min-w-max pb-1" id="tabBar">
-                <!-- Tabs will be rendered here dynamically -->
+    <div class="sticky top-[60px] z-30 bg-maroon-950/95 border-b border-amber-600/40 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-2 sm:px-4 py-2.5 overflow-x-auto no-scrollbar">
+            <div class="flex items-center justify-start md:justify-center space-x-2 min-w-max pb-1" id="mainTabBar">
+                <button onclick="switchMainTab('navadurga')" id="navtab-navadurga" class="nav-tab active flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border border-amber-600/40 bg-maroon-900/60 text-amber-200 hover:border-amber-400 transition">
+                    <i class="fa-solid fa-om text-amber-400"></i>
+                    <span id="tab1Title">Navadurga (9 Forms)</span>
+                </button>
+                <button onclick="switchMainTab('puja')" id="navtab-puja" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border border-amber-600/40 bg-maroon-900/60 text-amber-200 hover:border-amber-400 transition">
+                    <i class="fa-solid fa-hands-praying text-amber-400"></i>
+                    <span id="tab2Title">Puja Vidhi & Rituals</span>
+                </button>
+                <button onclick="switchMainTab('garba')" id="navtab-garba" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border border-saffron-500/50 bg-saffron-600/20 text-saffron-300 hover:bg-saffron-600/40 transition">
+                    <i class="fa-solid fa-compact-disc text-amber-400"></i>
+                    <span id="tab3Title">Garba & Dandiya Hub</span>
+                </button>
+                <button onclick="switchMainTab('safety')" id="navtab-safety" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border border-red-500/60 bg-red-950/80 text-red-200 hover:bg-red-900 transition">
+                    <i class="fa-solid fa-user-shield text-red-400"></i>
+                    <span id="tab4Title">Late-Night Safety SOS</span>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- MAIN CONTENT CONTAINER -->
+    <!-- MAIN DYNAMIC CONTENT CONTAINER -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full" id="mainContainer">
-        <!-- Content will be injected dynamically via JS based on selected tab -->
+        <!-- JS Injects Tab View Here -->
     </main>
 
-    <!-- FLOATING SOS BUTTON -->
+    <!-- FLOATING EMERGENCY SOS CALLER -->
     <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
-        <!-- Quick Call Bar Popup (hidden by default) -->
         <div id="quickCallPopup" class="hidden bg-maroon-950 border-2 border-red-500 rounded-2xl p-4 shadow-2xl w-72 text-white transition-all card-glow-red">
             <div class="flex justify-between items-center mb-3 pb-2 border-b border-red-800/50">
-                <span class="font-bold text-red-400 text-sm flex items-center gap-2">
+                <span class="font-bold text-red-400 text-sm flex items-center gap-2" id="sosPopupHeading">
                     <i class="fa-solid fa-triangle-exclamation animate-bounce"></i> Emergency Helplines
                 </span>
                 <button onclick="toggleQuickCall()" class="text-amber-200/70 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="space-y-2 text-xs">
-                <a href="tel:112" class="flex items-center justify-between bg-red-600/30 hover:bg-red-600/50 p-2 rounded.lg border border-red-500/40 text-red-200 font-semibold transition">
-                    <span><i class="fa-solid fa-shield-halved mr-2"></i>National Emergency</span>
-                    <span class="bg-red-600 px-2 py-0.5 rounded text-white font-bold">112</span>
+                <a href="tel:112" class="flex items-center justify-between bg-red-600/30 hover:bg-red-600/50 p-2.5 rounded-lg border border-red-500/40 text-red-100 font-bold transition">
+                    <span><i class="fa-solid fa-shield-halved mr-2"></i>National Helpline</span>
+                    <span class="bg-red-600 px-2 py-0.5 rounded text-white">112</span>
                 </a>
-                <a href="tel:1091" class="flex items-center justify-between bg-pink-600/30 hover:bg-pink-600/50 p-2 rounded-lg border border-pink-500/40 text-pink-200 font-semibold transition">
-                    <span><i class="fa-solid fa-venus mr-2"></i>Women Helpline</span>
-                    <span class="bg-pink-600 px-2 py-0.5 rounded text-white font-bold">1091</span>
+                <a href="tel:1091" class="flex items-center justify-between bg-pink-600/30 hover:bg-pink-600/50 p-2.5 rounded-lg border border-pink-500/40 text-pink-100 font-bold transition">
+                    <span><i class="fa-solid fa-venus mr-2"></i>Women Safety</span>
+                    <span class="bg-pink-600 px-2 py-0.5 rounded text-white">1091</span>
                 </a>
-                <a href="tel:108" class="flex items-center justify-between bg-amber-600/30 hover:bg-amber-600/50 p-2 rounded-lg border border-amber-500/40 text-amber-200 font-semibold transition">
-                    <span><i class="fa-solid fa-ambulance mr-2"></i>Medical Ambulance</span>
-                    <span class="bg-amber-600 px-2 py-0.5 rounded text-white font-bold">108</span>
+                <a href="tel:100" class="flex items-center justify-between bg-blue-600/30 hover:bg-blue-600/50 p-2.5 rounded-lg border border-blue-500/40 text-blue-100 font-bold transition">
+                    <span><i class="fa-solid fa-building-shield mr-2"></i>Police Control</span>
+                    <span class="bg-blue-600 px-2 py-0.5 rounded text-white">100</span>
+                </a>
+                <a href="tel:108" class="flex items-center justify-between bg-amber-600/30 hover:bg-amber-600/50 p-2.5 rounded-lg border border-amber-500/40 text-amber-100 font-bold transition">
+                    <span><i class="fa-solid fa-ambulance mr-2"></i>Ambulance</span>
+                    <span class="bg-amber-600 px-2 py-0.5 rounded text-white">108</span>
                 </a>
             </div>
         </div>
 
-        <button onclick="toggleQuickCall()" class="sos-btn-animated bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white font-black text-sm sm:text-base px-5 py-3.5 rounded-full shadow-2xl border-2 border-amber-400/80 flex items-center gap-2 cursor-pointer transition transform active:scale-95">
+        <button onclick="toggleQuickCall()" class="sos-btn-animated bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-500 text-white font-black text-sm sm:text-base px-5 py-3.5 rounded-full shadow-2xl border-2 border-amber-400/90 flex items-center gap-2 cursor-pointer transition transform active:scale-95">
             <i class="fa-solid fa-phone-volume text-lg animate-pulse"></i>
-            <span>EMERGENCY SOS</span>
+            <span id="sosBtnText">Emergency SOS</span>
         </button>
     </div>
 
     <!-- FOOTER -->
-    <footer class="bg-maroon-950 border-t border-amber-700/40 py-8 mt-12 text-center text-amber-200/70 text-xs sm:text-sm">
+    <footer class="bg-maroon-950 border-t border-amber-700/40 py-8 mt-12 text-center text-amber-200/80 text-xs sm:text-sm">
         <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-2">
-                <span class="heading-font text-amber-400 font-bold text-base">ॐ नवरात्रोत्सव </span>
-                <span>• May Goddess Durga Bless Everyone With Strength & Security</span>
+                <span class="heading-serif text-amber-400 font-bold text-base sm:text-lg">ॐ जगज्जनन्यै नमः</span>
+                <span id="footerText">• Sarvamangala Maangalye Shive Sarvaartha Saadhike</span>
             </div>
             <div class="flex items-center gap-4 text-xs">
-                <button onclick="switchTab('safety')" class="hover:text-amber-300 transition underline">Late Night Safety Guidelines</button>
-                <button onclick="switchTab('garba')" class="hover:text-amber-300 transition underline">Garba Moves</button>
+                <button onclick="switchMainTab('safety')" class="hover:text-amber-300 transition underline" id="footerLinkSafety">Safety Guidelines</button>
+                <button onclick="switchMainTab('garba')" class="hover:text-amber-300 transition underline" id="footerLinkGarba">Garba Rules</button>
                 <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="bg-amber-800/40 hover:bg-amber-700/60 px-3 py-1 rounded text-amber-200"><i class="fa-solid fa-arrow-up"></i> Top</button>
             </div>
         </div>
     </footer>
 
+    <!-- JAVASCRIPT DATA & APP LOGIC -->
     <script>
+        // TRILINGUAL UI DICTIONARY
+        const uiText = {
+            en: {
+                siteTitle: "Navratri Mahotsav",
+                siteSubtitle: "Navadurga • Puja Vidhi • Garba Raas • Late-Night Safety Guide",
+                heroBadge: "Jai Mata Di • 9 Holy Days & Nights",
+                heroHeading: "Navadurga Shakti, Puja Vidhi, Garba & Safety Portal",
+                heroDescription: "Complete guide to Goddess Durga's 9 forms, daily mantras, Ghatasthapana rituals, Garba steps, and late-night safety helplines for women and visitors.",
+                tab1Title: "Navadurga (9 Forms)",
+                tab2Title: "Puja Vidhi & Rituals",
+                tab3Title: "Garba & Dandiya Hub",
+                tab4Title: "Late-Night Safety SOS",
+                bellText: "Temple Bell",
+                bellTextActive: "Chiming Bell",
+                sosPopupHeading: "Emergency Helplines",
+                sosBtnText: "Emergency SOS",
+                footerText: "• Sarvamangala Maangalye Shive Sarvaartha Saadhike",
+                footerLinkSafety: "Safety Guidelines",
+                footerLinkGarba: "Garba Rules",
+                dayPrefix: "Day",
+                mountLabel: "Mount / Vehicle",
+                flowerLabel: "Favorite Flower",
+                bhogLabel: "Special Bhog",
+                weaponLabel: "Weapons / Items",
+                copyMantraBtn: "Copy Mantra",
+                copiedToast: "Mantra copied to clipboard!",
+                pujaHeader: "Kalash Sthapana & Complete Ritual Guide",
+                pujaSubtitle: "Ghatasthapana marks the auspicious beginning of the 9-day Navratri worship.",
+                garbaHeader: "Garba & Dandiya Raas Hub",
+                garbaSubtitle: "Learn authentic Garba steps, costume advice, and health/posture tips for high energy.",
+                safetyHeader: "Late-Night Women & Visitor Safety Guide",
+                safetySubtitle: "Emergency contacts, GPS location sharing, transport safety, and night-out guidelines.",
+                getGpsBtn: "Get Current GPS Location",
+                shareWhatsappBtn: "Share GPS on WhatsApp",
+                playGarbaBeat: "Play Garba Beat"
+            },
+            hi: {
+                siteTitle: "शुभ नवरात्रि महोत्सव",
+                siteSubtitle: "नवदुर्गा दर्शन • पूजा विधि • गरबा रास • रात्रि सुरक्षा निर्देश",
+                heroBadge: "जय माता दी • ९ पवित्र दिन एवं रात्रियाँ",
+                heroHeading: "नवदुर्गा शक्ति, पूजा-विधि, गरबा एवं सुरक्षा पोर्टल",
+                heroDescription: "माँ शैलपुत्री से सिद्धिदात्री तक संपूर्ण ९ रूपों का विवरण, मंत्र, पूजा-सामग्री, गरबा/डांडिया मार्गदर्शन एवं देर रात सुरक्षा हेल्पलाइन।",
+                tab1Title: "नवदुर्गा ९ रूप",
+                tab2Title: "पूजा विधि एवं घटस्थापना",
+                tab3Title: "गरबा एवं डांडिया रास",
+                tab4Title: "रात्रि सुरक्षा एवं SOS",
+                bellText: "घंटी ध्वनि",
+                bellTextActive: "घंटी बज रही है",
+                sosPopupHeading: "आपातकालीन हेल्पलाइन",
+                sosBtnText: "आपातकालीन SOS",
+                footerText: "• सर्वमंगल मांगल्ये शिवे सर्वार्थ साधिके",
+                footerLinkSafety: "सुरक्षा निर्देश",
+                footerLinkGarba: "गरबा नियम",
+                dayPrefix: "दिवस",
+                mountLabel: "सवारी (Vehicle)",
+                flowerLabel: "प्रिय पुष्प (Flower)",
+                bhogLabel: "पावन भोग (Bhog)",
+                weaponLabel: "अस्त्र/शस्त्र (Items)",
+                copyMantraBtn: "मंत्र कॉपी करें",
+                copiedToast: "मंत्र सफलतापूर्वक कॉपी हो गया!",
+                pujaHeader: "कलश स्थापना एवं संपूर्ण पूजा विधि",
+                pujaSubtitle: "प्रतिपदा तिथि को घटस्थापना के साथ ही ९ दिनों के पावन व्रत का शुभारंभ होता है।",
+                garbaHeader: "गरबा एवं डांडिया रास गाइड",
+                garbaSubtitle: "गरबा भक्ति का उत्सव है। जानिए पारंपारिक स्टेप्स, परिधान सुझाव और ऊर्जा बनाए रखने के टिप्स।",
+                safetyHeader: "महिला एवं नागरिक सुरक्षा निर्देशिका",
+                safetySubtitle: "गरबा पंडालों में देर रात तक रुकने वाले श्रद्धालुओं और बहनों के लिए आवश्यक सुरक्षा साधन।",
+                getGpsBtn: "वर्तमान स्थान प्राप्त करें",
+                shareWhatsappBtn: "व्हाट्सएप पर लोकेशन भेजें",
+                playGarbaBeat: "ढोल ताल बजाएं"
+            },
+            gu: {
+                siteTitle: "શુભ નવરાત્રી મહોત્સવ",
+                siteSubtitle: "નવદુર્ગા દર્શન • પૂજા વિધિ • ગરબા રાસ • રાત્રિ સુરક્ષા વિગત",
+                heroBadge: "જય માતાજી • ૯ પવિત્ર દિવસો અને રાતો",
+                heroHeading: "નવદુર્ગા શક્તિ, પૂજા-વિધિ, ગરબા અને સુરક્ષા પોર્ટલ",
+                heroDescription: "મા શેલપુત્રી થી સિદ્ધિદાત્રી સુધીના ૯ સ્વરૂપો, મંત્રો, ઘટસ્થાપના પૂજા, ગરબા સ્ટેપ્સ અને મોડી રાતની મહિલા સુરક્ષા ગાઈડ.",
+                tab1Title: "નવદુર્ગા ૯ સ્વરૂપ",
+                tab2Title: "પૂજા વિધિ અને ઘટસ્થાપના",
+                tab3Title: "ગરબા અને દાંડિયા રાસ",
+                tab4Title: "રાત્રિ સુરક્ષા અને SOS",
+                bellText: "મંદિર ઘંટડી",
+                bellTextActive: "ઘંટડી વાગી રહી છે",
+                sosPopupHeading: "ઈમરજન્સી હેલ્પલાઈન",
+                sosBtnText: "ઈમરજન્સી SOS",
+                footerText: "• સર્વમંગલ માંગલ્યે શિવે સર્વાર્થ સાધિકે",
+                footerLinkSafety: "સુરક્ષા સૂચનાઓ",
+                footerLinkGarba: "ગરબા નિયમો",
+                dayPrefix: "દિવસ",
+                mountLabel: "સવારી (Vehicle)",
+                flowerLabel: "પ્રિય પુષ્પ (Flower)",
+                bhogLabel: "પવિત્ર ભોગ (Bhog)",
+                weaponLabel: "અસ્ત્ર/શસ્ત્ર",
+                copyMantraBtn: "મંત્ર કોપી કરો",
+                copiedToast: "મંત્ર સફળતાપૂર્વક કોપી થઈ ગયો!",
+                pujaHeader: "કળશ સ્થાપના અને સંપૂર્ણ પૂજા વિધિ",
+                pujaSubtitle: "પ્રથમ દિવસે ઘટસ્થાપના સાથે નવરાત્રીના પવિત્ર વ્રત અને પૂજનનો પ્રારંભ થાય છે.",
+                garbaHeader: "ગરબા અને દાંડિયા રાસ ગાઈડ",
+                garbaSubtitle: "ગરબા એ ભક્તિનો ઉત્સવ છે. જાણો પરંપરાગત સ્ટેપ્સ, પહેરવેશ અને એનર્જી ટિપ્સ.",
+                safetyHeader: "મહિલા અને નાગરિક સુરક્ષા માર્ગદર્શિકા",
+                safetySubtitle: "મોડી રાત સુધી ગરબામાં રોકાતા ખેલૈયાઓ અને બહેનો માટે જરૂરી સુરક્ષા સાધનો.",
+                getGpsBtn: "લાઇવ લોકેશન મેળવો",
+                shareWhatsappBtn: "વોટ્સએપ પર લોકેશન મોકલો",
+                playGarbaBeat: "ઢોલ તાલી વગાડો"
+            }
+        };
+
+        // NAVADURGA DATA (Trilingual)
         const durgaData = [
             {
                 day: 1,
                 id: "shailaputri",
-                name: "Shailaputri",
-                hindiName: "1. शैलपुत्री",
-                tagline: "शक्ति, धैर्य और नई शुरुआत की प्रतीक",
-                significance: "Symbol of Shakti, immense patience, and pure new beginnings. Daughter of Mount Himavan.",
-                mount: "Bull (Nandi)",
-                weapons: "Trishul (Trident) & Lotus",
-                bgGradient: "from-amber-900/60 to-red-950/80",
-                color: "Yellow / White",
-                colorHex: "#eab308",
-                flower: "Hibiscus / Jasmine",
-                bhog: "Pure Desi Ghee / Milk sweets",
-                mantra: "ॐ देवी शैलपुत्र्यै नमः ॥",
-                sloka: "वन्दे वाञ्छितलाभाय चन्द्रार्धकृतशेखराम्। वृषारूढां शूलधरां शैलपुत्रीं यशस्विनीम्॥",
-                pujaSteps: [
-                    "Perform Kalash Sthapana (Ghatasthapana) with akshat and sacred water.",
-                    "Offer pure Desi Ghee or sweets made from ghee at Goddess Shailaputri's feet.",
-                    "Light a pure ghee diya and offer yellow flowers or jasmine.",
-                    "Chant 108 times the sacred mantra for good health and stable mind."
-                ],
-                garbaTip: "1-Clap Basic Garba & Slow Rhythm Circle",
-                avatarIcon: "fa-mountain",
-                svgGraphic: `<svg class="w-32 h-32 mx-auto" viewBox="0 0 100 100">
+                name: { en: "Shailaputri", hi: "शैलपुत्री", gu: "શૈલપુત્રી" },
+                tagline: {
+                    en: "Symbol of strength, patience, and new beginnings",
+                    hi: "शक्ति, धैर्य और नई शुरुआत की प्रतीक",
+                    gu: "શક્તિ, ધીરજ અને નવી શરુઆતની પ્રતીક"
+                },
+                significance: {
+                    en: "Daughter of the Mountain King Himalaya. She rides the bull and represents absolute strength and grounding.",
+                    hi: "पर्वतराज हिमालय की पुत्री। माँ शैलपुत्री शक्ति, असीम धैर्य और नई शुरुआत का पावन प्रतीक हैं।",
+                    gu: "પર્વતરાજ હિમાલયની પુત્રી. મા શૈલપુત્રી અસીમ ધીરજ, સ્થિરતા અને નવી શરુઆતનું પ્રતીક છે."
+                },
+                mount: { en: "Nandi Bull (वृषभ)", hi: "वृषभ (बैल)", gu: "બળદ (વૃષભ)" },
+                weapons: { en: "Trishul (Trident) & Lotus", hi: "त्रिशूल एवं कमल", gu: "ત્રિશૂળ અને કમળ" },
+                color: { en: "Yellow / White", hi: "पीला / सफेद", gu: "પીળો / સફેદ" },
+                flower: { en: "Hibiscus & Jasmine", hi: "गुड़हल व चमेली", gu: "જાસૂદ અને ચમેલી" },
+                bhog: { en: "Pure Cow Ghee & Milk Sweets", hi: "शुद्ध गाय का घी व दूध मिठाई", gu: "શુદ્ધ ગાયનું ઘી અને દૂધની મીઠાઈ" },
+                mantra: { en: "Om Devi Shailaputriyai Namah ||", hi: "ॐ देवी शैलपुत्र्यै नमः ॥", gu: "ઓમ દેવી શૈલપુત્ર્યૈ નમઃ ॥" },
+                sloka: {
+                    en: "Vande Vanchhitalabhaya Chandrardhakritashekharam | Vrisharudham Shuladharam Shailaputrim Yashasvinim ||",
+                    hi: "वन्दे वाञ्छितलाभाय चन्द्रार्धकृतशेखराम्। वृषारूढां शूलधरां शैलपुत्रीं यशस्विनीम्॥",
+                    gu: "વંદે વાંછિતલાભાય ચંદ્રાર્ધકૃતશેખરામ્। વૃષારૂઢાં શૂલધરાં શૈલપુત્રીં યશસ્વિનીમ્॥"
+                },
+                svgGraphic: `<svg class="w-24 h-24 mx-auto" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="45" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="4,2"/>
                     <path d="M50 15 L50 85 M15 50 L85 50" stroke="#f59e0b" stroke-width="1.5"/>
-                    <polygon points="50,20 60,40 40,40" fill="#dc2626"/>
-                    <path d="M30 65 Q50 45 70 65" fill="none" stroke="#facc15" stroke-width="3"/>
-                    <circle cx="50" cy="50" r="12" fill="#eab308" opacity="0.8"/>
+                    <polygon points="50,18 62,38 38,38" fill="#dc2626"/>
+                    <circle cx="50" cy="50" r="10" fill="#eab308"/>
                 </svg>`
             },
             {
                 day: 2,
                 id: "brahmacharini",
-                name: "Brahmacharini",
-                hindiName: "2. ब्रह्मचारिणी",
-                tagline: "तप, त्याग और साधना की शक्ति",
-                significance: "Embodies deep penance, self-discipline, sacrifice, and supreme devotion.",
-                mount: "Barefoot (Walks on earth)",
-                weapons: "Japa Mala (Rosary) & Kamandalu (Water Pot)",
-                bgGradient: "from-orange-950/70 to-red-950/80",
-                color: "Orange / Light Green",
-                colorHex: "#f97316",
-                flower: "Lotus / Jasmine",
-                bhog: "Sugar, Panchamrit, Fruits",
-                mantra: "ॐ देवी ब्रह्मचारिण्यै नमः ॥",
-                sloka: "दधानाव्रजपद्माभ्यामक्षमालाकमण्डलू। देवी प्रसीदतु मयि ब्रह्मचारिण्यनुत्तमा॥",
-                pujaSteps: [
-                    "Begin morning puja with clean mind and offered lotus flowers.",
-                    "Offer sugar and panchamrit as Bhog for longevity of family members.",
-                    "Meditate quietly while rotating the Rudraksha mala.",
-                    "Pray for determination, focus, and success in learning or spiritual goals."
-                ],
-                garbaTip: "2-Clap Garba with graceful hand gestures and light footwork",
-                avatarIcon: "fa-hands-praying",
-                svgGraphic: `<svg class="w-32 h-32 mx-auto" viewBox="0 0 100 100">
+                name: { en: "Brahmacharini", hi: "ब्रह्मचारिणी", gu: "બ્રહ્મચારીણી" },
+                tagline: {
+                    en: "Goddess of penance, devotion, and austerity",
+                    hi: "तप, त्याग और साधना की शक्ति",
+                    gu: "તપ, ત્યાગ અને સાધનાની શક્તિ"
+                },
+                significance: {
+                    en: "The ascetic goddess who practiced intense penance to obtain Lord Shiva as her consort. She grants wisdom and restraint.",
+                    hi: "कठोर तपस्या करने वाली देवी। माँ ब्रह्मचारिणी अनंत फल देने वाली, संयम, त्याग और निष्ठा प्रदान करती हैं।",
+                    gu: "કઠોર તપસ્યા કરનારા દેવી. મા બ્રહ્મચારીણી સંયમ, ત્યાગ અને સમર્પણનો આશીર્વાદ આપે છે."
+                },
+                mount: { en: "Barefoot (walking)", hi: "पैदल (नंगे पैर)", gu: "પગપાળા (નગ્ન પગે)" },
+                weapons: { en: "Japa Mala (Rosary) & Kamandalu", hi: "जाप माला एवं कमंडल", gu: "જપ માળા અને કમંડળ" },
+                color: { en: "Orange / Green", hi: "नारंगी / हरा", gu: "નાળંગી / લીલો" },
+                flower: { en: "Lotus & Marigold", hi: "कमल एवं गेंदा", gu: "કમળ અને ગલગોટો" },
+                bhog: { en: "Sugar, Panchamrit & Fruits", hi: "शक्कर, पंचामृत एवं फल", gu: "સાકર, પંચામૃત અને ફળ" },
+                mantra: { en: "Om Devi Brahmacharinyai Namah ||", hi: "ॐ देवी ब्रह्मचारिण्यै नमः ॥", gu: "ઓમ દેવી બ્રહ્મચારીણ્યૈ નમઃ ॥" },
+                sloka: {
+                    en: "Dadhana Karapadmabhyamakshamalakamandalu | Devi Prasidatu Mayi Brahmacharinyanuttama ||",
+                    hi: "दधानाव्रजपद्माभ्यामक्षमालाकमण्डलू। देवी प्रसीदतु मयि ब्रह्मचारिण्यनुत्तमा॥",
+                    gu: "દધાના કરપદ્માભ્યામક્ષમાલાકમંડલૂ। દેવી પ્રસીદતુ મયિ બ્રહ્મચારીણ્યનુત્તમા॥"
+                },
+                svgGraphic: `<svg class="w-24 h-24 mx-auto" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="42" fill="none" stroke="#ea580c" stroke-width="2"/>
-                    <circle cx="50" cy="50" r="28" fill="none" stroke="#facc15" stroke-width="1.5"/>
-                    <path d="M50 30 Q65 50 50 70 Q35 50 50 30 Z" fill="#f97316" opacity="0.7"/>
-                    <circle cx="50" cy="50" r="6" fill="#fef08a"/>
+                    <path d="M50 25 Q68 50 50 75 Q32 50 50 25 Z" fill="#f97316" opacity="0.8"/>
+                    <circle cx="50" cy="50" r="7" fill="#fef08a"/>
                 </svg>`
             },
             {
                 day: 3,
                 id: "chandraghanta",
-                name: "Chandraghanta",
-                hindiName: "3. चंद्रघंटा",
-                tagline: "साहस, शांति और सुरक्षा की देवी",
-                significance: "Goddess of courage, supreme peace, and divine shield. She wears a bell-shaped half-moon.",
-                mount: "Tigress / Lion",
-                weapons: "Trishul, Gada, Sword, Bell, Bow & Arrow",
-                bgGradient: "from-pink-950/70 to-maroon-950/90",
-                color: "Royal Blue / Red",
-                colorHex: "#3b82f6",
-                flower: "Shankhpushpi / Red Lotus",
-                bhog: "Milk sweets, Kheer, Honey",
-                mantra: "ॐ देवी चंद्रघंटायै नमः ॥",
-                sloka: "पिण्डजप्रवरारूढा चण्डकोपास्त्रकैर्युता। प्रसादं तनुते मह्यं चंद्रघंटेति विश्रुता॥",
-                pujaSteps: [
-                    "Ring temple bells during Aarti to remove negative energies.",
-                    "Offer Kheer or milk items prepared with cardamom and saffron.",
-                    "Offer red flowers and chant Chandraghanta Stotram for bravery.",
-                    "Pray for peace, safety against evil forces, and inner confidence."
-                ],
-                garbaTip: "Fast 3-Clap Garba with bell spins and energetic spins",
-                avatarIcon: "fa-bell",
-                svgGraphic: `<svg class="w-32 h-32 mx-auto" viewBox="0 0 100 100">
-                    <path d="M30 40 A20 20 0 0 1 70 40 L70 65 L30 65 Z" fill="#ec4899" opacity="0.8"/>
+                name: { en: "Chandraghanta", hi: "चंद्रघंटा", gu: "ચંદ્રઘંટા" },
+                tagline: {
+                    en: "Goddess of courage, peace, and serenity",
+                    hi: "साहस, शांति और सुरक्षा की देवी",
+                    gu: "સાહસ, શાંતિ અને સુરક્ષાના દેવી"
+                },
+                significance: {
+                    en: "She wears a half-moon shaped like a bell on her forehead. Her bell sound drives away all evil spirits and fear.",
+                    hi: "मस्तक पर घण्टे के आकार का आधा चंद्रमा। माँ चंद्रघंटा पापों का नाश करने वाली और वीरता देने वाली देवी हैं।",
+                    gu: "મસ્તક પર ઘંટ આકારનો અડધો ચંદ્ર. મા ચંદ્રઘંટા પાપોનો નાશ કરનાર અને વીરતા આપનાર દેવી છે."
+                },
+                mount: { en: "Tigress / Lion", hi: "सिंह (शेर)", gu: "સિંહ / વાઘ" },
+                weapons: { en: "Trishul, Sword, Gada, Bell, Bow", hi: "त्रिशूल, खड्ग, गदा, घंटा", gu: "ત્રિશૂળ, તલવાર, ગદા, ઘંટ" },
+                color: { en: "Red / Grey", hi: "लाल / ग्रे", gu: "લાલ / ગ્રે" },
+                flower: { en: "Jasmine & Lotus", hi: "चमेली व शंखपुष्पी", gu: "ચમેલી અને શંખપુષ્પી" },
+                bhog: { en: "Milk Sweets, Kheer & Honey", hi: "दूध मिठाई, खीर व शहद", gu: "દૂધની વાનીઓ, ખીર અને મધ" },
+                mantra: { en: "Om Devi Chandraghantayai Namah ||", hi: "ॐ देवी चंद्रघंटायै नमः ॥", gu: "ઓમ દેવી ચંદ્રઘંટાયૈ નમઃ ॥" },
+                sloka: {
+                    en: "Pindajapravararudha Chandakopastrakairyuta | Prasadam Tanute Mahyam Chandraghanteti Vishruta ||",
+                    hi: "पिण्डजप्रवरारूढा चण्डकोपास्त्रकैर्युता। प्रसादं तनुते मह्यं चंद्रघंटेति विश्रुता॥",
+                    gu: "પિંડજપ્રવરારૂઢા ચંડકોપાસ્ત્રકૈર્યુતા। પ્રસાદં તનુતે મહ્યં ચંદ્રઘંટેતિ વિશ્રુતા॥"
+                },
+                svgGraphic: `<svg class="w-24 h-24 mx-auto" viewBox="0 0 100 100">
+                    <path d="M30 40 A20 20 0 0 1 70 40 L70 65 L30 65 Z" fill="#ec4899" opacity="0.85"/>
                     <path d="M25 65 L75 65" stroke="#facc15" stroke-width="4"/>
-                    <circle cx="50" cy="72" r="6" fill="#facc15"/>
-                    <path d="M40 20 A 15 15 0 0 0 60 20" fill="none" stroke="#fef08a" stroke-width="3"/>
+                    <circle cx="50" cy="73" r="6" fill="#facc15"/>
                 </svg>`
             },
             {
                 day: 4,
                 id: "kushmanda",
-                name: "Kushmanda",
-                hindiName: "4. कूष्मांडा",
-                tagline: "सृष्टि की ऊर्जा और महास्वरुप की देवी",
-                significance: "Creator of the cosmic egg (Universe) through her divine radiant smile and cosmic light.",
-                mount: "Tiger",
-                weapons: "Chakra, Gada, Bow, Arrow, Rosary, Nectar Pot",
-                bgGradient: "from-amber-950/80 to-yellow-950/90",
-                color: "Royal Blue / Orange",
-                colorHex: "#eab308",
-                flower: "Red Marigold or Red Flowers",
-                bhog: "Malpua / Pumpkin Sweets",
-                mantra: "ॐ देवी कूष्माण्डायै नमः ॥",
-                sloka: "सुरासम्पूर्णकलशं रुधिराप्लुतमेव च। दधाना हस्तपद्माभ्यां कूष्मांडा शुभदास्तु मे॥",
-                pujaSteps: [
-                    "Light lamps facing east to attract radiant positive energy.",
-                    "Offer fresh Malpua made with ghee and cardamom.",
-                    "Recite Kushmanda Kavach for radiant health and intellect.",
-                    "Distribute Prasad among neighbors and children."
-                ],
-                garbaTip: "Dodhiyo & Popat Steps with wide arms and cheerful spins",
-                avatarIcon: "fa-sun",
-                svgGraphic: `<svg class="w-32 h-32 mx-auto" viewBox="0 0 100 100">
+                name: { en: "Kushmanda", hi: "कूष्मांडा", gu: "કૂષ્માંડા" },
+                tagline: {
+                    en: "Creator of the Cosmic Universe and energy",
+                    hi: "सृष्टि की ऊर्जा और महास्वरूपा की देवी",
+                    gu: "બ્રહ્માંડના સર્જક અને ઊર્જાના દેવી"
+                },
+                significance: {
+                    en: "She created the universe with her divine smile. She has eight hands and resides in the core of the Sun.",
+                    hi: "अपनी मंद मुस्कान से ब्रह्मांड की रचना करने वाली। इनकी ऊर्जा से दसों दिशाएं आलोकित होती हैं।",
+                    gu: "પોતાના મંદ સ્મિતથી બ્રહ્માંડની રચના કરનારા. તેમની ઊર્જા સૂર્ય સમાન તેજોમય છે."
+                },
+                mount: { en: "Tiger (बाघ)", hi: "बाघ (Tiger)", gu: "વાઘ" },
+                weapons: { en: "Chakra, Gada, Bow, Arrow, Amrit Kalash", hi: "चक्र, गदा, धनुष, बाण, अमृत कलश", gu: "ચક્ર, ગદા, ધનુષ, બાણ, અમૃત કળશ" },
+                color: { en: "Royal Blue / Orange", hi: "नारंगी / पीला", gu: "નારંગી / પીળો" },
+                flower: { en: "Red Flowers & Marigold", hi: "लाल पुष्प व गेंदा", gu: "લાલ ફૂલ અને ગલગોટો" },
+                bhog: { en: "Malpua & Pumpkin Sweets", hi: "मालपुआ व पेठा", gu: "માલપુડા અને પેઠા" },
+                mantra: { en: "Om Devi Kushmandayai Namah ||", hi: "ॐ देवी कूष्माण्डायै नमः ॥", gu: "ઓમ દેવી કૂષ્માંડાયૈ નમઃ ॥" },
+                sloka: {
+                    en: "Surasampurnakalasham Rudhiraplutameva Cha | Dadhana Hastapadmabhyam Kushmanda Shubhadastu Me ||",
+                    hi: "सुरासम्पूर्णकलशं रुधिराप्लुतमेव च। दधाना हस्तपद्माभ्यां कूष्मांडा शुभदास्तु मे॥",
+                    gu: "સુરાસંપૂર્ણકલશં રુધિરાપ્લુતમેવ ચ। દધાના હસ્તપદ્માભ્યાં કૂષ્માંડા શુભદાસ્તુ મે॥"
+                },
+                svgGraphic: `<svg class="w-24 h-24 mx-auto" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="22" fill="#f59e0b"/>
                     <g stroke="#facc15" stroke-width="2.5">
                         <line x1="50" y1="10" x2="50" y2="22"/>
                         <line x1="50" y1="78" x2="50" y2="90"/>
                         <line x1="10" y1="50" x2="22" y2="50"/>
                         <line x1="78" y1="50" x2="90" y2="50"/>
-                        <line x1="22" y1="22" x2="30" y2="30"/>
-                        <line x1="70" y1="70" x2="78" y2="78"/>
-                        <line x1="22" y1="78" x2="30" y2="70"/>
-                        <line x1="70" y1="30" x2="78" y2="22"/>
                     </g>
                 </svg>`
             },
             {
                 day: 5,
                 id: "skandamata",
-                name: "Skandamata",
-                hindiName: "5. स्कंदमाता",
-                tagline: "ममता, सुरक्षा और साहस की देवी",
-                significance: "Mother of Lord Skanda (Kartikeya). Protector who bestows maternal love, salvation, and victory.",
-                mount: "Lion",
-                weapons: "Lotus in two hands, Holding infant Skanda",
-                bgGradient: "from-blue-950/80 to-indigo-950/90",
-                color: "White / Yellow",
-                colorHex: "#38bdf8",
-                flower: "Yellow Rose / Champa",
-                bhog: "Bananas / Kheer",
-                mantra: "ॐ देवी स्कन्दमातायै नमः ॥",
-                sloka: "सिंहासनगता नित्यं पद्माश्रितकरद्वया। शुभदास्तु सदा देवी स्कन्दमाता यशस्विनी॥",
-                pujaSteps: [
-                    "Offer ripe bananas or banana delicacies to the Goddess.",
-                    "Seek blessings for children's prosperity, protection, and wisdom.",
-                    "Perform Aarti with yellow roses and brass diya.",
-                    "Chant Skandamata mantra with family members."
-                ],
-                garbaTip: "Smooth 4-Step Garba & Dandiya Raas with partner sync",
-                avatarIcon: "fa-baby",
-                svgGraphic: `<svg class="w-32 h-32 mx-auto" viewBox="0 0 100 100">
-                    <circle cx="50" cy="40" r="18" fill="#38bdf8" opacity="0.6"/>
-                    <circle cx="50" cy="70" r="12" fill="#facc15" opacity="0.8"/>
-                    <path d="M30 85 Q50 65 70 85 Z" fill="#0284c7"/>
+                name: { en: "Skandamata", hi: "स्कंदमाता", gu: "સ્કંદમાતા" },
+                tagline: {
+                    en: "Mother of Skanda (Kartikeya) & embodiment of maternal love",
+                    hi: "ममता, सुरक्षा और साहस की देवी",
+                    gu: "મમતા, સુરક્ષા અને વાત્સલ્યના દેવી"
+                },
+                significance: {
+                    en: "The mother of Lord Kartikeya (Skanda). She bestows wisdom, protection, and unconditional love.",
+                    hi: "भगवान कार्तिकेय की माता। इनकी कृपा से ज्ञान, संतान सुख और सफलता प्राप्त होती है।",
+                    gu: "ભગવાન કાર્તિકેયની માતા. તેમની કૃપાથી જ્ઞાન, સંતાન સુખ અને વિજય પ્રાપ્ત થાય છે."
+                },
+                mount: { en: "Lion (सिंह)", hi: "सिंह (Lion)", gu: "સિંહ" },
+                weapons: { en: "Holds infant Skanda & Lotus flowers", hi: "कमल पुष्प व बाल स्कंद", gu: "કમળના ફૂલ અને બાળ સ્કંદ" },
+                color: { en: "White / Light Blue", hi: "सफेद / नीला", gu: "સફેદ / વાદળી" },
+                flower: { en: "Yellow Flowers", hi: "पीले पुष्प", gu: "પીળા ફૂલ" },
+                bhog: { en: "Banana & Milk Kheer", hi: "केला एवं केसर खीर", gu: "કેળા અને કેસર ખીર" },
+                mantra: { en: "Om Devi Skandamatayai Namah ||", hi: "ॐ देवी स्कन्दमातायै नमः ॥", gu: "ઓમ દેવી સ્કંદમાતાયૈ નમઃ ॥" },
+                sloka: {
+                    en: "Sinhasanagata Nityam Padmashritakaradvaya | Shubhadastu Sada Devi Skandamata Yashasvini ||",
+                    hi: "सिंहासनगता नित्यं पद्माश्रितकरद्वया। शुभदास्तु सदा देवी स्कन्दमाता यशस्विनी॥",
+                    gu: "સિંડાસનગતા નિત્યં પદ્માશ્રિતકરદ્વયા। શુભદાસ્તુ સદા દેવી સ્કંદમાતા યશસ્વિની॥"
+                },
+                svgGraphic: `<svg class="w-24 h-24 mx-auto" viewBox="0 0 100 100">
+                    <circle cx="50" cy="38" r="18" fill="#38bdf8" opacity="0.65"/>
+                    <circle cx="50" cy="68" r="12" fill="#facc15"/>
                 </svg>`
             },
             {
                 day: 6,
                 id: "katyayani",
-                name: "Katyayani",
-                hindiName: "6. कात्यायनी",
-                tagline: "शक्ति, न्याय और साहस की देवी",
-                significance: "Fierce warrior form born to destroy Mahishasura. Grants marital happiness and destroys injustice.",
-                mount: "Feisty Lion",
-                weapons: "Sword, Lotus, Shield, Sacred Gesture",
-                bgGradient: "from-amber-900/80 to-red-900/90",
-                color: "Red / Marigold",
-                colorHex: "#ef4444",
-                flower: "Red Hibiscus / Marigold",
-                bhog: "Honey & Sweet Pan",
-                mantra: "ॐ देवी कात्यायन्यै नमः ॥",
-                sloka: "चन्द्रहासोज्वलकरा शार्दूलवरवाहना। कात्यायनी शुभं दद्याद् देवी दानवघातिनी॥",
-                pujaSteps: [
-                    "Offer wild honey and betel leaves (Paan) to Katyayani Maa.",
-                    "Unmarried individuals pray for desired life partners and harmony.",
-                    "Light 6 deepaks and chant her powerful slokas.",
-                    "Offer red Chunri and fragrant flowers."
-                ],
-                garbaTip: "Energetic Fast-Paced Sword/Stick Dandiya Moves",
-                avatarIcon: "fa-shield-cat",
-                svgGraphic: `<svg class="w-32 h-32 mx-auto" viewBox="0 0 100 100">
+                name: { en: "Katyayani", hi: "कात्यायनी", gu: "કાત્યાયની" },
+                tagline: {
+                    en: "Warrior form of Durga & destroyer of Mahishasura",
+                    hi: "शक्ति, न्याय और साहस की देवी",
+                    gu: "શક્તિ, ન્યાય અને વીરતાના દેવી"
+                },
+                significance: {
+                    en: "Fierce warrior goddess born from Sage Katyayana's penance to slay the demon Mahishasura.",
+                    hi: "महर्षि कात्यायन की तपस्या से प्रकट। महिषासुर का वध करने वाली परम शक्तिशाली देवी।",
+                    gu: "મહર્ષિ કાત્યાયનના તપથી પ્રગટ થયેલા યોદ્ધા સ્વરૂપ. મહિષાસુરનો વધ કરનારા દેવી."
+                },
+                mount: { en: "Ferocious Lion", hi: "सिंह (Lion)", gu: "સિંહ" },
+                weapons: { en: "Long Sword (Chandrahasa) & Lotus", hi: "तलवार व कमल का फूल", gu: "તલવાર અને કમળ" },
+                color: { en: "Red / Maroon", hi: "लाल / मैरून", gu: "લાલ / મરૂન" },
+                flower: { en: "Red Hibiscus", hi: "लाल गुड़हल", gu: "લાલ જાસૂદ" },
+                bhog: { en: "Honey & Sweet Paan", hi: "शहद एवं मीठा पान", gu: "મધ અને મીઠું પાન" },
+                mantra: { en: "Om Devi Katyayanyai Namah ||", hi: "ॐ देवी कात्यायन्यै नमः ॥", gu: "ઓમ દેવી કાત્યાયન્યૈ નમઃ ॥" },
+                sloka: {
+                    en: "Chandrahasojvalakara Shardulavaravahana | Katyayani Shubham Dadyad Devi Danavaghatini ||",
+                    hi: "चन्द्रहासोज्वलकरा शार्दूलवरवाहना। कात्यायनी शुभं दद्याद् देवी दानवघातिनी॥",
+                    gu: "ચંદ્રહાસોજ્જ્વલકરા શાર્દૂલવરવાહના। કાત્યાયની શુભં દદ્યાદ્ દેવી દાનવઘાતિની॥"
+                },
+                svgGraphic: `<svg class="w-24 h-24 mx-auto" viewBox="0 0 100 100">
                     <path d="M50 15 L85 30 L85 65 Q50 90 15 65 L15 30 Z" fill="#b91c1c" stroke="#facc15" stroke-width="2"/>
-                    <path d="M50 30 L50 70 M35 45 L65 45" stroke="#fef08a" stroke-width="4"/>
                 </svg>`
             },
             {
                 day: 7,
                 id: "kalaratri",
-                name: "Kalaratri",
-                hindiName: "7. कालरात्रि",
-                tagline: "भय का नाश और बुराई पर विजय की देवी",
-                significance: "Dark night form that eliminates all fears, evil spirits, black magic, and anxiety. Shubhankari.",
-                mount: "Donkey (Gardabh)",
-                weapons: "Iron Hook (Kanta), Scimitar (Thorn Cleaver)",
-                bgGradient: "from-slate-950 via-purple-950 to-black",
-                color: "Grey / Dark Blue / Royal Red",
-                colorHex: "#a855f7",
-                flower: "Night Jasmine (Parijat) / Hibiscus",
-                bhog: "Jaggery (Gud) / Jaggery sweets",
-                mantra: "ॐ देवी कालरात्र्यै नमः ॥",
-                sloka: "एकवेणी जपाकर्णपूरा नग्ना खरास्थिता। लम्बोष्ठी कर्णिकाकर्णी तैलाभ्यक्तशरीरिणी॥",
-                pujaSteps: [
-                    "Offer organic Jaggery or jaggery-based sweets to remove obstacles.",
-                    "Chant Kalaratri Mantra at midnight for relief from fears & anxiety.",
-                    "Keep a mustard oil lamp lit in front of the altar.",
-                    "Pray for courage during difficult times in life."
-                ],
-                garbaTip: "High-Energy Late-Night Sanbedo Garba & Fast Rotations",
-                avatarIcon: "fa-bolt",
-                svgGraphic: `<svg class="w-32 h-32 mx-auto" viewBox="0 0 100 100">
+                name: { en: "Kalaratri", hi: "कालरात्रि", gu: "કાળરાત્રિ" },
+                tagline: {
+                    en: "Destroyer of darkness, fear, and evil spirits",
+                    hi: "भय का नाश और बुराई पर विजय की देवी",
+                    gu: "ભયનો નાશ અને અનિષ્ટ પર વિજયના દેવી"
+                },
+                significance: {
+                    en: "The fiercest form of Goddess Durga with dark skin. She removes fear, negative energy, and grants protection.",
+                    hi: "अंधकार और दुष्टों का विनाश करने वाली देवी। भक्तों के लिए अत्यंत शुभकारी (शुभंकरी) हैं।",
+                    gu: "અંધકાર અને દુષ્ટોનો નાશ કરનાર કાળજી સ્વરૂપ. ભક્તો માટે અત્યંત શુભંકરી છે."
+                },
+                mount: { en: "Donkey (गर्दभ)", hi: "गर्दभ (गधा)", gu: "ગધેડું (ગર્ધભ)" },
+                weapons: { en: "Iron Cleaver (Khadga) & Curved Thorn", hi: "लोहे का कांटा एवं खड्ग", gu: "લોખંડનું ખડગ અને કાંટો" },
+                color: { en: "Dark Blue / Purple", hi: "नीला / बैगनी", gu: "વાદળી / જાંબલી" },
+                flower: { en: "Night Jasmine (Parijat)", hi: "रात की रानी / पारिजात", gu: "પારિજાત / રાતરાણી" },
+                bhog: { en: "Jaggery (Gud) & Jaggery Sweets", hi: "गुड़ व गुड़ के पकवान", gu: "ગોળ અને ગોળની વાનીઓ" },
+                mantra: { en: "Om Devi Kalaratriyai Namah ||", hi: "ॐ देवी कालरात्र्यै नमः ॥", gu: "ઓમ દેવી કાળરાત્ર્યૈ નમઃ ॥" },
+                sloka: {
+                    en: "Ekaveni Japakarnapura Nagna Kharasthita | Lamboshti Karnikakarni Tailabhyaktasharirini ||",
+                    hi: "एकवेणी जपाकर्णपूरा नग्ना खरास्थिता। लम्बोष्ठी कर्णिकाकर्णी तैलाभ्यक्तशरीरिणी॥",
+                    gu: "એકવેણી જપાકર્ણપૂરા નગ્ના ખરાસ્થિતા। લંબોષ્ઠી કર્ણિકાકર્ણી તૈલાભ્યક્તશરીરિણી॥"
+                },
+                svgGraphic: `<svg class="w-24 h-24 mx-auto" viewBox="0 0 100 100">
                     <rect x="10" y="10" width="80" height="80" rx="15" fill="#1e1b4b"/>
-                    <path d="M55 20 L30 52 L48 52 L40 80 L70 45 L50 45 Z" fill="#c084fc" stroke="#facc15" stroke-width="1.5"/>
+                    <path d="M55 20 L30 52 L48 52 L40 80 L70 45 L50 45 Z" fill="#c084fc"/>
                 </svg>`
             },
             {
                 day: 8,
                 id: "mahagauri",
-                name: "Mahagauri",
-                hindiName: "8. महागौरी",
-                tagline: "पवित्रता, शांति और सुख की देवी",
-                significance: "Pure, serene, white complexioned Goddess of purity, peace, forgiveness, and fulfillment.",
-                mount: "White Bull",
-                weapons: "Trishul, Damru, Abhaya & Varada Mudra",
-                bgGradient: "from-rose-950/70 via-amber-950/50 to-maroon-950",
-                color: "Peacock Green / White / Pink",
-                colorHex: "#f472b6",
-                flower: "Mogra / White Lotus",
-                bhog: "Coconut / Halwa & Puri for Kanya Pujan",
-                mantra: "ॐ देवी महागौर्यै नमः ॥",
-                sloka: "श्वेते वृषे समारूढा श्वेताम्बरधरा शुचिः। महागौरी शुभं दद्यान्महादेवप्रमोददा॥",
-                pujaSteps: [
-                    "Celebrate Durga Ashtami with Kanya Pujan (worshipping 9 young girls).",
-                    "Offer Coconut, Puri, Chana, and Suji Halwa as Mahaprasad.",
-                    "Offer white clothes or Dupatta to Goddess Mahagauri.",
-                    "Seek forgiveness for past mistakes and ask for mental tranquility."
-                ],
-                garbaTip: "Graceful Slow Circular Raas & Elegant Hand Twirls",
-                avatarIcon: "fa-om",
-                svgGraphic: `<svg class="w-32 h-32 mx-auto" viewBox="0 0 100 100">
+                name: { en: "Mahagauri", hi: "महागौरी", gu: "મહાગૌરી" },
+                tagline: {
+                    en: "Goddess of purity, grace, and inner peace",
+                    hi: "पवित्रता, शांति और सुख की देवी",
+                    gu: "પવિત્રતા, શાંતિ અને સુખના દેવી"
+                },
+                significance: {
+                    en: "Extremely fair and serene. Worshipped on Durga Ashtami with Kanya Pujan (worship of young girls).",
+                    hi: "अत्यंत गौर वर्ण, शांत और सौम्य स्वरूप। भक्तों के सभी पापों का क्षय कर सुख-समृद्धि देती हैं।",
+                    gu: "અત્યંત ગૌર વર્ણ અને શાંત સ્વરૂપ. આસો આઠમે કન્યા પૂજન સાથે પૂજાય છે."
+                },
+                mount: { en: "White Bull (श्वेत वृषभ)", hi: "श्वेत वृषभ", gu: "સફેદ બળદ" },
+                weapons: { en: "Trishul, Damru, Varada Mudra", hi: "त्रिशूल, डमरू, अभय मुद्रा", gu: "ત્રિશૂળ, ડમરું, અભય મુદ્રા" },
+                color: { en: "Pink / White", hi: "गुलाबी / सफेद", gu: "ગુલાબી / સફેદ" },
+                flower: { en: "Mogra & White Jasmine", hi: "मोगरा व मल्लिका", gu: "મોગરો અને ચમેલી" },
+                bhog: { en: "Coconut, Halwa & Puri", hi: "नारियल, हलवा एवं पूरी", gu: "નાળિયેર, શીરો અને પૂરી" },
+                mantra: { en: "Om Devi Mahagauriyai Namah ||", hi: "ॐ देवी महागौर्यै नमः ॥", gu: "ઓમ દેવી મહાગૌર્યૈ નમઃ ॥" },
+                sloka: {
+                    en: "Shwete Vrishesamarudha Shwetambaradhara Shuchih | Mahagauri Shubham Dadyanmahadevapramodada ||",
+                    hi: "श्वेते वृषे समारूढा श्वेताम्बरधरा शुचिः। महागौरी शुभं दद्यान्महादेवप्रमोददा॥",
+                    gu: "શ્વેતે વૃષે સમારૂઢા શ્વેતાંબરધરા શુચિઃ। મહાગૌરી શુભં દદ્યાન્મહાદેવપ્રમોદદા॥"
+                },
+                svgGraphic: `<svg class="w-24 h-24 mx-auto" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="40" fill="none" stroke="#f472b6" stroke-width="2"/>
-                    <path d="M50 20 C65 20 75 35 75 50 C75 65 65 80 50 80 C35 80 25 65 25 50 C25 35 35 20 50 20 Z" fill="#fff" opacity="0.15"/>
-                    <circle cx="50" cy="50" r="15" fill="#facc15"/>
+                    <circle cx="50" cy="50" r="14" fill="#facc15"/>
                 </svg>`
             },
             {
                 day: 9,
                 id: "siddhidatri",
-                name: "Siddhidatri",
-                hindiName: "9. सिद्धिदात्री",
-                tagline: "सिद्धि, ज्ञान और पूर्णता की देवी",
-                significance: "Bestower of 26 supernatural powers (Siddhis) and supreme spiritual wisdom. Final culmination.",
-                mount: "Lion (Seated on Lotus)",
-                weapons: "Chakra, Shankh, Gada, Lotus",
-                bgGradient: "from-emerald-950/80 via-teal-950/60 to-maroon-950",
-                color: "Purple / Emerald Green",
-                colorHex: "#10b981",
-                flower: "Champa / Red Hibiscus",
-                bhog: "Sesame seeds (Til), Kheer, Halwa",
-                mantra: "ॐ देवी सिद्धिदात्र्यै नमः ॥",
-                sloka: "सिद्धगन्धर्वयक्षाद्यैरसुरैरमरैरपि। सेव्यामाना सदा भूयात् सिध्दिदा सिध्दिदायिनी॥",
-                pujaSteps: [
-                    "Perform Navami Havan and offer sesame seeds and ghee into sacred fire.",
-                    "Offer Halwa, Puri, and Kheer to girls and express gratitude.",
-                    "Pray for supreme knowledge, prosperity, and spiritual evolution.",
-                    "Conclude Navratri fast with blessings of all 9 Avatars."
-                ],
-                garbaTip: "Grand Finale Garba Raas with full troupe and fast clapping",
-                avatarIcon: "fa-crown",
-                svgGraphic: `<svg class="w-32 h-32 mx-auto" viewBox="0 0 100 100">
+                name: { en: "Siddhidatri", hi: "सिद्धिदात्री", gu: "સિદ્ધિદાત્રી" },
+                tagline: {
+                    en: "Bestower of divine accomplishments and perfection",
+                    hi: "सिद्धि, ज्ञान और पूर्णता की देवी",
+                    gu: "સિદ્ધિ, જ્ઞાન અને પૂર્ણતાના દેવી"
+                },
+                significance: {
+                    en: "Giver of all 8 Siddhis (supernatural powers) and 9 Nidhis. Even Lord Shiva obtained powers from her.",
+                    hi: "सभी प्रकार की सिद्धियों को देने वाली। इनकी कृपा से ही भगवान शिव को 'अर्धनारीश्वर' रूप मिला।",
+                    gu: "તમામ ૮ સિદ્ધિઓ આપનારા દેવી. તેમની કૃપાથી જ શિવજીને 'અર્ધનારીશ્વર' સ્વરૂપ મળ્યું."
+                },
+                mount: { en: "Lotus / Lion", hi: "सिंह (कमल पर आसीन)", gu: "સિંહ (કમળ પર બિરાજમાન)" },
+                weapons: { en: "Chakra, Shankh, Gada, Lotus Flower", hi: "चक्र, शंख, गदा एवं कमल", gu: "ચક્ર, શંખ, ગદા અને કમળ" },
+                color: { en: "Purple / Emerald Green", hi: "बैंगनी / हरा", gu: "જાંબલી / લીલો" },
+                flower: { en: "Champa & Lotus", hi: "चम्पा व कमल", gu: "ચંપો અને કમળ" },
+                bhog: { en: "Sesame (Til), Kheer & Halwa", hi: "तिल, खीर, हलवा-पूरी", gu: "તલ, ખીર અને શીરો" },
+                mantra: { en: "Om Devi Siddhidatriyai Namah ||", hi: "ॐ देवी सिद्धिदात्र्यै नमः ॥", gu: "ઓમ દેવી સિદ્ધિદાત્ર્યૈ નમઃ ॥" },
+                sloka: {
+                    en: "Siddhagandharvayakhsadyairasurairamarairapi | Sevyamana Sada Bhuyat Siddhida Siddhidayini ||",
+                    hi: "सिद्धगन्धर्वयक्षाद्यैरसुरैरमरैरपि। सेव्यामाना सदा भूयात् सिध्दिदा सिध्दिदायिनी॥",
+                    gu: "સિદ્ધગંધર્વયક્ષાદ્યૈરસુરૈરમરૈરપિ। સેવ્યામાના સદા ભૂયાત્ સિદ્ધિદા સિદ્ધિદાયિની॥"
+                },
+                svgGraphic: `<svg class="w-24 h-24 mx-auto" viewBox="0 0 100 100">
                     <polygon points="50,10 63,35 90,38 70,57 75,85 50,72 25,85 30,57 10,38 37,35" fill="#10b981" stroke="#facc15" stroke-width="2"/>
                 </svg>`
             }
         ];
 
-        let activeTab = "shailaputri";
+        // STATE MANAGEMENT
+        let currentLang = localStorage.getItem("navratri_lang") || "en";
+        let activeMainTab = "navadurga";
+        let activeDurgaId = "shailaputri";
         let isAudioPlaying = false;
         let synth = null;
 
-        // Initialize App
         window.addEventListener("DOMContentLoaded", () => {
-            renderTabBar();
-            switchTab("shailaputri");
+            document.getElementById("languageSelect").value = currentLang;
+            updateStaticText();
+            switchMainTab("navadurga");
         });
 
-        function renderTabBar() {
-            const tabBar = document.getElementById("tabBar");
-            let html = "";
-
-            // 9 Navadurga Tabs
-            durgaData.forEach((durga) => {
-                html += `
-                    <button onclick="switchTab('${durga.id}')" id="tab-btn-${durga.id}" 
-                            class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold border border-amber-600/40 bg-maroon-900/60 text-amber-200 hover:border-amber-400 hover:text-white transition whitespace-nowrap">
-                        <span class="w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-xs font-bold">${durga.day}</span>
-                        <span>${durga.name}</span>
-                    </button>
-                `;
-            });
-
-            // Garba Hub Tab
-            html += `
-                <button onclick="switchTab('garba')" id="tab-btn-garba" 
-                        class="tab-btn flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border border-saffron-500/50 bg-saffron-600/20 text-saffron-300 hover:bg-saffron-600/40 transition whitespace-nowrap">
-                    <i class="fa-solid fa-compact-disc text-amber-400 animate-spin" style="animation-duration: 8s;"></i>
-                    <span>Garba & Raas Hub</span>
-                </button>
-            `;
-
-            // Night Safety Guide Tab
-            html += `
-                <button onclick="switchTab('safety')" id="tab-btn-safety" 
-                        class="tab-btn flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border border-red-500/60 bg-red-950/80 text-red-200 hover:bg-red-900 transition whitespace-nowrap">
-                    <i class="fa-solid fa-user-shield text-red-400"></i>
-                    <span>Late-Night Safety Guide</span>
-                </button>
-            `;
-
-            tabBar.innerHTML = html;
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem("navratri_lang", lang);
+            updateStaticText();
+            switchMainTab(activeMainTab);
         }
 
-        function switchTab(tabId) {
-            activeTab = tabId;
-
-            // Update Tab Button styles
-            document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-            const currentBtn = document.getElementById(`tab-btn-${tabId}`);
-            if (currentBtn) {
-                currentBtn.classList.add("active");
-                currentBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-            }
-
-            const mainContainer = document.getElementById("mainContainer");
-
-            if (tabId === "garba") {
-                renderGarbaHub(mainContainer);
-            } else if (tabId === "safety") {
-                renderSafetyGuide(mainContainer);
-            } else {
-                const durga = durgaData.find(d => d.id === tabId);
-                if (durga) {
-                    renderNavadurgaTab(mainContainer, durga);
-                }
-            }
-
-            window.scrollTo({ top: 180, behavior: 'smooth' });
+        function updateStaticText() {
+            const t = uiText[currentLang];
+            document.getElementById("siteTitle").innerText = t.siteTitle;
+            document.getElementById("siteSubtitle").innerText = t.siteSubtitle;
+            document.getElementById("heroBadge").innerText = t.heroBadge;
+            document.getElementById("heroHeading").innerText = t.heroHeading;
+            document.getElementById("heroDescription").innerText = t.heroDescription;
+            document.getElementById("tab1Title").innerText = t.tab1Title;
+            document.getElementById("tab2Title").innerText = t.tab2Title;
+            document.getElementById("tab3Title").innerText = t.tab3Title;
+            document.getElementById("tab4Title").innerText = t.tab4Title;
+            document.getElementById("audioText").innerText = isAudioPlaying ? t.bellTextActive : t.bellText;
+            document.getElementById("sosPopupHeading").innerHTML = `<i class="fa-solid fa-triangle-exclamation animate-bounce"></i> ${t.sosPopupHeading}`;
+            document.getElementById("sosBtnText").innerText = t.sosBtnText;
+            document.getElementById("footerText").innerText = t.footerText;
+            document.getElementById("footerLinkSafety").innerText = t.footerLinkSafety;
+            document.getElementById("footerLinkGarba").innerText = t.footerLinkGarba;
         }
 
-        function renderNavadurgaTab(container, durga) {
+        function switchMainTab(tabName) {
+            activeMainTab = tabName;
+            document.querySelectorAll(".nav-tab").forEach(btn => btn.classList.remove("active"));
+            const currentTabBtn = document.getElementById(`navtab-${tabName}`);
+            if (currentTabBtn) currentTabBtn.classList.add("active");
+
+            const container = document.getElementById("mainContainer");
+
+            if (tabName === "navadurga") {
+                renderNavadurgaSection(container);
+            } else if (tabName === "puja") {
+                renderPujaSection(container);
+            } else if (tabName === "garba") {
+                renderGarbaSection(container);
+            } else if (tabName === "safety") {
+                renderSafetySection(container);
+            }
+        }
+
+        // TAB 1: NAVADURGA
+        function renderNavadurgaSection(container) {
+            const t = uiText[currentLang];
+            const activeDurga = durgaData.find(d => d.id === activeDurgaId) || durgaData[0];
+
             container.innerHTML = `
                 <div class="space-y-8 animate-fadeIn">
-                    <!-- Top Hero Card -->
-                    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r ${durga.bgGradient} p-6 sm:p-8 border border-amber-500/40 shadow-2xl card-glow">
+                    <!-- Day Selector Badges -->
+                    <div class="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
+                        ${durgaData.map(d => `
+                            <button onclick="selectDurgaAvatar('${d.id}')" 
+                                    class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold border transition whitespace-nowrap ${d.id === activeDurga.id ? 'bg-amber-500 text-maroon-950 border-amber-300 shadow-lg' : 'bg-maroon-900/60 text-amber-200 border-amber-700/40 hover:border-amber-400'}">
+                                ${d.day}. ${d.name[currentLang]}
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <!-- Selected Goddess Hero Display Card -->
+                    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-950/80 via-red-950/90 to-maroon-950 p-6 sm:p-8 border border-amber-500/50 shadow-2xl card-glow">
                         <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                            <!-- Visual Avatar Graphic -->
+                            
                             <div class="md:col-span-4 text-center">
-                                <div class="relative inline-block p-4 rounded-full bg-black/40 border-2 border-amber-400/50 shadow-inner">
+                                <div class="relative inline-block p-4 rounded-full bg-black/40 border-2 border-amber-400/60 shadow-inner">
                                     <div class="diya-flame absolute -top-4 left-1/2 -translate-x-1/2 text-amber-400 text-2xl">
                                         <i class="fa-solid fa-fire"></i>
                                     </div>
-                                    ${durga.svgGraphic}
+                                    ${activeDurga.svgGraphic}
                                 </div>
-                                <div class="mt-3 inline-block px-4 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 font-semibold text-xs">
-                                    Navratri Day ${durga.day} • ${durga.color}
+                                <div class="mt-3 inline-block px-4 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 font-bold text-xs">
+                                    ${t.dayPrefix} ${activeDurga.day} • ${activeDurga.color[currentLang]}
                                 </div>
                             </div>
 
-                            <!-- Avatar Details -->
                             <div class="md:col-span-8 space-y-3">
-                                <div class="flex items-center gap-3">
-                                    <h2 class="heading-font text-3xl sm:text-4xl font-black text-amber-100 glow-gold">${durga.hindiName}</h2>
-                                    <span class="text-amber-300 text-xl font-bold">(${durga.name})</span>
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <h2 class="heading-serif text-3xl sm:text-4xl font-bold text-amber-100 glow-gold">
+                                        ${activeDurga.day}. ${activeDurga.name[currentLang]}
+                                    </h2>
                                 </div>
-                                <p class="text-amber-300 font-semibold text-base sm:text-lg border-l-4 border-amber-500 pl-3">
-                                    "${durga.tagline}"
+                                <p class="text-amber-300 font-bold text-base sm:text-lg border-l-4 border-amber-500 pl-3">
+                                    "${activeDurga.tagline[currentLang]}"
                                 </p>
-                                <p class="text-amber-100/90 text-sm sm:text-base leading-relaxed">
-                                    ${durga.significance}
+                                <p class="text-amber-100/90 text-xs sm:text-sm leading-relaxed">
+                                    ${activeDurga.significance[currentLang]}
                                 </p>
 
-                                <!-- Key Highlights Grid -->
                                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 text-xs sm:text-sm">
-                                    <div class="bg-black/30 p-2.5 rounded-xl border border-amber-600/30">
-                                        <div class="text-amber-400/80 font-medium">Mount / Sawari</div>
-                                        <div class="text-amber-100 font-bold">${durga.mount}</div>
+                                    <div class="bg-black/40 p-2.5 rounded-xl border border-amber-600/30">
+                                        <div class="text-amber-400/80 font-medium">${t.mountLabel}</div>
+                                        <div class="text-amber-100 font-bold">${activeDurga.mount[currentLang]}</div>
                                     </div>
-                                    <div class="bg-black/30 p-2.5 rounded-xl border border-amber-600/30">
-                                        <div class="text-amber-400/80 font-medium">Fav Flower</div>
-                                        <div class="text-amber-100 font-bold">${durga.flower}</div>
+                                    <div class="bg-black/40 p-2.5 rounded-xl border border-amber-600/30">
+                                        <div class="text-amber-400/80 font-medium">${t.flowerLabel}</div>
+                                        <div class="text-amber-100 font-bold">${activeDurga.flower[currentLang]}</div>
                                     </div>
-                                    <div class="bg-black/30 p-2.5 rounded-xl border border-amber-600/30">
-                                        <div class="text-amber-400/80 font-medium">Auspicious Bhog</div>
-                                        <div class="text-amber-100 font-bold">${durga.bhog}</div>
+                                    <div class="bg-black/40 p-2.5 rounded-xl border border-amber-600/30">
+                                        <div class="text-amber-400/80 font-medium">${t.bhogLabel}</div>
+                                        <div class="text-amber-100 font-bold">${activeDurga.bhog[currentLang]}</div>
                                     </div>
-                                    <div class="bg-black/30 p-2.5 rounded-xl border border-amber-600/30">
-                                        <div class="text-amber-400/80 font-medium">Garba Recommendation</div>
-                                        <div class="text-amber-100 font-bold">${durga.garbaTip.split(' ')[0]} Move</div>
+                                    <div class="bg-black/40 p-2.5 rounded-xl border border-amber-600/30">
+                                        <div class="text-amber-400/80 font-medium">${t.weaponLabel}</div>
+                                        <div class="text-amber-100 font-bold">${activeDurga.weapons[currentLang]}</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Mantra & Sacred Chanting Section -->
-                    <div class="bg-maroon-900/80 border border-amber-600/40 rounded-2xl p-6 shadow-lg">
+                    <!-- Mantra & Copy Box -->
+                    <div class="bg-maroon-900/80 border border-amber-600/40 rounded-2xl p-6 shadow-xl">
                         <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-                            <h3 class="heading-font text-xl font-bold text-amber-300 flex items-center gap-2">
-                                <i class="fa-solid fa-om text-amber-400"></i> Sacred Mantra & Sloka
+                            <h3 class="heading-serif text-xl font-bold text-amber-300 flex items-center gap-2">
+                                <i class="fa-solid fa-om text-amber-400"></i> Mantra & Sloka
                             </h3>
-                            <button onclick="copyToClipboard('${durga.mantra}')" class="text-xs bg-amber-500/20 hover:bg-amber-500/40 text-amber-200 px-3 py-1.5 rounded-lg border border-amber-400/30 transition flex items-center gap-1.5">
-                                <i class="fa-regular fa-copy"></i> Copy Mantra
+                            <button onclick="copyToClipboard('${activeDurga.mantra[currentLang]}')" 
+                                    class="text-xs bg-amber-500/20 hover:bg-amber-500/40 text-amber-200 px-3.5 py-2 rounded-xl border border-amber-400/40 transition flex items-center gap-2 font-bold cursor-pointer">
+                                <i class="fa-regular fa-copy"></i> ${t.copyMantraBtn}
                             </button>
                         </div>
-                        <div class="bg-black/40 rounded-xl p-5 border border-amber-500/20 text-center space-y-3">
-                            <div class="text-2xl sm:text-3xl font-black text-amber-300 font-serif tracking-wider glow-gold">
-                                ${durga.mantra}
+                        <div class="bg-black/50 rounded-xl p-5 border border-amber-500/30 text-center space-y-3">
+                            <div class="text-2xl sm:text-3xl font-bold text-amber-300 tracking-wide glow-gold">
+                                ${activeDurga.mantra[currentLang]}
                             </div>
                             <div class="text-amber-200/90 italic text-sm sm:text-base max-w-2xl mx-auto">
-                                "${durga.sloka}"
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Puja Vidhi & Interactive Checklist Grid -->
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        <!-- Puja Ritual Steps -->
-                        <div class="lg:col-span-7 bg-maroon-900/60 border border-amber-600/40 rounded-2xl p-6">
-                            <h3 class="heading-font text-xl font-bold text-amber-300 mb-4 flex items-center gap-2">
-                                <i class="fa-solid fa-hands-holding-circle text-amber-400"></i> Step-by-Step Puja Vidhi
-                            </h3>
-                            <div class="space-y-3">
-                                ${durga.pujaSteps.map((step, idx) => `
-                                    <div class="flex items-start gap-3 bg-black/20 p-3 rounded-xl border border-amber-800/30">
-                                        <span class="w-6 h-6 rounded-full bg-amber-500 text-maroon-950 font-bold flex items-center justify-center text-xs shrink-0 mt-0.5">${idx + 1}</span>
-                                        <p class="text-amber-100 text-sm leading-relaxed">${step}</p>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-
-                        <!-- Interactive Daily Offering Checklist -->
-                        <div class="lg:col-span-5 bg-maroon-900/60 border border-amber-600/40 rounded-2xl p-6">
-                            <h3 class="heading-font text-xl font-bold text-amber-300 mb-4 flex items-center gap-2">
-                                <i class="fa-solid fa-list-check text-amber-400"></i> Daily Puja Checklist
-                            </h3>
-                            <div class="space-y-2 text-xs sm:text-sm" id="checklist-${durga.id}">
-                                ${renderChecklistItem(durga.id, 1, `Wear ${durga.color} color attire`)}
-                                ${renderChecklistItem(durga.id, 2, `Offer fresh ${durga.flower}`)}
-                                ${renderChecklistItem(durga.id, 3, `Prepare & offer ${durga.bhog} as Bhog`)}
-                                ${renderChecklistItem(durga.id, 4, `Chant ${durga.name} Mantra 108 times`)}
-                                ${renderChecklistItem(durga.id, 5, `Perform Evening Diya Aarti & Garba`)}
+                                "${activeDurga.sloka[currentLang]}"
                             </div>
                         </div>
                     </div>
@@ -700,116 +799,90 @@
             `;
         }
 
-        function renderChecklistItem(durgaId, itemId, text) {
-            const key = `check_${durgaId}_${itemId}`;
-            const isChecked = localStorage.getItem(key) === 'true';
-            return `
-                <label class="flex items-center gap-3 p-2.5 rounded-xl bg-black/30 border border-amber-900/40 cursor-pointer hover:bg-amber-950/40 transition">
-                    <input type="checkbox" onchange="toggleCheck('${key}')" ${isChecked ? 'checked' : ''} 
-                           class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 bg-maroon-950 border-amber-600">
-                    <span class="${isChecked ? 'line-through text-amber-400/60' : 'text-amber-100'}">${text}</span>
-                </label>
+        function selectDurgaAvatar(id) {
+            activeDurgaId = id;
+            switchMainTab("navadurga");
+        }
+
+        // TAB 2: PUJA VIDHI
+        function renderPujaSection(container) {
+            const t = uiText[currentLang];
+            container.innerHTML = `
+                <div class="space-y-8 animate-fadeIn">
+                    <div class="bg-gradient-to-r from-amber-900/80 via-red-950 to-maroon-950 border border-amber-500/50 rounded-3xl p-6 sm:p-8 card-glow">
+                        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div class="space-y-2">
+                                <span class="bg-amber-500 text-maroon-950 font-bold px-3 py-1 rounded-full text-xs">Anushthan</span>
+                                <h2 class="heading-serif text-3xl sm:text-4xl font-bold text-amber-200">${t.pujaHeader}</h2>
+                                <p class="text-amber-100/90 text-sm sm:text-base max-w-2xl">${t.pujaSubtitle}</p>
+                            </div>
+                            <div class="text-5xl text-amber-400">
+                                <i class="fa-solid fa-hands-praying animate-pulse"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Steps -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="bg-maroon-900/70 p-4 rounded-xl border border-amber-700/40">
+                            <div class="text-amber-400 font-bold text-sm mb-1">1. Altar & Barley Soil Preparation</div>
+                            <p class="text-amber-200/80 text-xs">Spread clean soil on a raised wooden platform and sow सप्तधान्य (Barley seeds).</p>
+                        </div>
+                        <div class="bg-maroon-900/70 p-4 rounded-xl border border-amber-700/40">
+                            <div class="text-amber-400 font-bold text-sm mb-1">2. Kalash Water & Sacred Offerings</div>
+                            <p class="text-amber-200/80 text-xs">Fill a brass or copper pot with holy Ganga water, coins, betel nut, and duba grass.</p>
+                        </div>
+                        <div class="bg-maroon-900/70 p-4 rounded-xl border border-amber-700/40">
+                            <div class="text-amber-400 font-bold text-sm mb-1">3. Mango Leaves & Coconut</div>
+                            <p class="text-amber-200/80 text-xs">Arrange 5 mango leaves on top, wrap a coconut in red cloth with sacred thread (Mouli).</p>
+                        </div>
+                    </div>
+                </div>
             `;
         }
 
-        function toggleCheck(key) {
-            const current = localStorage.getItem(key) === 'true';
-            localStorage.setItem(key, (!current).toString());
-            // Re-render active tab content to keep UI updated
-            switchTab(activeTab);
-        }
-
-        function renderGarbaHub(container) {
+        // TAB 3: GARBA
+        function renderGarbaSection(container) {
+            const t = uiText[currentLang];
             container.innerHTML = `
                 <div class="space-y-8 animate-fadeIn">
-                    <!-- Garba Banner -->
-                    <div class="bg-gradient-to-r from-saffron-600/30 via-amber-900/60 to-maroon-900 border border-saffron-500/50 rounded-3xl p-6 sm:p-8 card-glow">
+                    <div class="bg-gradient-to-r from-saffron-600/30 via-amber-900/60 to-maroon-950 border border-saffron-500/50 rounded-3xl p-6 sm:p-8 card-glow">
                         <div class="flex flex-col md:flex-row items-center justify-between gap-6">
                             <div class="space-y-2">
-                                <span class="bg-saffron-500 text-maroon-950 font-bold px-3 py-1 rounded-full text-xs">FESTIVE DANCE & RAAS</span>
-                                <h2 class="heading-font text-3xl sm:text-4xl font-black text-amber-200">गरबा एवं डांडिया रास गाइड</h2>
-                                <p class="text-amber-100/90 text-sm sm:text-base max-w-2xl">
-                                    Garba represents the devotion, joy, and victory of good over evil. Master traditional steps, maintain energy, and enjoy authentic garba rhythms safely!
-                                </p>
+                                <span class="bg-saffron-500 text-maroon-950 font-bold px-3 py-1 rounded-full text-xs">Garba & Raas</span>
+                                <h2 class="heading-serif text-3xl sm:text-4xl font-bold text-amber-200">${t.garbaHeader}</h2>
+                                <p class="text-amber-100/90 text-sm sm:text-base max-w-2xl">${t.garbaSubtitle}</p>
                             </div>
-                            <div class="text-5xl text-saffron-400 flex gap-4">
-                                <i class="fa-solid fa-compact-disc animate-spin" style="animation-duration: 10s;"></i>
+                            <div class="text-5xl text-saffron-400 flex gap-3">
+                                <i class="fa-solid fa-compact-disc animate-spin" style="animation-duration: 8s;"></i>
                                 <i class="fa-solid fa-drum text-amber-300"></i>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Steps Tutorials Grid -->
-                    <div>
-                        <h3 class="heading-font text-2xl font-bold text-amber-300 mb-6 flex items-center gap-2">
-                            <i class="fa-solid fa-person-dancing text-saffron-400"></i> Popular Garba Steps & Techniques
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            ${renderGarbaCard("1-Clap & 2-Clap Garba", "Beginner Level", "Basic circular motion with synchronized hand clapping on alternate foot placement. Ideal for warming up.", "fa-hand-clapping", "bg-amber-500/20 text-amber-300")}
-                            ${renderGarbaCard("3-Clap (Tran Tali) Garba", "Intermediate", "Dynamic 3-clap rhythm involving a 180-degree spin on the third clap. High energy circle dance step.", "fa-arrows-spin", "bg-saffron-500/20 text-saffron-300")}
-                            ${renderGarbaCard("Dodhiyo (Diagonal Step)", "Intermediate / Advanced", "Cross-body diagonal stepping rhythm with graceful hand sweeps. Highly popular in night pandals.", "fa-shoe-prints", "bg-pink-500/20 text-pink-300")}
-                            ${renderGarbaCard("Popat (Parrot Move)", "Advanced", "Rhythmic hopping and synchronized wrist flicking resembling a parrot's flight pattern.", "fa-feather", "bg-emerald-500/20 text-emerald-300")}
-                            ${renderGarbaCard("Sanbedo", "High Tempo", "Fast-paced frantic footwork with intense drum beats usually performed late in the night circle.", "fa-bolt", "bg-purple-500/20 text-purple-300")}
-                            ${renderGarbaCard("Dandiya Raas (Sticks)", "Partner / Group", "Rhythmic striking of wooden sticks (Dandiyas) with partners in double rotating concentric circles.", "fa-wand-magic-sparkles", "bg-blue-500/20 text-blue-300")}
-                        </div>
-                    </div>
-
-                    <!-- Energy, Hydration & Foot Care Tips -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-maroon-900/60 border border-amber-600/30 p-5 rounded-2xl">
-                            <div class="text-amber-400 text-2xl mb-2"><i class="fa-solid fa-bottle-water"></i></div>
-                            <h4 class="font-bold text-amber-200 text-base mb-1">Hydration First</h4>
-                            <p class="text-amber-100/80 text-xs sm:text-sm">Sip electrolyte water, ORS, or coconut water every 45 minutes. Avoid excessive cold caffeine drinks.</p>
-                        </div>
-                        <div class="bg-maroon-900/60 border border-amber-600/30 p-5 rounded-2xl">
-                            <div class="text-saffron-400 text-2xl mb-2"><i class="fa-solid fa-socks"></i></div>
-                            <h4 class="font-bold text-amber-200 text-base mb-1">Footwear & Cushioning</h4>
-                            <p class="text-amber-100/80 text-xs sm:text-sm">If dancing barefoot, inspect the ground first. Use gel pads in Mojris/Juttis to prevent heel pain.</p>
-                        </div>
-                        <div class="bg-maroon-900/60 border border-amber-600/30 p-5 rounded-2xl">
-                            <div class="text-pink-400 text-2xl mb-2"><i class="fa-solid fa-shirt"></i></div>
-                            <h4 class="font-bold text-amber-200 text-base mb-1">Breathable Traditional Wear</h4>
-                            <p class="text-amber-100/80 text-xs sm:text-sm">Ensure heavy Chaniya Cholis or Kediyus are pinned properly so you don't trip during fast spins.</p>
-                        </div>
+                    <div class="bg-maroon-900/80 border border-amber-600/40 rounded-2xl p-6 text-center">
+                        <h4 class="font-bold text-amber-300 text-lg mb-2">Garba Drum Synthesizer</h4>
+                        <button onclick="playBeatPattern()" class="bg-saffron-500 hover:bg-saffron-400 text-maroon-950 font-bold px-6 py-3 rounded-full shadow-lg transition inline-flex items-center gap-2 text-sm">
+                            <i class="fa-solid fa-play"></i> ${t.playGarbaBeat}
+                        </button>
                     </div>
                 </div>
             `;
         }
 
-        function renderGarbaCard(title, level, desc, icon, badgeClass) {
-            return `
-                <div class="bg-maroon-900/70 border border-amber-600/40 rounded-2xl p-5 hover:border-amber-400 transition card-glow flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-start mb-3">
-                            <div class="p-3 bg-black/40 rounded-xl text-amber-400 text-xl border border-amber-600/30">
-                                <i class="fa-solid ${icon}"></i>
-                            </div>
-                            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${badgeClass}">${level}</span>
-                        </div>
-                        <h4 class="heading-font text-lg font-bold text-amber-200 mb-2">${title}</h4>
-                        <p class="text-amber-100/80 text-xs sm:text-sm leading-relaxed mb-4">${desc}</p>
-                    </div>
-                    <button onclick="playBeatPattern()" class="w-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-semibold py-2 rounded-xl border border-amber-500/30 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-play"></i> Simulate Garba Beat Rhythm
-                    </button>
-                </div>
-            `;
-        }
-
-        function renderSafetyGuide(container) {
+        // TAB 4: SAFETY
+        function renderSafetySection(container) {
+            const t = uiText[currentLang];
             container.innerHTML = `
                 <div class="space-y-8 animate-fadeIn">
-                    <!-- Safety Header Banner -->
                     <div class="bg-gradient-to-r from-red-950 via-maroon-900 to-red-950 border-2 border-red-500/60 rounded-3xl p-6 sm:p-8 card-glow-red">
                         <div class="flex flex-col md:flex-row items-center justify-between gap-6">
                             <div class="space-y-2">
                                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-600 text-white font-bold text-xs">
-                                    <i class="fa-solid fa-shield-halved"></i> WOMEN & CITIZENS NIGHT SAFETY
+                                    <i class="fa-solid fa-shield-halved"></i> 24/7 Helpline
                                 </div>
-                                <h2 class="heading-font text-3xl sm:text-4xl font-black text-white">लेट-नाइट सुरक्षा एवं सहायता निर्देशिका</h2>
-                                <p class="text-red-100/90 text-sm sm:text-base max-w-2xl">
-                                    Navratri festivities run late into the night. Here is your essential safety toolkit, emergency quick-dialers, buddy tips, and live location helper for a worry-free celebration.
-                                </p>
+                                <h2 class="heading-serif text-3xl sm:text-4xl font-bold text-white">${t.safetyHeader}</h2>
+                                <p class="text-red-100/90 text-sm sm:text-base max-w-2xl">${t.safetySubtitle}</p>
                             </div>
                             <div class="text-5xl text-red-400">
                                 <i class="fa-solid fa-user-shield animate-pulse"></i>
@@ -817,101 +890,16 @@
                         </div>
                     </div>
 
-                    <!-- Direct Emergency Hotline Quick Callers Grid -->
-                    <div>
-                        <h3 class="heading-font text-2xl font-bold text-amber-300 mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-phone-flip text-red-400"></i> One-Tap Emergency Helplines
+                    <div class="bg-maroon-900/80 border border-amber-600/40 rounded-2xl p-6">
+                        <h3 class="heading-serif text-xl font-bold text-amber-300 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-location-crosshairs text-amber-400"></i> Emergency Live GPS Tracker
                         </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <a href="tel:112" class="bg-red-900/60 border-2 border-red-500 hover:bg-red-800 p-4 rounded-2xl text-center shadow-lg transition transform hover:-translate-y-1">
-                                <i class="fa-solid fa-shield-cat text-3xl text-red-400 mb-2"></i>
-                                <div class="text-xs text-red-200 font-medium">National Emergency</div>
-                                <div class="text-2xl font-black text-white">112</div>
-                            </a>
-                            <a href="tel:1091" class="bg-pink-900/60 border-2 border-pink-500 hover:bg-pink-800 p-4 rounded-2xl text-center shadow-lg transition transform hover:-translate-y-1">
-                                <i class="fa-solid fa-venus text-3xl text-pink-400 mb-2"></i>
-                                <div class="text-xs text-pink-200 font-medium">Women Safety Helpline</div>
-                                <div class="text-2xl font-black text-white">1091</div>
-                            </a>
-                            <a href="tel:100" class="bg-blue-900/60 border-2 border-blue-500 hover:bg-blue-800 p-4 rounded-2xl text-center shadow-lg transition transform hover:-translate-y-1">
-                                <i class="fa-solid fa-building-shield text-3xl text-blue-400 mb-2"></i>
-                                <div class="text-xs text-blue-200 font-medium">Police Control Room</div>
-                                <div class="text-2xl font-black text-white">100</div>
-                            </a>
-                            <a href="tel:108" class="bg-amber-900/60 border-2 border-amber-500 hover:bg-amber-800 p-4 rounded-2xl text-center shadow-lg transition transform hover:-translate-y-1">
-                                <i class="fa-solid fa-truck-medical text-3xl text-amber-400 mb-2"></i>
-                                <div class="text-xs text-amber-200 font-medium">Ambulance Emergency</div>
-                                <div class="text-2xl font-black text-white">108</div>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Live GPS Location Broadcast Simulator -->
-                    <div class="bg-maroon-900/80 border border-amber-600/40 rounded-2xl p-6 shadow-xl">
-                        <h3 class="heading-font text-xl font-bold text-amber-300 mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-location-crosshairs text-amber-400"></i> Quick Emergency GPS Location Share
-                        </h3>
-                        <p class="text-amber-100/80 text-xs sm:text-sm mb-4">
-                            Instantly retrieve your current coordinates and construct a quick alert message to share with family or trusted friends over WhatsApp / SMS.
-                        </p>
-                        <div class="flex flex-col sm:flex-row items-center gap-4">
-                            <button onclick="fetchLocation()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-maroon-950 font-bold px-5 py-3 rounded-xl border border-amber-300 transition flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-location-arrow"></i> Get Current Location
+                        <div class="flex flex-col sm:flex-row items-center gap-4 mt-4">
+                            <button onclick="fetchLocation()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-maroon-950 font-bold px-5 py-3 rounded-xl border border-amber-300 transition flex items-center justify-center gap-2 text-sm">
+                                <i class="fa-solid fa-location-arrow"></i> ${t.getGpsBtn}
                             </button>
                             <div id="locationOutput" class="text-xs text-amber-200 bg-black/40 px-4 py-3 rounded-xl border border-amber-800/40 flex-grow w-full">
-                                Click button to fetch your location coordinates...
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Safety Best Practices & Buddy Guidelines -->
-                    <div>
-                        <h3 class="heading-font text-2xl font-bold text-amber-300 mb-6 flex items-center gap-2">
-                            <i class="fa-solid fa-list-check text-amber-400"></i> Essential Late-Night Safety Protocol
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-maroon-900/60 border border-amber-600/30 rounded-2xl p-5 space-y-3">
-                                <h4 class="font-bold text-amber-300 text-base flex items-center gap-2">
-                                    <i class="fa-solid fa-people-group text-saffron-400"></i> Buddy System & Group Movement
-                                </h4>
-                                <ul class="space-y-2 text-xs sm:text-sm text-amber-100/90 list-disc list-inside leading-relaxed">
-                                    <li>Always travel in groups of 3 or more during late hours (11 PM - 3 AM).</li>
-                                    <li>Designate a non-distracted buddy to keep track of everyone in crowded pandals.</li>
-                                    <li>Fix a pre-decided meeting spot near venue exit in case mobile networks get congested.</li>
-                                </ul>
-                            </div>
-
-                            <div class="bg-maroon-900/60 border border-amber-600/30 rounded-2xl p-5 space-y-3">
-                                <h4 class="font-bold text-amber-300 text-base flex items-center gap-2">
-                                    <i class="fa-solid fa-taxi text-saffron-400"></i> Commute & Taxi Precautions
-                                </h4>
-                                <ul class="space-y-2 text-xs sm:text-sm text-amber-100/90 list-disc list-inside leading-relaxed">
-                                    <li>Use verified cab apps (Uber/Ola) with trip sharing enabled to emergency contacts.</li>
-                                    <li>Cross-check vehicle number and driver photo before boarding late at night.</li>
-                                    <li>Prefer well-lit primary roads rather than dark unlit shortcuts.</li>
-                                </ul>
-                            </div>
-
-                            <div class="bg-maroon-900/60 border border-amber-600/30 rounded-2xl p-5 space-y-3">
-                                <h4 class="font-bold text-amber-300 text-base flex items-center gap-2">
-                                    <i class="fa-solid fa-battery-charging-full text-saffron-400"></i> Phone & Power Management
-                                </h4>
-                                <ul class="space-y-2 text-xs sm:text-sm text-amber-100/90 list-disc list-inside leading-relaxed">
-                                    <li>Keep your smartphone battery above 50% and carry a fully charged power bank.</li>
-                                    <li>Store local police station and venue security numbers on speed dial.</li>
-                                    <li>Keep mobile GPS location turned ON continuously while commuting.</li>
-                                </ul>
-                            </div>
-
-                            <div class="bg-maroon-900/60 border border-amber-600/30 rounded-2xl p-5 space-y-3">
-                                <h4 class="font-bold text-amber-300 text-base flex items-center gap-2">
-                                    <i class="fa-solid fa-eye text-saffron-400"></i> Awareness & Personal Items
-                                </h4>
-                                <ul class="space-y-2 text-xs sm:text-sm text-amber-100/90 list-disc list-inside leading-relaxed">
-                                    <li>Never leave food or beverages unattended in public garba grounds.</li>
-                                    <li>Keep personal valuables (wallets, gold jewelry) secure in zipped cross-body bags.</li>
-                                    <li>If feeling unsafe or uncomfortable, report immediately to police desk or security staff at venue.</li>
-                                </ul>
+                                Click button to generate GPS coordinates...
                             </div>
                         </div>
                     </div>
@@ -920,28 +908,24 @@
         }
 
         function toggleAmbientAudio() {
+            const t = uiText[currentLang];
             const btnText = document.getElementById("audioText");
             const btnIcon = document.getElementById("audioIcon");
 
             if (!synth) {
-                // Tone.js Synth initialization for temple bell effect
                 synth = new Tone.PolySynth(Tone.Synth).toDestination();
-                synth.set({
-                    envelope: { attack: 0.01, decay: 3, sustain: 0.1, release: 3 }
-                });
+                synth.set({ envelope: { attack: 0.01, decay: 3, sustain: 0.1, release: 3 } });
             }
 
             if (!isAudioPlaying) {
                 isAudioPlaying = true;
-                btnText.innerText = "Bell Playing";
-                btnIcon.className = "fa-solid fa-volume-high text-amber-950 animate-pulse";
-                
-                // Play periodic temple chime chord
+                btnText.innerText = t.bellTextActive;
+                btnIcon.className = "fa-solid fa-volume-high text-maroon-950 animate-pulse";
                 playTempleBell();
             } else {
                 isAudioPlaying = false;
-                btnText.innerText = "Ambient Bell";
-                btnIcon.className = "fa-solid fa-volume-xmark text-amber-950";
+                btnText.innerText = t.bellText;
+                btnIcon.className = "fa-solid fa-volume-xmark text-maroon-950";
             }
         }
 
@@ -949,17 +933,12 @@
             if (!isAudioPlaying || !synth) return;
             Tone.start();
             synth.triggerAttackRelease(["C5", "G5", "C6"], "2s");
-            setTimeout(() => {
-                if (isAudioPlaying) playTempleBell();
-            }, 5000);
+            setTimeout(() => { if (isAudioPlaying) playTempleBell(); }, 5000);
         }
 
         function playBeatPattern() {
-            if (!synth) {
-                synth = new Tone.PolySynth(Tone.Synth).toDestination();
-            }
+            if (!synth) synth = new Tone.PolySynth(Tone.Synth).toDestination();
             Tone.start();
-            // Simulate 3-clap garba beat sequence (Dhol sound simulation)
             const now = Tone.now();
             synth.triggerAttackRelease("C3", "8n", now);
             synth.triggerAttackRelease("G3", "8n", now + 0.25);
@@ -967,33 +946,41 @@
             synth.triggerAttackRelease("E4", "4n", now + 0.75);
         }
 
-        function copyToClipboard(text) {
-            const tempInput = document.createElement("input");
-            tempInput.value = text;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand("copy");
-            document.body.removeChild(tempInput);
-            
-            showToast("Mantra copied to clipboard!");
+        async function copyToClipboard(text) {
+            const t = uiText[currentLang];
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(text);
+                } else {
+                    const tempInput = document.createElement("textarea");
+                    tempInput.value = text;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(tempInput);
+                }
+                showToast(t.copiedToast);
+            } catch (err) {
+                showToast("Failed to copy.");
+            }
         }
 
         function showToast(msg) {
             const toast = document.createElement("div");
-            toast.className = "fixed top-20 right-5 z-50 bg-amber-500 text-maroon-950 font-bold px-4 py-2 rounded-xl shadow-2xl border border-amber-200 text-xs sm:text-sm animate-bounce";
+            toast.className = "fixed top-20 right-5 z-50 bg-amber-500 text-maroon-950 font-bold px-4 py-2.5 rounded-xl shadow-2xl border border-amber-200 text-xs sm:text-sm animate-bounce";
             toast.innerText = msg;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 2500);
         }
 
         function toggleQuickCall() {
-            const popup = document.getElementById("quickCallPopup");
-            popup.classList.toggle("hidden");
+            document.getElementById("quickCallPopup").classList.toggle("hidden");
         }
 
         function fetchLocation() {
+            const t = uiText[currentLang];
             const output = document.getElementById("locationOutput");
-            output.innerText = "Fetching current GPS coordinates...";
+            output.innerText = "Fetching coordinates...";
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -1002,41 +989,21 @@
                         const lng = position.coords.longitude.toFixed(5);
                         const mapsUrl = `https://maps.google.com/?q=${lat},${lng}`;
                         output.innerHTML = `
-                            <div class="space-y-1">
-                                <div class="font-bold text-amber-300">Lat: ${lat}, Lng: ${lng}</div>
-                                <a href="https://wa.me/?text=Emergency%20Alert!%20My%20current%20location%20is:%20${encodeURIComponent(mapsUrl)}" 
+                            <div class="space-y-1.5">
+                                <div class="font-bold text-amber-300">GPS: ${lat}, ${lng}</div>
+                                <a href="https://wa.me/?text=${encodeURIComponent('Emergency Alert! My GPS Location is: ' + mapsUrl)}" 
                                    target="_blank" class="inline-block bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1 rounded text-xs transition">
-                                    <i class="fa-brands fa-whatsapp"></i> Share Alert on WhatsApp
+                                    <i class="fa-brands fa-whatsapp"></i> ${t.shareWhatsappBtn}
                                 </a>
                             </div>
                         `;
                     },
-                    (error) => {
-                        output.innerText = "Unable to fetch location automatically. Please enable GPS permissions.";
+                    () => {
+                        output.innerText = "GPS error. Please enable Location permissions.";
                     }
                 );
             } else {
-                output.innerText = "Geolocation is not supported by your browser.";
-            }
-        }
-
-        function handleSearch() {
-            const query = document.getElementById("searchInput").value.toLowerCase().trim();
-            if (!query) return;
-
-            // Search in Navadurga names
-            const matchedDurga = durgaData.find(d => 
-                d.name.toLowerCase().includes(query) || 
-                d.hindiName.toLowerCase().includes(query) ||
-                d.significance.toLowerCase().includes(query)
-            );
-
-            if (matchedDurga) {
-                switchTab(matchedDurga.id);
-            } else if (query.includes("garba") || query.includes("dance") || query.includes("step")) {
-                switchTab("garba");
-            } else if (query.includes("safe") || query.includes("help") || query.includes("police") || query.includes("sos")) {
-                switchTab("safety");
+                output.innerText = "Geolocation not supported.";
             }
         }
     </script>
