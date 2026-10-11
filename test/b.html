@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#176b45">
+<title>PeerLeaf WebRTC Chat V2</title>
+
+<style>
+:root {
+  --bg:#f0f7f0;
+  --card:#ffffff;
+  --text:#193b2b;
+  --muted:#65786b;
+  --primary:#176b45;
+  --accent:#32a66b;
+  --border:#d6e5d9;
+  --soft:#e4f3e7;
+}
+
+[data-theme="ocean"] {
+  --bg:#edf7fb;--card:#fff;--text:#183a4a;
+  --muted:#607985;--primary:#176d8b;
+  --accent:#32a6c5;--border:#d4e8ef;--soft:#e2f4fa;
+}
+[data-theme="sunrise"] {
+  --bg:#fff6eb;--card:#fff;--text:#51351e;
+  --muted:#826a53;--primary:#b75c21;
+  --accent:#e58a3c;--border:#f0dfcc;--soft:#fff0df;
+}
+[data-theme="lavender"] {
+  --bg:#f6f2fb;--card:#fff;--text:#3e3052;
+  --muted:#7a6a8a;--primary:#7353a6;
+  --accent:#a07bd0;--border:#e4dcf0;--soft:#f0e8fa;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;background:var(--bg);color:var(--text);
+  font:15px/1.5 system-ui,-apple-system,sans-serif;
+}
+header {
+  padding:20px 15px;
+  background:linear-gradient(120deg,var(--primary),var(--accent));
+  color:white;
+}
+header h1 {margin:0;font-size:23px}
+header p {margin:4px 0 0;font-size:13px}
+main {max-width:1000px;margin:auto;padding:12px}
+.tabs {
+  display:flex;gap:7px;overflow-x:auto;padding:5px 0 12px;
+  position:sticky;top:0;background:var(--bg);z-index:5;
+}
+button,select,input,textarea {font:inherit}
+button {
+  border:1px solid var(--border);border-radius:10px;
+  padding:10px 12px;cursor:pointer;
+}
+.tabs button {white-space:nowrap;background:var(--card);color:var(--text)}
+.tabs button.active,.primary {background:var(--primary);color:white}
+.primary {border-color:var(--primary)}
+.secondary {background:var(--soft);color:var(--text)}
+.danger {background:#fff0ed;color:#a33b36}
+.panel {display:none}
+.panel.active {display:block}
+.card {
+  background:var(--card);border:1px solid var(--border);
+  border-radius:15px;padding:15px;margin-bottom:12px;
+}
+.card h2 {font-size:18px;margin:0 0 10px}
+.card h3 {font-size:15px;margin:0 0 8px}
+label {display:block;font-weight:650;font-size:13px;margin:10px 0 4px}
+input,select,textarea {
+  width:100%;padding:10px;border-radius:9px;
+  border:1px solid var(--border);background:var(--card);
+  color:var(--text);
+}
+textarea {min-height:100px;resize:vertical;font-family:monospace;font-size:12px}
+.row {display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.row>* {flex:1 1 130px;min-width:0}
+.grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.muted {color:var(--muted);font-size:13px}
+.notice {
+  background:var(--soft);border:1px solid var(--border);
+  padding:12px;border-radius:12px;margin-bottom:12px;font-size:13px;
+}
+.stats {display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat {background:var(--soft);padding:12px;border-radius:10px}
+.stat b {display:block;font-size:22px}
+.chatbox {
+  height:300px;overflow:auto;border:1px solid var(--border);
+  border-radius:10px;padding:10px;background:var(--bg);
+}
+.msg {
+  padding:9px 11px;margin:7px 0;max-width:90%;
+  border:1px solid var(--border);background:var(--card);
+  border-radius:12px;overflow-wrap:anywhere;
+}
+.msg.mine {margin-left:auto;background:var(--soft)}
+.msg small {display:block;font-size:11px;color:var(--muted);margin-top:5px}
+.msg p {margin:0;white-space:pre-wrap}
+.item {
+  border:1px solid var(--border);border-radius:10px;
+  padding:10px;margin:7px 0;overflow-wrap:anywhere;
+}
+.pill {
+  display:inline-block;background:var(--soft);
+  padding:3px 8px;border-radius:20px;font-size:12px;
+}
+.hidden {display:none!important}
+footer {text-align:center;padding:15px;color:var(--muted);font-size:12px}
+video {width:100%;max-height:220px}
+@media(max-width:450px) {
+  main {padding:8px}
+  .card {padding:12px}
+}
+</style>
+</head>
+
+<body data-theme="forest">
+
+<header>
+  <h1>🌿 PeerLeaf Chat V2</h1>
+  <p>Peer-to-peer communication · WebRTC · IndexedDB</p>
+</header>
+
+<main>
+
+<div class="notice">
+  <b>Demo information:</b>
+  Messages are stored locally on this device. QR codes help exchange
+  connection data. WebRTC requires successful connection negotiation.
+  Pending messages cannot reach disconnected users until a connection
+  is restored. Use HTTPS for camera access. This is not a production
+  secure messenger.
+</div>
+
+<nav class="tabs">
+  <button class="active" data-tab="home">🏠 Home</button>
+  <button data-tab="connect">🔗 Connect</button>
+  <button data-tab="chat">💬 Chat</button>
+  <button data-tab="group">👥 Group</button>
+  <button data-tab="delivery">📬 Delivery</button>
+  <button data-tab="data">🗃️ Data</button>
+  <button data-tab="settings">⚙️ Settings</button>
+</nav>
+
+<!-- HOME -->
+<section class="panel active" id="home">
+
+  <div class="grid">
+    <div class="card">
+      <h2>👤 My Identity</h2>
+      <label>Display name</label>
+      <input id="myName" placeholder="Your name" maxlength="40">
+      <div class="row">
+        <button class="primary" id="saveName">Save name</button>
+        <button class="secondary" id="generateId">New ID</button>
+      </div>
+      <p class="muted">Local ID</p>
+      <div id="myId" style="overflow-wrap:anywhere"></div>
+      <button class="secondary" id="copyId" style="margin-top:8px">Copy ID</button>
+    </div>
+
+    <div class="card">
+      <h2>📊 Dashboard</h2>
+      <div class="stats">
+        <div class="stat"><b id="peerCount">0</b><span class="muted">Peers</span></div>
+        <div class="stat"><b id="messageCount">0</b><span class="muted">Messages</span></div>
+        <div class="stat"><b id="pendingCount">0</b><span class="muted">Pending</span></div>
+      </div>
+      <p id="storageStatus" class="muted">Opening storage…</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🎚️ Select Communication Level</h2>
+    <label>Choose a level</label>
+    <select id="level">
+      <option value="1">Level 1 — Manual connection</option>
+      <option value="2">Level 2 — QR-assisted connection</option>
+      <option value="3">Level 3 — Live one-to-one chat</option>
+      <option value="4">Level 4 — Offline local history</option>
+      <option value="5">Level 5 — Group mesh management</option>
+      <option value="6">Level 6 — Delivery acknowledgments</option>
+      <option value="7">Level 7 — STUN/TURN configuration</option>
+      <option value="8">Level 8 — Identity and contacts</option>
+    </select>
+    <div class="notice" id="levelDescription" style="margin-top:10px">
+      Level 1: Exchange WebRTC offer and answer data manually.
+    </div>
+    <button class="primary" id="openConnection">Open Connection Setup</button>
+  </div>
+
+</section>
+
+<!-- CONNECTION -->
+<section class="panel" id="connect">
+
+  <div class="card">
+    <h2>🔗 Establish WebRTC Connection</h2>
+
+    <p class="muted">
+      Device A creates an offer. Device B applies the offer and creates
+      an answer. Device A applies the answer. Transfer the complete
+      JSON text between devices.
+    </p>
+
+    <label>Peer display name</label>
+    <input id="peerName" placeholder="Friend's name">
+
+    <div class="row">
+      <button class="primary" id="createOffer">1. Create Offer</button>
+      <button class="primary" id="createAnswer">2. Create Answer</button>
+      <button class="secondary" id="applyAnswer">3. Apply Answer</button>
+    </div>
+
+    <label>My connection data — share with the other device</label>
+    <textarea id="localData" placeholder="Offer or answer appears here"></textarea>
+
+    <div class="row">
+      <button class="secondary" id="copyData">Copy Data</button>
+      <button class="secondary" id="showQR">Generate QR</button>
+    </div>
+
+    <div id="qrArea" style="text-align:center;margin:10px 0"></div>
+
+    <label>Remote connection data — paste data received</label>
+    <textarea id="remoteData" placeholder="Paste complete offer or answer JSON"></textarea>
+
+    <div class="row">
+      <button class="primary" id="applyOffer">Apply Remote Offer</button>
+      <button class="secondary" id="scanQR">Scan QR</button>
+    </div>
+
+    <video id="camera" class="hidden" playsinline></video>
+
+    <p id="connectionStatus" class="muted">Not connected.</p>
+  </div>
+
+  <div class="card">
+    <h3>Connection tips</h3>
+    <p class="muted">
+      1. Create an offer on Device A.<br>
+      2. Copy it to Device B.<br>
+      3. Apply the offer on Device B and create an answer.<br>
+      4. Copy the answer back to Device A and apply it.<br>
+      5. Wait for the DataChannel to open.<br><br>
+      If the connection fails, your networks may require a TURN relay.
+    </p>
+  </div>
+
+</section>
+
+<!-- CHAT -->
+<section class="panel" id="chat">
+
+  <div class="card">
+    <h2>💬 Private Chat</h2>
+
+    <label>Active peer</label>
+    <select id="activePeer"></select>
+
+    <p>Connection status: <span class="pill" id="chatStatus">Not connected</span></p>
+
+    <div id="chatMessages" class="chatbox"></div>
+
+    <label>Write message</label>
+    <textarea id="messageInput" style="min-height:65px;font-family:inherit"
+      placeholder="Type a message..."></textarea>
+
+    <div class="row">
+      <button class="primary" id="sendMessage">Send Message</button>
+      <button class="secondary" id="retryMessages">Retry Pending</button>
+    </div>
+
+    <p class="muted">
+      Sent means the local DataChannel accepted the message.
+      Delivered means the remote application acknowledged it.
+    </p>
+  </div>
+
+</section>
+
+<!-- GROUP -->
+<section class="panel" id="group">
+
+  <div class="card">
+    <h2>👥 Group Manager</h2>
+
+    <p class="muted">
+      This prototype manages individual peer connections. It does not
+      automatically create a fully connected group mesh.
+    </p>
+
+    <label>Group name</label>
+    <input id="groupName" placeholder="Family group">
+
+    <label>Intended group size</label>
+    <select id="groupSize">
+      <option value="3">3 users</option>
+      <option value="5">5 users</option>
+      <option value="10">10 users</option>
+      <option value="50">50 users</option>
+    </select>
+
+    <button class="primary" id="saveGroup">Save Group Settings</button>
+
+    <p id="groupStatus" class="muted"></p>
+
+    <h3 style="margin-top:15px">Connected / known peers</h3>
+    <div id="peerList"></div>
+
+    <p class="muted">
+      A fully connected mesh of 50 users can require 1,225 pairwise
+      connections. A server-assisted group architecture is generally
+      more practical at that scale.
+    </p>
+  </div>
+
+</section>
+
+<!-- DELIVERY -->
+<section class="panel" id="delivery">
+
+  <div class="card">
+    <h2>📬 Delivery Queue</h2>
+
+    <p class="muted">
+      Messages that cannot currently be sent remain in local storage.
+      Reconnect the intended peer and retry delivery.
+    </p>
+
+    <div class="row">
+      <button class="primary" id="retryAll">Retry All Pending</button>
+      <button class="secondary" id="refreshQueue">Refresh</button>
+    </div>
+
+    <div id="deliveryQueue"></div>
+  </div>
+
+</section>
+
+<!-- DATA -->
+<section class="panel" id="data">
+
+  <div class="card">
+    <h2>🗃️ Data Management</h2>
+
+    <div class="row">
+      <button class="primary" id="exportJSON">Export JSON</button>
+      <button class="secondary" id="exportCSV">Export CSV</button>
+      <button class="secondary" id="importButton">Import JSON</button>
+    </div>
+
+    <input type="file" id="importFile" accept=".json,application/json"
+      class="hidden">
+
+    <h3 style="margin-top:15px">Saved Messages</h3>
+    <div id="history"></div>
+
+    <button class="danger" id="clearMessages" style="margin-top:12px">
+      Delete All Messages
+    </button>
+
+    <button class="danger" id="resetApp" style="margin-top:12px">
+      Reset Application Data
+    </button>
+  </div>
+
+</section>
+
+<!-- SETTINGS -->
+<section class="panel" id="settings">
+
+  <div class="card">
+    <h2>⚙️ Settings</h2>
+
+    <label>Nature theme</label>
+    <select id="theme">
+      <option value="forest">Forest Green</option>
+      <option value="ocean">Ocean Blue</option>
+      <option value="sunrise">Sunrise Orange</option>
+      <option value="lavender">Lavender</option>
+    </select>
+
+    <label>STUN server</label>
+    <input id="stunServer" value="stun:stun.l.google.com:19302">
+
+    <label>Optional TURN server URL</label>
+    <input id="turnServer" placeholder="turn:your-server.example:3478">
+
+    <label>TURN username</label>
+    <input id="turnUsername" autocomplete="off">
+
+    <label>TURN credential</label>
+    <input id="turnCredential" type="password" autocomplete="new-password">
+
+    <button class="primary" id="saveSettings" style="margin-top:12px">
+      Save Settings
+    </button>
+
+    <p class="muted">
+      TURN requires an actual server and valid credentials.
+      Avoid embedding permanent TURN secrets in public HTML.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>🔐 Security</h3>
+    <p class="muted">
+      WebRTC encrypts transport traffic, but this demo does not verify
+      user identities. IndexedDB is not an encrypted vault. Do not use
+      this prototype for confidential or emergency communication.
+    </p>
+  </div>
+
+</section>
+
+<footer>PeerLeaf WebRTC Demo V2 · Vanilla JavaScript · Local IndexedDB</footer>
+</main>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+const DB_NAME = "PeerLeafChatV2";
+const DB_VERSION = 1;
+
+let db;
+let peers = new Map();
+let activePeerId = "";
+let currentPC = null;
+let currentChannel = null;
+let scanStream = null;
+let qrLibraryLoading = false;
+
+let identity = { id:"", name:"Guest" };
+
+let settings = {
+  theme:"forest",
+  stun:"stun:stun.l.google.com:19302",
+  turn:"",
+  turnUser:"",
+  turnCredential:""
+};
+
+let group = { name:"", size:3 };
+
+const levelDescriptions = {
+  1:"Manual connection: exchange complete WebRTC offer and answer data.",
+  2:"QR-assisted connection: transfer offer and answer data using QR codes.",
+  3:"Live chat: send messages through an open WebRTC DataChannel.",
+  4:"Local history: messages are saved in IndexedDB on this device.",
+  5:"Group mesh: manage multiple peer links individually.",
+  6:"Delivery management: pending queue, retry, and acknowledgments.",
+  7:"Network settings: configure STUN and optional TURN servers.",
+  8:"Identity management: local user ID, display name, and peer labels."
+};
+
+function uid() {
+  const bytes = new Uint8Array(12);
+  crypto.getRandomValues(bytes);
+  return "peer-" + Array.from(bytes,
+    b => b.toString(16).padStart(2,"0")).join("");
+}
+
+function timestamp() {
+  return new Date().toISOString();
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[ch]);
+}
+
+function openDatabase() {
+  return new Promise((resolve,reject) => {
+    const request = indexedDB.open(DB_NAME,DB_VERSION);
+
+    request.onupgradeneeded = () => {
+      const database = request.result;
+
+      if (!database.objectStoreNames.contains("messages")) {
+        const store = database.createObjectStore("messages",{keyPath:"id"});
+        store.createIndex("createdAt","createdAt");
+      }
+
+      if (!database.objectStoreNames.contains("meta")) {
+        database.createObjectStore("meta",{keyPath:"key"});
+      }
+    };
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function store(storeName,mode="readonly") {
+  return db.transaction(storeName,mode).objectStore(storeName);
+}
+
+function getAll(storeName) {
+  return new Promise((resolve,reject) => {
+    const req = store(storeName).getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function put(storeName,value) {
+  return new Promise((resolve,reject) => {
+    const req = store(storeName,"readwrite").put(value);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function deleteRecord(storeName,key) {
+  return new Promise((resolve,reject) => {
+    const req = store(storeName,"readwrite").delete(key);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function clearStore(storeName) {
+  return new Promise((resolve,reject) => {
+    const req = store(storeName,"readwrite").clear();
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function saveMeta() {
+  await put("meta",{key:"identity",value:identity});
+  await put("meta",{key:"settings",value:settings});
+  await put("meta",{key:"group",value:group});
+}
+
+async function loadMeta() {
+  const records = await getAll("meta");
+
+  for (const record of records) {
+    if (record.key === "identity") identity = record.value;
+    if (record.key === "settings") settings = {...settings,...record.value};
+    if (record.key === "group") group = {...group,...record.value};
+  }
+
+  if (!identity.id) {
+    identity = {id:uid(),name:"Guest"};
+  }
+}
+
+function rtcConfig() {
+  const iceServers = [];
+
+  if (settings.stun) {
+    iceServers.push({urls:settings.stun.trim()});
+  }
+
+  if (settings.turn) {
+    const server = {urls:settings.turn.trim()};
+
+    if (settings.turnUser) server.username = settings.turnUser;
+    if (settings.turnCredential) {
+      server.credential = settings.turnCredential;
+    }
+
+    iceServers.push(server);
+  }
+
+  return {iceServers};
+}
+
+function waitForICE(pc) {
+  return new Promise(resolve => {
+    if (pc.iceGatheringState === "complete") {
+      resolve();
+      return;
+    }
+
+    let finished = false;
+
+    function done() {
+      if (finished) return;
+      finished = true;
+      pc.removeEventListener("icegatheringstatechange",check);
+      resolve();
+    }
+
+    function check() {
+      if (pc.iceGatheringState === "complete") done();
+    }
+
+    pc.addEventListener("icegatheringstatechange",check);
+    setTimeout(done,15000);
+  });
+}
+
+function encodeDescription(description,peerId,name) {
+  return JSON.stringify({
+    app:"PeerLeaf",
+    version:2,
+    kind:description.type,
+    description:description,
+    peerId:peerId,
+    name:name || "Peer"
+  });
+}
+
+function decodeDescription(text) {
+  const data = JSON.parse(text);
+
+  if (!data || data.app !== "PeerLeaf" ||
+      !data.description || !data.kind) {
+    throw new Error("Invalid PeerLeaf connection data.");
+  }
+
+  return data;
+}
+
+function setStatus(message) {
+  $("connectionStatus").textContent = message;
+}
+
+function registerPeer(id,name,pc,channel) {
+  let peer = peers.get(id);
+
+  if (!peer) {
+    peer = {
+      id,
+      name:name || "Peer",
+      pc,
+      channel:null,
+      status:"connecting"
+    };
+    peers.set(id,peer);
+  } else {
+    peer.name = name || peer.name;
+    peer.pc = pc || peer.pc;
+  }
+
+  if (pc) {
+    pc.onconnectionstatechange = () => {
+      peer.status = pc.connectionState;
+      renderPeers();
+      updateStats();
+    };
+
+    pc.oniceconnectionstatechange = () => {
+      if (pc.iceConnectionState === "failed") {
+        setStatus("ICE failed. Check your network or configure TURN.");
+      }
+    };
+  }
+
+  if (channel) attachChannel(peer,channel);
+
+  renderPeers();
+  updateStats();
+
+  return peer;
+}
+
+function attachChannel(peer,channel) {
+  peer.channel = channel;
+
+  channel.onopen = () => {
+    peer.status = "connected";
+    setStatus("Connected to " + peer.name);
+    renderPeers();
+    renderChat();
+    updateStats();
+    retryPendingFor(peer.id);
+  };
+
+  channel.onclose = () => {
+    peer.status = "disconnected";
+    renderPeers();
+    renderChat();
+    updateStats();
+  };
+
+  channel.onerror = () => {
+    $("chatStatus").textContent = "Channel error";
+  };
+
+  channel.onmessage = async event => {
+    let packet;
+
+    try {
+      packet = JSON.parse(event.data);
+    } catch {
+      return;
+    }
+
+    if (packet.type === "message") {
+      const message = {
+        id:packet.id || uid(),
+        peerId:peer.id,
+        peerName:peer.name,
+        from:packet.from || peer.id,
+        text:String(packet.text || ""),
+        createdAt:packet.createdAt || timestamp(),
+        status:"delivered",
+        direction:"incoming"
+      };
+
+      await put("messages",message);
+
+      try {
+        channel.send(JSON.stringify({
+          type:"ack",
+          id:message.id,
+          from:identity.id
+        }));
+      } catch {}
+
+      await refreshUI();
+    }
+
+    if (packet.type === "ack") {
+      const messages = await getAll("messages");
+      const message = messages.find(m => m.id === packet.id);
+
+      if (message) {
+        message.status = "delivered";
+        message.deliveredAt = timestamp();
+        await put("messages",message);
+        await refreshUI();
+      }
+    }
+  };
+}
+
+function makePeerConnection() {
+  const pc = new RTCPeerConnection(rtcConfig());
+
+  pc.ondatachannel = event => {
+    const metadata = window.remotePeerMetadata || {};
+    const peerId = metadata.peerId || uid();
+    const peerName = metadata.name || $("peerName").value || "Peer";
+
+    const peer = registerPeer(
+      peerId,peerName,pc,event.channel
+    );
+
+    selectPeer(peer.id);
+  };
+
+  return pc;
+}
+
+function closeCurrentConnection() {
+  if (currentChannel) {
+    try { currentChannel.close(); } catch {}
+  }
+
+  if (currentPC) {
+    try { currentPC.close(); } catch {}
+  }
+
+  currentChannel = null;
+  currentPC = null;
+}
+
+async function createOffer() {
+  try {
+    closeCurrentConnection();
+
+    const pc = makePeerConnection();
+    currentPC = pc;
+
+    const channel = pc.createDataChannel("peerleaf-chat",{
+      ordered:true
+    });
+
+    currentChannel = channel;
+
+    const localPeerId = uid();
+
+    const peer = registerPeer(
+      localPeerId,
+      $("peerName").value.trim() || "New peer",
+      pc,
+      channel
+    );
+
+    selectPeer(peer.id);
+
+    await pc.setLocalDescription(await pc.createOffer());
+
+    setStatus("Gathering ICE candidates…");
+    await waitForICE(pc);
+
+    $("localData").value = encodeDescription(
+      pc.localDescription,identity.id,identity.name
+    );
+
+    setStatus("Offer ready. Transfer it to the answering device.");
+
+  } catch (error) {
+    setStatus("Offer error: " + error.message);
+  }
+}
+
+async function applyOffer() {
+  try {
+    const metadata = decodeDescription($("remoteData").value);
+
+    if (metadata.kind !== "offer") {
+      throw new Error("Remote data must be an offer.");
+    }
+
+    closeCurrentConnection();
+
+    window.remotePeerMetadata = metadata;
+
+    const pc = makePeerConnection();
+    currentPC = pc;
+
+    await pc.setRemoteDescription(metadata.description);
+
+    setStatus("Offer applied. Now create an answer.");
+
+  } catch (error) {
+    setStatus("Could not apply offer: " + error.message);
+  }
+}
+
+async function createAnswer() {
+  try {
+    if (!currentPC ||
+        currentPC.signalingState !== "have-remote-offer") {
+      await applyOffer();
+    }
+
+    if (!currentPC ||
+        currentPC.signalingState !== "have-remote-offer") {
+      return;
+    }
+
+    await currentPC.setLocalDescription(
+      await currentPC.createAnswer()
+    );
+
+    setStatus("Gathering ICE candidates…");
+    await waitForICE(currentPC);
+
+    $("localData").value = encodeDescription(
+      currentPC.localDescription,identity.id,identity.name
+    );
+
+    setStatus("Answer ready. Transfer it to the initiating device.");
+
+  } catch (error) {
+    setStatus("Answer error: " + error.message);
+  }
+}
+
+async function applyAnswer() {
+  try {
+    if (!currentPC) {
+      throw new Error("Create an offer on this device first.");
+    }
+
+    const metadata = decodeDescription($("remoteData").value);
+
+    if (metadata.kind !== "answer") {
+      throw new Error("Remote data must be an answer.");
+    }
+
+    await currentPC.setRemoteDescription(metadata.description);
+
+    setStatus("Answer applied. Waiting for connection…");
+
+  } catch (error) {
+    setStatus("Could not apply answer: " + error.message);
+  }
+}
+
+function selectPeer(id) {
+  activePeerId = id;
+
+  const peer = peers.get(id);
+
+  if (peer) $("peerName").value = peer.name;
+
+  renderPeerSelect();
+  renderChat();
+}
+
+function renderPeerSelect() {
+  const select = $("activePeer");
+  const previous = activePeerId;
+
+  select.innerHTML = "";
+
+  for (const peer of peers.values()) {
+    const option = document.createElement("option");
+    option.value = peer.id;
+    option.textContent = peer.name + " — " + peer.status;
+    select.appendChild(option);
+  }
+
+  if (!peers.size) {
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "No peers connected";
+    select.appendChild(option);
+    activePeerId = "";
+  } else if ([...select.options].some(o => o.value === previous)) {
+    select.value = previous;
+    activePeerId = previous;
+  } else {
+    select.selectedIndex = 0;
+    activePeerId = select.value;
+  }
+}
+
+function renderPeers() {
+  renderPeerSelect();
+
+  const container = $("peerList");
+  container.innerHTML = "";
+
+  for (const peer of peers.values()) {
+    const div = document.createElement("div");
+    div.className = "item";
+
+    div.innerHTML =
+      "<b>" + escapeHTML(peer.name) + "</b><br>" +
+      "<span class='muted'>" + escapeHTML(peer.id) + "</span><br>" +
+      "<span class='pill'>" + escapeHTML(peer.status) + "</span> " +
+      "<button class='secondary' data-open-peer='" +
+      escapeHTML(peer.id) + "'>Open Chat</button>";
+
+    container.appendChild(div);
+  }
+
+  if (!peers.size) {
+    container.innerHTML = "<p class='muted'>No peers yet.</p>";
+  }
+
+  container.querySelectorAll("[data-open-peer]").forEach(button => {
+    button.onclick = () => {
+      selectPeer(button.dataset.openPeer);
+      document.querySelector('[data-tab="chat"]').click();
+    };
+  });
+
+  $("groupStatus").textContent =
+    group.name ? group.name + " — target " + group.size + " users" :
+    "No group configured.";
+}
+
+async function renderChat() {
+  const box = $("chatMessages");
+  if (!db) return;
+
+  const all = await getAll("messages");
+
+  const messages = all
+    .filter(m => !activePeerId || m.peerId === activePeerId)
+    .sort((a,b) => a.createdAt.localeCompare(b.createdAt));
+
+  box.innerHTML = "";
+
+  for (const message of messages) {
+    const div = document.createElement("div");
+
+    div.className = "msg " +
+      (message.direction === "outgoing" ? "mine" : "");
+
+    div.innerHTML =
+      "<p>" + escapeHTML(message.text) + "</p>" +
+      "<small>" +
+      escapeHTML(message.direction === "outgoing" ?
+        "You" : message.peerName || "Peer") +
+      " · " + escapeHTML(new Date(message.createdAt).toLocaleString()) +
+      " · " + escapeHTML(message.status) +
+      "</small>";
+
+    box.appendChild(div);
+  }
+
+  box.scrollTop = box.scrollHeight;
+
+  const peer = peers.get(activePeerId);
+
+  $("chatStatus").textContent = peer ?
+    peer.status : "Not connected";
+}
+
+async function sendMessage() {
+  const text = $("messageInput").value.trim();
+
+  if (!text) return;
+
+  const peer = peers.get(activePeerId);
+
+  const message = {
+    id:uid(),
+    peerId:activePeerId || "",
+    peerName:peer ? peer.name : "Unconnected peer",
+    from:identity.id,
+    text,
+    createdAt:timestamp(),
+    status:"pending",
+    direction:"outgoing"
+  };
+
+  await put("messages",message);
+
+  $("messageInput").value = "";
+
+  if (peer && peer.channel &&
+      peer.channel.readyState === "open") {
+
+    try {
+      peer.channel.send(JSON.stringify({
+        type:"message",
+        id:message.id,
+        from:identity.id,
+        text:message.text,
+        createdAt:message.createdAt
+      }));
+
+      message.status = "sent";
+      await put("messages",message);
+
+    } catch {
+      message.status = "pending";
+      await put("messages",message);
+    }
+  }
+
+  await refreshUI();
+}
+
+async function retryPendingFor(peerId) {
+  const all = await getAll("messages");
+  const peer = peers.get(peerId);
+
+  if (!peer || !peer.channel ||
+      peer.channel.readyState !== "open") return;
+
+  for (const message of all) {
+    if (message.direction !== "outgoing" ||
+        message.status !== "pending" ||
+        message.peerId !== peerId) continue;
+
+    try {
+      peer.channel.send(JSON.stringify({
+        type:"message",
+        id:message.id,
+        from:identity.id,
+        text:message.text,
+        createdAt:message.createdAt
+      }));
+
+      message.status = "sent";
+      await put("messages",message);
+
+    } catch {}
+  }
+
+  await refreshUI();
+}
+
+async function retryAllPending() {
+  const messages = await getAll("messages");
+
+  for (const message of messages) {
+    if (message.direction === "outgoing" &&
+        message.status === "pending") {
+      await retryPendingFor(message.peerId);
+    }
+  }
+}
+
+async function renderDelivery() {
+  const all = await getAll("messages");
+
+  const pending = all.filter(m =>
+    m.direction === "outgoing" &&
+    m.status !== "delivered"
+  );
+
+  $("deliveryQueue").innerHTML = pending.map(message =>
+    "<div class='item'><b>" +
+    escapeHTML(message.text.slice(0,100)) +
+    "</b><br><span class='muted'>" +
+    escapeHTML(message.peerName) + " · " +
+    escapeHTML(message.status) +
+    "</span></div>"
+  ).join("") || "<p class='muted'>No pending messages.</p>";
+}
+
+async function renderHistory() {
+  const all = await getAll("messages");
+
+  $("history").innerHTML = all
+    .sort((a,b) => b.createdAt.localeCompare(a.createdAt))
+    .slice(0,100)
+    .map(message =>
+      "<div class='item'><b>" +
+      escapeHTML(message.text.slice(0,100)) +
+      "</b><br><span class='muted'>" +
+      escapeHTML(message.peerName) + " · " +
+      escapeHTML(message.direction) + " · " +
+      escapeHTML(message.status) +
+      "</span> <button class='danger' data-delete-message='" +
+      escapeHTML(message.id) + "'>Delete</button></div>"
+    ).join("") || "<p class='muted'>No saved messages.</p>";
+
+  $("history").querySelectorAll("[data-delete-message]").forEach(button => {
+    button.onclick = async () => {
+      await deleteRecord("messages",button.dataset.deleteMessage);
+      await refreshUI();
+    };
+  });
+}
+
+async function updateStats() {
+  const all = await getAll("messages");
+
+  $("peerCount").textContent = peers.size;
+  $("messageCount").textContent = all.length;
+
+  $("pendingCount").textContent = all.filter(m =>
+    m.direction === "outgoing" &&
+    m.status !== "delivered"
+  ).length;
+}
+
+async function refreshUI() {
+  await Promise.all([
+    renderChat(),
+    renderHistory(),
+    renderDelivery(),
+    updateStats()
+  ]);
+}
+
+function downloadFile(filename,content,type) {
+  const blob = new Blob([content],{type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download = filename;
+  a.click();
+
+  setTimeout(() => URL.revokeObjectURL(url),1000);
+}
+
+function csvValue(value) {
+  return '"' + String(value ?? "").replace(/"/g,'""') + '"';
+}
+
+async function exportJSON() {
+  const messages = await getAll("messages");
+
+  downloadFile(
+    "peerleaf-backup.json",
+    JSON.stringify({
+      app:"PeerLeaf",
+      version:2,
+      exportedAt:timestamp(),
+      identity,
+      settings,
+      group,
+      messages
+    },null,2),
+    "application/json"
+  );
+}
+
+async function exportCSV() {
+  const messages = await getAll("messages");
+
+  const rows = [
+    ["id","peerId","peerName","direction","text","createdAt","status"],
+    ...messages.map(m => [
+      m.id,m.peerId,m.peerName,m.direction,
+      m.text,m.createdAt,m.status
+    ])
+  ];
+
+  downloadFile(
+    "peerleaf-messages.csv",
+    rows.map(row => row.map(csvValue).join(",")).join("\r\n"),
+    "text/csv;charset=utf-8"
+  );
+}
+
+async function importJSON(file) {
+  try {
+    const data = JSON.parse(await file.text());
+
+    if (data.app !== "PeerLeaf" ||
+        !Array.isArray(data.messages)) {
+      throw new Error("Invalid PeerLeaf backup.");
+    }
+
+    for (const message of data.messages) {
+      if (message && message.id &&
+          typeof message.text === "string") {
+        await put("messages",message);
+      }
+    }
+
+    if (data.identity && data.identity.id) {
+      identity = data.identity;
+    }
+
+    if (data.settings) {
+      settings = {...settings,...data.settings};
+    }
+
+    if (data.group) {
+      group = {...group,...data.group};
+    }
+
+    await saveMeta();
+    syncSettingsUI();
+    await refreshUI();
+
+    alert("Backup imported.");
+
+  } catch (error) {
+    alert("Import failed: " + error.message);
+  }
+}
+
+function syncSettingsUI() {
+  $("myName").value = identity.name;
+  $("myId").textContent = identity.id;
+
+  $("theme").value = settings.theme;
+  document.body.dataset.theme = settings.theme;
+
+  $("stunServer").value = settings.stun;
+  $("turnServer").value = settings.turn;
+  $("turnUsername").value = settings.turnUser;
+  $("turnCredential").value = settings.turnCredential;
+
+  $("groupName").value = group.name;
+  $("groupSize").value = String(group.size);
+
+  $("groupStatus").textContent = group.name ?
+    group.name + " — target " + group.size + " users" :
+    "No group configured.";
+}
+
+/* QR display: uses an optional external QR library. */
+function generateQR() {
+  const text = $("localData").value.trim();
+
+  if (!text) {
+    setStatus("Create an offer or answer first.");
+    return;
+  }
+
+  const area = $("qrArea");
+  area.innerHTML = "";
+
+  function draw() {
+    if (!window.QRCode) {
+      setStatus("QR library unavailable. Use Copy Data instead.");
+      return;
+    }
+
+    new QRCode(area,{
+      text:text,
+      width:220,
+      height:220
+    });
+  }
+
+  if (window.QRCode) {
+    draw();
+    return;
+  }
+
+  if (qrLibraryLoading) return;
+
+  qrLibraryLoading = true;
+
+  const script = document.createElement("script");
+
+  script.src =
+    "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";
+
+  script.onload = () => {
+    qrLibraryLoading = false;
+    draw();
+  };
+
+  script.onerror = () => {
+    qrLibraryLoading = false;
+    setStatus("Could not load QR library. Use Copy Data instead.");
+  };
+
+  document.head.appendChild(script);
+}
+
+/* QR scanning: browser support varies. */
+async function scanQR() {
+  if (!("BarcodeDetector" in window)) {
+    alert(
+      "QR scanning is not supported by this browser. " +
+      "Use your phone's QR scanner to decode the text, then paste it."
+    );
+    return;
+  }
+
+  try {
+    scanStream = await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:"environment"}
+    });
+
+    const video = $("camera");
+    video.srcObject = scanStream;
+    video.classList.remove("hidden");
+
+    await video.play();
+
+    const detector = new BarcodeDetector({
+      formats:["qr_code"]
+    });
+
+    const scan = async () => {
+      if (!scanStream) return;
+
+      try {
+        const results = await detector.detect(video);
+
+        if (results.length) {
+          $("remoteData").value = results[0].rawValue;
+          stopCamera();
+          setStatus("QR data captured. Apply the offer or answer.");
+          return;
+        }
+      } catch {}
+
+      setTimeout(scan,500);
+    };
+
+    scan();
+
+  } catch (error) {
+    alert("Camera unavailable: " + error.message);
+  }
+}
+
+function stopCamera() {
+  if (scanStream) {
+    scanStream.getTracks().forEach(track => track.stop());
+    scanStream = null;
+  }
+
+  $("camera").classList.add("hidden");
+}
+
+/* Tab navigation */
+document.querySelectorAll("[data-tab]").forEach(button => {
+  button.addEventListener("click",() => {
+    document.querySelectorAll("[data-tab]").forEach(b =>
+      b.classList.toggle("active",b === button)
+    );
+
+    document.querySelectorAll(".panel").forEach(panel =>
+      panel.classList.toggle("active",panel.id === button.dataset.tab)
+    );
+
+    if (button.dataset.tab === "chat") renderChat();
+    if (button.dataset.tab === "data") renderHistory();
+    if (button.dataset.tab === "delivery") renderDelivery();
+  });
+});
+
+/* Communication levels */
+$("level").onchange = () => {
+  $("levelDescription").textContent =
+    levelDescriptions[$("level").value];
+};
+
+$("openConnection").onclick = () =>
+  document.querySelector('[data-tab="connect"]').click();
+
+/* Identity */
+$("saveName").onclick = async () => {
+  identity.name = $("myName").value.trim() || "Guest";
+  await saveMeta();
+  syncSettingsUI();
+};
+
+$("generateId").onclick = async () => {
+  identity.id = uid();
+  await saveMeta();
+  syncSettingsUI();
+};
+
+$("copyId").onclick = async () => {
+  try {
+    await navigator.clipboard.writeText(identity.id);
+    alert("ID copied.");
+  } catch {
+    prompt("Copy your ID:",identity.id);
+  }
+};
+
+/* WebRTC */
+$("createOffer").onclick = createOffer;
+$("applyOffer").onclick = applyOffer;
+$("createAnswer").onclick = createAnswer;
+$("applyAnswer").onclick = applyAnswer;
+
+$("copyData").onclick = async () => {
+  try {
+    await navigator.clipboard.writeText($("localData").value);
+    setStatus("Connection data copied.");
+  } catch {
+    $("localData").select();
+    alert("Copy the selected connection data.");
+  }
+};
+
+$("showQR").onclick = generateQR;
+$("scanQR").onclick = scanQR;
+
+/* Chat */
+$("activePeer").onchange = () =>
+  selectPeer($("activePeer").value);
+
+$("sendMessage").onclick = sendMessage;
+$("retryMessages").onclick = retryAllPending;
+$("retryAll").onclick = retryAllPending;
+$("refreshQueue").onclick = renderDelivery;
+
+$("messageInput").addEventListener("keydown",event => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
+  }
+});
+
+/* Group settings */
+$("saveGroup").onclick = async () => {
+  group = {
+    name:$("groupName").value.trim() || "Untitled group",
+    size:Number($("groupSize").value)
+  };
+
+  await saveMeta();
+  syncSettingsUI();
+};
+
+/* Theme and network settings */
+$("theme").onchange = () => {
+  document.body.dataset.theme = $("theme").value;
+};
+
+$("saveSettings").onclick = async () => {
+  settings = {
+    theme:$("theme").value,
+    stun:$("stunServer").value.trim(),
+    turn:$("turnServer").value.trim(),
+    turnUser:$("turnUsername").value.trim(),
+    turnCredential:$("turnCredential").value
+  };
+
+  await saveMeta();
+  syncSettingsUI();
+
+  alert("Settings saved. They will apply to new connections.");
+};
+
+/* Data management */
+$("exportJSON").onclick = exportJSON;
+$("exportCSV").onclick = exportCSV;
+
+$("importButton").onclick = () => $("importFile").click();
+
+$("importFile").onchange = event => {
+  const file = event.target.files[0];
+
+  if (file) importJSON(file);
+
+  event.target.value = "";
+};
+
+$("clearMessages").onclick = async () => {
+  if (confirm("Delete all locally saved messages?")) {
+    await clearStore("messages");
+    await refreshUI();
+  }
+};
+
+$("resetApp").onclick = async () => {
+  if (!confirm("Reset all local application data?")) return;
+
+  await clearStore("messages");
+  await clearStore("meta");
+
+  for (const peer of peers.values()) {
+    try { peer.pc?.close(); } catch {}
+  }
+
+  peers.clear();
+
+  identity = {id:uid(),name:"Guest"};
+
+  settings = {
+    theme:"forest",
+    stun:"stun:stun.l.google.com:19302",
+    turn:"",
+    turnUser:"",
+    turnCredential:""
+  };
+
+  group = {name:"",size:3};
+
+  await saveMeta();
+  syncSettingsUI();
+  renderPeers();
+  await refreshUI();
+};
+
+/* Start app */
+(async function init() {
+  try {
+    if (!("indexedDB" in window)) {
+      throw new Error("IndexedDB unavailable");
+    }
+
+    db = await openDatabase();
+    await loadMeta();
+    syncSettingsUI();
+
+    $("storageStatus").textContent =
+      "IndexedDB ready. Data is stored in this browser.";
+
+    renderPeers();
+    await refreshUI();
+
+  } catch (error) {
+    $("storageStatus").textContent =
+      "Storage error: " + error.message;
+  }
+})();
+
+window.addEventListener("beforeunload",stopCamera);
+
+</script>
+</body>
+</html>
