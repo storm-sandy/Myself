@@ -3,154 +3,1404 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#167447">
-<title>Swayam Chat — Peer-to-Peer Demo</title>
+<meta name="theme-color" content="#147d4b">
+<title>Swayam Room Chat V3</title>
+
+<!-- QR generation only; no third-party messaging database -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <style>
-:root{--bg:#f3f8f3;--panel:#fff;--ink:#173326;--muted:#617568;--primary:#167447;--primary2:#0b5c35;--line:#d9e6dc;--bubble:#e5f5e9;--danger:#b42318;--shadow:0 8px 26px #153d2410}
-[data-theme="forest"]{--bg:#edf5ee;--panel:#fff;--ink:#173326;--muted:#617568;--primary:#167447;--primary2:#0b5c35;--line:#d9e6dc;--bubble:#e5f5e9}
-[data-theme="ocean"]{--bg:#eef7fb;--panel:#fff;--ink:#153248;--muted:#587183;--primary:#147c9b;--primary2:#075d78;--line:#d5e8ef;--bubble:#dff4fa}
-[data-theme="sunset"]{--bg:#fff5ef;--panel:#fff;--ink:#482d26;--muted:#80665d;--primary:#c45d32;--primary2:#9b3d1b;--line:#f0ddd3;--bubble:#ffeadf}
-[data-theme="lavender"]{--bg:#f7f3ff;--panel:#fff;--ink:#35294b;--muted:#756987;--primary:#7652a8;--primary2:#553580;--line:#e4daf4;--bubble:#efe6ff}
-[data-theme="meadow"]{--bg:#f5f8e9;--panel:#fff;--ink:#34401d;--muted:#717a58;--primary:#708c25;--primary2:#526c12;--line:#e1e8c8;--bubble:#edf5d7}
-[data-theme="rose"]{--bg:#fff3f6;--panel:#fff;--ink:#4a2836;--muted:#886a78;--primary:#b54470;--primary2:#8b2a51;--line:#f0d9e3;--bubble:#ffe4ef}
-[data-theme="sky"]{--bg:#f0f7ff;--panel:#fff;--ink:#1c3552;--muted:#657c98;--primary:#3478c8;--primary2:#20579a;--line:#d8e6f7;--bubble:#e1efff}
-[data-theme="earth"]{--bg:#f7f1e8;--panel:#fff;--ink:#3e3024;--muted:#7c6a58;--primary:#8b613b;--primary2:#684523;--line:#e7d9c8;--bubble:#f4e7d5}
-[data-theme="night"]{--bg:#111a18;--panel:#1c2925;--ink:#e5f2e9;--muted:#a1b5a8;--primary:#47b77a;--primary2:#2a965d;--line:#34483e;--bubble:#263f32;--shadow:0 8px 26px #0004}
-[data-theme="monsoon"]{--bg:#edf2f5;--panel:#fff;--ink:#20333d;--muted:#667c86;--primary:#477c8a;--primary2:#2e5e6b;--line:#d8e3e7;--bubble:#e1eff2}
-[data-theme="sunrise"]{--bg:#fff9e9;--panel:#fff;--ink:#48351b;--muted:#887653;--primary:#c08a16;--primary2:#93670b;--line:#f0e3bf;--bubble:#fff0c7}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer;border:0;border-radius:11px;padding:10px 13px;background:var(--primary);color:white;font-weight:650}button:hover{filter:brightness(.96)}button.secondary{background:var(--bubble);color:var(--ink);border:1px solid var(--line)}button.danger{background:var(--danger)}button:disabled{opacity:.45;cursor:not-allowed}input,textarea,select{width:100%;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:10px;padding:10px}textarea{min-height:100px;resize:vertical}label{display:block;font-weight:650;margin:10px 0 5px}.app{max-width:1120px;margin:auto;min-height:100dvh;display:flex;flex-direction:column}.top{padding:15px 16px 10px;display:flex;gap:12px;align-items:center;justify-content:space-between}.brand{display:flex;gap:10px;align-items:center}.logo{width:42px;height:42px;border-radius:14px;background:var(--primary);display:grid;place-items:center;color:white;font-size:22px}.brand h1{font-size:19px;margin:0}.brand small{color:var(--muted)}.status{font-size:12px;color:var(--muted);text-align:right}.tabs{display:flex;gap:7px;overflow:auto;padding:8px 12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:3}.tabs button{white-space:nowrap;background:transparent;color:var(--muted);border:1px solid transparent;padding:9px 12px}.tabs button.active{background:var(--primary);color:#fff}.main{padding:14px;flex:1}.panel{display:none}.panel.active{display:block}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:var(--shadow);min-width:0}.card h2,.card h3{margin:0 0 10px}.muted{color:var(--muted)}.row{display:flex;gap:8px;align-items:center}.row>*{min-width:0}.row input{flex:1}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.list{display:flex;flex-direction:column;gap:8px}.item{display:flex;gap:10px;align-items:center;padding:11px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}.item .grow{flex:1;min-width:0}.item strong{display:block;overflow-wrap:anywhere}.item small{color:var(--muted)}.pill{display:inline-block;border-radius:99px;background:var(--bubble);padding:3px 8px;font-size:12px;color:var(--ink)}.chatbox{height:min(52vh,520px);min-height:280px;overflow:auto;display:flex;flex-direction:column;gap:9px;padding:12px;background:var(--bg);border:1px solid var(--line);border-radius:14px}.bubble{max-width:88%;padding:10px 12px;border-radius:14px;background:var(--panel);border:1px solid var(--line);overflow-wrap:anywhere;align-self:flex-start}.bubble.mine{align-self:flex-end;background:var(--bubble)}.bubble .meta{font-size:11px;color:var(--muted);margin-top:4px}.compose{display:flex;gap:8px;margin-top:10px}.compose input{flex:1}.empty{padding:22px;text-align:center;color:var(--muted)}.notice{padding:11px 13px;border-radius:12px;background:var(--bubble);margin:10px 0;color:var(--ink)}.warning{background:#fff2d8;color:#714a00}.small{font-size:12px}.hidden{display:none!important}.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{padding:12px;background:var(--bg);border-radius:12px}.stat b{font-size:22px;display:block}.footer{padding:12px 16px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}.inline{display:inline-flex;align-items:center;gap:7px}.check{width:auto}.divider{border:0;border-top:1px solid var(--line);margin:15px 0}
-@media(max-width:700px){.grid{grid-template-columns:1fr}.main{padding:10px}.top{padding:12px}.statgrid{grid-template-columns:repeat(3,1fr)}.chatbox{height:48vh}.tabs{padding-inline:8px}}
+:root{
+  --bg:#f1f8f3;
+  --card:#ffffff;
+  --text:#17372a;
+  --muted:#718176;
+  --primary:#147d4b;
+  --primary2:#0b6138;
+  --border:#dce9df;
+  --bubble:#e3f5e9;
+  --danger:#c0392b;
+  --shadow:0 4px 18px #163d2410;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,Arial,sans-serif;
+}
+body[data-theme="ocean"]{
+ --bg:#eaf5fb;--card:#fff;--text:#173b54;--muted:#648093;
+ --primary:#087ca7;--primary2:#075779;--border:#d3e6ef;--bubble:#dff2fb;
+}
+body[data-theme="sunset"]{
+ --bg:#fff3e9;--card:#fff;--text:#563321;--muted:#8a7161;
+ --primary:#d76532;--primary2:#a94720;--border:#f0ded1;--bubble:#ffe8d9;
+}
+body[data-theme="lavender"]{
+ --bg:#f5f0ff;--card:#fff;--text:#3d315b;--muted:#817496;
+ --primary:#7954b5;--primary2:#56388b;--border:#e5dbf4;--bubble:#eee4ff;
+}
+body[data-theme="forest"]{
+ --bg:#e9f1e8;--card:#fff;--text:#263c28;--muted:#718172;
+ --primary:#386b35;--primary2:#254c24;--border:#d6e4d3;--bubble:#dfeedd;
+}
+body[data-theme="rose"]{
+ --bg:#fff0f4;--card:#fff;--text:#562e3c;--muted:#8a7180;
+ --primary:#c33f70;--primary2:#91254d;--border:#f0d8e1;--bubble:#ffe1ec;
+}
+body[data-theme="night"]{
+ --bg:#151d29;--card:#202b3b;--text:#edf4ff;--muted:#a5b2c4;
+ --primary:#55b78a;--primary2:#32825c;--border:#36465a;--bubble:#263d3a;
+}
+body[data-theme="night"] input,
+body[data-theme="night"] textarea,
+body[data-theme="night"] select{
+ background:#172130;color:var(--text);border-color:var(--border);
+}
+header{
+ background:var(--primary);color:white;padding:14px 16px;
+ position:sticky;top:0;z-index:10;
+}
+.headrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+header h1{font-size:19px;margin:0}
+header small{opacity:.9}
+.wrap{max-width:900px;margin:auto;padding:12px 12px 90px}
+.card{
+ background:var(--card);border:1px solid var(--border);
+ border-radius:15px;padding:14px;margin:10px 0;box-shadow:var(--shadow);
+}
+h2{font-size:18px;margin:0 0 12px}
+h3{font-size:15px;margin:10px 0}
+p{line-height:1.5}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 5px}
+input,textarea,select{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:10px;background:var(--card);color:var(--text);
+ font:inherit;min-width:0;
+}
+textarea{resize:vertical;min-height:90px}
+button{
+ background:var(--primary);color:white;border:0;padding:10px 13px;
+ border-radius:10px;font:inherit;font-size:14px;cursor:pointer;
+}
+button:hover{filter:brightness(.96)}
+button:disabled{opacity:.5;cursor:not-allowed}
+button.secondary{background:#748579}
+button.outline{background:transparent;color:var(--primary);border:1px solid var(--primary)}
+button.danger{background:var(--danger)}
+button.small{padding:6px 9px;font-size:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.row .fixed{flex:0 0 auto}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.hidden{display:none!important}
+.tabs{
+ position:fixed;bottom:0;left:0;right:0;z-index:20;
+ display:flex;overflow-x:auto;background:var(--card);
+ border-top:1px solid var(--border);padding:7px 4px;
+}
+.tabs button{
+ flex:1;min-width:65px;background:transparent;color:var(--muted);
+ border-radius:8px;padding:8px 5px;font-size:11px;
+}
+.tabs button.active{background:var(--bubble);color:var(--primary);font-weight:700}
+.tabicon{display:block;font-size:19px;margin-bottom:2px}
+.status{font-size:12px;padding:4px 8px;border-radius:20px;display:inline-block}
+.online{background:#d9f6e4;color:#12683a}
+.connecting{background:#fff0ca;color:#815800}
+.offline{background:#eceff0;color:#657077}
+.error{background:#ffe0dd;color:#9e2922}
+.muted{color:var(--muted);font-size:13px}
+.member,.roomitem{
+ display:flex;align-items:center;gap:10px;padding:10px 0;
+ border-bottom:1px solid var(--border);
+}
+.member:last-child,.roomitem:last-child{border-bottom:0}
+.avatar{
+ width:42px;height:42px;border-radius:50%;display:grid;
+ place-items:center;background:var(--bubble);font-size:22px;flex-shrink:0;
+}
+.memberinfo{flex:1;min-width:0}
+.memberinfo strong{display:block;overflow-wrap:anywhere}
+.memberinfo small{color:var(--muted)}
+.chatbox{
+ height:43vh;min-height:250px;overflow:auto;border:1px solid var(--border);
+ border-radius:12px;padding:10px;background:var(--bg);
+}
+.msg{
+ background:var(--card);border:1px solid var(--border);
+ border-radius:12px;padding:10px;margin:8px 0;max-width:94%;
+ overflow-wrap:anywhere;
+}
+.msg.mine{margin-left:auto;background:var(--bubble)}
+.msghead{font-size:12px;color:var(--muted);margin-bottom:5px}
+.msgtext{white-space:pre-wrap;word-break:break-word}
+.msgtools{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.msgtools button{font-size:11px;padding:5px 7px}
+#replyBanner{font-size:12px;padding:8px;background:var(--bubble);border-radius:8px;margin:7px 0}
+#qrbox{background:white;padding:10px;display:inline-block;border-radius:10px}
+pre{white-space:pre-wrap;overflow-wrap:anywhere}
+hr{border:0;border-top:1px solid var(--border);margin:14px 0}
+footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
+@media(max-width:500px){
+ .grid{grid-template-columns:1fr}
+ .wrap{padding:8px 8px 85px}
+ .card{padding:12px}
+ header h1{font-size:17px}
+}
 </style>
 </head>
-<body>
-<div class="app">
-<header class="top">
- <div class="brand"><div class="logo">🌿</div><div><h1>Swayam Chat</h1><small>Local-first · Peer-to-peer demo</small></div></div>
- <div class="status"><div id="netStatus">Checking connection…</div><div id="peerStatus">0 peers connected</div></div>
+
+<body data-theme="forest">
+<header>
+ <div class="headrow">
+  <div>
+   <h1>🌿 Swayam Room Chat</h1>
+   <small>Version 3 · Direct peer-to-peer chat</small>
+  </div>
+  <button class="small outline" style="color:white;border-color:white" onclick="showTab('identity')">My ID</button>
+ </div>
 </header>
-<nav class="tabs" aria-label="Main navigation">
- <button class="active" data-tab="chats">💬 Chats</button><button data-tab="contacts">👥 Contacts</button><button data-tab="groups">🧑‍🤝‍🧑 Groups</button><button data-tab="connect">🔗 Connect</button><button data-tab="settings">⚙️ Settings</button><button data-tab="data">💾 Data</button>
-</nav>
-<main class="main">
-<section id="chats" class="panel active">
- <div class="grid">
-  <div class="card"><h2>Conversations</h2><div class="muted small">Choose a conversation to view its locally saved history.</div><div id="conversationList" class="list" style="margin-top:12px"></div></div>
-  <div class="card"><div class="row" style="justify-content:space-between"><div><h2 id="chatTitle">Select a chat</h2><div id="chatSub" class="muted small">Messages are stored in this browser's IndexedDB.</div></div><span id="chatType" class="pill">Local</span></div>
-   <div id="messages" class="chatbox" aria-live="polite"><div class="empty">Select or create a conversation to begin.</div></div>
-   <div class="compose"><input id="messageInput" placeholder="Write a message…" maxlength="4000" aria-label="Message"><button id="sendBtn">Send</button></div>
-   <div class="actions"><button class="secondary" id="attachBtn">Attach file</button><input type="file" id="fileInput" class="hidden" accept="image/*,.pdf,.txt,.doc,.docx,.zip"><button class="secondary" id="exportChatBtn">Export this chat</button></div>
-   <div class="muted small" style="margin-top:8px">A message is not “delivered” until a connected peer acknowledges it. File transfer is for small demo files only.</div>
+
+<div class="wrap">
+
+<!-- HOME -->
+<section id="tab-home" class="tabpage">
+ <div class="card">
+  <h2>👋 Welcome</h2>
+  <p class="muted">Your identity and messages are saved locally on this device. Connect directly to other users using WebRTC.</p>
+  <div class="grid">
+   <div class="card">
+    <div class="muted">My identity</div>
+    <strong id="homeName">Loading…</strong>
+    <div class="muted" id="homeId"></div>
+   </div>
+   <div class="card">
+    <div class="muted">Connections</div>
+    <strong id="homeConnections">0 connected</strong>
+    <div class="muted" id="homeRooms">0 rooms</div>
+   </div>
+  </div>
+  <div class="row">
+   <button onclick="showTab('chat')">💬 Open Chat</button>
+   <button class="secondary" onclick="showTab('connections')">🔗 Connections</button>
   </div>
  </div>
- <div class="notice warning"><strong>Demo limitation:</strong> no server or third-party database is used. Peer pairing requires exchanging WebRTC offer/answer text. Devices must be online and connected to exchange messages; offline recipients cannot be reached by magic.</div>
-</section>
-<section id="contacts" class="panel">
- <div class="grid">
-  <div class="card"><h2>Your local profile</h2><p class="muted">This name is stored only in this browser. It is not a verified identity.</p><label for="displayName">Display name</label><input id="displayName" maxlength="50" placeholder="Your name"><div class="actions"><button id="saveProfile">Save profile</button><button class="secondary" id="showMyId">Show local ID</button></div><div id="myIdBox" class="notice hidden"></div></div>
-  <div class="card"><h2>Add contact</h2><label for="contactName">Contact display name</label><input id="contactName" maxlength="50" placeholder="Friend's name"><label for="contactPeerId">Peer ID (optional)</label><input id="contactPeerId" maxlength="100" placeholder="Peer ID from their pairing screen"><div class="actions"><button id="addContact">Save contact</button></div><hr class="divider"><h3>Saved contacts</h3><div id="contactList" class="list"></div></div>
+ <div class="card">
+  <h2>🔗 Quick Connect</h2>
+  <p class="muted">To start a connection, create an offer on one device, then import that offer on the other device. Finally, exchange the answer.</p>
+  <button onclick="startOfferFlow()">＋ Create Connection Offer</button>
+  <button class="outline" onclick="showTab('connections')">Import Offer / Answer</button>
+ </div>
+ <div class="card">
+  <h2>🛡️ Connection reality</h2>
+  <p class="muted">Direct WebRTC needs signaling information exchanged between devices. It does not guarantee that messages reach offline users. This app saves messages locally and sends them to connected peers.</p>
  </div>
 </section>
-<section id="groups" class="panel">
- <div class="grid">
-  <div class="card"><h2>Create local group</h2><p class="muted small">Creates a local group record. Add connected peers to send messages. A group is not automatically shared with other devices.</p><label for="groupName">Group name</label><input id="groupName" maxlength="60" placeholder="Family Group"><div class="actions"><button id="createGroup">Create group</button></div><hr class="divider"><h3>Your groups</h3><div id="groupList" class="list"></div></div>
-  <div class="card"><h2>Group membership</h2><p id="groupMemberHint" class="muted">Select a group to manage its local member list.</p><div id="groupMembers" class="list"></div><div class="notice small">For this demo, every peer connection is direct. Group messages are sent to all currently connected peers. Recipients must have the same group/conversation identity locally or the app will save incoming messages into a received conversation.</div></div>
+
+<!-- IDENTITY -->
+<section id="tab-identity" class="tabpage hidden">
+ <div class="card">
+  <h2>🪪 My Member Identity</h2>
+  <label>Display name</label>
+  <input id="identityName" maxlength="60" placeholder="Your name">
+  <label>Avatar emoji</label>
+  <input id="identityAvatar" maxlength="8" placeholder="🌿">
+  <label>Permanent local member ID</label>
+  <input id="identityId" readonly>
+  <p class="muted">Your ID is generated once and stored in this browser's IndexedDB. Clearing browser data may remove it. It is an identifier, not a verified account or proof of identity.</p>
+  <div class="row">
+   <button onclick="saveIdentity()">Save Identity</button>
+   <button class="outline" onclick="renderIdentityQR()">Show My QR</button>
+  </div>
+ </div>
+ <div class="card">
+  <h2>My QR Code</h2>
+  <div id="qrbox"><div id="myQR"></div></div>
+  <p class="muted">This QR contains your member identity only. It does not create a WebRTC connection by itself.</p>
+  <button class="outline" onclick="downloadQR()">Save QR Image</button>
  </div>
 </section>
-<section id="connect" class="panel">
- <div class="grid">
-  <div class="card"><h2>1. Pair this device</h2><p class="muted">WebRTC needs signaling. With no signaling server, copy the offer to the other device and bring its answer back here. Use HTTPS or localhost; GitHub Pages provides HTTPS.</p><label for="pairLabel">Connection label</label><input id="pairLabel" maxlength="50" placeholder="Friend's phone"><div class="actions"><button id="createOffer">Create offer</button><button class="secondary" id="createAnswer">Create answer from offer</button></div><label for="signalInput">Paste offer or answer here</label><textarea id="signalInput" spellcheck="false" placeholder="Paste the other device's signaling text here…"></textarea><div class="actions"><button id="applySignal">Apply pasted signal</button><button class="secondary" id="copySignal">Copy my signal</button><button class="secondary" id="clearSignal">Clear</button></div><div id="signalHint" class="notice small">Flow: Device A creates offer → Device B pastes offer and creates answer → Device A pastes answer.</div><label for="peerCode">Your local peer ID</label><input id="peerCode" readonly><div class="actions"><button class="secondary" id="copyPeerId">Copy peer ID</button></div></div>
-  <div class="card"><h2>2. Connected peers</h2><div class="statgrid"><div class="stat"><b id="statPeers">0</b><span class="small muted">Connected</span></div><div class="stat"><b id="statSent">0</b><span class="small muted">Sent locally</span></div><div class="stat"><b id="statReceived">0</b><span class="small muted">Received</span></div></div><div id="peerList" class="list" style="margin-top:12px"></div><div class="actions"><button class="secondary" id="pingPeers">Ping connected peers</button><button class="danger" id="disconnectAll">Disconnect all</button></div><hr class="divider"><p class="muted small">QR pairing is not included in this zero-library single-file demo; signaling text can be copied or shared as a file. Never accept signaling data from an unknown person if you do not trust them.</p></div>
+
+<!-- CONNECTIONS -->
+<section id="tab-connections" class="tabpage hidden">
+ <div class="card">
+  <h2>🔗 Connection Manager</h2>
+  <div class="row">
+   <button onclick="startOfferFlow()">＋ Create Offer</button>
+   <button class="outline" onclick="showImportOffer()">Import Offer</button>
+  </div>
+  <label>Connection status</label>
+  <div id="connectionSummary" class="muted">Loading connections…</div>
+  <div id="connectionList"></div>
+ </div>
+
+ <div class="card" id="signalCard">
+  <h2>📡 Exchange Connection Data</h2>
+  <p class="muted">Copy the offer to the other device. The other device imports it and creates an answer. Copy that answer back to the first device.</p>
+
+  <label>Connection label (optional)</label>
+  <input id="connectionLabel" placeholder="Example: Family phone">
+
+  <label>Import offer or answer JSON</label>
+  <textarea id="signalInput" placeholder="Paste the complete JSON connection data here"></textarea>
+  <div class="row">
+   <button onclick="importSignal()">Import Data</button>
+   <button class="secondary" onclick="pasteClipboard('signalInput')">Paste</button>
+  </div>
+
+  <label>My connection data</label>
+  <textarea id="signalOutput" readonly placeholder="Your offer or answer appears here"></textarea>
+  <div class="row">
+   <button onclick="copySignal()">Copy Data</button>
+   <button class="outline" onclick="downloadSignal()">Download JSON</button>
+  </div>
+  <p id="signalStatus" class="muted" aria-live="polite"></p>
+ </div>
+
+ <div class="card">
+  <h2>⚙️ Connection health</h2>
+  <p class="muted">The app monitors WebRTC connection state and channel state. Reconnect by creating a fresh offer if a connection is lost. Existing connections cannot always recover automatically.</p>
+  <button class="outline" onclick="refreshConnections()">Refresh Status</button>
  </div>
 </section>
-<section id="settings" class="panel">
- <div class="grid">
-  <div class="card"><h2>Appearance</h2><label for="themeSelect">Nature theme</label><select id="themeSelect"><option value="forest">Forest Green</option><option value="ocean">Ocean Blue</option><option value="sunset">Sunset</option><option value="lavender">Lavender</option><option value="meadow">Meadow</option><option value="rose">Rose Garden</option><option value="sky">Open Sky</option><option value="earth">Earth</option><option value="night">Night Forest</option><option value="monsoon">Monsoon</option><option value="sunrise">Sunrise</option></select><label class="inline"><input id="soundToggle" class="check" type="checkbox"> Play a sound on incoming messages</label><label class="inline"><input id="notifyToggle" class="check" type="checkbox"> Show browser notifications while app is open</label><div class="actions"><button id="requestNotifications" class="secondary">Enable notification permission</button></div></div>
-  <div class="card"><h2>Privacy & behaviour</h2><label class="inline"><input id="enterSend" class="check" type="checkbox"> Enter sends message (Shift+Enter for new line)</label><label class="inline"><input id="confirmClear" class="check" type="checkbox" checked> Confirm before clearing local data</label><label class="inline"><input id="autoRetry" class="check" type="checkbox" checked> Retry queued messages when peers reconnect</label><div class="notice warning small">IndexedDB is local browser storage, not an encrypted backup. Anyone with access to this browser profile may be able to access the app's local data. Avoid sensitive information on shared devices.</div><div class="actions"><button id="saveSettings">Save settings</button></div></div>
+
+<!-- ROOMS -->
+<section id="tab-rooms" class="tabpage hidden">
+ <div class="card">
+  <h2>🏠 Rooms</h2>
+  <label>Create a room</label>
+  <input id="newRoomName" maxlength="60" placeholder="Room name">
+  <div class="row">
+   <button onclick="createRoom()">Create Room</button>
+   <button class="outline" onclick="joinRoomById()">Join by Room ID</button>
+  </div>
+  <label>Room ID to join</label>
+  <input id="joinRoomId" placeholder="Paste a room ID">
+  <p class="muted">Room membership is managed locally. For group conversations, each connected member must have a direct peer connection to your device and use the same room ID.</p>
+  <div id="roomList"></div>
+ </div>
+ <div class="card">
+  <h2>👥 Selected Room Members</h2>
+  <div id="roomMemberList" class="muted">Select a room to see members.</div>
+  <p class="muted">A member appearing in a room does not necessarily mean they are currently online.</p>
  </div>
 </section>
-<section id="data" class="panel">
- <div class="grid">
-  <div class="card"><h2>Local data management</h2><div class="statgrid"><div class="stat"><b id="dataMessages">0</b><span class="small muted">Messages</span></div><div class="stat"><b id="dataContacts">0</b><span class="small muted">Contacts</span></div><div class="stat"><b id="dataGroups">0</b><span class="small muted">Groups</span></div></div><div class="actions"><button id="exportAll">Export all data (JSON)</button><button class="secondary" id="importAllBtn">Import JSON backup</button><input type="file" id="importFile" accept=".json,application/json" class="hidden"></div><hr class="divider"><button id="clearMessages" class="secondary">Clear all messages</button> <button id="clearAll" class="danger">Delete all local data</button></div>
-  <div class="card"><h2>About this demo</h2><p>This demo stores profiles, contacts, conversations, messages, groups and settings in IndexedDB. WebRTC transports data peer-to-peer when a connection is established.</p><ul><li>No account server or central message database.</li><li>Display names and peer IDs are not verified identities.</li><li>Local backups are unencrypted JSON unless you encrypt the exported file separately.</li><li>Clearing browser storage or losing a device can destroy its local copy.</li><li>Browser background limits mean it is not a WhatsApp replacement.</li></ul><p class="muted small">Recommended: test with two tabs/devices on separate networks. For multi-member groups, pair each participant individually; the demo broadcasts to connected peers.</p></div>
+
+<!-- CHAT -->
+<section id="tab-chat" class="tabpage hidden">
+ <div class="card">
+  <h2>💬 Chat</h2>
+  <label>Room</label>
+  <select id="chatRoomSelect" onchange="selectChatRoom(this.value)"></select>
+  <div class="row">
+   <button class="outline" onclick="showTab('rooms')">Manage Rooms</button>
+   <button class="outline" onclick="showTab('connections')">Connections</button>
+  </div>
+  <label>Search messages</label>
+  <input id="messageSearch" placeholder="Search messages…" oninput="renderMessages()">
+  <div id="pinnedArea"></div>
+  <div id="chatMessages" class="chatbox" aria-live="polite"></div>
+  <div id="replyBanner" class="hidden"></div>
+  <label>Message</label>
+  <textarea id="messageInput" maxlength="10000" rows="3" placeholder="Write a message…"></textarea>
+  <div class="row">
+   <button onclick="sendMessage()">Send</button>
+   <button class="secondary" onclick="document.getElementById('fileInput').click()">📎 File</button>
+   <button class="outline" onclick="cancelReply()">Cancel Reply</button>
+  </div>
+  <input type="file" id="fileInput" class="hidden" onchange="sendFile(this.files[0]);this.value=''">
+  <p class="muted">Messages are saved locally. Sending only works for peers with an open WebRTC data channel. Large files may exceed browser memory or channel limits.</p>
  </div>
 </section>
-</main>
-<footer class="footer">Swayam Chat demo · IndexedDB + WebRTC DataChannel · No third-party database · Not production-ready for sensitive communication</footer>
+
+<!-- DATA -->
+<section id="tab-data" class="tabpage hidden">
+ <div class="card">
+  <h2>🗄️ Data Management</h2>
+  <p class="muted">Export a JSON backup of local identity, rooms, contacts, and messages. Protect backups because they may contain private conversations.</p>
+  <div class="row">
+   <button onclick="exportBackup()">Export JSON Backup</button>
+   <button class="outline" onclick="document.getElementById('backupFile').click()">Import Backup</button>
+  </div>
+  <input id="backupFile" type="file" accept=".json,application/json" class="hidden" onchange="importBackup(this.files[0]);this.value=''">
+  <hr>
+  <button class="outline" onclick="exportCSV()">Export Messages CSV</button>
+  <hr>
+  <h3>Storage statistics</h3>
+  <div id="storageStats" class="muted"></div>
+  <hr>
+  <button class="danger" onclick="clearAllMessages()">Delete All Messages</button>
+  <p class="muted">Deleting messages cannot be undone. This does not delete other users' copies.</p>
+ </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="tab-settings" class="tabpage hidden">
+ <div class="card">
+  <h2>⚙️ Settings</h2>
+  <label>Nature theme</label>
+  <select id="themeSelect" onchange="changeTheme(this.value)">
+   <option value="forest">🌲 Forest</option>
+   <option value="default">🌿 Green</option>
+   <option value="ocean">🌊 Ocean</option>
+   <option value="sunset">🌅 Sunset</option>
+   <option value="lavender">💜 Lavender</option>
+   <option value="rose">🌸 Rose</option>
+   <option value="night">🌙 Night</option>
+  </select>
+  <label><input id="notifyToggle" type="checkbox" style="width:auto"> Enable browser notifications</label>
+  <button class="outline" onclick="requestNotifications()">Request Notification Permission</button>
+  <hr>
+  <h3>Privacy and security</h3>
+  <p class="muted">Messages are stored in this browser's IndexedDB. WebRTC encrypts data in transit, but this prototype does not implement end-to-end identity verification, account recovery, or encrypted backups. Only connect to people you trust.</p>
+  <button class="outline" onclick="showTab('identity')">Manage Identity</button>
+  <button class="outline" onclick="showTab('data')">Data Management</button>
+ </div>
+ <div class="card">
+  <h2>ℹ️ About</h2>
+  <p><strong>Swayam Room Chat V3</strong></p>
+  <p class="muted">Single-file HTML · Vanilla JavaScript · IndexedDB · WebRTC DataChannels</p>
+  <p class="muted">No third-party messaging database. QR generation uses an optional external library.</p>
+ </div>
+</section>
+
+<footer>Swayam Room Chat · Local-first peer-to-peer prototype</footer>
 </div>
+
+<nav class="tabs">
+ <button class="active" data-tab="home" onclick="showTab('home')"><span class="tabicon">🏠</span>Home</button>
+ <button data-tab="identity" onclick="showTab('identity')"><span class="tabicon">🪪</span>Identity</button>
+ <button data-tab="connections" onclick="showTab('connections')"><span class="tabicon">🔗</span>Connect</button>
+ <button data-tab="rooms" onclick="showTab('rooms')"><span class="tabicon">👥</span>Rooms</button>
+ <button data-tab="chat" onclick="showTab('chat')"><span class="tabicon">💬</span>Chat</button>
+ <button data-tab="data" onclick="showTab('data')"><span class="tabicon">🗄️</span>Data</button>
+ <button data-tab="settings" onclick="showTab('settings')"><span class="tabicon">⚙️</span>Settings</button>
+</nav>
+
 <script>
-(() => {
 "use strict";
-const DB_NAME="swayam-chat-local-v1", DB_VERSION=1;
-const stores=["profile","contacts","conversations","messages","groups","settings"];
-let db, currentConversation=null, selectedGroup=null, peers=new Map(), sentCount=0, receivedCount=0, lastSignal="", localPeerId=localStorage.getItem("swayamPeerId");
-if(!localPeerId){localPeerId="peer-"+crypto.randomUUID().slice(0,8);localStorage.setItem("swayamPeerId",localPeerId)}
-const $=id=>document.getElementById(id);
-const now=()=>Date.now();
-const uid=()=>crypto.randomUUID();
-const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,DB_VERSION);req.onupgradeneeded=()=>{const d=req.result;for(const s of stores)if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:"id"});};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);})}
-function tx(store,mode="readonly"){return db.transaction(store,mode).objectStore(store)}
-function getAll(store){return new Promise((res,rej)=>{const r=tx(store).getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)})}
-function get(store,id){return new Promise((res,rej)=>{const r=tx(store).get(id);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
-function put(store,obj){return new Promise((res,rej)=>{const t=db.transaction(store,"readwrite"),r=t.objectStore(store).put(obj);t.oncomplete=()=>res(obj);t.onerror=()=>rej(t.error);r.onerror=()=>rej(r.error)})}
-function del(store,id){return new Promise((res,rej)=>{const t=db.transaction(store,"readwrite");t.objectStore(store).delete(id);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
-function clearStore(store){return new Promise((res,rej)=>{const t=db.transaction(store,"readwrite");t.objectStore(store).clear();t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
-function allTxClear(){return new Promise((res,rej)=>{const t=db.transaction(stores,"readwrite");stores.forEach(s=>t.objectStore(s).clear());t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
-function download(name,text,type="application/json"){const a=document.createElement("a"),u=URL.createObjectURL(new Blob([text],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),2000)}
-function notify(text){$("signalHint").textContent=text}
-function activeName(){return $("displayName").value.trim()||"Me"}
-function setTab(tab){document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id===tab));}
-document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.tab)));
-function theme(name){document.documentElement.dataset.theme=name}
-async function settingsLoad(){const s=await get("settings","main")||{};$("themeSelect").value=s.theme||"forest";theme($("themeSelect").value);$("soundToggle").checked=!!s.sound;$("notifyToggle").checked=!!s.notify;$("enterSend").checked=!!s.enterSend;$("confirmClear").checked=s.confirmClear!==false;$("autoRetry").checked=s.autoRetry!==false}
-async function saveSettings(){const s={id:"main",theme:$("themeSelect").value,sound:$("soundToggle").checked,notify:$("notifyToggle").checked,enterSend:$("enterSend").checked,confirmClear:$("confirmClear").checked,autoRetry:$("autoRetry").checked};await put("settings",s);theme(s.theme);notify("Settings saved locally.");}
-$("themeSelect").addEventListener("change",e=>theme(e.target.value));$("saveSettings").onclick=saveSettings;
-async function loadProfile(){const p=await get("profile","main");$("displayName").value=p?.name||"";$("peerCode").value=localPeerId}
-$("saveProfile").onclick=async()=>{await put("profile",{id:"main",name:$("displayName").value.trim().slice(0,50),peerId:localPeerId});notify("Profile saved on this device.")};
-$("showMyId").onclick=()=>{$("myIdBox").classList.remove("hidden");$("myIdBox").textContent="Local peer ID: "+localPeerId+" (not an account or a globally routable address)."};
-$("copyPeerId").onclick=()=>copyText(localPeerId);
-async function copyText(text){try{await navigator.clipboard.writeText(text);notify("Copied to clipboard.");}catch{prompt("Copy this text:",text)}}
-$("addContact").onclick=async()=>{const name=$("contactName").value.trim();if(!name)return alert("Enter a contact name.");const c={id:uid(),name,peerId:$("contactPeerId").value.trim(),createdAt:now()};await put("contacts",c);$("contactName").value="";$("contactPeerId").value="";await renderAll();notify("Contact saved locally.")};
-async function createConversation(title,type="direct",id=uid()){const c={id,title,type,createdAt:now(),updatedAt:now()};await put("conversations",c);currentConversation=id;await renderAll();return c}
-async function renderAll(){await renderConversations();await renderContacts();await renderGroups();await renderPeers();await updateStats();if(currentConversation)await renderMessages();else{$("messages").innerHTML='<div class="empty">Select or create a conversation to begin.</div>'}}
-async function renderConversations(){const list=$("conversationList"),cs=(await getAll("conversations")).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));if(!cs.length){list.innerHTML='<div class="empty">No conversations yet. Create a chat by selecting a connected peer or creating a group.</div>';return}list.innerHTML="";for(const c of cs){const ms=(await getAll("messages")).filter(m=>m.conversationId===c.id).sort((a,b)=>b.timestamp-a.timestamp),last=ms[0];const el=document.createElement("div");el.className="item";el.innerHTML=`<div class="grow"><strong>${esc(c.title)}</strong><small>${esc(last?last.text||("["+last.type+"]"):"No messages yet")}</small></div><button class="secondary">Open</button>`;el.querySelector("button").onclick=async()=>{currentConversation=c.id;await renderMessages();await renderConversations()};list.appendChild(el)}}
-async function renderContacts(){const list=$("contactList"),cs=await getAll("contacts");list.innerHTML="";if(!cs.length){list.innerHTML='<div class="empty">No contacts saved.</div>';return}for(const c of cs){const el=document.createElement("div");el.className="item";el.innerHTML=`<div class="grow"><strong>${esc(c.name)}</strong><small>${esc(c.peerId||"Not paired yet")}</small></div><button>Chat</button><button class="secondary" title="Delete contact">×</button>`;el.children[1].onclick=async()=>{let conv=(await getAll("conversations")).find(x=>x.peerId===c.peerId&&c.peerId);if(!conv)conv=await createConversation(c.name,"direct");currentConversation=conv.id;await renderMessages();setTab("chats")};el.children[2].onclick=async()=>{if(confirm("Delete this contact?")){await del("contacts",c.id);await renderAll()}};list.appendChild(el)}}
-async function renderGroups(){const list=$("groupList");const gs=await getAll("groups");list.innerHTML="";if(!gs.length)list.innerHTML='<div class="empty">No groups created.</div>';for(const g of gs){const el=document.createElement("div");el.className="item";el.innerHTML=`<div class="grow"><strong>${esc(g.name)}</strong><small>${(g.members||[]).length} saved peer(s)</small></div><button class="secondary">Manage</button><button>Open chat</button>`;el.children[1].onclick=()=>manageGroup(g.id);el.children[2].onclick=async()=>{let c=await get("conversations",g.conversationId);if(!c)c=await createConversation(g.name,"group",g.conversationId);currentConversation=c.id;await renderMessages();setTab("chats")};list.appendChild(el)}if(selectedGroup)await manageGroup(selectedGroup)}
-$("createGroup").onclick=async()=>{const name=$("groupName").value.trim();if(!name)return alert("Enter a group name.");const id=uid(),conv={id:"group-"+id,title:name,type:"group",createdAt:now(),updatedAt:now()};await put("conversations",conv);await put("groups",{id,name,conversationId:conv.id,members:[],createdAt:now(),admin:localPeerId});selectedGroup=id;$("groupName").value="";currentConversation=conv.id;await renderAll();setTab("groups")};
-async function manageGroup(id){selectedGroup=id;const g=await get("groups",id);if(!g)return;$("groupMemberHint").textContent=`${g.name} · ${g.members.length} saved member(s) · local group ID ${g.id}`;const box=$("groupMembers");box.innerHTML="";const contacts=await getAll("contacts");for(const c of contacts){const member=(g.members||[]).includes(c.id);const el=document.createElement("div");el.className="item";el.innerHTML=`<div class="grow"><strong>${esc(c.name)}</strong><small>${esc(c.peerId||"Not paired")}</small></div><button class="${member?"secondary":""}">${member?"Remove":"Add"}</button>`;el.querySelector("button").onclick=async()=>{const gg=await get("groups",id);gg.members=gg.members||[];gg.members=member?gg.members.filter(x=>x!==c.id):[...gg.members,c.id];await put("groups",gg);await manageGroup(id);await renderGroups()};box.appendChild(el)}if(!contacts.length)box.innerHTML='<div class="empty">Add contacts first. Pairing is managed in Connect.</div>'}
-async function renderMessages(){const c=await get("conversations",currentConversation);if(!c){$("chatTitle").textContent="Select a chat";return}$("chatTitle").textContent=c.title;$("chatSub").textContent=c.type==="group"?"Group chat · local history":"Direct chat · local history";$("chatType").textContent=c.type;const box=$("messages"),ms=(await getAll("messages")).filter(m=>m.conversationId===c.id).sort((a,b)=>a.timestamp-b.timestamp);box.innerHTML="";if(!ms.length)box.innerHTML='<div class="empty">No messages yet. Say hello!</div>';for(const m of ms){const b=document.createElement("div");b.className="bubble"+(m.senderId===localPeerId?" mine":"");const date=new Date(m.timestamp||now()).toLocaleString();let body=m.type==="file"?`📎 ${esc(m.fileName||"File")} (${Math.round((m.fileSize||0)/1024)} KB)`:esc(m.text||"");if(m.type==="file"&&m.dataUrl)body+=`<div><a download="${esc(m.fileName)}" href="${m.dataUrl}">Download file</a></div>`;b.innerHTML=`<div><strong>${esc(m.senderName||m.senderId||"Unknown")}</strong></div><div>${body}</div><div class="meta">${esc(date)} · ${esc(m.status||"saved locally")}</div>`;box.appendChild(b)}box.scrollTop=box.scrollHeight}
-async function saveAndSend(payload){const c=await get("conversations",currentConversation);if(!c)return alert("Select a conversation first.");const m={id:uid(),conversationId:c.id,groupId:c.type==="group"?c.id:null,senderId:localPeerId,senderName:activeName(),text:payload.text||"",type:payload.type||"text",fileName:payload.fileName||"",fileSize:payload.fileSize||0,dataUrl:payload.dataUrl||"",timestamp:now(),status:"pending",deliveredTo:[]};await put("messages",m);let targetPeers=[];if(c.type==="group"){const g=(await getAll("groups")).find(x=>x.conversationId===c.id);const contacts=await getAll("contacts");const peerIds=(g?.members||[]).map(id=>contacts.find(x=>x.id===id)?.peerId).filter(Boolean);targetPeers=[...peers.values()].filter(p=>p.channel?.readyState==="open"&&(!peerIds.length||peerIds.includes(p.remotePeerId)||peerIds.includes(p.label)));}else{const direct=await getAll("contacts");const contact=direct.find(x=>x.name===c.title||x.peerId===[...peers.values()].find(p=>p.label===c.title)?.remotePeerId);targetPeers=[...peers.values()].filter(p=>p.channel?.readyState==="open"&&(!contact?.peerId||contact.peerId===p.remotePeerId||contact.peerId===p.label));if(!targetPeers.length)targetPeers=[...peers.values()].filter(p=>p.channel?.readyState==="open")}
-let delivered=0;for(const p of targetPeers){try{p.channel.send(JSON.stringify({kind:"message",message:m}));delivered++}catch(e){console.warn(e)}}if(delivered){m.status="sent to connected peer(s)";sentCount++;await put("messages",m)}else{m.status="pending — no matching connected peer";await put("messages",m)}c.updatedAt=now();await put("conversations",c);await renderAll()}
-$("sendBtn").onclick=async()=>{const text=$("messageInput").value.trim();if(!text)return;if(!currentConversation)return alert("Select a conversation first.");$("messageInput").value="";await saveAndSend({text,type:"text"})};
-$("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&$("enterSend").checked){e.preventDefault();$("sendBtn").click()}});
-$("attachBtn").onclick=()=>$("fileInput").click();
-$("fileInput").onchange=async e=>{const f=e.target.files[0];if(!f)return;if(f.size>300*1024){alert("Demo limit: files must be 300 KB or smaller. Larger files need chunked transfer.");e.target.value="";return}const reader=new FileReader();reader.onload=async()=>{await saveAndSend({type:"file",text:"",fileName:f.name,fileSize:f.size,dataUrl:reader.result});e.target.value=""};reader.readAsDataURL(f)};
-$("exportChatBtn").onclick=async()=>{if(!currentConversation)return;const c=await get("conversations",currentConversation),ms=(await getAll("messages")).filter(m=>m.conversationId===currentConversation);download("swayam-chat-"+c.id+".json",JSON.stringify({conversation:c,messages:ms},null,2))};
-function makePeer(label){const pc=new RTCPeerConnection({iceServers:[]});const p={id:uid(),label:label||"Peer",pc,channel:null,remotePeerId:"",connectedAt:0};pc.ondatachannel=e=>{p.channel=e.channel;setupChannel(p)};pc.onconnectionstatechange=()=>{renderPeers();if(pc.connectionState==="connected"){p.connectedAt=now();if($("autoRetry").checked)retryQueue(p)}};peers.set(p.id,p);return p}
-function setupChannel(p){const ch=p.channel;ch.onopen=()=>{try{ch.send(JSON.stringify({kind:"hello",peerId:localPeerId,name:activeName()}))}catch{}renderPeers();if($("autoRetry").checked)retryQueue(p)};ch.onclose=()=>renderPeers();ch.onerror=()=>renderPeers();ch.onmessage=async e=>{try{const data=JSON.parse(e.data);if(data.kind==="hello"){p.remotePeerId=data.peerId||"";if(data.name)p.label=data.name;renderPeers();return}if(data.kind==="ping"){ch.send(JSON.stringify({kind:"pong",at:data.at}));return}if(data.kind==="pong")return;if(data.kind==="message"){const m=data.message;if(!m?.id||!m.conversationId)return;const exists=await get("messages",m.id);if(!exists){let conv=await get("conversations",m.conversationId);if(!conv){conv={id:m.conversationId,title:m.groupId?"Received group":"Chat with "+(m.senderName||p.label),type:m.groupId?"group":"direct",createdAt:now(),updatedAt:now()};await put("conversations",conv)}const copy={...m,status:"received",receivedAt:now()};await put("messages",copy);conv.updatedAt=now();await put("conversations",conv);receivedCount++;if($("soundToggle").checked)beep();if($("notifyToggle").checked&&document.hidden&&Notification.permission==="granted")new Notification("New message from "+(m.senderName||p.label),{body:m.type==="file"?"Sent a file":m.text||"New message"});ch.send(JSON.stringify({kind:"ack",messageId:m.id,from:localPeerId}));await renderAll()}else{ch.send(JSON.stringify({kind:"ack",messageId:m.id,from:localPeerId}))}return}if(data.kind==="ack"){const m=await get("messages",data.messageId);if(m){m.deliveredTo=m.deliveredTo||[];if(!m.deliveredTo.includes(data.from))m.deliveredTo.push(data.from);m.status="acknowledged by "+m.deliveredTo.length+" peer(s)";await put("messages",m);await renderMessages()}return}}catch(err){console.warn("Invalid peer data",err)}}}
-function waitIce(pc){return new Promise(resolve=>{if(pc.iceGatheringState==="complete")return resolve();const timer=setTimeout(done,8000);function done(){clearTimeout(timer);pc.removeEventListener("icegatheringstatechange",change);resolve()}function change(){if(pc.iceGatheringState==="complete")done()}pc.addEventListener("icegatheringstatechange",change)})}
-$("createOffer").onclick=async()=>{try{const p=makePeer($("pairLabel").value.trim()||"Pending peer");p.channel=p.pc.createDataChannel("swayam-chat",{ordered:true});setupChannel(p);const offer=await p.pc.createOffer();await p.pc.setLocalDescription(offer);notify("Gathering connection information…");await waitIce(p.pc);lastSignal=JSON.stringify({app:"swayam-chat-demo",version:1,kind:"offer",peerId:localPeerId,name:activeName(),sdp:p.pc.localDescription.sdp});$("signalInput").value=lastSignal;notify("Offer ready. Copy it to the other device.");await renderPeers()}catch(e){alert("Could not create offer: "+e.message)}};
-$("createAnswer").onclick=async()=>{try{const data=parseSignal($("signalInput").value);if(data.kind!=="offer")throw Error("Paste an offer first.");const p=makePeer(data.name||$("pairLabel").value||"Peer");p.remotePeerId=data.peerId||"";await p.pc.setRemoteDescription({type:"offer",sdp:data.sdp});const answer=await p.pc.createAnswer();await p.pc.setLocalDescription(answer);notify("Gathering answer…");await waitIce(p.pc);lastSignal=JSON.stringify({app:"swayam-chat-demo",version:1,kind:"answer",peerId:localPeerId,name:activeName(),sdp:p.pc.localDescription.sdp});$("signalInput").value=lastSignal;notify("Answer ready. Copy it back to the offer creator.");await renderPeers()}catch(e){alert("Could not create answer: "+e.message)}};
-function parseSignal(s){const d=JSON.parse(s);if(d.app!=="swayam-chat-demo"||!["offer","answer"].includes(d.kind)||!d.sdp)throw Error("Invalid Swayam Chat signaling text.");return d}
-$("applySignal").onclick=async()=>{try{const d=parseSignal($("signalInput").value);if(d.kind==="answer"){const p=[...peers.values()].find(x=>x.pc.signalingState==="have-local-offer");if(!p)throw Error("No pending local offer found. Create an offer first.");await p.pc.setRemoteDescription({type:"answer",sdp:d.sdp});p.remotePeerId=d.peerId||"";p.label=d.name||p.label;notify("Answer applied. Waiting for peer connection…")}else{throw Error("This is an offer. On the answering device, use Create answer from offer.")}await renderPeers()}catch(e){alert(e.message)}};
-$("copySignal").onclick=()=>{if(!$("signalInput").value.trim())return alert("Create an offer or answer first.");copyText($("signalInput").value)};
-$("clearSignal").onclick=()=>{$("signalInput").value="";notify("Signaling box cleared.")};
-async function retryQueue(p){if(!p.channel||p.channel.readyState!=="open")return;const ms=(await getAll("messages")).filter(m=>m.senderId===localPeerId&&(m.status||"").startsWith("pending"));for(const m of ms){try{p.channel.send(JSON.stringify({kind:"message",message:m}));m.status="sent to connected peer(s)";await put("messages",m)}catch{}}await renderAll()}
-async function renderPeers(){const list=$("peerList");list.innerHTML="";let connected=0;for(const p of peers.values()){const state=p.pc.connectionState||"new";if(p.channel?.readyState==="open")connected++;const el=document.createElement("div");el.className="item";el.innerHTML=`<div class="grow"><strong>${esc(p.label)}</strong><small>${esc(p.remotePeerId||"peer ID unknown")} · ${esc(state)} · channel ${esc(p.channel?.readyState||"waiting")}</small></div><button class="secondary">Disconnect</button>`;el.querySelector("button").onclick=()=>{p.pc.close();peers.delete(p.id);renderPeers()};list.appendChild(el)}if(!peers.size)list.innerHTML='<div class="empty">No peers yet. Pair another device in this tab.</div>';$("peerStatus").textContent=connected+" peer(s) connected";$("statPeers").textContent=connected}
-$("disconnectAll").onclick=()=>{for(const p of peers.values())p.pc.close();peers.clear();renderPeers()};
-$("pingPeers").onclick=()=>{let n=0;for(const p of peers.values())if(p.channel?.readyState==="open"){p.channel.send(JSON.stringify({kind:"ping",at:now()}));n++}alert("Ping sent to "+n+" connected peer(s).")};
-async function updateStats(){const ms=await getAll("messages"),cs=await getAll("contacts"),gs=await getAll("groups");$("dataMessages").textContent=ms.length;$("dataContacts").textContent=cs.length;$("dataGroups").textContent=gs.length;$("statSent").textContent=sentCount;$("statReceived").textContent=receivedCount}
-$("exportAll").onclick=async()=>{const data={format:"swayam-chat-backup",version:1,exportedAt:new Date().toISOString()};for(const s of stores)data[s]=await getAll(s);download("swayam-chat-backup.json",JSON.stringify(data,null,2))};
-$("importAllBtn").onclick=()=>$("importFile").click();
-$("importFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(d.format!=="swayam-chat-backup")throw Error("This file is not a Swayam Chat backup.");for(const s of stores)for(const item of (d[s]||[]))if(item&&item.id)await put(s,item);await renderAll();await loadProfile();alert("Backup imported.");}catch(err){alert("Import failed: "+err.message)}e.target.value=""};
-$("clearMessages").onclick=async()=>{if($("confirmClear").checked&&!confirm("Delete all local messages?"))return;await clearStore("messages");await renderAll()};
-$("clearAll").onclick=async()=>{if($("confirmClear").checked&&!confirm("Delete ALL local profiles, contacts, conversations, groups, messages and settings? This cannot be undone."))return;await allTxClear();currentConversation=null;await renderAll();await loadProfile();await settingsLoad();alert("Local app data cleared.")};
-$("requestNotifications").onclick=async()=>{if(!("Notification"in window))return alert("Notifications are not supported in this browser.");const p=await Notification.requestPermission();alert("Notification permission: "+p)};
-function beep(){try{const ctx=new (window.AudioContext||window.webkitAudioContext)(),o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=660;g.gain.value=.04;o.start();o.stop(ctx.currentTime+.12);o.onended=()=>ctx.close()}catch{}}
-function onlineStatus(){$("netStatus").textContent=navigator.onLine?"Internet: online":"Internet: offline (peer links may disconnect)";$("netStatus").style.color=navigator.onLine?"var(--primary)":"var(--danger)"}
-window.addEventListener("online",onlineStatus);window.addEventListener("offline",onlineStatus);
-(async()=>{try{db=await openDB();await loadProfile();await settingsLoad();await renderAll();onlineStatus();$("peerCode").value=localPeerId;if(!window.RTCPeerConnection){alert("This browser does not support WebRTC.");} }catch(e){console.error(e);alert("Could not open local IndexedDB: "+e.message)}})();
-})();
+
+/* ==========================================================
+   SWAYAM ROOM CHAT V3
+   IndexedDB local storage + WebRTC DataChannels
+   ========================================================== */
+
+const DB_NAME = "SwayamRoomChatV3";
+const DB_VERSION = 1;
+const MAX_ROOM_MEMBERS = 50;
+const APP_TAG = "swayam-room-chat-v3";
+const RTC_CONFIG = {
+  iceServers: [
+    {urls:"stun:stun.l.google.com:19302"}
+  ]
+};
+
+let db;
+let myIdentity = null;
+let rooms = [];
+let peers = [];
+let messages = [];
+let selectedRoomId = null;
+let replyToId = null;
+
+/*
+ Peer runtime objects:
+ {
+   id, name, avatar, roomId, pc, dc, state, lastSeen, label
+ }
+*/
+const peerRuntime = new Map();
+
+const $ = id => document.getElementById(id);
+const uid = prefix => prefix + "_" +
+  (crypto.randomUUID ? crypto.randomUUID() :
+  Date.now().toString(36) + Math.random().toString(36).slice(2));
+
+function safeText(s){
+ return String(s ?? "");
+}
+function escapeHtml(s){
+ return safeText(s).replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+function timeString(ts){
+ try{return new Date(ts).toLocaleString()}catch(e){return ""}
+}
+function statusClass(s){
+ if(s==="connected" || s==="open") return "online";
+ if(s==="connecting" || s==="new") return "connecting";
+ if(s==="failed" || s==="disconnected" || s==="closed") return "error";
+ return "offline";
+}
+function statusLabel(s){
+ if(s==="connected" || s==="open") return "Online";
+ if(s==="connecting" || s==="new") return "Connecting";
+ if(s==="failed") return "Failed";
+ if(s==="disconnected") return "Disconnected";
+ if(s==="closed") return "Closed";
+ return s || "Offline";
+}
+
+function openDB(){
+ return new Promise((resolve,reject)=>{
+  const request = indexedDB.open(DB_NAME,DB_VERSION);
+  request.onupgradeneeded = ()=>{
+   const d=request.result;
+   if(!d.objectStoreNames.contains("settings"))
+    d.createObjectStore("settings",{keyPath:"key"});
+   if(!d.objectStoreNames.contains("rooms"))
+    d.createObjectStore("rooms",{keyPath:"id"});
+   if(!d.objectStoreNames.contains("peers"))
+    d.createObjectStore("peers",{keyPath:"id"});
+   if(!d.objectStoreNames.contains("messages"))
+    d.createObjectStore("messages",{keyPath:"id"});
+  };
+  request.onsuccess=()=>resolve(request.result);
+  request.onerror=()=>reject(request.error);
+ });
+}
+function store(name,mode="readonly"){
+ return db.transaction(name,mode).objectStore(name);
+}
+function getAll(name){
+ return new Promise((resolve,reject)=>{
+  const r=store(name).getAll();
+  r.onsuccess=()=>resolve(r.result||[]);
+  r.onerror=()=>reject(r.error);
+ });
+}
+function getOne(name,key){
+ return new Promise((resolve,reject)=>{
+  const r=store(name).get(key);
+  r.onsuccess=()=>resolve(r.result||null);
+  r.onerror=()=>reject(r.error);
+ });
+}
+function putOne(name,value){
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(name,"readwrite");
+  tx.objectStore(name).put(value);
+  tx.oncomplete=()=>resolve(true);
+  tx.onerror=()=>reject(tx.error);
+ });
+}
+function deleteOne(name,key){
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(name,"readwrite");
+  tx.objectStore(name).delete(key);
+  tx.oncomplete=()=>resolve(true);
+  tx.onerror=()=>reject(tx.error);
+ });
+}
+function clearStore(name){
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(name,"readwrite");
+  tx.objectStore(name).clear();
+  tx.oncomplete=()=>resolve(true);
+  tx.onerror=()=>reject(tx.error);
+ });
+}
+async function refreshData(){
+ rooms=await getAll("rooms");
+ peers=await getAll("peers");
+ messages=await getAll("messages");
+ rooms.sort((a,b)=>a.createdAt-b.createdAt);
+ messages.sort((a,b)=>a.timestamp-b.timestamp);
+ if(!selectedRoomId || !rooms.some(r=>r.id===selectedRoomId)){
+  selectedRoomId=rooms[0]?.id||null;
+ }
+ renderAll();
+}
+async function setting(key,value){
+ if(arguments.length===1){
+  const r=await getOne("settings",key);
+  return r ? r.value : undefined;
+ }
+ await putOne("settings",{key,value});
+ return value;
+}
+async function init(){
+ try{
+  if(!("indexedDB" in window)) throw new Error("IndexedDB is not available.");
+  db=await openDB();
+
+  myIdentity=await setting("identity");
+  if(!myIdentity){
+   myIdentity={
+    id:uid("member"),
+    name:"Member",
+    avatar:"🌿",
+    createdAt:Date.now()
+   };
+   await setting("identity",myIdentity);
+  }
+
+  const savedTheme=await setting("theme");
+  document.body.dataset.theme=savedTheme||"forest";
+  $("themeSelect").value=savedTheme||"forest";
+  $("notifyToggle").checked=(await setting("notifications"))===true;
+  $("notifyToggle").addEventListener("change",async()=>{
+   await setting("notifications",$("notifyToggle").checked);
+  });
+
+  let existingRooms=await getAll("rooms");
+  if(!existingRooms.length){
+   const room={
+    id:uid("room"),name:"General",createdAt:Date.now(),
+    members:[myIdentity.id]
+   };
+   await putOne("rooms",room);
+   selectedRoomId=room.id;
+  }else{
+   selectedRoomId=existingRooms[0].id;
+  }
+
+  await refreshData();
+  fillIdentity();
+  refreshConnections();
+  window.addEventListener("beforeunload",()=>{
+   // Persisted messages remain available; connections are temporary.
+   for(const p of peerRuntime.values()){
+    try{p.pc.close()}catch(e){}
+   }
+  });
+ }catch(err){
+  alert("Could not start local storage: "+err.message);
+  console.error(err);
+ }
+}
+function fillIdentity(){
+ $("identityName").value=myIdentity.name||"";
+ $("identityAvatar").value=myIdentity.avatar||"🌿";
+ $("identityId").value=myIdentity.id;
+}
+async function saveIdentity(){
+ const name=$("identityName").value.trim().slice(0,60);
+ const avatar=$("identityAvatar").value.trim().slice(0,8)||"🌿";
+ if(!name){alert("Please enter a display name.");return}
+ myIdentity={...myIdentity,name,avatar};
+ await setting("identity",myIdentity);
+ await refreshData();
+ alert("Identity saved.");
+}
+function renderIdentityQR(){
+ const box=$("myQR");
+ box.innerHTML="";
+ const payload=JSON.stringify({
+  app:APP_TAG,
+  id:myIdentity.id,
+  name:myIdentity.name,
+  avatar:myIdentity.avatar
+ });
+ if(typeof QRCode==="undefined"){
+  box.textContent="QR library unavailable. Your member ID is: "+myIdentity.id;
+  return;
+ }
+ new QRCode(box,{text:payload,width:190,height:190});
+}
+function downloadQR(){
+ const img=$("myQR").querySelector("img");
+ const canvas=$("myQR").querySelector("canvas");
+ const url=img?.src || (canvas?canvas.toDataURL("image/png"):null);
+ if(!url){alert("Generate your QR first.");return}
+ const a=document.createElement("a");
+ a.href=url;a.download="swayam-member-qr.png";a.click();
+}
+function showTab(tab){
+ document.querySelectorAll(".tabpage").forEach(el=>el.classList.add("hidden"));
+ $("tab-"+tab).classList.remove("hidden");
+ document.querySelectorAll(".tabs button").forEach(b=>{
+  b.classList.toggle("active",b.dataset.tab===tab);
+ });
+ if(tab==="identity")fillIdentity();
+ if(tab==="connections")refreshConnections();
+ if(tab==="rooms")renderRooms();
+ if(tab==="chat")renderMessages();
+ if(tab==="data")renderStats();
+}
+async function changeTheme(theme){
+ const valid=["forest","default","ocean","sunset","lavender","rose","night"];
+ if(!valid.includes(theme))theme="forest";
+ document.body.dataset.theme=theme;
+ await setting("theme",theme);
+}
+function renderAll(){
+ renderHome();
+ renderRooms();
+ renderChatRoomOptions();
+ renderMessages();
+ renderConnectionList();
+ renderStats();
+}
+function renderHome(){
+ $("homeName").textContent=myIdentity?.name||"Member";
+ $("homeId").textContent=myIdentity?.id||"";
+ const active=[...peerRuntime.values()].filter(p=>p.dc?.readyState==="open").length;
+ $("homeConnections").textContent=active+" connected";
+ $("homeRooms").textContent=rooms.length+" rooms";
+}
+function renderRooms(){
+ const box=$("roomList");
+ box.innerHTML="";
+ for(const room of rooms){
+  const div=document.createElement("div");
+  div.className="roomitem";
+  const info=document.createElement("div");
+  info.className="memberinfo";
+  info.innerHTML="<strong>"+escapeHtml(room.name)+"</strong><small>"+escapeHtml(room.id)+" · "+(room.members||[]).length+" listed member(s)</small>";
+  const btn=document.createElement("button");
+  btn.className="small";
+  btn.textContent=room.id===selectedRoomId?"Selected":"Select";
+  btn.onclick=()=>selectRoom(room.id);
+  const del=document.createElement("button");
+  del.className="small danger";
+  del.textContent="Delete";
+  del.onclick=()=>deleteRoom(room.id);
+  div.append(info,btn,del);
+  box.append(div);
+ }
+ renderRoomMembers();
+}
+async function createRoom(){
+ const name=$("newRoomName").value.trim().slice(0,60);
+ if(!name){alert("Enter a room name.");return}
+ const room={id:uid("room"),name,createdAt:Date.now(),members:[myIdentity.id]};
+ await putOne("rooms",room);
+ selectedRoomId=room.id;
+ $("newRoomName").value="";
+ await refreshData();
+}
+async function joinRoomById(){
+ const id=$("joinRoomId").value.trim();
+ if(!id){alert("Enter a room ID.");return}
+ let room=await getOne("rooms",id);
+ if(!room){
+  room={id,name:"Joined "+id.slice(-8),createdAt:Date.now(),members:[myIdentity.id]};
+  await putOne("rooms",room);
+ }else if(!(room.members||[]).includes(myIdentity.id)){
+  room.members.push(myIdentity.id);
+  await putOne("rooms",room);
+ }
+ selectedRoomId=id;
+ await refreshData();
+ $("joinRoomId").value="";
+}
+async function selectRoom(id){
+ if(!rooms.some(r=>r.id===id))return;
+ selectedRoomId=id;
+ await refreshData();
+}
+async function selectChatRoom(id){
+ if(rooms.some(r=>r.id===id)){
+  selectedRoomId=id;
+  await refreshData();
+ }
+}
+async function deleteRoom(id){
+ const room=rooms.find(r=>r.id===id);
+ if(!room)return;
+ if(!confirm('Delete room "'+room.name+'"? Messages tagged to it will remain in your message history.'))return;
+ await deleteOne("rooms",id);
+ if(selectedRoomId===id)selectedRoomId=null;
+ await refreshData();
+}
+function renderRoomMembers(){
+ const box=$("roomMemberList");
+ const room=rooms.find(r=>r.id===selectedRoomId);
+ if(!room){box.textContent="Create or select a room.";return}
+ box.innerHTML="";
+ const ids=new Set(room.members||[]);
+ const relevant=peers.filter(p=>ids.has(p.id));
+ const self=document.createElement("div");
+ self.className="member";
+ self.innerHTML='<div class="avatar">'+escapeHtml(myIdentity.avatar)+'</div><div class="memberinfo"><strong>'+escapeHtml(myIdentity.name)+' (You)</strong><small>'+escapeHtml(myIdentity.id)+'</small></div><span class="status online">You</span>';
+ box.append(self);
+ relevant.forEach(p=>{
+  const rt=peerRuntime.get(p.id);
+  const state=rt?.dc?.readyState==="open"?"connected":(rt?.state||"offline");
+  const div=document.createElement("div");
+  div.className="member";
+  div.innerHTML='<div class="avatar">'+escapeHtml(p.avatar||"👤")+'</div><div class="memberinfo"><strong>'+escapeHtml(p.name||"Member")+'</strong><small>'+escapeHtml(p.id)+'</small></div><span class="status '+statusClass(state)+'">'+escapeHtml(statusLabel(state))+'</span>';
+  box.append(div);
+ });
+ if(!relevant.length){
+  const p=document.createElement("p");
+  p.className="muted";
+  p.textContent="No other members have been added to this room yet. Connect a peer, then add them to the room.";
+  box.append(p);
+ }
+}
+function renderChatRoomOptions(){
+ const sel=$("chatRoomSelect");
+ const old=selectedRoomId;
+ sel.innerHTML="";
+ rooms.forEach(r=>{
+  const o=document.createElement("option");
+  o.value=r.id;o.textContent=r.name;
+  sel.append(o);
+ });
+ if(rooms.some(r=>r.id===old))sel.value=old;
+}
+function getCurrentRoom(){
+ return rooms.find(r=>r.id===selectedRoomId)||null;
+}
+
+/* ---------- CONNECTION MANAGEMENT ---------- */
+function peerIdentityPayload(){
+ return {id:myIdentity.id,name:myIdentity.name,avatar:myIdentity.avatar};
+}
+function createPeerRuntime(peerId,meta={}){
+ const old=peerRuntime.get(peerId);
+ if(old){
+  try{old.pc.close()}catch(e){}
+  peerRuntime.delete(peerId);
+ }
+ const pc=new RTCPeerConnection(RTC_CONFIG);
+ const rt={
+  id:peerId||"pending",
+  name:meta.name||"Unknown member",
+  avatar:meta.avatar||"👤",
+  roomId:meta.roomId||selectedRoomId,
+  pc,dc:null,state:"connecting",lastSeen:Date.now(),
+  label:meta.label||""
+ };
+ peerRuntime.set(rt.id,rt);
+
+ pc.oniceconnectionstatechange=()=>{
+  rt.state=pc.iceConnectionState;
+  rt.lastSeen=Date.now();
+  renderConnectionList();renderRoomMembers();renderHome();
+ };
+ pc.onconnectionstatechange=()=>{
+  rt.state=pc.connectionState;
+  renderConnectionList();renderRoomMembers();renderHome();
+ };
+ pc.ondatachannel=ev=>{
+  attachDataChannel(rt,ev.channel);
+ };
+ pc.onicecandidate=()=>{
+  // We wait for ICE gathering to finish before exporting SDP.
+ };
+ return rt;
+}
+function attachDataChannel(rt,dc){
+ rt.dc=dc;
+ dc.onopen=()=>{
+  rt.state="connected";
+  rt.lastSeen=Date.now();
+  sendProtocol(rt,{kind:"hello",identity:peerIdentityPayload(),roomId:rt.roomId});
+  renderConnectionList();renderRoomMembers();renderHome();
+ };
+ dc.onclose=()=>{
+  rt.state="disconnected";
+  renderConnectionList();renderRoomMembers();renderHome();
+ };
+ dc.onerror=err=>{
+  console.warn("Data channel error",err);
+ };
+ dc.onmessage=ev=>{
+  handleIncoming(rt,ev.data);
+ };
+}
+function waitIceGathering(pc,timeoutMs=15000){
+ return new Promise(resolve=>{
+  if(pc.iceGatheringState==="complete"){resolve();return}
+  let done=false;
+  const finish=()=>{
+   if(done)return;
+   done=true;
+   pc.removeEventListener("icegatheringstatechange",check);
+   resolve();
+  };
+  const check=()=>{
+   if(pc.iceGatheringState==="complete")finish();
+  };
+  pc.addEventListener("icegatheringstatechange",check);
+  setTimeout(finish,timeoutMs);
+ });
+}
+async function startOfferFlow(){
+ const room=getCurrentRoom();
+ if(!room){alert("Create a room first.");showTab("rooms");return}
+ try{
+  const rt=createPeerRuntime(null,{roomId:room.id,label:$("connectionLabel").value.trim()});
+  // Generate an ID only for the temporary runtime; remote ID arrives in answer.
+  const tempId=rt.id;
+  const dc=rt.pc.createDataChannel("swayam-chat",{ordered:true});
+  attachDataChannel(rt,dc);
+  const offer=await rt.pc.createOffer();
+  await rt.pc.setLocalDescription(offer);
+  $("signalStatus").textContent="Gathering network candidates. Please wait…";
+  await waitIceGathering(rt.pc);
+  const payload={
+   app:APP_TAG,type:"offer",roomId:room.id,
+   from:peerIdentityPayload(),
+   label:$("connectionLabel").value.trim(),
+   sdp:rt.pc.localDescription
+  };
+  $("signalOutput").value=JSON.stringify(payload);
+  $("signalStatus").textContent="Offer ready. Copy it to the other device.";
+  // Runtime key is temporary until the answer identifies the peer.
+  rt.tempId=tempId;
+  showTab("connections");
+  renderConnectionList();
+ }catch(e){
+  $("signalStatus").textContent="Could not create offer: "+e.message;
+ }
+}
+function showImportOffer(){
+ showTab("connections");
+ $("signalInput").focus();
+}
+async function importSignal(){
+ let data;
+ try{
+  data=JSON.parse($("signalInput").value.trim());
+ }catch(e){
+  alert("Invalid JSON. Paste the complete offer or answer.");return;
+ }
+ if(data.app!==APP_TAG || !["offer","answer"].includes(data.type)){
+  alert("This is not valid Swayam Room Chat V3 connection data.");return;
+ }
+ try{
+  if(data.type==="offer") await acceptOffer(data);
+  else await acceptAnswer(data);
+ }catch(e){
+  console.error(e);
+  $("signalStatus").textContent="Connection exchange failed: "+e.message;
+  alert("Could not import connection data: "+e.message);
+ }
+}
+async function acceptOffer(data){
+ if(!data.from?.id || !data.sdp?.type || !data.sdp?.sdp){
+  throw new Error("Offer is missing identity or SDP information.");
+ }
+ if(data.from.id===myIdentity.id)throw new Error("This is your own identity.");
+ let room=await getOne("rooms",data.roomId);
+ if(!room){
+  room={id:data.roomId,name:"Room "+data.roomId.slice(-8),createdAt:Date.now(),members:[myIdentity.id]};
+  await putOne("rooms",room);
+ }
+ if(!(room.members||[]).includes(data.from.id)){
+  if(room.members.length>=MAX_ROOM_MEMBERS)throw new Error("Room member limit reached.");
+  room.members.push(data.from.id);
+  await putOne("rooms",room);
+ }
+ const old=peerRuntime.get(data.from.id);
+ if(old){
+  try{old.pc.close()}catch(e){}
+  peerRuntime.delete(data.from.id);
+ }
+ const rt=createPeerRuntime(data.from.id,{
+  name:data.from.name,avatar:data.from.avatar,roomId:data.roomId,label:data.label
+ });
+ rt.name=data.from.name||"Member";
+ rt.avatar=data.from.avatar||"👤";
+ await rt.pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+ const answer=await rt.pc.createAnswer();
+ await rt.pc.setLocalDescription(answer);
+ $("signalStatus").textContent="Preparing answer…";
+ await waitIceGathering(rt.pc);
+ const payload={
+  app:APP_TAG,type:"answer",roomId:data.roomId,
+  from:peerIdentityPayload(),to:data.from.id,
+  sdp:rt.pc.localDescription
+ };
+ $("signalOutput").value=JSON.stringify(payload);
+ $("signalStatus").textContent="Answer ready. Copy it back to the person who created the offer.";
+ await savePeer({
+  id:data.from.id,name:rt.name,avatar:rt.avatar,
+  roomId:data.roomId,label:data.label||"",addedAt:Date.now()
+ });
+ selectedRoomId=data.roomId;
+ await refreshData();
+}
+async function acceptAnswer(data){
+ if(!data.from?.id || !data.sdp?.type || !data.sdp?.sdp){
+  throw new Error("Answer is missing identity or SDP information.");
+ }
+ if(data.to && data.to!==myIdentity.id){
+  throw new Error("This answer was addressed to a different member ID.");
+ }
+ // Find a pending outgoing offer that has no remote description.
+ let rt=null;
+ for(const candidate of peerRuntime.values()){
+  if(candidate.pc.signalingState==="have-local-offer" &&
+     candidate.roomId===data.roomId &&
+     !candidate.pc.remoteDescription){
+   rt=candidate;break;
+  }
+ }
+ if(!rt)throw new Error("No matching pending offer was found. Create a new offer first.");
+ if(data.from.id===myIdentity.id)throw new Error("Cannot connect to your own identity.");
+ const pendingKey=rt.id;
+ rt.name=data.from.name||"Member";
+ rt.avatar=data.from.avatar||"👤";
+ rt.id=data.from.id;
+ rt.roomId=data.roomId;
+ // Re-key the runtime map from temporary ID to permanent peer ID.
+ peerRuntime.delete(pendingKey);
+ const duplicate=peerRuntime.get(rt.id);
+ if(duplicate && duplicate!==rt){
+  try{duplicate.pc.close()}catch(e){}
+  peerRuntime.delete(rt.id);
+ }
+ peerRuntime.set(rt.id,rt);
+ await rt.pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+ let room=await getOne("rooms",data.roomId);
+ if(!room){
+  room={id:data.roomId,name:"Room "+data.roomId.slice(-8),createdAt:Date.now(),members:[myIdentity.id]};
+ }
+ if(!(room.members||[]).includes(data.from.id)){
+  if(room.members.length>=MAX_ROOM_MEMBERS)throw new Error("Room member limit reached.");
+  room.members.push(data.from.id);
+ }
+ await putOne("rooms",room);
+ await savePeer({
+  id:data.from.id,name:rt.name,avatar:rt.avatar,
+  roomId:data.roomId,label:$("connectionLabel").value.trim(),addedAt:Date.now()
+ });
+ selectedRoomId=data.roomId;
+ $("signalStatus").textContent="Answer imported. Waiting for the peer connection…";
+ await refreshData();
+}
+async function savePeer(peer){
+ const existing=await getOne("peers",peer.id);
+ await putOne("peers",{...(existing||{}),...peer});
+}
+function renderConnectionList(){
+ const box=$("connectionList");
+ if(!box)return;
+ box.innerHTML="";
+ const known=new Map(peers.map(p=>[p.id,p]));
+ const runtimeIds=new Set(peerRuntime.keys());
+ const ids=new Set([...known.keys(),...runtimeIds]);
+ let connected=0;
+ ids.forEach(id=>{
+  const saved=known.get(id)||{};
+  const rt=peerRuntime.get(id);
+  const state=rt?.dc?.readyState==="open"?"connected":
+   (rt?.pc?.connectionState||rt?.state||"offline");
+  if(state==="connected")connected++;
+  const div=document.createElement("div");
+  div.className="member";
+  const avatar=saved.avatar||rt?.avatar||"👤";
+  const name=saved.name||rt?.name||"Unknown member";
+  const label=saved.label||rt?.label||"";
+  div.innerHTML=
+   '<div class="avatar">'+escapeHtml(avatar)+'</div>'+
+   '<div class="memberinfo"><strong>'+escapeHtml(name)+'</strong>'+
+   '<small>'+escapeHtml(id)+(label?" · "+escapeHtml(label):"")+'</small><br>'+
+   '<span class="status '+statusClass(state)+'">'+escapeHtml(statusLabel(state))+'</span></div>';
+  const buttons=document.createElement("div");
+  buttons.className="row";
+  buttons.style.flex="0 0 auto";
+  const ping=document.createElement("button");
+  ping.className="small outline";
+  ping.textContent="Ping";
+  ping.disabled=rt?.dc?.readyState!=="open";
+  ping.onclick=()=>sendProtocol(rt,{kind:"ping",at:Date.now()});
+  const remove=document.createElement("button");
+  remove.className="small danger";
+  remove.textContent="Remove";
+  remove.onclick=()=>removePeer(id);
+  buttons.append(ping,remove);
+  div.append(buttons);
+  box.append(div);
+ });
+ $("connectionSummary").textContent=connected+" connected · "+ids.size+" known peer(s)";
+ if(!ids.size)box.innerHTML='<p class="muted">No peers yet. Create an offer to begin.</p>';
+}
+async function removePeer(id){
+ if(!confirm("Remove this peer from your local contact list?"))return;
+ const rt=peerRuntime.get(id);
+ if(rt){try{rt.pc.close()}catch(e){}peerRuntime.delete(id)}
+ await deleteOne("peers",id);
+ const allRooms=await getAll("rooms");
+ for(const r of allRooms){
+  r.members=(r.members||[]).filter(m=>m!==id);
+  await putOne("rooms",r);
+ }
+ await refreshData();
+}
+function refreshConnections(){
+ renderConnectionList();renderRoomMembers();renderHome();
+}
+async function copySignal(){
+ const text=$("signalOutput").value;
+ if(!text){alert("There is no connection data to copy.");return}
+ try{
+  await navigator.clipboard.writeText(text);
+  $("signalStatus").textContent="Copied to clipboard.";
+ }catch(e){
+  $("signalOutput").focus();$("signalOutput").select();
+  alert("Clipboard permission unavailable. Select the text and copy it manually.");
+ }
+}
+async function pasteClipboard(targetId){
+ try{
+  $(targetId).value=await navigator.clipboard.readText();
+ }catch(e){
+  alert("Clipboard permission unavailable. Paste manually into the text box.");
+ }
+}
+function downloadSignal(){
+ const text=$("signalOutput").value;
+ if(!text){alert("No connection data to download.");return}
+ downloadText("swayam-connection.json",text,"application/json");
+}
+
+/* ---------- CHAT PROTOCOL ---------- */
+function sendProtocol(rt,obj){
+ if(!rt?.dc || rt.dc.readyState!=="open")return false;
+ try{rt.dc.send(JSON.stringify(obj));return true}catch(e){console.warn(e);return false}
+}
+async function sendMessage(){
+ const text=$("messageInput").value.trim();
+ const room=getCurrentRoom();
+ if(!room){alert("Create or select a room first.");return}
+ if(!text){alert("Enter a message.");return}
+ const msg={
+  id:uid("msg"),roomId:room.id,
+  fromId:myIdentity.id,fromName:myIdentity.name,
+  text,timestamp:Date.now(),type:"text",
+  replyTo:replyToId||null,reactions:{},pinned:false,
+  status:"saved"
+ };
+ await putOne("messages",msg);
+ const recipients=(room.members||[]).filter(id=>id!==myIdentity.id);
+ let sent=0;
+ recipients.forEach(id=>{
+  const rt=peerRuntime.get(id);
+  if(sendProtocol(rt,{kind:"message",message:msg,roomId:room.id}))sent++;
+ });
+ if(sent>0){
+  msg.status="sent";
+  await putOne("messages",msg);
+ }
+ $("messageInput").value="";
+ cancelReply();
+ await refreshData();
+ if(recipients.length && sent===0){
+  $("signalStatus").textContent="Message saved locally. No room member is currently connected.";
+ }
+}
+async function handleIncoming(rt,raw){
+ let data;
+ try{data=JSON.parse(raw)}catch(e){return}
+ rt.lastSeen=Date.now();
+ if(data.kind==="hello"){
+  if(data.identity?.id){
+   if(data.identity.id===myIdentity.id)return;
+   rt.name=data.identity.name||rt.name;
+   rt.avatar=data.identity.avatar||rt.avatar;
+   await savePeer({
+    id:data.identity.id,name:rt.name,avatar:rt.avatar,
+    roomId:data.roomId||rt.roomId,addedAt:Date.now()
+   });
+  }
+  renderConnectionList();renderRoomMembers();return;
+ }
+ if(data.kind==="ping"){
+  sendProtocol(rt,{kind:"pong",at:data.at});
+  return;
+ }
+ if(data.kind==="pong"){
+  rt.lastPong=Date.now();
+  renderConnectionList();return;
+ }
+ if(data.kind==="message" && data.message){
+  const incoming=data.message;
+  // Ignore duplicate message IDs.
+  const exists=await getOne("messages",incoming.id);
+  if(!exists){
+   await putOne("messages",{
+    ...incoming,
+    roomId:data.roomId||incoming.roomId,
+    status:"received"
+   });
+  }
+  sendProtocol(rt,{kind:"ack",messageId:incoming.id});
+  await refreshData();
+  const enabled=await setting("notifications");
+  if(enabled && document.hidden && "Notification" in window &&
+     Notification.permission==="granted"){
+   try{new Notification(incoming.fromName||"New message",{body:(incoming.text||"").slice(0,120)})}catch(e){}
+  }
+  return;
+ }
+ if(data.kind==="ack" && data.messageId){
+  const msg=await getOne("messages",data.messageId);
+  if(msg && msg.fromId===myIdentity.id){
+   msg.status="delivered";
+   await putOne("messages",msg);
+   await refreshData();
+  }
+  return;
+ }
+ if(data.kind==="reaction" && data.messageId){
+  const msg=await getOne("messages",data.messageId);
+  if(msg){
+   msg.reactions=msg.reactions||{};
+   msg.reactions[data.fromId||rt.id]=data.emoji;
+   await putOne("messages",msg);
+   await refreshData();
+  }
+  return;
+ }
+ if(data.kind==="pin" && data.messageId){
+  const msg=await getOne("messages",data.messageId);
+  if(msg){msg.pinned=!!data.pinned;await putOne("messages",msg);await refreshData()}
+  return;
+ }
+ if(data.kind==="file" && data.file){
+  // Small files are sent as base64 JSON. Large files may exceed channel limits.
+  const f=data.file;
+  const msg={
+   id:uid("filemsg"),roomId:data.roomId||rt.roomId,
+   fromId:data.from?.id||rt.id,fromName:data.from?.name||rt.name,
+   text:"📎 "+(f.name||"File"),
+   timestamp:Date.now(),type:"file",
+   fileName:f.name,fileType:f.type,fileData:f.data,
+   fileSize:f.size,status:"received",reactions:{},pinned:false
+  };
+  await putOne("messages",msg);
+  sendProtocol(rt,{kind:"ack",messageId:data.messageId});
+  await refreshData();
+ }
+}
+function renderMessages(){
+ const box=$("chatMessages");
+ if(!box)return;
+ const room=getCurrentRoom();
+ box.innerHTML="";
+ if(!room){
+  box.textContent="Create a room first.";
+  return;
+ }
+ const query=$("messageSearch").value.trim().toLowerCase();
+ const list=messages.filter(m=>m.roomId===room.id &&
+  (!query || (m.text||"").toLowerCase().includes(query) ||
+   (m.fromName||"").toLowerCase().includes(query)));
+ list.forEach(m=>{
+  const div=document.createElement("div");
+  div.className="msg"+(m.fromId===myIdentity.id?" mine":"");
+  const reply=m.replyTo ? messages.find(x=>x.id===m.replyTo):null;
+  const reactionText=Object.values(m.reactions||{}).join(" ");
+  const status=m.fromId===myIdentity.id ? " · "+(m.status||"saved") : "";
+  let content=escapeHtml(m.text||"");
+  if(m.type==="file"){
+   content+='<br><small>'+escapeHtml(m.fileName||"")+' ('+Math.max(0,Math.round((m.fileSize||0)/1024))+' KB)</small>';
+   if(m.fileData)content+='<br><button class="small" onclick="downloadMessageFile(\''+m.id+'\')">Download File</button>';
+  }
+  div.innerHTML=
+   '<div class="msghead">'+escapeHtml(m.fromName||"Member")+
+   ' · '+escapeHtml(timeString(m.timestamp))+escapeHtml(status)+
+   (m.pinned?' · 📌 Pinned':'')+'</div>'+
+   (reply?'<div class="muted">↪ Reply to '+escapeHtml(reply.fromName)+': '+escapeHtml((reply.text||"").slice(0,100))+'</div>':'')+
+   '<div class="msgtext">'+content+'</div>'+
+   (reactionText?'<div>❤️ '+escapeHtml(reactionText)+'</div>':'');
+  const tools=document.createElement("div");
+  tools.className="msgtools";
+  const replyBtn=document.createElement("button");
+  replyBtn.className="outline";replyBtn.textContent="↩ Reply";
+  replyBtn.onclick=()=>setReply(m.id);
+  const reactBtn=document.createElement("button");
+  reactBtn.className="outline";reactBtn.textContent="❤️ React";
+  reactBtn.onclick=()=>reactMessage(m.id);
+  const pinBtn=document.createElement("button");
+  pinBtn.className="outline";pinBtn.textContent=m.pinned?"Unpin":"📌 Pin";
+  pinBtn.onclick=()=>togglePin(m.id);
+  const delBtn=document.createElement("button");
+  delBtn.className="danger";delBtn.textContent="Delete";
+  delBtn.onclick=()=>deleteMessage(m.id);
+  tools.append(replyBtn,reactBtn,pinBtn,delBtn);
+  div.append(tools);
+  box.append(div);
+ });
+ if(!list.length)box.innerHTML='<p class="muted">No messages here yet. Say hello!</p>';
+ box.scrollTop=box.scrollHeight;
+ const pinned=messages.filter(m=>m.roomId===room.id&&m.pinned);
+ $("pinnedArea").innerHTML=pinned.length?
+  '<p class="muted">📌 Pinned: '+pinned.map(m=>escapeHtml((m.text||"").slice(0,50))).join(" · ")+'</p>':"";
+}
+function setReply(id){
+ const msg=messages.find(m=>m.id===id);
+ if(!msg)return;
+ replyToId=id;
+ $("replyBanner").classList.remove("hidden");
+ $("replyBanner").textContent="Replying to "+msg.fromName+": "+(msg.text||"").slice(0,100);
+ $("messageInput").focus();
+}
+function cancelReply(){
+ replyToId=null;
+ $("replyBanner").classList.add("hidden");
+ $("replyBanner").textContent="";
+}
+async function reactMessage(id){
+ const emoji=prompt("Enter a reaction emoji","❤️");
+ if(!emoji)return;
+ const msg=await getOne("messages",id);
+ if(!msg)return;
+ msg.reactions=msg.reactions||{};
+ msg.reactions[myIdentity.id]=emoji.slice(0,8);
+ await putOne("messages",msg);
+ const room=getCurrentRoom();
+ for(const peerId of (room?.members||[])){
+  if(peerId!==myIdentity.id)sendProtocol(peerRuntime.get(peerId),{
+   kind:"reaction",messageId:id,fromId:myIdentity.id,emoji:emoji.slice(0,8)
+  });
+ }
+ await refreshData();
+}
+async function togglePin(id){
+ const msg=await getOne("messages",id);
+ if(!msg)return;
+ msg.pinned=!msg.pinned;
+ await putOne("messages",msg);
+ const room=rooms.find(r=>r.id===msg.roomId);
+ for(const peerId of (room?.members||[])){
+  if(peerId!==myIdentity.id)sendProtocol(peerRuntime.get(peerId),{
+   kind:"pin",messageId:id,pinned:msg.pinned
+  });
+ }
+ await refreshData();
+}
+async function deleteMessage(id){
+ if(!confirm("Delete this message from your device?"))return;
+ await deleteOne("messages",id);
+ await refreshData();
+}
+async function downloadMessageFile(id){
+ const msg=await getOne("messages",id);
+ if(!msg?.fileData){alert("File data is unavailable.");return}
+ const raw=atob(msg.fileData);
+ const bytes=new Uint8Array(raw.length);
+ for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+ const blob=new Blob([bytes],{type:msg.fileType||"application/octet-stream"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;a.download=msg.fileName||"download";
+ a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+async function sendFile(file){
+ if(!file)return;
+ const room=getCurrentRoom();
+ if(!room)return;
+ if(file.size>512*1024){
+  alert("For this single-file demo, please use files no larger than 512 KB. Larger transfers need chunked WebRTC file transfer.");
+  return;
+ }
+ const reader=new FileReader();
+ reader.onload=async()=>{
+  const base64=String(reader.result).split(",")[1]||"";
+  const msg={
+   id:uid("filemsg"),roomId:room.id,fromId:myIdentity.id,
+   fromName:myIdentity.name,text:"📎 "+file.name,timestamp:Date.now(),
+   type:"file",fileName:file.name,fileType:file.type,
+   fileSize:file.size,fileData:base64,status:"saved",reactions:{},pinned:false
+  };
+  await putOne("messages",msg);
+  let sent=0;
+  const packet={
+   kind:"file",messageId:msg.id,roomId:room.id,
+   from:peerIdentityPayload(),
+   file:{name:file.name,type:file.type,size:file.size,data:base64}
+  };
+  for(const id of (room.members||[])){
+   if(id!==myIdentity.id && sendProtocol(peerRuntime.get(id),packet))sent++;
+  }
+  if(sent){msg.status="sent";await putOne("messages",msg)}
+  await refreshData();
+ };
+ reader.readAsDataURL(file);
+}
+
+/* ---------- BACKUP / EXPORT ---------- */
+function downloadText(filename,text,type="text/plain"){
+ const blob=new Blob([text],{type});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;a.download=filename;
+ document.body.append(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+async function exportBackup(){
+ const data={
+  app:APP_TAG,version:3,exportedAt:new Date().toISOString(),
+  identity:myIdentity,rooms:await getAll("rooms"),
+  peers:await getAll("peers"),messages:await getAll("messages"),
+  theme:await setting("theme"),
+  notifications:await setting("notifications")
+ };
+ downloadText("swayam-chat-backup.json",JSON.stringify(data,null,2),"application/json");
+}
+async function importBackup(file){
+ if(!file)return;
+ try{
+  const data=JSON.parse(await file.text());
+  if(data.app!==APP_TAG)throw new Error("This is not a Swayam Room Chat backup.");
+  if(!confirm("Import this backup? Existing records with matching IDs may be replaced."))return;
+  if(data.identity){
+   // Keep the current identity by default to avoid accidental identity changes.
+   const keep=confirm("Use the identity from this backup? Choose Cancel to keep your current identity.");
+   if(keep){myIdentity=data.identity;await setting("identity",myIdentity)}
+  }
+  for(const r of (data.rooms||[]))if(r.id)await putOne("rooms",r);
+  for(const p of (data.peers||[]))if(p.id)await putOne("peers",p);
+  for(const m of (data.messages||[]))if(m.id)await putOne("messages",m);
+  if(data.theme)await setting("theme",data.theme);
+  if(data.notifications!==undefined)await setting("notifications",data.notifications);
+  await refreshData();fillIdentity();
+  alert("Backup imported.");
+ }catch(e){alert("Import failed: "+e.message)}
+}
+async function exportCSV(){
+ const all=await getAll("messages");
+ const rows=[["id","roomId","fromId","fromName","timestamp","type","text","status","pinned"]];
+ all.forEach(m=>rows.push([
+  m.id,m.roomId,m.fromId,m.fromName,timeString(m.timestamp),m.type,m.text,m.status,m.pinned
+ ]));
+ const csv=rows.map(row=>row.map(v=>{
+  let s=String(v??"").replace(/"/g,'""');
+  return '"'+s+'"';
+ }).join(",")).join("\r\n");
+ downloadText("swayam-messages.csv",csv,"text/csv;charset=utf-8");
+}
+async function renderStats(){
+ if(!db)return;
+ const allMessages=await getAll("messages");
+ const allRooms=await getAll("rooms");
+ const allPeers=await getAll("peers");
+ $("storageStats").textContent=
+  "Identity ID: "+myIdentity.id+"\n"+
+  "Rooms: "+allRooms.length+"\n"+
+  "Known contacts: "+allPeers.length+"\n"+
+  "Saved messages: "+allMessages.length+"\n"+
+  "Browser: "+navigator.userAgent;
+}
+async function clearAllMessages(){
+ if(!confirm("Permanently delete all locally saved messages?"))return;
+ await clearStore("messages");
+ await refreshData();
+ alert("All local messages deleted.");
+}
+async function requestNotifications(){
+ if(!("Notification" in window)){
+  alert("Notifications are not supported by this browser.");return;
+ }
+ const result=await Notification.requestPermission();
+ alert("Notification permission: "+result);
+}
+document.addEventListener("keydown",e=>{
+ if(e.key==="Enter" && e.ctrlKey && !$("tab-chat").classList.contains("hidden")){
+  sendMessage();
+ }
+});
+
+init();
 </script>
 </body>
 </html>
