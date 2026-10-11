@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#147d50">
+<title>Swayam Chat — Peer to Peer</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+:root {
+  --bg:#edf7ef;
+  --card:#ffffff;
+  --text:#183b2a;
+  --primary:#147d50;
+  --border:#cfe4d5;
+  --muted:#60786a;
+  --bubble:#d8f5df;
+}
+[data-theme="ocean"] {
+  --bg:#eaf5ff;--card:#fff;--text:#153753;
+  --primary:#1476ae;--border:#c6deef;--muted:#59758c;
+  --bubble:#d8edff;
+}
+[data-theme="sunset"] {
+  --bg:#fff0e7;--card:#fff;--text:#633321;
+  --primary:#d65b2c;--border:#f0d0be;--muted:#90644e;
+  --bubble:#ffe0cf;
+}
+[data-theme="lavender"] {
+  --bg:#f4efff;--card:#fff;--text:#392b5d;
+  --primary:#7952b3;--border:#ded0f5;--muted:#786b91;
+  --bubble:#e9ddff;
+}
+[data-theme="dark"] {
+  --bg:#111b17;--card:#1d2b24;--text:#e6f6eb;
+  --primary:#42b87c;--border:#35483d;--muted:#afc4b6;
+  --bubble:#294e39;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,sans-serif;
+}
+header{
+  background:var(--primary);color:white;padding:17px;
+  position:sticky;top:0;z-index:5;
+}
+header h1{margin:0;font-size:21px}
+header p{margin:5px 0 0;font-size:12px;opacity:.9}
+nav{
+  display:flex;overflow-x:auto;gap:7px;padding:10px;
+  background:var(--card);border-bottom:1px solid var(--border);
+  position:sticky;top:73px;z-index:4;
+}
+nav button{white-space:nowrap;flex-shrink:0}
+button,.button{
+  border:0;border-radius:10px;padding:10px 13px;
+  background:var(--primary);color:white;font-weight:600;
+  cursor:pointer;font-size:13px;
+}
+button.secondary{background:var(--border);color:var(--text)}
+button.danger{background:#bd3838;color:white}
+button:disabled{opacity:.45;cursor:not-allowed}
+nav button.active{outline:2px solid var(--primary);outline-offset:2px}
+main{max-width:850px;margin:auto;padding:13px}
+section.tab{display:none}
+section.tab.active{display:block}
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:15px;padding:15px;margin-bottom:13px;
+}
+h2{font-size:18px;margin:0 0 12px}
+h3{font-size:15px;margin:13px 0 8px}
+p,.muted{color:var(--muted);font-size:13px;line-height:1.5}
+label{display:block;font-size:13px;font-weight:650;margin:10px 0 5px}
+input,textarea,select{
+  width:100%;padding:11px;border-radius:9px;
+  border:1px solid var(--border);background:var(--bg);
+  color:var(--text);font:inherit;font-size:14px;
+}
+textarea{min-height:100px;resize:vertical}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.row>*{flex:1}
+.status{
+  padding:10px;border-radius:9px;background:var(--bg);
+  border:1px solid var(--border);font-size:13px;
+  overflow-wrap:anywhere;
+}
+.good{color:#169458}.bad{color:#d04444}
+#messages{
+  height:300px;overflow:auto;border:1px solid var(--border);
+  background:var(--bg);border-radius:10px;padding:10px;
+}
+.msg{padding:9px 11px;margin:7px 0;border-radius:10px;
+  max-width:90%;overflow-wrap:anywhere;background:var(--card);
+  border:1px solid var(--border);font-size:14px}
+.msg.mine{margin-left:auto;background:var(--bubble)}
+.msg small{display:block;color:var(--muted);font-size:10px;margin-bottom:4px}
+#qr{display:flex;justify-content:center;overflow:auto;padding:10px}
+video{
+  width:100%;max-height:250px;background:#101010;
+  border-radius:10px;object-fit:contain;margin-top:7px;
+}
+.videoGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+video{min-height:120px}
+hr{border:0;border-top:1px solid var(--border);margin:15px 0}
+footer{text-align:center;padding:20px;color:var(--muted);font-size:12px}
+.small{font-size:11px}
+</style>
+</head>
+
+<body data-theme="forest">
+
+<header>
+  <h1>🌿 Swayam Chat</h1>
+  <p>Private peer-to-peer messaging · WebRTC · Local history</p>
+</header>
+
+<nav id="navigation">
+  <button class="active" data-tab="home">🏠 Home</button>
+  <button data-tab="connect">🔗 Connect</button>
+  <button data-tab="chat">💬 Chat</button>
+  <button data-tab="call">📹 Calls</button>
+  <button data-tab="files">📁 Files</button>
+  <button data-tab="data">💾 Data</button>
+  <button data-tab="settings">⚙️ Settings</button>
+</nav>
+
+<main>
+
+<section class="tab active" id="home">
+  <div class="card">
+    <h2>Welcome to Swayam Chat</h2>
+    <p>Connect two devices directly using WebRTC. Exchange connection information using a QR code or copy and paste.</p>
+    <label>Your display name</label>
+    <input id="displayName" maxlength="40" placeholder="Enter your name">
+    <div class="row">
+      <button onclick="saveName()">Save Name</button>
+      <button class="secondary" onclick="showTab('connect')">Connect a Person</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Connection Status</h2>
+    <div class="status" id="homeStatus">Not connected</div>
+    <p id="peerInfo">No peer connected.</p>
+    <div class="row">
+      <button onclick="showTab('chat')">Open Chat</button>
+      <button onclick="showTab('call')">Open Calls</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>How to connect</h2>
+    <p><b>Device A:</b> Open Connect and tap Create Offer. Share its QR code or copy the offer text.</p>
+    <p><b>Device B:</b> Scan or paste the offer, then tap Apply Offer & Create Answer. Share the answer back.</p>
+    <p><b>Device A:</b> Paste the answer and tap Apply Answer.</p>
+    <p>Keep both devices online while establishing the connection. QR scanning may require camera permission and a supported browser.</p>
+  </div>
+</section>
+
+<section class="tab" id="connect">
+  <div class="card">
+    <h2>🔗 Connection Setup</h2>
+    <div class="status" id="connectionStatus">Not connected</div>
+
+    <h3>Step 1 — Create an offer</h3>
+    <p>Use this on the first device. Create an offer and share it with the second device.</p>
+    <button onclick="createOffer()">Create Offer</button>
+
+    <label>Your connection information</label>
+    <textarea id="localSignal" placeholder="Your offer or answer appears here"></textarea>
+    <div class="row">
+      <button onclick="copyText('localSignal')">Copy Offer / Answer</button>
+      <button class="secondary" onclick="makeQR()">Generate QR</button>
+    </div>
+    <div id="qr"></div>
+    <p id="qrStatus"></p>
+
+    <hr>
+    <h3>Step 2 — Receive connection information</h3>
+    <p>Paste the other device's offer or answer below. You can also scan a QR code.</p>
+    <textarea id="remoteSignal" placeholder="Paste the other device's offer or answer here"></textarea>
+
+    <div class="row">
+      <button onclick="pasteClipboard()">Paste from Clipboard</button>
+      <button class="secondary" onclick="startScanner()">Scan QR</button>
+    </div>
+
+    <video id="scannerVideo" playsinline muted style="display:none"></video>
+    <div class="row">
+      <button onclick="stopScanner()" class="secondary">Stop Scanner</button>
+      <button onclick="applyOffer()">Apply Offer & Create Answer</button>
+    </div>
+    <button style="width:100%;margin-top:8px" onclick="applyAnswer()">Apply Answer</button>
+
+    <p class="small">Offers and answers are exchanged manually. This demo uses a public STUN server, not a relay server. Some networks may prevent a direct connection.</p>
+  </div>
+
+  <div class="card">
+    <h2>Connection Controls</h2>
+    <div class="row">
+      <button onclick="showConnection()">Refresh Status</button>
+      <button class="danger" onclick="disconnectPeer()">Disconnect</button>
+    </div>
+    <p id="iceStatus">ICE: new</p>
+    <p id="dataStatus">Data channel: closed</p>
+  </div>
+</section>
+
+<section class="tab" id="chat">
+  <div class="card">
+    <h2>💬 Private Chat</h2>
+    <div id="messages"></div>
+    <label>Message</label>
+    <textarea id="messageInput" placeholder="Write your message..."></textarea>
+    <div class="row">
+      <button onclick="sendMessage()">Send Message</button>
+      <button class="secondary" onclick="document.getElementById('messageInput').value=''">Clear Input</button>
+    </div>
+    <p>Messages are stored locally on this device. Delivery requires an active connection.</p>
+  </div>
+</section>
+
+<section class="tab" id="call">
+  <div class="card">
+    <h2>📹 Audio & Video Calls</h2>
+    <label>Call mode</label>
+    <select id="callMode">
+      <option value="audio">Audio only</option>
+      <option value="video">Video only</option>
+      <option value="both">Audio + Video</option>
+    </select>
+    <div class="row">
+      <button onclick="startCall()">Start Call / Enable Media</button>
+      <button class="secondary" onclick="stopCall()">Stop Local Media</button>
+    </div>
+    <p id="callStatus">No local call media started.</p>
+
+    <div class="videoGrid">
+      <div>
+        <label>Your camera</label>
+        <video id="localVideo" autoplay playsinline muted></video>
+      </div>
+      <div>
+        <label>Other person</label>
+        <video id="remoteVideo" autoplay playsinline></video>
+      </div>
+    </div>
+    <p>For camera and microphone access, use HTTPS or localhost and grant browser permissions. The other person must also enable their media to send audio/video back.</p>
+  </div>
+</section>
+
+<section class="tab" id="files">
+  <div class="card">
+    <h2>📁 Send a File</h2>
+    <input id="fileInput" type="file">
+    <div class="row">
+      <button onclick="sendFile()">Send Selected File</button>
+    </div>
+    <p>For this demo, files are limited to 2 MB. The connection must be established first.</p>
+    <div class="status" id="fileStatus">No file transfer in progress.</div>
+    <div id="receivedFiles"></div>
+  </div>
+</section>
+
+<section class="tab" id="data">
+  <div class="card">
+    <h2>💾 Local Data Management</h2>
+    <p>Messages are stored in IndexedDB on this device.</p>
+    <div class="row">
+      <button onclick="exportJSON()">Export JSON</button>
+      <button onclick="exportCSV()">Export CSV</button>
+    </div>
+    <label>Import JSON backup</label>
+    <input type="file" id="importFile" accept=".json,application/json">
+    <button style="margin-top:10px" onclick="importJSON()">Import JSON</button>
+    <hr>
+    <button class="danger" onclick="clearHistory()">Delete Local Message History</button>
+    <p>Exported backups may contain private messages. Keep them secure.</p>
+  </div>
+</section>
+
+<section class="tab" id="settings">
+  <div class="card">
+    <h2>⚙️ Settings</h2>
+    <label>Nature theme</label>
+    <select id="themeSelect" onchange="setTheme(this.value)">
+      <option value="forest">🌲 Forest</option>
+      <option value="ocean">🌊 Ocean</option>
+      <option value="sunset">🌅 Sunset</option>
+      <option value="lavender">💜 Lavender</option>
+      <option value="dark">🌙 Dark</option>
+    </select>
+    <hr>
+    <h3>About this demo</h3>
+    <p>This is a browser-based WebRTC prototype. There is no account server, message server, or cloud database.</p>
+    <p>WebRTC does not guarantee offline delivery. Both devices need to be online to establish a direct connection, and the recipient needs to be connected to receive messages.</p>
+    <button class="secondary" onclick="showTab('home')">Back to Home</button>
+  </div>
+</section>
+
+</main>
+
+<footer>Swayam Chat · Peer-to-peer demo · Keep your connection codes private</footer>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+let pc = null;
+let dc = null;
+let localStream = null;
+let remoteStream = new MediaStream();
+let scannerStream = null;
+let scanFrame = null;
+let incomingFile = null;
+let receivedChunks = [];
+let history = [];
+let db = null;
+let pendingOffer = false;
+
+const DB_NAME = "SwayamChatDB";
+const DB_VERSION = 1;
+
+const RTC_CONFIG = {
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" }
+  ]
+};
+
+/* ---------- Tabs ---------- */
+
+document.querySelectorAll("#navigation button").forEach(button => {
+  button.addEventListener("click", () => showTab(button.dataset.tab));
+});
+
+function showTab(tabId) {
+  document.querySelectorAll("section.tab").forEach(section => {
+    section.classList.toggle("active", section.id === tabId);
+  });
+  document.querySelectorAll("#navigation button").forEach(button => {
+    button.classList.toggle("active", button.dataset.tab === tabId);
+  });
+}
+
+/* ---------- Profile and theme ---------- */
+
+function saveName() {
+  const name = $("displayName").value.trim().slice(0, 40);
+  localStorage.setItem("swayam_name", name || "Guest");
+  $("displayName").value = name || "Guest";
+  $("peerInfo").textContent = "Your name: " + $("displayName").value;
+}
+
+function loadSettings() {
+  $("displayName").value = localStorage.getItem("swayam_name") || "Guest";
+  const theme = localStorage.getItem("swayam_theme") || "forest";
+  $("themeSelect").value = theme;
+  setTheme(theme);
+}
+
+function setTheme(theme) {
+  document.body.dataset.theme = theme;
+  localStorage.setItem("swayam_theme", theme);
+}
+
+/* ---------- IndexedDB ---------- */
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onupgradeneeded = () => {
+      const database = request.result;
+      if (!database.objectStoreNames.contains("messages")) {
+        database.createObjectStore("messages", {
+          keyPath: "id",
+          autoIncrement: true
+        });
+      }
+    };
+
+    request.onsuccess = () => {
+      db = request.result;
+      resolve(db);
+    };
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function addHistory(record) {
+  const item = {
+    time: new Date().toISOString(),
+    ...record
+  };
+
+  history.push(item);
+  renderMessages();
+
+  if (db) {
+    try {
+      db.transaction("messages", "readwrite")
+        .objectStore("messages").add(item);
+    } catch (error) {
+      console.error("Could not store message:", error);
+    }
+  }
+}
+
+function loadHistory() {
+  if (!db) return;
+
+  const request = db.transaction("messages", "readonly")
+    .objectStore("messages").getAll();
+
+  request.onsuccess = () => {
+    history = request.result || [];
+    renderMessages();
+  };
+}
+
+function renderMessages() {
+  const container = $("messages");
+  container.innerHTML = "";
+
+  history.forEach(item => {
+    if (!item.text) return;
+
+    const div = document.createElement("div");
+    div.className = "msg " + (item.direction === "out" ? "mine" : "");
+    const small = document.createElement("small");
+    small.textContent =
+      (item.direction === "out" ? "You" : "Peer") +
+      " · " + new Date(item.time).toLocaleString();
+
+    const body = document.createElement("div");
+    body.textContent = item.text;
+
+    div.append(small, body);
+    container.appendChild(div);
+  });
+
+  container.scrollTop = container.scrollHeight;
+}
+
+/* ---------- WebRTC connection ---------- */
+
+function waitForICE(connection, timeout = 12000) {
+  if (connection.iceGatheringState === "complete") {
+    return Promise.resolve();
+  }
+
+  return new Promise(resolve => {
+    let finished = false;
+
+    const done = () => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      connection.removeEventListener("icegatheringstatechange", check);
+      resolve();
+    };
+
+    const check = () => {
+      if (connection.iceGatheringState === "complete") done();
+    };
+
+    const timer = setTimeout(done, timeout);
+    connection.addEventListener("icegatheringstatechange", check);
+  });
+}
+
+function setupPeer() {
+  if (pc) {
+    try { pc.close(); } catch (_) {}
+  }
+
+  pc = new RTCPeerConnection(RTC_CONFIG);
+  dc = null;
+  remoteStream = new MediaStream();
+  $("remoteVideo").srcObject = remoteStream;
+
+  pc.oniceconnectionstatechange = () => {
+    $("iceStatus").textContent = "ICE: " + pc.iceConnectionState;
+    showConnection();
+  };
+
+  pc.onconnectionstatechange = () => {
+    $("connectionStatus").textContent =
+      "Connection: " + pc.connectionState;
+    $("homeStatus").textContent =
+      "Connection: " + pc.connectionState;
+    showConnection();
+  };
+
+  pc.ondatachannel = event => {
+    attachDataChannel(event.channel);
+  };
+
+  pc.ontrack = event => {
+    if (event.streams && event.streams[0]) {
+      event.streams[0].getTracks().forEach(track => {
+        if (!remoteStream.getTracks().some(t => t.id === track.id)) {
+          remoteStream.addTrack(track);
+        }
+      });
+    } else if (!remoteStream.getTracks().some(t => t.id === event.track.id)) {
+      remoteStream.addTrack(event.track);
+    }
+
+    $("remoteVideo").srcObject = remoteStream;
+    $("remoteVideo").play().catch(() => {});
+  };
+
+  return pc;
+}
+
+function attachDataChannel(channel) {
+  dc = channel;
+  dc.binaryType = "arraybuffer";
+
+  dc.onopen = () => {
+    $("dataStatus").textContent = "Data channel: open";
+    $("connectionStatus").textContent = "Connected";
+    $("homeStatus").textContent = "Connected";
+  };
+
+  dc.onclose = () => {
+    $("dataStatus").textContent = "Data channel: closed";
+  };
+
+  dc.onerror = () => {
+    $("dataStatus").textContent = "Data channel: error";
+  };
+
+  dc.onmessage = event => handleIncoming(event.data);
+}
+
+function isDataReady() {
+  return dc && dc.readyState === "open";
+}
+
+async function createOffer() {
+  try {
+    setupPeer();
+
+    // Create audio/video transceivers before creating the offer.
+    // This makes it possible to add local media later without
+    // requiring a second connection negotiation.
+    pc.addTransceiver("audio", { direction: "sendrecv" });
+    pc.addTransceiver("video", { direction: "sendrecv" });
+
+    attachDataChannel(pc.createDataChannel("swayam-chat"));
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    $("connectionStatus").textContent = "Preparing offer…";
+
+    await waitForICE(pc);
+
+    $("localSignal").value = JSON.stringify(pc.localDescription);
+    $("qrStatus").textContent =
+      "Offer ready. Share the text or generate a QR code.";
+
+    showConnection();
+  } catch (error) {
+    alert("Could not create offer: " + error.message);
+  }
+}
+
+async function applyOffer() {
+  try {
+    const data = JSON.parse($("remoteSignal").value.trim());
+
+    if (data.type !== "offer" || !data.sdp) {
+      throw new Error("The supplied connection data is not an offer.");
+    }
+
+    setupPeer();
+    await pc.setRemoteDescription(new RTCSessionDescription(data));
+
+    // The remote offer includes audio/video transceivers.
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    $("connectionStatus").textContent = "Preparing answer…";
+
+    await waitForICE(pc);
+
+    $("localSignal").value = JSON.stringify(pc.localDescription);
+    $("qrStatus").textContent =
+      "Answer ready. Send it back to the person who created the offer.";
+
+    showConnection();
+  } catch (error) {
+    alert("Could not apply offer: " + error.message);
+  }
+}
+
+async function applyAnswer() {
+  try {
+    if (!pc) {
+      throw new Error("Create an offer first on this device.");
+    }
+
+    const data = JSON.parse($("remoteSignal").value.trim());
+
+    if (data.type !== "answer" || !data.sdp) {
+      throw new Error("The supplied connection data is not an answer.");
+    }
+
+    await pc.setRemoteDescription(new RTCSessionDescription(data));
+    $("connectionStatus").textContent = "Answer applied; connecting…";
+    showConnection();
+  } catch (error) {
+    alert("Could not apply answer: " + error.message);
+  }
+}
+
+function showConnection() {
+  const state = pc ? pc.connectionState : "not connected";
+  $("homeStatus").textContent = "Connection: " + state;
+  $("connectionStatus").textContent = "Connection: " + state;
+  $("iceStatus").textContent =
+    "ICE: " + (pc ? pc.iceConnectionState : "not started");
+  $("dataStatus").textContent =
+    "Data channel: " + (dc ? dc.readyState : "not created");
+}
+
+function disconnectPeer() {
+  stopCall();
+
+  if (dc) {
+    try { dc.close(); } catch (_) {}
+  }
+  if (pc) {
+    try { pc.close(); } catch (_) {}
+  }
+
+  pc = null;
+  dc = null;
+  $("connectionStatus").textContent = "Disconnected";
+  $("homeStatus").textContent = "Disconnected";
+  $("dataStatus").textContent = "Data channel: closed";
+  $("iceStatus").textContent = "ICE: closed";
+}
+
+/* ---------- QR generation and scanning ---------- */
+
+function makeQR() {
+  const text = $("localSignal").value.trim();
+  const container = $("qr");
+  container.innerHTML = "";
+
+  if (!text) {
+    $("qrStatus").textContent = "Create an offer or answer first.";
+    return;
+  }
+
+  if (text.length > 2500) {
+    $("qrStatus").textContent =
+      "This connection text may be too large for a reliable QR code. Use Copy and Paste instead.";
+    return;
+  }
+
+  if (typeof QRCode === "undefined") {
+    $("qrStatus").textContent =
+      "QR library unavailable. Use Copy and Paste instead.";
+    return;
+  }
+
+  try {
+    new QRCode(container, {
+      text,
+      width: 240,
+      height: 240,
+      correctLevel: QRCode.CorrectLevel.L
+    });
+
+    $("qrStatus").textContent =
+      "QR generated. Scan it on the other device, or copy/paste the text.";
+  } catch (error) {
+    $("qrStatus").textContent =
+      "Could not generate QR. Use Copy and Paste instead.";
+  }
+}
+
+async function startScanner() {
+  if (!("BarcodeDetector" in window)) {
+    alert(
+      "QR scanning is not supported by this browser. Use Copy/Paste, or open this app in a browser that supports BarcodeDetector."
+    );
+    return;
+  }
+
+  try {
+    const detector = new BarcodeDetector({ formats: ["qr_code"] });
+    scannerStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" },
+      audio: false
+    });
+
+    const video = $("scannerVideo");
+    video.srcObject = scannerStream;
+    video.style.display = "block";
+    await video.play();
+
+    const scan = async () => {
+      if (!scannerStream) return;
+
+      try {
+        const codes = await detector.detect(video);
+        if (codes.length && codes[0].rawValue) {
+          $("remoteSignal").value = codes[0].rawValue;
+          stopScanner();
+          $("qrStatus").textContent = "QR scanned. Review the data and continue.";
+          return;
+        }
+      } catch (_) {}
+
+      scanFrame = requestAnimationFrame(scan);
+    };
+
+    scan();
+  } catch (error) {
+    alert("Could not start QR scanner: " + error.message);
+  }
+}
+
+function stopScanner() {
+  if (scanFrame) cancelAnimationFrame(scanFrame);
+  scanFrame = null;
+
+  if (scannerStream) {
+    scannerStream.getTracks().forEach(track => track.stop());
+    scannerStream = null;
+  }
+
+  $("scannerVideo").srcObject = null;
+  $("scannerVideo").style.display = "none";
+}
+
+async function copyText(id) {
+  const text = $(id).value;
+  if (!text) {
+    alert("There is no connection text to copy yet.");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("Copied. Send it to the other device.");
+  } catch (_) {
+    $(id).focus();
+    $(id).select();
+    alert("Automatic copy is unavailable. The text is selected; copy it manually.");
+  }
+}
+
+async function pasteClipboard() {
+  try {
+    $("remoteSignal").value = await navigator.clipboard.readText();
+  } catch (_) {
+    alert("Clipboard access is unavailable. Paste into the box manually.");
+  }
+}
+
+/* ---------- Chat ---------- */
+
+function sendMessage() {
+  const text = $("messageInput").value.trim();
+  if (!text) return;
+
+  if (!isDataReady()) {
+    alert("Connect to the other device first.");
+    return;
+  }
+
+  try {
+    dc.send(JSON.stringify({
+      kind: "text",
+      text,
+      sender: localStorage.getItem("swayam_name") || "Guest"
+    }));
+
+    addHistory({ direction: "out", text });
+    $("messageInput").value = "";
+  } catch (error) {
+    alert("Message could not be sent: " + error.message);
+  }
+}
+
+$("messageInput").addEventListener("keydown", event => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
+  }
+});
+
+function handleIncoming(data) {
+  if (typeof data !== "string") {
+    handleFileChunk(data);
+    return;
+  }
+
+  let message;
+  try {
+    message = JSON.parse(data);
+  } catch (_) {
+    addHistory({ direction: "in", text: data });
+    return;
+  }
+
+  if (message.kind === "text") {
+    addHistory({
+      direction: "in",
+      text: message.text || "(empty message)"
+    });
+  } else if (message.kind === "file-start") {
+    incomingFile = {
+      name: message.name || "received-file",
+      type: message.type || "application/octet-stream",
+      size: Number(message.size) || 0
+    };
+    receivedChunks = [];
+    $("fileStatus").textContent =
+      "Receiving: " + incomingFile.name;
+  } else if (message.kind === "file-chunk") {
+    // Each chunk is sent as base64 to keep this small demo simple.
+    try {
+      const binary = atob(message.data);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      receivedChunks.push(bytes);
+    } catch (_) {
+      $("fileStatus").textContent = "A file chunk could not be decoded.";
+    }
+  } else if (message.kind === "file-end") {
+    finishIncomingFile();
+  }
+}
+
+/* ---------- File transfer ---------- */
+
+function waitForBuffer(channel, limit = 256 * 1024) {
+  return new Promise(resolve => {
+    if (channel.readyState !== "open") {
+      resolve(false);
+      return;
+    }
+
+    if (channel.bufferedAmount < limit) {
+      resolve(true);
+      return;
+    }
+
+    channel.bufferedAmountLowThreshold = 64 * 1024;
+
+    const done = () => {
+      channel.removeEventListener("bufferedamountlow", done);
+      resolve(channel.readyState === "open");
+    };
+
+    channel.addEventListener("bufferedamountlow", done, { once: true });
+    setTimeout(() => {
+      channel.removeEventListener("bufferedamountlow", done);
+      resolve(channel.readyState === "open");
+    }, 5000);
+  });
+}
+
+function fileToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = String(reader.result);
+      resolve(result.substring(result.indexOf(",") + 1));
+    };
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function sendFile() {
+  const file = $("fileInput").files[0];
+
+  if (!file) {
+    alert("Choose a file first.");
+    return;
+  }
+
+  if (!isDataReady()) {
+    alert("Connect to the other device first.");
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert("This demo limits file size to 2 MB.");
+    return;
+  }
+
+  const channel = dc;
+  const chunkSize = 12 * 1024;
+
+  try {
+    channel.send(JSON.stringify({
+      kind: "file-start",
+      name: file.name,
+      type: file.type,
+      size: file.size
+    }));
+
+    for (let offset = 0; offset < file.size; offset += chunkSize) {
+      if (channel.readyState !== "open") {
+        throw new Error("Connection closed during transfer.");
+      }
+
+      const ok = await waitForBuffer(channel);
+      if (!ok) throw new Error("Data channel is no longer open.");
+
+      const chunk = file.slice(offset, offset + chunkSize);
+      const encoded = await fileToBase64(chunk);
+
+      channel.send(JSON.stringify({
+        kind: "file-chunk",
+        data: encoded
+      }));
+
+      $("fileStatus").textContent =
+        "Sending " + file.name + ": " +
+        Math.min(100, Math.round((offset + chunk.size) / file.size * 100)) + "%";
+    }
+
+    channel.send(JSON.stringify({ kind: "file-end" }));
+    $("fileStatus").textContent = "Sent: " + file.name;
+  } catch (error) {
+    $("fileStatus").textContent = "Transfer failed: " + error.message;
+  }
+}
+
+function handleFileChunk() {
+  // Reserved for binary chunks if binary transfer is enabled in a future version.
+}
+
+function finishIncomingFile() {
+  if (!incomingFile) return;
+
+  const blob = new Blob(receivedChunks, { type: incomingFile.type });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = incomingFile.name;
+  link.textContent = "Download received file: " + incomingFile.name;
+  link.style.display = "block";
+  link.style.margin = "10px 0";
+
+  $("receivedFiles").appendChild(link);
+  $("fileStatus").textContent =
+    "Received " + incomingFile.name + " (" + blob.size + " bytes).";
+
+  incomingFile = null;
+  receivedChunks = [];
+}
+
+/* ---------- Audio and video ---------- */
+
+async function startCall() {
+  if (!pc) {
+    alert("Connect to the other device first.");
+    return;
+  }
+
+  if (pc.signalingState !== "stable") {
+    alert("The connection is still negotiating. Wait for it to settle.");
+    return;
+  }
+
+  const mode = $("callMode").value;
+  const audio = mode === "audio" || mode === "both";
+  const video = mode === "video" || mode === "both";
+
+  try {
+    if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+    }
+
+    localStream = await navigator.mediaDevices.getUserMedia({
+      audio,
+      video
+    });
+
+    $("localVideo").srcObject = localStream;
+    $("localVideo").play().catch(() => {});
+
+    const transceivers = pc.getTransceivers();
+
+    for (const track of localStream.getTracks()) {
+      const transceiver = transceivers.find(t => t.receiver &&
+        t.receiver.track && t.receiver.track.kind === track.kind);
+
+      if (!transceiver) {
+        throw new Error(
+          "No negotiated " + track.kind +
+          " transceiver exists. Create a fresh offer with this version on both devices."
+        );
+      }
+
+      await transceiver.sender.replaceTrack(track);
+      transceiver.direction = "sendrecv";
+    }
+
+    $("callStatus").textContent =
+      "Local " + mode + " media enabled. The peer must also enable media to send back.";
+  } catch (error) {
+    $("callStatus").textContent = "Could not start media: " + error.message;
+    alert("Call error: " + error.message);
+  }
+}
+
+function stopCall() {
+  if (localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+    localStream = null;
+  }
+
+  $("localVideo").srcObject = null;
+  $("callStatus").textContent =
+    "Local media stopped. Remote media may remain visible.";
+}
+
+/* ---------- Export / import ---------- */
+
+function downloadFile(name, content, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+function exportJSON() {
+  downloadFile(
+    "swayam-chat-backup.json",
+    JSON.stringify(history, null, 2),
+    "application/json"
+  );
+}
+
+function csvEscape(value) {
+  return '"' + String(value ?? "").replace(/"/g, '""') + '"';
+}
+
+function exportCSV() {
+  const rows = [
+    ["time", "direction", "text"],
+    ...history.map(item => [item.time, item.direction, item.text || ""])
+  ];
+
+  const csv = rows.map(row => row.map(csvEscape).join(",")).join("\r\n");
+  downloadFile("swayam-chat-messages.csv", csv, "text/csv;charset=utf-8");
+}
+
+async function importJSON() {
+  const file = $("importFile").files[0];
+  if (!file) {
+    alert("Choose a JSON backup first.");
+    return;
+  }
+
+  try {
+    const parsed = JSON.parse(await file.text());
+
+    if (!Array.isArray(parsed)) {
+      throw new Error("The backup must contain a JSON array.");
+    }
+
+    const records = parsed.filter(item =>
+      item && typeof item.text === "string"
+    );
+
+    if (!db) throw new Error("Local database is not ready.");
+
+    const transaction = db.transaction("messages", "readwrite");
+    const store = transaction.objectStore("messages");
+
+    records.forEach(item => {
+      store.add({
+        time: item.time || new Date().toISOString(),
+        direction: item.direction === "out" ? "out" : "in",
+        text: item.text
+      });
+    });
+
+    transaction.oncomplete = () => {
+      alert("Imported " + records.length + " messages.");
+      loadHistory();
+    };
+
+    transaction.onerror = () => {
+      alert("Import failed.");
+    };
+  } catch (error) {
+    alert("Could not import backup: " + error.message);
+  }
+}
+
+function clearHistory() {
+  if (!confirm("Delete all local message history on this device?")) return;
+
+  history = [];
+  renderMessages();
+
+  if (db) {
+    const transaction = db.transaction("messages", "readwrite");
+    transaction.objectStore("messages").clear();
+  }
+}
+
+/* ---------- Startup ---------- */
+
+async function init() {
+  loadSettings();
+
+  try {
+    await openDB();
+    loadHistory();
+  } catch (error) {
+    console.error(error);
+    alert("Local history is unavailable. Try a modern browser with IndexedDB enabled.");
+  }
+
+  showConnection();
+}
+
+init();
+</script>
+</body>
+</html>
