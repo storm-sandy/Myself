@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#147d4a">
+<title>Swayam Chat</title>
+
+<style>
+:root {
+  --bg:#eef8ef;
+  --card:#fff;
+  --primary:#147d4a;
+  --text:#193d2b;
+  --muted:#688071;
+  --border:#d3e6d8;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+header {
+  background:var(--primary);
+  color:white;
+  padding:17px;
+  position:sticky;
+  top:0;
+  z-index:5;
+}
+header h2 { margin:0 0 5px; }
+header small { opacity:.9; }
+nav {
+  display:flex;
+  overflow-x:auto;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:67px;
+  z-index:4;
+}
+nav button {
+  flex:1;
+  min-width:72px;
+  padding:13px 8px;
+  border:0;
+  background:transparent;
+  color:var(--text);
+}
+nav button.active {
+  color:var(--primary);
+  border-bottom:3px solid var(--primary);
+  font-weight:bold;
+}
+main { padding:14px; max-width:850px; margin:auto; }
+.tab { display:none; }
+.tab.active { display:block; }
+.card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:15px;
+  margin-bottom:14px;
+}
+h3 { margin-top:0; }
+label {
+  display:block;
+  font-size:13px;
+  margin:12px 0 5px;
+  color:var(--muted);
+}
+input,textarea,select {
+  width:100%;
+  padding:11px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:var(--card);
+  color:var(--text);
+  font:inherit;
+}
+input[type=checkbox] { width:auto; }
+button.action {
+  border:0;
+  border-radius:9px;
+  background:var(--primary);
+  color:white;
+  padding:11px 14px;
+  margin:5px 3px 5px 0;
+  cursor:pointer;
+}
+button.secondary {
+  background:#e3f2e7;
+  color:#175d38;
+}
+button.danger { background:#b72f3d; }
+button:disabled { opacity:.5; cursor:not-allowed; }
+.muted { color:var(--muted); font-size:13px; line-height:1.5; }
+.row { display:flex; gap:8px; align-items:center; }
+.item {
+  border:1px solid var(--border);
+  padding:11px;
+  border-radius:10px;
+  margin:7px 0;
+  overflow-wrap:anywhere;
+}
+#messages {
+  height:300px;
+  overflow:auto;
+  background:var(--bg);
+  padding:10px;
+  border-radius:10px;
+}
+.msg {
+  max-width:92%;
+  padding:9px 11px;
+  border-radius:12px;
+  margin:7px 0;
+  background:var(--card);
+  border:1px solid var(--border);
+  overflow-wrap:anywhere;
+}
+.msg.mine { margin-left:auto; background:#d9f5df; }
+.msg small {
+  display:block;
+  color:var(--muted);
+  margin-top:5px;
+  font-size:11px;
+}
+.badge {
+  display:inline-block;
+  border-radius:20px;
+  padding:5px 9px;
+  background:#e2f2e6;
+  color:#175d38;
+  font-size:12px;
+  margin:7px 0;
+}
+#qrImage { max-width:100%; height:auto; display:block; margin:10px auto; }
+footer { padding:20px; text-align:center; font-size:12px; color:var(--muted); }
+hr { border:0; border-top:1px solid var(--border); margin:15px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <h2>🌿 Swayam Chat</h2>
+  <small>Local-first messaging · Groups up to 50 members</small>
+</header>
+
+<nav>
+  <button class="active" data-tab="chats">Chats</button>
+  <button data-tab="contacts">Contacts</button>
+  <button data-tab="groups">Groups</button>
+  <button data-tab="connect">Connect</button>
+  <button data-tab="settings">Settings</button>
+  <button data-tab="data">Data</button>
+</nav>
+
+<main>
+<section class="tab active" id="chats">
+  <div class="card">
+    <h3>💬 Messages</h3>
+    <label>Conversation</label>
+    <select id="conversationSelect"></select>
+    <div id="messages"></div>
+    <label>Write a message</label>
+    <textarea id="messageInput" rows="3" placeholder="Type a message..."></textarea>
+    <button class="action" id="sendBtn">Send message</button>
+    <button class="action secondary" id="retryBtn">Retry pending</button>
+    <p class="muted" id="deliveryStatus">Messages are stored locally.</p>
+  </div>
+  <div class="card">
+    <h3>📬 Pending messages</h3>
+    <div id="pendingList"></div>
+  </div>
+</section>
+
+<section class="tab" id="contacts">
+  <div class="card">
+    <h3>👤 Add contact</h3>
+    <label>Display name</label>
+    <input id="contactName" placeholder="Friend's name">
+    <label>Contact ID (optional)</label>
+    <input id="contactId" placeholder="Phone number or other label">
+    <button class="action" id="addContact">Save contact</button>
+  </div>
+  <div class="card">
+    <h3>Contacts</h3>
+    <div id="contactList"></div>
+  </div>
+</section>
+
+<section class="tab" id="groups">
+  <div class="card">
+    <h3>👥 Create group</h3>
+    <label>Group name</label>
+    <input id="groupName" placeholder="Family, Friends, Team...">
+    <label>Maximum members, including creator</label>
+    <select id="groupLimit">
+      <option value="5">5 members</option>
+      <option value="10">10 members</option>
+      <option value="20">20 members</option>
+      <option value="50" selected>50 members</option>
+    </select>
+    <button class="action" id="createGroup">Create group</button>
+  </div>
+
+  <div class="card">
+    <h3>📋 Your groups</h3>
+    <div id="groupList"></div>
+  </div>
+
+  <div class="card" id="memberManager">
+    <h3>👤 Group members</h3>
+    <p class="muted">Select a group to view or manage its members.</p>
+    <label>Choose group</label>
+    <select id="memberGroupSelect">
+      <option value="">Select a group</option>
+    </select>
+    <div id="memberSummary" class="badge">0 members</div>
+    <div id="memberList"></div>
+    <hr>
+    <label>Add contact to group</label>
+    <select id="memberContactSelect">
+      <option value="">Select a contact</option>
+    </select>
+    <button class="action" id="addGroupMember">Add member</button>
+    <p class="muted">
+      Adding a member updates this device's group list only.
+      It does not automatically add them on other devices.
+    </p>
+  </div>
+</section>
+
+<section class="tab" id="connect">
+  <div class="card">
+    <h3>🔗 Connect devices</h3>
+    <p class="muted">
+      Exchange WebRTC offer and answer text between devices.
+      Without a signaling server, you must transfer the text manually.
+    </p>
+    <label>Peer display name</label>
+    <input id="peerName" placeholder="Friend or device name">
+    <button class="action" id="createOffer">Create offer</button>
+    <label>Paste an offer or answer</label>
+    <textarea id="signalInput" rows="5" placeholder="Paste connection information"></textarea>
+    <button class="action" id="applyOffer">Create answer from offer</button>
+    <button class="action secondary" id="applyAnswer">Apply answer</button>
+    <label>Connection information to share</label>
+    <textarea id="signalOutput" rows="5" readonly></textarea>
+    <button class="action secondary" id="copySignal">Copy text</button>
+    <button class="action secondary" id="makeQR">Show QR code</button>
+    <div id="qrArea"></div>
+    <p id="peerStatus" class="badge">Not connected</p>
+  </div>
+  <div class="card">
+    <h3>Connected devices</h3>
+    <div id="peerList"></div>
+  </div>
+</section>
+
+<section class="tab" id="settings">
+  <div class="card">
+    <h3>⚙️ Settings</h3>
+    <label>Your display name</label>
+    <input id="displayName" placeholder="Your name">
+    <label>Nature theme</label>
+    <select id="theme">
+      <option value="forest">Forest</option>
+      <option value="ocean">Ocean</option>
+      <option value="sunrise">Sunrise</option>
+      <option value="lavender">Lavender</option>
+      <option value="earth">Earth</option>
+      <option value="mint">Mint</option>
+      <option value="night">Night</option>
+      <option value="rose">Rose</option>
+      <option value="sand">Sand</option>
+      <option value="sky">Sky</option>
+      <option value="default">Default</option>
+    </select>
+    <label><input id="sound" type="checkbox"> Enable message sound</label>
+    <button class="action" id="saveSettings">Save settings</button>
+  </div>
+  <div class="card">
+    <h3>📡 Delivery information</h3>
+    <p class="muted">
+      Pending messages are kept in this browser's IndexedDB.
+      This prototype cannot guarantee delivery to offline recipients.
+      A persistent relay server is required for reliable offline delivery.
+    </p>
+  </div>
+</section>
+
+<section class="tab" id="data">
+  <div class="card">
+    <h3>💾 Data management</h3>
+    <button class="action" id="exportData">Export JSON backup</button>
+    <label>Import JSON backup</label>
+    <input id="importFile" type="file" accept=".json,application/json">
+    <button class="action" id="importData">Import backup</button>
+    <button class="action danger" id="clearData">Clear local data</button>
+  </div>
+  <div class="card">
+    <h3>Storage status</h3>
+    <div id="storageStatus"></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  Swayam Chat · Testing prototype · Not for emergency communications
+</footer>
+
+<script>
+"use strict";
+
+const DB_NAME = "SwayamChat50";
+const DB_VERSION = 1;
+
+let db;
+let currentConversation = "local";
+let peers = new Map();
+let pending = [];
+let contacts = [];
+let groups = [];
+let messages = [];
+let settings = {displayName:"Me",theme:"forest",sound:false};
+
+const $ = id => document.getElementById(id);
+
+function uuid() {
+  return crypto.randomUUID
+    ? crypto.randomUUID()
+    : Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+function openDB() {
+  return new Promise((resolve,reject) => {
+    const request = indexedDB.open(DB_NAME,DB_VERSION);
+    request.onupgradeneeded = () => {
+      const database = request.result;
+      ["messages","contacts","groups","pending","settings"].forEach(store => {
+        if (!database.objectStoreNames.contains(store)) {
+          database.createObjectStore(store,{keyPath:"id"});
+        }
+      });
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function put(store,record) {
+  return new Promise((resolve,reject) => {
+    const tx = db.transaction(store,"readwrite");
+    tx.objectStore(store).put(record);
+    tx.oncomplete = () => resolve(record);
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error);
+  });
+}
+
+function getAll(store) {
+  return new Promise((resolve,reject) => {
+    const req = db.transaction(store).objectStore(store).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function clearStore(store) {
+  return new Promise((resolve,reject) => {
+    const tx = db.transaction(store,"readwrite");
+    tx.objectStore(store).clear();
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function deleteRecord(store,id) {
+  return new Promise((resolve,reject) => {
+    const tx = db.transaction(store,"readwrite");
+    tx.objectStore(store).delete(id);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g,c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+
+async function refresh() {
+  [messages,contacts,groups,pending] = await Promise.all([
+    getAll("messages"),getAll("contacts"),getAll("groups"),getAll("pending")
+  ]);
+
+  // Migrate older group records to the current format.
+  for (const group of groups) {
+    if (!Array.isArray(group.members)) {
+      group.members = [];
+      await put("groups",group);
+    }
+    if (!Number.isInteger(group.limit)) group.limit = 50;
+  }
+
+  renderConversations();
+  renderMessages();
+  renderContacts();
+  renderGroups();
+  renderPending();
+  renderPeers();
+  renderStorage();
+}
+
+function switchTab(name) {
+  document.querySelectorAll(".tab").forEach(el =>
+    el.classList.toggle("active",el.id === name)
+  );
+  document.querySelectorAll("nav button").forEach(el =>
+    el.classList.toggle("active",el.dataset.tab === name)
+  );
+}
+
+document.querySelectorAll("nav button").forEach(button => {
+  button.addEventListener("click",() => switchTab(button.dataset.tab));
+});
+
+function renderConversations() {
+  const select = $("conversationSelect");
+  const previous = currentConversation;
+  const choices = [["local","Local notes"]];
+
+  contacts.forEach(c => choices.push(["contact:"+c.id,c.name]));
+  groups.forEach(g => choices.push(["group:"+g.id,g.name]));
+
+  select.innerHTML = "";
+  choices.forEach(([id,name]) => {
+    const option = document.createElement("option");
+    option.value = id;
+    option.textContent = name;
+    select.appendChild(option);
+  });
+
+  if (choices.some(c => c[0] === previous)) select.value = previous;
+  currentConversation = select.value || "local";
+}
+
+function renderMessages() {
+  const selected = messages
+    .filter(m => m.conversation === currentConversation)
+    .sort((a,b) => a.time-b.time);
+
+  $("messages").innerHTML = selected.map(m => `
+    <div class="msg ${m.mine ? "mine" : ""}">
+      <strong>${escapeHTML(m.sender || "Unknown")}</strong><br>
+      ${escapeHTML(m.text)}
+      <small>${new Date(m.time).toLocaleString()} · ${escapeHTML(m.status || "saved locally")}</small>
+    </div>
+  `).join("") || '<p class="muted">No messages in this conversation.</p>';
+
+  $("messages").scrollTop = $("messages").scrollHeight;
+}
+
+function renderContacts() {
+  $("contactList").innerHTML = contacts.map(c => `
+    <div class="item">
+      <strong>👤 ${escapeHTML(c.name)}</strong>
+      <div class="muted">${escapeHTML(c.contactId || c.id)}</div>
+      <button class="action secondary" data-open-contact="${escapeHTML(c.id)}">Open chat</button>
+      <button class="action danger" data-delete-contact="${escapeHTML(c.id)}">Delete</button>
+    </div>
+  `).join("") || '<p class="muted">No contacts yet.</p>';
+
+  $("contactList").querySelectorAll("[data-open-contact]").forEach(button => {
+    button.onclick = () => {
+      currentConversation = "contact:" + button.dataset.openContact;
+      renderConversations();
+      $("conversationSelect").value = currentConversation;
+      renderMessages();
+      switchTab("chats");
+    };
+  });
+
+  $("contactList").querySelectorAll("[data-delete-contact]").forEach(button => {
+    button.onclick = async () => {
+      const id = button.dataset.deleteContact;
+      if (!confirm("Delete this contact? Existing messages will remain.")) return;
+
+      await deleteRecord("contacts",id);
+
+      for (const group of groups) {
+        group.members = (group.members || []).filter(m => m.contactId !== id);
+        await put("groups",group);
+      }
+      await refresh();
+    };
+  });
+}
+
+function renderGroups() {
+  const previous = $("memberGroupSelect").value;
+
+  $("groupList").innerHTML = groups.map(g => {
+    const count = 1 + (g.members || []).length;
+    return `
+      <div class="item">
+        <strong>👥 ${escapeHTML(g.name)}</strong>
+        <p class="muted">${count} / ${g.limit} members, including creator</p>
+        <button class="action secondary" data-view-group="${escapeHTML(g.id)}">View members</button>
+        <button class="action secondary" data-open-group="${escapeHTML(g.id)}">Open group chat</button>
+        <button class="action secondary" data-export-invite="${escapeHTML(g.id)}">Invitation text</button>
+        <button class="action danger" data-delete-group="${escapeHTML(g.id)}">Delete group</button>
+      </div>
+    `;
+  }).join("") || '<p class="muted">No groups created yet.</p>';
+
+  $("groupList").querySelectorAll("[data-view-group]").forEach(button => {
+    button.onclick = () => {
+      $("memberGroupSelect").value = button.dataset.viewGroup;
+      renderGroupMembers();
+      $("memberManager").scrollIntoView({behavior:"smooth",block:"start"});
+    };
+  });
+
+  $("groupList").querySelectorAll("[data-open-group]").forEach(button => {
+    button.onclick = () => {
+      currentConversation = "group:" + button.dataset.openGroup;
+      renderConversations();
+      $("conversationSelect").value = currentConversation;
+      renderMessages();
+      switchTab("chats");
+    };
+  });
+
+  $("groupList").querySelectorAll("[data-export-invite]").forEach(button => {
+    button.onclick = () => {
+      const g = groups.find(x => x.id === button.dataset.exportInvite);
+      $("signalOutput").value = JSON.stringify({
+        type:"swayam-group-invitation",
+        version:1,
+        groupId:g.id,
+        name:g.name,
+        limit:g.limit,
+        note:"Informational invitation only; not proof of membership."
+      });
+      switchTab("connect");
+    };
+  });
+
+  $("groupList").querySelectorAll("[data-delete-group]").forEach(button => {
+    button.onclick = async () => {
+      if (!confirm("Delete this group and its local membership list?")) return;
+      await deleteRecord("groups",button.dataset.deleteGroup);
+      await refresh();
+    };
+  });
+
+  $("memberGroupSelect").innerHTML =
+    '<option value="">Select a group</option>' +
+    groups.map(g => `<option value="${escapeHTML(g.id)}">${escapeHTML(g.name)}</option>`).join("");
+
+  if (groups.some(g => g.id === previous)) {
+    $("memberGroupSelect").value = previous;
+  } else if (groups.length) {
+    $("memberGroupSelect").value = groups[0].id;
+  }
+
+  $("memberContactSelect").innerHTML =
+    '<option value="">Select a contact</option>' +
+    contacts.map(c => `<option value="${escapeHTML(c.id)}">${escapeHTML(c.name)}</option>`).join("");
+
+  renderGroupMembers();
+}
+
+function renderGroupMembers() {
+  const groupId = $("memberGroupSelect").value;
+  const group = groups.find(g => g.id === groupId);
+  const list = $("memberList");
+  const summary = $("memberSummary");
+  const contactSelect = $("memberContactSelect");
+  const addButton = $("addGroupMember");
+
+  if (!group) {
+    summary.textContent = "0 members";
+    list.innerHTML = '<p class="muted">Select a group to see its members.</p>';
+    addButton.disabled = true;
+    return;
+  }
+
+  if (!Array.isArray(group.members)) group.members = [];
+
+  const members = [
+    {id:"__owner__",name:settings.displayName || "Me",owner:true},
+    ...group.members.map(member => {
+      const contact = contacts.find(c => c.id === member.contactId);
+      return {
+        id:member.contactId,
+        name:contact ? contact.name : (member.name || "Unknown member"),
+        owner:false
+      };
+    })
+  ];
+
+  summary.textContent = `${members.length} / ${group.limit} members`;
+
+  list.innerHTML = members.map(member => `
+    <div class="item">
+      <strong>${member.owner ? "👑 " : "👤 "}${escapeHTML(member.name)}</strong>
+      <div class="muted">${member.owner ? "Group creator (this device)" : "Local group member"}</div>
+      ${member.owner ? "" : `
+        <button class="action danger" data-remove-member="${escapeHTML(member.id)}">Remove member</button>
+      `}
+    </div>
+  `).join("");
+
+  list.querySelectorAll("[data-remove-member]").forEach(button => {
+    button.onclick = async () => {
+      if (!confirm("Remove this contact from this local group?")) return;
+      group.members = group.members.filter(m => m.contactId !== button.dataset.removeMember);
+      await put("groups",group);
+      await refresh();
+    };
+  });
+
+  const memberIds = new Set(group.members.map(m => m.contactId));
+  [...contactSelect.options].forEach(option => {
+    if (option.value) option.disabled = memberIds.has(option.value);
+  });
+
+  addButton.disabled = members.length >= group.limit || contacts.length === 0;
+}
+
+$("memberGroupSelect").addEventListener("change",renderGroupMembers);
+
+$("addGroupMember").onclick = async () => {
+  const group = groups.find(g => g.id === $("memberGroupSelect").value);
+  const contactId = $("memberContactSelect").value;
+
+  if (!group) return alert("Please select a group.");
+  if (!contactId) return alert("Please select a contact.");
+
+  if (!Array.isArray(group.members)) group.members = [];
+
+  if (group.members.some(m => m.contactId === contactId)) {
+    return alert("This contact is already in the group.");
+  }
+
+  if (group.members.length + 1 >= group.limit) {
+    return alert("The group has reached its member limit.");
+  }
+
+  const contact = contacts.find(c => c.id === contactId);
+  if (!contact) return alert("Contact not found.");
+
+  group.members.push({
+    contactId:contact.id,
+    name:contact.name,
+    addedAt:Date.now()
+  });
+
+  await put("groups",group);
+  $("memberContactSelect").value = "";
+  await refresh();
+  alert("Member added to the local group list.");
+};
+
+$("conversationSelect").onchange = () => {
+  currentConversation = $("conversationSelect").value;
+  renderMessages();
+};
+
+async function saveMessage(text,conversation,options={}) {
+  const record = {
+    id:options.id || uuid(),
+    conversation,
+    text,
+    sender:options.sender || settings.displayName,
+    mine:options.mine !== false,
+    time:options.time || Date.now(),
+    status:options.status || "saved locally"
+  };
+  await put("messages",record);
+  await refresh();
+  return record;
+}
+
+$("sendBtn").onclick = async () => {
+  const text = $("messageInput").value.trim();
+  if (!text) return;
+
+  const record = await saveMessage(text,currentConversation);
+  $("messageInput").value = "";
+
+  const envelope = {
+    type:"message",
+    id:record.id,
+    conversation:record.conversation,
+    text:record.text,
+    sender:record.sender,
+    time:record.time
+  };
+
+  let sent = 0;
+  for (const peer of peers.values()) {
+    if (peer.channel && peer.channel.readyState === "open") {
+      try {
+        peer.channel.send(JSON.stringify(envelope));
+        sent++;
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+  }
+
+  if (!sent) {
+    await put("pending",{
+      id:record.id,
+      conversation:record.conversation,
+      text:record.text,
+      time:record.time,
+      status:"pending"
+    });
+    const stored = messages.find(m => m.id === record.id);
+    if (stored) {
+      stored.status = "pending locally";
+      await put("messages",stored);
+    }
+    $("deliveryStatus").textContent =
+      "Saved locally; no connected device received it.";
+  } else {
+    $("deliveryStatus").textContent =
+      `Sent to ${sent} connected device(s); awaiting acknowledgements.`;
+  }
+  await refresh();
+};
+
+$("retryBtn").onclick = async () => {
+  for (const item of [...pending]) {
+    let sent = false;
+    for (const peer of peers.values()) {
+      if (peer.channel && peer.channel.readyState === "open") {
+        try {
+          peer.channel.send(JSON.stringify({
+            type:"message",
+            id:item.id,
+            conversation:item.conversation,
+            text:item.text,
+            sender:settings.displayName,
+            time:item.time
+          }));
+          sent = true;
+        } catch {}
+      }
+    }
+    // Retain pending items until an acknowledgement arrives.
+    if (sent) item.status = "sent; awaiting acknowledgement";
+  }
+  await refresh();
+};
+
+$("addContact").onclick = async () => {
+  const name = $("contactName").value.trim();
+  if (!name) return alert("Enter a contact name.");
+
+  await put("contacts",{
+    id:uuid(),
+    name,
+    contactId:$("contactId").value.trim()
+  });
+
+  $("contactName").value = "";
+  $("contactId").value = "";
+  await refresh();
+};
+
+$("createGroup").onclick = async () => {
+  const name = $("groupName").value.trim();
+  const limit = Number($("groupLimit").value);
+
+  if (!name) return alert("Enter a group name.");
+  if (!Number.isInteger(limit) || limit < 2 || limit > 50) {
+    return alert("Choose a limit between 2 and 50.");
+  }
+
+  const group = {
+    id:uuid(),
+    name,
+    limit,
+    created:Date.now(),
+    members:[]
+  };
+
+  await put("groups",group);
+  $("groupName").value = "";
+  await refresh();
+  $("memberGroupSelect").value = group.id;
+  renderGroupMembers();
+  alert("Group created. You are the creator.");
+};
+
+/* WebRTC connection setup: no STUN/TURN servers configured. */
+function createPeerConnection(name) {
+  const pc = new RTCPeerConnection({iceServers:[]});
+  const id = uuid();
+  const peer = {id,name:name || "Peer",pc,channel:null};
+
+  pc.ondatachannel = event => attachChannel(peer,event.channel);
+  pc.onconnectionstatechange = renderPeers;
+
+  peers.set(id,peer);
+  renderPeers();
+  return peer;
+}
+
+function attachChannel(peer,channel) {
+  peer.channel = channel;
+
+  channel.onopen = () => {
+    $("peerStatus").textContent = "Connected: " + peer.name;
+    renderPeers();
+  };
+  channel.onclose = renderPeers;
+
+  channel.onmessage = async event => {
+    try {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "message") {
+        const exists = messages.some(m => m.id === data.id);
+        if (!exists) {
+          await saveMessage(data.text,data.conversation,{
+            id:data.id,
+            sender:data.sender,
+            mine:false,
+            time:data.time,
+            status:"received"
+          });
+        }
+
+        channel.send(JSON.stringify({type:"ack",id:data.id}));
+      }
+
+      if (data.type === "ack") {
+        await deleteRecord("pending",data.id);
+        const original = messages.find(m => m.id === data.id);
+        if (original) {
+          original.status = "acknowledged by a connected peer";
+          await put("messages",original);
+        }
+        await refresh();
+      }
+    } catch(err) {
+      console.error("Could not process incoming message",err);
+    }
+  };
+  renderPeers();
+}
+
+function waitForICE(pc) {
+  return new Promise(resolve => {
+    if (pc.iceGatheringState === "complete") return resolve();
+    const timeout = setTimeout(resolve,12000);
+
+    function changed() {
+      if (pc.iceGatheringState === "complete") {
+        clearTimeout(timeout);
+        pc.removeEventListener("icegatheringstatechange",changed);
+        resolve();
+      }
+    }
+    pc.addEventListener("icegatheringstatechange",changed);
+  });
+}
+
+$("createOffer").onclick = async () => {
+  try {
+    const peer = createPeerConnection($("peerName").value.trim());
+    const channel = peer.pc.createDataChannel("swayam-chat");
+    attachChannel(peer,channel);
+
+    await peer.pc.setLocalDescription(await peer.pc.createOffer());
+    await waitForICE(peer.pc);
+
+    $("signalOutput").value = JSON.stringify({
+      type:"offer",
+      description:peer.pc.localDescription,
+      peerId:peer.id,
+      name:settings.displayName
+    });
+    $("peerStatus").textContent = "Offer created. Share it with the other device.";
+  } catch(err) {
+    alert("Could not create offer: " + err.message);
+  }
+};
+
+$("applyOffer").onclick = async () => {
+  try {
+    const data = JSON.parse($("signalInput").value);
+    if (data.type !== "offer" || !data.description) {
+      throw new Error("The pasted text is not a valid offer.");
+    }
+
+    const peer = createPeerConnection(
+      $("peerName").value.trim() || data.name || "Peer"
+    );
+
+    await peer.pc.setRemoteDescription(data.description);
+    await peer.pc.setLocalDescription(await peer.pc.createAnswer());
+    await waitForICE(peer.pc);
+
+    $("signalOutput").value = JSON.stringify({
+      type:"answer",
+      description:peer.pc.localDescription,
+      peerId:peer.id,
+      name:settings.displayName
+    });
+    $("peerStatus").textContent = "Answer created. Return it to the offer creator.";
+  } catch(err) {
+    alert("Could not create answer: " + err.message);
+  }
+};
+
+$("applyAnswer").onclick = async () => {
+  try {
+    const data = JSON.parse($("signalInput").value);
+    if (data.type !== "answer" || !data.description) {
+      throw new Error("The pasted text is not a valid answer.");
+    }
+
+    const peer = [...peers.values()].find(
+      p => p.pc.signalingState === "have-local-offer"
+    );
+    if (!peer) throw new Error("No outstanding offer exists on this device.");
+
+    await peer.pc.setRemoteDescription(data.description);
+    $("peerStatus").textContent = "Answer applied. Waiting for connection...";
+  } catch(err) {
+    alert("Could not apply answer: " + err.message);
+  }
+};
+
+$("copySignal").onclick = async () => {
+  const value = $("signalOutput").value;
+  if (!value) return alert("Create connection information first.");
+
+  try {
+    await navigator.clipboard.writeText(value);
+    alert("Copied. Share it with the other device.");
+  } catch {
+    $("signalOutput").focus();
+    $("signalOutput").select();
+    alert("Copy the selected text manually.");
+  }
+};
+
+$("makeQR").onclick = () => {
+  const value = $("signalOutput").value.trim();
+  if (!value) return alert("Create connection information first.");
+  if (value.length > 1800) return alert("The data is too large for this QR display. Copy the text instead.");
+
+  $("qrArea").innerHTML = "";
+
+  const warning = document.createElement("p");
+  warning.className = "muted";
+  warning.textContent =
+    "External QR image service: connection text is sent to that service. Avoid encoding confidential information.";
+  $("qrArea").appendChild(warning);
+
+  const img = document.createElement("img");
+  img.id = "qrImage";
+  img.alt = "Connection QR code";
+  img.src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
+    encodeURIComponent(value);
+  $("qrArea").appendChild(img);
+};
+
+function renderPeers() {
+  $("peerList").innerHTML = [...peers.entries()].map(([id,p]) => `
+    <div class="item">
+      <strong>${escapeHTML(p.name)}</strong>
+      <div class="muted">${escapeHTML(p.pc.connectionState)}</div>
+      <button class="action danger" data-disconnect="${escapeHTML(id)}">Disconnect</button>
+    </div>
+  `).join("") || '<p class="muted">No connected devices.</p>';
+
+  $("peerList").querySelectorAll("[data-disconnect]").forEach(button => {
+    button.onclick = () => {
+      const peer = peers.get(button.dataset.disconnect);
+      if (peer) peer.pc.close();
+      peers.delete(button.dataset.disconnect);
+      renderPeers();
+    };
+  });
+}
+
+function applyTheme(theme) {
+  const themes = {
+    forest:["#eef8ef","#fff","#147d4a","#193d2b","#688071","#d3e6d8"],
+    ocean:["#eaf6fc","#fff","#087eae","#163b50","#5c7e91","#d0e6ef"],
+    sunrise:["#fff4e9","#fff","#d56a2d","#5b321f","#96715b","#f0d9c7"],
+    lavender:["#f5effc","#fff","#7953ad","#38264d","#806d91","#e1d3f0"],
+    earth:["#f5f0e6","#fff","#7b6337","#40351e","#81765d","#e3dac7"],
+    mint:["#eafff5","#fff","#168768","#164b3b","#638b7d","#c9eddd"],
+    night:["#18251f","#24342c","#4bbd85","#f0fff5","#b4cbbd","#405448"],
+    rose:["#fff0f3","#fff","#c14b73","#51293a","#906b7a","#f1d4de"],
+    sand:["#faf5e9","#fff","#ad8443","#49391f","#897657","#e7dcc5"],
+    sky:["#edf5ff","#fff","#367bd0","#213a60","#7084a2","#d3e1f5"],
+    default:["#f2f5f3","#fff","#147d4a","#193d2b","#688071","#d3e6d8"]
+  };
+
+  const values = themes[theme] || themes.forest;
+  ["--bg","--card","--primary","--text","--muted","--border"].forEach((key,i) => {
+    document.documentElement.style.setProperty(key,values[i]);
+  });
+}
+
+$("saveSettings").onclick = async () => {
+  settings.displayName = $("displayName").value.trim() || "Me";
+  settings.theme = $("theme").value;
+  settings.sound = $("sound").checked;
+
+  await put("settings",{id:"main",...settings});
+  applyTheme(settings.theme);
+  await refresh();
+  alert("Settings saved.");
+};
+
+function renderPending() {
+  $("pendingList").innerHTML = pending.map(m => `
+    <div class="item">
+      ${escapeHTML(m.text)}
+      <div class="muted">Pending locally · ${new Date(m.time).toLocaleString()}</div>
+    </div>
+  `).join("") || '<p class="muted">No pending messages.</p>';
+}
+
+function renderStorage() {
+  $("storageStatus").textContent =
+    `${messages.length} messages · ${contacts.length} contacts · ${groups.length} groups · ${pending.length} pending`;
+}
+
+$("exportData").onclick = async () => {
+  const backup = {
+    app:"Swayam Chat",
+    version:1,
+    exportedAt:new Date().toISOString(),
+    messages,contacts,groups,pending,settings
+  };
+
+  const blob = new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "swayam-chat-backup.json";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url),1000);
+};
+
+$("importData").onclick = async () => {
+  const file = $("importFile").files[0];
+  if (!file) return alert("Choose a JSON backup file.");
+
+  try {
+    const data = JSON.parse(await file.text());
+    if (!data || data.app !== "Swayam Chat") throw new Error("Invalid Swayam Chat backup.");
+
+    for (const store of ["messages","contacts","groups","pending"]) {
+      if (Array.isArray(data[store])) {
+        for (const record of data[store]) {
+          if (record && typeof record.id === "string") await put(store,record);
+        }
+      }
+    }
+
+    if (data.settings && typeof data.settings === "object") {
+      settings = {...settings,...data.settings,id:"main"};
+      await put("settings",settings);
+      $("displayName").value = settings.displayName || "Me";
+      $("theme").value = settings.theme || "forest";
+      $("sound").checked = !!settings.sound;
+      applyTheme(settings.theme);
+    }
+
+    await refresh();
+    alert("Backup imported.");
+  } catch(err) {
+    alert("Import failed: " + err.message);
+  }
+};
+
+$("clearData").onclick = async () => {
+  if (!confirm("Delete all local app data? Export a backup first if needed.")) return;
+
+  for (const store of ["messages","contacts","groups","pending","settings"]) {
+    await clearStore(store);
+  }
+
+  messages = [];
+  contacts = [];
+  groups = [];
+  pending = [];
+  settings = {displayName:"Me",theme:"forest",sound:false};
+
+  $("displayName").value = settings.displayName;
+  $("theme").value = settings.theme;
+  $("sound").checked = false;
+  applyTheme(settings.theme);
+  await refresh();
+  alert("Local data cleared.");
+};
+
+async function init() {
+  if (!("indexedDB" in window)) {
+    alert("IndexedDB is not supported in this browser.");
+    return;
+  }
+
+  db = await openDB();
+  const stored = await getAll("settings");
+  const main = stored.find(s => s.id === "main");
+  if (main) settings = {...settings,...main};
+
+  $("displayName").value = settings.displayName;
+  $("theme").value = settings.theme;
+  $("sound").checked = !!settings.sound;
+  applyTheme(settings.theme);
+
+  await refresh();
+}
+
+init().catch(err => {
+  console.error(err);
+  alert("App initialization failed: " + err.message);
+});
+</script>
+</body>
+</html>
