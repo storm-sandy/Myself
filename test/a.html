@@ -3,1140 +3,1370 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#147d4a">
-<title>Swayam Chat</title>
+<meta name="theme-color" content="#167447">
+<title>Swayam Room Chat</title>
+
+<!-- QR generation library. The app itself uses no messaging database. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
-:root {
-  --bg:#eef8ef;
-  --card:#fff;
-  --primary:#147d4a;
-  --text:#193d2b;
-  --muted:#688071;
-  --border:#d3e6d8;
+:root{
+ --primary:#167447;
+ --primary2:#0c5733;
+ --bg:#edf6ef;
+ --card:#fff;
+ --text:#183729;
+ --muted:#718176;
+ --border:#dbe8dd;
+ --mine:#d9f5df;
+ --danger:#c0392b;
 }
-* { box-sizing:border-box; }
-body {
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:system-ui,-apple-system,Arial,sans-serif;
 }
-header {
-  background:var(--primary);
-  color:white;
-  padding:17px;
-  position:sticky;
-  top:0;
-  z-index:5;
+header{
+ background:var(--primary);color:white;
+ padding:17px 16px 14px;
+ position:sticky;top:0;z-index:5;
+ box-shadow:0 3px 12px #0002;
 }
-header h2 { margin:0 0 5px; }
-header small { opacity:.9; }
-nav {
-  display:flex;
-  overflow-x:auto;
-  background:var(--card);
-  border-bottom:1px solid var(--border);
-  position:sticky;
-  top:67px;
-  z-index:4;
+.header-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+header h1{font-size:20px;margin:0}
+header p{font-size:12px;margin:5px 0 0;opacity:.9}
+.status-pill{
+ background:#ffffff25;border:1px solid #ffffff55;
+ padding:6px 10px;border-radius:20px;font-size:12px;
 }
-nav button {
-  flex:1;
-  min-width:72px;
-  padding:13px 8px;
-  border:0;
-  background:transparent;
-  color:var(--text);
+nav{
+ display:flex;gap:5px;overflow-x:auto;
+ padding:8px;background:var(--card);
+ border-bottom:1px solid var(--border);
+ position:sticky;top:76px;z-index:4;
 }
-nav button.active {
-  color:var(--primary);
-  border-bottom:3px solid var(--primary);
-  font-weight:bold;
+nav button{
+ border:0;background:transparent;color:var(--muted);
+ padding:10px 12px;border-radius:9px;
+ font-weight:700;white-space:nowrap;cursor:pointer;
 }
-main { padding:14px; max-width:850px; margin:auto; }
-.tab { display:none; }
-.tab.active { display:block; }
-.card {
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:15px;
-  margin-bottom:14px;
+nav button.active{background:var(--primary);color:white}
+main{max-width:850px;margin:auto;padding:14px}
+.panel{display:none}
+.panel.active{display:block}
+.card{
+ background:var(--card);border:1px solid var(--border);
+ border-radius:15px;padding:15px;margin-bottom:13px;
+ box-shadow:0 3px 12px #12310808;
 }
-h3 { margin-top:0; }
-label {
-  display:block;
-  font-size:13px;
-  margin:12px 0 5px;
-  color:var(--muted);
+h2{font-size:18px;margin:0 0 12px}
+h3{font-size:15px;margin:13px 0 8px}
+p{line-height:1.45}
+.muted{color:var(--muted);font-size:13px}
+label{display:block;font-size:13px;font-weight:700;margin:11px 0 5px}
+input,textarea,select{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:var(--card);color:var(--text);
+ font:inherit;outline:none;
 }
-input,textarea,select {
-  width:100%;
-  padding:11px;
-  border:1px solid var(--border);
-  border-radius:9px;
-  background:var(--card);
-  color:var(--text);
-  font:inherit;
+textarea{min-height:110px;resize:vertical}
+button,.button{
+ font:inherit;cursor:pointer;border:0;border-radius:9px;
+ padding:10px 13px;background:var(--primary);color:white;
+ font-weight:650;
 }
-input[type=checkbox] { width:auto; }
-button.action {
-  border:0;
-  border-radius:9px;
-  background:var(--primary);
-  color:white;
-  padding:11px 14px;
-  margin:5px 3px 5px 0;
-  cursor:pointer;
+button.secondary{background:#e6f0e8;color:var(--primary2)}
+button.danger{background:var(--danger)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.row button{flex:0 0 auto}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.stat{
+ border:1px solid var(--border);border-radius:12px;
+ padding:13px;background:var(--card);
 }
-button.secondary {
-  background:#e3f2e7;
-  color:#175d38;
+.stat strong{font-size:22px;display:block}
+.stat span{font-size:12px;color:var(--muted)}
+#messages{
+ height:42vh;min-height:250px;overflow-y:auto;
+ display:flex;flex-direction:column;gap:9px;
+ padding:4px 2px 12px;
 }
-button.danger { background:#b72f3d; }
-button:disabled { opacity:.5; cursor:not-allowed; }
-.muted { color:var(--muted); font-size:13px; line-height:1.5; }
-.row { display:flex; gap:8px; align-items:center; }
-.item {
-  border:1px solid var(--border);
-  padding:11px;
-  border-radius:10px;
-  margin:7px 0;
-  overflow-wrap:anywhere;
+.msg{
+ max-width:88%;padding:10px 12px;border-radius:13px;
+ background:var(--bg);border:1px solid var(--border);
+ overflow-wrap:anywhere;
 }
-#messages {
-  height:300px;
-  overflow:auto;
-  background:var(--bg);
-  padding:10px;
-  border-radius:10px;
+.msg.mine{align-self:flex-end;background:var(--mine)}
+.msg .meta{font-size:11px;color:var(--muted);margin-bottom:4px}
+.msg .body{white-space:pre-wrap}
+.msg .time{font-size:10px;color:var(--muted);text-align:right;margin-top:5px}
+#compose{display:flex;gap:8px;margin-top:9px}
+#compose input{min-width:0}
+#compose button{white-space:nowrap}
+.member{
+ display:flex;align-items:center;gap:10px;
+ padding:10px 0;border-bottom:1px solid var(--border);
 }
-.msg {
-  max-width:92%;
-  padding:9px 11px;
-  border-radius:12px;
-  margin:7px 0;
-  background:var(--card);
-  border:1px solid var(--border);
-  overflow-wrap:anywhere;
+.avatar{
+ width:39px;height:39px;display:grid;place-items:center;
+ border-radius:50%;background:var(--bg);font-size:20px;flex-shrink:0;
 }
-.msg.mine { margin-left:auto; background:#d9f5df; }
-.msg small {
-  display:block;
-  color:var(--muted);
-  margin-top:5px;
-  font-size:11px;
+.member-info{flex:1;min-width:0}
+.member-info strong{display:block;overflow-wrap:anywhere}
+.member-info small{color:var(--muted)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.online{background:#21a35b}
+.offline{background:#aab5ad}
+#qr{display:flex;justify-content:center;margin:15px 0}
+#qr canvas,#qr img{max-width:100%;height:auto!important}
+.notice{
+ border-left:4px solid #d7a32a;background:#fff8e4;
+ color:#624d1d;padding:11px;border-radius:6px;
+ font-size:13px;margin:10px 0;
 }
-.badge {
-  display:inline-block;
-  border-radius:20px;
-  padding:5px 9px;
-  background:#e2f2e6;
-  color:#175d38;
-  font-size:12px;
-  margin:7px 0;
+.small{font-size:12px}
+footer{text-align:center;padding:20px;color:var(--muted);font-size:12px}
+hr{border:0;border-top:1px solid var(--border);margin:15px 0}
+.theme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.theme-grid button{padding:12px;text-align:left}
+.theme-grid button.selected{outline:3px solid var(--text)}
+@media(max-width:430px){
+ main{padding:9px}
+ .card{padding:12px}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ nav{top:76px}
 }
-#qrImage { max-width:100%; height:auto; display:block; margin:10px auto; }
-footer { padding:20px; text-align:center; font-size:12px; color:var(--muted); }
-hr { border:0; border-top:1px solid var(--border); margin:15px 0; }
 </style>
 </head>
 <body>
 
 <header>
-  <h2>🌿 Swayam Chat</h2>
-  <small>Local-first messaging · Groups up to 50 members</small>
+ <div class="header-row">
+  <div>
+   <h1>🌿 Swayam Room Chat</h1>
+   <p>Direct messaging · Local storage · Room invitations</p>
+  </div>
+  <div class="status-pill" id="globalStatus">Starting…</div>
+ </div>
 </header>
 
-<nav>
-  <button class="active" data-tab="chats">Chats</button>
-  <button data-tab="contacts">Contacts</button>
-  <button data-tab="groups">Groups</button>
-  <button data-tab="connect">Connect</button>
-  <button data-tab="settings">Settings</button>
-  <button data-tab="data">Data</button>
+<nav id="navigation">
+ <button class="active" data-tab="chat">💬 Chat</button>
+ <button data-tab="rooms">🏠 Rooms</button>
+ <button data-tab="connect">🔗 Connect</button>
+ <button data-tab="members">👥 Members</button>
+ <button data-tab="data">💾 Data</button>
+ <button data-tab="settings">⚙️ Settings</button>
 </nav>
 
 <main>
-<section class="tab active" id="chats">
-  <div class="card">
-    <h3>💬 Messages</h3>
-    <label>Conversation</label>
-    <select id="conversationSelect"></select>
-    <div id="messages"></div>
-    <label>Write a message</label>
-    <textarea id="messageInput" rows="3" placeholder="Type a message..."></textarea>
-    <button class="action" id="sendBtn">Send message</button>
-    <button class="action secondary" id="retryBtn">Retry pending</button>
-    <p class="muted" id="deliveryStatus">Messages are stored locally.</p>
+
+<section class="panel active" id="chat">
+ <div class="card">
+  <h2 id="chatRoomTitle">Chat</h2>
+  <div class="row">
+   <div class="stat"><strong id="messageCount">0</strong><span>Saved messages</span></div>
+   <div class="stat"><strong id="peerCount">0</strong><span>Connected peers</span></div>
+   <div class="stat"><strong id="roomCount">0</strong><span>Room members</span></div>
   </div>
-  <div class="card">
-    <h3>📬 Pending messages</h3>
-    <div id="pendingList"></div>
+ </div>
+
+ <div class="card">
+  <div id="messages">
+   <p class="muted">Your messages will appear here.</p>
   </div>
+  <div id="compose">
+   <input id="messageInput" placeholder="Type a message…" maxlength="5000">
+   <button id="sendButton">Send ➤</button>
+  </div>
+  <p class="muted">Messages are saved locally. Group messages go to currently connected peers.</p>
+ </div>
 </section>
 
-<section class="tab" id="contacts">
-  <div class="card">
-    <h3>👤 Add contact</h3>
-    <label>Display name</label>
-    <input id="contactName" placeholder="Friend's name">
-    <label>Contact ID (optional)</label>
-    <input id="contactId" placeholder="Phone number or other label">
-    <button class="action" id="addContact">Save contact</button>
+<section class="panel" id="rooms">
+ <div class="card">
+  <h2>🏠 Room Management</h2>
+  <label>Your display name</label>
+  <input id="displayName" maxlength="40" placeholder="Your name">
+  <label>Room name</label>
+  <input id="roomName" maxlength="60" placeholder="Family Room">
+  <div class="row" style="margin-top:12px">
+   <button id="createRoom">Create Room</button>
+   <button id="saveRoom" class="secondary">Save Changes</button>
   </div>
-  <div class="card">
-    <h3>Contacts</h3>
-    <div id="contactList"></div>
+  <hr>
+  <h3>Current Room</h3>
+  <p><strong id="currentRoomName">My Room</strong></p>
+  <p class="muted">Room ID: <span id="currentRoomId"></span></p>
+  <div class="row">
+   <button id="makeQR">Show Room QR</button>
+   <button id="shareRoom" class="secondary">Share Invitation</button>
   </div>
+  <div id="qr"></div>
+  <textarea id="roomInvite" readonly placeholder="Your room invitation will appear here"></textarea>
+  <button id="copyInvite" class="secondary">Copy Invitation</button>
+ </div>
+
+ <div class="card">
+  <h2>Join a Room</h2>
+  <label>Room invitation or room ID</label>
+  <textarea id="joinRoomText" placeholder="Paste an invitation or enter a room ID"></textarea>
+  <button id="joinRoom">Join Room</button>
+  <p class="muted">Joining a room changes your local room selection. It does not connect you to other members automatically.</p>
+ </div>
+
+ <div class="card">
+  <h2>Registered Room Members</h2>
+  <p class="muted">This is a local member list, not a globally synchronized directory.</p>
+  <div id="roomMembers"></div>
+ </div>
 </section>
 
-<section class="tab" id="groups">
-  <div class="card">
-    <h3>👥 Create group</h3>
-    <label>Group name</label>
-    <input id="groupName" placeholder="Family, Friends, Team...">
-    <label>Maximum members, including creator</label>
-    <select id="groupLimit">
-      <option value="5">5 members</option>
-      <option value="10">10 members</option>
-      <option value="20">20 members</option>
-      <option value="50" selected>50 members</option>
-    </select>
-    <button class="action" id="createGroup">Create group</button>
+<section class="panel" id="connect">
+ <div class="card">
+  <h2>🔗 Direct WebRTC Connection</h2>
+  <p class="muted">
+   Connect two devices by exchanging an offer and answer. Send the generated
+   codes using a separate method, such as a messaging app or a QR code.
+  </p>
+  <div class="notice">
+   Both users must exchange connection information. A room code alone does
+   not establish a WebRTC connection. This demo has no signaling server.
   </div>
 
-  <div class="card">
-    <h3>📋 Your groups</h3>
-    <div id="groupList"></div>
+  <label>Connection label</label>
+  <input id="peerLabel" placeholder="Friend's name">
+
+  <div class="row" style="margin-top:12px">
+   <button id="createOffer">1. Create Offer</button>
+   <button id="createAnswer" class="secondary">2. Create Answer</button>
   </div>
 
-  <div class="card" id="memberManager">
-    <h3>👤 Group members</h3>
-    <p class="muted">Select a group to view or manage its members.</p>
-    <label>Choose group</label>
-    <select id="memberGroupSelect">
-      <option value="">Select a group</option>
-    </select>
-    <div id="memberSummary" class="badge">0 members</div>
-    <div id="memberList"></div>
-    <hr>
-    <label>Add contact to group</label>
-    <select id="memberContactSelect">
-      <option value="">Select a contact</option>
-    </select>
-    <button class="action" id="addGroupMember">Add member</button>
-    <p class="muted">
-      Adding a member updates this device's group list only.
-      It does not automatically add them on other devices.
-    </p>
+  <label>Generated offer / answer</label>
+  <textarea id="localCode" placeholder="Your generated connection code appears here"></textarea>
+  <div class="row">
+   <button id="copyLocal" class="secondary">Copy Code</button>
+   <button id="shareLocal" class="secondary">Share Code</button>
   </div>
+
+  <label>Paste the other person's offer / answer</label>
+  <textarea id="remoteCode" placeholder="Paste the code received from the other person"></textarea>
+  <div class="row">
+   <button id="applyRemote">Apply Remote Code</button>
+   <button id="clearRemote" class="secondary">Clear</button>
+  </div>
+
+  <hr>
+  <h3>Connection Log</h3>
+  <div id="connectionLog" class="muted">Ready for a connection.</div>
+ </div>
+
+ <div class="card">
+  <h2>Connection Instructions</h2>
+  <ol class="small">
+   <li>Device A selects <b>Create Offer</b>.</li>
+   <li>Device A sends its generated code to device B.</li>
+   <li>Device B pastes that code and selects <b>Create Answer</b>.</li>
+   <li>Device B sends its answer code to device A.</li>
+   <li>Device A pastes the answer and selects <b>Apply Remote Code</b>.</li>
+   <li>Wait for the connection to become connected.</li>
+  </ol>
+  <p class="muted">
+   If you receive an offer, use Create Answer. If you receive an answer
+   to your offer, use Apply Remote Code. Both devices need a working network.
+  </p>
+ </div>
+
+ <div class="card">
+  <h2>Connected Devices</h2>
+  <div id="connectionMembers"></div>
+ </div>
 </section>
 
-<section class="tab" id="connect">
-  <div class="card">
-    <h3>🔗 Connect devices</h3>
-    <p class="muted">
-      Exchange WebRTC offer and answer text between devices.
-      Without a signaling server, you must transfer the text manually.
-    </p>
-    <label>Peer display name</label>
-    <input id="peerName" placeholder="Friend or device name">
-    <button class="action" id="createOffer">Create offer</button>
-    <label>Paste an offer or answer</label>
-    <textarea id="signalInput" rows="5" placeholder="Paste connection information"></textarea>
-    <button class="action" id="applyOffer">Create answer from offer</button>
-    <button class="action secondary" id="applyAnswer">Apply answer</button>
-    <label>Connection information to share</label>
-    <textarea id="signalOutput" rows="5" readonly></textarea>
-    <button class="action secondary" id="copySignal">Copy text</button>
-    <button class="action secondary" id="makeQR">Show QR code</button>
-    <div id="qrArea"></div>
-    <p id="peerStatus" class="badge">Not connected</p>
+<section class="panel" id="members">
+ <div class="card">
+  <h2>👥 Room Members</h2>
+  <div class="grid">
+   <div class="stat"><strong id="memberTotal">0</strong><span>Registered members</span></div>
+   <div class="stat"><strong>50</strong><span>Maximum list size</span></div>
   </div>
-  <div class="card">
-    <h3>Connected devices</h3>
-    <div id="peerList"></div>
-  </div>
+  <div id="memberList"></div>
+  <p class="muted">
+   The member list is local to this browser. Member information is not
+   automatically shared with every device.
+  </p>
+ </div>
 </section>
 
-<section class="tab" id="settings">
-  <div class="card">
-    <h3>⚙️ Settings</h3>
-    <label>Your display name</label>
-    <input id="displayName" placeholder="Your name">
-    <label>Nature theme</label>
-    <select id="theme">
-      <option value="forest">Forest</option>
-      <option value="ocean">Ocean</option>
-      <option value="sunrise">Sunrise</option>
-      <option value="lavender">Lavender</option>
-      <option value="earth">Earth</option>
-      <option value="mint">Mint</option>
-      <option value="night">Night</option>
-      <option value="rose">Rose</option>
-      <option value="sand">Sand</option>
-      <option value="sky">Sky</option>
-      <option value="default">Default</option>
-    </select>
-    <label><input id="sound" type="checkbox"> Enable message sound</label>
-    <button class="action" id="saveSettings">Save settings</button>
+<section class="panel" id="data">
+ <div class="card">
+  <h2>💾 Data Management</h2>
+  <p class="muted">Export messages, rooms, and local contacts as a JSON backup.</p>
+  <div class="row">
+   <button id="exportData">Export JSON Backup</button>
+   <button id="exportCSV" class="secondary">Export Messages CSV</button>
   </div>
-  <div class="card">
-    <h3>📡 Delivery information</h3>
-    <p class="muted">
-      Pending messages are kept in this browser's IndexedDB.
-      This prototype cannot guarantee delivery to offline recipients.
-      A persistent relay server is required for reliable offline delivery.
-    </p>
-  </div>
+  <label>Restore JSON backup</label>
+  <input type="file" id="importFile" accept=".json,application/json">
+  <button id="importData" style="margin-top:10px">Import Backup</button>
+  <hr>
+  <h3>Local Data</h3>
+  <p id="storageInfo" class="muted">Checking storage…</p>
+  <button id="clearMessages" class="secondary">Clear Messages</button>
+  <button id="clearAll" class="danger">Reset App Data</button>
+  <p class="muted">Resetting data cannot be undone. Export a backup first.</p>
+ </div>
 </section>
 
-<section class="tab" id="data">
-  <div class="card">
-    <h3>💾 Data management</h3>
-    <button class="action" id="exportData">Export JSON backup</button>
-    <label>Import JSON backup</label>
-    <input id="importFile" type="file" accept=".json,application/json">
-    <button class="action" id="importData">Import backup</button>
-    <button class="action danger" id="clearData">Clear local data</button>
-  </div>
-  <div class="card">
-    <h3>Storage status</h3>
-    <div id="storageStatus"></div>
-  </div>
+<section class="panel" id="settings">
+ <div class="card">
+  <h2>⚙️ Settings</h2>
+  <label>Display name</label>
+  <input id="settingsName" maxlength="40">
+  <button id="saveSettings" style="margin-top:10px">Save Name</button>
+  <hr>
+  <h3>🌿 Nature Themes</h3>
+  <div class="theme-grid" id="themeGrid"></div>
+  <hr>
+  <label>
+   <input type="checkbox" id="soundEnabled" style="width:auto">
+   Enable message notification sound
+  </label>
+  <label>
+   <input type="checkbox" id="showTimestamps" style="width:auto" checked>
+   Show message timestamps
+  </label>
+  <p class="muted">Theme and display preferences are stored locally.</p>
+ </div>
+ <div class="card">
+  <h2>🔒 Privacy and Limitations</h2>
+  <ul class="small">
+   <li>Chat history is stored in this browser's IndexedDB.</li>
+   <li>WebRTC messages travel directly between connected devices.</li>
+   <li>Room invitations do not provide authentication or encryption keys for a room.</li>
+   <li>WebRTC encrypts its connection, but this demo does not add application-level end-to-end identity verification.</li>
+   <li>Offline messages are not delivered automatically.</li>
+   <li>There is no central account or globally synchronized room list.</li>
+   <li>For a larger mesh, bandwidth and device limitations can be significant.</li>
+  </ul>
+ </div>
 </section>
+
+<footer>Swayam Room Chat · Local-first WebRTC demo</footer>
 </main>
-
-<footer>
-  Swayam Chat · Testing prototype · Not for emergency communications
-</footer>
 
 <script>
 "use strict";
 
-const DB_NAME = "SwayamChat50";
-const DB_VERSION = 1;
-
-let db;
-let currentConversation = "local";
-let peers = new Map();
-let pending = [];
-let contacts = [];
-let groups = [];
-let messages = [];
-let settings = {displayName:"Me",theme:"forest",sound:false};
+/* ===================== APP STATE ===================== */
 
 const $ = id => document.getElementById(id);
+const DB_NAME = "SwayamRoomChatDB";
+const DB_VERSION = 1;
 
-function uuid() {
-  return crypto.randomUUID
-    ? crypto.randomUUID()
-    : Date.now().toString(36) + Math.random().toString(36).slice(2);
+let db = null;
+let currentRoom = null;
+let rooms = [];
+let members = [];
+let messages = [];
+let peers = {};
+let pendingOfferPeer = null;
+
+let settings = {
+ name: "User",
+ theme: "Forest",
+ sound: false,
+ timestamps: true
+};
+
+const themes = {
+ Forest:  {primary:"#167447",primary2:"#0c5733",bg:"#edf6ef",card:"#ffffff",text:"#183729",muted:"#718176",border:"#dbe8dd",mine:"#d9f5df"},
+ Ocean:   {primary:"#087e9c",primary2:"#07536b",bg:"#eaf6fa",card:"#ffffff",text:"#143947",muted:"#6c8791",border:"#d4e8ee",mine:"#d2f0fa"},
+ Sunset:  {primary:"#c65d37",primary2:"#88381e",bg:"#fff1e8",card:"#ffffff",text:"#4b2a20",muted:"#94766b",border:"#f0d9cc",mine:"#ffe0cb"},
+ Lavender:{primary:"#7961ae",primary2:"#4e3d7e",bg:"#f2effb",card:"#ffffff",text:"#332a4b",muted:"#837b9a",border:"#e1daf1",mine:"#e8ddff"},
+ Desert:  {primary:"#a77a34",primary2:"#76521e",bg:"#faf3e5",card:"#fffdf8",text:"#49381e",muted:"#928267",border:"#eadeca",mine:"#f5e6c4"},
+ Sakura:  {primary:"#c44c83",primary2:"#87315a",bg:"#fff0f6",card:"#ffffff",text:"#492438",muted:"#98768a",border:"#f0d7e3",mine:"#ffdfed"},
+ Mint:    {primary:"#318779",primary2:"#205b52",bg:"#e8f8f3",card:"#ffffff",text:"#20443c",muted:"#718e85",border:"#d0ebe1",mine:"#d0f2e5"},
+ Night:   {primary:"#465a7e",primary2:"#263652",bg:"#e9edf5",card:"#ffffff",text:"#202c43",muted:"#71809b",border:"#d6deed",mine:"#dce5fa"},
+ Autumn:  {primary:"#98502d",primary2:"#63351e",bg:"#f9efe4",card:"#fffaf4",text:"#432c20",muted:"#947b69",border:"#ead8c6",mine:"#f4dec8"},
+ Meadow:  {primary:"#698a32",primary2:"#405a1c",bg:"#f1f6e7",card:"#ffffff",text:"#344224",muted:"#7f8b6e",border:"#e0e8d1",mine:"#e2f0c9"}
+};
+
+function uid(prefix="id") {
+ return prefix + "_" + crypto.randomUUID();
+}
+function now(){return new Date().toISOString()}
+function shortTime(value){
+ try{return new Date(value).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}
+ catch(e){return ""}
+}
+function escapeHTML(value){
+ return String(value ?? "").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+function activePeers(){
+ return Object.values(peers).filter(p=>p.dc && p.dc.readyState==="open");
+}
+function currentMembers(){
+ return members.filter(m=>m.roomId===currentRoom?.id);
 }
 
-function openDB() {
-  return new Promise((resolve,reject) => {
-    const request = indexedDB.open(DB_NAME,DB_VERSION);
-    request.onupgradeneeded = () => {
-      const database = request.result;
-      ["messages","contacts","groups","pending","settings"].forEach(store => {
-        if (!database.objectStoreNames.contains(store)) {
-          database.createObjectStore(store,{keyPath:"id"});
-        }
-      });
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
+/* ===================== INDEXEDDB ===================== */
 
-function put(store,record) {
-  return new Promise((resolve,reject) => {
-    const tx = db.transaction(store,"readwrite");
-    tx.objectStore(store).put(record);
-    tx.oncomplete = () => resolve(record);
-    tx.onerror = () => reject(tx.error);
-    tx.onabort = () => reject(tx.error);
-  });
-}
+function openDatabase(){
+ return new Promise((resolve,reject)=>{
+  const request = indexedDB.open(DB_NAME,DB_VERSION);
 
-function getAll(store) {
-  return new Promise((resolve,reject) => {
-    const req = db.transaction(store).objectStore(store).getAll();
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
-}
-
-function clearStore(store) {
-  return new Promise((resolve,reject) => {
-    const tx = db.transaction(store,"readwrite");
-    tx.objectStore(store).clear();
-    tx.oncomplete = resolve;
-    tx.onerror = () => reject(tx.error);
-  });
-}
-
-function deleteRecord(store,id) {
-  return new Promise((resolve,reject) => {
-    const tx = db.transaction(store,"readwrite");
-    tx.objectStore(store).delete(id);
-    tx.oncomplete = resolve;
-    tx.onerror = () => reject(tx.error);
-  });
-}
-
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g,c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  })[c]);
-}
-
-async function refresh() {
-  [messages,contacts,groups,pending] = await Promise.all([
-    getAll("messages"),getAll("contacts"),getAll("groups"),getAll("pending")
-  ]);
-
-  // Migrate older group records to the current format.
-  for (const group of groups) {
-    if (!Array.isArray(group.members)) {
-      group.members = [];
-      await put("groups",group);
+  request.onupgradeneeded = ()=>{
+   const database=request.result;
+   ["rooms","members","messages","settings"].forEach(name=>{
+    if(!database.objectStoreNames.contains(name)){
+     database.createObjectStore(name,{keyPath:"id"});
     }
-    if (!Number.isInteger(group.limit)) group.limit = 50;
-  }
+   });
+  };
 
-  renderConversations();
-  renderMessages();
-  renderContacts();
-  renderGroups();
-  renderPending();
-  renderPeers();
-  renderStorage();
+  request.onsuccess=()=>resolve(request.result);
+  request.onerror=()=>reject(request.error);
+ });
 }
 
-function switchTab(name) {
-  document.querySelectorAll(".tab").forEach(el =>
-    el.classList.toggle("active",el.id === name)
-  );
-  document.querySelectorAll("nav button").forEach(el =>
-    el.classList.toggle("active",el.dataset.tab === name)
-  );
+function storeRecord(storeName,record){
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(storeName,"readwrite");
+  tx.objectStore(storeName).put(record);
+  tx.oncomplete=()=>resolve(true);
+  tx.onerror=()=>reject(tx.error);
+ });
 }
 
-document.querySelectorAll("nav button").forEach(button => {
-  button.addEventListener("click",() => switchTab(button.dataset.tab));
+function readAll(storeName){
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(storeName,"readonly");
+  const req=tx.objectStore(storeName).getAll();
+  req.onsuccess=()=>resolve(req.result||[]);
+  req.onerror=()=>reject(req.error);
+ });
+}
+
+function removeRecord(storeName,id){
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(storeName,"readwrite");
+  tx.objectStore(storeName).delete(id);
+  tx.oncomplete=()=>resolve(true);
+  tx.onerror=()=>reject(tx.error);
+ });
+}
+
+function clearStore(storeName){
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(storeName,"readwrite");
+  tx.objectStore(storeName).clear();
+  tx.oncomplete=()=>resolve(true);
+  tx.onerror=()=>reject(tx.error);
+ });
+}
+
+async function loadApp(){
+ db=await openDatabase();
+
+ rooms=await readAll("rooms");
+ members=await readAll("members");
+ messages=await readAll("messages");
+
+ const savedSettings=await readAll("settings");
+ const saved=savedSettings.find(x=>x.id==="main");
+ if(saved) settings={...settings,...saved.value};
+
+ if(!rooms.length){
+  currentRoom={
+   id:uid("room"),
+   name:"My Room",
+   ownerId:"local",
+   createdAt:now()
+  };
+  rooms.push(currentRoom);
+  await storeRecord("rooms",currentRoom);
+ }else{
+  currentRoom=rooms[0];
+ }
+
+ if(!members.some(m=>m.id==="local")){
+  members.push({
+   id:"local",
+   name:settings.name,
+   roomId:currentRoom.id,
+   local:true,
+   createdAt:now()
+  });
+  await storeRecord("members",members[members.length-1]);
+ }
+
+ // Keep the local user registered in the selected room.
+ let local=members.find(m=>m.id==="local");
+ local.roomId=currentRoom.id;
+ local.name=settings.name;
+ await storeRecord("members",local);
+
+ $("displayName").value=settings.name;
+ $("settingsName").value=settings.name;
+ $("roomName").value=currentRoom.name;
+ $("soundEnabled").checked=!!settings.sound;
+ $("showTimestamps").checked=settings.timestamps!==false;
+
+ renderAll();
+ buildThemes();
+ applyTheme(settings.theme);
+ log("Local database opened successfully.");
+}
+
+/* ===================== TABS ===================== */
+
+document.querySelectorAll("nav button").forEach(button=>{
+ button.addEventListener("click",()=>{
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  button.classList.add("active");
+  $(button.dataset.tab).classList.add("active");
+ });
 });
 
-function renderConversations() {
-  const select = $("conversationSelect");
-  const previous = currentConversation;
-  const choices = [["local","Local notes"]];
-
-  contacts.forEach(c => choices.push(["contact:"+c.id,c.name]));
-  groups.forEach(g => choices.push(["group:"+g.id,g.name]));
-
-  select.innerHTML = "";
-  choices.forEach(([id,name]) => {
-    const option = document.createElement("option");
-    option.value = id;
-    option.textContent = name;
-    select.appendChild(option);
-  });
-
-  if (choices.some(c => c[0] === previous)) select.value = previous;
-  currentConversation = select.value || "local";
+function goTab(name){
+ document.querySelectorAll("nav button").forEach(b=>{
+  b.classList.toggle("active",b.dataset.tab===name);
+ });
+ document.querySelectorAll(".panel").forEach(p=>{
+  p.classList.toggle("active",p.id===name);
+ });
 }
 
-function renderMessages() {
-  const selected = messages
-    .filter(m => m.conversation === currentConversation)
-    .sort((a,b) => a.time-b.time);
+/* ===================== ROOMS ===================== */
 
-  $("messages").innerHTML = selected.map(m => `
-    <div class="msg ${m.mine ? "mine" : ""}">
-      <strong>${escapeHTML(m.sender || "Unknown")}</strong><br>
-      ${escapeHTML(m.text)}
-      <small>${new Date(m.time).toLocaleString()} · ${escapeHTML(m.status || "saved locally")}</small>
-    </div>
-  `).join("") || '<p class="muted">No messages in this conversation.</p>';
-
-  $("messages").scrollTop = $("messages").scrollHeight;
+async function saveRoom(room){
+ await storeRecord("rooms",room);
+ rooms=await readAll("rooms");
+ renderAll();
 }
 
-function renderContacts() {
-  $("contactList").innerHTML = contacts.map(c => `
-    <div class="item">
-      <strong>👤 ${escapeHTML(c.name)}</strong>
-      <div class="muted">${escapeHTML(c.contactId || c.id)}</div>
-      <button class="action secondary" data-open-contact="${escapeHTML(c.id)}">Open chat</button>
-      <button class="action danger" data-delete-contact="${escapeHTML(c.id)}">Delete</button>
-    </div>
-  `).join("") || '<p class="muted">No contacts yet.</p>';
+$("createRoom").onclick=async()=>{
+ const name=$("roomName").value.trim()||"New Room";
+ const room={
+  id:uid("room"),
+  name,
+  ownerId:"local",
+  createdAt:now()
+ };
 
-  $("contactList").querySelectorAll("[data-open-contact]").forEach(button => {
-    button.onclick = () => {
-      currentConversation = "contact:" + button.dataset.openContact;
-      renderConversations();
-      $("conversationSelect").value = currentConversation;
-      renderMessages();
-      switchTab("chats");
-    };
-  });
+ currentRoom=room;
+ await saveRoom(room);
 
-  $("contactList").querySelectorAll("[data-delete-contact]").forEach(button => {
-    button.onclick = async () => {
-      const id = button.dataset.deleteContact;
-      if (!confirm("Delete this contact? Existing messages will remain.")) return;
+ let local=members.find(m=>m.id==="local");
+ if(local){
+  local.roomId=room.id;
+  local.name=settings.name;
+  await storeRecord("members",local);
+ }
+ members=await readAll("members");
 
-      await deleteRecord("contacts",id);
-
-      for (const group of groups) {
-        group.members = (group.members || []).filter(m => m.contactId !== id);
-        await put("groups",group);
-      }
-      await refresh();
-    };
-  });
-}
-
-function renderGroups() {
-  const previous = $("memberGroupSelect").value;
-
-  $("groupList").innerHTML = groups.map(g => {
-    const count = 1 + (g.members || []).length;
-    return `
-      <div class="item">
-        <strong>👥 ${escapeHTML(g.name)}</strong>
-        <p class="muted">${count} / ${g.limit} members, including creator</p>
-        <button class="action secondary" data-view-group="${escapeHTML(g.id)}">View members</button>
-        <button class="action secondary" data-open-group="${escapeHTML(g.id)}">Open group chat</button>
-        <button class="action secondary" data-export-invite="${escapeHTML(g.id)}">Invitation text</button>
-        <button class="action danger" data-delete-group="${escapeHTML(g.id)}">Delete group</button>
-      </div>
-    `;
-  }).join("") || '<p class="muted">No groups created yet.</p>';
-
-  $("groupList").querySelectorAll("[data-view-group]").forEach(button => {
-    button.onclick = () => {
-      $("memberGroupSelect").value = button.dataset.viewGroup;
-      renderGroupMembers();
-      $("memberManager").scrollIntoView({behavior:"smooth",block:"start"});
-    };
-  });
-
-  $("groupList").querySelectorAll("[data-open-group]").forEach(button => {
-    button.onclick = () => {
-      currentConversation = "group:" + button.dataset.openGroup;
-      renderConversations();
-      $("conversationSelect").value = currentConversation;
-      renderMessages();
-      switchTab("chats");
-    };
-  });
-
-  $("groupList").querySelectorAll("[data-export-invite]").forEach(button => {
-    button.onclick = () => {
-      const g = groups.find(x => x.id === button.dataset.exportInvite);
-      $("signalOutput").value = JSON.stringify({
-        type:"swayam-group-invitation",
-        version:1,
-        groupId:g.id,
-        name:g.name,
-        limit:g.limit,
-        note:"Informational invitation only; not proof of membership."
-      });
-      switchTab("connect");
-    };
-  });
-
-  $("groupList").querySelectorAll("[data-delete-group]").forEach(button => {
-    button.onclick = async () => {
-      if (!confirm("Delete this group and its local membership list?")) return;
-      await deleteRecord("groups",button.dataset.deleteGroup);
-      await refresh();
-    };
-  });
-
-  $("memberGroupSelect").innerHTML =
-    '<option value="">Select a group</option>' +
-    groups.map(g => `<option value="${escapeHTML(g.id)}">${escapeHTML(g.name)}</option>`).join("");
-
-  if (groups.some(g => g.id === previous)) {
-    $("memberGroupSelect").value = previous;
-  } else if (groups.length) {
-    $("memberGroupSelect").value = groups[0].id;
-  }
-
-  $("memberContactSelect").innerHTML =
-    '<option value="">Select a contact</option>' +
-    contacts.map(c => `<option value="${escapeHTML(c.id)}">${escapeHTML(c.name)}</option>`).join("");
-
-  renderGroupMembers();
-}
-
-function renderGroupMembers() {
-  const groupId = $("memberGroupSelect").value;
-  const group = groups.find(g => g.id === groupId);
-  const list = $("memberList");
-  const summary = $("memberSummary");
-  const contactSelect = $("memberContactSelect");
-  const addButton = $("addGroupMember");
-
-  if (!group) {
-    summary.textContent = "0 members";
-    list.innerHTML = '<p class="muted">Select a group to see its members.</p>';
-    addButton.disabled = true;
-    return;
-  }
-
-  if (!Array.isArray(group.members)) group.members = [];
-
-  const members = [
-    {id:"__owner__",name:settings.displayName || "Me",owner:true},
-    ...group.members.map(member => {
-      const contact = contacts.find(c => c.id === member.contactId);
-      return {
-        id:member.contactId,
-        name:contact ? contact.name : (member.name || "Unknown member"),
-        owner:false
-      };
-    })
-  ];
-
-  summary.textContent = `${members.length} / ${group.limit} members`;
-
-  list.innerHTML = members.map(member => `
-    <div class="item">
-      <strong>${member.owner ? "👑 " : "👤 "}${escapeHTML(member.name)}</strong>
-      <div class="muted">${member.owner ? "Group creator (this device)" : "Local group member"}</div>
-      ${member.owner ? "" : `
-        <button class="action danger" data-remove-member="${escapeHTML(member.id)}">Remove member</button>
-      `}
-    </div>
-  `).join("");
-
-  list.querySelectorAll("[data-remove-member]").forEach(button => {
-    button.onclick = async () => {
-      if (!confirm("Remove this contact from this local group?")) return;
-      group.members = group.members.filter(m => m.contactId !== button.dataset.removeMember);
-      await put("groups",group);
-      await refresh();
-    };
-  });
-
-  const memberIds = new Set(group.members.map(m => m.contactId));
-  [...contactSelect.options].forEach(option => {
-    if (option.value) option.disabled = memberIds.has(option.value);
-  });
-
-  addButton.disabled = members.length >= group.limit || contacts.length === 0;
-}
-
-$("memberGroupSelect").addEventListener("change",renderGroupMembers);
-
-$("addGroupMember").onclick = async () => {
-  const group = groups.find(g => g.id === $("memberGroupSelect").value);
-  const contactId = $("memberContactSelect").value;
-
-  if (!group) return alert("Please select a group.");
-  if (!contactId) return alert("Please select a contact.");
-
-  if (!Array.isArray(group.members)) group.members = [];
-
-  if (group.members.some(m => m.contactId === contactId)) {
-    return alert("This contact is already in the group.");
-  }
-
-  if (group.members.length + 1 >= group.limit) {
-    return alert("The group has reached its member limit.");
-  }
-
-  const contact = contacts.find(c => c.id === contactId);
-  if (!contact) return alert("Contact not found.");
-
-  group.members.push({
-    contactId:contact.id,
-    name:contact.name,
-    addedAt:Date.now()
-  });
-
-  await put("groups",group);
-  $("memberContactSelect").value = "";
-  await refresh();
-  alert("Member added to the local group list.");
+ $("roomName").value=name;
+ $("qr").innerHTML="";
+ $("roomInvite").value="";
+ renderAll();
+ log("Created room: "+name);
 };
 
-$("conversationSelect").onchange = () => {
-  currentConversation = $("conversationSelect").value;
-  renderMessages();
+$("saveRoom").onclick=async()=>{
+ if(!currentRoom)return;
+ currentRoom.name=$("roomName").value.trim()||"My Room";
+ await saveRoom(currentRoom);
+ log("Room details saved.");
 };
 
-async function saveMessage(text,conversation,options={}) {
-  const record = {
-    id:options.id || uuid(),
-    conversation,
-    text,
-    sender:options.sender || settings.displayName,
-    mine:options.mine !== false,
-    time:options.time || Date.now(),
-    status:options.status || "saved locally"
+function makeInvitation(room){
+ return JSON.stringify({
+  app:"SwayamRoomChat",
+  version:1,
+  roomId:room.id,
+  roomName:room.name,
+  createdAt:room.createdAt
+ });
+}
+
+$("makeQR").onclick=()=>{
+ $("qr").innerHTML="";
+ const invite=makeInvitation(currentRoom);
+ $("roomInvite").value=invite;
+
+ if(typeof QRCode!=="undefined"){
+  new QRCode($("qr"),{
+   text:invite,
+   width:210,
+   height:210,
+   correctLevel:QRCode.CorrectLevel.M
+  });
+ }else{
+  $("qr").textContent="QR library unavailable. Copy the invitation instead.";
+ }
+};
+
+$("copyInvite").onclick=()=>copyText($("roomInvite").value);
+
+$("shareRoom").onclick=async()=>{
+ const text=makeInvitation(currentRoom);
+ $("roomInvite").value=text;
+ if(navigator.share){
+  try{await navigator.share({title:currentRoom.name,text})}
+  catch(e){}
+ }else{
+  await copyText(text);
+ }
+};
+
+$("joinRoom").onclick=async()=>{
+ const raw=$("joinRoomText").value.trim();
+ if(!raw)return alert("Paste a room invitation or room ID.");
+
+ let id=raw;
+ let name="Joined Room";
+ let createdAt=now();
+
+ try{
+  const parsed=JSON.parse(raw);
+  if(parsed.app!=="SwayamRoomChat")throw new Error("Invalid invitation");
+  id=parsed.roomId;
+  name=parsed.roomName||name;
+  createdAt=parsed.createdAt||createdAt;
+ }catch(e){
+  if(raw.startsWith("{"))return alert("This invitation is not valid.");
+ }
+
+ if(!id)return alert("No room ID found.");
+
+ let room=rooms.find(r=>r.id===id);
+ if(!room){
+  room={id,name,ownerId:"remote",createdAt};
+  await storeRecord("rooms",room);
+ }
+
+ currentRoom=room;
+ let local=members.find(m=>m.id==="local");
+ if(local){
+  local.roomId=room.id;
+  await storeRecord("members",local);
+ }
+ rooms=await readAll("rooms");
+ members=await readAll("members");
+ renderAll();
+ $("roomName").value=room.name;
+ alert("Room selected locally. You still need to establish a WebRTC connection to exchange messages.");
+ goTab("chat");
+};
+
+async function addPeerMember(peerId,label){
+ const memberId="peer_"+peerId;
+ let member=members.find(m=>m.id===memberId);
+ if(!member){
+  member={
+   id:memberId,
+   name:label||"Connected peer",
+   roomId:currentRoom.id,
+   local:false,
+   peerId,
+   createdAt:now()
   };
-  await put("messages",record);
-  await refresh();
-  return record;
+  await storeRecord("members",member);
+ }else{
+  member.name=label||member.name;
+  member.roomId=currentRoom.id;
+  await storeRecord("members",member);
+ }
+ members=await readAll("members");
+ renderAll();
 }
 
-$("sendBtn").onclick = async () => {
-  const text = $("messageInput").value.trim();
-  if (!text) return;
+/* ===================== WEBRTC ===================== */
 
-  const record = await saveMessage(text,currentConversation);
-  $("messageInput").value = "";
+function makePeer(label){
+ const id=uid("peer");
 
-  const envelope = {
-    type:"message",
-    id:record.id,
-    conversation:record.conversation,
-    text:record.text,
-    sender:record.sender,
-    time:record.time
+ // STUN helps discover public network addresses; it is not a relay.
+ const pc=new RTCPeerConnection({
+  iceServers:[{urls:"stun:stun.l.google.com:19302"}]
+ });
+
+ const peer={
+  id,label:label||"Peer",
+  pc,dc:null,
+  incoming:false
+ };
+
+ peers[id]=peer;
+ setupPeerEvents(peer);
+ return peer;
+}
+
+function setupPeerEvents(peer){
+ peer.pc.onconnectionstatechange=()=>{
+  log(peer.label+": "+peer.pc.connectionState);
+  renderAll();
+ };
+
+ peer.pc.oniceconnectionstatechange=()=>{
+  renderAll();
+ };
+
+ peer.pc.ondatachannel=event=>{
+  peer.dc=event.channel;
+  setupDataChannel(peer);
+ };
+
+ peer.pc.onicecandidate=()=>{
+  // Codes are exported only after ICE gathering completes.
+ };
+}
+
+function setupDataChannel(peer){
+ const dc=peer.dc;
+ if(!dc)return;
+
+ dc.onopen=async()=>{
+  log("Connected to "+peer.label);
+  await addPeerMember(peer.id,peer.label);
+  renderAll();
+ };
+
+ dc.onclose=()=>{
+  log("Disconnected from "+peer.label);
+  renderAll();
+ };
+
+ dc.onerror=()=>log("Data channel error: "+peer.label);
+
+ dc.onmessage=async event=>{
+  try{
+   const data=JSON.parse(event.data);
+   if(data.type==="chat"){
+    await saveIncomingMessage(data,peer);
+   }else if(data.type==="hello"){
+    if(data.name)peer.label=data.name;
+    await addPeerMember(peer.id,peer.label);
+    renderAll();
+   }
+  }catch(e){
+   log("Received an unrecognized message.");
+  }
+ };
+}
+
+function sendHello(peer){
+ if(peer.dc && peer.dc.readyState==="open"){
+  peer.dc.send(JSON.stringify({
+   type:"hello",
+   name:settings.name,
+   roomId:currentRoom.id
+  }));
+ }
+}
+
+function waitForIce(pc,timeout=12000){
+ return new Promise(resolve=>{
+  if(pc.iceGatheringState==="complete")return resolve();
+
+  let finished=false;
+  const done=()=>{
+   if(finished)return;
+   finished=true;
+   pc.removeEventListener("icegatheringstatechange",check);
+   clearTimeout(timer);
+   resolve();
   };
-
-  let sent = 0;
-  for (const peer of peers.values()) {
-    if (peer.channel && peer.channel.readyState === "open") {
-      try {
-        peer.channel.send(JSON.stringify(envelope));
-        sent++;
-      } catch (err) {
-        console.warn(err);
-      }
-    }
-  }
-
-  if (!sent) {
-    await put("pending",{
-      id:record.id,
-      conversation:record.conversation,
-      text:record.text,
-      time:record.time,
-      status:"pending"
-    });
-    const stored = messages.find(m => m.id === record.id);
-    if (stored) {
-      stored.status = "pending locally";
-      await put("messages",stored);
-    }
-    $("deliveryStatus").textContent =
-      "Saved locally; no connected device received it.";
-  } else {
-    $("deliveryStatus").textContent =
-      `Sent to ${sent} connected device(s); awaiting acknowledgements.`;
-  }
-  await refresh();
-};
-
-$("retryBtn").onclick = async () => {
-  for (const item of [...pending]) {
-    let sent = false;
-    for (const peer of peers.values()) {
-      if (peer.channel && peer.channel.readyState === "open") {
-        try {
-          peer.channel.send(JSON.stringify({
-            type:"message",
-            id:item.id,
-            conversation:item.conversation,
-            text:item.text,
-            sender:settings.displayName,
-            time:item.time
-          }));
-          sent = true;
-        } catch {}
-      }
-    }
-    // Retain pending items until an acknowledgement arrives.
-    if (sent) item.status = "sent; awaiting acknowledgement";
-  }
-  await refresh();
-};
-
-$("addContact").onclick = async () => {
-  const name = $("contactName").value.trim();
-  if (!name) return alert("Enter a contact name.");
-
-  await put("contacts",{
-    id:uuid(),
-    name,
-    contactId:$("contactId").value.trim()
-  });
-
-  $("contactName").value = "";
-  $("contactId").value = "";
-  await refresh();
-};
-
-$("createGroup").onclick = async () => {
-  const name = $("groupName").value.trim();
-  const limit = Number($("groupLimit").value);
-
-  if (!name) return alert("Enter a group name.");
-  if (!Number.isInteger(limit) || limit < 2 || limit > 50) {
-    return alert("Choose a limit between 2 and 50.");
-  }
-
-  const group = {
-    id:uuid(),
-    name,
-    limit,
-    created:Date.now(),
-    members:[]
+  const check=()=>{
+   if(pc.iceGatheringState==="complete")done();
   };
-
-  await put("groups",group);
-  $("groupName").value = "";
-  await refresh();
-  $("memberGroupSelect").value = group.id;
-  renderGroupMembers();
-  alert("Group created. You are the creator.");
-};
-
-/* WebRTC connection setup: no STUN/TURN servers configured. */
-function createPeerConnection(name) {
-  const pc = new RTCPeerConnection({iceServers:[]});
-  const id = uuid();
-  const peer = {id,name:name || "Peer",pc,channel:null};
-
-  pc.ondatachannel = event => attachChannel(peer,event.channel);
-  pc.onconnectionstatechange = renderPeers;
-
-  peers.set(id,peer);
-  renderPeers();
-  return peer;
+  const timer=setTimeout(done,timeout);
+  pc.addEventListener("icegatheringstatechange",check);
+ });
 }
 
-function attachChannel(peer,channel) {
-  peer.channel = channel;
-
-  channel.onopen = () => {
-    $("peerStatus").textContent = "Connected: " + peer.name;
-    renderPeers();
-  };
-  channel.onclose = renderPeers;
-
-  channel.onmessage = async event => {
-    try {
-      const data = JSON.parse(event.data);
-
-      if (data.type === "message") {
-        const exists = messages.some(m => m.id === data.id);
-        if (!exists) {
-          await saveMessage(data.text,data.conversation,{
-            id:data.id,
-            sender:data.sender,
-            mine:false,
-            time:data.time,
-            status:"received"
-          });
-        }
-
-        channel.send(JSON.stringify({type:"ack",id:data.id}));
-      }
-
-      if (data.type === "ack") {
-        await deleteRecord("pending",data.id);
-        const original = messages.find(m => m.id === data.id);
-        if (original) {
-          original.status = "acknowledged by a connected peer";
-          await put("messages",original);
-        }
-        await refresh();
-      }
-    } catch(err) {
-      console.error("Could not process incoming message",err);
-    }
-  };
-  renderPeers();
+function encodeDescription(description,peer){
+ return JSON.stringify({
+  app:"SwayamRoomChatRTC",
+  version:1,
+  type:description.type,
+  description,
+  label:settings.name,
+  roomId:currentRoom.id,
+  peerLabel:peer?.label||"Peer"
+ });
 }
 
-function waitForICE(pc) {
-  return new Promise(resolve => {
-    if (pc.iceGatheringState === "complete") return resolve();
-    const timeout = setTimeout(resolve,12000);
-
-    function changed() {
-      if (pc.iceGatheringState === "complete") {
-        clearTimeout(timeout);
-        pc.removeEventListener("icegatheringstatechange",changed);
-        resolve();
-      }
-    }
-    pc.addEventListener("icegatheringstatechange",changed);
-  });
+function parseDescription(raw){
+ const data=JSON.parse(raw);
+ if(data.app!=="SwayamRoomChatRTC")throw new Error("Invalid connection code");
+ if(!data.description||!["offer","answer"].includes(data.description.type)){
+  throw new Error("Invalid WebRTC description");
+ }
+ return data;
 }
 
-$("createOffer").onclick = async () => {
-  try {
-    const peer = createPeerConnection($("peerName").value.trim());
-    const channel = peer.pc.createDataChannel("swayam-chat");
-    attachChannel(peer,channel);
+$("createOffer").onclick=async()=>{
+ try{
+  $("createOffer").disabled=true;
+  const peer=makePeer($("peerLabel").value.trim()||"Friend");
+  peer.dc=peer.pc.createDataChannel("swayam-chat",{ordered:true});
+  setupDataChannel(peer);
 
-    await peer.pc.setLocalDescription(await peer.pc.createOffer());
-    await waitForICE(peer.pc);
+  const offer=await peer.pc.createOffer();
+  await peer.pc.setLocalDescription(offer);
+  log("Creating offer. Gathering network information…");
+  await waitForIce(peer.pc);
 
-    $("signalOutput").value = JSON.stringify({
-      type:"offer",
-      description:peer.pc.localDescription,
-      peerId:peer.id,
-      name:settings.displayName
-    });
-    $("peerStatus").textContent = "Offer created. Share it with the other device.";
-  } catch(err) {
-    alert("Could not create offer: " + err.message);
-  }
+  $("localCode").value=encodeDescription(peer.pc.localDescription,peer);
+  log("Offer ready. Send it to the other device.");
+ }catch(e){
+  log("Offer error: "+e.message);
+  alert("Could not create offer: "+e.message);
+ }finally{
+  $("createOffer").disabled=false;
+ }
 };
 
-$("applyOffer").onclick = async () => {
-  try {
-    const data = JSON.parse($("signalInput").value);
-    if (data.type !== "offer" || !data.description) {
-      throw new Error("The pasted text is not a valid offer.");
-    }
+$("createAnswer").onclick=async()=>{
+ try{
+  const raw=$("remoteCode").value.trim();
+  if(!raw)return alert("Paste the received offer first.");
 
-    const peer = createPeerConnection(
-      $("peerName").value.trim() || data.name || "Peer"
-    );
+  const data=parseDescription(raw);
+  if(data.type!=="offer")return alert("The pasted code must be an offer.");
 
-    await peer.pc.setRemoteDescription(data.description);
-    await peer.pc.setLocalDescription(await peer.pc.createAnswer());
-    await waitForICE(peer.pc);
+  const peer=makePeer($("peerLabel").value.trim()||data.label||"Friend");
+  peer.incoming=true;
+  await peer.pc.setRemoteDescription(data.description);
 
-    $("signalOutput").value = JSON.stringify({
-      type:"answer",
-      description:peer.pc.localDescription,
-      peerId:peer.id,
-      name:settings.displayName
-    });
-    $("peerStatus").textContent = "Answer created. Return it to the offer creator.";
-  } catch(err) {
-    alert("Could not create answer: " + err.message);
-  }
+  const answer=await peer.pc.createAnswer();
+  await peer.pc.setLocalDescription(answer);
+
+  log("Creating answer. Gathering network information…");
+  await waitForIce(peer.pc);
+
+  $("localCode").value=encodeDescription(peer.pc.localDescription,peer);
+  log("Answer ready. Send it to the offer creator.");
+ }catch(e){
+  log("Answer error: "+e.message);
+  alert("Could not create answer: "+e.message);
+ }
 };
 
-$("applyAnswer").onclick = async () => {
-  try {
-    const data = JSON.parse($("signalInput").value);
-    if (data.type !== "answer" || !data.description) {
-      throw new Error("The pasted text is not a valid answer.");
-    }
+$("applyRemote").onclick=async()=>{
+ try{
+  const raw=$("remoteCode").value.trim();
+  if(!raw)return alert("Paste the remote answer first.");
 
-    const peer = [...peers.values()].find(
-      p => p.pc.signalingState === "have-local-offer"
-    );
-    if (!peer) throw new Error("No outstanding offer exists on this device.");
+  const data=parseDescription(raw);
+  if(data.type!=="answer")return alert("The pasted code must be an answer.");
 
-    await peer.pc.setRemoteDescription(data.description);
-    $("peerStatus").textContent = "Answer applied. Waiting for connection...";
-  } catch(err) {
-    alert("Could not apply answer: " + err.message);
-  }
-};
+  // Select the peer that is still awaiting its answer.
+  const candidates=Object.values(peers).filter(p=>
+   p.pc.signalingState==="have-local-offer"
+  );
 
-$("copySignal").onclick = async () => {
-  const value = $("signalOutput").value;
-  if (!value) return alert("Create connection information first.");
-
-  try {
-    await navigator.clipboard.writeText(value);
-    alert("Copied. Share it with the other device.");
-  } catch {
-    $("signalOutput").focus();
-    $("signalOutput").select();
-    alert("Copy the selected text manually.");
-  }
-};
-
-$("makeQR").onclick = () => {
-  const value = $("signalOutput").value.trim();
-  if (!value) return alert("Create connection information first.");
-  if (value.length > 1800) return alert("The data is too large for this QR display. Copy the text instead.");
-
-  $("qrArea").innerHTML = "";
-
-  const warning = document.createElement("p");
-  warning.className = "muted";
-  warning.textContent =
-    "External QR image service: connection text is sent to that service. Avoid encoding confidential information.";
-  $("qrArea").appendChild(warning);
-
-  const img = document.createElement("img");
-  img.id = "qrImage";
-  img.alt = "Connection QR code";
-  img.src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
-    encodeURIComponent(value);
-  $("qrArea").appendChild(img);
-};
-
-function renderPeers() {
-  $("peerList").innerHTML = [...peers.entries()].map(([id,p]) => `
-    <div class="item">
-      <strong>${escapeHTML(p.name)}</strong>
-      <div class="muted">${escapeHTML(p.pc.connectionState)}</div>
-      <button class="action danger" data-disconnect="${escapeHTML(id)}">Disconnect</button>
-    </div>
-  `).join("") || '<p class="muted">No connected devices.</p>';
-
-  $("peerList").querySelectorAll("[data-disconnect]").forEach(button => {
-    button.onclick = () => {
-      const peer = peers.get(button.dataset.disconnect);
-      if (peer) peer.pc.close();
-      peers.delete(button.dataset.disconnect);
-      renderPeers();
-    };
-  });
-}
-
-function applyTheme(theme) {
-  const themes = {
-    forest:["#eef8ef","#fff","#147d4a","#193d2b","#688071","#d3e6d8"],
-    ocean:["#eaf6fc","#fff","#087eae","#163b50","#5c7e91","#d0e6ef"],
-    sunrise:["#fff4e9","#fff","#d56a2d","#5b321f","#96715b","#f0d9c7"],
-    lavender:["#f5effc","#fff","#7953ad","#38264d","#806d91","#e1d3f0"],
-    earth:["#f5f0e6","#fff","#7b6337","#40351e","#81765d","#e3dac7"],
-    mint:["#eafff5","#fff","#168768","#164b3b","#638b7d","#c9eddd"],
-    night:["#18251f","#24342c","#4bbd85","#f0fff5","#b4cbbd","#405448"],
-    rose:["#fff0f3","#fff","#c14b73","#51293a","#906b7a","#f1d4de"],
-    sand:["#faf5e9","#fff","#ad8443","#49391f","#897657","#e7dcc5"],
-    sky:["#edf5ff","#fff","#367bd0","#213a60","#7084a2","#d3e1f5"],
-    default:["#f2f5f3","#fff","#147d4a","#193d2b","#688071","#d3e6d8"]
-  };
-
-  const values = themes[theme] || themes.forest;
-  ["--bg","--card","--primary","--text","--muted","--border"].forEach((key,i) => {
-    document.documentElement.style.setProperty(key,values[i]);
-  });
-}
-
-$("saveSettings").onclick = async () => {
-  settings.displayName = $("displayName").value.trim() || "Me";
-  settings.theme = $("theme").value;
-  settings.sound = $("sound").checked;
-
-  await put("settings",{id:"main",...settings});
-  applyTheme(settings.theme);
-  await refresh();
-  alert("Settings saved.");
-};
-
-function renderPending() {
-  $("pendingList").innerHTML = pending.map(m => `
-    <div class="item">
-      ${escapeHTML(m.text)}
-      <div class="muted">Pending locally · ${new Date(m.time).toLocaleString()}</div>
-    </div>
-  `).join("") || '<p class="muted">No pending messages.</p>';
-}
-
-function renderStorage() {
-  $("storageStatus").textContent =
-    `${messages.length} messages · ${contacts.length} contacts · ${groups.length} groups · ${pending.length} pending`;
-}
-
-$("exportData").onclick = async () => {
-  const backup = {
-    app:"Swayam Chat",
-    version:1,
-    exportedAt:new Date().toISOString(),
-    messages,contacts,groups,pending,settings
-  };
-
-  const blob = new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "swayam-chat-backup.json";
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url),1000);
-};
-
-$("importData").onclick = async () => {
-  const file = $("importFile").files[0];
-  if (!file) return alert("Choose a JSON backup file.");
-
-  try {
-    const data = JSON.parse(await file.text());
-    if (!data || data.app !== "Swayam Chat") throw new Error("Invalid Swayam Chat backup.");
-
-    for (const store of ["messages","contacts","groups","pending"]) {
-      if (Array.isArray(data[store])) {
-        for (const record of data[store]) {
-          if (record && typeof record.id === "string") await put(store,record);
-        }
-      }
-    }
-
-    if (data.settings && typeof data.settings === "object") {
-      settings = {...settings,...data.settings,id:"main"};
-      await put("settings",settings);
-      $("displayName").value = settings.displayName || "Me";
-      $("theme").value = settings.theme || "forest";
-      $("sound").checked = !!settings.sound;
-      applyTheme(settings.theme);
-    }
-
-    await refresh();
-    alert("Backup imported.");
-  } catch(err) {
-    alert("Import failed: " + err.message);
-  }
-};
-
-$("clearData").onclick = async () => {
-  if (!confirm("Delete all local app data? Export a backup first if needed.")) return;
-
-  for (const store of ["messages","contacts","groups","pending","settings"]) {
-    await clearStore(store);
+  const peer=candidates[candidates.length-1];
+  if(!peer){
+   return alert("No pending offer found on this device. Create an offer first.");
   }
 
-  messages = [];
-  contacts = [];
-  groups = [];
-  pending = [];
-  settings = {displayName:"Me",theme:"forest",sound:false};
-
-  $("displayName").value = settings.displayName;
-  $("theme").value = settings.theme;
-  $("sound").checked = false;
-  applyTheme(settings.theme);
-  await refresh();
-  alert("Local data cleared.");
+  await peer.pc.setRemoteDescription(data.description);
+  log("Answer applied. Waiting for connection…");
+  renderAll();
+ }catch(e){
+  log("Could not apply answer: "+e.message);
+  alert("Could not apply answer: "+e.message);
+ }
 };
 
-async function init() {
-  if (!("indexedDB" in window)) {
-    alert("IndexedDB is not supported in this browser.");
-    return;
-  }
+$("clearRemote").onclick=()=>{$("remoteCode").value=""};
+$("copyLocal").onclick=()=>copyText($("localCode").value);
 
-  db = await openDB();
-  const stored = await getAll("settings");
-  const main = stored.find(s => s.id === "main");
-  if (main) settings = {...settings,...main};
+$("shareLocal").onclick=async()=>{
+ const text=$("localCode").value;
+ if(!text)return alert("Generate a connection code first.");
 
-  $("displayName").value = settings.displayName;
-  $("theme").value = settings.theme;
-  $("sound").checked = !!settings.sound;
-  applyTheme(settings.theme);
+ if(navigator.share){
+  try{await navigator.share({title:"Swayam WebRTC Connection Code",text})}
+  catch(e){}
+ }else{
+  await copyText(text);
+ }
+};
 
-  await refresh();
+/* ===================== CHAT ===================== */
+
+async function saveIncomingMessage(data,peer){
+ const message={
+  id:data.id||uid("msg"),
+  roomId:currentRoom.id,
+  senderId:data.senderId||peer.id,
+  senderName:data.senderName||peer.label,
+  text:String(data.text||"").slice(0,5000),
+  time:data.time||now(),
+  incoming:true
+ };
+
+ // Avoid duplicate IDs.
+ if(messages.some(m=>m.id===message.id))return;
+
+ messages.push(message);
+ await storeRecord("messages",message);
+ renderAll();
+ playSound();
 }
 
-init().catch(err => {
-  console.error(err);
-  alert("App initialization failed: " + err.message);
+async function sendMessage(){
+ const input=$("messageInput");
+ const text=input.value.trim();
+ if(!text)return;
+
+ const message={
+  id:uid("msg"),
+  roomId:currentRoom.id,
+  senderId:"local",
+  senderName:settings.name,
+  text,
+  time:now(),
+  incoming:false
+ };
+
+ messages.push(message);
+ await storeRecord("messages",message);
+
+ const packet=JSON.stringify({
+  type:"chat",
+  ...message,
+  roomName:currentRoom.name
+ });
+
+ let delivered=0;
+ activePeers().forEach(peer=>{
+  try{
+   peer.dc.send(packet);
+   delivered++;
+  }catch(e){}
+ });
+
+ input.value="";
+ renderAll();
+
+ if(!delivered){
+  log("Message saved locally. No connected peers available.");
+ }else{
+  log("Message sent to "+delivered+" connected peer(s).");
+ }
+}
+
+$("sendButton").onclick=sendMessage;
+$("messageInput").addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){
+  e.preventDefault();
+  sendMessage();
+ }
 });
+
+function playSound(){
+ if(!settings.sound)return;
+ try{
+  const AudioContext=window.AudioContext||window.webkitAudioContext;
+  if(!AudioContext)return;
+  const ctx=new AudioContext();
+  const oscillator=ctx.createOscillator();
+  const gain=ctx.createGain();
+  oscillator.connect(gain);
+  gain.connect(ctx.destination);
+  oscillator.frequency.value=700;
+  gain.gain.value=0.04;
+  oscillator.start();
+  oscillator.stop(ctx.currentTime+0.12);
+  oscillator.onended=()=>ctx.close();
+ }catch(e){}
+}
+
+/* ===================== RENDER ===================== */
+
+function renderChat(){
+ $("chatRoomTitle").textContent=currentRoom.name;
+ const list=$("messages");
+ const current=messages
+  .filter(m=>m.roomId===currentRoom.id)
+  .sort((a,b)=>new Date(a.time)-new Date(b.time));
+
+ $("messageCount").textContent=current.length;
+
+ if(!current.length){
+  list.innerHTML='<p class="muted">No messages yet. Connect a device to start chatting.</p>';
+  return;
+ }
+
+ list.innerHTML=current.map(m=>`
+  <div class="msg ${m.senderId==="local"?"mine":""}">
+   <div class="meta">${escapeHTML(m.senderName||"User")}</div>
+   <div class="body">${escapeHTML(m.text)}</div>
+   ${settings.timestamps!==false?`<div class="time">${escapeHTML(shortTime(m.time))}</div>`:""}
+  </div>
+ `).join("");
+
+ list.scrollTop=list.scrollHeight;
+}
+
+function renderMembers(){
+ const list=currentMembers();
+ $("roomCount").textContent=list.length;
+ $("memberTotal").textContent=list.length;
+
+ const html=list.map(m=>{
+  const isConnected=m.local||Object.values(peers).some(p=>
+   p.id===m.peerId&&p.dc&&p.dc.readyState==="open"
+  );
+
+  return `<div class="member">
+   <div class="avatar">${m.local?"🙂":"👤"}</div>
+   <div class="member-info">
+    <strong>${escapeHTML(m.name)}</strong>
+    <small><span class="dot ${isConnected?"online":"offline"}"></span>
+    ${m.local?"This device":isConnected?"Connected":"Not connected"}</small>
+   </div>
+   ${m.local?"":`<button class="danger removeMember" data-id="${escapeHTML(m.id)}">Remove</button>`}
+  </div>`;
+ }).join("");
+
+ $("memberList").innerHTML=html||'<p class="muted">No members.</p>';
+ $("roomMembers").innerHTML=html||'<p class="muted">No members.</p>';
+
+ document.querySelectorAll(".removeMember").forEach(btn=>{
+  btn.onclick=async()=>{
+   const id=btn.dataset.id;
+   const member=members.find(m=>m.id===id);
+   if(!member)return;
+   if(!confirm("Remove "+member.name+" from this local member list?"))return;
+   await removeRecord("members",id);
+   members=await readAll("members");
+   renderAll();
+  };
+ });
+}
+
+function renderConnections(){
+ const connected=activePeers();
+ $("peerCount").textContent=connected.length;
+ $("globalStatus").textContent=connected.length
+  ?connected.length+" connected":"No connections";
+
+ const html=Object.values(peers).map(p=>{
+  const state=p.dc?.readyState||p.pc.connectionState||"connecting";
+  const ok=state==="open"||state==="connected";
+  return `<div class="member">
+   <div class="avatar">📱</div>
+   <div class="member-info">
+    <strong>${escapeHTML(p.label)}</strong>
+    <small><span class="dot ${ok?"online":"offline"}"></span>${escapeHTML(state)}</small>
+   </div>
+   <button class="secondary disconnectPeer" data-id="${p.id}">Close</button>
+  </div>`;
+ }).join("");
+
+ $("connectionMembers").innerHTML=html||'<p class="muted">No WebRTC connections yet.</p>';
+
+ document.querySelectorAll(".disconnectPeer").forEach(btn=>{
+  btn.onclick=()=>{
+   const peer=peers[btn.dataset.id];
+   if(!peer)return;
+   try{peer.dc?.close()}catch(e){}
+   try{peer.pc.close()}catch(e){}
+   delete peers[btn.dataset.id];
+   log("Connection closed.");
+   renderAll();
+  };
+ });
+}
+
+function renderRooms(){
+ $("currentRoomName").textContent=currentRoom.name;
+ $("currentRoomId").textContent=currentRoom.id;
+}
+
+function renderAll(){
+ if(!currentRoom)return;
+ renderChat();
+ renderMembers();
+ renderConnections();
+ renderRooms();
+
+ $("storageInfo").textContent=
+  `${rooms.length} rooms · ${members.length} member records · ${messages.length} messages`;
+}
+
+/* ===================== SETTINGS ===================== */
+
+async function saveSettings(){
+ settings.name=$("settingsName").value.trim()||"User";
+ settings.sound=$("soundEnabled").checked;
+ settings.timestamps=$("showTimestamps").checked;
+
+ $("displayName").value=settings.name;
+
+ const local=members.find(m=>m.id==="local");
+ if(local){
+  local.name=settings.name;
+  await storeRecord("members",local);
+ }
+
+ await storeRecord("settings",{id:"main",value:settings});
+ members=await readAll("members");
+ renderAll();
+ log("Settings saved.");
+}
+
+$("saveSettings").onclick=saveSettings;
+
+$("displayName").addEventListener("change",async()=>{
+ $("settingsName").value=$("displayName").value;
+ await saveSettings();
+});
+
+$("soundEnabled").onchange=saveSettings;
+$("showTimestamps").onchange=saveSettings;
+
+function buildThemes(){
+ const grid=$("themeGrid");
+ grid.innerHTML="";
+
+ Object.entries(themes).forEach(([name,t])=>{
+  const button=document.createElement("button");
+  button.textContent="🌿 "+name;
+  button.style.background=t.bg;
+  button.style.color=t.text;
+  button.style.border="2px solid "+t.primary;
+  button.dataset.theme=name;
+
+  button.onclick=async()=>{
+   settings.theme=name;
+   applyTheme(name);
+   await storeRecord("settings",{id:"main",value:settings});
+   buildThemes();
+  };
+
+  if(settings.theme===name)button.classList.add("selected");
+  grid.appendChild(button);
+ });
+}
+
+function applyTheme(name){
+ const t=themes[name]||themes.Forest;
+ const root=document.documentElement;
+
+ root.style.setProperty("--primary",t.primary);
+ root.style.setProperty("--primary2",t.primary2);
+ root.style.setProperty("--bg",t.bg);
+ root.style.setProperty("--card",t.card);
+ root.style.setProperty("--text",t.text);
+ root.style.setProperty("--muted",t.muted);
+ root.style.setProperty("--border",t.border);
+ root.style.setProperty("--mine",t.mine);
+}
+
+/* ===================== DATA EXPORT / IMPORT ===================== */
+
+function downloadFile(name,content,type){
+ const blob=new Blob([content],{type});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=name;
+ document.body.appendChild(a);
+ a.click();
+ a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+
+$("exportData").onclick=()=>{
+ const data={
+  app:"SwayamRoomChatBackup",
+  version:1,
+  exportedAt:now(),
+  rooms,members,messages,settings
+ };
+ downloadFile(
+  "swayam-chat-backup.json",
+  JSON.stringify(data,null,2),
+  "application/json"
+ );
+};
+
+$("exportCSV").onclick=()=>{
+ const current=messages.filter(m=>m.roomId===currentRoom.id);
+ const escapeCSV=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+ const rows=[
+  ["id","roomId","senderId","senderName","text","time"],
+  ...current.map(m=>[m.id,m.roomId,m.senderId,m.senderName,m.text,m.time])
+ ];
+ downloadFile(
+  "swayam-messages.csv",
+  rows.map(row=>row.map(escapeCSV).join(",")).join("\r\n"),
+  "text/csv;charset=utf-8"
+ );
+};
+
+$("importData").onclick=async()=>{
+ const file=$("importFile").files[0];
+ if(!file)return alert("Choose a JSON backup file first.");
+
+ try{
+  const data=JSON.parse(await file.text());
+  if(data.app!=="SwayamRoomChatBackup")throw new Error("Not a Swayam backup.");
+
+  if(!confirm("Import this backup? Existing records with matching IDs may be replaced."))return;
+
+  for(const room of (data.rooms||[])){
+   if(room.id)await storeRecord("rooms",room);
+  }
+  for(const member of (data.members||[])){
+   if(member.id)await storeRecord("members",member);
+  }
+  for(const message of (data.messages||[])){
+   if(message.id)await storeRecord("messages",message);
+  }
+
+  if(data.settings){
+   settings={...settings,...data.settings};
+   await storeRecord("settings",{id:"main",value:settings});
+  }
+
+  rooms=await readAll("rooms");
+  members=await readAll("members");
+  messages=await readAll("messages");
+
+  currentRoom=rooms[0]||currentRoom;
+  $("settingsName").value=settings.name;
+  $("displayName").value=settings.name;
+  $("roomName").value=currentRoom.name;
+
+  applyTheme(settings.theme);
+  buildThemes();
+  renderAll();
+
+  alert("Backup imported.");
+ }catch(e){
+  alert("Import failed: "+e.message);
+ }
+};
+
+$("clearMessages").onclick=async()=>{
+ if(!confirm("Delete all locally stored messages?"))return;
+ await clearStore("messages");
+ messages=[];
+ renderAll();
+};
+
+$("clearAll").onclick=async()=>{
+ if(!confirm("Permanently erase all rooms, members, messages, and settings?"))return;
+
+ for(const name of ["rooms","members","messages","settings"]){
+  await clearStore(name);
+ }
+
+ Object.values(peers).forEach(p=>{
+  try{p.dc?.close()}catch(e){}
+  try{p.pc.close()}catch(e){}
+ });
+ peers={};
+
+ rooms=[];
+ members=[];
+ messages=[];
+ settings={name:"User",theme:"Forest",sound:false,timestamps:true};
+
+ currentRoom={
+  id:uid("room"),
+  name:"My Room",
+  ownerId:"local",
+  createdAt:now()
+ };
+
+ await storeRecord("rooms",currentRoom);
+ await storeRecord("members",{
+  id:"local",name:settings.name,roomId:currentRoom.id,
+  local:true,createdAt:now()
+ });
+ await storeRecord("settings",{id:"main",value:settings});
+
+ $("displayName").value=settings.name;
+ $("settingsName").value=settings.name;
+ $("roomName").value=currentRoom.name;
+ $("qr").innerHTML="";
+ $("roomInvite").value="";
+ $("localCode").value="";
+ $("remoteCode").value="";
+
+ applyTheme(settings.theme);
+ buildThemes();
+ renderAll();
+ log("App data reset.");
+};
+
+/* ===================== HELPERS ===================== */
+
+async function copyText(text){
+ if(!text)return alert("There is nothing to copy.");
+
+ try{
+  await navigator.clipboard.writeText(text);
+  alert("Copied to clipboard.");
+ }catch(e){
+  const box=document.createElement("textarea");
+  box.value=text;
+  box.style.position="fixed";
+  box.style.opacity="0";
+  document.body.appendChild(box);
+  box.select();
+
+  let ok=false;
+  try{ok=document.execCommand("copy")}catch(err){}
+  box.remove();
+
+  if(ok)alert("Copied to clipboard.");
+  else alert("Copy failed. Select and copy the text manually.");
+ }
+}
+
+function log(message){
+ const el=$("connectionLog");
+ const time=new Date().toLocaleTimeString();
+ const line=document.createElement("div");
+ line.textContent="["+time+"] "+message;
+ el.prepend(line);
+
+ while(el.children.length>25)el.lastChild.remove();
+}
+
+window.addEventListener("online",()=>{
+ log("Internet connection available.");
+});
+window.addEventListener("offline",()=>{
+ log("Internet connection lost.");
+});
+
+async function start(){
+ try{
+  await loadApp();
+ }catch(e){
+  console.error(e);
+  $("globalStatus").textContent="Storage error";
+  alert("Could not initialize local storage. Open the app in a browser that supports IndexedDB.");
+ }
+}
+
+start();
 </script>
 </body>
 </html>
