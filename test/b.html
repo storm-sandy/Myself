@@ -4,184 +4,1330 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#167447">
-<title>Swayam Chat — Peer-to-Peer Demo</title>
+<title>Swayam Room Chat V2</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <style>
-:root{--bg:#f3f8f3;--panel:#fff;--ink:#173326;--muted:#617568;--primary:#167447;--primary2:#0b5c35;--line:#d9e6dc;--bubble:#e5f5e9;--danger:#b42318;--shadow:0 8px 26px #153d2410}
-[data-theme="forest"]{--bg:#edf5ee;--panel:#fff;--ink:#173326;--muted:#617568;--primary:#167447;--primary2:#0b5c35;--line:#d9e6dc;--bubble:#e5f5e9}
-[data-theme="ocean"]{--bg:#eef7fb;--panel:#fff;--ink:#153248;--muted:#587183;--primary:#147c9b;--primary2:#075d78;--line:#d5e8ef;--bubble:#dff4fa}
-[data-theme="sunset"]{--bg:#fff5ef;--panel:#fff;--ink:#482d26;--muted:#80665d;--primary:#c45d32;--primary2:#9b3d1b;--line:#f0ddd3;--bubble:#ffeadf}
-[data-theme="lavender"]{--bg:#f7f3ff;--panel:#fff;--ink:#35294b;--muted:#756987;--primary:#7652a8;--primary2:#553580;--line:#e4daf4;--bubble:#efe6ff}
-[data-theme="meadow"]{--bg:#f5f8e9;--panel:#fff;--ink:#34401d;--muted:#717a58;--primary:#708c25;--primary2:#526c12;--line:#e1e8c8;--bubble:#edf5d7}
-[data-theme="rose"]{--bg:#fff3f6;--panel:#fff;--ink:#4a2836;--muted:#886a78;--primary:#b54470;--primary2:#8b2a51;--line:#f0d9e3;--bubble:#ffe4ef}
-[data-theme="sky"]{--bg:#f0f7ff;--panel:#fff;--ink:#1c3552;--muted:#657c98;--primary:#3478c8;--primary2:#20579a;--line:#d8e6f7;--bubble:#e1efff}
-[data-theme="earth"]{--bg:#f7f1e8;--panel:#fff;--ink:#3e3024;--muted:#7c6a58;--primary:#8b613b;--primary2:#684523;--line:#e7d9c8;--bubble:#f4e7d5}
-[data-theme="night"]{--bg:#111a18;--panel:#1c2925;--ink:#e5f2e9;--muted:#a1b5a8;--primary:#47b77a;--primary2:#2a965d;--line:#34483e;--bubble:#263f32;--shadow:0 8px 26px #0004}
-[data-theme="monsoon"]{--bg:#edf2f5;--panel:#fff;--ink:#20333d;--muted:#667c86;--primary:#477c8a;--primary2:#2e5e6b;--line:#d8e3e7;--bubble:#e1eff2}
-[data-theme="sunrise"]{--bg:#fff9e9;--panel:#fff;--ink:#48351b;--muted:#887653;--primary:#c08a16;--primary2:#93670b;--line:#f0e3bf;--bubble:#fff0c7}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer;border:0;border-radius:11px;padding:10px 13px;background:var(--primary);color:white;font-weight:650}button:hover{filter:brightness(.96)}button.secondary{background:var(--bubble);color:var(--ink);border:1px solid var(--line)}button.danger{background:var(--danger)}button:disabled{opacity:.45;cursor:not-allowed}input,textarea,select{width:100%;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:10px;padding:10px}textarea{min-height:100px;resize:vertical}label{display:block;font-weight:650;margin:10px 0 5px}.app{max-width:1120px;margin:auto;min-height:100dvh;display:flex;flex-direction:column}.top{padding:15px 16px 10px;display:flex;gap:12px;align-items:center;justify-content:space-between}.brand{display:flex;gap:10px;align-items:center}.logo{width:42px;height:42px;border-radius:14px;background:var(--primary);display:grid;place-items:center;color:white;font-size:22px}.brand h1{font-size:19px;margin:0}.brand small{color:var(--muted)}.status{font-size:12px;color:var(--muted);text-align:right}.tabs{display:flex;gap:7px;overflow:auto;padding:8px 12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:3}.tabs button{white-space:nowrap;background:transparent;color:var(--muted);border:1px solid transparent;padding:9px 12px}.tabs button.active{background:var(--primary);color:#fff}.main{padding:14px;flex:1}.panel{display:none}.panel.active{display:block}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:var(--shadow);min-width:0}.card h2,.card h3{margin:0 0 10px}.muted{color:var(--muted)}.row{display:flex;gap:8px;align-items:center}.row>*{min-width:0}.row input{flex:1}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.list{display:flex;flex-direction:column;gap:8px}.item{display:flex;gap:10px;align-items:center;padding:11px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}.item .grow{flex:1;min-width:0}.item strong{display:block;overflow-wrap:anywhere}.item small{color:var(--muted)}.pill{display:inline-block;border-radius:99px;background:var(--bubble);padding:3px 8px;font-size:12px;color:var(--ink)}.chatbox{height:min(52vh,520px);min-height:280px;overflow:auto;display:flex;flex-direction:column;gap:9px;padding:12px;background:var(--bg);border:1px solid var(--line);border-radius:14px}.bubble{max-width:88%;padding:10px 12px;border-radius:14px;background:var(--panel);border:1px solid var(--line);overflow-wrap:anywhere;align-self:flex-start}.bubble.mine{align-self:flex-end;background:var(--bubble)}.bubble .meta{font-size:11px;color:var(--muted);margin-top:4px}.compose{display:flex;gap:8px;margin-top:10px}.compose input{flex:1}.empty{padding:22px;text-align:center;color:var(--muted)}.notice{padding:11px 13px;border-radius:12px;background:var(--bubble);margin:10px 0;color:var(--ink)}.warning{background:#fff2d8;color:#714a00}.small{font-size:12px}.hidden{display:none!important}.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{padding:12px;background:var(--bg);border-radius:12px}.stat b{font-size:22px;display:block}.footer{padding:12px 16px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}.inline{display:inline-flex;align-items:center;gap:7px}.check{width:auto}.divider{border:0;border-top:1px solid var(--line);margin:15px 0}
-@media(max-width:700px){.grid{grid-template-columns:1fr}.main{padding:10px}.top{padding:12px}.statgrid{grid-template-columns:repeat(3,1fr)}.chatbox{height:48vh}.tabs{padding-inline:8px}}
+:root{
+ --primary:#167447;
+ --primary2:#0c5733;
+ --bg:#edf6ef;
+ --card:#fff;
+ --text:#183729;
+ --muted:#718176;
+ --border:#dbe8dd;
+ --mine:#d9f5df;
+ --danger:#c0392b;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:system-ui,-apple-system,Arial,sans-serif
+}
+header{
+ position:sticky;top:0;z-index:5;
+ padding:15px;background:var(--primary);color:white;
+ box-shadow:0 3px 12px #0002
+}
+.head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+h1{font-size:20px;margin:0}
+header p{font-size:12px;margin:4px 0 0}
+.badge{font-size:12px;background:#ffffff25;padding:7px 10px;border-radius:20px}
+nav{
+ position:sticky;top:72px;z-index:4;
+ display:flex;gap:4px;overflow-x:auto;padding:7px;
+ background:var(--card);border-bottom:1px solid var(--border)
+}
+nav button{
+ flex-shrink:0;background:transparent;color:var(--muted);
+ padding:10px;border-radius:9px
+}
+nav button.active{background:var(--primary);color:white}
+main{max-width:850px;margin:auto;padding:12px}
+.panel{display:none}
+.panel.active{display:block}
+.card{
+ background:var(--card);border:1px solid var(--border);
+ padding:14px;border-radius:15px;margin-bottom:12px;
+ overflow:hidden
+}
+h2{font-size:18px;margin:0 0 12px}
+h3{font-size:15px;margin:14px 0 8px}
+p{line-height:1.45}
+.muted{color:var(--muted);font-size:13px}
+label{display:block;font-size:13px;font-weight:700;margin:11px 0 5px}
+input,textarea,select{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:var(--card);color:var(--text);
+ font:inherit;min-width:0
+}
+input[type=checkbox]{width:auto}
+textarea{min-height:100px;resize:vertical}
+button,.button{
+ border:0;border-radius:9px;padding:10px 13px;
+ background:var(--primary);color:white;font:inherit;
+ font-weight:650;cursor:pointer
+}
+button.secondary{background:#e4efe7;color:var(--primary2)}
+button.danger{background:var(--danger);color:white}
+button:disabled{opacity:.45}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.row button{flex:0 0 auto}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stat{padding:12px;border:1px solid var(--border);border-radius:12px}
+.stat strong{font-size:22px;display:block}
+.stat span{font-size:11px;color:var(--muted)}
+#messages{
+ height:40vh;min-height:250px;overflow:auto;
+ display:flex;flex-direction:column;gap:9px;padding:4px 0
+}
+.msg{
+ max-width:90%;background:var(--bg);
+ border:1px solid var(--border);
+ border-radius:13px;padding:10px 12px;overflow-wrap:anywhere
+}
+.msg.mine{align-self:flex-end;background:var(--mine)}
+.meta{font-size:11px;color:var(--muted);margin-bottom:4px}
+.body{white-space:pre-wrap;overflow-wrap:anywhere}
+.time{font-size:10px;text-align:right;color:var(--muted);margin-top:5px}
+#compose{display:flex;gap:7px;margin-top:8px}
+#compose input{flex:1;min-width:0}
+#compose button{flex:0 0 auto}
+.member{display:flex;gap:9px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--bg);display:grid;place-items:center;flex-shrink:0}
+.member-info{flex:1;min-width:0}
+.member-info strong{display:block;overflow-wrap:anywhere}
+.member-info small{color:var(--muted)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.online{background:#23a55b}
+.offline{background:#9ba99f}
+.notice{background:#fff5dc;border-left:4px solid #d7a32a;padding:10px;font-size:13px;border-radius:6px;color:#614c1d}
+#qr{display:flex;justify-content:center;margin:15px 0}
+#qr canvas,#qr img{max-width:100%;height:auto!important}
+#cameraVideo{width:100%;max-height:300px;background:#111;border-radius:12px;display:none}
+#scanStatus{font-size:13px;color:var(--muted);margin:8px 0}
+.log{max-height:160px;overflow:auto;font-size:12px;color:var(--muted)}
+.log div{padding:4px 0;border-bottom:1px solid var(--border)}
+.theme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.theme-grid button{text-align:left}
+.theme-grid button.selected{outline:3px solid var(--text)}
+.small{font-size:12px}
+footer{text-align:center;padding:18px;color:var(--muted);font-size:12px}
+@media(max-width:430px){
+ main{padding:8px}.card{padding:11px}
+ .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ nav button{padding:9px;font-size:12px}
+}
 </style>
 </head>
 <body>
-<div class="app">
-<header class="top">
- <div class="brand"><div class="logo">🌿</div><div><h1>Swayam Chat</h1><small>Local-first · 50-member coordinator demo</small></div></div>
- <div class="status"><div id="netStatus">Checking connection…</div><div id="peerStatus">0 peers connected</div></div>
+
+<header>
+ <div class="head">
+  <div>
+   <h1>🌿 Swayam Room Chat</h1>
+   <p>Version 2 · Direct WebRTC messaging</p>
+  </div>
+  <div id="statusBadge" class="badge">Starting…</div>
+ </div>
 </header>
-<nav class="tabs" aria-label="Main navigation">
- <button class="active" data-tab="chats">💬 Chats</button><button data-tab="contacts">👥 Contacts</button><button data-tab="groups">🧑‍🤝‍🧑 Groups</button><button data-tab="connect">🔗 Connect</button><button data-tab="settings">⚙️ Settings</button><button data-tab="data">💾 Data</button>
+
+<nav>
+ <button class="active" data-tab="chat">💬 Chat</button>
+ <button data-tab="rooms">🏠 Rooms</button>
+ <button data-tab="connect">🔗 Connect</button>
+ <button data-tab="members">👥 Members</button>
+ <button data-tab="data">💾 Data</button>
+ <button data-tab="settings">⚙️ Settings</button>
 </nav>
-<main class="main">
-<section id="chats" class="panel active">
- <div class="grid">
-  <div class="card"><h2>Conversations</h2><div class="muted small">Choose a conversation to view its locally saved history.</div><div id="conversationList" class="list" style="margin-top:12px"></div></div>
-  <div class="card"><div class="row" style="justify-content:space-between"><div><h2 id="chatTitle">Select a chat</h2><div id="chatSub" class="muted small">Messages are stored in this browser's IndexedDB.</div></div><span id="chatType" class="pill">Local</span></div>
-   <div id="messages" class="chatbox" aria-live="polite"><div class="empty">Select or create a conversation to begin.</div></div>
-   <div class="compose"><input id="messageInput" placeholder="Write a message…" maxlength="4000" aria-label="Message"><button id="sendBtn">Send</button></div>
-   <div class="actions"><button class="secondary" id="attachBtn">Attach file</button><input type="file" id="fileInput" class="hidden" accept="image/*,.pdf,.txt,.doc,.docx,.zip"><button class="secondary" id="exportChatBtn">Export this chat</button></div>
-   <div class="muted small" style="margin-top:8px">A message is not “delivered” until a connected peer acknowledges it. File transfer is for small demo files only.</div>
+
+<main>
+
+<!-- CHAT -->
+<section class="panel active" id="chat">
+ <div class="card">
+  <h2 id="chatTitle">My Room</h2>
+  <div class="grid">
+   <div class="stat"><strong id="messageCount">0</strong><span>Messages</span></div>
+   <div class="stat"><strong id="peerCount">0</strong><span>Connected</span></div>
+   <div class="stat"><strong id="memberCount">1/50</strong><span>Room members</span></div>
   </div>
  </div>
- <div class="notice warning"><strong>Demo limitation:</strong> no server or third-party database is used. Peer pairing requires exchanging WebRTC offer/answer text. Devices must be online and connected to exchange messages; offline recipients cannot be reached by magic.</div>
-</section>
-<section id="contacts" class="panel">
- <div class="grid">
-  <div class="card"><h2>Your local profile</h2><p class="muted">This name is stored only in this browser. It is not a verified identity.</p><label for="displayName">Display name</label><input id="displayName" maxlength="50" placeholder="Your name"><div class="actions"><button id="saveProfile">Save profile</button><button class="secondary" id="showMyId">Show local ID</button></div><div id="myIdBox" class="notice hidden"></div></div>
-  <div class="card"><h2>Add contact</h2><label for="contactName">Contact display name</label><input id="contactName" maxlength="50" placeholder="Friend's name"><label for="contactPeerId">Peer ID (optional)</label><input id="contactPeerId" maxlength="100" placeholder="Peer ID from their pairing screen"><div class="actions"><button id="addContact">Save contact</button></div><hr class="divider"><h3>Saved contacts</h3><div id="contactList" class="list"></div></div>
+
+ <div class="card">
+  <div id="messages"><p class="muted">No messages yet. Connect another device to start chatting.</p></div>
+  <div id="compose">
+   <input id="messageInput" maxlength="5000" placeholder="Write a message…">
+   <button id="sendButton">Send ➤</button>
+  </div>
+  <p class="muted">✓ means saved locally. Delivery counts show connected peers that acknowledged a message.</p>
  </div>
 </section>
-<section id="groups" class="panel">
- <div class="grid">
-  <div class="card"><h2>Create local group</h2><p class="muted small">Creates a local group record. Add connected peers to send messages. A group is not automatically shared with other devices.</p><label for="groupName">Group name</label><input id="groupName" maxlength="60" placeholder="Family Group"><div class="actions"><button id="createGroup">Create group</button></div><hr class="divider"><h3>Your groups</h3><div id="groupList" class="list"></div></div>
-  <div class="card"><h2>Group membership</h2><p id="groupMemberHint" class="muted">Select a group to manage its local member list.</p><div id="groupMembers" class="list"></div><div class="notice small">Coordinator mode: make one trusted, always-online device the group hub. Every member connects to that hub; the hub forwards group messages to its other connected peers. The hub must stay online, and group members still need compatible group IDs for a shared history.</div></div>
+
+<!-- ROOMS -->
+<section class="panel" id="rooms">
+ <div class="card">
+  <h2>🏠 Room Management</h2>
+  <label>Your display name</label>
+  <input id="displayName" maxlength="40" placeholder="Your name">
+
+  <label>Room name</label>
+  <input id="roomName" maxlength="60" placeholder="Family Room">
+
+  <div class="row" style="margin-top:10px">
+   <button id="createRoom">Create Room</button>
+   <button id="saveRoom" class="secondary">Save Name</button>
+  </div>
+
+  <hr>
+  <h3>Current Room</h3>
+  <p><strong id="currentRoomName"></strong></p>
+  <p class="muted">Room ID: <span id="currentRoomId"></span></p>
+
+  <div class="row">
+   <button id="generateQR">Generate QR</button>
+   <button id="shareInvite" class="secondary">Share Invitation</button>
+  </div>
+
+  <div id="qr"></div>
+  <textarea id="inviteText" readonly placeholder="Room invitation"></textarea>
+  <button id="copyInvite" class="secondary">Copy Invitation</button>
+ </div>
+
+ <div class="card">
+  <h2>Join a Room</h2>
+  <label>Invitation text or room ID</label>
+  <textarea id="joinText" placeholder="Paste room invitation here"></textarea>
+  <div class="row">
+   <button id="joinRoom">Join Room</button>
+   <button id="scanOpen" class="secondary">📷 Scan QR</button>
+  </div>
+
+  <video id="cameraVideo" autoplay playsinline></video>
+  <div id="scanStatus"></div>
+  <button id="stopScan" class="danger" style="display:none">Stop Scanner</button>
+  <p class="muted">Room joining does not itself establish a WebRTC connection.</p>
  </div>
 </section>
-<section id="connect" class="panel">
- <div class="grid">
-  <div class="card"><h2>1. Pair this device</h2><p class="muted">WebRTC needs signaling. With no signaling server, copy the offer to the other device and bring its answer back here. Use HTTPS or localhost; GitHub Pages provides HTTPS.</p><label for="pairLabel">Connection label</label><input id="pairLabel" maxlength="50" placeholder="Friend's phone"><div class="actions"><button id="createOffer">Create offer</button><button class="secondary" id="createAnswer">Create answer from offer</button></div><label for="signalInput">Paste offer or answer here</label><textarea id="signalInput" spellcheck="false" placeholder="Paste the other device's signaling text here…"></textarea><div class="actions"><button id="applySignal">Apply pasted signal</button><button class="secondary" id="copySignal">Copy my signal</button><button class="secondary" id="clearSignal">Clear</button></div><div id="signalHint" class="notice small">Flow: Device A creates offer → Device B pastes offer and creates answer → Device A pastes answer.</div><label for="peerCode">Your local peer ID</label><input id="peerCode" readonly><div class="actions"><button class="secondary" id="copyPeerId">Copy peer ID</button></div></div>
-  <div class="card"><h2>2. Connected peers</h2><div class="statgrid"><div class="stat"><b id="statPeers">0</b><span class="small muted">Connected</span></div><div class="stat"><b id="statSent">0</b><span class="small muted">Sent locally</span></div><div class="stat"><b id="statReceived">0</b><span class="small muted">Received</span></div></div><div id="peerList" class="list" style="margin-top:12px"></div><div class="actions"><button class="secondary" id="pingPeers">Ping connected peers</button><button class="danger" id="disconnectAll">Disconnect all</button></div><label class="inline"><input id="coordinatorMode" class="check" type="checkbox"> This device is the group coordinator (hub)</label><div class="notice small">For a 50-person group, all members connect to one trusted hub instead of making 1,225 full-mesh links. Keep the hub online. This is still peer-to-peer: no message server or third-party database is used.</div><hr class="divider"><p class="muted small">Pairing still requires exchanging offer/answer text. A QR code alone cannot establish a remote connection without a signaling channel. STUN helps connection setup; some networks may still require a TURN relay.</p></div>
+
+<!-- CONNECT -->
+<section class="panel" id="connect">
+ <div class="card">
+  <h2>🔗 Connect Devices</h2>
+  <div class="notice">
+   This demo exchanges WebRTC connection codes manually. No signaling server is included.
+   A room QR is not a live connection QR.
+  </div>
+
+  <label>Connection label</label>
+  <input id="peerLabel" maxlength="40" placeholder="Friend's name">
+
+  <div class="row" style="margin-top:10px">
+   <button id="createOffer">1. Create Offer</button>
+   <button id="createAnswer" class="secondary">2. Create Answer</button>
+  </div>
+
+  <label>My generated connection code</label>
+  <textarea id="localCode" placeholder="Offer or answer appears here"></textarea>
+  <div class="row">
+   <button id="copyCode" class="secondary">Copy Code</button>
+   <button id="shareCode" class="secondary">Share Code</button>
+  </div>
+
+  <label>Connection code received from the other device</label>
+  <textarea id="remoteCode" placeholder="Paste offer or answer here"></textarea>
+  <button id="applyAnswer" style="margin-top:8px">3. Apply Remote Answer</button>
+
+  <h3>Connection Log</h3>
+  <div id="connectionLog" class="log"></div>
+ </div>
+
+ <div class="card">
+  <h2>Connection Steps</h2>
+  <ol class="small">
+   <li>Device A creates an offer.</li>
+   <li>Device A sends the offer to Device B.</li>
+   <li>Device B pastes the offer and creates an answer.</li>
+   <li>Device B sends its answer to Device A.</li>
+   <li>Device A pastes the answer and applies it.</li>
+   <li>Wait for the connection to open.</li>
+  </ol>
+ </div>
+
+ <div class="card">
+  <h2>Connected Devices</h2>
+  <div id="connectionList"></div>
  </div>
 </section>
-<section id="settings" class="panel">
- <div class="grid">
-  <div class="card"><h2>Appearance</h2><label for="themeSelect">Nature theme</label><select id="themeSelect"><option value="forest">Forest Green</option><option value="ocean">Ocean Blue</option><option value="sunset">Sunset</option><option value="lavender">Lavender</option><option value="meadow">Meadow</option><option value="rose">Rose Garden</option><option value="sky">Open Sky</option><option value="earth">Earth</option><option value="night">Night Forest</option><option value="monsoon">Monsoon</option><option value="sunrise">Sunrise</option></select><label class="inline"><input id="soundToggle" class="check" type="checkbox"> Play a sound on incoming messages</label><label class="inline"><input id="notifyToggle" class="check" type="checkbox"> Show browser notifications while app is open</label><div class="actions"><button id="requestNotifications" class="secondary">Enable notification permission</button></div></div>
-  <div class="card"><h2>Privacy & behaviour</h2><label class="inline"><input id="enterSend" class="check" type="checkbox"> Enter sends message (Shift+Enter for new line)</label><label class="inline"><input id="confirmClear" class="check" type="checkbox" checked> Confirm before clearing local data</label><label class="inline"><input id="autoRetry" class="check" type="checkbox" checked> Retry queued messages when peers reconnect</label><div class="notice warning small">IndexedDB is local browser storage, not an encrypted backup. Anyone with access to this browser profile may be able to access the app's local data. Avoid sensitive information on shared devices.</div><div class="actions"><button id="saveSettings">Save settings</button></div></div>
+
+<!-- MEMBERS -->
+<section class="panel" id="members">
+ <div class="card">
+  <h2>👥 Room Members</h2>
+  <p class="muted">Maximum registered members per room: 50, including this device.</p>
+  <div id="memberList"></div>
+  <p class="muted">Member lists are local to each device. This demo does not synchronize a complete directory between all participants.</p>
  </div>
 </section>
-<section id="data" class="panel">
- <div class="grid">
-  <div class="card"><h2>Local data management</h2><div class="statgrid"><div class="stat"><b id="dataMessages">0</b><span class="small muted">Messages</span></div><div class="stat"><b id="dataContacts">0</b><span class="small muted">Contacts</span></div><div class="stat"><b id="dataGroups">0</b><span class="small muted">Groups</span></div></div><div class="actions"><button id="exportAll">Export all data (JSON)</button><button class="secondary" id="importAllBtn">Import JSON backup</button><input type="file" id="importFile" accept=".json,application/json" class="hidden"></div><hr class="divider"><button id="clearMessages" class="secondary">Clear all messages</button> <button id="clearAll" class="danger">Delete all local data</button></div>
-  <div class="card"><h2>About this demo</h2><p>This demo stores profiles, contacts, conversations, messages, groups and settings in IndexedDB. WebRTC transports data peer-to-peer when a connection is established.</p><ul><li>No account server or central message database.</li><li>Display names and peer IDs are not verified identities.</li><li>Local backups are unencrypted JSON unless you encrypt the exported file separately.</li><li>Clearing browser storage or losing a device can destroy its local copy.</li><li>Browser background limits mean it is not a WhatsApp replacement.</li></ul><p class="muted small">For groups up to around 50 members, use coordinator mode on one trusted device and connect each member to it. The hub forwards group messages only. It is not guaranteed offline delivery: when a member is disconnected, the hub cannot reach them until they reconnect.</p></div>
+
+<!-- DATA -->
+<section class="panel" id="data">
+ <div class="card">
+  <h2>💾 Data Management</h2>
+  <p class="muted">Messages are saved automatically in IndexedDB on this device.</p>
+  <div class="row">
+   <button id="exportJSON">Export JSON</button>
+   <button id="exportCSV" class="secondary">Export CSV</button>
+  </div>
+
+  <label>Import JSON backup</label>
+  <input type="file" id="importFile" accept=".json,application/json">
+  <button id="importJSON" style="margin-top:8px">Import Backup</button>
+
+  <hr>
+  <p id="storageInfo" class="muted"></p>
+  <button id="clearMessages" class="secondary">Clear Messages</button>
+  <button id="resetApp" class="danger">Reset All Data</button>
  </div>
 </section>
+
+<!-- SETTINGS -->
+<section class="panel" id="settings">
+ <div class="card">
+  <h2>⚙️ Settings</h2>
+  <label>Display name</label>
+  <input id="settingsName" maxlength="40">
+  <button id="saveSettings" style="margin-top:8px">Save Settings</button>
+
+  <hr>
+  <h3>🌿 Nature Themes</h3>
+  <div id="themeGrid" class="theme-grid"></div>
+
+  <hr>
+  <label><input type="checkbox" id="notificationToggle"> Enable browser notifications</label>
+  <button id="enableNotifications" class="secondary">Request Notification Permission</button>
+  <label><input type="checkbox" id="soundToggle"> Enable sound</label>
+  <label><input type="checkbox" id="timeToggle" checked> Show timestamps</label>
+ </div>
+
+ <div class="card">
+  <h2>🔒 Privacy and Delivery</h2>
+  <ul class="small">
+   <li>Messages are stored in this browser's IndexedDB.</li>
+   <li>WebRTC encrypts transport between connected peers.</li>
+   <li>Message delivery receipts indicate that a connected peer acknowledged receipt.</li>
+   <li>A receipt does not prove that a person read a message.</li>
+   <li>Offline recipients do not receive messages automatically.</li>
+   <li>Room QR codes are invitations, not authentication credentials.</li>
+   <li>No server-side message backup is provided.</li>
+  </ul>
+ </div>
+</section>
+
+<footer>Swayam Room Chat V2 · Local-first WebRTC demo</footer>
 </main>
-<footer class="footer">Swayam Chat demo · IndexedDB + WebRTC DataChannel · No third-party database · No third-party database · Coordinator mode · Not production-ready for sensitive communication</footer>
-</div>
+
 <script>
-(() => {
 "use strict";
-const DB_NAME="swayam-chat-local-v1", DB_VERSION=1;
-const stores=["profile","contacts","conversations","messages","groups","settings"];
-let db, currentConversation=null, selectedGroup=null, peers=new Map(), sentCount=0, receivedCount=0, lastSignal="", localPeerId=localStorage.getItem("swayamPeerId");
-if(!localPeerId){localPeerId="peer-"+crypto.randomUUID().slice(0,8);localStorage.setItem("swayamPeerId",localPeerId)}
-const $=id=>document.getElementById(id);
-const now=()=>Date.now();
-const uid=()=>crypto.randomUUID();
-const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,DB_VERSION);req.onupgradeneeded=()=>{const d=req.result;for(const s of stores)if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:"id"});};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);})}
-function tx(store,mode="readonly"){return db.transaction(store,mode).objectStore(store)}
-function getAll(store){return new Promise((res,rej)=>{const r=tx(store).getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)})}
-function get(store,id){return new Promise((res,rej)=>{const r=tx(store).get(id);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
-function put(store,obj){return new Promise((res,rej)=>{const t=db.transaction(store,"readwrite"),r=t.objectStore(store).put(obj);t.oncomplete=()=>res(obj);t.onerror=()=>rej(t.error);r.onerror=()=>rej(r.error)})}
-function del(store,id){return new Promise((res,rej)=>{const t=db.transaction(store,"readwrite");t.objectStore(store).delete(id);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
-function clearStore(store){return new Promise((res,rej)=>{const t=db.transaction(store,"readwrite");t.objectStore(store).clear();t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
-function allTxClear(){return new Promise((res,rej)=>{const t=db.transaction(stores,"readwrite");stores.forEach(s=>t.objectStore(s).clear());t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
-function download(name,text,type="application/json"){const a=document.createElement("a"),u=URL.createObjectURL(new Blob([text],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),2000)}
-function notify(text){$("signalHint").textContent=text}
-function activeName(){return $("displayName").value.trim()||"Me"}
-function setTab(tab){document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id===tab));}
-document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.tab)));
-function theme(name){document.documentElement.dataset.theme=name}
-async function settingsLoad(){const s=await get("settings","main")||{};$("themeSelect").value=s.theme||"forest";theme($("themeSelect").value);$("soundToggle").checked=!!s.sound;$("notifyToggle").checked=!!s.notify;$("enterSend").checked=!!s.enterSend;$("confirmClear").checked=s.confirmClear!==false;$("autoRetry").checked=s.autoRetry!==false}
-async function saveSettings(){localStorage.setItem("swayamCoordinatorMode",String($("coordinatorMode").checked));const s={id:"main",theme:$("themeSelect").value,sound:$("soundToggle").checked,notify:$("notifyToggle").checked,enterSend:$("enterSend").checked,confirmClear:$("confirmClear").checked,autoRetry:$("autoRetry").checked};await put("settings",s);theme(s.theme);notify("Settings saved locally.");}
-$("themeSelect").addEventListener("change",e=>theme(e.target.value));$("saveSettings").onclick=saveSettings;
-async function loadProfile(){const p=await get("profile","main");$("displayName").value=p?.name||"";$("peerCode").value=localPeerId}
-$("saveProfile").onclick=async()=>{await put("profile",{id:"main",name:$("displayName").value.trim().slice(0,50),peerId:localPeerId});notify("Profile saved on this device.")};
-$("showMyId").onclick=()=>{$("myIdBox").classList.remove("hidden");$("myIdBox").textContent="Local peer ID: "+localPeerId+" (not an account or a globally routable address)."};
-$("copyPeerId").onclick=()=>copyText(localPeerId);
-async function copyText(text){try{await navigator.clipboard.writeText(text);notify("Copied to clipboard.");}catch{prompt("Copy this text:",text)}}
-$("addContact").onclick=async()=>{const name=$("contactName").value.trim();if(!name)return alert("Enter a contact name.");const c={id:uid(),name,peerId:$("contactPeerId").value.trim(),createdAt:now()};await put("contacts",c);$("contactName").value="";$("contactPeerId").value="";await renderAll();notify("Contact saved locally.")};
-async function createConversation(title,type="direct",id=uid()){const c={id,title,type,createdAt:now(),updatedAt:now()};await put("conversations",c);currentConversation=id;await renderAll();return c}
-async function renderAll(){await renderConversations();await renderContacts();await renderGroups();await renderPeers();await updateStats();if(currentConversation)await renderMessages();else{$("messages").innerHTML='<div class="empty">Select or create a conversation to begin.</div>'}}
-async function renderConversations(){const list=$("conversationList"),cs=(await getAll("conversations")).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));if(!cs.length){list.innerHTML='<div class="empty">No conversations yet. Create a chat by selecting a connected peer or creating a group.</div>';return}list.innerHTML="";for(const c of cs){const ms=(await getAll("messages")).filter(m=>m.conversationId===c.id).sort((a,b)=>b.timestamp-a.timestamp),last=ms[0];const el=document.createElement("div");el.className="item";el.innerHTML=`<div class="grow"><strong>${esc(c.title)}</strong><small>${esc(last?last.text||("["+last.type+"]"):"No messages yet")}</small></div><button class="secondary">Open</button>`;el.querySelector("button").onclick=async()=>{currentConversation=c.id;await renderMessages();await renderConversations()};list.appendChild(el)}}
-async function renderContacts(){const list=$("contactList"),cs=await getAll("contacts");list.innerHTML="";if(!cs.length){list.innerHTML='<div class="empty">No contacts saved.</div>';return}for(const c of cs){const el=document.createElement("div");el.className="item";el.innerHTML=`<div class="grow"><strong>${esc(c.name)}</strong><small>${esc(c.peerId||"Not paired yet")}</small></div><button>Chat</button><button class="secondary" title="Delete contact">×</button>`;el.children[1].onclick=async()=>{let conv=(await getAll("conversations")).find(x=>x.peerId===c.peerId&&c.peerId);if(!conv)conv=await createConversation(c.name,"direct");currentConversation=conv.id;await renderMessages();setTab("chats")};el.children[2].onclick=async()=>{if(confirm("Delete this contact?")){await del("contacts",c.id);await renderAll()}};list.appendChild(el)}}
-async function renderGroups(){const list=$("groupList");const gs=await getAll("groups");list.innerHTML="";if(!gs.length)list.innerHTML='<div class="empty">No groups created.</div>';for(const g of gs){const el=document.createElement("div");el.className="item";el.innerHTML=`<div class="grow"><strong>${esc(g.name)}</strong><small>${(g.members||[]).length} saved peer(s)</small></div><button class="secondary">Manage</button><button>Open chat</button>`;el.children[1].onclick=()=>manageGroup(g.id);el.children[2].onclick=async()=>{let c=await get("conversations",g.conversationId);if(!c)c=await createConversation(g.name,"group",g.conversationId);currentConversation=c.id;await renderMessages();setTab("chats")};list.appendChild(el)}if(selectedGroup)await manageGroup(selectedGroup)}
-$("createGroup").onclick=async()=>{const name=$("groupName").value.trim();if(!name)return alert("Enter a group name.");const id=uid(),conv={id:"group-"+id,title:name,type:"group",createdAt:now(),updatedAt:now()};await put("conversations",conv);await put("groups",{id,name,conversationId:conv.id,members:[],createdAt:now(),admin:localPeerId});selectedGroup=id;$("groupName").value="";currentConversation=conv.id;await renderAll();setTab("groups")};
-async function manageGroup(id){selectedGroup=id;const g=await get("groups",id);if(!g)return;$("groupMemberHint").textContent=`${g.name} · ${g.members.length} saved member(s) · local group ID ${g.id}`;const box=$("groupMembers");box.innerHTML="";const contacts=await getAll("contacts");for(const c of contacts){const member=(g.members||[]).includes(c.id);const el=document.createElement("div");el.className="item";el.innerHTML=`<div class="grow"><strong>${esc(c.name)}</strong><small>${esc(c.peerId||"Not paired")}</small></div><button class="${member?"secondary":""}">${member?"Remove":"Add"}</button>`;el.querySelector("button").onclick=async()=>{const gg=await get("groups",id);gg.members=gg.members||[];gg.members=member?gg.members.filter(x=>x!==c.id):[...gg.members,c.id];await put("groups",gg);await manageGroup(id);await renderGroups()};box.appendChild(el)}if(!contacts.length)box.innerHTML='<div class="empty">Add contacts first. Pairing is managed in Connect.</div>'}
-async function renderMessages(){const c=await get("conversations",currentConversation);if(!c){$("chatTitle").textContent="Select a chat";return}$("chatTitle").textContent=c.title;$("chatSub").textContent=c.type==="group"?"Group chat · local history":"Direct chat · local history";$("chatType").textContent=c.type;const box=$("messages"),ms=(await getAll("messages")).filter(m=>m.conversationId===c.id).sort((a,b)=>a.timestamp-b.timestamp);box.innerHTML="";if(!ms.length)box.innerHTML='<div class="empty">No messages yet. Say hello!</div>';for(const m of ms){const b=document.createElement("div");b.className="bubble"+(m.senderId===localPeerId?" mine":"");const date=new Date(m.timestamp||now()).toLocaleString();let body=m.type==="file"?`📎 ${esc(m.fileName||"File")} (${Math.round((m.fileSize||0)/1024)} KB)`:esc(m.text||"");if(m.type==="file"&&m.dataUrl)body+=`<div><a download="${esc(m.fileName)}" href="${m.dataUrl}">Download file</a></div>`;b.innerHTML=`<div><strong>${esc(m.senderName||m.senderId||"Unknown")}</strong></div><div>${body}</div><div class="meta">${esc(date)} · ${esc(m.status||"saved locally")}</div>`;box.appendChild(b)}box.scrollTop=box.scrollHeight}
-async function saveAndSend(payload){const c=await get("conversations",currentConversation);if(!c)return alert("Select a conversation first.");const m={id:uid(),conversationId:c.id,groupId:c.type==="group"?c.id:null,senderId:localPeerId,senderName:activeName(),text:payload.text||"",type:payload.type||"text",fileName:payload.fileName||"",fileSize:payload.fileSize||0,dataUrl:payload.dataUrl||"",timestamp:now(),status:"pending",deliveredTo:[]};await put("messages",m);let targetPeers=[];if(c.type==="group"){const g=(await getAll("groups")).find(x=>x.conversationId===c.id);const contacts=await getAll("contacts");const peerIds=(g?.members||[]).map(id=>contacts.find(x=>x.id===id)?.peerId).filter(Boolean);targetPeers=[...peers.values()].filter(p=>p.channel?.readyState==="open"&&(!peerIds.length||peerIds.includes(p.remotePeerId)||peerIds.includes(p.label)));}else{const direct=await getAll("contacts");const contact=direct.find(x=>x.name===c.title||x.peerId===[...peers.values()].find(p=>p.label===c.title)?.remotePeerId);targetPeers=[...peers.values()].filter(p=>p.channel?.readyState==="open"&&(!contact?.peerId||contact.peerId===p.remotePeerId||contact.peerId===p.label));if(!targetPeers.length)targetPeers=[...peers.values()].filter(p=>p.channel?.readyState==="open")}
-if(!targetPeers.length)targetPeers=[...peers.values()].filter(p=>p.channel?.readyState==="open");let delivered=0;for(const p of targetPeers){try{p.channel.send(JSON.stringify({kind:"message",message:m}));delivered++}catch(e){console.warn(e)}}if(delivered){m.status="sent to connected peer(s)";sentCount++;await put("messages",m)}else{m.status="pending — no matching connected peer";await put("messages",m)}c.updatedAt=now();await put("conversations",c);await renderAll()}
-$("sendBtn").onclick=async()=>{const text=$("messageInput").value.trim();if(!text)return;if(!currentConversation)return alert("Select a conversation first.");$("messageInput").value="";await saveAndSend({text,type:"text"})};
-$("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&$("enterSend").checked){e.preventDefault();$("sendBtn").click()}});
-$("attachBtn").onclick=()=>$("fileInput").click();
-$("fileInput").onchange=async e=>{const f=e.target.files[0];if(!f)return;if(f.size>300*1024){alert("Demo limit: files must be 300 KB or smaller. Larger files need chunked transfer.");e.target.value="";return}const reader=new FileReader();reader.onload=async()=>{await saveAndSend({type:"file",text:"",fileName:f.name,fileSize:f.size,dataUrl:reader.result});e.target.value=""};reader.readAsDataURL(f)};
-$("exportChatBtn").onclick=async()=>{if(!currentConversation)return;const c=await get("conversations",currentConversation),ms=(await getAll("messages")).filter(m=>m.conversationId===currentConversation);download("swayam-chat-"+c.id+".json",JSON.stringify({conversation:c,messages:ms},null,2))};
-function makePeer(label){const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});const p={id:uid(),label:label||"Peer",pc,channel:null,remotePeerId:"",connectedAt:0};pc.ondatachannel=e=>{p.channel=e.channel;setupChannel(p)};pc.onconnectionstatechange=()=>{renderPeers();if(pc.connectionState==="connected"){p.connectedAt=now();if($("autoRetry").checked)retryQueue(p)}};peers.set(p.id,p);return p}
-function setupChannel(p){
- const ch=p.channel;
- ch.onopen=()=>{try{ch.send(JSON.stringify({kind:"hello",peerId:localPeerId,name:activeName()}))}catch{}renderPeers();if($("autoRetry").checked)retryQueue(p)};
- ch.onclose=()=>renderPeers();ch.onerror=()=>renderPeers();
- ch.onmessage=async e=>{try{
-  const data=JSON.parse(e.data);
-  if(data.kind==="hello"){p.remotePeerId=data.peerId||"";if(data.name)p.label=data.name;renderPeers();return}
-  if(data.kind==="ping"){ch.send(JSON.stringify({kind:"pong",at:data.at}));return}
-  if(data.kind==="pong")return;
-  if(data.kind==="message"){
-   const m=data.message;if(!m?.id||!m.conversationId)return;
-   const exists=await get("messages",m.id);
-   if(!exists){
-    let conv=await get("conversations",m.conversationId);
-    if(!conv){conv={id:m.conversationId,title:m.groupId?"Received group":"Chat with "+(m.senderName||p.label),type:m.groupId?"group":"direct",createdAt:now(),updatedAt:now()};await put("conversations",conv)}
-    const copy={...m,status:"received",receivedAt:now()};await put("messages",copy);conv.updatedAt=now();await put("conversations",conv);receivedCount++;
-    if($("soundToggle").checked)beep();if($("notifyToggle").checked&&document.hidden&&"Notification" in window&&Notification.permission==="granted")new Notification("New message from "+(m.senderName||p.label),{body:m.type==="file"?"Sent a file":m.text||"New message"});
-    // Hub forwards group messages to every other connected member; message IDs prevent loops/duplicates.
-    if($("coordinatorMode").checked&&m.groupId){for(const other of peers.values()){if(other.id!==p.id&&other.channel?.readyState==="open"){try{other.channel.send(JSON.stringify({kind:"message",message:m}))}catch(err){console.warn(err)}}}}
-    ch.send(JSON.stringify({kind:"ack",messageId:m.id,from:localPeerId}));await renderAll();
-   }else{ch.send(JSON.stringify({kind:"ack",messageId:m.id,from:localPeerId}))}
-   return
-  }
-  if(data.kind==="ack"){
-   const m=await get("messages",data.messageId);
-   if(m){m.deliveredTo=m.deliveredTo||[];if(!m.deliveredTo.includes(data.from))m.deliveredTo.push(data.from);m.status="acknowledged by "+m.deliveredTo.length+" peer(s)";await put("messages",m);if($("coordinatorMode").checked&&m.senderId!==localPeerId){for(const other of peers.values()){if(other.id!==p.id&&other.remotePeerId===m.senderId&&other.channel?.readyState==="open"){try{other.channel.send(JSON.stringify(data))}catch{}}}}await renderMessages();return}
-   // If this device is the hub, route recipient acknowledgements back to the original sender.
-   if($("coordinatorMode").checked){for(const other of peers.values()){if(other.id!==p.id&&other.remotePeerId===data.from&&other.channel?.readyState==="open"){try{other.channel.send(JSON.stringify(data))}catch{}}}}
-   return
-  }
- }catch(err){console.warn("Invalid peer data",err)}};
+
+const $ = id => document.getElementById(id);
+const DB_NAME = "SwayamRoomChatV2";
+const DB_VERSION = 1;
+const MAX_MEMBERS = 50;
+
+let db;
+let rooms = [];
+let members = [];
+let messages = [];
+let peers = {};
+let currentRoom = null;
+let cameraStream = null;
+let scanTimer = null;
+
+let settings = {
+ name:"User",
+ theme:"Forest",
+ notifications:false,
+ sound:false,
+ timestamps:true
+};
+
+const themes = {
+ Forest:["#167447","#0c5733","#edf6ef","#ffffff","#183729","#718176","#dbe8dd","#d9f5df"],
+ Ocean:["#087e9c","#07536b","#eaf6fa","#ffffff","#143947","#6c8791","#d4e8ee","#d2f0fa"],
+ Sunset:["#c65d37","#88381e","#fff1e8","#ffffff","#4b2a20","#94766b","#f0d9cc","#ffe0cb"],
+ Lavender:["#7961ae","#4e3d7e","#f2effb","#ffffff","#332a4b","#837b9a","#e1daf1","#e8ddff"],
+ Desert:["#a77a34","#76521e","#faf3e5","#fffdf8","#49381e","#928267","#eadeca","#f5e6c4"],
+ Sakura:["#c44c83","#87315a","#fff0f6","#ffffff","#492438","#98768a","#f0d7e3","#ffdfed"],
+ Mint:["#318779","#205b52","#e8f8f3","#ffffff","#20443c","#718e85","#d0ebe1","#d0f2e5"],
+ Night:["#465a7e","#263652","#e9edf5","#ffffff","#202c43","#71809b","#d6deed","#dce5fa"],
+ Autumn:["#98502d","#63351e","#f9efe4","#fffaf4","#432c20","#947b69","#ead8c6","#f4dec8"],
+ Meadow:["#698a32","#405a1c","#f1f6e7","#ffffff","#344224","#7f8b6e","#e0e8d1","#e2f0c9"]
+};
+
+const uid = prefix => prefix+"_"+crypto.randomUUID();
+const now = () => new Date().toISOString();
+const shortTime = s => {
+ try{return new Date(s).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}
+ catch(e){return ""}
+};
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+})[c]);
+
+function log(s){
+ const div=document.createElement("div");
+ div.textContent="["+shortTime(now())+"] "+s;
+ $("connectionLog").prepend(div);
+ while($("connectionLog").children.length>30){
+  $("connectionLog").lastChild.remove();
+ }
 }
-function waitIce(pc){return new Promise(resolve=>{if(pc.iceGatheringState==="complete")return resolve();const timer=setTimeout(done,8000);function done(){clearTimeout(timer);pc.removeEventListener("icegatheringstatechange",change);resolve()}function change(){if(pc.iceGatheringState==="complete")done()}pc.addEventListener("icegatheringstatechange",change)})}
-$("createOffer").onclick=async()=>{try{const p=makePeer($("pairLabel").value.trim()||"Pending peer");p.channel=p.pc.createDataChannel("swayam-chat",{ordered:true});setupChannel(p);const offer=await p.pc.createOffer();await p.pc.setLocalDescription(offer);notify("Gathering connection information…");await waitIce(p.pc);lastSignal=JSON.stringify({app:"swayam-chat-demo",version:1,kind:"offer",peerId:localPeerId,name:activeName(),sdp:p.pc.localDescription.sdp});$("signalInput").value=lastSignal;notify("Offer ready. Copy it to the other device.");await renderPeers()}catch(e){alert("Could not create offer: "+e.message)}};
-$("createAnswer").onclick=async()=>{try{const data=parseSignal($("signalInput").value);if(data.kind!=="offer")throw Error("Paste an offer first.");const p=makePeer(data.name||$("pairLabel").value||"Peer");p.remotePeerId=data.peerId||"";await p.pc.setRemoteDescription({type:"offer",sdp:data.sdp});const answer=await p.pc.createAnswer();await p.pc.setLocalDescription(answer);notify("Gathering answer…");await waitIce(p.pc);lastSignal=JSON.stringify({app:"swayam-chat-demo",version:1,kind:"answer",peerId:localPeerId,name:activeName(),sdp:p.pc.localDescription.sdp});$("signalInput").value=lastSignal;notify("Answer ready. Copy it back to the offer creator.");await renderPeers()}catch(e){alert("Could not create answer: "+e.message)}};
-function parseSignal(s){const d=JSON.parse(s);if(d.app!=="swayam-chat-demo"||!["offer","answer"].includes(d.kind)||!d.sdp)throw Error("Invalid Swayam Chat signaling text.");return d}
-$("applySignal").onclick=async()=>{try{const d=parseSignal($("signalInput").value);if(d.kind==="answer"){const p=[...peers.values()].find(x=>x.pc.signalingState==="have-local-offer");if(!p)throw Error("No pending local offer found. Create an offer first.");await p.pc.setRemoteDescription({type:"answer",sdp:d.sdp});p.remotePeerId=d.peerId||"";p.label=d.name||p.label;notify("Answer applied. Waiting for peer connection…")}else{throw Error("This is an offer. On the answering device, use Create answer from offer.")}await renderPeers()}catch(e){alert(e.message)}};
-$("copySignal").onclick=()=>{if(!$("signalInput").value.trim())return alert("Create an offer or answer first.");copyText($("signalInput").value)};
-$("clearSignal").onclick=()=>{$("signalInput").value="";notify("Signaling box cleared.")};
-async function retryQueue(p){if(!p.channel||p.channel.readyState!=="open")return;const ms=(await getAll("messages")).filter(m=>m.senderId===localPeerId&&(m.status||"").startsWith("pending"));for(const m of ms){try{p.channel.send(JSON.stringify({kind:"message",message:m}));m.status="sent to connected peer(s)";await put("messages",m)}catch{}}await renderAll()}
-async function renderPeers(){const list=$("peerList");list.innerHTML="";let connected=0;for(const p of peers.values()){const state=p.pc.connectionState||"new";if(p.channel?.readyState==="open")connected++;const el=document.createElement("div");el.className="item";el.innerHTML=`<div class="grow"><strong>${esc(p.label)}</strong><small>${esc(p.remotePeerId||"peer ID unknown")} · ${esc(state)} · channel ${esc(p.channel?.readyState||"waiting")}</small></div><button class="secondary">Disconnect</button>`;el.querySelector("button").onclick=()=>{p.pc.close();peers.delete(p.id);renderPeers()};list.appendChild(el)}if(!peers.size)list.innerHTML='<div class="empty">No peers yet. Pair another device in this tab.</div>';$("peerStatus").textContent=connected+" peer(s) connected";$("statPeers").textContent=connected}
-$("disconnectAll").onclick=()=>{for(const p of peers.values())p.pc.close();peers.clear();renderPeers()};
-$("pingPeers").onclick=()=>{let n=0;for(const p of peers.values())if(p.channel?.readyState==="open"){p.channel.send(JSON.stringify({kind:"ping",at:now()}));n++}alert("Ping sent to "+n+" connected peer(s).")};
-async function updateStats(){const ms=await getAll("messages"),cs=await getAll("contacts"),gs=await getAll("groups");$("dataMessages").textContent=ms.length;$("dataContacts").textContent=cs.length;$("dataGroups").textContent=gs.length;$("statSent").textContent=sentCount;$("statReceived").textContent=receivedCount}
-$("exportAll").onclick=async()=>{const data={format:"swayam-chat-backup",version:1,exportedAt:new Date().toISOString()};for(const s of stores)data[s]=await getAll(s);download("swayam-chat-backup.json",JSON.stringify(data,null,2))};
-$("importAllBtn").onclick=()=>$("importFile").click();
-$("importFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(d.format!=="swayam-chat-backup")throw Error("This file is not a Swayam Chat backup.");for(const s of stores)for(const item of (d[s]||[]))if(item&&item.id)await put(s,item);await renderAll();await loadProfile();alert("Backup imported.");}catch(err){alert("Import failed: "+err.message)}e.target.value=""};
-$("clearMessages").onclick=async()=>{if($("confirmClear").checked&&!confirm("Delete all local messages?"))return;await clearStore("messages");await renderAll()};
-$("clearAll").onclick=async()=>{if($("confirmClear").checked&&!confirm("Delete ALL local profiles, contacts, conversations, groups, messages and settings? This cannot be undone."))return;await allTxClear();currentConversation=null;await renderAll();await loadProfile();await settingsLoad();alert("Local app data cleared.")};
-$("requestNotifications").onclick=async()=>{if(!("Notification"in window))return alert("Notifications are not supported in this browser.");const p=await Notification.requestPermission();alert("Notification permission: "+p)};
-function beep(){try{const ctx=new (window.AudioContext||window.webkitAudioContext)(),o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=660;g.gain.value=.04;o.start();o.stop(ctx.currentTime+.12);o.onended=()=>ctx.close()}catch{}}
-function onlineStatus(){$("netStatus").textContent=navigator.onLine?"Internet: online":"Internet: offline (peer links may disconnect)";$("netStatus").style.color=navigator.onLine?"var(--primary)":"var(--danger)"}
-window.addEventListener("online",onlineStatus);window.addEventListener("offline",onlineStatus);
-(async()=>{try{db=await openDB();await loadProfile();await settingsLoad();$("coordinatorMode").checked=localStorage.getItem("swayamCoordinatorMode")==="true";$("coordinatorMode").onchange=()=>localStorage.setItem("swayamCoordinatorMode",String($("coordinatorMode").checked));await renderAll();onlineStatus();$("peerCode").value=localPeerId;if(!window.RTCPeerConnection){alert("This browser does not support WebRTC.");} }catch(e){console.error(e);alert("Could not open local IndexedDB: "+e.message)}})();
-})();
+
+function readAll(store){
+ return new Promise((resolve,reject)=>{
+  const req=db.transaction(store,"readonly").objectStore(store).getAll();
+  req.onsuccess=()=>resolve(req.result||[]);
+  req.onerror=()=>reject(req.error);
+ });
+}
+
+function put(store,record){
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(store,"readwrite");
+  tx.objectStore(store).put(record);
+  tx.oncomplete=()=>resolve(true);
+  tx.onerror=()=>reject(tx.error);
+ });
+
+}
+
+function clearStore(store){
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(store,"readwrite");
+  tx.objectStore(store).clear();
+  tx.oncomplete=resolve;
+  tx.onerror=()=>reject(tx.error);
+ });
+}
+
+function openDB(){
+ return new Promise((resolve,reject)=>{
+  const req=indexedDB.open(DB_NAME,DB_VERSION);
+  req.onupgradeneeded=()=>{
+   const d=req.result;
+   for(const s of ["rooms","members","messages","settings"]){
+    if(!d.objectStoreNames.contains(s)){
+     d.createObjectStore(s,{keyPath:"id"});
+    }
+   }
+  };
+  req.onsuccess=()=>resolve(req.result);
+  req.onerror=()=>reject(req.error);
+ });
+}
+
+async function init(){
+ db=await openDB();
+ rooms=await readAll("rooms");
+ members=await readAll("members");
+ messages=await readAll("messages");
+
+ const stored=await readAll("settings");
+ const setting=stored.find(x=>x.id==="main");
+ if(setting)settings={...settings,...setting.value};
+
+ if(!rooms.length){
+  currentRoom={id:uid("room"),name:"My Room",createdAt:now()};
+  await put("rooms",currentRoom);
+  rooms=[currentRoom];
+ }else{
+  currentRoom=rooms[0];
+ }
+
+ let local=members.find(m=>m.id==="local");
+ if(!local){
+  local={
+   id:"local",name:settings.name,roomId:currentRoom.id,
+   local:true,createdAt:now()
+  };
+  await put("members",local);
+ }else{
+  local.name=settings.name;
+  local.roomId=currentRoom.id;
+  await put("members",local);
+ }
+
+ $("displayName").value=settings.name;
+ $("settingsName").value=settings.name;
+ $("roomName").value=currentRoom.name;
+ $("notificationToggle").checked=!!settings.notifications;
+ $("soundToggle").checked=!!settings.sound;
+ $("timeToggle").checked=settings.timestamps!==false;
+
+ buildThemes();
+ applyTheme(settings.theme);
+ render();
+ log("Database ready.");
+}
+
+document.querySelectorAll("nav button").forEach(b=>{
+ b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===b));
+  document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===b.dataset.tab));
+ };
+});
+
+function goTab(tab){
+ document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x.dataset.tab===tab));
+ document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===tab));
+}
+
+function localMember(){
+ return members.find(m=>m.id==="local");
+}
+
+function roomMembers(){
+ return members.filter(m=>m.roomId===currentRoom.id);
+}
+
+async function refreshData(){
+ rooms=await readAll("rooms");
+ members=await readAll("members");
+ messages=await readAll("messages");
+ render();
+}
+
+async function createRoom(){
+ const name=$("roomName").value.trim()||"New Room";
+ const room={id:uid("room"),name,createdAt:now()};
+ const local=localMember();
+
+ // The local user's current membership counts toward the limit.
+ const count=members.filter(m=>m.roomId===room.id).length;
+ if(count>=MAX_MEMBERS)return alert("Room is full.");
+
+ await put("rooms",room);
+ currentRoom=room;
+
+ if(local){
+  local.roomId=room.id;
+  await put("members",local);
+ }
+
+ await refreshData();
+ $("qr").innerHTML="";
+ $("inviteText").value="";
+ log("Created room "+name);
+}
+
+$("createRoom").onclick=createRoom;
+
+$("saveRoom").onclick=async()=>{
+ currentRoom.name=$("roomName").value.trim()||"My Room";
+ await put("rooms",currentRoom);
+ await refreshData();
+};
+
+function invitation(){
+ return JSON.stringify({
+  app:"SwayamRoomChat",
+  version:2,
+  roomId:currentRoom.id,
+  roomName:currentRoom.name,
+  createdAt:currentRoom.createdAt
+ });
+}
+
+$("generateQR").onclick=()=>{
+ $("qr").innerHTML="";
+ const text=invitation();
+ $("inviteText").value=text;
+ if(typeof QRCode==="undefined"){
+  return alert("QR library unavailable. Check your internet connection.");
+ }
+ new QRCode($("qr"),{
+  text,width:210,height:210,
+  correctLevel:QRCode.CorrectLevel.M
+ });
+};
+
+async function copyText(text){
+ if(!text)return alert("Nothing to copy.");
+ try{
+  await navigator.clipboard.writeText(text);
+  alert("Copied.");
+ }catch(e){
+  const t=document.createElement("textarea");
+  t.value=text;
+  document.body.appendChild(t);
+  t.select();
+  let ok=false;
+  try{ok=document.execCommand("copy")}catch(err){}
+  t.remove();
+  if(!ok)alert("Copy failed. Select the text and copy it manually.");
+ }
+}
+
+$("copyInvite").onclick=()=>copyText($("inviteText").value);
+
+$("shareInvite").onclick=async()=>{
+ const text=invitation();
+ $("inviteText").value=text;
+ if(navigator.share){
+  try{await navigator.share({title:currentRoom.name,text})}
+  catch(e){}
+ }else{
+  await copyText(text);
+ }
+};
+
+async function joinInvitation(raw){
+ let data;
+ try{
+  data=JSON.parse(raw);
+  if(data.app!=="SwayamRoomChat")throw new Error("Invalid invitation");
+ }catch(e){
+  // A raw room ID can select an existing local room only.
+  const found=rooms.find(r=>r.id===raw.trim());
+  if(!found)throw new Error("Enter a valid room invitation or an existing local room ID.");
+  data={roomId:found.id,roomName:found.name,createdAt:found.createdAt};
+ }
+
+ if(!data.roomId)throw new Error("Room ID is missing.");
+
+ let room=rooms.find(r=>r.id===data.roomId);
+ if(!room){
+  room={
+   id:data.roomId,
+   name:data.roomName||"Joined Room",
+   createdAt:data.createdAt||now()
+  };
+  await put("rooms",room);
+ }
+
+ const local=localMember();
+ const existing=members.filter(m=>m.roomId===room.id);
+ if(!existing.some(m=>m.id==="local")&&existing.length>=MAX_MEMBERS){
+  throw new Error("This room has reached the 50-member limit in this local member list.");
+ }
+
+ currentRoom=room;
+ if(local){
+  local.roomId=room.id;
+  await put("members",local);
+ }
+ await refreshData();
+ $("roomName").value=room.name;
+ $("qr").innerHTML="";
+ alert("Room selected. Connect to other devices separately using WebRTC.");
+ goTab("chat");
+}
+
+$("joinRoom").onclick=async()=>{
+ try{
+  const raw=$("joinText").value.trim();
+  if(!raw)return alert("Paste an invitation first.");
+  await joinInvitation(raw);
+ }catch(e){alert(e.message)}
+};
+
+/* QR camera scanner: requires a secure context and BarcodeDetector support. */
+$("scanOpen").onclick=async()=>{
+ if(!navigator.mediaDevices?.getUserMedia){
+  return alert("Camera access is unavailable. Try HTTPS or localhost.");
+ }
+ if(!("BarcodeDetector" in window)){
+  return alert("This browser does not support BarcodeDetector. You can paste the invitation instead.");
+ }
+
+ try{
+  const detector=new BarcodeDetector({formats:["qr_code"]});
+  cameraStream=await navigator.mediaDevices.getUserMedia({
+   video:{facingMode:{ideal:"environment"}},
+   audio:false
+  });
+
+  const video=$("cameraVideo");
+  video.srcObject=cameraStream;
+  video.style.display="block";
+  $("stopScan").style.display="block";
+  $("scanStatus").textContent="Point the camera at a room QR code.";
+
+  await video.play();
+
+  clearInterval(scanTimer);
+  scanTimer=setInterval(async()=>{
+   try{
+    if(video.readyState<2)return;
+    const codes=await detector.detect(video);
+    if(codes.length&&codes[0].rawValue){
+     clearInterval(scanTimer);
+     $("joinText").value=codes[0].rawValue;
+     stopScanner();
+     await joinInvitation(codes[0].rawValue);
+    }
+   }catch(e){}
+  },500);
+ }catch(e){
+  stopScanner();
+  alert("Could not open camera: "+e.message);
+ }
+};
+
+function stopScanner(){
+ clearInterval(scanTimer);
+ scanTimer=null;
+ if(cameraStream){
+  cameraStream.getTracks().forEach(t=>t.stop());
+  cameraStream=null;
+ }
+ $("cameraVideo").srcObject=null;
+ $("cameraVideo").style.display="none";
+ $("stopScan").style.display="none";
+ $("scanStatus").textContent="";
+}
+$("stopScan").onclick=stopScanner;
+
+/* WebRTC peer management. */
+function connectedPeers(){
+ return Object.values(peers).filter(p=>p.dc&&p.dc.readyState==="open");
+}
+
+function makePeer(label){
+ const id=uid("peer");
+ const pc=new RTCPeerConnection({
+  iceServers:[{urls:"stun:stun.l.google.com:19302"}]
+ });
+ const peer={id,label:label||"Peer",pc,dc:null};
+ peers[id]=peer;
+
+ pc.ondatachannel=e=>{
+  peer.dc=e.channel;
+  setupChannel(peer);
+ };
+ pc.onconnectionstatechange=()=>{
+  log(peer.label+": "+pc.connectionState);
+  render();
+ };
+ pc.oniceconnectionstatechange=render;
+
+ return peer;
+}
+
+function setupChannel(peer){
+ const dc=peer.dc;
+ if(!dc)return;
+
+ dc.onopen=()=>{
+  log("Connected to "+peer.label);
+  dc.send(JSON.stringify({
+   type:"hello",
+   name:settings.name,
+   roomId:currentRoom.id
+  }));
+  render();
+ };
+
+ dc.onclose=()=>{
+  log("Connection closed: "+peer.label);
+  render();
+ };
+
+ dc.onerror=()=>log("Data channel error.");
+
+ dc.onmessage=async event=>{
+  try{
+   const data=JSON.parse(event.data);
+
+   if(data.type==="hello"){
+    if(data.name)peer.label=String(data.name).slice(0,40);
+    await registerConnectedPeer(peer);
+    render();
+   }
+
+   if(data.type==="chat"){
+    await receiveMessage(data,peer);
+   }
+
+   if(data.type==="ack"){
+    await receiveAck(data);
+   }
+  }catch(e){
+   log("Invalid message received.");
+  }
+ };
+}
+
+async function registerConnectedPeer(peer){
+ const id="peer_"+peer.id;
+ let m=members.find(x=>x.id===id);
+ if(!m){
+  if(roomMembers().length>=MAX_MEMBERS){
+   try{peer.dc.close()}catch(e){}
+   try{peer.pc.close()}catch(e){}
+   delete peers[peer.id];
+   log("Room is full; rejected this connection.");
+   return;
+  }
+  m={
+   id,name:peer.label,roomId:currentRoom.id,
+   local:false,peerId:peer.id,createdAt:now()
+  };
+ }else{
+  m.name=peer.label;
+  m.roomId=currentRoom.id;
+  m.peerId=peer.id;
+ }
+ await put("members",m);
+ await refreshData();
+}
+
+function waitIce(pc,timeout=15000){
+ return new Promise(resolve=>{
+  if(pc.iceGatheringState==="complete")return resolve();
+  let finished=false;
+  const done=()=>{
+   if(finished)return;
+   finished=true;
+   pc.removeEventListener("icegatheringstatechange",check);
+   clearTimeout(timer);
+   resolve();
+  };
+  const check=()=>{
+   if(pc.iceGatheringState==="complete")done();
+  };
+  const timer=setTimeout(done,timeout);
+  pc.addEventListener("icegatheringstatechange",check);
+ });
+}
+
+function encodeRTC(desc,peer){
+ return JSON.stringify({
+  app:"SwayamRoomChatRTC",
+  version:2,
+  description:desc,
+  label:settings.name,
+  roomId:currentRoom.id,
+  peerId:peer.id
+ });
+}
+
+function parseRTC(raw){
+ const data=JSON.parse(raw);
+ if(data.app!=="SwayamRoomChatRTC"||!data.description){
+  throw new Error("Invalid WebRTC code.");
+ }
+ if(!["offer","answer"].includes(data.description.type)){
+  throw new Error("Invalid WebRTC description type.");
+ }
+ return data;
+}
+
+$("createOffer").onclick=async()=>{
+ try{
+  const peer=makePeer($("peerLabel").value.trim()||"Friend");
+  peer.dc=peer.pc.createDataChannel("swayam-chat",{ordered:true});
+  setupChannel(peer);
+
+  const offer=await peer.pc.createOffer();
+  await peer.pc.setLocalDescription(offer);
+  log("Gathering connection details…");
+  await waitIce(peer.pc);
+  $("localCode").value=encodeRTC(peer.pc.localDescription,peer);
+  log("Offer ready. Send it to the other device.");
+ }catch(e){
+  alert("Could not create offer: "+e.message);
+  log(e.message);
+ }
+};
+
+$("createAnswer").onclick=async()=>{
+ try{
+  const data=parseRTC($("remoteCode").value.trim());
+  if(data.description.type!=="offer"){
+   return alert("Paste an offer, not an answer.");
+  }
+
+  const peer=makePeer($("peerLabel").value.trim()||data.label||"Friend");
+  peer.pc.ondatachannel=e=>{
+   peer.dc=e.channel;
+   setupChannel(peer);
+  };
+
+  await peer.pc.setRemoteDescription(data.description);
+  const answer=await peer.pc.createAnswer();
+  await peer.pc.setLocalDescription(answer);
+  await waitIce(peer.pc);
+
+  $("localCode").value=encodeRTC(peer.pc.localDescription,peer);
+  log("Answer ready. Send it to the offer creator.");
+ }catch(e){
+  alert("Could not create answer: "+e.message);
+  log(e.message);
+ }
+};
+
+$("applyAnswer").onclick=async()=>{
+ try{
+  const data=parseRTC($("remoteCode").value.trim());
+  if(data.description.type!=="answer"){
+   return alert("Paste an answer here.");
+  }
+
+  const pending=Object.values(peers).filter(p=>
+   p.pc.signalingState==="have-local-offer"
+  );
+  const peer=pending[pending.length-1];
+  if(!peer)return alert("Create an offer first.");
+
+  await peer.pc.setRemoteDescription(data.description);
+  log("Answer applied. Waiting for the connection.");
+ }catch(e){
+  alert("Could not apply answer: "+e.message);
+  log(e.message);
+ }
+};
+
+$("copyCode").onclick=()=>copyText($("localCode").value);
+
+$("shareCode").onclick=async()=>{
+ const text=$("localCode").value;
+ if(!text)return alert("Generate an offer or answer first.");
+ if(navigator.share){
+  try{await navigator.share({title:"Swayam connection code",text})}
+  catch(e){}
+ }else{
+  await copyText(text);
+ }
+};
+
+/* Messaging, persistence and acknowledgements. */
+async function saveMessage(message){
+ if(messages.some(m=>m.id===message.id))return;
+ messages.push(message);
+ await put("messages",message);
+ renderChat();
+}
+
+async function sendMessage(){
+ const input=$("messageInput");
+ const text=input.value.trim();
+ if(!text)return;
+
+ const peersNow=connectedPeers();
+ const msg={
+  id:uid("msg"),
+  roomId:currentRoom.id,
+  senderId:"local",
+  senderName:settings.name,
+  text,
+  time:now(),
+  deliveredTo:[]
+ };
+
+ // Save locally before attempting transmission.
+ messages.push(msg);
+ await put("messages",msg);
+
+ let sent=0;
+ const packet=JSON.stringify({
+  type:"chat",
+  id:msg.id,
+  roomId:msg.roomId,
+  senderId:"local",
+  senderName:settings.name,
+  text:msg.text,
+  time:msg.time
+ });
+
+ for(const peer of peersNow){
+  try{
+   peer.dc.send(packet);
+   sent++;
+  }catch(e){}
+ }
+
+ input.value="";
+ render();
+
+ if(!sent)log("Saved locally. No connected recipients.");
+ else log("Sent to "+sent+" connected peer(s).");
+}
+
+$("sendButton").onclick=sendMessage;
+$("messageInput").addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){
+  e.preventDefault();
+  sendMessage();
+ }
+});
+
+async function receiveMessage(data,peer){
+ const msg={
+  id:String(data.id),
+  roomId:currentRoom.id,
+  senderId:peer.id,
+  senderName:String(data.senderName||peer.label).slice(0,40),
+  text:String(data.text||"").slice(0,5000),
+  time:data.time||now(),
+  deliveredTo:[]
+ };
+
+ const exists=messages.some(m=>m.id===msg.id);
+ if(!exists){
+  messages.push(msg);
+  await put("messages",msg);
+ }
+
+ // Acknowledge receipt to the sender.
+ try{
+  peer.dc.send(JSON.stringify({
+   type:"ack",
+   messageId:msg.id,
+   receiverId:"peer_"+peer.id,
+   receiverName:settings.name,
+   time:now()
+  }));
+ }catch(e){}
+
+ if(!exists){
+  render();
+  notifyMessage(msg);
+ }
+}
+
+async function receiveAck(data){
+ const msg=messages.find(m=>m.id===data.messageId);
+ if(!msg)return;
+
+ if(!Array.isArray(msg.deliveredTo))msg.deliveredTo=[];
+ const peerKey=data.receiverId||uid("receiver");
+
+ if(!msg.deliveredTo.some(x=>x.id===peerKey)){
+  msg.deliveredTo.push({
+   id:peerKey,
+   name:data.receiverName||"Peer",
+   time:data.time||now()
+  });
+  await put("messages",msg);
+  renderChat();
+ }
+}
+
+async function notifyMessage(msg){
+ if(settings.sound){
+  try{
+   const AC=window.AudioContext||window.webkitAudioContext;
+   if(AC){
+    const c=new AC();
+    const o=c.createOscillator();
+    const g=c.createGain();
+    o.connect(g);g.connect(c.destination);
+    o.frequency.value=700;g.gain.value=.04;
+    o.start();o.stop(c.currentTime+.12);
+    o.onended=()=>c.close();
+   }
+  }catch(e){}
+ }
+
+ if(settings.notifications&&"Notification" in window&&Notification.permission==="granted"&&document.hidden){
+  try{
+   new Notification("Swayam Room Chat",{
+    body:msg.senderName+": "+msg.text.slice(0,100)
+   });
+  }catch(e){}
+ }
+}
+
+/* Rendering. */
+function renderChat(){
+ $("chatTitle").textContent=currentRoom.name;
+ const list=$("messages");
+ const data=messages.filter(m=>m.roomId===currentRoom.id)
+  .sort((a,b)=>new Date(a.time)-new Date(b.time));
+
+ $("messageCount").textContent=data.length;
+
+ if(!data.length){
+  list.innerHTML='<p class="muted">No messages yet.</p>';
+  return;
+ }
+
+ list.innerHTML=data.map(m=>{
+  const mine=m.senderId==="local";
+  const count=(m.deliveredTo||[]).length;
+  return `<div class="msg ${mine?"mine":""}">
+   <div class="meta">${esc(m.senderName)}</div>
+   <div class="body">${esc(m.text)}</div>
+   <div class="time">
+    ${settings.timestamps!==false?esc(shortTime(m.time))+" · ":""}
+    ${mine?"✓ Saved · "+count+" receipt(s)":""}
+   </div>
+  </div>`;
+ }).join("");
+ list.scrollTop=list.scrollHeight;
+}
+
+function renderMembers(){
+ const list=roomMembers();
+ $("memberCount").textContent=list.length+"/"+MAX_MEMBERS;
+
+ $("memberList").innerHTML=list.map(m=>{
+  const connected=m.local||Object.values(peers).some(p=>
+   p.id===m.peerId&&p.dc&&p.dc.readyState==="open"
+  );
+
+  return `<div class="member">
+   <div class="avatar">${m.local?"🙂":"👤"}</div>
+   <div class="member-info">
+    <strong>${esc(m.name)}</strong>
+    <small><span class="dot ${connected?"online":"offline"}"></span>
+    ${m.local?"This device":connected?"Connected":"Not connected"}</small>
+   </div>
+   ${m.local?"":`<button class="danger removeMember" data-id="${esc(m.id)}">Remove</button>`}
+  </div>`;
+ }).join("")||'<p class="muted">No members.</p>';
+
+ document.querySelectorAll(".removeMember").forEach(b=>{
+  b.onclick=async()=>{
+   const m=members.find(x=>x.id===b.dataset.id);
+   if(!m)return;
+   if(!confirm("Remove this member from your local list?"))return;
+   await new Promise((resolve,reject)=>{
+    const tx=db.transaction("members","readwrite");
+    tx.objectStore("members").delete(m.id);
+    tx.oncomplete=resolve;
+    tx.onerror=()=>reject(tx.error);
+   });
+   await refreshData();
+  };
+ });
+}
+
+function renderConnections(){
+ const connected=connectedPeers();
+ $("peerCount").textContent=connected.length;
+ $("statusBadge").textContent=connected.length+" connected";
+
+ $("connectionList").innerHTML=Object.values(peers).map(p=>{
+  const state=p.dc?.readyState||p.pc.connectionState||"connecting";
+  return `<div class="member">
+   <div class="avatar">📱</div>
+   <div class="member-info">
+    <strong>${esc(p.label)}</strong><small>${esc(state)}</small>
+   </div>
+   <button class="danger closePeer" data-id="${p.id}">Close</button>
+  </div>`;
+ }).join("")||'<p class="muted">No connections.</p>';
+
+ document.querySelectorAll(".closePeer").forEach(b=>{
+  b.onclick=()=>{
+   const p=peers[b.dataset.id];
+   if(!p)return;
+   try{p.dc?.close()}catch(e){}
+   try{p.pc.close()}catch(e){}
+   delete peers[b.dataset.id];
+   render();
+  };
+ });
+}
+
+function render(){
+ if(!currentRoom)return;
+ renderChat();
+ renderMembers();
+ renderConnections();
+
+ $("currentRoomName").textContent=currentRoom.name;
+ $("currentRoomId").textContent=currentRoom.id;
+ $("storageInfo").textContent=
+  rooms.length+" rooms · "+members.length+" members · "+messages.length+" messages";
+}
+
+/* Themes and preferences. */
+function applyTheme(name){
+ const t=themes[name]||themes.Forest;
+ const root=document.documentElement;
+ const vars=["--primary","--primary2","--bg","--card","--text","--muted","--border","--mine"];
+ vars.forEach((v,i)=>root.style.setProperty(v,t[i]));
+}
+
+function buildThemes(){
+ const grid=$("themeGrid");
+ grid.innerHTML="";
+ Object.keys(themes).forEach(name=>{
+  const b=document.createElement("button");
+  b.textContent="🌿 "+name;
+  b.dataset.name=name;
+  b.style.background=themes[name][2];
+  b.style.color=themes[name][4];
+  b.style.border="2px solid "+themes[name][0];
+  b.classList.toggle("selected",settings.theme===name);
+  b.onclick=async()=>{
+   settings.theme=name;
+   applyTheme(name);
+   await saveSettings();
+   buildThemes();
+  };
+  grid.appendChild(b);
+ });
+}
+
+async function saveSettings(){
+ settings.name=$("settingsName").value.trim()||"User";
+ settings.notifications=$("notificationToggle").checked;
+ settings.sound=$("soundToggle").checked;
+ settings.timestamps=$("timeToggle").checked;
+
+ $("displayName").value=settings.name;
+
+ const local=localMember();
+ if(local){
+  local.name=settings.name;
+  await put("members",local);
+ }
+
+ await put("settings",{id:"main",value:settings});
+ await refreshData();
+}
+
+$("saveSettings").onclick=saveSettings;
+$("displayName").onchange=async()=>{
+ $("settingsName").value=$("displayName").value;
+ await saveSettings();
+};
+$("notificationToggle").onchange=saveSettings;
+$("soundToggle").onchange=saveSettings;
+$("timeToggle").onchange=saveSettings;
+
+$("enableNotifications").onclick=async()=>{
+ if(!("Notification" in window)){
+  return alert("Notifications are not supported in this browser.");
+ }
+ const permission=await Notification.requestPermission();
+ if(permission==="granted"){
+  settings.notifications=true;
+  $("notificationToggle").checked=true;
+  await saveSettings();
+  alert("Notifications enabled.");
+ }else{
+  alert("Notification permission was not granted.");
+ }
+};
+
+/* Export/import. */
+function download(name,content,type){
+ const blob=new Blob([content],{type});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;a.download=name;
+ document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+
+$("exportJSON").onclick=()=>{
+ download("swayam-chat-v2.json",JSON.stringify({
+  app:"SwayamRoomChatBackup",
+  version:2,
+  exportedAt:now(),
+  rooms,members,messages,settings
+ },null,2),"application/json");
+};
+
+$("exportCSV").onclick=()=>{
+ const list=messages.filter(m=>m.roomId===currentRoom.id);
+ const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+ const rows=[["id","roomId","senderName","text","time","receipts"]];
+ list.forEach(m=>rows.push([
+  m.id,m.roomId,m.senderName,m.text,m.time,(m.deliveredTo||[]).length
+ ]));
+ download("swayam-messages.csv",rows.map(r=>r.map(q).join(",")).join("\r\n"),"text/csv;charset=utf-8");
+};
+
+$("importJSON").onclick=async()=>{
+ const file=$("importFile").files[0];
+ if(!file)return alert("Select a backup first.");
+
+ try{
+  const d=JSON.parse(await file.text());
+  if(d.app!=="SwayamRoomChatBackup")throw new Error("Invalid backup.");
+  if(!confirm("Import backup data? Existing matching IDs will be replaced."))return;
+
+  for(const r of d.rooms||[])if(r.id)await put("rooms",r);
+  for(const m of d.members||[])if(m.id)await put("members",m);
+  for(const m of d.messages||[])if(m.id)await put("messages",m);
+
+  if(d.settings){
+   settings={...settings,...d.settings};
+   await put("settings",{id:"main",value:settings});
+  }
+
+  await refreshData();
+  currentRoom=rooms[0]||currentRoom;
+  $("roomName").value=currentRoom.name;
+  $("settingsName").value=settings.name;
+  $("displayName").value=settings.name;
+  applyTheme(settings.theme);
+  buildThemes();
+  alert("Backup imported.");
+ }catch(e){alert("Import failed: "+e.message)}
+};
+
+$("clearMessages").onclick=async()=>{
+ if(!confirm("Delete all saved messages?"))return;
+ await clearStore("messages");
+ messages=[];
+ render();
+};
+
+$("resetApp").onclick=async()=>{
+ if(!confirm("Delete all local rooms, members, messages and settings?"))return;
+
+ stopScanner();
+
+ for(const p of Object.values(peers)){
+  try{p.dc?.close()}catch(e){}
+  try{p.pc.close()}catch(e){}
+ }
+ peers={};
+
+ for(const s of ["rooms","members","messages","settings"])await clearStore(s);
+
+ rooms=[];members=[];messages=[];
+ settings={name:"User",theme:"Forest",notifications:false,sound:false,timestamps:true};
+
+ currentRoom={id:uid("room"),name:"My Room",createdAt:now()};
+ await put("rooms",currentRoom);
+ await put("members",{
+  id:"local",name:settings.name,roomId:currentRoom.id,
+  local:true,createdAt:now()
+ });
+ await put("settings",{id:"main",value:settings});
+
+ $("displayName").value=settings.name;
+ $("settingsName").value=settings.name;
+ $("roomName").value=currentRoom.name;
+ $("localCode").value="";
+ $("remoteCode").value="";
+ $("qr").innerHTML="";
+ $("inviteText").value="";
+ applyTheme(settings.theme);
+ buildThemes();
+ await refreshData();
+ log("App reset.");
+};
+
+window.addEventListener("online",()=>log("Internet connection available."));
+window.addEventListener("offline",()=>log("Internet connection lost."));
+
+init().catch(e=>{
+ console.error(e);
+ $("statusBadge").textContent="Storage error";
+ alert("Could not start the app: "+e.message);
+});
 </script>
 </body>
 </html>
