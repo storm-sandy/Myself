@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#147d4b">
+<title>PeerCall Fixed</title>
+
+<style>
+:root{
+  --bg:#eff7f0;--card:#fff;--text:#193b2a;
+  --accent:#147d4b;--border:#d5e5d9;
+}
+[data-theme="ocean"]{
+  --bg:#edf7fc;--card:#fff;--text:#12364c;
+  --accent:#087da8;--border:#d0e7f1;
+}
+[data-theme="sunrise"]{
+  --bg:#fff5eb;--card:#fff;--text:#50301e;
+  --accent:#d96b27;--border:#f0ddcc;
+}
+[data-theme="lavender"]{
+  --bg:#f6f1fc;--card:#fff;--text:#37274e;
+  --accent:#7651a8;--border:#e3d8f1;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+font:15px Arial,sans-serif}
+header{padding:18px;background:var(--accent);color:white}
+header h1{margin:0}
+header p{margin:6px 0 0}
+nav{
+ display:flex;gap:7px;overflow-x:auto;padding:10px;
+ background:var(--card);position:sticky;top:0;z-index:10;
+ border-bottom:1px solid var(--border)
+}
+nav button{
+ flex:0 0 auto;padding:11px 14px;border:1px solid var(--border);
+ border-radius:9px;background:var(--bg);color:var(--text);
+ font-weight:bold;cursor:pointer
+}
+nav button.active{background:var(--accent);color:white}
+main{max-width:850px;margin:auto;padding:12px}
+.tab{display:none!important}
+.tab.active{display:block!important}
+.card{
+ background:var(--card);border:1px solid var(--border);
+ padding:15px;border-radius:13px;margin-bottom:13px
+}
+h2{font-size:19px;margin:0 0 13px}
+h3{font-size:16px}
+label{display:block;margin:12px 0 6px;font-weight:bold}
+input,select,textarea{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:var(--card);color:var(--text);
+ font:inherit
+}
+textarea{min-height:120px;resize:vertical}
+button.action{
+ padding:11px 13px;margin:5px 3px 5px 0;
+ border:0;border-radius:9px;background:var(--accent);
+ color:white;font-weight:bold;cursor:pointer
+}
+button.secondary{background:var(--bg);color:var(--text);
+border:1px solid var(--border)}
+button.danger{background:#b42318}
+.level{
+ display:flex;align-items:center;gap:10px;
+ padding:12px;border:1px solid var(--border);
+ border-radius:9px;margin:8px 0
+}
+.level input{width:auto}
+.videos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+video{width:100%;aspect-ratio:4/3;background:#17241c;
+border-radius:10px;object-fit:cover}
+.status{
+ background:var(--bg);border:1px solid var(--border);
+ border-radius:9px;padding:12px;overflow-wrap:anywhere;
+ line-height:1.5
+}
+.note{font-size:13px;line-height:1.6;opacity:.8}
+footer{text-align:center;padding:18px;font-size:13px}
+@media(max-width:500px){.videos{grid-template-columns:1fr}}
+</style>
+</head>
+
+<body data-theme="forest">
+
+<header>
+<h1>📞 PeerCall</h1>
+<p>Audio and video calling demonstration</p>
+</header>
+
+<nav id="mainNav">
+<button type="button" class="active" data-target="call">📞 Call</button>
+<button type="button" data-target="connect">🔗 Connect</button>
+<button type="button" data-target="media">🎙️ Controls</button>
+<button type="button" data-target="settings">⚙️ Settings</button>
+<button type="button" data-target="help">❓ Help</button>
+</nav>
+
+<main>
+
+<section id="call" class="tab active">
+<div class="card">
+<h2>Choose Call Level</h2>
+
+<label class="level">
+<input type="radio" name="level" value="audio" checked>
+<span>Level 1 — Audio only</span>
+</label>
+
+<label class="level">
+<input type="radio" name="level" value="video">
+<span>Level 2 — Video only</span>
+</label>
+
+<label class="level">
+<input type="radio" name="level" value="both">
+<span>Level 3 — Audio + Video</span>
+</label>
+
+<button type="button" class="action" id="previewBtn">Start Preview</button>
+<button type="button" class="action" id="offerBtn">Create Call Offer</button>
+<button type="button" class="action danger" id="hangupBtn">Hang Up</button>
+
+<div class="status" id="status">Ready. Choose a call level.</div>
+</div>
+
+<div class="card">
+<h2>Call Screen</h2>
+<div class="videos">
+<div>
+<h3>👤 Your Camera</h3>
+<video id="localVideo" autoplay muted playsinline></video>
+</div>
+<div>
+<h3>👥 Remote Participant</h3>
+<video id="remoteVideo" autoplay playsinline></video>
+</div>
+</div>
+</div>
+</section>
+
+<section id="connect" class="tab">
+<div class="card">
+<h2>Connect to Another User</h2>
+<p class="note">Exchange offer and answer text using a separate messaging method. This demo has no signaling server.</p>
+
+<label>Your Generated Offer / Answer</label>
+<textarea id="localDesc" readonly></textarea>
+<button type="button" class="action secondary" id="copyBtn">Copy Text</button>
+
+<label>Remote Offer / Answer</label>
+<textarea id="remoteDesc" placeholder="Paste remote connection text here"></textarea>
+
+<button type="button" class="action" id="applyOfferBtn">Apply Remote Offer</button>
+<button type="button" class="action" id="answerBtn">Create Answer</button>
+<button type="button" class="action" id="applyAnswerBtn">Apply Remote Answer</button>
+
+<div class="status" id="connectionStatus">Not connected.</div>
+</div>
+
+<div class="card">
+<h2>Connection Steps</h2>
+<ol>
+<li>User A creates an offer.</li>
+<li>User A shares the offer text with User B.</li>
+<li>User B pastes it and selects Apply Remote Offer.</li>
+<li>User B creates an answer and sends it to User A.</li>
+<li>User A pastes the answer and selects Apply Remote Answer.</li>
+</ol>
+</div>
+</section>
+
+<section id="media" class="tab">
+<div class="card">
+<h2>Media Controls</h2>
+<button type="button" class="action secondary" id="micBtn">Mute / Unmute Mic</button>
+<button type="button" class="action secondary" id="cameraBtn">Camera On / Off</button>
+<button type="button" class="action secondary" id="switchBtn">Switch Camera</button>
+<button type="button" class="action secondary" id="pipBtn">Picture-in-Picture</button>
+<div class="status" id="mediaStatus">Media not started.</div>
+</div>
+
+<div class="card">
+<h2>Call Levels</h2>
+<p><b>Level 1:</b> Microphone audio.</p>
+<p><b>Level 2:</b> Camera video.</p>
+<p><b>Level 3:</b> Microphone and camera.</p>
+</div>
+</section>
+
+<section id="settings" class="tab">
+<div class="card">
+<h2>Settings</h2>
+
+<label>Theme</label>
+<select id="theme">
+<option value="forest">Forest</option>
+<option value="ocean">Ocean</option>
+<option value="sunrise">Sunrise</option>
+<option value="lavender">Lavender</option>
+</select>
+
+<label>STUN Server</label>
+<input id="stun" value="stun:stun.l.google.com:19302">
+
+<label>Optional TURN Server</label>
+<input id="turn" placeholder="turn:your-server.example:3478">
+
+<label>TURN Username</label>
+<input id="turnUser">
+
+<label>TURN Password</label>
+<input id="turnPass" type="password">
+
+<button type="button" class="action" id="applySettingsBtn">Apply Settings</button>
+<div class="status" id="settingsStatus">Default settings loaded.</div>
+</div>
+</section>
+
+<section id="help" class="tab">
+<div class="card">
+<h2>Help and Limitations</h2>
+<ul>
+<li>Designed for one-to-one WebRTC calling.</li>
+<li>Camera and microphone access normally requires HTTPS or localhost.</li>
+<li>Both users must exchange connection information.</li>
+<li>Some networks require a TURN server.</li>
+<li>This demonstration does not verify remote user identity.</li>
+<li>Calls are not recorded or saved.</li>
+</ul>
+</div>
+</section>
+
+</main>
+
+<footer>PeerCall · Vanilla JavaScript · WebRTC</footer>
+
+<script>
+/* FIXED TAB NAVIGATION: independent of WebRTC initialization. */
+(function(){
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+function showTab(target){
+  const section = $(target);
+  if(!section) return;
+
+  document.querySelectorAll(".tab").forEach(tab=>{
+    tab.classList.toggle("active",tab.id===target);
+  });
+
+  document.querySelectorAll("#mainNav button").forEach(button=>{
+    button.classList.toggle("active",button.dataset.target===target);
+  });
+}
+
+document.querySelectorAll("#mainNav button").forEach(button=>{
+  button.addEventListener("click",function(){
+    showTab(this.dataset.target);
+  });
+});
+
+/* WebRTC */
+let pc=null;
+let localStream=null;
+let remoteStream=null;
+let facingMode="user";
+
+let rtcConfig={
+  iceServers:[{urls:"stun:stun.l.google.com:19302"}]
+};
+
+function setStatus(message){
+  $("status").textContent=message;
+}
+
+function setConnection(message){
+  $("connectionStatus").textContent=message;
+}
+
+function selectedLevel(){
+  return document.querySelector('input[name="level"]:checked').value;
+}
+
+function updateMediaStatus(){
+  if(!localStream){
+    $("mediaStatus").textContent="Media not started.";
+    return;
+  }
+
+  $("mediaStatus").textContent=localStream.getTracks().map(track=>{
+    return track.kind+": "+(track.enabled?"enabled":"muted/off");
+  }).join(" | ");
+}
+
+async function startMedia(level){
+  if(!navigator.mediaDevices ||
+     !navigator.mediaDevices.getUserMedia){
+    throw new Error("Open this page on HTTPS or localhost to use media.");
+  }
+
+  if(localStream){
+    localStream.getTracks().forEach(track=>track.stop());
+  }
+
+  const audio=level==="audio"||level==="both";
+  const video=level==="video"||level==="both";
+
+  localStream=await navigator.mediaDevices.getUserMedia({
+    audio:audio,
+    video:video?{facingMode:facingMode}:false
+  });
+
+  $("localVideo").srcObject=localStream;
+  updateMediaStatus();
+  return localStream;
+}
+
+function closePeer(){
+  if(pc){
+    try{pc.close();}catch(e){}
+  }
+
+  pc=null;
+  remoteStream=null;
+  $("remoteVideo").srcObject=null;
+  setConnection("Not connected.");
+}
+
+function createPeer(){
+  closePeer();
+
+  pc=new RTCPeerConnection(rtcConfig);
+  remoteStream=new MediaStream();
+  $("remoteVideo").srcObject=remoteStream;
+
+  if(localStream){
+    localStream.getTracks().forEach(track=>{
+      pc.addTrack(track,localStream);
+    });
+  }
+
+  pc.ontrack=event=>{
+    if(!remoteStream.getTracks().some(t=>t.id===event.track.id)){
+      remoteStream.addTrack(event.track);
+    }
+    $("remoteVideo").play().catch(()=>{});
+  };
+
+  pc.onconnectionstatechange=()=>{
+    if(pc){
+      setConnection("Connection: "+pc.connectionState+
+        " | ICE: "+pc.iceConnectionState);
+    }
+  };
+
+  pc.oniceconnectionstatechange=()=>{
+    if(pc){
+      setConnection("ICE state: "+pc.iceConnectionState);
+    }
+  };
+
+  return pc;
+}
+
+function pack(description){
+  return JSON.stringify({
+    app:"PeerCall",
+    version:1,
+    description:{
+      type:description.type,
+      sdp:description.sdp
+    }
+  },null,2);
+}
+
+function unpack(text){
+  const data=JSON.parse(text);
+
+  if(!data.description ||
+     !data.description.type ||
+     !data.description.sdp){
+    throw new Error("Invalid offer/answer text.");
+  }
+
+  return data;
+}
+
+function waitForICE(peer){
+  return new Promise(resolve=>{
+    if(peer.iceGatheringState==="complete"){
+      resolve();
+      return;
+    }
+
+    let finished=false;
+
+    function finish(){
+      if(finished)return;
+      finished=true;
+      clearTimeout(timer);
+      peer.removeEventListener("icegatheringstatechange",check);
+      resolve();
+    }
+
+    function check(){
+      if(peer.iceGatheringState==="complete")finish();
+    }
+
+    const timer=setTimeout(finish,10000);
+    peer.addEventListener("icegatheringstatechange",check);
+  });
+}
+
+$("previewBtn").addEventListener("click",async()=>{
+  try{
+    await startMedia(selectedLevel());
+    setStatus("Media preview started.");
+  }catch(error){
+    setStatus("Media error: "+error.message);
+  }
+});
+
+$("offerBtn").addEventListener("click",async()=>{
+  try{
+    await startMedia(selectedLevel());
+
+    const peer=createPeer();
+    const offer=await peer.createOffer();
+    await peer.setLocalDescription(offer);
+
+    setStatus("Gathering network details...");
+    await waitForICE(peer);
+
+    $("localDesc").value=pack(peer.localDescription);
+    setStatus("Offer created. Share it with the other user.");
+    showTab("connect");
+  }catch(error){
+    setStatus("Offer error: "+error.message);
+  }
+});
+
+$("applyOfferBtn").addEventListener("click",async()=>{
+  try{
+    const data=unpack($("remoteDesc").value);
+
+    if(data.description.type!=="offer"){
+      throw new Error("Paste an offer, not an answer.");
+    }
+
+    await startMedia(selectedLevel());
+    const peer=createPeer();
+
+    await peer.setRemoteDescription(
+      new RTCSessionDescription(data.description)
+    );
+
+    setConnection("Offer applied. Now create an answer.");
+    setStatus("Remote offer applied successfully.");
+  }catch(error){
+    setStatus("Apply offer error: "+error.message);
+  }
+});
+
+$("answerBtn").addEventListener("click",async()=>{
+  try{
+    if(!pc||!pc.remoteDescription||
+       pc.remoteDescription.type!=="offer"){
+      throw new Error("Apply the remote offer first.");
+    }
+
+    const answer=await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+
+    setStatus("Gathering network details...");
+    await waitForICE(pc);
+
+    $("localDesc").value=pack(pc.localDescription);
+    setStatus("Answer created. Send it back to the caller.");
+  }catch(error){
+    setStatus("Answer error: "+error.message);
+  }
+});
+
+$("applyAnswerBtn").addEventListener("click",async()=>{
+  try{
+    if(!pc)throw new Error("Create an offer first.");
+
+    const data=unpack($("remoteDesc").value);
+
+    if(data.description.type!=="answer"){
+      throw new Error("Paste an answer, not an offer.");
+    }
+
+    await pc.setRemoteDescription(
+      new RTCSessionDescription(data.description)
+    );
+
+    setStatus("Answer applied. Waiting for connection.");
+  }catch(error){
+    setStatus("Apply answer error: "+error.message);
+  }
+});
+
+$("hangupBtn").addEventListener("click",()=>{
+  closePeer();
+
+  if(localStream){
+    localStream.getTracks().forEach(track=>track.stop());
+    localStream=null;
+  }
+
+  $("localVideo").srcObject=null;
+  $("remoteVideo").srcObject=null;
+  updateMediaStatus();
+  setStatus("Call ended. Camera and microphone stopped.");
+});
+
+$("copyBtn").addEventListener("click",async()=>{
+  const text=$("localDesc").value;
+
+  if(!text){
+    setConnection("Nothing to copy.");
+    return;
+  }
+
+  try{
+    await navigator.clipboard.writeText(text);
+    setConnection("Connection text copied.");
+  }catch(error){
+    $("localDesc").focus();
+    $("localDesc").select();
+    setConnection("Select and copy the text manually.");
+  }
+});
+
+$("micBtn").addEventListener("click",()=>{
+  if(!localStream){
+    setStatus("Start media first.");
+    return;
+  }
+
+  const tracks=localStream.getAudioTracks();
+
+  if(!tracks.length){
+    setStatus("This level has no microphone.");
+    return;
+  }
+
+  const enabled=!tracks[0].enabled;
+  tracks.forEach(track=>track.enabled=enabled);
+  updateMediaStatus();
+});
+
+$("cameraBtn").addEventListener("click",()=>{
+  if(!localStream){
+    setStatus("Start media first.");
+    return;
+  }
+
+  const tracks=localStream.getVideoTracks();
+
+  if(!tracks.length){
+    setStatus("This level has no camera.");
+    return;
+  }
+
+  const enabled=!tracks[0].enabled;
+  tracks.forEach(track=>track.enabled=enabled);
+  updateMediaStatus();
+});
+
+$("switchBtn").addEventListener("click",async()=>{
+  if(!localStream||!localStream.getVideoTracks().length){
+    setStatus("Start a video-capable level first.");
+    return;
+  }
+
+  const next=facingMode==="user"?"environment":"user";
+  let stream=null;
+
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:{ideal:next}},
+      audio:false
+    });
+
+    const newTrack=stream.getVideoTracks()[0];
+    const oldTrack=localStream.getVideoTracks()[0];
+
+    if(pc){
+      const sender=pc.getSenders().find(
+        s=>s.track&&s.track.kind==="video"
+      );
+      if(sender)await sender.replaceTrack(newTrack);
+    }
+
+    localStream.removeTrack(oldTrack);
+    oldTrack.stop();
+    localStream.addTrack(newTrack);
+    $("localVideo").srcObject=localStream;
+    facingMode=next;
+    updateMediaStatus();
+    setStatus("Camera switched.");
+  }catch(error){
+    if(stream)stream.getTracks().forEach(t=>t.stop());
+    setStatus("Camera switch failed: "+error.message);
+  }
+});
+
+$("pipBtn").addEventListener("click",async()=>{
+  try{
+    const video=$("remoteVideo");
+
+    if(document.pictureInPictureElement){
+      await document.exitPictureInPicture();
+    }else if(video.requestPictureInPicture){
+      await video.requestPictureInPicture();
+    }else{
+      setStatus("Picture-in-Picture is unavailable.");
+    }
+  }catch(error){
+    setStatus("Picture-in-Picture error: "+error.message);
+  }
+});
+
+$("theme").addEventListener("change",event=>{
+  document.body.dataset.theme=event.target.value;
+});
+
+$("applySettingsBtn").addEventListener("click",()=>{
+  const servers=[];
+  const stun=$("stun").value.trim();
+
+  if(stun)servers.push({urls:stun});
+
+  const turn=$("turn").value.trim();
+
+  if(turn){
+    const item={urls:turn};
+
+    if($("turnUser").value.trim()){
+      item.username=$("turnUser").value.trim();
+    }
+
+    if($("turnPass").value){
+      item.credential=$("turnPass").value;
+    }
+
+    servers.push(item);
+  }
+
+  rtcConfig={iceServers:servers};
+
+  $("settingsStatus").textContent=
+    "Settings applied. Create a new connection to use them.";
+});
+
+/* Show the first tab immediately. */
+showTab("call");
+
+})();
+</script>
+</body>
+</html>
