@@ -1,1 +1,756 @@
-tt
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#087747">
+<title>India Government Services Directory</title>
+
+<style>
+:root {
+ --primary:#087747;
+ --bg:#eef7f0;
+ --card:#fff;
+ --text:#183529;
+ --muted:#687a70;
+ --border:#dbe8de;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:system-ui,Arial,sans-serif;
+ background:var(--bg);
+ color:var(--text);
+}
+header{
+ background:var(--primary);
+ color:white;
+ padding:22px 15px;
+ text-align:center;
+}
+header h1{font-size:23px;margin:0 0 7px}
+header p{font-size:13px;margin:0}
+main{max-width:1100px;margin:auto;padding:14px}
+input,select{
+ width:100%;
+ padding:12px;
+ border:1px solid var(--border);
+ border-radius:10px;
+ background:var(--card);
+ color:var(--text);
+ font:inherit;
+}
+.tabs{
+ display:flex;
+ gap:8px;
+ overflow-x:auto;
+ padding:12px 0;
+}
+.tab{
+ flex-shrink:0;
+ border:0;
+ border-radius:22px;
+ padding:11px 14px;
+ background:var(--card);
+ color:var(--text);
+ font-weight:650;
+}
+.tab.active{background:var(--primary);color:white}
+.toolbar{display:flex;flex-wrap:wrap;gap:7px;margin:6px 0 14px}
+button{cursor:pointer}
+.small{
+ padding:9px 12px;
+ border:1px solid var(--border);
+ border-radius:9px;
+ background:var(--card);
+ color:var(--text);
+}
+h2{font-size:19px}
+.summary{font-size:13px;color:var(--muted);margin:7px 0 15px}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:11px;
+}
+.item{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:14px;
+ padding:13px;
+ min-width:0;
+}
+.top{display:flex;align-items:center;gap:10px}
+.icon{
+ width:45px;height:45px;flex-shrink:0;
+ display:grid;place-items:center;
+ border-radius:12px;
+ background:var(--bg);
+ font-size:26px;
+}
+.name{font-size:14px;font-weight:750;overflow-wrap:anywhere}
+.category{font-size:11px;color:var(--muted);margin-top:3px}
+.desc{font-size:12px;color:var(--muted);line-height:1.5;margin:10px 0}
+.actions{display:flex;gap:7px}
+.open{
+ flex:1;border:0;border-radius:8px;
+ padding:9px 6px;background:var(--primary);
+ color:white;font-weight:700;font-size:13px;
+}
+.star{
+ border:1px solid var(--border);border-radius:8px;
+ padding:6px 10px;background:var(--card);color:var(--text);
+ font-size:19px;
+}
+.panel{display:none}
+.panel.active{display:block}
+.box{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:13px;
+ padding:15px;margin-bottom:13px;
+}
+label{display:block;font-size:13px;margin:12px 0 5px}
+.action{
+ border:0;border-radius:9px;padding:11px 14px;
+ background:var(--primary);color:white;
+ margin-top:12px;font-weight:700;
+}
+.danger{background:#b42318}
+.note{font-size:13px;color:var(--muted);line-height:1.6}
+.notice{
+ padding:12px;border-radius:10px;
+ background:var(--card);border:1px solid var(--border);
+ font-size:13px;line-height:1.6;margin-bottom:13px;
+}
+.savedrow{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:10px;padding:11px 0;border-bottom:1px solid var(--border);
+}
+footer{text-align:center;padding:20px;font-size:12px;color:var(--muted)}
+@media(min-width:650px){
+ .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(min-width:950px){
+ .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+</style>
+</head>
+<body>
+
+<header>
+ <h1>🇮🇳 India Government Services</h1>
+ <p>Government websites, citizen services and official portals in one place</p>
+</header>
+
+<main>
+ <input id="search" placeholder="🔎 Search Aadhaar, PAN, pension, jobs, land records..." autocomplete="off">
+
+ <nav class="tabs" id="tabs">
+  <button class="tab active" data-cat="All">🏠 All</button>
+  <button class="tab" data-cat="Favorites">⭐ Favorites</button>
+  <button class="tab" data-cat="National">🇮🇳 National</button>
+  <button class="tab" data-cat="Identity">🪪 Identity</button>
+  <button class="tab" data-cat="Documents">📁 Documents</button>
+  <button class="tab" data-cat="Tax">💰 Tax</button>
+  <button class="tab" data-cat="Benefits">🤝 Benefits</button>
+  <button class="tab" data-cat="Banking">🏦 Banking</button>
+  <button class="tab" data-cat="Jobs">💼 Jobs</button>
+  <button class="tab" data-cat="Education">🎓 Education</button>
+  <button class="tab" data-cat="Health">🏥 Health</button>
+  <button class="tab" data-cat="Transport">🚘 Transport</button>
+  <button class="tab" data-cat="Agriculture">🌾 Agriculture</button>
+  <button class="tab" data-cat="Justice">⚖️ Justice</button>
+  <button class="tab" data-cat="Business">🏢 Business</button>
+  <button class="tab" data-cat="Utilities">💡 Utilities</button>
+  <button class="tab" data-cat="Maharashtra">🏙️ Maharashtra</button>
+  <button class="tab" data-cat="Emergency">🆘 Emergency</button>
+  <button class="tab" data-cat="Custom">➕ My Links</button>
+  <button class="tab" data-cat="Settings">⚙️ Settings</button>
+ </nav>
+
+ <div class="toolbar">
+  <button class="small" onclick="sortMode='name';render()">A–Z</button>
+  <button class="small" onclick="sortMode='category';render()">By Category</button>
+  <button class="small" onclick="document.getElementById('search').value='';setCat('All')">Show All</button>
+ </div>
+
+ <section id="directory" class="panel active">
+  <div class="notice">
+   <b>Safety:</b> Use official government domains wherever possible.
+   Never share an OTP, password, PIN or banking details with anyone.
+   Some portals may require registration or may be temporarily unavailable.
+  </div>
+  <h2 id="heading">All Government Services</h2>
+  <div class="summary" id="count"></div>
+  <div class="grid" id="grid"></div>
+ </section>
+
+ <section id="customPanel" class="panel">
+  <div class="box">
+   <h2>➕ Add Government Link</h2>
+   <label for="newName">Service name</label>
+   <input id="newName" placeholder="My municipal corporation">
+
+   <label for="newIcon">Emoji icon</label>
+   <input id="newIcon" value="🏛️" maxlength="8">
+
+   <label for="newCat">Category</label>
+   <select id="newCat">
+    <option>National</option><option>Identity</option><option>Documents</option>
+    <option>Tax</option><option>Benefits</option><option>Banking</option>
+    <option>Jobs</option><option>Education</option><option>Health</option>
+    <option>Transport</option><option>Agriculture</option><option>Justice</option>
+    <option>Business</option><option>Utilities</option><option>Maharashtra</option>
+    <option>Emergency</option>
+   </select>
+
+   <label for="newUrl">Official website URL</label>
+   <input id="newUrl" placeholder="https://example.gov.in">
+
+   <label for="newDesc">Description</label>
+   <input id="newDesc" placeholder="What this service does">
+
+   <button class="action" onclick="addLink()">Save Link</button>
+  </div>
+  <div class="box">
+   <h2>My Saved Links</h2>
+   <div id="customList"></div>
+  </div>
+ </section>
+
+ <section id="settingsPanel" class="panel">
+  <div class="box">
+   <h2>🌿 Nature Themes</h2>
+   <label for="theme">Choose theme</label>
+   <select id="theme" onchange="changeTheme()">
+    <option value="forest">🌿 Forest Green</option>
+    <option value="ocean">🌊 Ocean Blue</option>
+    <option value="earth">🌍 Earth Brown</option>
+    <option value="flower">🌸 Flower Pink</option>
+    <option value="lavender">💜 Lavender</option>
+    <option value="mint">🍃 Mint Green</option>
+    <option value="sunrise">🌅 Sunrise</option>
+    <option value="sunshine">☀️ Sunshine</option>
+    <option value="dark">🌙 Night Mode</option>
+    <option value="simple">⚪ Simple</option>
+   </select>
+  </div>
+
+  <div class="box">
+   <h2>💾 Data Management</h2>
+   <button class="action" onclick="exportLinks()">Export My Links</button>
+   <button class="action" onclick="document.getElementById('importFile').click()">Import My Links</button>
+   <input id="importFile" type="file" accept=".json,application/json" hidden onchange="importLinks(event)">
+   <button class="action danger" onclick="clearFavs()">Clear Favorites</button>
+   <p class="note">Favorites and custom links are stored locally in this browser.</p>
+  </div>
+
+  <div class="box">
+   <h2>ℹ️ Discover More Official Services</h2>
+   <p class="note">
+    This directory is a curated collection, not an exhaustive list of every
+    central, state, district and municipal service in India. Use the official
+    government service directory and government app store below to discover
+    additional portals and applications.
+   </p>
+   <button class="action" onclick="openLink('https://services.india.gov.in/')">National Government Services Portal ↗</button>
+   <button class="action" onclick="openLink('https://mapps.mgov.gov.in/')">Gov.in Appstore ↗</button>
+   <button class="action" onclick="openLink('https://www.india.gov.in/')">National Portal of India ↗</button>
+  </div>
+ </section>
+</main>
+
+<footer>India Government Services Directory • Single HTML • Not an official government app</footer>
+
+<script>
+const D = [
+ // National portals
+ ["National Portal of India","🇮🇳","National","https://www.india.gov.in/","National government information"],
+ ["National Government Services Portal","🏛️","National","https://services.india.gov.in/","Discover services by category and location"],
+ ["Gov.in Appstore","📱","National","https://mapps.mgov.gov.in/","Discover government mobile apps"],
+ ["UMANG","📲","National","https://web.umang.gov.in/","Central and state government services"],
+ ["MyGov India","🇮🇳","National","https://www.mygov.in/","Citizen engagement and consultations"],
+ ["Open Government Data","📊","National","https://www.data.gov.in/","Government datasets"],
+ ["India Code","📚","National","https://www.indiacode.nic.in/","Indian laws and legislation"],
+ ["National Consumer Helpline","☎️","National","https://consumerhelpline.gov.in/","Consumer grievance assistance"],
+ ["CPGRAMS Public Grievances","📝","National","https://pgportal.gov.in/","Submit and track public grievances"],
+ ["RTI Online","📄","National","https://rtionline.gov.in/","Online RTI requests for covered public authorities"],
+ ["Digital India","💻","National","https://www.digitalindia.gov.in/","Digital India initiatives"],
+ ["PIB India","📰","National","https://pib.gov.in/","Official government press releases"],
+ ["National Career Service","💼","National","https://www.ncs.gov.in/","Employment and career services"],
+
+ // Identity
+ ["UIDAI Aadhaar","🪪","Identity","https://uidai.gov.in/","Official Aadhaar information"],
+ ["Aadhaar Self Service","🪪","Identity","https://myaadhaar.uidai.gov.in/","Available Aadhaar online services"],
+ ["Aadhaar Appointment","📅","Identity","https://appointments.uidai.gov.in/","Appointment services; check current availability"],
+ ["PAN Services NSDL/Protean","💳","Identity","https://www.protean-tinpan.com/","PAN application and related services"],
+ ["UTIITSL PAN","💳","Identity","https://www.pan.utiitsl.com/","PAN application services"],
+ ["Voter Services ECI","🗳️","Identity","https://voters.eci.gov.in/","Electoral registration and voter services"],
+ ["Election Commission of India","🗳️","Identity","https://www.eci.gov.in/","Election information"],
+ ["Passport Seva","🛂","Identity","https://www.passportindia.gov.in/","Passport applications and appointments"],
+ ["DigiLocker","📁","Identity","https://www.digilocker.gov.in/","Access authentic digital documents"],
+ ["MeriPehchaan","🔐","Identity","https://meripehchaan.gov.in/","National single sign-on portal"],
+ ["National Population Register","👥","Identity","https://censusindia.gov.in/","Census and population information"],
+
+ // Documents and certificates
+ ["DigiLocker Sign In","📂","Documents","https://www.digilocker.gov.in/","Access issued digital documents"],
+ ["eSign India","✍️","Documents","https://cca.gov.in/","Digital signature and eSign information"],
+ ["CBSE Academic Documents","🎓","Documents","https://www.cbse.gov.in/","CBSE official information"],
+ ["National Academic Depository","📜","Documents","https://nad.gov.in/","Academic awards and documents"],
+ ["Birth and Death Registration CRS","👶","Documents","https://crsorgi.gov.in/","Civil registration information"],
+ ["eGazette of India","📰","Documents","https://egazette.gov.in/","Official Gazette publications"],
+ ["India Post","📮","Documents","https://www.indiapost.gov.in/","Postal services and tracking"],
+
+ // Tax
+ ["Income Tax e-Filing","💰","Tax","https://www.incometax.gov.in/","Income tax returns and services"],
+ ["Income Tax Department","🏛️","Tax","https://incometaxindia.gov.in/","Tax information and resources"],
+ ["GST Portal","🧾","Tax","https://www.gst.gov.in/","GST registration, returns and services"],
+ ["GST Search Taxpayer","🔎","Tax","https://services.gst.gov.in/services/searchtp","Search GST taxpayer information"],
+ ["Central Board of Indirect Taxes","📑","Tax","https://www.cbic.gov.in/","Customs and indirect tax information"],
+ ["EPFO","👷","Tax","https://www.epfindia.gov.in/","Provident fund services"],
+ ["EPFO Member Portal","👤","Tax","https://unifiedportal-mem.epfindia.gov.in/memberinterface/","Member account access"],
+ ["Employees Pension Services","🧓","Tax","https://www.epfindia.gov.in/","Pension and provident fund information"],
+ ["ESIC","🏥","Tax","https://www.esic.gov.in/","Employee state insurance services"],
+
+ // Benefits
+ ["PM-KISAN","🌾","Benefits","https://pmkisan.gov.in/","Farmer income support scheme"],
+ ["National Social Assistance Programme","🤝","Benefits","https://nsap.nic.in/","Social assistance information"],
+ ["National Scholarship Portal","🎓","Benefits","https://scholarships.gov.in/","Scholarship applications"],
+ ["PM Awas Yojana Urban","🏠","Benefits","https://pmay-urban.gov.in/","Urban housing scheme information"],
+ ["PM Awas Yojana Gramin","🏡","Benefits","https://pmayg.nic.in/","Rural housing scheme information"],
+ ["Ayushman Bharat PM-JAY","🩺","Benefits","https://pmjay.gov.in/","Health assurance scheme information"],
+ ["Mahatma Gandhi NREGA","🧑‍🌾","Benefits","https://nrega.nic.in/","Rural employment scheme"],
+ ["National Food Security Portal","🌾","Benefits","https://nfsa.gov.in/","Food security information"],
+ ["Public Distribution System","🍚","Benefits","https://impds.nic.in/","Integrated public distribution information"],
+ ["e-Shram","👷","Benefits","https://eshram.gov.in/","Unorganised worker services"],
+ ["National Pension System","🧓","Benefits","https://npstrust.org.in/","Pension system information"],
+ ["Atal Pension Yojana","🧓","Benefits","https://www.npscra.nsdl.co.in/","Pension information and related services"],
+ ["PM Vishwakarma","🛠️","Benefits","https://pmvishwakarma.gov.in/","Artisan scheme information"],
+ ["Stand Up India","🏢","Benefits","https://www.standupmitra.in/","Entrepreneurship scheme information"],
+ ["Startup India","🚀","Benefits","https://www.startupindia.gov.in/","Startup resources"],
+ ["PM Mudra Yojana","💼","Benefits","https://www.mudra.org.in/","Micro-enterprise lending information"],
+
+ // Banking
+ ["Reserve Bank of India","🏦","Banking","https://www.rbi.org.in/","Central bank information"],
+ ["RBI Sachet","🛡️","Banking","https://sachet.rbi.org.in/","Report suspected illegal deposit schemes"],
+ ["RBI Complaint Management","📝","Banking","https://cms.rbi.org.in/","Banking complaints, subject to eligibility"],
+ ["NPCI","💳","Banking","https://www.npci.org.in/","UPI and retail payment systems"],
+ ["BHIM UPI","📲","Banking","https://www.bhimupi.org.in/","Official BHIM information"],
+ ["Financial Services Department","💰","Banking","https://financialservices.gov.in/","Government financial services information"],
+ ["Jan Dhan Yojana","🏦","Banking","https://pmjdy.gov.in/","Financial inclusion scheme"],
+ ["Public Financial Management System","📊","Banking","https://pfms.nic.in/","Government payment and fund information"],
+ ["MUDRA","🏢","Banking","https://www.mudra.org.in/","Micro-unit development and finance"],
+
+ // Jobs
+ ["UPSC","🏛️","Jobs","https://upsc.gov.in/","Civil services and other examinations"],
+ ["UPSC Online Applications","📝","Jobs","https://upsconline.nic.in/","Application portal"],
+ ["Staff Selection Commission","👨‍💼","Jobs","https://ssc.gov.in/","SSC examinations"],
+ ["Institute of Banking Personnel Selection","🏦","Jobs","https://www.ibps.in/","Bank recruitment examinations"],
+ ["National Testing Agency","📝","Jobs","https://nta.ac.in/","Entrance examination information"],
+ ["Employment News","📰","Jobs","https://employmentnews.gov.in/","Government employment information"],
+ ["Railway Recruitment Boards","🚆","Jobs","https://www.rrbcdg.gov.in/","Railway recruitment information; regional boards vary"],
+ ["Indian Army Recruitment","🎖️","Jobs","https://joinindianarmy.nic.in/","Army recruitment"],
+ ["Indian Navy Recruitment","⚓","Jobs","https://www.joinindiannavy.gov.in/","Navy recruitment"],
+ ["Indian Air Force Recruitment","✈️","Jobs","https://careerindianairforce.cdac.in/","Air Force career information"],
+ ["National Career Service","💼","Jobs","https://www.ncs.gov.in/","Jobs and career services"],
+
+ // Education
+ ["Ministry of Education","🎓","Education","https://www.education.gov.in/","National education policy and information"],
+ ["SWAYAM","📚","Education","https://swayam.gov.in/","Online courses"],
+ ["DIKSHA","📖","Education","https://diksha.gov.in/","Digital school learning resources"],
+ ["ePathshala","📘","Education","https://epathshala.nic.in/","NCERT digital learning materials"],
+ ["NCERT","🏫","Education","https://ncert.nic.in/","Curriculum and textbooks"],
+ ["NTA","📝","Education","https://nta.ac.in/","Entrance examinations"],
+ ["UGC","🎓","Education","https://www.ugc.gov.in/","University and higher education information"],
+ ["AICTE","🏛️","Education","https://www.aicte-india.org/","Technical education information"],
+ ["National Scholarship Portal","💰","Education","https://scholarships.gov.in/","Scholarship services"],
+ ["Academic Bank of Credits","📚","Education","https://abc.gov.in/","Academic credit information"],
+ ["NPTEL","💻","Education","https://nptel.ac.in/","Online engineering and science courses"],
+ ["AISHE","📊","Education","https://aishe.gov.in/","Higher education statistics"],
+
+ // Health
+ ["Ministry of Health","🏥","Health","https://mohfw.gov.in/","National health information"],
+ ["National Health Authority","🩺","Health","https://nha.gov.in/","Digital health and health assurance"],
+ ["Ayushman Bharat PM-JAY","💳","Health","https://pmjay.gov.in/","Health assurance scheme"],
+ ["ABHA","🪪","Health","https://abha.abdm.gov.in/","Digital health account portal"],
+ ["eSanjeevani","👨‍⚕️","Health","https://esanjeevani.mohfw.gov.in/","Government telemedicine"],
+ ["CoWIN","💉","Health","https://www.cowin.gov.in/","Official vaccination portal information"],
+ ["Indian Council of Medical Research","🔬","Health","https://www.icmr.gov.in/","Medical research"],
+ ["National Medical Commission","🩺","Health","https://www.nmc.org.in/","Medical education and regulation"],
+ ["Central Drugs Standard Control Organisation","💊","Health","https://cdsco.gov.in/","Drug regulatory information"],
+ ["Food Safety and Standards Authority","🥗","Health","https://www.fssai.gov.in/","Food safety information"],
+ ["National AIDS Control Organisation","❤️","Health","https://naco.gov.in/","HIV/AIDS information"],
+ ["Ayush Ministry","🌿","Health","https://ayush.gov.in/","AYUSH systems of healthcare"],
+
+ // Transport
+ ["Parivahan","🚘","Transport","https://parivahan.gov.in/","Driving licence and vehicle services"],
+ ["Sarathi Driving Licence","🪪","Transport","https://sarathi.parivahan.gov.in/","Driving licence services"],
+ ["Vahan Vehicle Services","🚗","Transport","https://vahan.parivahan.gov.in/","Vehicle registration services"],
+ ["mParivahan Information","🚘","Transport","https://parivahan.gov.in/","Official transport services portal"],
+ ["Indian Railways","🚆","Transport","https://indianrailways.gov.in/","Railway information"],
+ ["IRCTC","🎟️","Transport","https://www.irctc.co.in/","Rail ticket booking"],
+ ["Rail Madad","🛤️","Transport","https://railmadad.indianrailways.gov.in/","Railway grievance assistance"],
+ ["National Highways Authority","🛣️","Transport","https://nhai.gov.in/","National highway information"],
+ ["Ministry of Road Transport","🚦","Transport","https://morth.nic.in/","Road transport policies"],
+ ["Airports Authority of India","✈️","Transport","https://www.aai.aero/","Airport information"],
+ ["Directorate General of Civil Aviation","🛫","Transport","https://www.dgca.gov.in/","Civil aviation information"],
+ ["Ministry of Ports Shipping and Waterways","🚢","Transport","https://shipmin.gov.in/","Ports and shipping information"],
+
+ // Agriculture
+ ["Ministry of Agriculture","🌾","Agriculture","https://agriwelfare.gov.in/","Agriculture policies and schemes"],
+ ["PM-KISAN","👨‍🌾","Agriculture","https://pmkisan.gov.in/","Farmer benefit services"],
+ ["Soil Health Card","🌱","Agriculture","https://soilhealth.dac.gov.in/","Soil health services"],
+ ["e-NAM","🧺","Agriculture","https://www.enam.gov.in/","Electronic national agriculture market"],
+ ["Agriculture Infrastructure Fund","🚜","Agriculture","https://agriinfra.dac.gov.in/","Agriculture infrastructure scheme"],
+ ["Pradhan Mantri Fasal Bima Yojana","🌧️","Agriculture","https://pmfby.gov.in/","Crop insurance"],
+ ["National Horticulture Board","🍎","Agriculture","https://nhb.gov.in/","Horticulture information"],
+ ["Indian Council of Agricultural Research","🔬","Agriculture","https://icar.org.in/","Agriculture research"],
+ ["Kisan Call Centre Information","☎️","Agriculture","https://agriwelfare.gov.in/","Agriculture support information"],
+ ["Fertilizer Department","🌱","Agriculture","https://fert.gov.in/","Fertilizer policy information"],
+
+ // Justice
+ ["eCourts Services","⚖️","Justice","https://ecourts.gov.in/","Court services and case information"],
+ ["Supreme Court of India","🏛️","Justice","https://www.sci.gov.in/","Supreme Court information"],
+ ["Department of Justice","⚖️","Justice","https://doj.gov.in/","Justice administration"],
+ ["National Legal Services Authority","🤝","Justice","https://nalsa.gov.in/","Legal aid information"],
+ ["India Code","📚","Justice","https://www.indiacode.nic.in/","Central legislation"],
+ ["National Consumer Commission","⚖️","Justice","https://ncdrc.nic.in/","Consumer dispute information"],
+ ["Central Vigilance Commission","🛡️","Justice","https://cvc.gov.in/","Vigilance information"],
+ ["Lokpal of India","🏛️","Justice","https://lokpal.gov.in/","Lokpal information"],
+
+ // Business
+ ["Ministry of Corporate Affairs","🏢","Business","https://www.mca.gov.in/","Company and LLP services"],
+ ["MCA Company Services","📄","Business","https://www.mca.gov.in/","Corporate filings and records"],
+ ["Udyam Registration","🏭","Business","https://udyamregistration.gov.in/","MSME registration"],
+ ["GeM Government e Marketplace","🛒","Business","https://gem.gov.in/","Government procurement"],
+ ["Government eProcurement","📑","Business","https://eprocure.gov.in/","Government tender portal"],
+ ["Central Public Procurement Portal","📋","Business","https://eprocure.gov.in/","Public procurement information"],
+ ["Startup India","🚀","Business","https://www.startupindia.gov.in/","Startup resources"],
+ ["Invest India","📈","Business","https://www.investindia.gov.in/","Investment facilitation"],
+ ["IP India","💡","Business","https://ipindia.gov.in/","Patents, trademarks and intellectual property"],
+ ["DGFT","🌐","Business","https://www.dgft.gov.in/","Foreign trade services"],
+ ["Bureau of Indian Standards","✅","Business","https://www.bis.gov.in/","Standards and certification"],
+
+ // Utilities
+ ["Bharat Bill Payment System","🧾","Utilities","https://www.npci.org.in/","Bill payment system information"],
+ ["Ministry of Power","⚡","Utilities","https://powermin.gov.in/","Power sector information"],
+ ["Ministry of Jal Shakti","💧","Utilities","https://jalshakti-dowr.gov.in/","Water resources information"],
+ ["Jal Jeevan Mission","🚰","Utilities","https://jaljeevanmission.gov.in/","Rural drinking water scheme"],
+ ["Swachh Bharat Mission","♻️","Utilities","https://swachhbharatmission.ddws.gov.in/","Sanitation programme"],
+ ["Central Pollution Control Board","🌳","Utilities","https://cpcb.nic.in/","Pollution and environmental information"],
+ ["India Meteorological Department","🌦️","Utilities","https://mausam.imd.gov.in/","Weather forecasts and warnings"],
+ ["National Disaster Management Authority","🆘","Utilities","https://ndma.gov.in/","Disaster preparedness"],
+ ["Bureau of Energy Efficiency","💡","Utilities","https://beeindia.gov.in/","Energy efficiency information"],
+ ["Ministry of Environment","🌳","Utilities","https://moef.gov.in/","Environment and forest policies"],
+
+ // Maharashtra
+ ["Maharashtra Government","🏛️","Maharashtra","https://www.maharashtra.gov.in/","State government portal"],
+ ["MahaOnline","💻","Maharashtra","https://www.mahaonline.gov.in/","Maharashtra online services"],
+ ["Aaple Sarkar","📄","Maharashtra","https://aaplesarkar.mahaonline.gov.in/","State citizen services"],
+ ["Maharashtra Transport","🚘","Maharashtra","https://transport.maharashtra.gov.in/","Transport department"],
+ ["Maharashtra Police","👮","Maharashtra","https://www.mahapolice.gov.in/","Police information"],
+ ["Maharashtra Public Service Commission","📝","Maharashtra","https://mpsc.gov.in/","State recruitment examinations"],
+ ["Maharashtra State Board","🎓","Maharashtra","https://mahahsscboard.in/","Secondary and higher secondary education"],
+ ["Maharashtra Revenue Department","🌾","Maharashtra","https://mahabhumi.gov.in/","Land records portal"],
+ ["Mahabhulekh","🗺️","Maharashtra","https://bhulekh.mahabhumi.gov.in/","Land record search"],
+ ["MahaDBT","💰","Maharashtra","https://mahadbt.maharashtra.gov.in/","State benefits and scholarships"],
+ ["Maharashtra Electricity Regulatory Commission","⚡","Maharashtra","https://merc.gov.in/","Electricity regulation"],
+ ["MSEDCL","💡","Maharashtra","https://www.mahadiscom.in/","Electricity services"],
+ ["Mumbai Police","👮","Maharashtra","https://mumbaipolice.gov.in/","Mumbai Police information"],
+ ["Brihanmumbai Municipal Corporation","🏙️","Maharashtra","https://portal.mcgm.gov.in/","Mumbai municipal services"],
+ ["Maharashtra State Election Commission","🗳️","Maharashtra","https://mahasec.maharashtra.gov.in/","Local election information"],
+ ["Maharashtra Housing and Area Development Authority","🏠","Maharashtra","https://www.mhada.gov.in/","Housing services"],
+ ["Maharashtra Water Resources Department","💧","Maharashtra","https://wrd.maharashtra.gov.in/","Water resources information"],
+ ["Maharashtra Public Health Department","🏥","Maharashtra","https:// आरोग्य.maharashtra.gov.in/","Public health information"],
+
+ // Emergency and citizen support
+ ["Emergency Response Support System","🆘","Emergency","https://112.gov.in/","National emergency response information"],
+ ["National Disaster Management Authority","🌪️","Emergency","https://ndma.gov.in/","Disaster information and preparedness"],
+ ["India Meteorological Department","⛈️","Emergency","https://mausam.imd.gov.in/","Weather warnings"],
+ ["National Cyber Crime Reporting Portal","🔐","Emergency","https://cybercrime.gov.in/","Report cybercrime"],
+ ["CERT-In","🛡️","Emergency","https://www.cert-in.org.in/","Cybersecurity advisories"],
+ ["Indian Coast Guard","🚢","Emergency","https://indiancoastguard.gov.in/","Coast Guard information"],
+ ["National Commission for Women","👩","Emergency","https://ncw.gov.in/","Women's rights and complaint information"],
+ ["Child Helpline Information","🧒","Emergency","https://www.spniwcd.wcd.gov.in/","Women and child development services"],
+ ["National Human Rights Commission","⚖️","Emergency","https://nhrc.nic.in/","Human rights information"],
+ ["National Commission for Scheduled Castes","🤝","Emergency","https://ncsc.nic.in/","Commission and complaint information"],
+ ["National Commission for Scheduled Tribes","🤝","Emergency","https://ncst.nic.in/","Commission information"]
+];
+
+let custom=[];
+let favorites=[];
+let category="All";
+let sortMode="name";
+
+try{custom=JSON.parse(localStorage.getItem("indGovCustom")||"[]")}catch(e){custom=[]}
+try{favorites=JSON.parse(localStorage.getItem("indGovFav")||"[]")}catch(e){favorites=[]}
+if(!Array.isArray(custom))custom=[];
+if(!Array.isArray(favorites))favorites=[];
+
+function allItems(){
+ const base=D.map((x,i)=>({
+  id:"gov-"+i,n:x[0],i:x[1],c:x[2],u:x[3],d:x[4]
+ }));
+ return base.concat(custom);
+}
+
+function openLink(url){
+ try{
+  const u=new URL(url);
+  if(!["https:","http:"].includes(u.protocol)){
+   alert("Only HTTP and HTTPS links are allowed.");
+   return;
+  }
+  window.open(u.href,"_blank","noopener,noreferrer");
+ }catch(e){alert("Invalid URL.")}
+}
+
+function setCat(c){
+ category=c;
+ document.querySelectorAll(".tab").forEach(b=>
+  b.classList.toggle("active",b.dataset.cat===c)
+ );
+ render();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+document.getElementById("tabs").addEventListener("click",e=>{
+ const b=e.target.closest("[data-cat]");
+ if(b)setCat(b.dataset.cat);
+});
+document.getElementById("search").addEventListener("input",render);
+
+function render(){
+ if(category==="Custom"){
+  showPanel("customPanel");renderCustom();return;
+ }
+ if(category==="Settings"){
+  showPanel("settingsPanel");return;
+ }
+ showPanel("directory");
+
+ const q=document.getElementById("search").value.trim().toLowerCase();
+ let data=allItems().filter(a=>{
+  const matchCat=category==="All"||
+   (category==="Favorites"&&favorites.includes(a.id))||
+   a.c===category;
+  const text=[a.n,a.c,a.d,a.u].join(" ").toLowerCase();
+  return matchCat&&(!q||text.includes(q));
+ });
+
+ data.sort((a,b)=>sortMode==="category"?
+  a.c.localeCompare(b.c)||a.n.localeCompare(b.n):
+  a.n.localeCompare(b.n));
+
+ document.getElementById("heading").textContent=
+  category==="All"?"All Government Services":
+  category==="Favorites"?"⭐ Favorite Services":category+" Services";
+
+ document.getElementById("count").textContent=
+  data.length+" services found";
+
+ const grid=document.getElementById("grid");
+ grid.replaceChildren();
+
+ if(!data.length){
+  grid.textContent="No services found. Try a different search.";
+  return;
+ }
+
+ data.forEach(a=>{
+  const card=document.createElement("article");
+  card.className="item";
+
+  const top=document.createElement("div");
+  top.className="top";
+
+  const icon=document.createElement("div");
+  icon.className="icon";icon.textContent=a.i;
+
+  const info=document.createElement("div");
+  const name=document.createElement("div");
+  name.className="name";name.textContent=a.n;
+
+  const cat=document.createElement("div");
+  cat.className="category";cat.textContent=a.c;
+  info.append(name,cat);top.append(icon,info);
+
+  const desc=document.createElement("div");
+  desc.className="desc";desc.textContent=a.d;
+
+  const actions=document.createElement("div");
+  actions.className="actions";
+
+  const open=document.createElement("button");
+  open.className="open";open.textContent="Open Official Site ↗";
+  open.onclick=()=>openLink(a.u);
+
+  const star=document.createElement("button");
+  star.className="star";
+  star.textContent=favorites.includes(a.id)?"★":"☆";
+  star.setAttribute("aria-label","Toggle favorite");
+  star.onclick=()=>{
+   favorites=favorites.includes(a.id)?
+    favorites.filter(id=>id!==a.id):favorites.concat(a.id);
+   localStorage.setItem("indGovFav",JSON.stringify(favorites));
+   render();
+  };
+
+  actions.append(open,star);
+  card.append(top,desc,actions);
+  grid.appendChild(card);
+ });
+}
+
+function showPanel(id){
+ document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+}
+
+function addLink(){
+ const n=document.getElementById("newName").value.trim();
+ const i=document.getElementById("newIcon").value.trim()||"🏛️";
+ const c=document.getElementById("newCat").value;
+ const u=document.getElementById("newUrl").value.trim();
+ const d=document.getElementById("newDesc").value.trim();
+
+ if(!n||!u)return alert("Enter a service name and URL.");
+
+ try{
+  const parsed=new URL(u);
+  if(!["https:","http:"].includes(parsed.protocol))
+   return alert("Only HTTP and HTTPS URLs are allowed.");
+ }catch(e){return alert("Enter a valid URL.");}
+
+ custom.push({
+  id:"custom-"+Date.now()+"-"+Math.random().toString(36).slice(2,8),
+  n,i,c,u,d
+ });
+ localStorage.setItem("indGovCustom",JSON.stringify(custom));
+
+ ["newName","newUrl","newDesc"].forEach(id=>
+  document.getElementById(id).value=""
+ );
+ document.getElementById("newIcon").value="🏛️";
+ renderCustom();
+ alert("Link saved.");
+}
+
+function renderCustom(){
+ const box=document.getElementById("customList");
+ box.replaceChildren();
+ if(!custom.length){
+  box.textContent="No custom links saved.";
+  return;
+ }
+
+ custom.forEach(a=>{
+  const row=document.createElement("div");
+  row.className="savedrow";
+
+  const name=document.createElement("span");
+  name.textContent=a.i+" "+a.n+" · "+a.c;
+
+  const actions=document.createElement("span");
+  const open=document.createElement("button");
+  open.className="small";open.textContent="Open";
+  open.onclick=()=>openLink(a.u);
+
+  const del=document.createElement("button");
+  del.className="small";del.textContent="Delete";
+  del.onclick=()=>{
+   if(!confirm("Delete "+a.n+"?"))return;
+   custom=custom.filter(x=>x.id!==a.id);
+   favorites=favorites.filter(x=>x!==a.id);
+   localStorage.setItem("indGovCustom",JSON.stringify(custom));
+   localStorage.setItem("indGovFav",JSON.stringify(favorites));
+   renderCustom();
+  };
+
+  actions.append(open,del);
+  row.append(name,actions);
+  box.appendChild(row);
+ });
+}
+
+function exportLinks(){
+ const blob=new Blob([JSON.stringify(custom,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;a.download="my-india-government-links.json";a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function importLinks(event){
+ const file=event.target.files[0];
+ if(!file)return;
+
+ const reader=new FileReader();
+ reader.onload=()=>{
+  try{
+   const data=JSON.parse(reader.result);
+   if(!Array.isArray(data))throw Error("Invalid file");
+   const valid=[];
+
+   data.forEach(a=>{
+    if(!a||typeof a.n!=="string"||typeof a.u!=="string")return;
+    try{
+     const u=new URL(a.u);
+     if(!["https:","http:"].includes(u.protocol))return;
+     valid.push({
+      id:"custom-"+Date.now()+"-"+Math.random().toString(36).slice(2,8),
+      n:a.n.slice(0,120),
+      i:typeof a.i==="string"?a.i.slice(0,8):"🏛️",
+      c:typeof a.c==="string"?a.c:"National",
+      u:u.href,
+      d:typeof a.d==="string"?a.d.slice(0,300):""
+     });
+    }catch(e){}
+   });
+
+   custom=custom.concat(valid);
+   localStorage.setItem("indGovCustom",JSON.stringify(custom));
+   renderCustom();
+   alert("Imported "+valid.length+" links.");
+  }catch(e){alert("Unable to read the JSON file.");}
+  event.target.value="";
+ };
+ reader.readAsText(file);
+}
+
+function clearFavs(){
+ if(!confirm("Clear all favorites?"))return;
+ favorites=[];
+ localStorage.setItem("indGovFav","[]");
+ render();
+}
+
+function changeTheme(){
+ const themes={
+  forest:["#087747","#eef7f0","#ffffff","#183529"],
+  ocean:["#126b91","#edf7fc","#ffffff","#173747"],
+  earth:["#795548","#f7f0e7","#fffaf3","#49372d"],
+  flower:["#b6427c","#fff0f6","#ffffff","#49273a"],
+  lavender:["#7951a8","#f5effa","#ffffff","#39294b"],
+  mint:["#138c78","#e9f8f2","#ffffff","#173e35"],
+  sunrise:["#b85c38","#fff3eb","#ffffff","#493126"],
+  sunshine:["#a77a00","#fff9df","#ffffff","#443715"],
+  dark:["#315b46","#17211b","#26352c","#edf7ef"],
+  simple:["#475569","#f1f5f9","#ffffff","#1e293b"]
+ };
+ const t=themes[document.getElementById("theme").value];
+ ["--primary","--bg","--card","--text"].forEach((k,i)=>
+  document.documentElement.style.setProperty(k,t[i])
+ );
+ localStorage.setItem("indGovTheme",document.getElementById("theme").value);
+}
+
+const oldTheme=localStorage.getItem("indGovTheme");
+if(oldTheme&&document.querySelector('#theme option[value="'+oldTheme+'"]')){
+ document.getElementById("theme").value=oldTheme;
+}
+changeTheme();
+render();
+</script>
+</body>
+</html>
