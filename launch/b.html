@@ -1,1 +1,841 @@
-gh
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#167447">
+<title>Android App Directory</title>
+
+<style>
+:root {
+  --primary:#167447;
+  --bg:#eff8f1;
+  --card:#ffffff;
+  --text:#183426;
+  --muted:#68786d;
+  --border:#dce8df;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  font-family:system-ui,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+header {
+  padding:19px 15px;
+  text-align:center;
+  background:var(--primary);
+  color:white;
+}
+header h1 {font-size:23px;margin:0 0 5px}
+header p {font-size:13px;margin:0}
+main {max-width:1100px;margin:auto;padding:13px}
+.searchbox {
+  width:100%;
+  padding:14px;
+  border:1px solid var(--border);
+  border-radius:13px;
+  background:var(--card);
+  color:var(--text);
+  font-size:16px;
+}
+.tabs {
+  display:flex;
+  overflow-x:auto;
+  gap:8px;
+  padding:12px 0;
+  scrollbar-width:thin;
+}
+.tab {
+  flex-shrink:0;
+  border:0;
+  padding:11px 14px;
+  border-radius:22px;
+  background:var(--card);
+  color:var(--text);
+  font-weight:600;
+  cursor:pointer;
+}
+.tab.active {background:var(--primary);color:white}
+.toolbar {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:4px 0 15px;
+}
+button {font:inherit;cursor:pointer}
+.smallbtn {
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  border-radius:9px;
+  padding:9px 12px;
+}
+h2 {font-size:19px;margin:12px 0}
+.summary {font-size:13px;color:var(--muted);margin:6px 0 15px}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:11px;
+}
+.app {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+  min-width:0;
+  box-shadow:0 2px 6px #00000007;
+}
+.app-top {display:flex;gap:10px;align-items:center}
+.icon {
+  width:47px;height:47px;
+  flex-shrink:0;
+  display:grid;place-items:center;
+  border-radius:13px;
+  background:var(--bg);
+  font-size:27px;
+}
+.app-name {font-weight:750;font-size:14px;overflow-wrap:anywhere}
+.app-category {font-size:11px;color:var(--muted);margin-top:3px}
+.app-description {font-size:12px;color:var(--muted);margin:10px 0;line-height:1.45}
+.app-actions {display:flex;gap:7px;align-items:center}
+.openbtn {
+  flex:1;
+  background:var(--primary);
+  color:white;
+  border:0;
+  padding:9px 7px;
+  border-radius:8px;
+  font-weight:650;
+  font-size:13px;
+}
+.favbtn {
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--card);
+  color:var(--text);
+  padding:7px 10px;
+  font-size:19px;
+}
+.empty {
+  background:var(--card);
+  padding:22px;
+  border-radius:12px;
+  color:var(--muted);
+}
+.panel {display:none}
+.panel.active {display:block}
+.card {
+  background:var(--card);
+  padding:16px;
+  border-radius:14px;
+  margin-bottom:13px;
+  border:1px solid var(--border);
+}
+label {display:block;font-size:13px;margin:12px 0 5px}
+input,select,textarea {
+  width:100%;
+  padding:11px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:var(--card);
+  color:var(--text);
+  font:inherit;
+}
+.action {
+  border:0;
+  border-radius:9px;
+  padding:11px 14px;
+  background:var(--primary);
+  color:white;
+  margin-top:12px;
+  font-weight:650;
+}
+.danger {background:#b42318}
+.note {font-size:13px;line-height:1.6;color:var(--muted)}
+footer {text-align:center;font-size:12px;color:var(--muted);padding:22px}
+@media(min-width:650px) {
+  .grid {grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(min-width:950px) {
+  .grid {grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <h1>📱 Android App Directory</h1>
+  <p>Your favourite apps and useful services in one place</p>
+</header>
+
+<main>
+  <input id="search" class="searchbox"
+    placeholder="🔎 Search apps, categories or services..."
+    autocomplete="off">
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-category="All">🏠 All</button>
+    <button class="tab" data-category="Favorites">⭐ Favorites</button>
+    <button class="tab" data-category="Communication">💬 Communication</button>
+    <button class="tab" data-category="Social">👥 Social</button>
+    <button class="tab" data-category="Google">🔵 Google</button>
+    <button class="tab" data-category="Shopping">🛍️ Shopping</button>
+    <button class="tab" data-category="Banking">🏦 Banking</button>
+    <button class="tab" data-category="Travel">🚆 Travel</button>
+    <button class="tab" data-category="Entertainment">🎬 Entertainment</button>
+    <button class="tab" data-category="Education">📚 Education</button>
+    <button class="tab" data-category="Productivity">📝 Productivity</button>
+    <button class="tab" data-category="AI">🤖 AI</button>
+    <button class="tab" data-category="Health">❤️ Health</button>
+    <button class="tab" data-category="Government">🏛️ Government</button>
+    <button class="tab" data-category="Utilities">🧰 Utilities</button>
+    <button class="tab" data-category="Developer">💻 Developer</button>
+    <button class="tab" data-category="Custom">➕ My Apps</button>
+    <button class="tab" data-category="Settings">⚙️ Settings</button>
+  </nav>
+
+  <div class="toolbar">
+    <button class="smallbtn" onclick="setSort('name')">A–Z</button>
+    <button class="smallbtn" onclick="setSort('category')">By Category</button>
+    <button class="smallbtn" onclick="showAll()">Show All Apps</button>
+  </div>
+
+  <section id="directory" class="panel active">
+    <h2 id="heading">All Apps</h2>
+    <div class="summary" id="count"></div>
+    <div class="grid" id="appGrid"></div>
+  </section>
+
+  <section id="customPanel" class="panel">
+    <div class="card">
+      <h2>➕ Add Your Own App</h2>
+      <p class="note">Save a website, Android App Link, or supported deep link.</p>
+
+      <label for="customName">App name</label>
+      <input id="customName" placeholder="My School App">
+
+      <label for="customIcon">Emoji icon</label>
+      <input id="customIcon" value="📲" maxlength="8">
+
+      <label for="customCategory">Category</label>
+      <select id="customCategory">
+        <option>Communication</option>
+        <option>Social</option>
+        <option>Google</option>
+        <option>Shopping</option>
+        <option>Banking</option>
+        <option>Travel</option>
+        <option>Entertainment</option>
+        <option>Education</option>
+        <option>Productivity</option>
+        <option>AI</option>
+        <option>Health</option>
+        <option>Government</option>
+        <option>Utilities</option>
+        <option>Developer</option>
+      </select>
+
+      <label for="customUrl">App URL</label>
+      <input id="customUrl" placeholder="https://example.com">
+
+      <label for="customDescription">Description (optional)</label>
+      <input id="customDescription" placeholder="My favourite application">
+
+      <button class="action" onclick="addCustom()">Save App</button>
+    </div>
+
+    <div class="card">
+      <h2>My Saved Apps</h2>
+      <div id="customList"></div>
+    </div>
+  </section>
+
+  <section id="settingsPanel" class="panel">
+    <div class="card">
+      <h2>🌿 Appearance</h2>
+      <label for="theme">Select theme</label>
+      <select id="theme" onchange="changeTheme()">
+        <option value="forest">🌿 Forest Green</option>
+        <option value="ocean">🌊 Ocean Blue</option>
+        <option value="sunrise">🌅 Sunrise</option>
+        <option value="earth">🌍 Earth Brown</option>
+        <option value="flower">🌸 Flower Pink</option>
+        <option value="lavender">💜 Lavender</option>
+        <option value="mint">🍃 Mint</option>
+        <option value="sunshine">☀️ Sunshine</option>
+        <option value="dark">🌙 Night</option>
+        <option value="plain">⚪ Simple</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <h2>💾 Data Management</h2>
+      <button class="action" onclick="exportData()">Export Custom Apps</button>
+      <button class="action" onclick="document.getElementById('importFile').click()">Import Custom Apps</button>
+      <input type="file" id="importFile" accept=".json,application/json"
+        hidden onchange="importData(event)">
+      <button class="action danger" onclick="clearFavorites()">Clear Favorites</button>
+      <p class="note">Your favorites and custom app links are saved locally in your browser.</p>
+    </div>
+
+    <div class="card">
+      <h2>ℹ️ About App Links</h2>
+      <p class="note">
+        These are useful public website links and supported app links, not a list
+        of every installed app on your phone. Android may open a website instead
+        of the app. Some services require an account, an installed app, or
+        availability in your country. Banking and government links should always
+        be checked against the official service.
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer>Android App Directory • Single HTML • No Node.js • No framework</footer>
+
+<script>
+const apps = [
+  // COMMUNICATION
+  {n:"WhatsApp",i:"💬",c:"Communication",u:"https://wa.me/",d:"Messaging and calls"},
+  {n:"Telegram",i:"✈️",c:"Communication",u:"https://t.me/",d:"Messages and channels"},
+  {n:"Signal",i:"🔐",c:"Communication",u:"https://signal.org/",d:"Private messaging"},
+  {n:"Messenger",i:"💙",c:"Communication",u:"https://www.messenger.com/",d:"Facebook messaging"},
+  {n:"Gmail",i:"📧",c:"Communication",u:"https://mail.google.com/",d:"Email inbox"},
+  {n:"Outlook",i:"📨",c:"Communication",u:"https://outlook.live.com/",d:"Email and calendar"},
+  {n:"Proton Mail",i:"🛡️",c:"Communication",u:"https://proton.me/mail",d:"Private email"},
+  {n:"Discord",i:"🎮",c:"Communication",u:"https://discord.com/app",d:"Communities and chat"},
+  {n:"Skype",i:"📞",c:"Communication",u:"https://www.skype.com/",d:"Calling service"},
+  {n:"Zoom",i:"🎥",c:"Communication",u:"https://zoom.us/join",d:"Video meetings"},
+  {n:"Google Meet",i:"📹",c:"Communication",u:"https://meet.google.com/",d:"Video calls"},
+  {n:"Microsoft Teams",i:"👨‍💻",c:"Communication",u:"https://teams.microsoft.com/",d:"Meetings and chat"},
+
+  // SOCIAL
+  {n:"Facebook",i:"🔵",c:"Social",u:"https://www.facebook.com/",d:"Social network"},
+  {n:"Instagram",i:"📸",c:"Social",u:"https://www.instagram.com/",d:"Photos and reels"},
+  {n:"Threads",i:"🧵",c:"Social",u:"https://www.threads.net/",d:"Social conversations"},
+  {n:"X",i:"𝕏",c:"Social",u:"https://x.com/",d:"Posts and news"},
+  {n:"Reddit",i:"🟠",c:"Social",u:"https://www.reddit.com/",d:"Communities and discussions"},
+  {n:"Pinterest",i:"📌",c:"Social",u:"https://www.pinterest.com/",d:"Ideas and inspiration"},
+  {n:"LinkedIn",i:"💼",c:"Social",u:"https://www.linkedin.com/",d:"Professional networking"},
+  {n:"Snapchat",i:"👻",c:"Social",u:"https://www.snapchat.com/",d:"Photos and messages"},
+  {n:"Mastodon",i:"🐘",c:"Social",u:"https://joinmastodon.org/",d:"Decentralized social network"},
+  {n:"Bluesky",i:"🦋",c:"Social",u:"https://bsky.app/",d:"Social conversations"},
+  {n:"Quora",i:"❓",c:"Social",u:"https://www.quora.com/",d:"Questions and answers"},
+
+  // GOOGLE
+  {n:"Google Search",i:"🔎",c:"Google",u:"https://www.google.com/",d:"Search the web"},
+  {n:"Google Maps",i:"🗺️",c:"Google",u:"https://maps.google.com/",d:"Navigation and places"},
+  {n:"Google Drive",i:"📁",c:"Google",u:"https://drive.google.com/",d:"Cloud files"},
+  {n:"Google Photos",i:"🖼️",c:"Google",u:"https://photos.google.com/",d:"Photo library"},
+  {n:"Google Calendar",i:"📅",c:"Google",u:"https://calendar.google.com/",d:"Schedule and events"},
+  {n:"Google Contacts",i:"👥",c:"Google",u:"https://contacts.google.com/",d:"Manage contacts"},
+  {n:"Google Translate",i:"🌐",c:"Google",u:"https://translate.google.com/",d:"Translate languages"},
+  {n:"Google Keep",i:"📝",c:"Google",u:"https://keep.google.com/",d:"Notes and lists"},
+  {n:"Google Docs",i:"📄",c:"Google",u:"https://docs.google.com/",d:"Documents"},
+  {n:"Google Sheets",i:"📊",c:"Google",u:"https://sheets.google.com/",d:"Spreadsheets"},
+  {n:"Google Slides",i:"📽️",c:"Google",u:"https://slides.google.com/",d:"Presentations"},
+  {n:"Google Classroom",i:"🏫",c:"Google",u:"https://classroom.google.com/",d:"School learning"},
+  {n:"Google Play",i:"▶️",c:"Google",u:"https://play.google.com/store",d:"Android app store"},
+  {n:"Google Earth",i:"🌍",c:"Google",u:"https://earth.google.com/",d:"Explore the planet"},
+  {n:"Google News",i:"📰",c:"Google",u:"https://news.google.com/",d:"News headlines"},
+
+  // SHOPPING
+  {n:"Amazon India",i:"📦",c:"Shopping",u:"https://www.amazon.in/",d:"Online shopping"},
+  {n:"Flipkart",i:"🛒",c:"Shopping",u:"https://www.flipkart.com/",d:"Indian online marketplace"},
+  {n:"Meesho",i:"🛍️",c:"Shopping",u:"https://www.meesho.com/",d:"Shopping marketplace"},
+  {n:"Myntra",i:"👕",c:"Shopping",u:"https://www.myntra.com/",d:"Fashion shopping"},
+  {n:"AJIO",i:"👟",c:"Shopping",u:"https://www.ajio.com/",d:"Fashion and lifestyle"},
+  {n:"JioMart",i:"🥦",c:"Shopping",u:"https://www.jiomart.com/",d:"Groceries and essentials"},
+  {n:"BigBasket",i:"🥬",c:"Shopping",u:"https://www.bigbasket.com/",d:"Online groceries"},
+  {n:"Blinkit",i:"⚡",c:"Shopping",u:"https://blinkit.com/",d:"Quick commerce"},
+  {n:"Nykaa",i:"💄",c:"Shopping",u:"https://www.nykaa.com/",d:"Beauty and wellness"},
+  {n:"FirstCry",i:"🧸",c:"Shopping",u:"https://www.firstcry.com/",d:"Baby and kids products"},
+  {n:"IKEA",i:"🪑",c:"Shopping",u:"https://www.ikea.com/in/en/",d:"Furniture and home"},
+  {n:"Decathlon",i:"🏃",c:"Shopping",u:"https://www.decathlon.in/",d:"Sports equipment"},
+
+  // BANKING AND PAYMENTS
+  {n:"State Bank of India",i:"🏦",c:"Banking",u:"https://sbi.co.in/",d:"Official SBI website"},
+  {n:"HDFC Bank",i:"🏦",c:"Banking",u:"https://www.hdfcbank.com/",d:"Official HDFC website"},
+  {n:"ICICI Bank",i:"🏦",c:"Banking",u:"https://www.icicibank.com/",d:"Official ICICI website"},
+  {n:"Axis Bank",i:"🏦",c:"Banking",u:"https://www.axisbank.com/",d:"Official Axis website"},
+  {n:"Kotak Bank",i:"🏦",c:"Banking",u:"https://www.kotak.com/",d:"Official Kotak website"},
+  {n:"Bank of Baroda",i:"🏦",c:"Banking",u:"https://www.bankofbaroda.in/",d:"Official bank website"},
+  {n:"Punjab National Bank",i:"🏦",c:"Banking",u:"https://pnbindia.in/",d:"Official PNB website"},
+  {n:"Canara Bank",i:"🏦",c:"Banking",u:"https://canarabank.com/",d:"Official Canara website"},
+  {n:"India Post Payments Bank",i:"📮",c:"Banking",u:"https://www.ippbonline.com/",d:"Official IPPB website"},
+  {n:"NPCI",i:"💳",c:"Banking",u:"https://www.npci.org.in/",d:"UPI and payment network"},
+  {n:"Paytm",i:"💸",c:"Banking",u:"https://paytm.com/",d:"Payments and services"},
+  {n:"PhonePe",i:"💜",c:"Banking",u:"https://www.phonepe.com/",d:"Payments and services"},
+  {n:"Google Pay",i:"💵",c:"Banking",u:"https://pay.google.com/",d:"Google payment services"},
+  {n:"BHIM UPI",i:"🇮🇳",c:"Banking",u:"https://www.bhimupi.org.in/",d:"Official BHIM information"},
+
+  // TRAVEL
+  {n:"IRCTC",i:"🚆",c:"Travel",u:"https://www.irctc.co.in/",d:"Indian Railways bookings"},
+  {n:"Indian Railways",i:"🚉",c:"Travel",u:"https://indianrailways.gov.in/",d:"Railway information"},
+  {n:"ConfirmTkt",i:"🎟️",c:"Travel",u:"https://www.confirmtkt.com/",d:"Train booking service"},
+  {n:" redBus",i:"🚌",c:"Travel",u:"https://www.redbus.in/",d:"Bus tickets"},
+  {n:"MakeMyTrip",i:"✈️",c:"Travel",u:"https://www.makemytrip.com/",d:"Flights and hotels"},
+  {n:"Goibibo",i:"🧳",c:"Travel",u:"https://www.goibibo.com/",d:"Travel bookings"},
+  {n:"Booking.com",i:"🏨",c:"Travel",u:"https://www.booking.com/",d:"Accommodation"},
+  {n:"Airbnb",i:"🏡",c:"Travel",u:"https://www.airbnb.co.in/",d:"Stays and experiences"},
+  {n:"Uber",i:"🚕",c:"Travel",u:"https://m.uber.com/",d:"Ride booking"},
+  {n:"Ola",i:"🚖",c:"Travel",u:"https://www.olacabs.com/",d:"Ride booking"},
+  {n:"Rapido",i:"🏍️",c:"Travel",u:"https://www.rapido.bike/",d:"Bike and cab rides"},
+  {n:"FASTag / NHAI",i:"🛣️",c:"Travel",u:"https://nhai.gov.in/",d:"Highway information"},
+  {n:"Maharashtra Transport",i:"🚌",c:"Travel",u:"https://transport.maharashtra.gov.in/",d:"State transport services"},
+  {n:"Airport Authority of India",i:"🛫",c:"Travel",u:"https://www.aai.aero/",d:"Airport information"},
+
+  // ENTERTAINMENT
+  {n:"YouTube",i:"▶️",c:"Entertainment",u:"https://www.youtube.com/",d:"Videos and creators"},
+  {n:"YouTube Music",i:"🎵",c:"Entertainment",u:"https://music.youtube.com/",d:"Music streaming"},
+  {n:"Spotify",i:"🎧",c:"Entertainment",u:"https://open.spotify.com/",d:"Music and podcasts"},
+  {n:"JioHotstar",i:"🏏",c:"Entertainment",u:"https://www.hotstar.com/in/",d:"Shows and sports"},
+  {n:"Netflix",i:"🎬",c:"Entertainment",u:"https://www.netflix.com/",d:"Films and series"},
+  {n:"Amazon Prime Video",i:"🍿",c:"Entertainment",u:"https://www.primevideo.com/",d:"Movies and shows"},
+  {n:"ZEE5",i:"📺",c:"Entertainment",u:"https://www.zee5.com/",d:"Entertainment streaming"},
+  {n:"Sony LIV",i:"📡",c:"Entertainment",u:"https://www.sonyliv.com/",d:"Shows and sports"},
+  {n:"JioSaavn",i:"🎶",c:"Entertainment",u:"https://www.jiosaavn.com/",d:"Music streaming"},
+  {n:"Gaana",i:"🎼",c:"Entertainment",u:"https://gaana.com/",d:"Music"},
+  {n:"Twitch",i:"🎮",c:"Entertainment",u:"https://www.twitch.tv/",d:"Live streaming"},
+  {n:"IMDb",i:"⭐",c:"Entertainment",u:"https://www.imdb.com/",d:"Movie information"},
+
+  // EDUCATION
+  {n:"SWAYAM",i:"🎓",c:"Education",u:"https://swayam.gov.in/",d:"Indian online courses"},
+  {n:"DIKSHA",i:"📚",c:"Education",u:"https://diksha.gov.in/",d:"School education resources"},
+  {n:"ePathshala",i:"📖",c:"Education",u:"https://epathshala.nic.in/",d:"NCERT learning materials"},
+  {n:"NPTEL",i:"🏛️",c:"Education",u:"https://nptel.ac.in/",d:"Engineering and science courses"},
+  {n:"Khan Academy",i:"🧮",c:"Education",u:"https://www.khanacademy.org/",d:"Free learning"},
+  {n:"Coursera",i:"🎓",c:"Education",u:"https://www.coursera.org/",d:"Online courses"},
+  {n:"edX",i:"📘",c:"Education",u:"https://www.edx.org/",d:"University courses"},
+  {n:"Udemy",i:"🧑‍🏫",c:"Education",u:"https://www.udemy.com/",d:"Online learning"},
+  {n:"Duolingo",i:"🦉",c:"Education",u:"https://www.duolingo.com/",d:"Language learning"},
+  {n:"Quizlet",i:"🗂️",c:"Education",u:"https://quizlet.com/",d:"Flashcards and quizzes"},
+  {n:"GeeksforGeeks",i:"💻",c:"Education",u:"https://www.geeksforgeeks.org/",d:"Programming tutorials"},
+  {n:"W3Schools",i:"🌐",c:"Education",u:"https://www.w3schools.com/",d:"Web development tutorials"},
+  {n:"freeCodeCamp",i:"👨‍💻",c:"Education",u:"https://www.freecodecamp.org/",d:"Learn programming"},
+  {n:"Unacademy",i:"📝",c:"Education",u:"https://unacademy.com/",d:"Online classes"},
+  {n:"BYJU'S",i:"📐",c:"Education",u:"https://byjus.com/",d:"Learning resources"},
+
+  // PRODUCTIVITY
+  {n:"Microsoft 365",i:"📊",c:"Productivity",u:"https://www.microsoft365.com/",d:"Office tools"},
+  {n:"Microsoft Word",i:"📄",c:"Productivity",u:"https://word.cloud.microsoft/",d:"Documents"},
+  {n:"Microsoft Excel",i:"📈",c:"Productivity",u:"https://excel.cloud.microsoft/",d:"Spreadsheets"},
+  {n:"Microsoft OneNote",i:"📒",c:"Productivity",u:"https://www.onenote.com/",d:"Notes"},
+  {n:"Notion",i:"🗒️",c:"Productivity",u:"https://www.notion.so/",d:"Notes and workspace"},
+  {n:"Trello",i:"📋",c:"Productivity",u:"https://trello.com/",d:"Project boards"},
+  {n:"Todoist",i:"☑️",c:"Productivity",u:"https://todoist.com/",d:"Task management"},
+  {n:"Evernote",i:"🐘",c:"Productivity",u:"https://evernote.com/",d:"Notes and documents"},
+  {n:"Dropbox",i:"📦",c:"Productivity",u:"https://www.dropbox.com/",d:"File storage"},
+  {n:"Canva",i:"🎨",c:"Productivity",u:"https://www.canva.com/",d:"Design and graphics"},
+  {n:"Adobe Acrobat",i:"📕",c:"Productivity",u:"https://www.adobe.com/acrobat.html",d:"PDF tools"},
+  {n:"WeTransfer",i:"📤",c:"Productivity",u:"https://wetransfer.com/",d:"File sharing"},
+  {n:"Clock",i:"⏰",c:"Productivity",u:"https://support.google.com/clock/",d:"Clock app information"},
+  {n:"Speedtest",i:"📶",c:"Productivity",u:"https://www.speedtest.net/",d:"Internet speed test"},
+
+  // AI
+  {n:"ChatGPT",i:"🤖",c:"AI",u:"https://chatgpt.com/",d:"AI assistant"},
+  {n:"Google Gemini",i:"✨",c:"AI",u:"https://gemini.google.com/",d:"Google AI assistant"},
+  {n:"Microsoft Copilot",i:"🧠",c:"AI",u:"https://copilot.microsoft.com/",d:"AI assistant"},
+  {n:"Claude",i:"🪄",c:"AI",u:"https://claude.ai/",d:"AI assistant"},
+  {n:"Perplexity",i:"🔍",c:"AI",u:"https://www.perplexity.ai/",d:"AI search"},
+  {n:"Poe",i:"💬",c:"AI",u:"https://poe.com/",d:"AI chatbots"},
+  {n:"Hugging Face",i:"🤗",c:"AI",u:"https://huggingface.co/",d:"AI models and tools"},
+  {n:"DeepSeek",i:"🐋",c:"AI",u:"https://chat.deepseek.com/",d:"AI assistant"},
+  {n:"NotebookLM",i:"📚",c:"AI",u:"https://notebooklm.google.com/",d:"AI research notebook"},
+
+  // HEALTH
+  {n:"WHO",i:"🌍",c:"Health",u:"https://www.who.int/",d:"Global health information"},
+  {n:"HealthifyMe",i:"🥗",c:"Health",u:"https://www.healthifyme.com/",d:"Nutrition and fitness"},
+  {n:"Practo",i:"🩺",c:"Health",u:"https://www.practo.com/",d:"Healthcare discovery"},
+  {n:"Apollo 24|7",i:"🏥",c:"Health",u:"https://www.apollo247.com/",d:"Healthcare services"},
+  {n:"Tata 1mg",i:"💊",c:"Health",u:"https://www.1mg.com/",d:"Pharmacy and health"},
+  {n:"ABHA",i:"🪪",c:"Health",u:"https://abha.abdm.gov.in/",d:"Digital health account"},
+  {n:"eSanjeevani",i:"👨‍⚕️",c:"Health",u:"https://esanjeevani.mohfw.gov.in/",d:"Telemedicine service"},
+  {n:"Fitbit",i:"⌚",c:"Health",u:"https://www.fitbit.com/",d:"Fitness tracking"},
+  {n:"Strava",i:"🏃",c:"Health",u:"https://www.strava.com/",d:"Exercise tracking"},
+  {n:"MyFitnessPal",i:"🍎",c:"Health",u:"https://www.myfitnesspal.com/",d:"Food and fitness tracking"},
+
+  // GOVERNMENT
+  {n:"UMANG",i:"🇮🇳",c:"Government",u:"https://web.umang.gov.in/",d:"Indian government services"},
+  {n:"DigiLocker",i:"🪪",c:"Government",u:"https://www.digilocker.gov.in/",d:"Digital documents"},
+  {n:"Aadhaar UIDAI",i:"🆔",c:"Government",u:"https://uidai.gov.in/",d:"Official Aadhaar website"},
+  {n:"Income Tax India",i:"💰",c:"Government",u:"https://www.incometax.gov.in/",d:"Income tax services"},
+  {n:"GST Portal",i:"🧾",c:"Government",u:"https://www.gst.gov.in/",d:"GST services"},
+  {n:"Passport Seva",i:"🛂",c:"Government",u:"https://www.passportindia.gov.in/",d:"Passport services"},
+  {n:"EPFO",i:"👷",c:"Government",u:"https://www.epfindia.gov.in/",d:"Provident fund services"},
+  {n:"National Scholarship Portal",i:"🎓",c:"Government",u:"https://scholarships.gov.in/",d:"Scholarships"},
+  {n:"MyGov India",i:"🇮🇳",c:"Government",u:"https://www.mygov.in/",d:"Citizen participation"},
+  {n:"Election Commission",i:"🗳️",c:"Government",u:"https://www.eci.gov.in/",d:"Election information"},
+  {n:"Maharashtra Government",i:"🏛️",c:"Government",u:"https://www.maharashtra.gov.in/",d:"State government portal"},
+  {n:"MahaOnline",i:"📄",c:"Government",u:"https://www.mahaonline.gov.in/",d:"Maharashtra online services"},
+  {n:"Parivahan",i:"🚘",c:"Government",u:"https://parivahan.gov.in/",d:"Driving and vehicle services"},
+  {n:"eCourts",i:"⚖️",c:"Government",u:"https://ecourts.gov.in/",d:"Court information"},
+  {n:"India.gov.in",i:"🇮🇳",c:"Government",u:"https://www.india.gov.in/",d:"National government portal"},
+
+  // UTILITIES
+  {n:"Phone Dialer",i:"📞",c:"Utilities",u:"tel:",d:"Open phone dialer"},
+  {n:"SMS Messages",i:"✉️",c:"Utilities",u:"sms:",d:"Open messaging app"},
+  {n:"Email App",i:"📧",c:"Utilities",u:"mailto:",d:"Open email app"},
+  {n:"Camera",i:"📷",c:"Utilities",u:"https://www.google.com/search?q=Android+camera+app",d:"Camera app help; direct launching varies"},
+  {n:"Android Settings",i:"⚙️",c:"Utilities",u:"https://support.google.com/android/",d:"Android help; direct settings launch is restricted"},
+  {n:"Find My Device",i:"📍",c:"Utilities",u:"https://www.google.com/android/find/",d:"Find supported Android devices"},
+  {n:"Google Password Manager",i:"🔑",c:"Utilities",u:"https://passwords.google.com/",d:"Manage saved passwords"},
+  {n:"VirusTotal",i:"🛡️",c:"Utilities",u:"https://www.virustotal.com/",d:"Check suspicious files and links"},
+  {n:"Internet Archive",i:"🗃️",c:"Utilities",u:"https://archive.org/",d:"Digital archive"},
+  {n:"Weather",i:"🌦️",c:"Utilities",u:"https://www.google.com/search?q=weather",d:"Weather search"},
+  {n:"Time and Date",i:"🕒",c:"Utilities",u:"https://www.timeanddate.com/",d:"Time and calendar tools"},
+  {n:"Calculator",i:"🧮",c:"Utilities",u:"https://www.google.com/search?q=calculator",d:"Calculator in browser search"},
+
+  // DEVELOPER
+  {n:"GitHub",i:"🐙",c:"Developer",u:"https://github.com/",d:"Code repositories"},
+  {n:"GitLab",i:"🦊",c:"Developer",u:"https://gitlab.com/",d:"Code and DevOps"},
+  {n:"Stack Overflow",i:"🧩",c:"Developer",u:"https://stackoverflow.com/",d:"Programming Q&A"},
+  {n:"CodePen",i:"🖊️",c:"Developer",u:"https://codepen.io/",d:"Web coding playground"},
+  {n:"JSFiddle",i:"🧪",c:"Developer",u:"https://jsfiddle.net/",d:"Test HTML CSS JavaScript"},
+  {n:"Replit",i:"💻",c:"Developer",u:"https://replit.com/",d:"Online coding"},
+  {n:"MDN Web Docs",i:"📘",c:"Developer",u:"https://developer.mozilla.org/",d:"Web developer documentation"},
+  {n:"npm",i:"📦",c:"Developer",u:"https://www.npmjs.com/",d:"JavaScript packages"},
+  {n:"PocketBase",i:"🗄️",c:"Developer",u:"https://pocketbase.io/",d:"Backend for applications"},
+  {n:"Supabase",i:"⚡",c:"Developer",u:"https://supabase.com/",d:"Backend and database platform"},
+  {n:"Firebase",i:"🔥",c:"Developer",u:"https://firebase.google.com/",d:"App development platform"},
+  {n:"Cloudflare",i:"☁️",c:"Developer",u:"https://www.cloudflare.com/",d:"Web infrastructure"}
+];
+
+let customApps = readStore("directoryCustom", []);
+let favorites = readStore("directoryFavorites", []);
+let activeCategory = "All";
+let sortMode = "name";
+
+function readStore(key, fallback) {
+  try {
+    const v = JSON.parse(localStorage.getItem(key));
+    return Array.isArray(fallback) && !Array.isArray(v) ? fallback : (v ?? fallback);
+  } catch(e) { return fallback; }
+}
+
+function saveStore(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function allApps() {
+  return apps.concat(customApps.map(a => ({...a, custom:true})));
+}
+
+function safeOpen(url) {
+  // Only permit known URL schemes; reject javascript: and data: links.
+  try {
+    const u = new URL(url);
+    if (!["https:","http:","tel:","sms:","mailto:","geo:","market:"].includes(u.protocol)) {
+      alert("This link type is not supported for safety.");
+      return;
+    }
+    if (["tel:","sms:","mailto:","geo:","market:"].includes(u.protocol)) {
+      location.href = url;
+    } else {
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+  } catch(e) {
+    alert("This app link is invalid.");
+  }
+}
+
+function render() {
+  if (activeCategory === "Custom") {
+    showPanel("customPanel");
+    renderCustom();
+    return;
+  }
+  if (activeCategory === "Settings") {
+    showPanel("settingsPanel");
+    return;
+  }
+  showPanel("directory");
+
+  const query = document.getElementById("search").value.trim().toLowerCase();
+  let data = allApps().filter(a => {
+    const categoryMatch =
+      activeCategory === "All" ||
+      (activeCategory === "Favorites" && favorites.includes(a.id || a.n)) ||
+      a.c === activeCategory;
+
+    const text = [a.n,a.c,a.d,a.u].join(" ").toLowerCase();
+    return categoryMatch && (!query || text.includes(query));
+  });
+
+  data.sort((a,b) => {
+    if (sortMode === "category") {
+      return a.c.localeCompare(b.c) || a.n.localeCompare(b.n);
+    }
+    return a.n.localeCompare(b.n);
+  });
+
+  document.getElementById("heading").textContent =
+    activeCategory === "All" ? "All Apps" :
+    activeCategory === "Favorites" ? "⭐ Favorite Apps" :
+    activeCategory + " Apps";
+
+  document.getElementById("count").textContent =
+    data.length + " results • Tap Open to launch";
+
+  const grid = document.getElementById("appGrid");
+  grid.replaceChildren();
+
+  if (!data.length) {
+    grid.innerHTML = '<div class="empty">No apps found. Try another search or category.</div>';
+    return;
+  }
+
+  data.forEach(a => {
+    const key = a.id || a.n;
+    const isFav = favorites.includes(key);
+
+    const card = document.createElement("article");
+    card.className = "app";
+
+    const top = document.createElement("div");
+    top.className = "app-top";
+
+    const icon = document.createElement("div");
+    icon.className = "icon";
+    icon.textContent = a.i;
+
+    const info = document.createElement("div");
+    const name = document.createElement("div");
+    name.className = "app-name";
+    name.textContent = a.n.trim();
+
+    const category = document.createElement("div");
+    category.className = "app-category";
+    category.textContent = a.c;
+
+    info.append(name, category);
+    top.append(icon, info);
+
+    const desc = document.createElement("div");
+    desc.className = "app-description";
+    desc.textContent = a.d || "Open service";
+
+    const actions = document.createElement("div");
+    actions.className = "app-actions";
+
+    const open = document.createElement("button");
+    open.className = "openbtn";
+    open.textContent = "Open ↗";
+    open.addEventListener("click", () => safeOpen(a.u));
+
+    const fav = document.createElement("button");
+    fav.className = "favbtn";
+    fav.textContent = isFav ? "★" : "☆";
+    fav.setAttribute("aria-label", "Toggle favorite");
+    fav.addEventListener("click", () => toggleFavorite(key));
+
+    actions.append(open, fav);
+    card.append(top, desc, actions);
+    grid.appendChild(card);
+  });
+}
+
+function showPanel(id) {
+  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function setCategory(category) {
+  activeCategory = category;
+  document.querySelectorAll(".tab").forEach(b =>
+    b.classList.toggle("active", b.dataset.category === category)
+  );
+  render();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+document.getElementById("tabs").addEventListener("click", e => {
+  const b = e.target.closest("[data-category]");
+  if (b) setCategory(b.dataset.category);
+});
+
+document.getElementById("search").addEventListener("input", render);
+
+function toggleFavorite(key) {
+  favorites = favorites.includes(key)
+    ? favorites.filter(k => k !== key)
+    : [...favorites, key];
+  saveStore("directoryFavorites", favorites);
+  render();
+}
+
+function setSort(mode) {
+  sortMode = mode;
+  render();
+}
+
+function showAll() {
+  document.getElementById("search").value = "";
+  setCategory("All");
+}
+
+function addCustom() {
+  const n = document.getElementById("customName").value.trim();
+  const i = document.getElementById("customIcon").value.trim() || "📲";
+  const c = document.getElementById("customCategory").value;
+  const u = document.getElementById("customUrl").value.trim();
+  const d = document.getElementById("customDescription").value.trim();
+
+  if (!n || !u) return alert("Enter an app name and URL.");
+
+  try {
+    const parsed = new URL(u);
+    if (!["https:","http:","tel:","sms:","mailto:","geo:","market:"].includes(parsed.protocol)) {
+      return alert("Use a supported URL scheme.");
+    }
+  } catch(e) {
+    return alert("Please enter a valid URL.");
+  }
+
+  customApps.push({
+    id:"custom-" + Date.now() + "-" + Math.random().toString(36).slice(2,7),
+    n,i,c,u,d
+  });
+  saveStore("directoryCustom", customApps);
+
+  ["customName","customUrl","customDescription"].forEach(id =>
+    document.getElementById(id).value = ""
+  );
+  document.getElementById("customIcon").value = "📲";
+
+  renderCustom();
+  alert("Custom app saved.");
+}
+
+function renderCustom() {
+  const box = document.getElementById("customList");
+  box.replaceChildren();
+
+  if (!customApps.length) {
+    box.textContent = "No custom apps added yet.";
+    return;
+  }
+
+  customApps.forEach(a => {
+    const row = document.createElement("div");
+    row.style.cssText =
+      "display:flex;gap:10px;align-items:center;justify-content:space-between;" +
+      "padding:12px 0;border-bottom:1px solid var(--border)";
+
+    const label = document.createElement("span");
+    label.textContent = a.i + " " + a.n + " · " + a.c;
+
+    const actions = document.createElement("span");
+
+    const open = document.createElement("button");
+    open.className = "smallbtn";
+    open.textContent = "Open";
+    open.onclick = () => safeOpen(a.u);
+
+    const del = document.createElement("button");
+    del.className = "smallbtn";
+    del.textContent = "Delete";
+    del.onclick = () => {
+      if (!confirm("Delete " + a.n + "?")) return;
+      customApps = customApps.filter(x => x.id !== a.id);
+      favorites = favorites.filter(x => x !== a.id);
+      saveStore("directoryCustom", customApps);
+      saveStore("directoryFavorites", favorites);
+      renderCustom();
+    };
+
+    actions.append(open, del);
+    row.append(label, actions);
+    box.appendChild(row);
+  });
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(customApps,null,2)], {
+    type:"application/json"
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "my-android-apps.json";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url),1000);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!Array.isArray(data)) throw new Error("Not an array");
+
+      const accepted = [];
+      data.forEach(a => {
+        if (!a || typeof a.n !== "string" || typeof a.u !== "string") return;
+        try {
+          const u = new URL(a.u);
+          if (!["https:","http:","tel:","sms:","mailto:","geo:","market:"].includes(u.protocol)) return;
+          accepted.push({
+            id:"custom-" + Date.now() + "-" + Math.random().toString(36).slice(2,7),
+            n:a.n.slice(0,100),
+            i:typeof a.i === "string" ? a.i.slice(0,8) : "📲",
+            c:typeof a.c === "string" ? a.c : "Utilities",
+            u:a.u,
+            d:typeof a.d === "string" ? a.d.slice(0,250) : ""
+          });
+        } catch(e) {}
+      });
+
+      customApps = customApps.concat(accepted);
+      saveStore("directoryCustom",customApps);
+      renderCustom();
+      alert("Imported " + accepted.length + " app shortcuts.");
+    } catch(e) {
+      alert("Could not import this JSON file.");
+    }
+    event.target.value = "";
+  };
+  reader.readAsText(file);
+}
+
+function clearFavorites() {
+  if (!confirm("Remove all favorites?")) return;
+  favorites = [];
+  saveStore("directoryFavorites", favorites);
+  render();
+}
+
+function changeTheme() {
+  const themes = {
+    forest:["#167447","#eff8f1","#ffffff","#183426"],
+    ocean:["#126b91","#edf7fc","#ffffff","#173747"],
+    sunrise:["#b85c38","#fff3eb","#ffffff","#493126"],
+    earth:["#795548","#f7f0e7","#fffaf3","#49372d"],
+    flower:["#bd477c","#fff0f6","#ffffff","#49273a"],
+    lavender:["#7951a8","#f5effa","#ffffff","#39294b"],
+    mint:["#138c78","#e9f8f2","#ffffff","#173e35"],
+    sunshine:["#a77a00","#fff9df","#ffffff","#443715"],
+    dark:["#315b46","#17211b","#26352c","#edf7ef"],
+    plain:["#475569","#f1f5f9","#ffffff","#1e293b"]
+  };
+  const t = themes[document.getElementById("theme").value];
+  ["--primary","--bg","--card","--text"].forEach((v,i) =>
+    document.documentElement.style.setProperty(v,t[i])
+  );
+  saveStore("directoryTheme",document.getElementById("theme").value);
+}
+
+const savedTheme = localStorage.getItem("directoryTheme");
+if (savedTheme && document.querySelector('#theme option[value="' + savedTheme + '"]')) {
+  document.getElementById("theme").value = savedTheme;
+}
+changeTheme();
+render();
+</script>
+</body>
+</html>
