@@ -1,1 +1,499 @@
-gh
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#137547">
+<title>Android App Launcher</title>
+
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Android%20App%20Launcher%22%2C%22short_name%22%3A%22App%20Launcher%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22theme_color%22%3A%22%23137547%22%2C%22background_color%22%3A%22%23f2f8f4%22%7D">
+
+<style>
+:root {
+  --green:#137547;
+  --bg:#f2f8f4;
+  --card:#ffffff;
+  --text:#183126;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+header {
+  background:var(--green);
+  color:white;
+  padding:20px 16px;
+  text-align:center;
+}
+header h2 {margin:0 0 6px}
+header p {margin:0;font-size:13px}
+main {max-width:850px;margin:auto;padding:15px}
+.tabs {
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+  margin-bottom:15px;
+}
+.tabs button {
+  flex:1;
+  min-width:90px;
+  border:0;
+  padding:12px 8px;
+  border-radius:10px;
+  background:#dcece2;
+  color:#17442c;
+  font-weight:bold;
+}
+.tabs button.active {
+  background:var(--green);
+  color:white;
+}
+.panel {display:none}
+.panel.active {display:block}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.app {
+  border:0;
+  border-radius:15px;
+  background:var(--card);
+  padding:18px 10px;
+  min-height:105px;
+  box-shadow:0 2px 7px #0000000c;
+  color:var(--text);
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.icon {display:block;font-size:30px;margin-bottom:9px}
+.card {
+  background:var(--card);
+  padding:16px;
+  border-radius:14px;
+  margin-bottom:13px;
+}
+label {display:block;font-size:14px;margin:12px 0 5px}
+input,select {
+  width:100%;
+  padding:12px;
+  border:1px solid #cbd8ce;
+  border-radius:9px;
+  background:white;
+  font-size:15px;
+}
+.action {
+  border:0;
+  padding:12px 15px;
+  border-radius:9px;
+  background:var(--green);
+  color:white;
+  font-weight:bold;
+  margin-top:12px;
+  cursor:pointer;
+}
+.secondary {background:#e4eee7;color:#17442c}
+.delete {
+  background:#b42318;
+  color:white;
+  border:0;
+  border-radius:7px;
+  padding:7px 10px;
+}
+.saved-item {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:12px 0;
+  border-bottom:1px solid #e5ece7;
+}
+.note {font-size:13px;line-height:1.6;color:#53665a}
+.status {
+  background:#e0f2e5;
+  padding:12px;
+  border-radius:9px;
+  font-size:13px;
+  line-height:1.5;
+  margin-bottom:12px;
+}
+footer {text-align:center;padding:20px;font-size:12px;color:#607266}
+@media(min-width:600px) {
+  .grid {grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>📱 Android App Launcher</h2>
+  <p>Open apps, websites and your favourite shortcuts</p>
+</header>
+
+<main>
+  <nav class="tabs">
+    <button class="active" data-tab="home">🏠 Home</button>
+    <button data-tab="custom">➕ My Apps</button>
+    <button data-tab="settings">⚙️ Settings</button>
+  </nav>
+
+  <section id="home" class="panel active">
+    <div class="status" id="installStatus">
+      Open this page in Chrome on Android. Some shortcuts require their
+      corresponding app to be installed.
+    </div>
+
+    <div class="grid">
+      <button class="app" onclick="openApp('https://wa.me/')">
+        <span class="icon">💬</span>WhatsApp
+      </button>
+
+      <button class="app" onclick="openApp('tel:')">
+        <span class="icon">📞</span>Phone
+      </button>
+
+      <button class="app" onclick="openApp('sms:')">
+        <span class="icon">✉️</span>Messages
+      </button>
+
+      <button class="app" onclick="openApp('mailto:')">
+        <span class="icon">📧</span>Email
+      </button>
+
+      <button class="app" onclick="openApp('https://maps.google.com/')">
+        <span class="icon">🗺️</span>Google Maps
+      </button>
+
+      <button class="app" onclick="openApp('https://www.youtube.com/')">
+        <span class="icon">▶️</span>YouTube
+      </button>
+
+      <button class="app" onclick="openApp('https://calendar.google.com/')">
+        <span class="icon">📅</span>Calendar
+      </button>
+
+      <button class="app" onclick="openApp('https://drive.google.com/')">
+        <span class="icon">📁</span>Google Drive
+      </button>
+
+      <button class="app" onclick="openApp('https://photos.google.com/')">
+        <span class="icon">🖼️</span>Photos
+      </button>
+
+      <button class="app" onclick="openApp('https://www.google.com/')">
+        <span class="icon">🌐</span>Browser
+      </button>
+
+      <button class="app" onclick="openApp('https://play.google.com/store')">
+        <span class="icon">🛍️</span>Play Store
+      </button>
+
+      <button class="app" onclick="openApp('https://contacts.google.com/')">
+        <span class="icon">👥</span>Contacts
+      </button>
+    </div>
+
+    <h3>⭐ My Shortcuts</h3>
+    <div class="grid" id="homeCustom"></div>
+  </section>
+
+  <section id="custom" class="panel">
+    <div class="card">
+      <h3>Add an app or website</h3>
+      <p class="note">
+        Enter a website URL, Android intent URL, or app-supported deep link.
+        Standard Android package names alone are not enough to launch every app.
+      </p>
+
+      <label for="appName">App name</label>
+      <input id="appName" placeholder="My School App">
+
+      <label for="appIcon">Icon (emoji)</label>
+      <input id="appIcon" value="📲" maxlength="8">
+
+      <label for="appUrl">App URL or deep link</label>
+      <input id="appUrl" placeholder="https://example.com">
+
+      <button class="action" onclick="addApp()">Save App</button>
+      <button class="action secondary" onclick="installPWA()">Install PWA</button>
+    </div>
+
+    <div class="card">
+      <h3>Saved Apps</h3>
+      <div id="savedApps"></div>
+    </div>
+  </section>
+
+  <section id="settings" class="panel">
+    <div class="card">
+      <h3>⚙️ Settings</h3>
+
+      <label for="theme">Nature theme</label>
+      <select id="theme" onchange="changeTheme()">
+        <option value="green">🌿 Forest Green</option>
+        <option value="blue">🌊 Ocean Blue</option>
+        <option value="earth">🌍 Earth Brown</option>
+        <option value="purple">🌸 Flower Purple</option>
+        <option value="dark">🌙 Night Mode</option>
+      </select>
+
+      <button class="action" onclick="installPWA()">📲 Install PWA</button>
+      <button class="action secondary" onclick="exportApps()">Export Apps JSON</button>
+      <button class="action secondary" onclick="importApps()">Import Apps JSON</button>
+      <input id="importFile" type="file" accept=".json,application/json"
+             hidden onchange="readImport(event)">
+
+      <p class="note">
+        Your custom app shortcuts are saved in this browser on this device.
+        Clearing browser storage may remove them.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>About</h3>
+      <p class="note">
+        This is a standalone HTML app launcher. Android controls which
+        applications can be opened. Some links open in the browser rather
+        than the native app. Installing a PWA does not grant access to a
+        complete list of installed Android applications.
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer>Android App Launcher • Single HTML file</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+let apps = [];
+let installPrompt = null;
+
+try {
+  apps = JSON.parse(localStorage.getItem('androidLauncherApps') || '[]');
+  if (!Array.isArray(apps)) apps = [];
+} catch(e) {
+  apps = [];
+}
+
+document.querySelectorAll('.tabs button').forEach(button => {
+  button.addEventListener('click', () => {
+    document.querySelectorAll('.tabs button').forEach(b =>
+      b.classList.toggle('active', b === button)
+    );
+    document.querySelectorAll('.panel').forEach(panel =>
+      panel.classList.toggle('active', panel.id === button.dataset.tab)
+    );
+    renderApps();
+  });
+});
+
+function openApp(url) {
+  if (!url) return;
+  // Use a normal browser navigation for broad compatibility.
+  // Android may route supported URLs to an installed app.
+  window.location.href = url;
+}
+
+function saveApps() {
+  localStorage.setItem('androidLauncherApps', JSON.stringify(apps));
+  renderApps();
+}
+
+function validUrl(value) {
+  try {
+    const u = new URL(value);
+    return ['https:', 'http:', 'intent:', 'mailto:', 'tel:', 'sms:',
+            'geo:', 'market:'].includes(u.protocol);
+  } catch(e) {
+    return false;
+  }
+}
+
+function addApp() {
+  const name = $('appName').value.trim();
+  const icon = $('appIcon').value.trim() || '📲';
+  const url = $('appUrl').value.trim();
+
+  if (!name || !url) {
+    alert('Please enter both an app name and URL.');
+    return;
+  }
+
+  if (!validUrl(url)) {
+    alert('Enter a valid URL or supported Android deep link.');
+    return;
+  }
+
+  apps.push({
+    id: Date.now() + Math.random(),
+    name, icon, url
+  });
+
+  saveApps();
+  $('appName').value = '';
+  $('appIcon').value = '📲';
+  $('appUrl').value = '';
+  alert('App shortcut saved.');
+}
+
+function removeApp(id) {
+  if (!confirm('Delete this shortcut?')) return;
+  apps = apps.filter(a => a.id !== id);
+  saveApps();
+}
+
+function renderApps() {
+  const list = $('savedApps');
+  const home = $('homeCustom');
+
+  list.innerHTML = '';
+  home.innerHTML = '';
+
+  if (!apps.length) {
+    list.textContent = 'No custom shortcuts saved yet.';
+    home.innerHTML =
+      '<p class="note">Add shortcuts from the My Apps tab.</p>';
+    return;
+  }
+
+  apps.forEach(app => {
+    const item = document.createElement('div');
+    item.className = 'saved-item';
+
+    const info = document.createElement('span');
+    info.textContent = app.icon + ' ' + app.name;
+
+    const controls = document.createElement('span');
+
+    const open = document.createElement('button');
+    open.className = 'action';
+    open.style.marginTop = '0';
+    open.textContent = 'Open';
+    open.onclick = () => openApp(app.url);
+
+    const del = document.createElement('button');
+    del.className = 'delete';
+    del.textContent = 'Delete';
+    del.style.marginLeft = '5px';
+    del.onclick = () => removeApp(app.id);
+
+    controls.append(open, del);
+    item.append(info, controls);
+    list.appendChild(item);
+
+    const button = document.createElement('button');
+    button.className = 'app';
+
+    const icon = document.createElement('span');
+    icon.className = 'icon';
+    icon.textContent = app.icon;
+
+    const title = document.createElement('span');
+    title.textContent = app.name;
+
+    button.append(icon, title);
+    button.onclick = () => openApp(app.url);
+    home.appendChild(button);
+  });
+}
+
+function changeTheme() {
+  const theme = $('theme').value;
+  const themes = {
+    green: {green:'#137547', bg:'#f2f8f4', card:'#ffffff', text:'#183126'},
+    blue: {green:'#126b91', bg:'#edf7fc', card:'#ffffff', text:'#163747'},
+    earth: {green:'#795548', bg:'#f8f1e8', card:'#fffaf3', text:'#49372d'},
+    purple: {green:'#7951a8', bg:'#f5effa', card:'#ffffff', text:'#39294b'},
+    dark: {green:'#24352b', bg:'#17211b', card:'#26352c', text:'#edf7ef'}
+  };
+  const t = themes[theme];
+  document.documentElement.style.setProperty('--green', t.green);
+  document.documentElement.style.setProperty('--bg', t.bg);
+  document.documentElement.style.setProperty('--card', t.card);
+  document.documentElement.style.setProperty('--text', t.text);
+  localStorage.setItem('androidLauncherTheme', theme);
+}
+
+function exportApps() {
+  const blob = new Blob([JSON.stringify(apps, null, 2)], {
+    type:'application/json'
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'android-app-shortcuts.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importApps() {
+  $('importFile').click();
+}
+
+function readImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!Array.isArray(data)) throw new Error('Expected a JSON array');
+
+      const clean = data.filter(a =>
+        a && typeof a.name === 'string' &&
+        typeof a.url === 'string' && validUrl(a.url)
+      ).map(a => ({
+        id: Date.now() + Math.random(),
+        name: a.name.slice(0,100),
+        icon: typeof a.icon === 'string' ? a.icon.slice(0,8) : '📲',
+        url: a.url
+      }));
+
+      apps = apps.concat(clean);
+      saveApps();
+      alert('Imported ' + clean.length + ' shortcuts.');
+    } catch(e) {
+      alert('Could not import file. Please select a valid exported JSON file.');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+async function installPWA() {
+  if (installPrompt) {
+    installPrompt.prompt();
+    await installPrompt.userChoice;
+    installPrompt = null;
+  } else {
+    alert(
+      'If available, open your browser menu and choose ' +
+      '"Install app" or "Add to Home screen". ' +
+      'For reliable PWA installation, host this page over HTTPS ' +
+      'with a separate manifest file and service worker.'
+    );
+  }
+}
+
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  installPrompt = event;
+  $('installStatus').textContent =
+    'Your browser may allow you to install this app from the Install PWA button.';
+});
+
+const oldTheme = localStorage.getItem('androidLauncherTheme');
+if (oldTheme && $('theme').querySelector('option[value="' + oldTheme + '"]')) {
+  $('theme').value = oldTheme;
+}
+changeTheme();
+renderApps();
+</script>
+
+</body>
+</html>
