@@ -1,1 +1,638 @@
-rr
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#176b43">
+<title>App Safety & Important Notes</title>
+<style>
+:root{
+ --primary:#176b43;--bg:#f1f7f1;--card:#fff;
+ --text:#203329;--muted:#64756b;--border:#d8e5da;
+ --soft:#e2f2e6;--warning:#fff1d6;--danger:#fde8e8;
+ --info:#e5f2ff
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:system-ui,-apple-system,Arial,sans-serif
+}
+header{
+ background:var(--primary);color:#fff;text-align:center;
+ padding:22px 14px
+}
+header h1{font-size:23px;margin:0 0 8px}
+header p{font-size:13px;margin:0;line-height:1.5}
+.container{max-width:1050px;margin:auto;padding:12px}
+.banner{
+ padding:14px;border-radius:12px;background:var(--warning);
+ border:1px solid #edcf91;margin-bottom:12px;line-height:1.6;
+ font-size:14px
+}
+.search{
+ width:100%;padding:13px;border:1px solid var(--border);
+ border-radius:10px;background:var(--card);color:var(--text);
+ font-size:16px;margin-bottom:10px
+}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+button,select{
+ padding:10px 12px;border:1px solid var(--border);
+ border-radius:9px;background:var(--card);color:var(--text);
+ font-size:14px;cursor:pointer
+}
+button.primary{background:var(--primary);color:white}
+.tabs{
+ display:flex;gap:7px;overflow-x:auto;padding:4px 0 12px
+}
+.tab{white-space:nowrap;flex-shrink:0}
+.tab.active{background:var(--primary);color:#fff}
+.grid{
+ display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+ gap:12px
+}
+.card{
+ background:var(--card);border:1px solid var(--border);
+ border-radius:13px;padding:14px;display:flex;
+ flex-direction:column;gap:9px
+}
+.card h3{font-size:16px;margin:0;line-height:1.4}
+.card p{font-size:13px;line-height:1.65;margin:0}
+.card .detail{color:var(--muted)}
+.badge{
+ font-size:11px;padding:5px 8px;border-radius:20px;
+ align-self:flex-start;background:var(--soft);color:var(--primary)
+}
+.level{font-size:11px;font-weight:bold}
+.level.high{color:#b42318}
+.level.medium{color:#9a5700}
+.level.general{color:var(--primary)}
+.cardfooter{display:flex;gap:7px;margin-top:auto}
+.cardfooter button{flex:1}
+.panel{
+ background:var(--card);border:1px solid var(--border);
+ padding:15px;border-radius:13px;margin:10px 0
+}
+.panel h2{font-size:19px;margin:0 0 12px}
+label{display:block;font-size:13px;margin:10px 0 5px}
+.input{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:8px;background:var(--card);color:var(--text)
+}
+.note{font-size:12px;line-height:1.6;color:var(--muted)}
+.hidden{display:none!important}
+.empty{text-align:center;padding:25px;color:var(--muted)}
+ul{padding-left:20px;line-height:1.8}
+footer{text-align:center;font-size:12px;color:var(--muted);padding:22px}
+hr{border:0;border-top:1px solid var(--border);margin:15px 0}
+@media(max-width:500px){
+ header h1{font-size:20px}
+ .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+ <h1>🛡️ App Safety & Important Notes</h1>
+ <p>Use apps at your comfort level. Stay alert, protect your privacy, and verify before you trust.</p>
+</header>
+
+<div class="container">
+
+ <div class="banner">
+  <strong>⚠️ IMPORTANT GENERAL NOTICE</strong><br>
+  Use any app or website only at your own comfort level and after understanding
+  its permissions, risks, and terms. If a link, app, message, or download looks
+  suspicious, do not open it, install it, pay through it, or share personal
+  information. When uncertain, stop and verify independently.
+ </div>
+
+ <input id="search" class="search"
+  placeholder="🔎 Search notes, warnings, government, AI, privacy..."
+  aria-label="Search safety notes">
+
+ <div class="toolbar">
+  <button id="allBtn" class="primary">📚 All Notes</button>
+  <button id="favBtn">⭐ Important / Saved</button>
+  <button id="customBtn">➕ My Notes</button>
+  <button id="settingsBtn">⚙️ Settings</button>
+ </div>
+
+ <div id="tabs" class="tabs"></div>
+ <div id="status" class="note"></div>
+ <div id="cards" class="grid"></div>
+
+ <section id="customPanel" class="panel hidden">
+  <h2>➕ Add a Personal Safety Note</h2>
+  <form id="noteForm">
+   <label for="noteTitle">Note title</label>
+   <input id="noteTitle" class="input" required maxlength="100"
+    placeholder="e.g. Verify an app before installing">
+
+   <label for="noteCategory">Category</label>
+   <select id="noteCategory" class="input"></select>
+
+   <label for="noteLevel">Importance</label>
+   <select id="noteLevel" class="input">
+    <option value="High">High — Stop and check</option>
+    <option value="Medium">Medium — Use caution</option>
+    <option value="General">General reminder</option>
+   </select>
+
+   <label for="noteText">Note or warning</label>
+   <textarea id="noteText" class="input" required rows="5"
+    maxlength="3000" placeholder="Write your note..."></textarea>
+
+   <br><br>
+   <button class="primary" type="submit">Save Note</button>
+  </form>
+
+  <hr>
+  <h3>Your Personal Notes</h3>
+  <div id="customList"></div>
+ </section>
+
+ <section id="settingsPanel" class="panel hidden">
+  <h2>⚙️ Settings & Data Management</h2>
+
+  <label for="theme">Nature theme</label>
+  <select id="theme" class="input">
+   <option value="forest">🌳 Forest Green</option>
+   <option value="ocean">🌊 Ocean Blue</option>
+   <option value="sunrise">🌅 Sunrise</option>
+   <option value="lavender">🌸 Lavender</option>
+   <option value="mint">🍃 Mint</option>
+   <option value="night">🌙 Night</option>
+   <option value="earth">🌍 Earth</option>
+   <option value="rose">🌹 Rose</option>
+   <option value="sky">☁️ Sky</option>
+   <option value="sand">🏜️ Sand</option>
+  </select>
+
+  <hr>
+  <h3>Backup and Restore</h3>
+  <p class="note">Export personal notes and saved note IDs as a JSON backup. Keep your backup in a secure location.</p>
+
+  <div class="toolbar">
+   <button id="exportBtn" class="primary">⬇ Export JSON</button>
+   <button id="importBtn">⬆ Import JSON</button>
+   <input id="importFile" type="file" accept=".json,application/json" class="hidden">
+  </div>
+  <button id="clearFav">Clear Saved Notes</button>
+  <button id="clearCustom">Delete Personal Notes</button>
+  <p id="message" class="note"></p>
+
+  <hr>
+  <h3>How this app works</h3>
+  <ul>
+   <li>This is an informational checklist, not a security scanner.</li>
+   <li>It does not automatically inspect websites, files, or installed apps.</li>
+   <li>Your saved notes are stored in browser local storage on this device.</li>
+   <li>Clearing browser/site data may erase saved information.</li>
+   <li>Export a backup if you want to preserve personal notes.</li>
+  </ul>
+ </section>
+
+</div>
+
+<footer>
+ Stay cautious, informed, and in control. No website or app is risk-free.
+</footer>
+
+<script>
+"use strict";
+
+const categories=[
+ "General Safety",
+ "Suspicious Links & Scams",
+ "App Installation",
+ "Permissions & Privacy",
+ "Passwords & Accounts",
+ "Payments & Banking",
+ "AI Tools",
+ "Education Websites",
+ "Government Websites",
+ "Scholarships & Exams",
+ "Downloads & Files",
+ "Children & Family",
+ "Social Media & Messaging",
+ "Health & Medicine",
+ "Public Wi-Fi & Devices",
+ "Data & Backup",
+ "Legal & Responsible Use",
+ "Emergency & Reporting",
+ "Personal Notes"
+];
+
+const notes=[
+["Use apps at your comfort level","General Safety","General",
+ "Use an app only if you understand its basic purpose, risks, permissions and costs. You do not need to use every available feature. If something makes you uncomfortable, stop and choose a safer alternative.",
+ "Your comfort and safety matter more than convenience."],
+
+["Suspicious links","Suspicious Links & Scams","High",
+ "Do not open links from unexpected SMS, email, messaging groups, QR codes or social media posts if they look suspicious. Be especially cautious with urgent threats, prizes, refunds, account blocks or unbelievable offers.",
+ "Visit the known official website by typing its address yourself or using a trusted bookmark."],
+
+["Check the website address","Suspicious Links & Scams","High",
+ "Look carefully for misspellings, extra words, strange subdomains and misleading characters. A padlock or HTTPS connection does not prove that a website is honest.",
+ "Verify the domain through a trusted source before entering passwords or payment details."],
+
+["Never share OTPs or PINs","Payments & Banking","High",
+ "Never disclose your banking PIN, password, OTP, card security code or recovery phrase to callers or people claiming to be support staff. Do not approve a payment request just to receive money.",
+ "Contact your bank through its official app, card number or verified website if unsure."],
+
+["Remote access and screen sharing","Payments & Banking","High",
+ "Do not install remote-control or screen-sharing apps at the request of an unknown caller, supposed bank agent or prize representative. Such access can expose messages, passwords and financial activity.",
+ "End the call and contact the organisation through a verified channel."],
+
+["App source and publisher","App Installation","High",
+ "Prefer official app stores or the developer's verified website. Check the publisher name, spelling, update history, reviews and requested permissions. Reviews and store listings can still be misleading.",
+ "Avoid unknown APK files, modified apps, cracked apps and unofficial copies."],
+
+["Unknown APK installation","App Installation","High",
+ "Installing an APK outside a trusted store can expose your device and data to malware. Do not enable installation from unknown sources just because a website tells you to.",
+ "If an installation is unexpected or suspicious, cancel it and remove the downloaded file."],
+
+["Unnecessary permissions","Permissions & Privacy","High",
+ "A calculator, wallpaper app or simple learning tool may not need access to your contacts, microphone, camera, SMS, call logs or precise location. Consider whether each permission is genuinely necessary.",
+ "Deny unnecessary permissions and review them later in your phone settings."],
+
+["Personal information","Permissions & Privacy","High",
+ "Do not share Aadhaar details, identity documents, home address, date of birth, financial details or private photographs unless necessary and with a verified service. Never post sensitive documents publicly.",
+ "Check why the information is needed, how it will be used and whether a safer alternative exists."],
+
+["Public Wi-Fi","Public Wi-Fi & Devices","Medium",
+ "Avoid banking or highly sensitive activity on untrusted public Wi-Fi. Do not ignore certificate warnings or connect to networks with suspicious names.",
+ "Use mobile data or a trusted network for sensitive tasks."],
+
+["Password safety","Passwords & Accounts","High",
+ "Use unique passwords for important accounts. Do not reuse your email password across many services. Avoid saving passwords on shared devices.",
+ "Use a reputable password manager and enable multi-factor authentication when available."],
+
+["Two-factor authentication","Passwords & Accounts","Medium",
+ "Enable two-factor authentication for important accounts when available. Protect backup codes and recovery methods. Never share login approval codes with another person.",
+ "Review account recovery details periodically."],
+
+["AI tools may make mistakes","AI Tools","Medium",
+ "AI-generated answers, summaries, translations, citations and code can be incorrect, outdated or fabricated. A confident tone does not guarantee accuracy.",
+ "Cross-check important facts with trustworthy sources and official documentation."],
+
+["Protect confidential information in AI","AI Tools","High",
+ "Before uploading information to an AI service, check its privacy policy, data controls and organisational rules. Avoid entering passwords, bank information, identity documents, private student records, confidential work files or sensitive personal data.",
+ "Use anonymised examples and share only the minimum information necessary."],
+
+["AI-generated images, audio and video","AI Tools","Medium",
+ "Images, voice recordings and videos can be generated or altered to mislead people. A familiar face or voice is not proof of authenticity.",
+ "Verify unusual requests through a separate trusted communication channel."],
+
+["AI coding and generated files","AI Tools","High",
+ "Do not blindly run AI-generated scripts, browser code, terminal commands or database queries. They can delete data, expose secrets or introduce vulnerabilities.",
+ "Inspect code, test in a safe environment and keep a backup before running it."],
+
+["Education website verification","Education Websites","Medium",
+ "Check the website's institution name, course details, instructor, fees, refund policy and certificate conditions. An attractive course page is not proof of accreditation or employment value.",
+ "Verify recognition claims directly with the relevant university, regulator or awarding body."],
+
+["Free courses and certificates","Education Websites","Medium",
+ "A course may be free to study but charge for a certificate, examination, assessment or advanced feature. Terms can vary by course and change over time.",
+ "Check the current price and completion requirements before enrolling."],
+
+["Student information and school records","Education Websites","High",
+ "Do not upload student marks, identity documents, addresses, attendance records, medical information or photographs to an unverified educational app.",
+ "Use institution-approved systems and protect children's personal information."],
+
+["Verify government websites","Government Websites","High",
+ "Government-related names, logos and flags can be copied. A website using government-style branding is not automatically official. Check the exact domain and verify the link through a known government portal.",
+ "For Indian central and state services, start from a verified official government website, then follow its own links."],
+
+["Indian government domain caution","Government Websites","High",
+ "Many Indian government websites use domains such as gov.in or nic.in, but domain appearance alone should not replace careful verification. Fake sites may use similar-looking names or advertisements.",
+ "Check the exact spelling and service details. Do not trust a search advertisement solely because it appears first."],
+
+["Government apps and downloads","Government Websites","High",
+ "Install government service apps only after checking the publisher and the link from the relevant official government website or verified app-store listing. Avoid APK files forwarded through messaging apps.",
+ "If an app requests unusual access or payment, pause and verify with the department."],
+
+["Government service fees","Government Websites","High",
+ "Check the official fee schedule and payment process before paying for a government service. Private agents or third-party portals may charge additional service fees and are not necessarily government-operated.",
+ "Keep the receipt and application reference. Never pay a stranger to guarantee approval."],
+
+["Government scheme eligibility","Government Websites","Medium",
+ "Eligibility, application dates, documents and benefits can change. A social media post may describe an expired scheme or incorrect eligibility conditions.",
+ "Read the current official notification and application instructions."],
+
+["Scholarship and exam scams","Scholarships & Exams","High",
+ "Be suspicious of guaranteed scholarships, exam leaks, paid admission guarantees or requests for urgent processing money. Do not share exam login credentials with unknown agents.",
+ "Use the official scholarship or examination portal and verify notices, deadlines and fees."],
+
+["Aadhaar and identity documents","Government Websites","High",
+ "Share identity documents only with a verified service when needed. Use permitted masking or redaction options where appropriate. Do not upload identity documents to random form-filling sites.",
+ "Check the purpose, recipient and secure submission method before sending documents."],
+
+["Downloads and file attachments","Downloads & Files","High",
+ "Unexpected ZIP files, executable files, APKs, macro-enabled documents and password-protected archives can be risky. A file name or icon can be misleading.",
+ "Do not open unexpected attachments. Scan downloads with reputable security software and keep your device updated."],
+
+["Browser notification scams","Suspicious Links & Scams","Medium",
+ "Websites may ask permission to send notifications and later display misleading warnings, fake virus alerts or scam advertisements.",
+ "Block notifications from unfamiliar sites and remove unwanted permissions in browser settings."],
+
+["Pop-ups and fake virus alerts","Suspicious Links & Scams","High",
+ "A webpage claiming that your phone is infected and asking you to call a number, install an app or pay immediately may be a scam.",
+ "Close the tab or browser. Do not call the displayed number or install the suggested tool."],
+
+["Children and online learning","Children & Family","High",
+ "Choose age-appropriate apps. Review advertising, chat, location sharing, public profiles, in-app purchases and contact permissions. Children should not share personal details with strangers.",
+ "Use parental controls and discuss how children can report uncomfortable interactions."],
+
+["In-app purchases and subscriptions","Payments & Banking","Medium",
+ "Check whether an app starts a free trial, renews automatically or charges for premium features. Removing an app may not cancel its subscription.",
+ "Review subscriptions and cancel them through the relevant official store or service."],
+
+["Health and medicine apps","Health & Medicine","High",
+ "Do not change a prescribed medicine, dose or treatment based only on an app or AI answer. Health information online may not fit your circumstances.",
+ "Discuss medical decisions with a qualified healthcare professional. Seek urgent care for emergencies."],
+
+["Social media privacy","Social Media & Messaging","Medium",
+ "Avoid publishing travel plans, live location, identity documents, private conversations or children's school details publicly. Check who can view posts and profile information.",
+ "Limit audience settings and think carefully before sharing or forwarding content."],
+
+["Messages from fake support agents","Suspicious Links & Scams","High",
+ "Scammers may impersonate customer support, government staff, teachers, delivery agents or family members. Caller ID and profile photographs can be spoofed.",
+ "Contact the person or organisation using a number or address you already trust."],
+
+["QR code payments","Payments & Banking","High",
+ "Inspect the recipient name and amount before confirming a QR payment. Scanning a QR code can open a malicious website or initiate an unexpected action.",
+ "You generally do not need to scan a QR code or enter a UPI PIN just to receive money."],
+
+["Backup before major changes","Data & Backup","Medium",
+ "Back up important documents, photos, contacts and application data before uninstalling an app, resetting a phone or changing storage settings.",
+ "Test that important backups can actually be opened and restored."],
+
+["Offline storage is not always backup","Data & Backup","Medium",
+ "Information stored only in browser local storage or IndexedDB can be erased when site data is cleared, browser storage is evicted or a device is lost.",
+ "Export important records regularly and store backups securely."],
+
+["Use of public computers","Public Wi-Fi & Devices","High",
+ "Avoid saving passwords on shared computers. Sign out when finished and do not leave downloaded identity documents or financial files behind.",
+ "Use a trusted personal device for sensitive transactions whenever possible."],
+
+["Keep devices updated","App Installation","Medium",
+ "Install operating-system and app security updates from trusted sources. Updates can correct known security problems.",
+ "Avoid unofficial update links sent through unsolicited messages."],
+
+["Legal and ethical use","Legal & Responsible Use","Medium",
+ "Respect copyright, privacy, platform terms and institutional policies. Do not use AI or digital tools to impersonate others, cheat, harass or access accounts without permission.",
+ "Check the rules that apply to your school, workplace, service and location."],
+
+["Report cyber fraud quickly","Emergency & Reporting","High",
+ "If you suspect financial cyber fraud, contact your bank or payment provider immediately using an official channel and report the incident through the appropriate official reporting service. Preserve transaction IDs, messages and screenshots.",
+ "In India, the national cybercrime portal is cybercrime.gov.in. The cyber-fraud helpline 1930 may be used for reporting eligible financial cyber fraud; act promptly and verify current instructions."],
+
+["Emergency information","Emergency & Reporting","High",
+ "Do not rely solely on an unfamiliar app or website during an emergency. Websites may be down, inaccurate or unable to contact responders.",
+ "Use locally recognised emergency services and trusted official information sources."],
+
+["Check terms and privacy policy","Permissions & Privacy","Medium",
+ "Before signing up, check what data is collected, why it is collected, how it is shared, how to delete your account and whether paid renewal applies.",
+ "If the policy is missing, confusing or inconsistent with the app's behaviour, consider not using the service."],
+
+["Do not trust reviews alone","App Installation","Medium",
+ "Ratings and reviews can be fake, incentivised, outdated or manipulated. A popular app can still have privacy or security risks.",
+ "Look at independent evidence, developer identity, update history and requested permissions."],
+
+["Avoid guaranteed returns","Payments & Banking","High",
+ "Be cautious of apps promising guaranteed investment returns, easy income, instant loans or rewards for paying a registration fee. High-pressure tactics and requests to pay more to withdraw funds are warning signs.",
+ "Verify the provider with the relevant financial regulator before transferring money."],
+
+["Account deletion and data rights","Permissions & Privacy","Medium",
+ "Before using a service extensively, learn how to delete your account and request removal of data where available. Uninstalling an app may not delete its server-side account.",
+ "Use the service's official account and privacy settings."],
+
+["No link is guaranteed safe","General Safety","General",
+ "A link that worked yesterday can be compromised later. Security tools, HTTPS, official-looking branding and familiar names reduce some risks but cannot guarantee safety.",
+ "Use caution every time you sign in, download, pay or share sensitive information."],
+
+["Pause when pressured","General Safety","High",
+ "Urgency, secrecy, threats, emotional pressure and demands for immediate payment are common scam tactics. A legitimate service should allow you time to verify important requests.",
+ "Stop, take a breath, and independently confirm the request."]
+];
+
+const themes={
+ forest:["#176b43","#f1f7f1","#fff","#203329","#d8e5da","#e2f2e6","#fff1d6","#fde8e8","#e5f2ff"],
+ ocean:["#075985","#edf7ff","#fff","#15354a","#cde3f3","#dcefff","#fff1d6","#fde8e8","#e5f2ff"],
+ sunrise:["#b45309","#fff7ed","#fff","#4b2c16","#f4d6b8","#ffedd5","#fff1d6","#fde8e8","#e5f2ff"],
+ lavender:["#7c3aed","#f7f2ff","#fff","#34234d","#e3d5f7","#eee5ff","#fff1d6","#fde8e8","#e5f2ff"],
+ mint:["#087f68","#edfff8","#fff","#163d34","#c8eadf","#d5f7e9","#fff1d6","#fde8e8","#e5f2ff"],
+ night:["#334155","#101827","#1e293b","#e5edf8","#40516a","#293a52","#4d4028","#512e35","#253c59"],
+ earth:["#596b35","#f5f2e8","#fff","#393b27","#ded8c3","#e8e5d1","#fff1d6","#fde8e8","#e5f2ff"],
+ rose:["#be185d","#fff1f5","#fff","#4c1e31","#f4cede","#ffe0eb","#fff1d6","#fde8e8","#e5f2ff"],
+ sky:["#0369a1","#f0f9ff","#fff","#183b53","#c9e7f8","#dff3ff","#fff1d6","#fde8e8","#e5f2ff"],
+ sand:["#92703a","#fbf5e9","#fff","#493b27","#e9dbc0","#f1e5cd","#fff1d6","#fde8e8","#e5f2ff"]
+};
+
+const $=id=>document.getElementById(id);
+let currentCategory="All";
+let mode="all";
+let saved=new Set(readJSON("safety_saved",[]));
+let customNotes=readJSON("safety_custom",[]);
+
+function readJSON(key,fallback){
+ try{
+  const v=JSON.parse(localStorage.getItem(key)||"null");
+  return v===null?fallback:v;
+ }catch(e){return fallback}
+}
+function saveAll(){
+ localStorage.setItem("safety_saved",JSON.stringify([...saved]));
+ localStorage.setItem("safety_custom",JSON.stringify(customNotes));
+}
+function esc(s){
+ return String(s).replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+function getAll(){
+ const base=notes.map((n,i)=>({
+  id:"default-"+i,title:n[0],category:n[1],level:n[2],
+  text:n[3],tip:n[4],custom:false
+ }));
+ const extra=customNotes.map((n,i)=>({...n,id:"custom-"+i,custom:true}));
+ return base.concat(extra);
+}
+function buildTabs(){
+ $("tabs").innerHTML=["All",...categories].map(c=>
+  `<button class="tab ${currentCategory===c?"active":""}" data-category="${esc(c)}">${c==="All"?"📚":"🗂️"} ${esc(c)}</button>`
+ ).join("");
+ $("noteCategory").innerHTML=categories.map(c=>
+  `<option value="${esc(c)}">${esc(c)}</option>`
+ ).join("");
+ $("tabs").querySelectorAll("[data-category]").forEach(b=>{
+  b.onclick=()=>{
+   currentCategory=b.dataset.category;
+   mode=mode==="favorites"?"all":mode;
+   updateView();buildTabs();render();
+  };
+ });
+}
+function updateView(){
+ const settings=mode==="settings";
+ const custom=mode==="custom";
+ $("settingsPanel").classList.toggle("hidden",!settings);
+ $("customPanel").classList.toggle("hidden",!custom);
+ $("tabs").classList.toggle("hidden",settings||custom);
+ $("search").classList.toggle("hidden",settings||custom);
+ $("cards").classList.toggle("hidden",settings||custom);
+ $("status").classList.toggle("hidden",settings||custom);
+ $("allBtn").classList.toggle("primary",mode==="all");
+ $("favBtn").classList.toggle("primary",mode==="favorites");
+ $("customBtn").classList.toggle("primary",custom);
+ $("settingsBtn").classList.toggle("primary",settings);
+}
+function render(){
+ const q=$("search").value.trim().toLowerCase();
+ const list=getAll().filter(n=>{
+  const cat=currentCategory==="All"||n.category===currentCategory;
+  const fav=mode!=="favorites"||saved.has(n.id);
+  const text=[n.title,n.category,n.level,n.text,n.tip].join(" ").toLowerCase();
+  return cat&&fav&&text.includes(q);
+ });
+ $("status").textContent=`${list.length} note(s) displayed · ${getAll().length} total notes`;
+ $("cards").innerHTML=list.length?list.map(n=>{
+  const isSaved=saved.has(n.id);
+  const levelClass=n.level==="High"?"high":n.level==="Medium"?"medium":"general";
+  return `<article class="card">
+   <span class="badge">${esc(n.category)}</span>
+   <span class="level ${levelClass}">${n.level==="High"?"🔴":n.level==="Medium"?"🟠":"🟢"} ${esc(n.level)} importance</span>
+   <h3>${esc(n.title)}</h3>
+   <p>${esc(n.text)}</p>
+   <p class="detail"><strong>Recommended action:</strong> ${esc(n.tip||"Use your judgment and verify details.")}</p>
+   <div class="cardfooter">
+    <button class="${isSaved?"primary":""}" data-save="${esc(n.id)}">${isSaved?"⭐ Saved":"☆ Save note"}</button>
+   </div>
+  </article>`;
+ }).join(""):'<div class="empty">No notes found. Try another search or category.</div>';
+ $("cards").querySelectorAll("[data-save]").forEach(b=>{
+  b.onclick=()=>{
+   const id=b.dataset.save;
+   saved.has(id)?saved.delete(id):saved.add(id);
+   saveAll();render();
+  };
+ });
+}
+function renderCustom(){
+ if(!customNotes.length){
+  $("customList").innerHTML='<p class="note">You have not added any personal notes.</p>';return;
+ }
+ $("customList").innerHTML=customNotes.map((n,i)=>
+  `<div class="panel">
+   <strong>${esc(n.title)}</strong>
+   <p class="note">${esc(n.category)} · ${esc(n.level)}</p>
+   <p>${esc(n.text)}</p>
+   <button data-delete="${i}">Delete note</button>
+  </div>`
+ ).join("");
+ $("customList").querySelectorAll("[data-delete]").forEach(b=>{
+  b.onclick=()=>{
+   if(!confirm("Delete this personal note?"))return;
+   customNotes.splice(Number(b.dataset.delete),1);
+   saveAll();renderCustom();render();
+  };
+ });
+}
+$("allBtn").onclick=()=>{
+ mode="all";currentCategory="All";updateView();buildTabs();render();
+};
+$("favBtn").onclick=()=>{
+ mode="favorites";currentCategory="All";updateView();buildTabs();render();
+};
+$("customBtn").onclick=()=>{
+ mode="custom";updateView();renderCustom();
+};
+$("settingsBtn").onclick=()=>{
+ mode="settings";updateView();
+};
+$("search").addEventListener("input",render);
+
+$("noteForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ customNotes.push({
+  title:$("noteTitle").value.trim(),
+  category:$("noteCategory").value,
+  level:$("noteLevel").value,
+  text:$("noteText").value.trim(),
+  tip:"Your personal reminder."
+ });
+ saveAll();e.target.reset();renderCustom();render();
+ alert("Your note has been saved on this device.");
+});
+
+$("theme").addEventListener("change",()=>{
+ const t=themes[$("theme").value]||themes.forest;
+ const keys=["--primary","--bg","--card","--text","--border","--soft","--warning","--danger","--info"];
+ keys.forEach((k,i)=>document.documentElement.style.setProperty(k,t[i]));
+ localStorage.setItem("safety_theme",$("theme").value);
+});
+function loadTheme(){
+ const name=localStorage.getItem("safety_theme")||"forest";
+ $("theme").value=name;
+ const t=themes[name]||themes.forest;
+ ["--primary","--bg","--card","--text","--border","--soft","--warning","--danger","--info"].forEach((k,i)=>document.documentElement.style.setProperty(k,t[i]));
+}
+$("exportBtn").onclick=()=>{
+ const backup={
+  app:"App Safety & Important Notes",version:1,
+  exportedAt:new Date().toISOString(),
+  saved:[...saved],customNotes
+ };
+ const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;a.download="app_safety_notes_backup.json";a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+ $("message").textContent="Backup exported.";
+};
+$("importBtn").onclick=()=>$("importFile").click();
+$("importFile").addEventListener("change",async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  const data=JSON.parse(await file.text());
+  if(!data||!Array.isArray(data.saved)||!Array.isArray(data.customNotes))
+   throw new Error("Invalid backup");
+  const cleaned=data.customNotes.filter(n=>
+   n&&typeof n.title==="string"&&typeof n.text==="string"
+  ).map(n=>({
+   title:n.title.slice(0,100),
+   category:categories.includes(n.category)?n.category:"Personal Notes",
+   level:["High","Medium","General"].includes(n.level)?n.level:"General",
+   text:n.text.slice(0,3000),
+   tip:typeof n.tip==="string"?n.tip.slice(0,1000):""
+  }));
+  if(!confirm("Replace your current personal notes and saved notes with this backup?"))return;
+  saved=new Set(data.saved.filter(x=>typeof x==="string"));
+  customNotes=cleaned;saveAll();render();renderCustom();
+  $("message").textContent="Backup restored.";
+ }catch(err){
+  alert("Import failed. Please choose a valid backup exported by this app.");
+ }
+ e.target.value="";
+});
+$("clearFav").onclick=()=>{
+ if(!confirm("Clear all saved notes?"))return;
+ saved.clear();saveAll();render();
+ $("message").textContent="Saved notes cleared.";
+};
+$("clearCustom").onclick=()=>{
+ if(!confirm("Permanently delete all your personal notes? Export a backup first if needed."))return;
+ customNotes=[];saveAll();renderCustom();render();
+ $("message").textContent="Personal notes deleted.";
+};
+
+buildTabs();
+loadTheme();
+updateView();
+render();
+renderCustom();
+</script>
+</body>
+</html>
