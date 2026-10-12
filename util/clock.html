@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10271e">
+<title>Swayam Floating Clock</title>
+
+<style>
+:root{
+  --bg:#071711;
+  --panel:#10271e;
+  --panel2:#17372a;
+  --text:#f3fff6;
+  --muted:#a9c5b3;
+  --accent:#50e39a;
+  --accent2:#b8ffcc;
+  --border:rgba(255,255,255,.14);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif}
+body{overflow-x:hidden}
+button,input,select{font:inherit}
+button{cursor:pointer;color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent)}
+.top{
+  position:sticky;top:0;z-index:20;background:var(--bg);
+  border-bottom:1px solid var(--border);
+  padding:calc(9px + env(safe-area-inset-top)) 10px 8px;
+}
+.brand{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.brand h1{font-size:17px;margin:0}
+.brand small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.tab{flex:0 0 auto;padding:8px 11px;border:1px solid var(--border);border-radius:10px;background:var(--panel);font-size:12px}
+.tab.active{background:var(--accent);color:#062016}
+main{max-width:850px;margin:auto;padding:12px 12px 30px}
+.page{display:none}
+.page.active{display:block}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:13px;margin-bottom:12px}
+h2{font-size:17px;margin:0 0 12px}
+h3{font-size:14px;margin:12px 0 8px}
+p,.muted{font-size:12px;color:var(--muted);line-height:1.5}
+label{display:block;font-size:12px;color:var(--muted);margin:9px 0 5px}
+input,select{width:100%;padding:10px;border-radius:10px;background:var(--panel2);border:1px solid var(--border);color:var(--text)}
+input[type=checkbox]{width:auto;accent-color:var(--accent)}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+.btn{border:0;border-radius:10px;padding:10px 12px;background:var(--accent);color:#062016;font-size:12px;font-weight:750}
+.btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
+.btn.danger{background:#a52c36;color:white}
+.btn.small{padding:7px 9px;font-size:11px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stat{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:10px}
+.stat strong{display:block;font-size:18px}
+.stat small{color:var(--muted);font-size:10px}
+.item{background:var(--panel2);border:1px solid var(--border);border-radius:11px;padding:10px;margin:8px 0}
+.item strong{font-size:13px}
+.item small{display:block;font-size:11px;color:var(--muted);margin-top:4px}
+.hidden{display:none!important}
+
+/* Main clock */
+.watch-stage{display:flex;justify-content:center;align-items:center;padding:4px 0 10px;overflow:hidden}
+.watch{
+  position:relative;width:min(88vw,400px);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 35% 25%,#234b36,#0c2016 70%);
+  border:7px solid var(--accent);box-shadow:0 16px 40px #0007;
+  overflow:hidden;isolation:isolate;
+}
+.watch::before{content:"";position:absolute;inset:3%;border:1px solid var(--border);border-radius:50%;pointer-events:none}
+.watch.square{border-radius:25%}
+.watch.ocean{background:radial-gradient(circle at 35% 25%,#146b82,#071d35 75%)}
+.watch.sunset{background:radial-gradient(circle at 50% 0%,#c16a40,#321b3e 75%)}
+.watch.gold{background:radial-gradient(circle,#514329,#15140e 75%);border-color:#d8b96e}
+.watch.purple{background:radial-gradient(circle at 30% 25%,#57386e,#181020 75%)}
+.watch.neon{background:#080d14;box-shadow:0 0 15px var(--accent),0 0 35px #50e39a55}
+.watch.ice{background:radial-gradient(circle at 40% 20%,#466a7c,#101d26 75%)}
+.watch.rose{background:radial-gradient(circle at 30% 20%,#69354b,#21111b 75%)}
+.watch.digital{background:linear-gradient(140deg,#102d39,#07121c)}
+.watch.minimal{background:#111;border-width:2px}
+.watch-label{position:absolute;top:13%;left:0;right:0;text-align:center;font-size:10px;letter-spacing:2px;color:var(--accent2);z-index:2;pointer-events:none}
+.numbers{position:absolute;inset:0;z-index:3}
+.number{
+  position:absolute;transform:translate(-50%,-50%);width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid transparent;border-radius:50%;
+  padding:0;font-weight:800;font-size:17px;text-shadow:0 1px 4px #000;
+}
+.number.contact{border-color:var(--accent);color:var(--accent2)}
+.number.reminder{box-shadow:inset 0 -3px 0 var(--accent)}
+.ticks{position:absolute;inset:0;z-index:1;pointer-events:none}
+.tick{position:absolute;top:5%;left:50%;width:2px;height:4%;background:var(--muted);transform-origin:50% 1125%;opacity:.6}
+.tick.major{height:6%;background:var(--accent);width:3px}
+.hand{position:absolute;bottom:50%;left:50%;transform:translateX(-50%) rotate(0);transform-origin:50% 100%;border-radius:9px;z-index:4;pointer-events:none}
+.hour-hand{height:23%;width:5px;background:var(--text)}
+.minute-hand{height:33%;width:3px;background:var(--text)}
+.second-hand{height:38%;width:2px;background:var(--accent)}
+.dot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid white;z-index:5}
+.icon-window{
+  position:absolute;z-index:7;left:19%;right:19%;top:30%;bottom:21%;
+  overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;
+  scrollbar-color:var(--accent) transparent;border-radius:12px;
+}
+.icon-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:4px}
+.clock-icon{
+  min-width:0;min-height:45px;padding:3px 1px;
+  border:1px solid var(--border);border-radius:9px;
+  background:#071711d9;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px
+}
+.clock-icon span{font-size:19px;line-height:1.1}
+.clock-icon small{font-size:9px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.clock-icon:active{background:var(--accent);color:#061c12}
+.digital-clock{text-align:center;font-size:clamp(28px,8vw,43px);font-weight:850;font-variant-numeric:tabular-nums;letter-spacing:1px}
+.date-line{text-align:center;color:var(--muted);font-size:12px;margin:4px 0 12px}
+.controls{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}
+.controls button{min-width:75px}
+.calendar-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:5px;margin-bottom:10px}
+.calendar-head strong{text-align:center;font-size:13px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal-grid>*{min-width:0;text-align:center}
+.weekday{font-size:10px;color:var(--muted);padding:5px 0}
+.day{width:100%;aspect-ratio:1;border-radius:8px;border:1px solid transparent;background:var(--panel2);font-size:12px;padding:0}
+.day.today{border-color:var(--accent)}
+.day.selected{background:var(--accent);color:#062016;font-weight:900}
+.day.has-reminder{box-shadow:inset 0 -3px 0 var(--accent)}
+.day.outside{opacity:.35}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.face-tile{padding:8px 4px;border:1px solid var(--border);border-radius:12px;background:var(--panel2);text-align:center}
+.face-tile.selected{border:2px solid var(--accent)}
+.preview{width:55px;height:55px;border-radius:50%;border:4px solid var(--accent);margin:0 auto 7px;display:grid;place-items:center;background:var(--bg);font-weight:bold}
+.theme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.theme-btn{padding:10px;text-align:left;background:var(--panel2);border:1px solid var(--border);border-radius:11px}
+.theme-btn.selected{border:2px solid var(--accent)}
+
+/* Floating apps */
+.float-overlay{
+  display:none;position:fixed;inset:0;z-index:1000;
+  align-items:center;justify-content:center;
+  padding:12px;padding-top:max(12px,env(safe-area-inset-top));
+  padding-bottom:max(12px,env(safe-area-inset-bottom));
+  background:#0009;
+}
+.float-overlay.open{display:flex}
+.float-window{
+  width:min(100%,480px);max-height:88dvh;display:flex;flex-direction:column;
+  background:var(--bg);border:1px solid var(--border);border-radius:18px;
+  overflow:hidden;box-shadow:0 20px 60px #0009;
+  animation:floatIn .17s ease-out;
+}
+.float-header{
+  flex:0 0 auto;padding:11px 12px;background:var(--panel);
+  border-bottom:1px solid var(--border);display:flex;
+  align-items:center;justify-content:space-between;gap:10px
+}
+.float-header strong{display:block;font-size:15px}
+.float-header small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.close-float{width:39px;height:39px;border:0;border-radius:12px;background:#b72d38;color:white;font-size:21px;font-weight:bold}
+.float-body{overflow:auto;overscroll-behavior:contain;padding:13px;min-height:110px}
+.float-body .card{box-shadow:none}
+@keyframes floatIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.float-body .digital-clock{font-size:32px}
+.float-body .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:1500;background:var(--panel2);padding:10px 14px;border-radius:12px;border:1px solid var(--border);display:none;font-size:12px}
+.toast.show{display:block}
+@media(min-width:600px){.watch{width:min(70vw,430px)}.gallery{grid-template-columns:repeat(5,minmax(0,1fr))}.icon-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:350px){.watch{width:94vw;border-width:4px}.icon-window{left:17%;right:17%}.icon-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+
+<body>
+<header class="top">
+  <div class="brand">
+    <div><h1>⌚ Swayam Floating Clock</h1><small id="headerDate">Personal clock studio</small></div>
+    <button class="btn small" id="fullscreen">⛶ Full screen</button>
+  </div>
+  <nav class="tabs">
+    <button class="tab active" data-page="watchPage">⌚ Watch</button>
+    <button class="tab" data-app="calendar">📅 Calendar</button>
+    <button class="tab" data-app="reminders">🔔 Reminders</button>
+    <button class="tab" data-app="tools">⏱ Tools</button>
+    <button class="tab" data-app="world">🌍 World</button>
+    <button class="tab" data-app="faces">🎨 Faces</button>
+    <button class="tab" data-app="icons">🧩 Icons</button>
+    <button class="tab" data-app="themes">🌿 Themes</button>
+    <button class="tab" data-app="settings">⚙ Settings</button>
+    <button class="tab" data-app="data">💾 Data</button>
+  </nav>
+</header>
+
+<main>
+<section class="page active" id="watchPage">
+  <div class="watch-stage">
+    <div class="watch" id="watch">
+      <div class="watch-label" id="watchLabel">SWAYAM</div>
+      <div class="numbers" id="numbers"></div>
+      <div class="ticks" id="ticks"></div>
+      <div class="hand hour-hand" id="hourHand"></div>
+      <div class="hand minute-hand" id="minuteHand"></div>
+      <div class="hand second-hand" id="secondHand"></div>
+      <div class="dot"></div>
+      <div class="icon-window" id="iconWindow"><div class="icon-grid" id="iconGrid"></div></div>
+    </div>
+  </div>
+  <div class="digital-clock" id="digitalClock">00:00:00</div>
+  <div class="date-line" id="dateLine"></div>
+  <div class="controls">
+    <button class="btn" id="prevFace">◀ Face</button>
+    <button class="btn secondary" id="nextFace">Face ▶</button>
+    <button class="btn secondary" data-app="reminders">🔔 Alarm</button>
+    <button class="btn secondary" data-app="tools">⏳ Timer</button>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h2>Quick dashboard</h2>
+    <div class="grid3">
+      <div class="stat"><strong id="remCount">0</strong><small>Reminders</small></div>
+      <div class="stat"><strong id="contactCount">0</strong><small>Contacts</small></div>
+      <div class="stat"><strong id="faceCount">1/100</strong><small>Watch face</small></div>
+    </div>
+    <p>Tap an icon to open its app in a floating window. Close it using ✕ to return to the clock. Tap a clock number to set a reminder or call an assigned contact.</p>
+  </div>
+</section>
+</main>
+
+<!-- Floating window. Every app is rendered here, not cloned. -->
+<div class="float-overlay" id="floatOverlay">
+  <div class="float-window" role="dialog" aria-modal="true" aria-labelledby="floatTitle">
+    <div class="float-header">
+      <div><strong id="floatTitle">App</strong><small>Swayam Clock Studio · Floating mode</small></div>
+      <button class="close-float" id="closeFloat" aria-label="Close app">✕</button>
+    </div>
+    <div class="float-body" id="floatBody"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- Templates: these are rendered in the floating window with working event handlers. -->
+<template id="tpl-calendar">
+  <div class="card">
+    <h2>📅 Calendar</h2>
+    <div class="calendar-head">
+      <button class="btn secondary small" data-action="prevMonth">◀</button>
+      <strong data-role="monthLabel"></strong>
+      <button class="btn secondary small" data-action="nextMonth">▶</button>
+    </div>
+    <div class="row" style="margin-bottom:9px">
+      <button class="btn small" data-action="today">Today</button>
+      <button class="btn secondary small" data-action="addSelected">＋ Reminder</button>
+    </div>
+    <div class="cal-grid" data-role="calendarGrid"></div>
+    <hr>
+    <h3 data-role="selectedDate"></h3>
+    <div data-role="dateEvents"></div>
+  </div>
+</template>
+
+<template id="tpl-reminders">
+  <div class="card">
+    <h2>🔔 Reminders</h2>
+    <label>Title</label><input data-role="title" placeholder="Reminder title">
+    <div class="grid2">
+      <div><label>Date</label><input data-role="date" type="date"></div>
+      <div><label>Time</label><input data-role="time" type="time"></div>
+    </div>
+    <label>Repeat</label>
+    <select data-role="repeat"><option value="none">No repeat</option><option value="daily">Daily</option><option value="weekly">Weekly</option></select>
+    <label>Notes</label><input data-role="notes" placeholder="Optional notes">
+    <button class="btn" data-action="save" style="margin-top:10px">Save reminder</button>
+    <button class="btn secondary" data-action="notify" style="margin-top:8px">Enable notifications</button>
+  </div>
+  <div class="card"><h2>Saved reminders</h2><div data-role="list"></div></div>
+</template>
+
+<template id="tpl-tools">
+  <div class="card">
+    <h2>⏱ Stopwatch</h2><div class="digital-clock" data-role="swDisplay">00:00.00</div>
+    <div class="row"><button class="btn" data-action="swStart">Start</button><button class="btn secondary" data-action="swLap">Lap</button><button class="btn secondary" data-action="swReset">Reset</button></div>
+    <div data-role="laps"></div>
+  </div>
+  <div class="card">
+    <h2>⏳ Countdown timer</h2>
+    <div class="grid2"><div><label>Minutes</label><input data-role="minutes" type="number" min="0" value="5"></div><div><label>Seconds</label><input data-role="seconds" type="number" min="0" max="59" value="0"></div></div>
+    <div class="digital-clock" data-role="timerDisplay">05:00</div>
+    <div class="row"><button class="btn" data-action="timerStart">Start</button><button class="btn secondary" data-action="timerPause">Pause</button><button class="btn secondary" data-action="timerReset">Reset</button></div>
+  </div>
+  <div class="card"><h2>🔊 Sound</h2><div class="row"><button class="btn" data-action="beep">Test sound</button><button class="btn secondary" data-action="nature">Nature tone</button><button class="btn secondary" data-action="stopSound">Stop</button></div></div>
+</template>
+
+<template id="tpl-world">
+  <div class="card">
+    <h2>🌍 World clock</h2>
+    <label>Choose time zone</label>
+    <select data-role="timezone">
+      <option value="Asia/Kolkata">Mumbai / New Delhi</option><option value="Asia/Dubai">Dubai</option>
+      <option value="Asia/Singapore">Singapore</option><option value="Asia/Tokyo">Tokyo</option>
+      <option value="Europe/London">London</option><option value="Europe/Paris">Paris</option>
+      <option value="America/New_York">New York</option><option value="America/Los_Angeles">Los Angeles</option>
+      <option value="Australia/Sydney">Sydney</option><option value="Pacific/Auckland">Auckland</option>
+    </select>
+    <div class="digital-clock" data-role="worldTime">--:--:--</div><div class="date-line" data-role="worldDate"></div>
+    <button class="btn secondary" data-action="map">Open map</button>
+  </div>
+  <div class="card"><h2>City clocks</h2><div data-role="cities"></div></div>
+</template>
+
+<template id="tpl-faces">
+  <div class="card">
+    <h2>🎨 100 Watch Faces</h2>
+    <div class="row"><input class="grow" data-role="search" placeholder="Search face number or style"><button class="btn secondary small" data-action="random">Random</button></div>
+    <div class="gallery" data-role="gallery" style="margin-top:12px"></div>
+  </div>
+</template>
+
+<template id="tpl-icons">
+  <div class="card">
+    <h2>🧩 Clock Icons</h2><p>Choose which shortcuts appear inside the clock. You can add, remove, or reorder them.</p>
+    <div class="row"><button class="btn" data-action="resetIcons">Reset defaults</button></div>
+    <div data-role="iconList"></div>
+    <hr><h3>Add an icon</h3><div class="grid2" data-role="iconPicker"></div>
+  </div>
+  <div class="card">
+    <h2>📞 Contacts for clock numbers</h2>
+    <label>Clock number</label><select data-role="contactHour"></select>
+    <label>Contact name</label><input data-role="contactName" placeholder="Contact name">
+    <label>Phone number</label><input data-role="contactPhone" type="tel" placeholder="+91...">
+    <div class="row" style="margin-top:9px"><button class="btn" data-action="saveContact">Save contact</button><button class="btn secondary" data-action="clearContact">Clear number</button></div>
+    <div data-role="contactsList"></div>
+  </div>
+</template>
+
+<template id="tpl-themes">
+  <div class="card"><h2>🌿 Nature Themes</h2><div class="theme-grid" data-role="natureThemes"></div></div>
+  <div class="card"><h2>🪟 Glass Themes</h2><div class="theme-grid" data-role="glassThemes"></div></div>
+</template>
+
+<template id="tpl-settings">
+  <div class="card">
+    <h2>⚙ Settings</h2>
+    <label>Clock format</label><select data-role="format"><option value="24">24-hour</option><option value="12">12-hour</option></select>
+    <label><input type="checkbox" data-role="seconds" checked> Show seconds</label>
+    <label><input type="checkbox" data-role="numbers" checked> Show clock numbers</label>
+    <label><input type="checkbox" data-role="ticks" checked> Show clock ticks</label>
+    <label><input type="checkbox" data-role="iconPanel" checked> Show icons inside clock</label>
+    <label><input type="checkbox" data-role="label" checked> Show watch label</label>
+    <label>Watch size</label><input type="range" min="65" max="100" data-role="size" value="88">
+    <button class="btn" data-action="saveSettings" style="margin-top:10px">Save settings</button>
+    <button class="btn secondary" data-action="fullScreen" style="margin-top:8px">Toggle full screen</button>
+    <hr><button class="btn secondary" data-action="notifications">Enable notifications</button>
+  </div>
+</template>
+
+<template id="tpl-data">
+  <div class="card">
+    <h2>💾 Backup and restore</h2><p>App data is stored on this device.</p>
+    <button class="btn" data-action="export">Export JSON backup</button>
+    <label>Restore JSON backup</label><input data-role="file" type="file" accept=".json,application/json">
+    <button class="btn secondary" data-action="import" style="margin-top:8px">Import backup</button>
+    <hr><button class="btn danger" data-action="clearAll">Delete all app data</button>
+  </div>
+</template>
+
+<!-- Number action floating window -->
+<template id="tpl-number">
+  <div class="card">
+    <h2 data-role="numberTitle">Clock number</h2>
+    <p data-role="numberDescription">Choose an action.</p>
+    <button class="btn" data-action="numberReminder">🔔 Create reminder</button>
+    <button class="btn secondary" data-action="numberCall" style="margin-top:8px">📞 Call assigned contact</button>
+    <button class="btn secondary" data-action="editContact" style="margin-top:8px">👤 Assign/edit contact</button>
+  </div>
+</template>
+
+<script>
+"use strict";
+
+/* ----------- Local data ----------- */
+const KEY="swayam_floating_clock_v2";
+const defaults={
+ face:1,themeType:"nature",nature:0,glass:0,
+ settings:{format:"24",seconds:true,numbers:true,ticks:true,iconPanel:true,label:true,size:88},
+ reminders:[],contacts:{},
+ icons:["calendar","world","reminders","tools","faces","themes","settings","icons","data"]
+};
+function copy(x){return JSON.parse(JSON.stringify(x))}
+function loadData(){
+  try{
+    const d=JSON.parse(localStorage.getItem(KEY)||"null");
+    if(!d)return copy(defaults);
+    return {...copy(defaults),...d,settings:{...defaults.settings,...(d.settings||{})},
+      reminders:Array.isArray(d.reminders)?d.reminders:[],contacts:d.contacts||{},
+      icons:Array.isArray(d.icons)?d.icons:defaults.icons.slice()};
+  }catch(e){return copy(defaults)}
+}
+let state=loadData();
+function persist(){localStorage.setItem(KEY,JSON.stringify(state));updateStats()}
+function pad(n){return String(n).padStart(2,"0")}
+function dateStr(d=new Date()){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function toast(s){const el=document.getElementById("toast");el.textContent=s;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2300)}
+function beep(){
+  try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=new C(),o=c.createOscillator(),g=c.createGain();o.frequency.value=880;g.gain.value=.12;o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.35);o.onended=()=>c.close()}catch(e){}
+}
+
+/* ----------- Theme data ----------- */
+const natureThemes=[
+["Forest","#071711","#10271e","#17372a","#50e39a","#b8ffcc"],
+["Ocean","#061727","#0c2a42","#12415b","#56d7ff","#c7f3ff"],
+["Sunset","#251326","#39213b","#5b3042","#ffae72","#ffe1ba"],
+["Meadow","#10200d","#1d3517","#2d4a22","#b7ec68","#e7ffc0"],
+["Lavender","#21162d","#322242","#49315e","#d2a7ff","#f1d8ff"],
+["Desert","#2b1c12","#432b1a","#624128","#ffc477","#ffebc8"],
+["Sky","#0e1f35","#183656","#244a70","#81c8ff","#d9f1ff"],
+["Rose Garden","#2a111b","#411d2c","#5d2b3d","#ff91ba","#ffd5e4"],
+["Moss","#121e13","#243522","#344b30","#9cc58a","#d9f0c7"],
+["Night Garden","#090f22","#141e39","#202f50","#a9b7ff","#e0e6ff"]
+];
+const glassThemes=[
+["Emerald Glass","#061c17","#102f27","#1a493b","#5fffc0","#d1ffed"],
+["Blue Glass","#08182c","#122c4b","#1e4266","#7dc8ff","#d8f0ff"],
+["Purple Glass","#1a102a","#2b1d42","#40305e","#c4a1ff","#eadcff"],
+["Rose Glass","#26111d","#3b2030","#573046","#ff9bc4","#ffdeeb"],
+["Amber Glass","#271a0b","#3c2a13","#5b401d","#ffc86f","#ffebbd"],
+["Ice Glass","#101d26","#203540","#314b5a","#a9efff","#e2fbff"],
+["Silver Glass","#171a1d","#2c3035","#41474e","#d6dce2","#ffffff"],
+["Coral Glass","#27130f","#44251e","#60362d","#ff9f82","#ffded1"],
+["Mint Glass","#0b211b","#18392e","#245141","#8effce","#d7ffed"],
+["Midnight Glass","#090c18","#171b31","#252c49","#9eaaff","#e2e5ff"]
+];
+function applyTheme(){
+  const arr=state.themeType==="glass"?glassThemes:natureThemes;
+  const t=arr[state.themeType==="glass"?state.glass:state.nature]||arr[0];
+  ["--bg","--panel","--panel2","--accent","--accent2"].forEach((v,i)=>document.documentElement.style.setProperty(v,t[i+1]));
+}
+function selectTheme(type,i){
+  state.themeType=type;
+  if(type==="nature")state.nature=i;else state.glass=i;
+  applyTheme();persist();renderClock();renderFloating("themes");
+}
+
+/* ----------- Icons ----------- */
+const iconData={
+ calendar:["📅","Calendar"],world:["🌍","World clock"],reminders:["🔔","Reminders"],
+ tools:["⏱️","Stopwatch & timer"],faces:["🎨","Watch faces"],themes:["🌿","Themes"],
+ settings:["⚙️","Settings"],icons:["🧩","Icon manager"],data:["💾","Backup"],
+ map:["🗺️","Map"],sound:["🔊","Sound"],notes:["📝","Quick note"],
+ calculator:["🧮","Calculator"],weather:["🌤️","Weather"],music:["🎵","Music"],
+ camera:["📷","Camera"],help:["❔","Help"],phone:["☎️","Contacts"]
+};
+function renderClockIcons(){
+  const grid=document.getElementById("iconGrid");grid.innerHTML="";
+  state.icons.forEach(id=>{
+    const inf=iconData[id];if(!inf)return;
+    const b=document.createElement("button");b.className="clock-icon";
+    b.innerHTML=`<span>${inf[0]}</span><small>${esc(inf[1])}</small>`;
+    b.onclick=()=>openApp(id);grid.appendChild(b);
+  });
+}
+function renderNumbers(){
+  const box=document.getElementById("numbers");box.innerHTML="";
+  if(!state.settings.numbers)return;
+  for(let n=1;n<=12;n++){
+    const a=(n%12)*Math.PI/6-Math.PI/2;
+    const b=document.createElement("button");b.className="number";
+    b.textContent=n;b.style.left=(50+39*Math.cos(a))+"%";b.style.top=(50+39*Math.sin(a))+"%";
+    if(state.contacts[n])b.classList.add("contact");
+    if(state.reminders.some(r=>r.clockHour===n))b.classList.add("reminder");
+    b.onclick=()=>openNumber(n);box.appendChild(b);
+  }
+}
+function renderTicks(){
+  const box=document.getElementById("ticks");box.innerHTML="";
+  if(!state.settings.ticks)return;
+  for(let i=0;i<60;i++){
+    const t=document.createElement("div");t.className="tick"+(i%5===0?" major":"");
+    t.style.transform=`translateX(-50%) rotate(${i*6}deg)`;box.appendChild(t);
+  }
+}
+const faceClasses=["","ocean","sunset","gold","purple","neon","ice","rose","digital","minimal"];
+function applyFace(){
+  const w=document.getElementById("watch");
+  w.className="watch "+faceClasses[(state.face-1)%10];
+  w.classList.toggle("square",Math.floor((state.face-1)/10)%2===1);
+  w.style.width=`min(${state.settings.size}vw,430px)`;
+  document.getElementById("watchLabel").style.display=state.settings.label?"block":"none";
+  document.getElementById("iconWindow").style.display=state.settings.iconPanel?"block":"none";
+  document.getElementById("secondHand").style.display=state.settings.seconds?"block":"none";
+  renderNumbers();renderTicks();renderClockIcons();
+  document.getElementById("faceCount").textContent=state.face+"/100";
+}
+function renderClock(){
+  const d=new Date(),h=d.getHours(),m=d.getMinutes(),s=d.getSeconds();
+  document.getElementById("hourHand").style.transform=`translateX(-50%) rotate(${(h%12)*30+m*.5}deg)`;
+  document.getElementById("minuteHand").style.transform=`translateX(-50%) rotate(${m*6+s*.1}deg)`;
+  document.getElementById("secondHand").style.transform=`translateX(-50%) rotate(${s*6}deg)`;
+  const is12=state.settings.format==="12";
+  document.getElementById("digitalClock").textContent=pad(is12?(h%12||12):h)+":"+pad(m)+(state.settings.seconds?":"+pad(s):"")+(is12?(h>=12?" PM":" AM"):"");
+  document.getElementById("dateLine").textContent=d.toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+  document.getElementById("headerDate").textContent=d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})+" · "+pad(h)+":"+pad(m);
+  updateStats();
+}
+setInterval(renderClock,1000);
+
+/* ----------- Floating window manager ----------- */
+const overlay=document.getElementById("floatOverlay"),body=document.getElementById("floatBody");
+let currentApp="",calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+let selectedDate=dateStr(),selectedHour=1;
+
+/* Stopwatch and timer state persists while changing floating apps */
+let swRunning=false,swStart=0,swElapsed=0,swInterval=null,lapNo=0;
+let timerRunning=false,timerEnd=0,timerRemaining=300,timerInterval=null;
+let natureOsc=[],natureCtx=null;
+
+function openApp(id){
+  if(id==="map"){window.open("https://www.openstreetmap.org/","_blank","noopener");return}
+  if(id==="weather"){window.open("https://www.google.com/search?q=weather","_blank","noopener");return}
+  if(id==="music"){window.open("https://music.youtube.com/","_blank","noopener");return}
+  if(id==="calculator"){window.open("https://www.google.com/search?q=calculator","_blank","noopener");return}
+  if(id==="camera"){toast("Open your device camera app.");return}
+  if(id==="notes"){
+    const n=prompt("Quick note:");
+    if(n&&n.trim()){const a=JSON.parse(localStorage.getItem(KEY+"_notes")||"[]");a.unshift({text:n,date:new Date().toISOString()});localStorage.setItem(KEY+"_notes",JSON.stringify(a));toast("Note saved on this device.");}
+    return;
+  }
+  if(id==="help"){alert("Tap a clock icon to open a floating app. Tap ✕ to close it. Tap a clock number to create a reminder or call a saved contact.");return}
+  renderFloating(id);
+}
+function renderFloating(id){
+  currentApp=id;
+  const tpl=document.getElementById("tpl-"+id);
+  if(!tpl)return;
+  body.replaceChildren(tpl.content.cloneNode(true));
+  document.getElementById("floatTitle").textContent=({calendar:"Calendar",reminders:"Reminders",tools:"Stopwatch & Timer",world:"World Clock",faces:"100 Watch Faces",icons:"Icon Manager",themes:"Themes",settings:"Settings",data:"Backup & Restore",number:"Clock Number"})[id]||id;
+  overlay.classList.add("open");
+  bindFloating(id);
+}
+function closeFloating(){
+  overlay.classList.remove("open");body.replaceChildren();currentApp="";
+}
+document.getElementById("closeFloat").onclick=closeFloating;
+overlay.addEventListener("click",e=>{if(e.target===overlay)closeFloating()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&overlay.classList.contains("open"))closeFloating()});
+document.querySelectorAll("[data-app]").forEach(b=>b.addEventListener("click",()=>openApp(b.dataset.app)));
+document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));
+  document.querySelectorAll(".page").forEach(x=>x.classList.toggle("active",x.id===b.dataset.page));
+}));
+document.getElementById("prevFace").onclick=()=>changeFace(-1);
+document.getElementById("nextFace").onclick=()=>changeFace(1);
+function changeFace(d){state.face=((state.face-1+d+100)%100)+1;persist();applyFace();}
+
+/* ----------- Floating app events ----------- */
+function role(name){return body.querySelector(`[data-role="${name}"]`)}
+function action(name,fn){const b=body.querySelector(`[data-action="${name}"]`);if(b)b.onclick=fn}
+function bindFloating(id){
+  if(id==="calendar")setupCalendar();
+  if(id==="reminders")setupReminders();
+  if(id==="tools")setupTools();
+  if(id==="world")setupWorld();
+  if(id==="faces")setupFaces();
+  if(id==="icons")setupIcons();
+  if(id==="themes")setupThemes();
+  if(id==="settings")setupSettings();
+  if(id==="data")setupData();
+  if(id==="number")setupNumber();
+}
+
+/* Calendar */
+function setupCalendar(){
+  action("prevMonth",()=>{calendarCursor=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth()-1,1);drawCalendar()});
+  action("nextMonth",()=>{calendarCursor=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth()+1,1);drawCalendar()});
+  action("today",()=>{const d=new Date();selectedDate=dateStr(d);calendarCursor=new Date(d.getFullYear(),d.getMonth(),1);drawCalendar()});
+  action("addSelected",()=>{openApp("reminders");if(role("date"))role("date").value=selectedDate;});
+  drawCalendar();
+}
+function drawCalendar(){
+  if(currentApp!=="calendar")return;
+  const y=calendarCursor.getFullYear(),m=calendarCursor.getMonth();
+  role("monthLabel").textContent=calendarCursor.toLocaleDateString(undefined,{month:"long",year:"numeric"});
+  const grid=role("calendarGrid");grid.innerHTML="";
+  ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(d=>{const el=document.createElement("div");el.className="weekday";el.textContent=d;grid.appendChild(el)});
+  const offset=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),prevDays=new Date(y,m,0).getDate(),today=dateStr();
+  for(let i=0;i<42;i++){
+    let num,ds,outside=false;
+    if(i<offset){num=prevDays-offset+i+1;ds=dateStr(new Date(y,m-1,num));outside=true}
+    else if(i>=offset+days){num=i-offset-days+1;ds=dateStr(new Date(y,m+1,num));outside=true}
+    else{num=i-offset+1;ds=dateStr(new Date(y,m,num))}
+    const b=document.createElement("button");b.className="day"+(ds===today?" today":"")+(ds===selectedDate?" selected":"")+(outside?" outside":"");
+    if(state.reminders.some(r=>r.date===ds))b.classList.add("has-reminder");
+    b.textContent=num;b.onclick=()=>{selectedDate=ds;calendarCursor=new Date(ds+"T12:00:00");calendarCursor.setDate(1);drawCalendar()};
+    grid.appendChild(b);
+  }
+  role("selectedDate").textContent=new Date(selectedDate+"T12:00:00").toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+  const ev=state.reminders.filter(r=>r.date===selectedDate);
+  role("dateEvents").innerHTML=ev.length?ev.map(r=>`<div class="item"><strong>${esc(r.title)}</strong><small>${esc(r.time)} · ${esc(r.notes||"")}</small></div>`).join(""):"<p>No reminders for this date.</p>";
+}
+
+/* Reminders */
+function setupReminders(){
+  role("date").value=selectedDate;
+  role("time").value=pad(new Date().getHours())+":"+pad(new Date().getMinutes());
+  action("save",()=>{
+    const title=role("title").value.trim(),date=role("date").value,time=role("time").value;
+    if(!title||!date||!time){toast("Enter a title, date and time.");return}
+    state.reminders.push({id:uid(),title,date,time,repeat:role("repeat").value,notes:role("notes").value.trim(),clockHour:null,lastFired:""});
+    persist();drawReminderList();renderNumbers();toast("Reminder saved.");
+  });
+  action("notify",async()=>{
+    if(!("Notification"in window)){toast("Notifications are not supported.");return}
+    try{toast("Notification permission: "+await Notification.requestPermission())}catch(e){toast("Permission unavailable.")}
+  });
+  drawReminderList();
+}
+function drawReminderList(){
+  if(currentApp!=="reminders")return;
+  const list=role("list");
+  if(!state.reminders.length){list.innerHTML="<p>No reminders saved.</p>";return}
+  list.innerHTML=state.reminders.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).map(r=>`
+    <div class="item"><div class="row"><div class="grow"><strong>${esc(r.title)}</strong><small>${esc(r.date)} · ${esc(r.time)} · ${esc(r.repeat)}</small>${r.notes?`<small>${esc(r.notes)}</small>`:""}</div>
+    <button class="btn danger small" data-del="${esc(r.id)}">Delete</button></div></div>`).join("");
+  list.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{
+    state.reminders=state.reminders.filter(r=>r.id!==b.dataset.del);persist();drawReminderList();renderNumbers();
+  });
+}
+let lastMinute="";
+function checkAlarms(){
+  const now=new Date(),d=dateStr(now),t=pad(now.getHours())+":"+pad(now.getMinutes()),key=d+" "+t;
+  if(key===lastMinute)return;lastMinute=key;
+  let fired=[];
+  state.reminders.forEach(r=>{
+    const same=r.date===d;
+    const daily=r.repeat==="daily"&&r.date<=d;
+    const weekly=r.repeat==="weekly"&&r.date<=d&&new Date(r.date+"T12:00:00").getDay()===now.getDay();
+    if((same||daily||weekly)&&r.time===t&&r.lastFired!==key){r.lastFired=key;fired.push(r)}
+  });
+  if(fired.length){
+    persist();
+    fired.forEach(r=>{
+      if("Notification"in window&&Notification.permission==="granted"){try{new Notification(r.title,{body:r.notes||"Reminder due"})}catch(e){}}
+      beep();alert("⏰ "+r.title+"\n"+(r.notes||"Reminder due"));
+    });
+    if(currentApp==="reminders")drawReminderList();
+  }
+}
+setInterval(checkAlarms,1000);
+
+/* Stopwatch and timer */
+function setupTools(){
+  action("swStart",()=>{
+    if(swRunning){swElapsed+=Date.now()-swStart;swRunning=false;clearInterval(swInterval)}
+    else{swStart=Date.now();swRunning=true;swInterval=setInterval(updateStopwatch,30)}
+    const b=body.querySelector('[data-action="swStart"]');if(b)b.textContent=swRunning?"Pause":"Resume";
+    updateStopwatch();
+  });
+  action("swLap",()=>{
+    lapNo++;const el=document.createElement("div");el.className="item";el.textContent="Lap "+lapNo+" · "+swFormat(swElapsed+(swRunning?Date.now()-swStart:0));role("laps").prepend(el);
+  });
+  action("swReset",()=>{
+    swRunning=false;swElapsed=0;clearInterval(swInterval);lapNo=0;role("laps").innerHTML="";updateStopwatch();
+    const b=body.querySelector('[data-action="swStart"]');if(b)b.textContent="Start";
+  });
+  action("timerStart",()=>{
+    if(timerRunning)return;
+    if(timerRemaining<=0)timerRemaining=(Number(role("minutes").value)||0)*60+(Number(role("seconds").value)||0);
+    if(timerRemaining<=0){toast("Set a timer duration.");return}
+    timerEnd=Date.now()+timerRemaining*1000;timerRunning=true;
+    clearInterval(timerInterval);timerInterval=setInterval(timerTick,250);
+  });
+  action("timerPause",()=>{
+    if(!timerRunning)return;timerRemaining=Math.max(0,(timerEnd-Date.now())/1000);timerRunning=false;clearInterval(timerInterval);drawTimer();
+  });
+  action("timerReset",()=>{
+    timerRunning=false;clearInterval(timerInterval);timerRemaining=(Number(role("minutes").value)||0)*60+(Number(role("seconds").value)||0);drawTimer();
+  });
+  action("beep",beep);
+  action("nature",playNature);
+  action("stopSound",stopNature);
+  updateStopwatch();drawTimer();
+}
+function swFormat(ms){return pad(Math.floor(ms/60000))+":"+pad(Math.floor(ms/1000)%60)+"."+pad(Math.floor(ms/10)%100)}
+function updateStopwatch(){if(currentApp==="tools"&&role("swDisplay"))role("swDisplay").textContent=swFormat(swElapsed+(swRunning?Date.now()-swStart:0))}
+function drawTimer(){if(currentApp==="tools"&&role("timerDisplay")){let s=Math.max(0,Math.ceil(timerRemaining));role("timerDisplay").textContent=pad(Math.floor(s/60))+":"+pad(s%60)}}
+function timerTick(){
+  timerRemaining=Math.max(0,(timerEnd-Date.now())/1000);drawTimer();
+  if(timerRemaining<=0){timerRunning=false;clearInterval(timerInterval);beep();alert("⏳ Countdown finished!")}
+}
+function playNature(){
+  try{
+    stopNature();const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
+    natureCtx=new C();
+    [196,293.66,392].forEach((f,i)=>{const o=natureCtx.createOscillator(),g=natureCtx.createGain();o.frequency.value=f;g.gain.value=.025/(i+1);o.connect(g);g.connect(natureCtx.destination);o.start();natureOsc.push(o)});
+  }catch(e){}
+}
+function stopNature(){natureOsc.forEach(o=>{try{o.stop()}catch(e){}});natureOsc=[];if(natureCtx){natureCtx.close().catch(()=>{});natureCtx=null}}
+
+/* World clock */
+function setupWorld(){
+  const tz=role("timezone");
+  tz.onchange=updateWorld;
+  action("map",()=>window.open("https://www.openstreetmap.org/","_blank","noopener"));
+  const cities=[["Mumbai","Asia/Kolkata"],["Dubai","Asia/Dubai"],["Singapore","Asia/Singapore"],["Tokyo","Asia/Tokyo"],["London","Europe/London"],["New York","America/New_York"],["Sydney","Australia/Sydney"]];
+  role("cities").innerHTML=cities.map(([n,z])=>`<div class="item"><strong>${n}</strong><small data-city="${z}"></small></div>`).join("");
+  updateWorld();
+}
+function updateWorld(){
+  if(currentApp!=="world")return;
+  const tz=role("timezone").value,now=new Date();
+  role("worldTime").textContent=now.toLocaleTimeString(undefined,{timeZone:tz,hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  role("worldDate").textContent=now.toLocaleDateString(undefined,{timeZone:tz,weekday:"long",year:"numeric",month:"long",day:"numeric"});
+  body.querySelectorAll("[data-city]").forEach(el=>el.textContent=new Date().toLocaleString(undefined,{timeZone:el.dataset.city,weekday:"short",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}));
+}
+
+/* 100 faces */
+function faceName(n){return ["Forest","Ocean","Sunset","Gold","Purple","Neon","Ice","Rose","Digital","Minimal"][(n-1)%10]}
+function setupFaces(){
+  role("search").oninput=drawFaces;action("random",()=>{state.face=1+Math.floor(Math.random()*100);persist();applyFace();drawFaces()});drawFaces();
+}
+function drawFaces(){
+  if(currentApp!=="faces")return;
+  const q=role("search").value.trim().toLowerCase(),box=role("gallery");box.innerHTML="";
+  for(let n=1;n<=100;n++){
+    const nm=faceName(n);
+    if(q&&!String(n).includes(q)&&!nm.toLowerCase().includes(q))continue;
+    const b=document.createElement("button");b.className="face-tile"+(state.face===n?" selected":"");
+    b.innerHTML=`<div class="preview" style="background:${["#10251d","#071d35","#321b3e","#302719","#21162d","#080d14","#101d26","#321622","#102d39","#111"][((n-1)%10)]}">${n%12+1}</div><strong style="font-size:11px">Face ${n}</strong><small style="display:block;color:var(--muted)">${nm}</small>`;
+    b.onclick=()=>{state.face=n;persist();applyFace();drawFaces()};
+    box.appendChild(b);
+  }
+}
+
+/* Icon manager and contacts */
+function setupIcons(){
+  const hour=role("contactHour");
+  for(let n=1;n<=12;n++){const o=document.createElement("option");o.value=n;o.textContent="Clock number "+n;hour.appendChild(o)}
+  hour.onchange=loadContactForm;
+  action("saveContact",()=>{
+    const n=Number(hour.value),name=role("contactName").value.trim(),phone=role("contactPhone").value.trim();
+    if(!name||!phone){toast("Enter name and phone number.");return}
+    state.contacts[n]={name,phone};persist();renderNumbers();drawContactList();toast("Contact saved.");
+  });
+  action("clearContact",()=>{
+    const n=Number(hour.value);delete state.contacts[n];persist();loadContactForm();drawContactList();renderNumbers();
+  });
+  action("resetIcons",()=>{state.icons=defaults.icons.slice();persist();drawIconManager();renderClockIcons()});
+  drawIconManager();drawContactList();loadContactForm();
+}
+function drawIconManager(){
+  if(currentApp!=="icons")return;
+  const list=role("iconList");list.innerHTML="";
+  state.icons.forEach((id,i)=>{
+    const inf=iconData[id];if(!inf)return;
+    const row=document.createElement("div");row.className="item";
+    row.innerHTML=`<div class="row"><div class="grow"><strong>${inf[0]} ${esc(inf[1])}</strong></div><button class="btn secondary small" data-up="${i}" ${i===0?"disabled":""}>↑</button><button class="btn secondary small" data-down="${i}" ${i===state.icons.length-1?"disabled":""}>↓</button><button class="btn danger small" data-remove="${id}">Remove</button></div>`;
+    list.appendChild(row);
+  });
+  list.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>{state.icons=state.icons.filter(x=>x!==b.dataset.remove);persist();drawIconManager();renderClockIcons()});
+  list.querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>moveIcon(+b.dataset.up,-1));
+  list.querySelectorAll("[data-down]").forEach(b=>b.onclick=()=>moveIcon(+b.dataset.down,1));
+  const picker=role("iconPicker");picker.innerHTML="";
+  Object.entries(iconData).forEach(([id,inf])=>{
+    const b=document.createElement("button");b.className="btn secondary";b.textContent=inf[0]+" "+inf[1];b.disabled=state.icons.includes(id);
+    b.onclick=()=>{if(!state.icons.includes(id))state.icons.push(id);persist();drawIconManager();renderClockIcons()};
+    picker.appendChild(b);
+  });
+}
+function moveIcon(i,d){const j=i+d;if(j<0||j>=state.icons.length)return;[state.icons[i],state.icons[j]]=[state.icons[j],state.icons[i]];persist();drawIconManager();renderClockIcons()}
+function loadContactForm(){if(currentApp!=="icons")return;const c=state.contacts[Number(role("contactHour").value)]||{};role("contactName").value=c.name||"";role("contactPhone").value=c.phone||""}
+function drawContactList(){
+  if(currentApp!=="icons")return;
+  const box=role("contactsList"),entries=Object.entries(state.contacts);
+  box.innerHTML=entries.length?entries.map(([n,c])=>`<div class="item"><div class="row"><div class="grow"><strong>Clock ${n} · ${esc(c.name)}</strong><small>${esc(c.phone)}</small></div><button class="btn secondary small" data-edit="${n}">Edit</button><button class="btn danger small" data-delete="${n}">Remove</button></div></div>`).join(""):"<p>No contacts assigned.</p>";
+  box.querySelectorAll("[data-edit]").forEach(b=>{b.onclick=()=>{role("contactHour").value=b.dataset.edit;loadContactForm()}});
+  box.querySelectorAll("[data-delete]").forEach(b=>b.onclick=()=>{delete state.contacts[b.dataset.delete];persist();drawContactList();renderNumbers()});
+}
+
+/* Number actions use same floating window manager */
+function openNumber(n){
+  selectedHour=n;renderFloating("number");
+}
+function setupNumber(){
+  role("numberTitle").textContent="Clock number "+selectedHour;
+  const c=state.contacts[selectedHour];
+  role("numberDescription").textContent=c?("Contact: "+c.name+" · "+c.phone):"No contact assigned to this number.";
+  action("numberReminder",()=>{
+    openApp("reminders");
+    role("title").value="Clock "+selectedHour+" reminder";
+    role("date").value=dateStr();
+    role("time").value=pad(selectedHour%12||12)+":00";
+  });
+  action("numberCall",()=>{
+    const c=state.contacts[selectedHour];
+    if(!c){toast("No contact assigned. Choose Assign/edit contact.");return}
+    if(confirm("Open phone dialer for "+c.name+"?"))location.href="tel:"+c.phone.replace(/[^\d+*#,;]/g,"");
+  });
+  action("editContact",()=>{
+    openApp("icons");role("contactHour").value=String(selectedHour);loadContactForm();
+  });
+}
+
+/* Themes */
+function setupThemes(){
+  const build=(data,type,container)=>{
+    container.innerHTML=data.map((t,i)=>`<button class="theme-btn ${state.themeType===type&&(type==="nature"?state.nature:state.glass)===i?"selected":""}" data-theme="${type}:${i}"><strong>${type==="nature"?"🌿":"🪟"} ${esc(t[0])}</strong><div style="display:flex;gap:4px;margin-top:8px">${t.slice(1).map(c=>`<span style="height:12px;flex:1;border-radius:3px;background:${c}"></span>`).join("")}</div></button>`).join("");
+  };
+  build(natureThemes,"nature",role("natureThemes"));build(glassThemes,"glass",role("glassThemes"));
+  body.querySelectorAll("[data-theme]").forEach(b=>b.onclick=()=>{const [type,i]=b.dataset.theme.split(":");selectTheme(type,+i)});
+}
+
+/* Settings */
+function setupSettings(){
+  role("format").value=state.settings.format;role("seconds").checked=state.settings.seconds;role("numbers").checked=state.settings.numbers;role("ticks").checked=state.settings.ticks;role("iconPanel").checked=state.settings.iconPanel;role("label").checked=state.settings.label;role("size").value=state.settings.size;
+  action("saveSettings",()=>{
+    state.settings={format:role("format").value,seconds:role("seconds").checked,numbers:role("numbers").checked,ticks:role("ticks").checked,iconPanel:role("iconPanel").checked,label:role("label").checked,size:+role("size").value};
+    persist();applyFace();renderClock();toast("Settings saved.");
+  });
+  role("size").oninput=()=>{document.getElementById("watch").style.width=`min(${role("size").value}vw,430px)`};
+  action("fullScreen",toggleFullscreen);
+  action("notifications",async()=>{
+    if(!("Notification"in window)){toast("Notifications not supported.");return}
+    toast("Notification permission: "+await Notification.requestPermission());
+  });
+}
+async function toggleFullscreen(){
+  try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch(e){toast("Full screen unavailable in this browser.")}
+}
+document.getElementById("fullscreen").onclick=toggleFullscreen;
+
+/* Data */
+function download(name,content,type){
+  const u=URL.createObjectURL(new Blob([content],{type})),a=document.createElement("a");a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
+}
+function setupData(){
+  action("export",()=>download("swayam_clock_backup.json",JSON.stringify(state,null,2),"application/json"));
+  action("import",async()=>{
+    const f=role("file").files[0];if(!f){toast("Choose a JSON backup.");return}
+    try{
+      const d=JSON.parse(await f.text());
+      if(!d||!Array.isArray(d.reminders)||!d.settings||!d.contacts||!Array.isArray(d.icons))throw Error("Invalid backup");
+      if(!confirm("Replace current app data?"))return;
+      state={...copy(defaults),...d,settings:{...defaults.settings,...d.settings}};
+      persist();applyTheme();applyFace();toast("Backup restored.");renderFloating("data");
+    }catch(e){alert("Could not import backup: "+e.message)}
+  });
+  action("clearAll",()=>{
+    if(!confirm("Delete all clock data on this device?"))return;
+    state=copy(defaults);persist();applyTheme();applyFace();renderFloating("data");toast("App data cleared.");
+  });
+}
+
+/* Stats and startup */
+function updateStats(){
+  const a=document.getElementById("remCount"),b=document.getElementById("contactCount"),c=document.getElementById("faceCount");
+  if(a)a.textContent=state.reminders.length;
+  if(b)b.textContent=Object.keys(state.contacts).length;
+  if(c)c.textContent=state.face+"/100";
+}
+applyTheme();applyFace();renderClock();updateStats();
+</script>
+</body>
+</html>
