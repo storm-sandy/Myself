@@ -1,1 +1,515 @@
-tt
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#167447">
+<title>AI & Education Directory</title>
+<style>
+:root{
+ --primary:#167447;--bg:#f1f7f1;--card:#fff;--text:#203329;
+ --muted:#64756b;--border:#d8e5da;--soft:#e2f2e6
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:system-ui,-apple-system,Arial,sans-serif
+}
+header{
+ background:var(--primary);color:white;padding:20px 15px;
+ text-align:center
+}
+header h1{font-size:24px;margin:0 0 6px}
+header p{margin:0;font-size:13px;opacity:.92}
+.container{max-width:1200px;margin:auto;padding:12px}
+.searchbox{
+ width:100%;padding:14px;border:1px solid var(--border);
+ border-radius:12px;font-size:16px;background:var(--card);
+ color:var(--text);margin-bottom:10px
+}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+button,select,.filelabel{
+ border:1px solid var(--border);border-radius:9px;
+ padding:10px 12px;background:var(--card);color:var(--text);
+ font-size:14px;cursor:pointer
+}
+button.primary{background:var(--primary);color:white;border-color:var(--primary)}
+button:active{transform:scale(.98)}
+.tabs{
+ display:flex;gap:7px;overflow-x:auto;padding:4px 1px 12px;
+ scrollbar-width:thin
+}
+.tab{white-space:nowrap;flex-shrink:0}
+.tab.active{background:var(--primary);color:white;border-color:var(--primary)}
+.status{font-size:13px;color:var(--muted);margin:5px 0 12px}
+.grid{
+ display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));
+ gap:12px
+}
+.card{
+ background:var(--card);border:1px solid var(--border);
+ border-radius:13px;padding:14px;min-width:0;
+ display:flex;flex-direction:column;gap:8px
+}
+.card h3{font-size:16px;margin:0;overflow-wrap:anywhere}
+.card p{font-size:13px;color:var(--muted);margin:0;line-height:1.5}
+.badge{
+ display:inline-block;background:var(--soft);color:var(--primary);
+ padding:4px 8px;border-radius:20px;font-size:11px;align-self:flex-start
+}
+.cardfooter{display:flex;gap:7px;margin-top:auto;padding-top:5px}
+.cardfooter a,.cardfooter button{
+ flex:1;text-align:center;text-decoration:none;
+ padding:9px 5px;border-radius:8px;font-size:13px
+}
+.visit{background:var(--primary);color:white}
+.fav{background:var(--soft);color:var(--primary);border:0}
+section.panel{
+ background:var(--card);border:1px solid var(--border);
+ border-radius:13px;padding:15px;margin-bottom:12px
+}
+section.panel h2{font-size:19px;margin:0 0 12px}
+label{font-size:13px;display:block;margin:10px 0 5px}
+input,textarea,select{
+ max-width:100%
+}
+.forminput{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:8px;background:var(--card);color:var(--text)
+}
+.hidden{display:none!important}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
+.empty{padding:25px;text-align:center;color:var(--muted)}
+.note{font-size:12px;color:var(--muted);line-height:1.6}
+hr{border:0;border-top:1px solid var(--border);margin:15px 0}
+@media(max-width:500px){
+ header h1{font-size:21px}
+ .grid{grid-template-columns:1fr}
+ .toolbar button,.toolbar select{flex:1}
+}
+</style>
+</head>
+<body>
+<header>
+ <h1>🌱 AI, ML & Education Directory</h1>
+ <p>Artificial Intelligence • Learning • Government Education • Research</p>
+</header>
+
+<div class="container">
+ <input id="search" class="searchbox"
+ placeholder="🔎 Search websites, subjects, exams, courses..."
+ aria-label="Search websites">
+
+ <div class="toolbar">
+  <button id="allBtn" class="primary">🌐 All Websites</button>
+  <button id="favBtn">⭐ Favorites</button>
+  <button id="customBtn">➕ My Websites</button>
+  <button id="settingsBtn">⚙️ Settings</button>
+ </div>
+
+ <div id="tabs" class="tabs"></div>
+ <div id="status" class="status"></div>
+ <div id="cards" class="grid"></div>
+
+ <section id="customPanel" class="panel hidden">
+  <h2>➕ Add Your Own Website</h2>
+  <form id="addForm">
+   <label for="siteName">Website name</label>
+   <input id="siteName" class="forminput" required placeholder="e.g. My College">
+   <label for="siteUrl">Website URL</label>
+   <input id="siteUrl" class="forminput" required placeholder="https://example.com">
+   <label for="siteCategory">Category</label>
+   <select id="siteCategory" class="forminput"></select>
+   <label for="siteDesc">Description</label>
+   <input id="siteDesc" class="forminput" placeholder="What can you learn here?">
+   <br><br><button class="primary" type="submit">Save Website</button>
+  </form>
+  <hr>
+  <h3>Your Custom Websites</h3>
+  <div id="customList"></div>
+ </section>
+
+ <section id="settingsPanel" class="panel hidden">
+  <h2>⚙️ Settings & Data Management</h2>
+  <label for="theme">Nature theme</label>
+  <select id="theme" class="forminput">
+   <option value="forest">🌳 Forest Green</option>
+   <option value="ocean">🌊 Ocean Blue</option>
+   <option value="sunrise">🌅 Sunrise</option>
+   <option value="lavender">🌸 Lavender</option>
+   <option value="mint">🍃 Mint</option>
+   <option value="night">🌙 Night</option>
+   <option value="earth">🌍 Earth</option>
+   <option value="rose">🌹 Rose</option>
+   <option value="sky">☁️ Sky</option>
+   <option value="sand">🏜️ Sand</option>
+  </select>
+
+  <hr>
+  <h3>Backup and Restore</h3>
+  <p class="note">Export your favorites and custom websites as JSON. Import a previous backup to restore them.</p>
+  <div class="toolbar">
+   <button id="exportBtn" class="primary">⬇ Export JSON</button>
+   <button id="importBtn">⬆ Import JSON</button>
+   <input id="importFile" type="file" accept=".json,application/json" class="hidden">
+  </div>
+  <button id="resetFav">Clear Favorites</button>
+  <p id="dataMessage" class="note"></p>
+  <hr>
+  <h3>About</h3>
+  <p class="note">This directory contains links to independent services and official portals. Availability, course fees, eligibility, and certification conditions may change. Verify details on the destination website.</p>
+ </section>
+</div>
+
+<footer>AI & Education Directory · Saved locally on this device</footer>
+
+<script>
+"use strict";
+
+const categories = [
+ "AI Tools","AI Learning","Machine Learning","Data Science",
+ "Programming","Free Courses","International Education",
+ "Indian Government","School Education","Higher Education",
+ "Exams & Admissions","Scholarships","Research & Libraries",
+ "Technical Education","Teacher Training","Digital Documents",
+ "Maharashtra Education","Career & Skills","Custom"
+];
+
+const sites = [
+/* AI tools */
+["ChatGPT","https://chatgpt.com/","AI Tools","AI assistant for explanations, writing, learning and coding."],
+["Google Gemini","https://gemini.google.com/","AI Tools","Google's AI assistant."],
+["Microsoft Copilot","https://copilot.microsoft.com/","AI Tools","AI assistance for learning and productivity."],
+["Claude","https://claude.ai/","AI Tools","AI assistant for reading, reasoning and writing."],
+["Perplexity","https://www.perplexity.ai/","AI Tools","AI-powered search and research."],
+["NotebookLM","https://notebooklm.google.com/","AI Tools","Study and ask questions about your source materials."],
+["Hugging Face","https://huggingface.co/","AI Tools","Explore AI models, datasets and demonstrations."],
+["Google AI Studio","https://aistudio.google.com/","AI Tools","Experiment with Google's generative AI models."],
+["Microsoft Learn AI","https://learn.microsoft.com/ai/","AI Tools","AI documentation and learning resources."],
+["Canva","https://www.canva.com/","AI Tools","Design presentations and educational materials."],
+["WolframAlpha","https://www.wolframalpha.com/","AI Tools","Computational answers for mathematics and science."],
+["Elicit","https://elicit.com/","AI Tools","AI-assisted academic research."],
+
+/* AI and ML learning */
+["Google AI Learning","https://ai.google/learn-ai-skills/","AI Learning","Courses and resources to build AI skills."],
+["Google ML Crash Course","https://developers.google.com/machine-learning/crash-course/","Machine Learning","Interactive machine learning lessons and exercises."],
+["Google ML Courses","https://developers.google.com/machine-learning/foundational-courses","Machine Learning","Foundational courses in machine learning."],
+["TensorFlow Tutorials","https://www.tensorflow.org/tutorials","Machine Learning","Hands-on tutorials for machine learning."],
+["PyTorch Tutorials","https://pytorch.org/tutorials/","Machine Learning","Learn deep learning with PyTorch."],
+["fast.ai","https://www.fast.ai/","Machine Learning","Practical deep learning courses."],
+["Kaggle Learn","https://www.kaggle.com/learn/","Machine Learning","Practical courses in Python, ML and data science."],
+["Hugging Face Learn","https://huggingface.co/learn","Machine Learning","Learn transformers, NLP, agents and open models."],
+["DeepLearning.AI","https://www.deeplearning.ai/","Machine Learning","AI and deep learning courses."],
+["OpenAI Academy","https://academy.openai.com/","AI Learning","AI learning resources and community."],
+["Elements of AI","https://www.elementsofai.com/","AI Learning","Introductory AI learning for a broad audience."],
+["MIT OpenCourseWare AI","https://ocw.mit.edu/","AI Learning","Open course materials from MIT; search for AI subjects."],
+["Stanford AI Courses","https://ai.stanford.edu/","AI Learning","Stanford AI research and academic resources."],
+["NVIDIA Deep Learning Institute","https://www.nvidia.com/en-us/training/","Machine Learning","Technical training in AI and accelerated computing."],
+["IBM SkillsBuild","https://skillsbuild.org/","AI Learning","Digital learning and career skills, including AI."],
+
+/* Data science and programming */
+["freeCodeCamp","https://www.freecodecamp.org/","Programming","Free programming lessons and projects."],
+["W3Schools","https://www.w3schools.com/","Programming","Web development and programming tutorials."],
+["MDN Web Docs","https://developer.mozilla.org/","Programming","Web standards and JavaScript documentation."],
+["Python Official Tutorial","https://docs.python.org/3/tutorial/","Programming","Official Python language tutorial."],
+["SQLBolt","https://sqlbolt.com/","Programming","Interactive SQL lessons."],
+["R for Data Science","https://r4ds.hadley.nz/","Data Science","Learn data science workflows using R."],
+["DataCamp","https://www.datacamp.com/","Data Science","Courses in data science and programming; some content paid."],
+["Codecademy","https://www.codecademy.com/","Programming","Interactive programming courses; availability varies by plan."],
+["GitHub Skills","https://skills.github.com/","Programming","Practical tutorials for GitHub and development."],
+["CS50 Harvard","https://cs50.harvard.edu/","Programming","Computer science courses from Harvard."],
+["Khan Academy Computing","https://www.khanacademy.org/computing","Programming","Computing, programming and related subjects."],
+
+/* Online learning */
+["Coursera","https://www.coursera.org/","Free Courses","Courses and certificates from universities and companies."],
+["edX","https://www.edx.org/","Free Courses","University-level online courses; fees vary."],
+["MIT OpenCourseWare","https://ocw.mit.edu/","Free Courses","Free learning materials from MIT."],
+["OpenLearn","https://www.open.edu/openlearn/","Free Courses","Free courses from The Open University."],
+["FutureLearn","https://www.futurelearn.com/","Free Courses","Online courses from universities and organisations."],
+["Alison","https://alison.com/","Free Courses","Online courses and career learning."],
+["Udacity","https://www.udacity.com/","Free Courses","Technology courses and career programs; many are paid."],
+["Udemy","https://www.udemy.com/","Free Courses","Marketplace for online courses; prices vary."],
+["TED-Ed","https://ed.ted.com/","International Education","Educational videos and lessons."],
+["Khan Academy","https://www.khanacademy.org/","International Education","Free learning in maths, science and more."],
+["OpenStax","https://openstax.org/","International Education","Free, openly licensed textbooks."],
+["OER Commons","https://www.oercommons.org/","International Education","Open educational resources."],
+
+/* India government education */
+["Ministry of Education","https://www.education.gov.in/","Indian Government","Government of India's education ministry."],
+["SWAYAM","https://swayam.gov.in/","Indian Government","National online courses from school level to postgraduate study."],
+["SWAYAM Plus","https://swayamplus.gov.in/","Indian Government","Employment-oriented and professional learning."],
+["DIKSHA","https://diksha.gov.in/","School Education","Digital learning resources, textbooks and courses."],
+["ePathshala","https://epathshala.gov.in/","School Education","NCERT digital textbooks and learning resources."],
+["NCERT","https://ncert.nic.in/","School Education","National Council of Educational Research and Training."],
+["CBSE","https://www.cbse.gov.in/","School Education","Central Board of Secondary Education."],
+["NIOS","https://nios.ac.in/","School Education","National Institute of Open Schooling."],
+["National Digital Library of India","https://ndl.iitkgp.ac.in/","Research & Libraries","Digital learning resources and academic materials."],
+["NDLI Club","https://club.ndl.iitkgp.ac.in/","Research & Libraries","NDLI learning community and club resources."],
+["NPTEL","https://nptel.ac.in/","Technical Education","Courses from IITs and IISc, especially engineering and science."],
+["NPTEL Online Courses","https://onlinecourses.nptel.ac.in/","Technical Education","Online course enrolment and learning."],
+["AICTE","https://www.aicte-india.org/","Technical Education","All India Council for Technical Education."],
+["UGC","https://www.ugc.gov.in/","Higher Education","University Grants Commission."],
+["AISHE","https://aishe.gov.in/","Higher Education","All India Survey on Higher Education."],
+["IGNOU","https://www.ignou.ac.in/","Higher Education","Open and distance learning university."],
+["National Testing Agency","https://nta.ac.in/","Exams & Admissions","National-level examination information."],
+["CUET","https://exams.nta.ac.in/CUET-UG/","Exams & Admissions","CUET undergraduate examination portal; check current notices."],
+["Academic Bank of Credits","https://www.abc.gov.in/","Digital Documents","Academic credit account and related services."],
+["National Academic Depository","https://nad.gov.in/","Digital Documents","Academic awards and document repository information."],
+["National Scholarship Portal","https://scholarships.gov.in/","Scholarships","Government scholarship application portal."],
+["UGC Student Corner","https://www.ugc.gov.in/","Scholarships","Visit UGC for scholarship, fellowship and student notices."],
+["National Council for Teacher Education","https://ncte.gov.in/","Teacher Training","Teacher education regulation and institutional information."],
+["PM eVIDYA","https://pmevidya.education.gov.in/","School Education","Digital, online and broadcast education initiatives."],
+["SWAYAMPRABHA","https://swayamprabha.gov.in/","School Education","Educational television channels and digital learning."],
+["Vidya Lakshmi","https://www.vidyalakshmi.co.in/","Scholarships","Education loan information and application services; verify current availability."],
+["National Career Service","https://www.ncs.gov.in/","Career & Skills","Government career and employment services."],
+["Skill India Digital Hub","https://www.skillindiadigital.gov.in/","Career & Skills","Skills training and vocational learning."],
+["Apprenticeship India","https://www.apprenticeshipindia.gov.in/","Career & Skills","Apprenticeship training information and registration."],
+
+/* Higher education and research */
+["IIT Bombay","https://www.iitb.ac.in/","Higher Education","Indian Institute of Technology Bombay."],
+["IIT Madras","https://www.iitm.ac.in/","Higher Education","Indian Institute of Technology Madras."],
+["IISc Bengaluru","https://iisc.ac.in/","Research & Libraries","Indian Institute of Science."],
+["IIT Delhi","https://home.iitd.ac.in/","Higher Education","Indian Institute of Technology Delhi."],
+["IIT Kanpur","https://www.iitk.ac.in/","Higher Education","Indian Institute of Technology Kanpur."],
+["IIT Kharagpur","https://www.iitkgp.ac.in/","Higher Education","Indian Institute of Technology Kharagpur."],
+["IIT Hyderabad","https://www.iith.ac.in/","Higher Education","Indian Institute of Technology Hyderabad."],
+["Shodhganga","https://shodhganga.inflibnet.ac.in/","Research & Libraries","Indian theses and dissertations repository."],
+["INFLIBNET","https://www.inflibnet.ac.in/","Research & Libraries","Information and library network for academic institutions."],
+["e-PG Pathshala","https://epgp.inflibnet.ac.in/","Higher Education","Postgraduate e-learning content."],
+["Shodh Shuddhi","https://shodhshuddhi.inflibnet.ac.in/","Research & Libraries","Research similarity-checking initiative information."],
+["Google Scholar","https://scholar.google.com/","Research & Libraries","Search scholarly literature."],
+["PubMed","https://pubmed.ncbi.nlm.nih.gov/","Research & Libraries","Biomedical and life sciences literature."],
+["arXiv","https://arxiv.org/","Research & Libraries","Open research preprints, including AI and computer science."],
+
+/* Maharashtra */
+["Maharashtra Government","https://www.maharashtra.gov.in/","Maharashtra Education","State government portal; find education department services."],
+["Maharashtra School Education","https://education.maharashtra.gov.in/","Maharashtra Education","School education department information; if unavailable, use the state portal."],
+["Maharashtra State Board","https://mahahsscboard.in/","Maharashtra Education","Maharashtra State Board of Secondary and Higher Secondary Education."],
+["Maharashtra CET Cell","https://cetcell.mahacet.org/","Maharashtra Education","State entrance examinations and admissions."],
+["MSBTE","https://msbte.ac.in/","Maharashtra Education","Maharashtra State Board of Technical Education."],
+["MahaDBT","https://mahadbt.maharashtra.gov.in/","Scholarships","Maharashtra scholarship and direct benefit portal."],
+["University of Mumbai","https://mu.ac.in/","Maharashtra Education","University of Mumbai information and academic services."],
+["Savitribai Phule Pune University","https://www.unipune.ac.in/","Maharashtra Education","University information, academics and examinations."],
+["YCMOU","https://ycmou.ac.in/","Maharashtra Education","Yashwantrao Chavan Maharashtra Open University."],
+["Maharashtra State Board of Skill","https://www.msbsde.gov.in/","Career & Skills","State skill-development information; check current official notices."],
+
+/* Career */
+["LinkedIn Learning","https://www.linkedin.com/learning/","Career & Skills","Professional skills courses; subscription may be required."],
+["Microsoft Learn","https://learn.microsoft.com/training/","Career & Skills","Technical learning paths and hands-on modules."],
+["AWS Skill Builder","https://skillbuilder.aws/","Career & Skills","Cloud and AI learning resources."],
+["Cisco Networking Academy","https://www.netacad.com/","Career & Skills","Networking, cybersecurity and IT learning."],
+["Oracle University","https://education.oracle.com/","Career & Skills","Oracle database, cloud and technology training."]
+];
+
+const themeStyles = {
+ forest:["#167447","#f1f7f1","#ffffff","#203329","#d8e5da","#e2f2e6"],
+ ocean:["#075985","#edf7ff","#ffffff","#15354a","#cde3f3","#dcefff"],
+ sunrise:["#b45309","#fff7ed","#ffffff","#4b2c16","#f4d6b8","#ffedd5"],
+ lavender:["#7c3aed","#f7f2ff","#ffffff","#34234d","#e3d5f7","#eee5ff"],
+ mint:["#087f68","#edfff8","#ffffff","#163d34","#c8eadf","#d5f7e9"],
+ night:["#334155","#101827","#1e293b","#e5edf8","#40516a","#293a52"],
+ earth:["#596b35","#f5f2e8","#ffffff","#393b27","#ded8c3","#e8e5d1"],
+ rose:["#be185d","#fff1f5","#ffffff","#4c1e31","#f4cede","#ffe0eb"],
+ sky:["#0369a1","#f0f9ff","#ffffff","#183b53","#c9e7f8","#dff3ff"],
+ sand:["#92703a","#fbf5e9","#ffffff","#493b27","#e9dbc0","#f1e5cd"]
+};
+
+const $ = id => document.getElementById(id);
+let activeCategory = "All";
+let favorites = new Set(JSON.parse(localStorage.getItem("edu_favorites") || "[]"));
+let customSites = JSON.parse(localStorage.getItem("edu_custom") || "[]");
+let showFavorites = false;
+let viewMode = "all";
+
+function esc(value){
+ return String(value).replace(/[&<>"']/g, c => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+function validUrl(value){
+ try{
+  const u = new URL(value);
+  return u.protocol === "https:" || u.protocol === "http:";
+ }catch(e){return false;}
+}
+function allSites(){
+ return sites.map((s,i)=>({
+  id:"base-"+i,name:s[0],url:s[1],category:s[2],desc:s[3],custom:false
+ })).concat(customSites.map((s,i)=>({...s,id:"custom-"+i,custom:true})));
+}
+function saveFavorites(){
+ localStorage.setItem("edu_favorites",JSON.stringify([...favorites]));
+}
+function saveCustom(){
+ localStorage.setItem("edu_custom",JSON.stringify(customSites));
+}
+function buildTabs(){
+ $("tabs").innerHTML = ["All",...categories].map(c=>
+  `<button class="tab ${activeCategory===c?"active":""}" data-cat="${esc(c)}">${c==="All"?"🌐": "📚"} ${esc(c)}</button>`
+ ).join("");
+ $("siteCategory").innerHTML = categories.map(c=>
+  `<option value="${esc(c)}">${esc(c)}</option>`
+ ).join("");
+ $("tabs").querySelectorAll("button").forEach(b=>{
+  b.addEventListener("click",()=>{
+   activeCategory=b.dataset.cat;
+   showFavorites=false;viewMode="all";
+   updateMainButtons();buildTabs();render();
+  });
+ });
+}
+function updateMainButtons(){
+ $("allBtn").classList.toggle("primary",viewMode==="all");
+ $("favBtn").classList.toggle("primary",viewMode==="favorites");
+ $("customBtn").classList.toggle("primary",viewMode==="custom");
+ $("settingsBtn").classList.toggle("primary",viewMode==="settings");
+ $("customPanel").classList.toggle("hidden",viewMode!=="custom");
+ $("settingsPanel").classList.toggle("hidden",viewMode!=="settings");
+ $("tabs").classList.toggle("hidden",viewMode==="custom"||viewMode==="settings");
+ $("search").classList.toggle("hidden",viewMode==="settings");
+ $("cards").classList.toggle("hidden",viewMode==="custom"||viewMode==="settings");
+ $("status").classList.toggle("hidden",viewMode==="custom"||viewMode==="settings");
+}
+function render(){
+ const query=$("search").value.trim().toLowerCase();
+ let list=allSites().filter(s=>{
+  const matchCategory=activeCategory==="All"||s.category===activeCategory;
+  const matchFav=!showFavorites||favorites.has(s.id)||favorites.has(s.name);
+  const text=[s.name,s.url,s.category,s.desc].join(" ").toLowerCase();
+  return matchCategory&&matchFav&&text.includes(query);
+ });
+ $("status").textContent=`Showing ${list.length} website(s) · ${allSites().length} total entries`;
+ $("cards").innerHTML=list.length?list.map(s=>{
+  const fav=favorites.has(s.id)||favorites.has(s.name);
+  return `<article class="card">
+   <span class="badge">${esc(s.category)}</span>
+   <h3>${esc(s.name)}</h3>
+   <p>${esc(s.desc)}</p>
+   <p class="note">${esc(s.url)}</p>
+   <div class="cardfooter">
+    <a class="visit" href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">Visit ↗</a>
+    <button class="fav" data-fav="${esc(s.id)}" aria-label="Toggle favorite">${fav?"⭐ Saved":"☆ Favorite"}</button>
+   </div>
+  </article>`;
+ }).join(""):`<div class="empty">No websites found. Try another search or category.</div>`;
+ $("cards").querySelectorAll("[data-fav]").forEach(b=>{
+  b.addEventListener("click",()=>{
+   const id=b.dataset.fav;
+   if(favorites.has(id))favorites.delete(id);else favorites.add(id);
+   saveFavorites();render();
+  });
+ });
+}
+function renderCustomList(){
+ if(!customSites.length){
+  $("customList").innerHTML='<p class="note">No custom websites yet.</p>';return;
+ }
+ $("customList").innerHTML=customSites.map((s,i)=>
+  `<section class="panel">
+   <strong>${esc(s.name)}</strong><br>
+   <span class="note">${esc(s.category)} · ${esc(s.url)}</span><br>
+   <button data-delete="${i}">Delete</button>
+  </section>`
+ ).join("");
+ $("customList").querySelectorAll("[data-delete]").forEach(b=>{
+  b.onclick=()=>{
+   if(!confirm("Delete this custom website?"))return;
+   customSites.splice(Number(b.dataset.delete),1);
+   saveCustom();renderCustomList();render();
+  };
+ });
+}
+$("allBtn").onclick=()=>{
+ viewMode="all";showFavorites=false;activeCategory="All";
+ updateMainButtons();buildTabs();render();
+};
+$("favBtn").onclick=()=>{
+ viewMode="favorites";showFavorites=true;activeCategory="All";
+ updateMainButtons();buildTabs();render();
+};
+$("customBtn").onclick=()=>{
+ viewMode="custom";updateMainButtons();renderCustomList();
+};
+$("settingsBtn").onclick=()=>{
+ viewMode="settings";updateMainButtons();
+};
+$("search").addEventListener("input",render);
+
+$("addForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ let url=$("siteUrl").value.trim();
+ if(!/^https?:\/\//i.test(url))url="https://"+url;
+ if(!validUrl(url)){alert("Please enter a valid website URL.");return;}
+ customSites.push({
+  name:$("siteName").value.trim(),url,
+  category:$("siteCategory").value,
+  desc:$("siteDesc").value.trim()||"Custom website added by you."
+ });
+ saveCustom();e.target.reset();renderCustomList();render();
+ alert("Website saved on this device.");
+});
+$("theme").addEventListener("change",()=>{
+ const t=themeStyles[$("theme").value]||themeStyles.forest;
+ const root=document.documentElement;
+ ["--primary","--bg","--card","--text","--border","--soft"].forEach((k,i)=>root.style.setProperty(k,t[i]));
+ localStorage.setItem("edu_theme",$("theme").value);
+});
+function applySavedTheme(){
+ const saved=localStorage.getItem("edu_theme")||"forest";
+ $("theme").value=saved;
+ const t=themeStyles[saved]||themeStyles.forest;
+ ["--primary","--bg","--card","--text","--border","--soft"].forEach((k,i)=>document.documentElement.style.setProperty(k,t[i]));
+}
+$("exportBtn").onclick=()=>{
+ const data={
+  app:"AI & Education Directory",
+  version:1,exportedAt:new Date().toISOString(),
+  favorites:[...favorites],customSites
+ };
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);a.download="ai_education_backup.json";
+ a.click();URL.revokeObjectURL(a.href);
+ $("dataMessage").textContent="Backup exported.";
+};
+$("importBtn").onclick=()=>$("importFile").click();
+$("importFile").addEventListener("change",async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  const data=JSON.parse(await file.text());
+  if(!data||!Array.isArray(data.favorites)||!Array.isArray(data.customSites))
+   throw new Error("Unexpected backup format");
+  const cleaned=[];
+  for(const s of data.customSites){
+   if(s&&typeof s.name==="string"&&typeof s.url==="string"&&validUrl(s.url)){
+    cleaned.push({
+     name:s.name.slice(0,150),url:s.url,
+     category:categories.includes(s.category)?s.category:"Custom",
+     desc:String(s.desc||"Imported website").slice(0,500)
+    });
+   }
+  }
+  if(!confirm("Replace your current favorites and custom websites with this backup?"))return;
+  favorites=new Set(data.favorites.filter(x=>typeof x==="string"));
+  customSites=cleaned;
+  saveFavorites();saveCustom();render();renderCustomList();
+  $("dataMessage").textContent="Backup imported successfully.";
+ }catch(err){
+  alert("Could not import this file. Please select a valid backup JSON file.");
+ }
+ e.target.value="";
+});
+$("resetFav").onclick=()=>{
+ if(!confirm("Clear all saved favorites?"))return;
+ favorites.clear();saveFavorites();render();
+ $("dataMessage").textContent="Favorites cleared.";
+};
+
+buildTabs();
+applySavedTheme();
+updateMainButtons();
+render();
+renderCustomList();
+</script>
+</body>
+</html>
