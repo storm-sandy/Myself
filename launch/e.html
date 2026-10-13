@@ -1,880 +1,992 @@
+Save as "world_news_launcher.html" and open it in SPCK.
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#138a4b">
 <title>World News Launcher</title>
-
 <style>
 :root{
-  --primary:#138a4b;
-  --primary2:#086b38;
-  --bg:#f0f7f2;
-  --card:#ffffff;
-  --text:#20352a;
-  --muted:#6b7d72;
-  --border:#dce9df;
-  --soft:#e3f5e8;
-  --danger:#c62828;
+ --primary:#138a4b;--primary2:#086b38;--bg:#f1f7f2;
+ --card:#ffffff;--text:#183326;--muted:#64766b;
+ --border:#d8e6dc;--soft:#e6f4e9;
 }
 *{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  transition:background .2s,color .2s;
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:Arial,Helvetica,sans-serif;line-height:1.45;
 }
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-a{color:inherit}
 header{
-  background:linear-gradient(135deg,var(--primary),var(--primary2));
-  color:white;
-  padding:20px 16px 18px;
+ background:linear-gradient(135deg,var(--primary),var(--primary2));
+ color:white;padding:18px 15px 14px;
+ position:sticky;top:0;z-index:10;
+ box-shadow:0 3px 12px #0002;
 }
-.header-inner{max-width:1200px;margin:auto}
-.header-top{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:12px;flex-wrap:wrap;
+.headerrow{display:flex;align-items:center;gap:12px}
+.logo{font-size:32px}
+h1{font-size:22px;margin:0}
+.subtitle{font-size:12px;opacity:.9}
+#clock{font-size:12px;margin-top:8px}
+main{max-width:1200px;margin:auto;padding:14px}
+nav{
+ display:flex;gap:7px;overflow-x:auto;padding:10px 2px;
+ scrollbar-width:thin;position:sticky;top:104px;z-index:8;
+ background:var(--bg);
 }
-.brand{font-size:24px;font-weight:800;letter-spacing:.2px}
-.tagline{font-size:13px;opacity:.9;margin-top:5px}
-.clock{text-align:right;font-size:12px;line-height:1.6}
-.hero{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:16px;margin-top:22px;flex-wrap:wrap;
+button,.btn{
+ border:0;border-radius:9px;padding:10px 13px;
+ cursor:pointer;font-weight:600;font-size:13px;
+ background:var(--primary);color:white;
 }
-.hero h1{font-size:clamp(25px,5vw,38px);margin:0 0 8px}
-.hero p{margin:0;opacity:.9;font-size:14px;line-height:1.5}
-.hero-icon{font-size:58px}
-.toolbar{
-  max-width:1200px;margin:0 auto;padding:14px 14px 8px;
-}
-.search-row{display:flex;gap:8px;flex-wrap:wrap}
-.search-row input{flex:1;min-width:160px}
-input,select,textarea{
-  width:100%;padding:11px 12px;
-  border:1px solid var(--border);border-radius:10px;
-  background:var(--card);color:var(--text);outline:none;
-}
-input:focus,select:focus,textarea:focus{border-color:var(--primary)}
-.btn{
-  border:0;border-radius:10px;padding:10px 14px;
-  background:var(--primary);color:white;font-weight:700;
-}
-.btn:hover{filter:brightness(.95)}
-.btn.secondary{background:var(--soft);color:var(--primary2)}
-.btn.outline{background:transparent;color:var(--text);border:1px solid var(--border)}
-.btn.danger{background:var(--danger);color:white}
-.nav-wrap{
-  position:sticky;top:0;z-index:20;
-  background:var(--bg);border-bottom:1px solid var(--border);
-}
-.nav{
-  max-width:1200px;margin:auto;padding:8px 10px;
-  display:flex;gap:7px;overflow-x:auto;
-  scrollbar-width:thin;
-}
-.nav button{
-  flex:0 0 auto;border:1px solid var(--border);
-  background:var(--card);color:var(--text);
-  border-radius:22px;padding:10px 14px;font-weight:700;
-}
-.nav button.active{
-  background:var(--primary);color:white;border-color:var(--primary);
-}
-main{max-width:1200px;margin:auto;padding:15px}
-.section-head{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:10px;flex-wrap:wrap;margin:8px 0 14px;
-}
-.section-head h2{margin:0;font-size:21px}
+button:active{transform:scale(.98)}
+button.secondary{background:var(--soft);color:var(--text)}
+button.danger{background:#b52c37;color:white}
+button.small{padding:6px 9px;font-size:12px}
+nav button{white-space:nowrap;background:var(--card);color:var(--text);
+ border:1px solid var(--border)}
+nav button.active{background:var(--primary);color:white;border-color:var(--primary)}
+.page{display:none}
+.page.active{display:block}
+h2{font-size:20px;margin:12px 0}
+h3{margin:0 0 8px;font-size:16px}
+p{margin:6px 0}
 .muted{color:var(--muted);font-size:13px}
-.grid{
-  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;
-}
-.card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:15px;padding:15px;min-width:0;
-  display:flex;flex-direction:column;gap:10px;
-  box-shadow:0 3px 12px rgba(0,0,0,.035);
-}
-.card-top{display:flex;align-items:flex-start;gap:10px}
-.site-icon{
-  width:44px;height:44px;flex:0 0 44px;
-  display:grid;place-items:center;border-radius:12px;
-  background:var(--soft);font-size:24px;
-}
-.site-title{font-size:16px;font-weight:800;overflow-wrap:anywhere}
-.site-category{font-size:11px;color:var(--primary);margin-top:5px;font-weight:700}
-.site-desc{font-size:13px;color:var(--muted);line-height:1.45;flex:1}
-.site-domain{font-size:11px;color:var(--muted);overflow-wrap:anywhere}
-.card-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:3px}
-.card-actions .btn{font-size:12px;padding:9px 11px}
-.fav{
-  margin-left:auto;border:0;background:transparent;
-  font-size:21px;padding:0 2px;color:#b2b2b2;
-}
-.fav.on{color:#f5a400}
 .panel{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:15px;padding:18px;margin-bottom:16px;
+ background:var(--card);border:1px solid var(--border);
+ border-radius:14px;padding:15px;margin:12px 0;
 }
-.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
-.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
-.field.full{grid-column:1/-1}
-.form-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.hidden{display:none!important}
-.empty{
-  background:var(--card);border:1px dashed var(--border);
-  padding:28px 15px;text-align:center;border-radius:14px;
-  color:var(--muted);grid-column:1/-1;
-}
-.stats{
-  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:10px;margin-bottom:16px;
-}
-.stat{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:12px;padding:13px;
-}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--soft);border-radius:10px;padding:12px;text-align:center}
 .stat strong{display:block;font-size:23px;color:var(--primary)}
-.stat span{font-size:12px;color:var(--muted)}
-.theme-grid{
-  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+input,select,textarea{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:var(--card);color:var(--text);
+ font:inherit;min-width:0;
 }
-.theme-choice{
-  display:flex;align-items:center;gap:10px;
-  border:1px solid var(--border);border-radius:11px;
-  padding:12px;background:var(--card);color:var(--text);
-  text-align:left;
+label{font-size:13px;font-weight:bold;display:block;margin:9px 0 5px}
+.field{flex:1;min-width:150px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:12px}
+.card{
+ background:var(--card);border:1px solid var(--border);
+ border-radius:13px;padding:14px;min-width:0;
+ display:flex;flex-direction:column;gap:8px;
+ box-shadow:0 2px 7px #00000008;
 }
-.theme-choice.active{border:2px solid var(--primary)}
-.swatches{display:flex;gap:3px}
-.swatches i{width:13px;height:25px;border-radius:4px;display:block}
-.small-note{font-size:12px;line-height:1.6;color:var(--muted)}
-footer{text-align:center;padding:22px 12px;color:var(--muted);font-size:12px}
-.toast{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-  background:#17251c;color:white;padding:12px 18px;
-  border-radius:12px;z-index:100;max-width:90%;
-  box-shadow:0 5px 25px #0003;
-}
-.badge{
-  display:inline-block;background:var(--soft);color:var(--primary2);
-  padding:4px 8px;border-radius:20px;font-size:11px;font-weight:bold;
-}
-@media(max-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:650px){
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-  main{padding:11px}
-  .card{padding:11px}
-  .brand{font-size:21px}
-  .hero-icon{font-size:42px}
-  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .form-grid{grid-template-columns:1fr}
-  .field.full{grid-column:auto}
-  .theme-grid{grid-template-columns:1fr}
-  .clock{text-align:left}
-}
-@media(max-width:370px){
-  .grid{grid-template-columns:1fr}
+.cardhead{display:flex;align-items:center;gap:10px}
+.icon{font-size:29px;min-width:35px}
+.cardtitle{font-weight:bold;overflow-wrap:anywhere}
+.badges{display:flex;gap:5px;flex-wrap:wrap}
+.badge{font-size:11px;padding:4px 7px;border-radius:20px;
+ background:var(--soft);color:var(--primary2)}
+.carddesc{font-size:13px;color:var(--muted);flex:1}
+.cardactions{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px}
+.cardactions button{flex:1}
+.empty{padding:25px;text-align:center;color:var(--muted)}
+.notice{background:var(--soft);border-left:4px solid var(--primary);
+ padding:12px;border-radius:7px;font-size:13px;margin:10px 0}
+hr{border:0;border-top:1px solid var(--border);margin:15px 0}
+footer{text-align:center;padding:25px 10px;color:var(--muted);font-size:12px}
+.hidden{display:none!important}
+.themegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:9px}
+.themebtn{padding:14px;border:2px solid var(--border);background:var(--card);color:var(--text)}
+.themebtn.active{border-color:var(--primary)}
+.linktext{color:var(--primary);overflow-wrap:anywhere;font-size:12px}
+@media(max-width:600px){
+ header{padding:13px}
+ h1{font-size:19px}
+ main{padding:9px}
+ nav{top:95px}
+ .stats{grid-template-columns:repeat(3,1fr)}
+ .stat{padding:8px 3px}
+ .stat strong{font-size:19px}
+ .grid{grid-template-columns:1fr}
 }
 </style>
 </head>
-
 <body>
+
 <header>
-  <div class="header-inner">
-    <div class="header-top">
-      <div>
-        <div class="brand">🌍 World News Launcher</div>
-        <div class="tagline">Your gateway to news from around the world</div>
-      </div>
-      <div class="clock">
-        <div id="date"></div>
-        <div id="time"></div>
-      </div>
-    </div>
-    <div class="hero">
-      <div>
-        <h1>Explore the World</h1>
-        <p>Discover news by country, category, and interest.<br>
-        Add your trusted news sources and create your own news hub.</p>
-      </div>
-      <div class="hero-icon">🗞️</div>
-    </div>
+ <div class="headerrow">
+  <div class="logo">🌍</div>
+  <div>
+   <h1>World News Launcher</h1>
+   <div class="subtitle">Explore news, newspapers, magazines & journals worldwide</div>
   </div>
+ </div>
+ <div id="clock">Loading date and time...</div>
 </header>
 
-<div class="toolbar">
-  <div class="search-row">
-    <input id="search" type="search" placeholder="🔎 Search news websites, topics or countries...">
-    <button class="btn" onclick="showPage('custom')">＋ Add Website</button>
-  </div>
-</div>
-
-<div class="nav-wrap">
-  <nav class="nav" id="nav">
-    <button data-page="all" class="active">🌐 All News</button>
-    <button data-page="favorites">⭐ Favorites</button>
-    <button data-page="world">🌍 World</button>
-    <button data-page="india">🇮🇳 India</button>
-    <button data-page="business">💹 Business</button>
-    <button data-page="technology">💻 Technology</button>
-    <button data-page="science">🔬 Science</button>
-    <button data-page="health">🩺 Health</button>
-    <button data-page="sports">⚽ Sports</button>
-    <button data-page="environment">🌱 Environment</button>
-    <button data-page="entertainment">🎬 Entertainment</button>
-    <button data-page="education">🎓 Education</button>
-    <button data-page="government">🏛️ Government</button>
-    <button data-page="regional">🗺️ Regional</button>
-    <button data-page="custom">➕ My Websites</button>
-    <button data-page="data">💾 Data</button>
-    <button data-page="settings">🎨 Settings</button>
-  </nav>
-</div>
-
 <main>
-  <section id="page-all" class="page">
-    <div class="stats" id="stats"></div>
-    <div class="section-head">
-      <div>
-        <h2 id="listTitle">🌐 All News Websites</h2>
-        <div class="muted" id="resultCount"></div>
-      </div>
-      <select id="sort" style="width:auto;max-width:170px">
-        <option value="default">Default order</option>
-        <option value="name">Name A–Z</option>
-        <option value="category">Category</option>
-      </select>
-    </div>
-    <div class="grid" id="newsGrid"></div>
-  </section>
+ <div class="stats">
+  <div class="stat"><strong id="statSites">0</strong><span>Publications</span></div>
+  <div class="stat"><strong id="statCountries">0</strong><span>Countries</span></div>
+  <div class="stat"><strong id="statFavorites">0</strong><span>Favorites</span></div>
+ </div>
 
-  <section id="page-custom" class="page hidden">
-    <div class="section-head">
-      <div>
-        <h2>➕ Add a News Website</h2>
-        <div class="muted">Save any legitimate news source for quick access.</div>
-      </div>
-    </div>
+ <nav id="navigation">
+  <button class="active" data-page="all">📰 All News</button>
+  <button data-page="favorites">⭐ Favorites</button>
+  <button data-page="countries">🌎 Countries</button>
+  <button data-page="world">🌐 World</button>
+  <button data-page="india">🇮🇳 India</button>
+  <button data-page="business">💹 Business</button>
+  <button data-page="technology">💻 Technology</button>
+  <button data-page="science">🔬 Science</button>
+  <button data-page="health">🩺 Health</button>
+  <button data-page="sports">🏏 Sports</button>
+  <button data-page="environment">🌱 Environment</button>
+  <button data-page="entertainment">🎬 Entertainment</button>
+  <button data-page="education">🎓 Education</button>
+  <button data-page="government">🏛️ Government</button>
+  <button data-page="regional">📍 Regional</button>
+  <button data-page="mywebsites">🔗 My Websites</button>
+  <button data-page="data">💾 Data</button>
+  <button data-page="settings">⚙️ Settings</button>
+ </nav>
 
-    <div class="panel">
-      <form id="siteForm">
-        <input type="hidden" id="editId">
-        <div class="form-grid">
-          <div class="field">
-            <label for="siteName">Website name *</label>
-            <input id="siteName" required maxlength="100" placeholder="Example: My Local News">
-          </div>
-          <div class="field">
-            <label for="siteUrl">Website URL *</label>
-            <input id="siteUrl" type="url" required placeholder="https://example.com">
-          </div>
-          <div class="field">
-            <label for="siteCategory">Category *</label>
-            <select id="siteCategory" required></select>
-          </div>
-          <div class="field">
-            <label for="siteIcon">Icon / Emoji</label>
-            <input id="siteIcon" maxlength="10" placeholder="📰">
-          </div>
-          <div class="field full">
-            <label for="siteDesc">Short description</label>
-            <input id="siteDesc" maxlength="250" placeholder="What type of news does this website cover?">
-          </div>
-        </div>
-        <div class="form-actions">
-          <button class="btn" type="submit" id="saveSiteBtn">Save Website</button>
-          <button class="btn secondary" type="button" onclick="resetForm()">Clear Form</button>
-        </div>
-      </form>
-    </div>
+ <!-- ALL NEWS / CATEGORY / FAVORITES -->
+ <section id="page-all" class="page active">
+  <h2 id="listHeading">📰 All News & Publications</h2>
+  <div class="toolbar">
+   <div class="field"><input id="search" placeholder="🔎 Search publications, topics, country..." autocomplete="off"></div>
+   <div class="field"><select id="typeFilter">
+    <option value="">All publication types</option>
+    <option>News Website</option><option>Newspaper</option>
+    <option>Magazine</option><option>Journal</option>
+    <option>Government</option><option>News Agency</option>
+    <option>Science & Research</option><option>Fact Check</option>
+    <option>Directory</option><option>Broadcast</option>
+   </select></div>
+   <div class="field"><select id="sort">
+    <option value="name">Sort: Name A–Z</option>
+    <option value="country">Sort: Country</option>
+    <option value="category">Sort: Category</option>
+    <option value="type">Sort: Publication type</option>
+   </select></div>
+  </div>
+  <div class="muted" id="resultsCount"></div>
+  <div id="newsGrid" class="grid"></div>
+ </section>
 
-    <div class="section-head">
-      <h2>My Added Websites</h2>
-      <span class="badge" id="customCount">0 websites</span>
-    </div>
-    <div class="grid" id="customGrid"></div>
-  </section>
+ <!-- COUNTRY DIRECTORY -->
+ <section id="page-countries" class="page">
+  <h2>🌎 Country-wise News Directory</h2>
+  <p class="muted">Choose a country and publication category to explore local and international sources.</p>
+  <div class="panel">
+   <label for="countrySelect">Country / Region</label>
+   <select id="countrySelect"><option value="">All countries</option></select>
+   <label for="countryCategory">News category</label>
+   <select id="countryCategory">
+    <option value="">All categories</option>
+    <option value="world">World News</option><option value="india">India</option>
+    <option value="business">Business & Finance</option>
+    <option value="technology">Technology</option><option value="science">Science</option>
+    <option value="health">Health</option><option value="sports">Sports</option>
+    <option value="environment">Environment</option><option value="entertainment">Entertainment</option>
+    <option value="education">Education</option><option value="government">Government</option>
+    <option value="regional">Regional News</option><option value="other">Other</option>
+   </select>
+   <label for="countryType">Publication type</label>
+   <select id="countryType">
+    <option value="">All publication types</option>
+    <option>News Website</option><option>Newspaper</option><option>Magazine</option>
+    <option>Journal</option><option>Government</option><option>News Agency</option>
+    <option>Science & Research</option><option>Fact Check</option><option>Directory</option>
+    <option>Broadcast</option>
+   </select>
+   <div class="toolbar">
+    <button id="resetCountry">Reset Filters</button>
+    <button class="secondary" id="countryDirectoryBtn">Browse All Countries</button>
+   </div>
+  </div>
+  <div class="muted" id="countryCount"></div>
+  <div id="countryGrid" class="grid"></div>
+  <div class="panel">
+   <h3>🌐 Find More Newspapers & Magazines</h3>
+   <p><a href="https://www.w3newspapers.com/" target="_blank" rel="noopener noreferrer">W3Newspapers — country-wise newspapers</a></p>
+   <p><a href="https://www.world-newspapers.com/" target="_blank" rel="noopener noreferrer">World Newspapers — news and magazines</a></p>
+   <p><a href="https://www.newsmedialists.com/" target="_blank" rel="noopener noreferrer">News Media Lists — global media directory</a></p>
+   <p class="muted">These are external directories. Verify publication identity and links before using them.</p>
+  </div>
+ </section>
 
-  <section id="page-data" class="page hidden">
-    <div class="section-head">
-      <div>
-        <h2>💾 Data Management</h2>
-        <div class="muted">Back up, transfer, and restore your website collection.</div>
-      </div>
+ <!-- CUSTOM WEBSITES -->
+ <section id="page-mywebsites" class="page">
+  <h2>🔗 My Websites</h2>
+  <div class="panel">
+   <h3>Add Your Own Publication</h3>
+   <p class="muted">Add a news website, newspaper, magazine, journal, blog, or other useful link.</p>
+   <form id="siteForm">
+    <input type="hidden" id="editId">
+    <label for="siteName">Website / Publication Name *</label>
+    <input id="siteName" required maxlength="100" placeholder="e.g. My Local Newspaper">
+    <label for="siteUrl">Website URL *</label>
+    <input id="siteUrl" required type="url" placeholder="https://example.com">
+    <label for="siteCountry">Country / Region</label>
+    <select id="siteCountry"></select>
+    <label for="siteCategory">Category</label>
+    <select id="siteCategory">
+     <option value="world">World</option><option value="india">India</option>
+     <option value="business">Business</option><option value="technology">Technology</option>
+     <option value="science">Science</option><option value="health">Health</option>
+     <option value="sports">Sports</option><option value="environment">Environment</option>
+     <option value="entertainment">Entertainment</option><option value="education">Education</option>
+     <option value="government">Government</option><option value="regional">Regional</option>
+     <option value="other">Other</option>
+    </select>
+    <label for="siteType">Publication Type</label>
+    <select id="siteType">
+     <option>News Website</option><option>Newspaper</option><option>Magazine</option>
+     <option>Journal</option><option>Government</option><option>News Agency</option>
+     <option>Science & Research</option><option>Fact Check</option><option>Broadcast</option>
+    </select>
+    <label for="siteIcon">Icon / Emoji</label>
+    <input id="siteIcon" maxlength="8" value="📰">
+    <label for="siteDesc">Description</label>
+    <textarea id="siteDesc" rows="2" maxlength="250" placeholder="Optional description"></textarea>
+    <div class="toolbar">
+     <button type="submit" id="saveSiteBtn">➕ Save Website</button>
+     <button type="button" class="secondary" id="cancelEdit">Clear Form</button>
     </div>
-    <div class="panel">
-      <h3>📤 Export your collection</h3>
-      <p class="small-note">Export your custom websites, favorite selections, and settings to a JSON file.</p>
-      <button class="btn" onclick="exportData()">Export JSON Backup</button>
-    </div>
-    <div class="panel">
-      <h3>📥 Import a backup</h3>
-      <p class="small-note">Choose a backup JSON file created by this app. You can merge its websites with your current collection or replace your custom websites.</p>
-      <input type="file" id="importFile" accept=".json,application/json">
-      <div class="form-actions">
-        <button class="btn" onclick="importData('merge')">Merge Websites</button>
-        <button class="btn secondary" onclick="importData('replace')">Replace Custom Websites</button>
-      </div>
-    </div>
-    <div class="panel">
-      <h3>🗑️ Reset</h3>
-      <p class="small-note">This removes your saved custom websites and favorites from this device. Default websites remain available.</p>
-      <button class="btn danger" onclick="resetCustom()">Delete Custom Websites</button>
-      <button class="btn outline" onclick="resetFavorites()">Clear Favorites</button>
-    </div>
-    <div class="panel">
-      <h3>📌 Storage information</h3>
-      <p id="storageInfo" class="small-note"></p>
-    </div>
-  </section>
+   </form>
+  </div>
+  <h3>Your Saved Websites</h3>
+  <div id="customGrid" class="grid"></div>
+ </section>
 
-  <section id="page-settings" class="page hidden">
-    <div class="section-head">
-      <div>
-        <h2>🎨 Appearance & Settings</h2>
-        <div class="muted">Choose the look that feels right for you.</div>
-      </div>
-    </div>
-    <div class="panel">
-      <h3>Nature themes</h3>
-      <p class="small-note">Your selected theme is saved automatically on this device.</p>
-      <div id="themeGrid" class="theme-grid"></div>
-    </div>
-    <div class="panel">
-      <h3>🌐 Opening websites</h3>
-      <p class="small-note">
-        News websites open in a new browser tab. Some websites block embedding
-        inside other apps, so this launcher opens the original website directly.
-      </p>
-    </div>
-    <div class="panel">
-      <h3>🔐 Privacy</h3>
-      <p class="small-note">
-        This launcher stores your custom website list, favorites, and theme
-        in your browser's local storage. It does not aggregate live news articles
-        or verify website safety automatically.
-      </p>
-    </div>
-  </section>
+ <!-- DATA -->
+ <section id="page-data" class="page">
+  <h2>💾 Data & Backup</h2>
+  <div class="notice">Your favorites, custom websites, and theme settings are stored locally in this browser. Export a backup before clearing browser data or changing devices.</div>
+  <div class="panel">
+   <h3>Export Data</h3>
+   <p class="muted">JSON includes your saved websites, favorites, and settings. CSV exports your saved websites.</p>
+   <div class="toolbar">
+    <button id="exportJson">⬇ Export JSON Backup</button>
+    <button id="exportCsv">⬇ Export My Websites CSV</button>
+   </div>
+  </div>
+  <div class="panel">
+   <h3>Import Backup</h3>
+   <label for="importJsonFile">Choose JSON backup</label>
+   <input type="file" id="importJsonFile" accept=".json,application/json">
+   <div class="toolbar"><button id="importJsonBtn">⬆ Import JSON</button></div>
+   <hr>
+   <h3>Import Websites from CSV</h3>
+   <p class="muted">CSV header: name,url,country,category,type,icon,description</p>
+   <input type="file" id="importCsvFile" accept=".csv,text/csv">
+   <div class="toolbar"><button id="importCsvBtn">⬆ Import CSV</button></div>
+  </div>
+  <div class="panel">
+   <h3>Reset</h3>
+   <p class="muted">This removes custom websites and favorites from this browser. Built-in publications remain available.</p>
+   <button class="danger" id="resetData">Reset My Saved Data</button>
+  </div>
+ </section>
+
+ <!-- SETTINGS -->
+ <section id="page-settings" class="page">
+  <h2>⚙️ Settings & Nature Themes</h2>
+  <div class="panel">
+   <h3>🎨 Choose a Theme</h3>
+   <p class="muted">Choose a nature-inspired colour theme for the launcher.</p>
+   <div class="themegrid" id="themeGrid"></div>
+  </div>
+  <div class="panel">
+   <h3>🔐 Safe Browsing Notes</h3>
+   <ul>
+    <li>Only open websites you recognize and trust.</li>
+    <li>Check the domain name before entering passwords or personal details.</li>
+    <li>Be cautious of unexpected downloads, payment requests, and sensational headlines.</li>
+    <li>Government websites should be checked carefully for the official domain and HTTPS.</li>
+    <li>Official-looking logos do not guarantee that a website is genuine.</li>
+    <li>News sources may differ in accuracy, editorial perspective, and political viewpoint. Compare multiple credible sources.</li>
+    <li>This launcher is a link directory, not a news publisher or fact-checking service.</li>
+   </ul>
+  </div>
+  <div class="panel">
+   <h3>ℹ️ About</h3>
+   <p>World News Launcher is a personal website launcher. It opens publications in your browser; it does not host their articles or guarantee their accuracy or availability.</p>
+   <p class="muted">External sites may collect information according to their own privacy policies. Custom links and favorites are stored locally by this application.</p>
+  </div>
+ </section>
+
+ <footer>🌍 World News Launcher · Personal publication directory · Use responsibly</footer>
 </main>
-
-<footer>
-  World News Launcher · Your personalized news gateway<br>
-  Always verify news from reliable sources and check the original publication.
-</footer>
-
-<div id="toast" class="toast hidden"></div>
 
 <script>
 "use strict";
 
-const CATEGORIES = {
-  world:"🌍 World",
-  india:"🇮🇳 India",
-  business:"💹 Business",
-  technology:"💻 Technology",
-  science:"🔬 Science",
-  health:"🩺 Health",
-  sports:"⚽ Sports",
-  environment:"🌱 Environment",
-  entertainment:"🎬 Entertainment",
-  education:"🎓 Education",
-  government:"🏛️ Government",
-  regional:"🗺️ Regional",
-  other:"📰 Other"
-};
+/*
+ Built-in directory:
+ [name, url, category, icon, description, country, publicationType]
+ Categories: world, india, business, technology, science, health,
+ sports, environment, entertainment, education, government, regional, other.
+*/
 
-const DEFAULT_SITES = [
-  // WORLD
-  ["BBC News","https://www.bbc.com/news","world","🌍","International news and world affairs"],
-  ["Reuters","https://www.reuters.com","world","🗞️","International reporting and breaking news"],
-  ["Associated Press","https://apnews.com","world","🌐","Global news and independent reporting"],
-  ["Al Jazeera","https://www.aljazeera.com","world","🌍","International news and analysis"],
-  ["The Guardian","https://www.theguardian.com","world","📰","World news, politics and analysis"],
-  ["France 24","https://www.france24.com","world","🌐","International news from France"],
-  ["Deutsche Welle","https://www.dw.com","world","🌍","German international broadcaster"],
-  ["Euronews","https://www.euronews.com","world","🇪🇺","European and global news"],
-  ["Sky News","https://news.sky.com","world","🗞️","UK and international news"],
-  ["NPR","https://www.npr.org","world","🎙️","News, reporting and features"],
-  ["PBS News","https://www.pbs.org/newshour","world","📺","US and international public affairs"],
-  ["ABC News","https://abcnews.go.com","world","📰","US and international news"],
-  ["CBS News","https://www.cbsnews.com","world","📺","US and global headlines"],
-  ["NBC News","https://www.nbcnews.com","world","🗞️","US and world reporting"],
-  ["CNN","https://edition.cnn.com","world","🌐","International headlines and analysis"],
-  ["The New York Times","https://www.nytimes.com","world","📰","Global reporting and analysis"],
-  ["The Washington Post","https://www.washingtonpost.com","world","🗞️","World affairs and politics"],
-  ["The Independent","https://www.independent.co.uk","world","🌍","UK and international reporting"],
-  ["The Straits Times","https://www.straitstimes.com","world","🌏","Asia and international news"],
-  ["South China Morning Post","https://www.scmp.com","world","🌏","China and Asia-Pacific news"],
-  ["The Japan Times","https://www.japantimes.co.jp","world","🇯🇵","Japan and international affairs"],
-  ["The Korea Herald","https://www.koreaherald.com","world","🇰🇷","South Korea and world news"],
-  ["The Hindu","https://www.thehindu.com","india","🇮🇳","Indian news and analysis"],
-  ["Indian Express","https://indianexpress.com","india","🇮🇳","Indian current affairs"],
-  ["NDTV","https://www.ndtv.com","india","📺","Indian and international headlines"],
-  ["India Today","https://www.indiatoday.in","india","🇮🇳","Indian news and features"],
-  ["Hindustan Times","https://www.hindustantimes.com","india","📰","India and world news"],
-  ["The Times of India","https://timesofindia.indiatimes.com","india","🗞️","Indian headlines"],
-  ["News18","https://www.news18.com","india","📺","Indian news and current affairs"],
-  ["The Print","https://theprint.in","india","📰","Indian politics and public affairs"],
-  ["Scroll.in","https://scroll.in","india","📖","Indian reporting and analysis"],
-  ["The Wire","https://thewire.in","india","🗞️","Indian news and commentary"],
-  ["The Quint","https://www.thequint.com","india","📰","Indian news and explainers"],
-  ["DD News","https://ddnews.gov.in","india","📺","Public broadcaster news"],
-  ["PIB India","https://pib.gov.in","government","🏛️","Official Indian government press releases"],
-  ["MyGov India","https://www.mygov.in","government","🇮🇳","Citizen engagement and government updates"],
-  ["India.gov.in","https://www.india.gov.in","government","🏛️","Official national government portal"],
+const SITES = [
+["BBC News","https://www.bbc.com/news","world","🌐","International news","United Kingdom","News Website"],
+["Reuters","https://www.reuters.com/","world","🌐","International news agency","International","News Agency"],
+["Associated Press","https://apnews.com/","world","🌐","Global news agency","United States","News Agency"],
+["Al Jazeera","https://www.aljazeera.com/","world","🌍","International news","Qatar","News Website"],
+["France 24","https://www.france24.com/en/","world","🌍","International news","France","Broadcast"],
+["Deutsche Welle","https://www.dw.com/","world","🌍","German international broadcaster","Germany","Broadcast"],
+["The Guardian","https://www.theguardian.com/international","world","📰","International reporting","United Kingdom","Newspaper"],
+["The New York Times","https://www.nytimes.com/","world","📰","International and US news","United States","Newspaper"],
+["The Washington Post","https://www.washingtonpost.com/","world","📰","News and analysis","United States","Newspaper"],
+["The Independent","https://www.independent.co.uk/","world","📰","UK and international news","United Kingdom","Newspaper"],
+["The Conversation","https://theconversation.com/","world","💬","Academic expert commentary","International","News Website"],
+["NPR","https://www.npr.org/","world","📻","News and public affairs","United States","Broadcast"],
+["PBS News","https://www.pbs.org/newshour/","world","📺","News and analysis","United States","Broadcast"],
+["CNN","https://edition.cnn.com/","world","📺","International news","United States","Broadcast"],
+["Sky News","https://news.sky.com/","world","📺","UK and world news","United Kingdom","Broadcast"],
+["The Economist","https://www.economist.com/","business","📈","Global affairs and economics","United Kingdom","Magazine"],
+["Foreign Affairs","https://www.foreignaffairs.com/","world","🌐","International relations journal","United States","Journal"],
+["Foreign Policy","https://foreignpolicy.com/","world","🌐","Global politics and analysis","United States","Magazine"],
 
-  // BUSINESS
-  ["Bloomberg","https://www.bloomberg.com","business","💹","Global business and financial markets"],
-  ["CNBC","https://www.cnbc.com","business","📈","Business and market news"],
-  ["Financial Times","https://www.ft.com","business","💼","Global business and economics"],
-  ["The Economist","https://www.economist.com","business","📊","World affairs and economic analysis"],
-  ["Forbes","https://www.forbes.com","business","💰","Business, leadership and finance"],
-  ["Business Standard","https://www.business-standard.com","business","📈","Indian business and economy"],
-  ["Mint","https://www.livemint.com","business","💹","Indian markets and finance"],
-  ["Moneycontrol","https://www.moneycontrol.com","business","📊","Indian stocks and financial news"],
-  ["Economic Times","https://economictimes.indiatimes.com","business","💰","Business and economic news"],
-  ["Investing.com","https://www.investing.com","business","📉","Markets and financial data"],
+["The Times of India","https://timesofindia.indiatimes.com/","india","🇮🇳","Indian national news","India","Newspaper"],
+["The Hindu","https://www.thehindu.com/","india","🇮🇳","Indian news and analysis","India","Newspaper"],
+["Hindustan Times","https://www.hindustantimes.com/","india","🇮🇳","Indian and world news","India","Newspaper"],
+["The Indian Express","https://indianexpress.com/","india","🇮🇳","Indian news and investigations","India","Newspaper"],
+["India Today","https://www.indiatoday.in/","india","🇮🇳","News and current affairs","India","Magazine"],
+["NDTV","https://www.ndtv.com/","india","📺","Indian news","India","Broadcast"],
+["News18","https://www.news18.com/","india","📺","Indian news","India","Broadcast"],
+["Firstpost","https://www.firstpost.com/","india","📰","Indian and international news","India","News Website"],
+["The Telegraph India","https://www.telegraphindia.com/","india","📰","Indian news","India","Newspaper"],
+["Deccan Herald","https://www.deccanherald.com/","india","📰","Indian news","India","Newspaper"],
+["The Tribune","https://www.tribuneindia.com/","india","📰","Indian news","India","Newspaper"],
+["Business Standard","https://www.business-standard.com/","business","💹","Indian business and economy","India","Newspaper"],
+["Mint","https://www.livemint.com/","business","💹","Business and financial news","India","Newspaper"],
+["The Economic Times","https://economictimes.indiatimes.com/","business","💹","Business and markets","India","Newspaper"],
+["Financial Express","https://www.financialexpress.com/","business","💹","Indian finance and business","India","Newspaper"],
+["Outlook India","https://www.outlookindia.com/","india","📰","News and current affairs","India","Magazine"],
+["The Wire","https://thewire.in/","india","📰","Indian news and commentary","India","News Website"],
+["Scroll.in","https://scroll.in/","india","📰","Indian reporting and analysis","India","News Website"],
+["The Print","https://theprint.in/","india","📰","Indian news and analysis","India","News Website"],
+["ANI","https://www.aninews.in/","india","📡","Indian news agency","India","News Agency"],
+["Press Information Bureau","https://pib.gov.in/","government","🏛️","Government of India press releases","India","Government"],
+["India.gov.in","https://www.india.gov.in/","government","🏛️","National government portal","India","Government"],
+["Reserve Bank of India","https://www.rbi.org.in/","business","🏦","Central bank information","India","Government"],
+["PRS Legislative Research","https://prsindia.org/","government","🏛️","Legislation and policy research","India","Science & Research"],
+["Yojana","https://yojana.gov.in/","government","📘","Development and public policy magazine","India","Magazine"],
+["Down To Earth","https://www.downtoearth.org.in/","environment","🌱","Environment and development","India","Magazine"],
+["Economic and Political Weekly","https://www.epw.in/","india","📚","Social science and public policy journal","India","Journal"],
+["Current Science","https://www.currentscience.ac.in/","science","🔬","Indian science journal","India","Journal"],
+["India Education","https://www.indiaeducation.net/","education","🎓","Education information","India","News Website"],
+["The Hindu Education Plus","https://www.thehindu.com/education/","education","🎓","Education news","India","News Website"],
 
-  // TECHNOLOGY
-  ["TechCrunch","https://techcrunch.com","technology","💻","Startups and technology"],
-  ["The Verge","https://www.theverge.com","technology","📱","Technology, science and culture"],
-  ["Wired","https://www.wired.com","technology","🔌","Technology and digital culture"],
-  ["Ars Technica","https://arstechnica.com","technology","🖥️","Technology and computing"],
-  ["Engadget","https://www.engadget.com","technology","📱","Consumer technology"],
-  ["CNET","https://www.cnet.com","technology","💻","Technology news and reviews"],
-  ["ZDNET","https://www.zdnet.com","technology","🖥️","Enterprise and IT technology"],
-  ["Gadgets 360","https://www.gadgets360.com","technology","📱","Technology and gadgets in India"],
-  ["91mobiles","https://www.91mobiles.com","technology","📲","Phones and technology"],
-  ["The Register","https://www.theregister.com","technology","🖥️","IT and technology reporting"],
-  ["MIT Technology Review","https://www.technologyreview.com","technology","🧪","Emerging technology and research"],
+["The Japan Times","https://www.japantimes.co.jp/","world","🇯🇵","English-language Japanese news","Japan","Newspaper"],
+["NHK World Japan","https://www3.nhk.or.jp/nhkworld/","world","🇯🇵","Japanese public broadcaster","Japan","Broadcast"],
+["The Korea Herald","https://www.koreaherald.com/","world","🇰🇷","South Korean news","South Korea","Newspaper"],
+["The Straits Times","https://www.straitstimes.com/","world","🇸🇬","Singapore news","Singapore","Newspaper"],
+["The Jakarta Post","https://www.thejakartapost.com/","world","🇮🇩","Indonesian news","Indonesia","Newspaper"],
+["The Daily Star","https://www.thedailystar.net/","world","🇧🇩","Bangladesh news","Bangladesh","Newspaper"],
+["Dawn","https://www.dawn.com/","world","🇵🇰","Pakistan news","Pakistan","Newspaper"],
+["The Express Tribune","https://tribune.com.pk/","world","🇵🇰","Pakistan news","Pakistan","Newspaper"],
+["The Kathmandu Post","https://kathmandupost.com/","world","🇳🇵","Nepal news","Nepal","Newspaper"],
+["The Nation","https://www.nation.com.pk/","world","🇵🇰","Pakistan news","Pakistan","Newspaper"],
+["South China Morning Post","https://www.scmp.com/","world","🇭🇰","Hong Kong and Asia news","Hong Kong","Newspaper"],
+["China Daily","https://www.chinadaily.com.cn/","world","🇨🇳","China news in English","China","Newspaper"],
+["Global Times","https://www.globaltimes.cn/","world","🇨🇳","Chinese current affairs","China","Newspaper"],
+["The National","https://www.thenationalnews.com/","world","🇦🇪","Middle East news","United Arab Emirates","Newspaper"],
+["Arab News","https://www.arabnews.com/","world","🇸🇦","Saudi and international news","Saudi Arabia","Newspaper"],
+["Gulf News","https://gulfnews.com/","world","🇦🇪","UAE and world news","United Arab Emirates","Newspaper"],
+["The Peninsula","https://thepeninsulaqatar.com/","world","🇶🇦","Qatar news","Qatar","Newspaper"],
+["The Jerusalem Post","https://www.jpost.com/","world","🌍","Israel and international news","Israel","Newspaper"],
+["Haaretz","https://www.haaretz.com/","world","📰","Israeli news and commentary","Israel","Newspaper"],
+["The Times of Israel","https://www.timesofisrael.com/","world","📰","Israel and Middle East reporting","Israel","News Website"],
 
-  // SCIENCE
-  ["Nature","https://www.nature.com","science","🔬","Scientific research and discoveries"],
-  ["Science Magazine","https://www.science.org","science","🧪","Scientific research and news"],
-  ["New Scientist","https://www.newscientist.com","science","🚀","Science and future discoveries"],
-  ["Scientific American","https://www.scientificamerican.com","science","🔭","Science explanations and research"],
-  ["NASA","https://www.nasa.gov","science","🚀","Space exploration and science"],
-  ["ESA","https://www.esa.int","science","🛰️","European space science"],
-  ["Phys.org","https://phys.org","science","⚛️","Research and science updates"],
-  ["ScienceDaily","https://www.sciencedaily.com","science","🧬","Research news and discoveries"],
-  ["ISRO","https://www.isro.gov.in","science","🛰️","Indian space research"],
-  ["Vigyan Prasar","https://vigyanprasar.gov.in","science","🔬","Indian science communication portal"],
+["The Sydney Morning Herald","https://www.smh.com.au/","world","🇦🇺","Australian news","Australia","Newspaper"],
+["ABC Australia","https://www.abc.net.au/news","world","🇦🇺","Australian public broadcaster","Australia","Broadcast"],
+["The Australian","https://www.theaustralian.com.au/","world","🇦🇺","Australian news","Australia","Newspaper"],
+["The New Zealand Herald","https://www.nzherald.co.nz/","world","🇳🇿","New Zealand news","New Zealand","Newspaper"],
+["CBC News","https://www.cbc.ca/news","world","🇨🇦","Canadian public broadcaster","Canada","Broadcast"],
+["The Globe and Mail","https://www.theglobeandmail.com/","world","🇨🇦","Canadian news","Canada","Newspaper"],
+["Toronto Star","https://www.thestar.com/","world","🇨🇦","Canadian news","Canada","Newspaper"],
+["The Irish Times","https://www.irishtimes.com/","world","🇮🇪","Irish news","Ireland","Newspaper"],
+["The Local Germany","https://www.thelocal.de/","world","🇩🇪","Germany news in English","Germany","News Website"],
+["Le Monde","https://www.lemonde.fr/en/","world","🇫🇷","French and world news","France","Newspaper"],
+["The Local France","https://www.thelocal.fr/","world","🇫🇷","France news in English","France","News Website"],
+["El País","https://english.elpais.com/","world","🇪🇸","Spanish and international news","Spain","Newspaper"],
+["ANSA","https://www.ansa.it/english/","world","🇮🇹","Italian news agency","Italy","News Agency"],
+["Swissinfo","https://www.swissinfo.ch/eng/","world","🇨🇭","Swiss news and analysis","Switzerland","News Website"],
+["The Moscow Times","https://www.themoscowtimes.com/","world","🇷🇺","Russia news in English","Russia","News Website"],
+["The Kyiv Independent","https://kyivindependent.com/","world","🇺🇦","Ukraine news","Ukraine","News Website"],
+["The Africa Report","https://www.theafricareport.com/","world","🌍","African current affairs","International","Magazine"],
+["Daily Nation","https://nation.africa/","world","🇰🇪","Kenyan and African news","Kenya","Newspaper"],
+["News24","https://www.news24.com/","world","🇿🇦","South African news","South Africa","News Website"],
+["Mail & Guardian","https://mg.co.za/","world","🇿🇦","South African news and analysis","South Africa","Newspaper"],
+["Premium Times","https://www.premiumtimesng.com/","world","🇳🇬","Nigerian news","Nigeria","News Website"],
+["The Punch","https://punchng.com/","world","🇳🇬","Nigerian news","Nigeria","Newspaper"],
+["AllAfrica","https://allafrica.com/","world","🌍","African news collection","International","News Website"],
+["O Globo","https://oglobo.globo.com/","world","🇧🇷","Brazilian news","Brazil","Newspaper"],
+["Folha de S.Paulo","https://www.folha.uol.com.br/","world","🇧🇷","Brazilian news","Brazil","Newspaper"],
+["Buenos Aires Times","https://www.batimes.com.ar/","world","🇦🇷","Argentina news in English","Argentina","Newspaper"],
+["The Tico Times","https://ticotimes.net/","world","🌎","Central America news","Costa Rica","News Website"],
+["Mexico News Daily","https://mexiconewsdaily.com/","world","🇲🇽","Mexico news in English","Mexico","News Website"],
 
-  // HEALTH
-  ["World Health Organization","https://www.who.int","health","🩺","Global public health information"],
-  ["CDC","https://www.cdc.gov","health","🏥","Public health guidance and updates"],
-  ["MedlinePlus","https://medlineplus.gov","health","🩺","Health information for the public"],
-  ["NHS","https://www.nhs.uk","health","🏥","Health information and services"],
-  ["Healthline","https://www.healthline.com","health","🌿","Health and wellness articles"],
-  ["Medical News Today","https://www.medicalnewstoday.com","health","🧬","Health and medical news"],
-  ["The Lancet","https://www.thelancet.com","health","📚","Medical journal and research"],
-  ["Indian Council of Medical Research","https://www.icmr.gov.in","health","🇮🇳","Indian medical research"],
-  ["Ministry of Health India","https://mohfw.gov.in","government","🏛️","Official Indian health ministry updates"],
+["Bloomberg","https://www.bloomberg.com/","business","💹","Business and financial news","United States","News Website"],
+["CNBC","https://www.cnbc.com/","business","📈","Markets and business","United States","Broadcast"],
+["Financial Times","https://www.ft.com/","business","💹","Global business news","United Kingdom","Newspaper"],
+["Forbes","https://www.forbes.com/","business","💼","Business and entrepreneurship","United States","Magazine"],
+["Fortune","https://fortune.com/","business","💼","Business and leadership","United States","Magazine"],
+["MarketWatch","https://www.marketwatch.com/","business","📊","Markets and investing","United States","News Website"],
+["Investopedia","https://www.investopedia.com/","business","📘","Finance education","United States","News Website"],
+["Yahoo Finance","https://finance.yahoo.com/","business","📈","Markets and finance","United States","News Website"],
+["The Wall Street Journal","https://www.wsj.com/","business","💹","Business and financial news","United States","Newspaper"],
+["The Banker","https://www.thebanker.com/","business","🏦","Banking and finance magazine","United Kingdom","Magazine"],
+["Harvard Business Review","https://hbr.org/","business","📚","Management and leadership","United States","Magazine"],
 
-  // SPORTS
-  ["ESPN","https://www.espn.com","sports","🏆","International sports coverage"],
-  ["BBC Sport","https://www.bbc.com/sport","sports","⚽","World sports news"],
-  ["Sky Sports","https://www.skysports.com","sports","🏅","Sports news and live coverage"],
-  ["Olympics","https://olympics.com","sports","🥇","Olympic sports and athletes"],
-  ["Cricbuzz","https://www.cricbuzz.com","sports","🏏","Cricket scores and news"],
-  ["ESPNcricinfo","https://www.espncricinfo.com","sports","🏏","Cricket reporting and statistics"],
-  ["Sportstar","https://sportstar.thehindu.com","sports","🏆","Indian and international sports"],
-  ["FIFA","https://www.fifa.com","sports","⚽","International football"],
-  ["Formula 1","https://www.formula1.com","sports","🏎️","Motorsport news"],
-  ["NBA","https://www.nba.com","sports","🏀","Basketball news and results"],
+["TechCrunch","https://techcrunch.com/","technology","💻","Technology startups","United States","News Website"],
+["Wired","https://www.wired.com/","technology","💻","Technology and culture","United States","Magazine"],
+["Ars Technica","https://arstechnica.com/","technology","🖥️","Technology reporting","United States","News Website"],
+["The Verge","https://www.theverge.com/","technology","📱","Technology and digital culture","United States","News Website"],
+["MIT Technology Review","https://www.technologyreview.com/","technology","🧠","Emerging technologies","United States","Magazine"],
+["Engadget","https://www.engadget.com/","technology","📱","Consumer technology","United States","News Website"],
+["ZDNET","https://www.zdnet.com/","technology","🖥️","Enterprise technology","United States","News Website"],
+["IEEE Spectrum","https://spectrum.ieee.org/","technology","⚙️","Engineering and technology","United States","Magazine"],
+["The Register","https://www.theregister.com/","technology","💻","Technology news","United Kingdom","News Website"],
+["Android Authority","https://www.androidauthority.com/","technology","📱","Android and mobile technology","International","News Website"],
+["NASA","https://www.nasa.gov/","science","🚀","Space science and exploration","United States","Government"],
+["Science Magazine","https://www.science.org/","science","🔬","Scientific research journal","United States","Journal"],
+["Nature","https://www.nature.com/","science","🧬","Scientific research journal","United Kingdom","Journal"],
+["Scientific American","https://www.scientificamerican.com/","science","🔬","Science journalism","United States","Magazine"],
+["New Scientist","https://www.newscientist.com/","science","🧪","Science and discovery","United Kingdom","Magazine"],
+["ScienceDaily","https://www.sciencedaily.com/","science","🔬","Research news","International","News Website"],
+["Live Science","https://www.livescience.com/","science","🧬","Science discoveries","International","News Website"],
+["PLOS","https://plos.org/","science","📚","Open-access science publishing","International","Journal"],
+["PubMed","https://pubmed.ncbi.nlm.nih.gov/","health","🩺","Biomedical literature database","United States","Science & Research"],
+["WHO","https://www.who.int/","health","🩺","World Health Organization","International","Government"],
+["CDC","https://www.cdc.gov/","health","🏥","Public health information","United States","Government"],
+["Medical News Today","https://www.medicalnewstoday.com/","health","🩺","Health news and information","International","News Website"],
+["Mayo Clinic","https://www.mayoclinic.org/","health","🏥","Health information","United States","Science & Research"],
+["The Lancet","https://www.thelancet.com/","health","📚","Medical research journal","United Kingdom","Journal"],
+["JAMA Network","https://jamanetwork.com/","health","🩺","Medical journals","United States","Journal"],
+["Harvard Health","https://www.health.harvard.edu/","health","🩺","Health education","United States","Science & Research"],
 
-  // ENVIRONMENT
-  ["Mongabay","https://news.mongabay.com","environment","🌳","Forests, wildlife and conservation"],
-  ["Carbon Brief","https://www.carbonbrief.org","environment","🌎","Climate science and policy"],
-  ["Inside Climate News","https://insideclimatenews.org","environment","🌱","Climate and environment reporting"],
-  ["UN Environment Programme","https://www.unep.org","environment","🌍","Global environmental updates"],
-  ["NASA Climate","https://climate.nasa.gov","environment","🌡️","Climate science and evidence"],
-  ["Down To Earth","https://www.downtoearth.org.in","environment","🌿","Environment and development in India"],
-  ["WWF","https://www.worldwildlife.org","environment","🐼","Wildlife and conservation"],
-  ["National Geographic","https://www.nationalgeographic.com","environment","🦁","Nature, wildlife and exploration"],
+["ESPN","https://www.espn.com/","sports","🏆","International sports","United States","Broadcast"],
+["BBC Sport","https://www.bbc.com/sport","sports","⚽","Sports news","United Kingdom","News Website"],
+["Sky Sports","https://www.skysports.com/","sports","🏏","Sports news and coverage","United Kingdom","Broadcast"],
+["Olympics","https://olympics.com/","sports","🥇","Olympic Games","International","Government"],
+["ICC Cricket","https://www.icc-cricket.com/","sports","🏏","International cricket","International","Government"],
+["FIFA","https://www.fifa.com/","sports","⚽","International football","International","Government"],
+["The Athletic","https://www.nytimes.com/athletic/","sports","🏆","Sports journalism","International","Magazine"],
+["Sports Illustrated","https://www.si.com/","sports","🏈","Sports magazine","United States","Magazine"],
 
-  // ENTERTAINMENT
-  ["Variety","https://variety.com","entertainment","🎬","Film and entertainment industry"],
-  ["The Hollywood Reporter","https://www.hollywoodreporter.com","entertainment","🎥","Hollywood and entertainment"],
-  ["IMDb News","https://www.imdb.com/news","entertainment","🍿","Film and television news"],
-  ["Rotten Tomatoes","https://editorial.rottentomatoes.com","entertainment","🍅","Film and TV editorial"],
-  ["Film Companion","https://www.filmcompanion.in","entertainment","🎞️","Indian cinema and entertainment"],
-  ["Bollywood Hungama","https://www.bollywoodhungama.com","entertainment","🎬","Indian entertainment news"],
-  ["Pinkvilla","https://www.pinkvilla.com","entertainment","⭐","Entertainment and celebrity news"],
-  ["The Music Journal","https://www.billboard.com","entertainment","🎵","Music charts and industry news"],
+["National Geographic","https://www.nationalgeographic.com/","environment","🌍","Nature, environment and science","United States","Magazine"],
+["Mongabay","https://mongabay.com/","environment","🌳","Environment and conservation","International","News Website"],
+["UN Environment Programme","https://www.unep.org/","environment","🌱","Global environmental information","International","Government"],
+["NASA Climate","https://science.nasa.gov/climate-change/","environment","🌡️","Climate science","United States","Government"],
+["Carbon Brief","https://www.carbonbrief.org/","environment","🌎","Climate and energy analysis","United Kingdom","News Website"],
+["The Nature Conservancy","https://www.nature.org/","environment","🌿","Conservation and nature","International","News Website"],
 
-  // EDUCATION
-  ["UNESCO","https://www.unesco.org","education","🎓","Education, culture and science"],
-  ["UNICEF Education","https://www.unicef.org/education","education","📚","Children and education"],
-  ["Ministry of Education India","https://www.education.gov.in","government","🏛️","Official Indian education ministry"],
-  ["SWAYAM","https://swayam.gov.in","education","🎓","Indian online learning courses"],
-  ["DIKSHA","https://diksha.gov.in","education","📚","Digital learning resources"],
-  ["NCERT","https://ncert.nic.in","education","📖","National educational research and resources"],
-  ["UGC","https://www.ugc.gov.in","education","🏫","Higher education in India"],
-  ["AICTE","https://www.aicte-india.org","education","🎓","Technical education in India"],
-  ["NDLI","https://ndl.iitkgp.ac.in","education","📚","National Digital Library of India"],
-  ["Khan Academy","https://www.khanacademy.org","education","🧠","Free learning resources"],
+["Variety","https://variety.com/","entertainment","🎬","Film and entertainment industry","United States","Magazine"],
+["The Hollywood Reporter","https://www.hollywoodreporter.com/","entertainment","🎥","Entertainment industry","United States","Magazine"],
+["Rolling Stone","https://www.rollingstone.com/","entertainment","🎵","Music and culture","United States","Magazine"],
+["Billboard","https://www.billboard.com/","entertainment","🎶","Music industry","United States","Magazine"],
+["People","https://people.com/","entertainment","⭐","Entertainment and culture","United States","Magazine"],
+["IMDb","https://www.imdb.com/","entertainment","🍿","Film and television database","International","Directory"],
 
-  // REGIONAL
-  ["The Hindu Mumbai","https://www.thehindu.com/news/cities/mumbai/","regional","🏙️","Mumbai and Maharashtra reporting"],
-  ["Indian Express Mumbai","https://indianexpress.com/section/cities/mumbai/","regional","🏙️","Mumbai city news"],
-  ["Hindustan Times Mumbai","https://www.hindustantimes.com/cities/mumbai-news","regional","🏙️","Mumbai local news"],
-  ["Loksatta","https://www.loksatta.com","regional","📰","Marathi news and current affairs"],
-  ["Lokmat","https://www.lokmat.com","regional","📰","Marathi news"],
-  ["Sakal","https://www.esakal.com","regional","🗞️","Marathi news and Maharashtra updates"],
-  ["BBC Marathi","https://www.bbc.com/marathi","regional","🇮🇳","Marathi news from BBC"],
-  ["ABP Majha","https://marathi.abplive.com","regional","📺","Marathi news coverage"],
-  ["Maharashtra Government","https://www.maharashtra.gov.in","government","🏛️","Official Maharashtra government portal"],
+["UNESCO","https://www.unesco.org/","education","🎓","Education, science and culture","International","Government"],
+["UNICEF Education","https://www.unicef.org/education","education","📚","Children and education","International","Government"],
+["Education Week","https://www.edweek.org/","education","🎓","Education reporting","United States","Magazine"],
+["Inside Higher Ed","https://www.insidehighered.com/","education","🏫","Higher education","United States","News Website"],
+["Times Higher Education","https://www.timeshighereducation.com/","education","🎓","Universities and research","United Kingdom","Magazine"],
+["Nature Education","https://www.nature.com/nature-portfolio/for-authors/education","education","📚","Scientific publishing resources","International","Science & Research"],
 
-  // FACT CHECK / OTHER
-  ["Reuters Fact Check","https://www.reuters.com/fact-check/","other","🔎","Fact-checking and verification"],
-  ["AP Fact Check","https://apnews.com/hub/ap-fact-check","other","🧾","Fact-checking reports"],
-  ["Snopes","https://www.snopes.com","other","🔍","Claims and misinformation checks"],
-  ["Alt News","https://www.altnews.in","other","🧾","Indian fact-checking organisation"],
-  ["BOOM Live","https://www.boomlive.in","other","🔎","Fact-checking and media literacy"],
-  ["Google News","https://news.google.com","other","📰","News stories from many publishers"],
-  ["Microsoft Start","https://www.msn.com/en-in/news","other","🌐","News aggregation"],
-  ["Yahoo News","https://news.yahoo.com","other","🗞️","News from multiple publishers"]
+["USAGov","https://www.usa.gov/","government","🏛️","United States government services","United States","Government"],
+["UK Government","https://www.gov.uk/","government","🏛️","United Kingdom government services","United Kingdom","Government"],
+["European Union","https://european-union.europa.eu/","government","🇪🇺","European Union information","International","Government"],
+["United Nations","https://www.un.org/","government","🌐","United Nations","International","Government"],
+["World Bank","https://www.worldbank.org/","business","🌐","Development and global data","International","Government"],
+["International Monetary Fund","https://www.imf.org/","business","🌐","Global financial information","International","Government"],
+["OECD","https://www.oecd.org/","business","📊","Economic research and policy","International","Government"],
+["Our World in Data","https://ourworldindata.org/","science","📊","Global data and research","International","Science & Research"],
+["Full Fact","https://fullfact.org/","other","🔎","Fact checking","United Kingdom","Fact Check"],
+["Snopes","https://www.snopes.com/","other","🔎","Fact checking","United States","Fact Check"],
+["AFP Fact Check","https://factcheck.afp.com/","other","🔎","International fact checking","International","Fact Check"],
+
+["Maharashtra Government","https://www.maharashtra.gov.in/","government","🏛️","Maharashtra government portal","India","Government"],
+["Mumbai Police","https://mumbaipolice.gov.in/","government","🚔","Mumbai Police information","India","Government"],
+["Maharashtra Times","https://maharashtratimes.com/","regional","📰","Marathi news","India","Newspaper"],
+["Loksatta","https://www.loksatta.com/","regional","📰","Marathi news and opinion","India","Newspaper"],
+["Lokmat","https://www.lokmat.com/","regional","📰","Marathi and regional news","India","Newspaper"],
+["Divya Bhaskar","https://www.divyabhaskar.co.in/","regional","📰","Gujarati news","India","Newspaper"],
+["Dainik Bhaskar","https://www.bhaskar.com/","regional","📰","Hindi and regional news","India","Newspaper"],
+["Amar Ujala","https://www.amarujala.com/","regional","📰","Hindi news","India","Newspaper"],
+["Dainik Jagran","https://www.jagran.com/","regional","📰","Hindi news","India","Newspaper"],
+["Anandabazar Patrika","https://www.anandabazar.com/","regional","📰","Bengali news","India","Newspaper"],
+["Dinamalar","https://www.dinamalar.com/","regional","📰","Tamil news","India","Newspaper"],
+["Eenadu","https://www.eenadu.net/","regional","📰","Telugu news","India","Newspaper"],
+["Malayala Manorama","https://www.manoramaonline.com/","regional","📰","Malayalam news","India","Newspaper"],
+["Prajavani","https://www.prajavani.net/","regional","📰","Kannada news","India","Newspaper"],
+
+["ABYZ News Links","https://www.abyznewslinks.com/","other","🌍","International news directory","International","Directory"],
+["W3Newspapers","https://www.w3newspapers.com/","other","🌍","Country-wise newspaper directory","International","Directory"],
+["World Newspapers","https://www.world-newspapers.com/","other","🌍","Newspaper and magazine directory","International","Directory"],
+["News Media Lists","https://www.newsmedialists.com/","other","🌍","Global media directory","International","Directory"]
 ];
 
 const THEMES = {
-  "Forest Green":{primary:"#138a4b",primary2:"#086b38",bg:"#f0f7f2",card:"#ffffff",text:"#20352a",muted:"#6b7d72",border:"#dce9df",soft:"#e3f5e8"},
-  "Ocean Blue":{primary:"#087fbd",primary2:"#075b8a",bg:"#eef7fc",card:"#ffffff",text:"#17374a",muted:"#668293",border:"#d4e6f1",soft:"#dff2ff"},
-  "Sunrise":{primary:"#ed7d22",primary2:"#b94a0c",bg:"#fff7ee",card:"#ffffff",text:"#493020",muted:"#92715c",border:"#f1dfcf",soft:"#ffead5"},
-  "Earth Brown":{primary:"#8b5e34",primary2:"#654321",bg:"#f7f1e9",card:"#fffdf9",text:"#3d3025",muted:"#87796a",border:"#e6d8c7",soft:"#efe2d0"},
-  "Flower Pink":{primary:"#d64f91",primary2:"#a52c68",bg:"#fff2f8",card:"#ffffff",text:"#48293a",muted:"#997487",border:"#f0d6e4",soft:"#ffe0ef"},
-  "Lavender":{primary:"#8063c7",primary2:"#58409a",bg:"#f5f1ff",card:"#ffffff",text:"#342b4c",muted:"#82789b",border:"#e2daf4",soft:"#eae2ff"},
-  "Mint":{primary:"#159d8b",primary2:"#087367",bg:"#edfaf7",card:"#ffffff",text:"#1d403c",muted:"#6b8d88",border:"#d0ebe5",soft:"#d9f6ee"},
-  "Sunshine":{primary:"#d69c00",primary2:"#997000",bg:"#fffbea",card:"#ffffff",text:"#463c19",muted:"#8f8459",border:"#efe6bb",soft:"#fff2bd"},
-  "Night":{primary:"#63b8ff",primary2:"#2877b9",bg:"#111827",card:"#1d293b",text:"#edf4ff",muted:"#a5b5cc",border:"#35445a",soft:"#283d56"},
-  "Simple":{primary:"#424b57",primary2:"#252d36",bg:"#f4f5f6",card:"#ffffff",text:"#20252a",muted:"#6b7178",border:"#dfe2e5",soft:"#e8eaed"}
+ "Forest Green":{primary:"#138a4b",primary2:"#086b38",bg:"#f1f7f2",card:"#ffffff",text:"#183326",muted:"#64766b",border:"#d8e6dc",soft:"#e6f4e9"},
+ "Ocean Blue":{primary:"#087eaa",primary2:"#075477",bg:"#edf7fb",card:"#ffffff",text:"#163543",muted:"#5e7581",border:"#d0e6ef",soft:"#dff2fa"},
+ "Sunrise":{primary:"#e66b28",primary2:"#b74619",bg:"#fff5ec",card:"#ffffff",text:"#442718",muted:"#866c5c",border:"#f1ddcf",soft:"#ffeadb"},
+ "Earth Brown":{primary:"#8b5e34",primary2:"#63401f",bg:"#f7f1e8",card:"#fffdf9",text:"#382a1d",muted:"#807263",border:"#e7dac8",soft:"#eee2d0"},
+ "Flower Pink":{primary:"#d94f8a",primary2:"#a92e65",bg:"#fff2f7",card:"#ffffff",text:"#472337",muted:"#8b6b7b",border:"#f1d5e2",soft:"#fce2ee"},
+ "Lavender":{primary:"#805ad5",primary2:"#5935a6",bg:"#f5f1ff",card:"#ffffff",text:"#30244b",muted:"#76698b",border:"#e2d8f4",soft:"#ebe3fc"},
+ "Mint":{primary:"#169b87",primary2:"#087765",bg:"#effbf7",card:"#ffffff",text:"#173a34",muted:"#65817a",border:"#d1eee5",soft:"#ddf7ee"},
+ "Sunshine":{primary:"#c18a00",primary2:"#8d6500",bg:"#fffbea",card:"#ffffff",text:"#423718",muted:"#887b50",border:"#eee4b9",soft:"#fff3c4"},
+ "Night":{primary:"#5b8def",primary2:"#3865bb",bg:"#111827",card:"#1f2937",text:"#f3f4f6",muted:"#b3bdcc",border:"#374151",soft:"#263b57"},
+ "Simple":{primary:"#475569",primary2:"#334155",bg:"#f4f5f7",card:"#ffffff",text:"#1f2937",muted:"#64748b",border:"#d8dee8",soft:"#e9edf4"}
 };
 
-let customSites = readStore("wnl_custom",[]);
-let favorites = readStore("wnl_favorites",[]);
-let activeTheme = localStorage.getItem("wnl_theme") || "Forest Green";
-let currentPage = "all";
-let toastTimer;
+const CATEGORY_NAMES = {
+ world:"World",india:"India",business:"Business",technology:"Technology",
+ science:"Science",health:"Health",sports:"Sports",environment:"Environment",
+ entertainment:"Entertainment",education:"Education",government:"Government",
+ regional:"Regional",other:"Other"
+};
 
-function readStore(key,fallback){
-  try{
-    const v=localStorage.getItem(key);
-    return v===null?fallback:JSON.parse(v);
-  }catch(e){return fallback}
+const COUNTRY_LIST = [
+ "International","India","United States","United Kingdom","Canada","Australia",
+ "New Zealand","Japan","China","Hong Kong","South Korea","Singapore","Indonesia",
+ "Bangladesh","Pakistan","Nepal","Qatar","United Arab Emirates","Saudi Arabia",
+ "Israel","France","Germany","Spain","Italy","Switzerland","Russia","Ukraine",
+ "Ireland","Kenya","Nigeria","South Africa","Brazil","Argentina","Costa Rica","Mexico"
+];
+
+const $ = id => document.getElementById(id);
+const STORAGE_KEY = "worldNewsLauncher.v1";
+
+let customSites = [];
+let favorites = [];
+let currentPage = "all";
+let activeTheme = "Forest Green";
+let nextCustomId = 1;
+
+function safeLoad(){
+ try{
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(!raw) return;
+  const data = JSON.parse(raw);
+  customSites = Array.isArray(data.customSites) ? data.customSites : [];
+  favorites = Array.isArray(data.favorites) ? data.favorites : [];
+  activeTheme = THEMES[data.theme] ? data.theme : "Forest Green";
+  nextCustomId = Number(data.nextCustomId) || 1;
+ }catch(e){console.warn("Saved data could not be loaded.",e);}
 }
-function saveStore(){
-  localStorage.setItem("wnl_custom",JSON.stringify(customSites));
-  localStorage.setItem("wnl_favorites",JSON.stringify(favorites));
-  localStorage.setItem("wnl_theme",activeTheme);
+
+function save(){
+ try{
+  localStorage.setItem(STORAGE_KEY,JSON.stringify({
+   customSites,favorites,theme:activeTheme,nextCustomId
+  }));
+ }catch(e){alert("Could not save data. Your browser storage may be full or disabled.");}
 }
-function makeId(){
-  return "site_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,8);
+
+function esc(value){
+ return String(value ?? "").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+function validUrl(url){
+ try{
+  const u=new URL(url);
+  return u.protocol==="https:" || u.protocol==="http:";
+ }catch(e){return false;}
+}
+function normalizeSite(site){
+ return {
+  id:String(site.id ?? ""),
+  name:String(site.name ?? "Untitled"),
+  url:String(site.url ?? ""),
+  category:CATEGORY_NAMES[site.category] ? site.category : "other",
+  icon:String(site.icon ?? "📰"),
+  desc:String(site.desc ?? ""),
+  country:String(site.country ?? "International"),
+  type:String(site.type ?? "News Website")
+ };
 }
 function allSites(){
-  return DEFAULT_SITES.map((s,i)=>({
-    id:"default_"+i,name:s[0],url:s[1],category:s[2],
-    icon:s[3],desc:s[4],isDefault:true
-  })).concat(customSites.map(s=>({...s,isDefault:false})));
+ const builtIn = SITES.map((s,i)=>({
+  id:"builtin_"+i,name:s[0],url:s[1],category:s[2],icon:s[3],
+  desc:s[4],country:s[5]||"International",type:s[6]||"News Website",
+  builtIn:true
+ }));
+ const custom = customSites.map(s=>({...normalizeSite(s),builtIn:false}));
+ return builtIn.concat(custom);
 }
-function safeUrl(value){
-  try{
-    const u=new URL(value);
-    if(u.protocol!=="https:" && u.protocol!=="http:")return null;
-    return u.href;
-  }catch(e){return null}
+function updateStats(){
+ const sites=allSites();
+ $("statSites").textContent=sites.length;
+ $("statCountries").textContent=new Set(sites.map(s=>s.country)).size;
+ $("statFavorites").textContent=favorites.length;
 }
-function domainOf(url){
-  try{return new URL(url).hostname.replace(/^www\./,"")}catch(e){return url}
+function isFavorite(id){return favorites.includes(id);}
+function toggleFavorite(id){
+ if(isFavorite(id)) favorites=favorites.filter(x=>x!==id);
+ else favorites.push(id);
+ save();renderAll();
 }
-function esc(s){
-  return String(s??"").replace(/[&<>"']/g,c=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[c]));
+function openSite(url){
+ if(!validUrl(url)){alert("This website URL is invalid.");return;}
+ window.open(url,"_blank","noopener,noreferrer");
 }
-function toast(message){
-  const t=document.getElementById("toast");
-  t.textContent=message;t.classList.remove("hidden");
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.add("hidden"),2600);
+function cardHTML(site,showCustomActions=false){
+ const fav=isFavorite(site.id);
+ return `<article class="card">
+  <div class="cardhead">
+   <div class="icon">${esc(site.icon)}</div>
+   <div><div class="cardtitle">${esc(site.name)}</div>
+   <div class="muted">${esc(site.country)}</div></div>
+  </div>
+  <div class="badges">
+   <span class="badge">${esc(CATEGORY_NAMES[site.category]||"Other")}</span>
+   <span class="badge">${esc(site.type)}</span>
+  </div>
+  <div class="carddesc">${esc(site.desc||"Visit this publication website.")}</div>
+  <div class="linktext">${esc(site.url)}</div>
+  <div class="cardactions">
+   <button data-action="open" data-id="${esc(site.id)}">↗ Open</button>
+   <button class="secondary" data-action="favorite" data-id="${esc(site.id)}">${fav?"★ Saved":"☆ Favorite"}</button>
+  </div>
+  ${showCustomActions?`<div class="cardactions">
+   <button class="secondary" data-action="edit" data-id="${esc(site.id)}">✏️ Edit</button>
+   <button class="danger" data-action="delete" data-id="${esc(site.id)}">🗑 Delete</button>
+  </div>`:""}
+ </article>`;
 }
-function setTheme(name){
-  if(!THEMES[name])return;
-  activeTheme=name;
-  const t=THEMES[name],r=document.documentElement.style;
-  Object.keys(t).forEach(k=>r.setProperty("--"+k,t[k]));
-  document.querySelector('meta[name="theme-color"]').content=t.primary;
-  localStorage.setItem("wnl_theme",name);
-  renderThemes();
-}
-function renderThemes(){
-  const box=document.getElementById("themeGrid");
-  box.innerHTML=Object.entries(THEMES).map(([name,t])=>`
-    <button class="theme-choice ${name===activeTheme?"active":""}" onclick="setTheme('${esc(name)}')">
-      <span class="swatches">
-        <i style="background:${t.primary}"></i>
-        <i style="background:${t.bg}"></i>
-        <i style="background:${t.card};border:1px solid ${t.border}"></i>
-      </span>
-      <span><strong>${esc(name)}</strong><br><small>${name===activeTheme?"✓ Selected":"Tap to apply"}</small></span>
-    </button>`).join("");
-}
-function fillCategories(){
-  const select=document.getElementById("siteCategory");
-  select.innerHTML=Object.entries(CATEGORIES).map(([k,v])=>
-    `<option value="${k}">${esc(v)}</option>`).join("");
-}
-function showPage(page){
-  currentPage=page;
-  document.querySelectorAll(".page").forEach(el=>el.classList.add("hidden"));
-  const target=document.getElementById("page-"+page);
-  if(target)target.classList.remove("hidden");
-  document.querySelectorAll("#nav button").forEach(b=>
-    b.classList.toggle("active",b.dataset.page===page));
-  if(page==="all"||page==="favorites"||CATEGORIES[page]){
-    renderNews();
-  }
-  if(page==="custom")renderCustom();
-  if(page==="data")renderStorageInfo();
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-document.getElementById("nav").addEventListener("click",e=>{
-  const b=e.target.closest("button[data-page]");
-  if(b)showPage(b.dataset.page);
-});
-document.getElementById("search").addEventListener("input",renderNews);
-document.getElementById("sort").addEventListener("change",renderNews);
 
-function currentSites(){
-  let list=allSites();
-  const q=document.getElementById("search").value.trim().toLowerCase();
-  if(currentPage==="favorites"){
-    list=list.filter(s=>favorites.includes(s.id));
-  }else if(CATEGORIES[currentPage]){
-    list=list.filter(s=>s.category===currentPage);
-  }
-  if(q){
-    list=list.filter(s=>
-      (s.name+" "+s.desc+" "+s.category+" "+domainOf(s.url))
-      .toLowerCase().includes(q));
-  }
-  const sort=document.getElementById("sort").value;
-  if(sort==="name")list.sort((a,b)=>a.name.localeCompare(b.name));
-  if(sort==="category")list.sort((a,b)=>
-    (CATEGORIES[a.category]||"").localeCompare(CATEGORIES[b.category]||"")||
-    a.name.localeCompare(b.name));
-  return list;
+function sortSites(list,mode){
+ return list.slice().sort((a,b)=>{
+  const key=mode==="country"?"country":mode==="category"?"category":mode==="type"?"type":"name";
+  return String(a[key]||"").localeCompare(String(b[key]||""));
+ });
+}
+function matchesSearch(site,query){
+ const hay=[site.name,site.url,site.desc,site.country,site.type,CATEGORY_NAMES[site.category]].join(" ").toLowerCase();
+ return hay.includes(query.toLowerCase());
 }
 function renderNews(){
-  const list=currentSites();
-  const titles={
-    all:"🌐 All News Websites",
-    favorites:"⭐ Favorite News Websites"
-  };
-  document.getElementById("listTitle").textContent=
-    titles[currentPage]||(CATEGORIES[currentPage]||"📰 News Websites");
-  document.getElementById("resultCount").textContent=list.length+" website(s) found";
-  document.getElementById("newsGrid").innerHTML=list.length?
-    list.map(cardHTML).join(""):'<div class="empty">No websites found.<br>Try another search or add your own website.</div>';
-  document.getElementById("stats").innerHTML=`
-    <div class="stat"><strong>${allSites().length}</strong><span>Total websites</span></div>
-    <div class="stat"><strong>${favorites.length}</strong><span>Favorites</span></div>
-    <div class="stat"><strong>${customSites.length}</strong><span>Your websites</span></div>
-    <div class="stat"><strong>${Object.keys(CATEGORIES).length}</strong><span>Categories</span></div>`;
+ const query=$("search").value.trim();
+ const type=$("typeFilter").value;
+ let sites=allSites();
+ if(currentPage==="favorites") sites=sites.filter(s=>isFavorite(s.id));
+ else if(CATEGORY_NAMES[currentPage]) sites=sites.filter(s=>s.category===currentPage);
+ if(query) sites=sites.filter(s=>matchesSearch(s,query));
+ if(type) sites=sites.filter(s=>s.type===type);
+ sites=sortSites(sites,$("sort").value);
+ $("listHeading").textContent=currentPage==="favorites"?"⭐ Favorite Publications":
+  CATEGORY_NAMES[currentPage]?`📰 ${CATEGORY_NAMES[currentPage]} Publications`:"📰 All News & Publications";
+ $("resultsCount").textContent=`Showing ${sites.length} publication(s)`;
+ $("newsGrid").innerHTML=sites.length?sites.map(s=>cardHTML(s)).join(""):'<div class="empty">No publications found. Try another search or filter.</div>';
+ updateStats();
 }
-function cardHTML(s){
-  const fav=favorites.includes(s.id);
-  return `<article class="card">
-    <div class="card-top">
-      <div class="site-icon">${esc(s.icon||"📰")}</div>
-      <div style="min-width:0;flex:1">
-        <div class="site-title">${esc(s.name)}</div>
-        <div class="site-category">${esc(CATEGORIES[s.category]||CATEGORIES.other)}</div>
-      </div>
-      <button class="fav ${fav?"on":""}" title="${fav?"Remove favorite":"Add favorite"}"
-        aria-label="Toggle favorite" onclick="toggleFavorite('${esc(s.id)}')">${fav?"★":"☆"}</button>
-    </div>
-    <div class="site-desc">${esc(s.desc||"News website")}</div>
-    <div class="site-domain">${esc(domainOf(s.url))}</div>
-    <div class="card-actions">
-      <button class="btn" onclick="openSite('${esc(s.id)}')">Open Website ↗</button>
-      ${s.isDefault?"":`<button class="btn secondary" onclick="editSite('${esc(s.id)}')">Edit</button>
-      <button class="btn outline" onclick="deleteSite('${esc(s.id)}')">Delete</button>`}
-    </div>
-  </article>`;
-}
-function toggleFavorite(id){
-  if(favorites.includes(id))favorites=favorites.filter(x=>x!==id);
-  else favorites.push(id);
-  saveStore();renderNews();renderCustom();
-  toast(favorites.includes(id)?"Added to favorites":"Removed from favorites");
-}
-function openSite(id){
-  const s=allSites().find(x=>x.id===id);
-  if(!s)return toast("Website not found");
-  const url=safeUrl(s.url);
-  if(!url)return toast("Invalid website URL");
-  window.open(url,"_blank","noopener,noreferrer");
+function renderCountries(){
+ const selected=$("countrySelect").value;
+ const cat=$("countryCategory").value;
+ const type=$("countryType").value;
+ const query=$("search").value.trim();
+ let sites=allSites();
+ if(selected) sites=sites.filter(s=>s.country===selected);
+ if(cat) sites=sites.filter(s=>s.category===cat);
+ if(type) sites=sites.filter(s=>s.type===type);
+ if(query) sites=sites.filter(s=>matchesSearch(s,query));
+ sites=sortSites(sites,$("sort").value);
+ $("countryCount").textContent=`Showing ${sites.length} publication(s)`;
+ $("countryGrid").innerHTML=sites.length?sites.map(s=>cardHTML(s)).join(""):'<div class="empty">No publications match these filters.</div>';
 }
 function renderCustom(){
-  document.getElementById("customCount").textContent=customSites.length+" website(s)";
-  const grid=document.getElementById("customGrid");
-  grid.innerHTML=customSites.length?
-    customSites.map(s=>cardHTML({...s,isDefault:false})).join("") :
-    '<div class="empty">You have not added any websites yet.<br>Use the form above to build your personal news collection.</div>';
+ const sites=customSites.map(s=>({...normalizeSite(s),builtIn:false}));
+ $("customGrid").innerHTML=sites.length?sortSites(sites,"name").map(s=>cardHTML(s,true)).join(""):'<div class="empty">You have not added any websites yet.</div>';
+ updateStats();
 }
-function resetForm(){
-  document.getElementById("siteForm").reset();
-  document.getElementById("editId").value="";
-  document.getElementById("siteIcon").value="📰";
-  document.getElementById("saveSiteBtn").textContent="Save Website";
+function renderAll(){
+ if(currentPage==="countries") renderCountries();
+ else if(currentPage==="mywebsites") renderCustom();
+ else if(currentPage==="data"||currentPage==="settings") updateStats();
+ else renderNews();
 }
-document.getElementById("siteForm").addEventListener("submit",e=>{
-  e.preventDefault();
-  const name=document.getElementById("siteName").value.trim();
-  const rawUrl=document.getElementById("siteUrl").value.trim();
-  const url=safeUrl(rawUrl);
-  const category=document.getElementById("siteCategory").value;
-  const icon=document.getElementById("siteIcon").value.trim()||"📰";
-  const desc=document.getElementById("siteDesc").value.trim();
-  const editId=document.getElementById("editId").value;
-  if(!name)return toast("Please enter a website name");
-  if(!url)return toast("Enter a valid HTTP or HTTPS URL");
-  const existing=customSites.find(s=>s.url===url&&s.id!==editId);
-  if(existing)return toast("This website URL is already in your collection");
-  const item={id:editId||makeId(),name,url,category,icon,desc};
-  if(editId){
-    customSites=customSites.map(s=>s.id===editId?item:s);
-    toast("Website updated");
-  }else{
-    customSites.push(item);
-    toast("Website added");
-  }
-  saveStore();resetForm();renderCustom();renderNews();
-});
-function editSite(id){
-  const s=customSites.find(x=>x.id===id);
-  if(!s)return;
-  document.getElementById("editId").value=s.id;
-  document.getElementById("siteName").value=s.name;
-  document.getElementById("siteUrl").value=s.url;
-  document.getElementById("siteCategory").value=s.category;
-  document.getElementById("siteIcon").value=s.icon||"📰";
-  document.getElementById("siteDesc").value=s.desc||"";
-  document.getElementById("saveSiteBtn").textContent="Update Website";
-  document.getElementById("siteName").focus();
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-function deleteSite(id){
-  const s=customSites.find(x=>x.id===id);
-  if(!s)return;
-  if(!confirm('Delete "'+s.name+'"?'))return;
-  customSites=customSites.filter(x=>x.id!==id);
-  favorites=favorites.filter(x=>x!==id);
-  saveStore();renderCustom();renderNews();
-  toast("Website deleted");
-}
-function exportData(){
-  const data={
-    app:"World News Launcher",
-    version:1,
-    exportedAt:new Date().toISOString(),
-    customSites,favorites,theme:activeTheme
-  };
-  downloadFile("world_news_backup.json",JSON.stringify(data,null,2),"application/json");
-  toast("Backup exported");
-}
-function downloadFile(name,content,type){
-  const blob=new Blob([content],{type});
-  const a=document.createElement("a");
-  const u=URL.createObjectURL(blob);
-  a.href=u;a.download=name;
-  document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(u),1000);
-}
-async function importData(mode){
-  const file=document.getElementById("importFile").files[0];
-  if(!file)return toast("Choose a JSON backup file first");
-  try{
-    const data=JSON.parse(await file.text());
-    if(!data||!Array.isArray(data.customSites)||!Array.isArray(data.favorites))
-      throw new Error("Invalid backup format");
-    const incoming=[];
-    for(const s of data.customSites){
-      if(!s||typeof s.name!=="string")continue;
-      const url=safeUrl(String(s.url||""));
-      if(!url)continue;
-      const cat=CATEGORIES[s.category]?s.category:"other";
-      incoming.push({
-        id:typeof s.id==="string"&&s.id.startsWith("site_")?s.id:makeId(),
-        name:s.name.slice(0,100),url,category:cat,
-        icon:String(s.icon||"📰").slice(0,10),
-        desc:String(s.desc||"").slice(0,250)
-      });
-    }
-    if(mode==="replace"){
-      if(!confirm("Replace all custom websites with the imported collection?"))return;
-      customSites=incoming;
-    }else{
-      for(const s of incoming){
-        const duplicate=customSites.some(x=>x.url===s.url);
-        if(!duplicate)customSites.push(s);
-      }
-    }
-    const validIds=new Set(customSites.map(s=>s.id));
-    favorites=[...new Set([...favorites,...data.favorites.filter(id=>validIds.has(id)||String(id).startsWith("default_"))])];
-    if(THEMES[data.theme])activeTheme=data.theme;
-    saveStore();setTheme(activeTheme);renderNews();renderCustom();renderStorageInfo();
-    toast("Import completed");
-  }catch(e){toast("Could not import: "+e.message)}
-}
-function resetCustom(){
-  if(!confirm("Delete all custom websites? This cannot be undone unless you have a backup."))return;
-  const ids=new Set(customSites.map(s=>s.id));
-  customSites=[];favorites=favorites.filter(id=>!ids.has(id));
-  saveStore();renderCustom();renderNews();renderStorageInfo();
-  toast("Custom websites deleted");
-}
-function resetFavorites(){
-  if(!confirm("Clear all favorite selections?"))return;
-  favorites=[];saveStore();renderNews();renderCustom();
-  toast("Favorites cleared");
-}
-function renderStorageInfo(){
-  let bytes=0;
-  ["wnl_custom","wnl_favorites","wnl_theme"].forEach(k=>{
-    bytes+=(localStorage.getItem(k)||"").length*2;
-  });
-  document.getElementById("storageInfo").textContent=
-    "Custom websites: "+customSites.length+
-    " | Favorites: "+favorites.length+
-    " | Approximate app storage: "+(bytes/1024).toFixed(1)+" KB."+
-    " Default websites are built into this HTML file.";
-}
-function updateClock(){
-  const now=new Date();
-  document.getElementById("date").textContent=
-    now.toLocaleDateString("en-IN",{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
-  document.getElementById("time").textContent=
-    now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true});
+function showPage(page){
+ currentPage=page;
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ const target=$("page-"+page);
+ if(target) target.classList.add("active");
+ else $("page-all").classList.add("active");
+
+ document.querySelectorAll("#navigation button").forEach(b=>{
+  b.classList.toggle("active",b.dataset.page===page);
+ });
+ renderAll();
+ window.scrollTo({top:0,behavior:"smooth"});
 }
 
-// Initialization
-fillCategories();
-document.getElementById("siteIcon").value="📰";
-setTheme(activeTheme);
+function buildCountryOptions(){
+ const all=allSites();
+ const countries=[...new Set(COUNTRY_LIST.concat(all.map(s=>s.country)))].sort((a,b)=>{
+  if(a==="International")return -1;
+  if(b==="International")return 1;
+  return a.localeCompare(b);
+ });
+ const select=$("countrySelect");
+ const previous=select.value;
+ select.innerHTML='<option value="">All countries</option>'+
+  countries.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
+ if(countries.includes(previous)) select.value=previous;
+
+ const custom=$("siteCountry");
+ custom.innerHTML=countries.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
+ if(countries.includes("India")) custom.value="India";
+}
+
+function resetForm(){
+ $("siteForm").reset();
+ $("editId").value="";
+ $("siteIcon").value="📰";
+ $("saveSiteBtn").textContent="➕ Save Website";
+}
+function editCustom(id){
+ const site=customSites.find(s=>s.id===id);
+ if(!site)return;
+ $("editId").value=site.id;
+ $("siteName").value=site.name;
+ $("siteUrl").value=site.url;
+ $("siteCountry").value=site.country||"International";
+ $("siteCategory").value=site.category||"other";
+ $("siteType").value=site.type||"News Website";
+ $("siteIcon").value=site.icon||"📰";
+ $("siteDesc").value=site.desc||"";
+ $("saveSiteBtn").textContent="💾 Update Website";
+ showPage("mywebsites");
+ $("siteName").focus();
+}
+function deleteCustom(id){
+ const site=customSites.find(s=>s.id===id);
+ if(!site)return;
+ if(!confirm(`Delete "${site.name}" from My Websites?`))return;
+ customSites=customSites.filter(s=>s.id!==id);
+ favorites=favorites.filter(x=>x!==id);
+ save();renderAll();
+}
+
+function setTheme(name){
+ if(!THEMES[name])return;
+ activeTheme=name;
+ const theme=THEMES[name];
+ Object.entries(theme).forEach(([key,value])=>{
+  document.documentElement.style.setProperty("--"+key,value);
+ });
+ document.querySelectorAll(".themebtn").forEach(b=>{
+  b.classList.toggle("active",b.dataset.theme===name);
+ });
+ save();
+}
+function buildThemes(){
+ $("themeGrid").innerHTML=Object.keys(THEMES).map(name=>
+  `<button class="themebtn" data-theme="${esc(name)}">${esc(name)}</button>`
+ ).join("");
+ setTheme(activeTheme);
+}
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function exportJSON(){
+ downloadFile("world-news-backup.json",JSON.stringify({
+  app:"World News Launcher",version:1,exportedAt:new Date().toISOString(),
+  customSites,favorites,theme:activeTheme,nextCustomId
+ },null,2),"application/json");
+}
+function csvCell(value){
+ const s=String(value??"");
+ return '"'+s.replace(/"/g,'""')+'"';
+}
+function exportCSV(){
+ const header=["name","url","country","category","type","icon","description"];
+ const rows=customSites.map(s=>[
+  s.name,s.url,s.country,s.category,s.type,s.icon,s.desc
+ ]);
+ const csv=[header,...rows].map(row=>row.map(csvCell).join(",")).join("\r\n");
+ downloadFile("my-news-websites.csv","\uFEFF"+csv,"text/csv;charset=utf-8");
+}
+function parseCSV(text){
+ const rows=[];let row=[],cell="",quoted=false;
+ for(let i=0;i<text.length;i++){
+  const c=text[i],next=text[i+1];
+  if(quoted){
+   if(c==='"'&&next==='"'){cell+='"';i++;}
+   else if(c==='"')quoted=false;
+   else cell+=c;
+  }else{
+   if(c==='"')quoted=true;
+   else if(c===","){row.push(cell);cell="";}
+   else if(c==="\n"){row.push(cell);rows.push(row);row=[];cell="";}
+   else if(c!=="\r")cell+=c;
+  }
+ }
+ if(cell.length||row.length){row.push(cell);rows.push(row);}
+ return rows;
+}
+function readFile(input){
+ return new Promise((resolve,reject)=>{
+  const file=input.files&&input.files[0];
+  if(!file){reject(new Error("Please choose a file first."));return;}
+  const reader=new FileReader();
+  reader.onload=()=>resolve(String(reader.result||""));
+  reader.onerror=()=>reject(new Error("Could not read the selected file."));
+  reader.readAsText(file);
+ });
+}
+async function importJSON(){
+ try{
+  const data=JSON.parse(await readFile($("importJsonFile")));
+  if(!data||typeof data!=="object")throw new Error("Invalid backup file.");
+  if(!confirm("Import this backup? Existing saved websites and favorites will be replaced."))return;
+  const incoming=Array.isArray(data.customSites)?data.customSites:[];
+  customSites=incoming.filter(s=>s&&validUrl(String(s.url||""))).map((s,i)=>({
+   id:String(s.id||("custom_"+Date.now()+"_"+i)),
+   name:String(s.name||"Imported Website"),
+   url:String(s.url),
+   country:String(s.country||"International"),
+   category:CATEGORY_NAMES[s.category]?s.category:"other",
+   type:String(s.type||"News Website"),
+   icon:String(s.icon||"📰"),
+   desc:String(s.desc||"")
+  }));
+  const allowedIds=new Set(allSites().map(s=>s.id));
+  favorites=Array.isArray(data.favorites)?data.favorites.map(String).filter(id=>allowedIds.has(id)||id.startsWith("builtin_")):[];
+  activeTheme=THEMES[data.theme]?data.theme:"Forest Green";
+  nextCustomId=Number(data.nextCustomId)||1;
+  save();buildCountryOptions();setTheme(activeTheme);renderAll();
+  alert("Backup imported.");
+ }catch(e){alert("Import failed: "+e.message);}
+}
+async function importCSV(){
+ try{
+  const text=await readFile($("importCsvFile"));
+  const rows=parseCSV(text.replace(/^\uFEFF/,""));
+  if(rows.length<2)throw new Error("The CSV has no website rows.");
+  const header=rows.shift().map(x=>x.trim().toLowerCase());
+  const index={};
+  header.forEach((h,i)=>index[h]=i);
+  if(index.name===undefined||index.url===undefined)throw new Error("CSV must contain name and url columns.");
+  let added=0;
+  rows.forEach(row=>{
+   const get=(key,def="")=>row[index[key]]??def;
+   const url=get("url").trim();
+   if(!validUrl(url))return;
+   customSites.push({
+    id:"custom_"+Date.now()+"_"+(nextCustomId++),
+    name:get("name","Imported Website").trim()||"Imported Website",
+    url,country:get("country","International")||"International",
+    category:CATEGORY_NAMES[get("category") ]?get("category"):"other",
+    type:get("type","News Website")||"News Website",
+    icon:get("icon","📰")||"📰",desc:get("description","")
+   });
+   added++;
+  });
+  save();buildCountryOptions();renderAll();
+  alert(`Imported ${added} website(s).`);
+ }catch(e){alert("CSV import failed: "+e.message);}
+}
+
+/* Events */
+$("navigation").addEventListener("click",e=>{
+ const btn=e.target.closest("button[data-page]");
+ if(btn)showPage(btn.dataset.page);
+});
+document.addEventListener("click",e=>{
+ const btn=e.target.closest("button[data-action]");
+ if(!btn)return;
+ const id=btn.dataset.id;
+ const site=allSites().find(s=>s.id===id);
+ switch(btn.dataset.action){
+  case "open":if(site)openSite(site.url);break;
+  case "favorite":toggleFavorite(id);break;
+  case "edit":editCustom(id);break;
+  case "delete":deleteCustom(id);break;
+ }
+});
+["search","typeFilter","sort"].forEach(id=>{
+ $(id).addEventListener(id==="search"?"input":"change",renderAll);
+});
+["countrySelect","countryCategory","countryType"].forEach(id=>{
+ $(id).addEventListener("change",renderCountries);
+});
+$("resetCountry").addEventListener("click",()=>{
+ $("countrySelect").value="";
+ $("countryCategory").value="";
+ $("countryType").value="";
+ $("search").value="";
+ renderCountries();
+});
+$("countryDirectoryBtn").addEventListener("click",()=>{
+ $("countrySelect").value="";
+ $("countryCategory").value="";
+ $("countryType").value="";
+ renderCountries();
+});
+$("siteForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const name=$("siteName").value.trim();
+ const url=$("siteUrl").value.trim();
+ if(!name||!validUrl(url)){
+  alert("Enter a publication name and a valid http:// or https:// URL.");
+  return;
+ }
+ const id=$("editId").value;
+ const record={
+  id:id||("custom_"+Date.now()+"_"+(nextCustomId++)),
+  name,url,country:$("siteCountry").value||"International",
+  category:$("siteCategory").value,type:$("siteType").value,
+  icon:$("siteIcon").value.trim()||"📰",desc:$("siteDesc").value.trim()
+ };
+ if(id){
+  const index=customSites.findIndex(s=>s.id===id);
+  if(index<0){alert("Website not found.");return;}
+  customSites[index]=record;
+ }else customSites.push(record);
+ save();resetForm();buildCountryOptions();renderAll();
+ alert(id?"Website updated.":"Website added.");
+});
+$("cancelEdit").addEventListener("click",resetForm);
+$("exportJson").addEventListener("click",exportJSON);
+$("exportCsv").addEventListener("click",exportCSV);
+$("importJsonBtn").addEventListener("click",importJSON);
+$("importCsvBtn").addEventListener("click",importCSV);
+$("resetData").addEventListener("click",()=>{
+ if(!confirm("Remove all custom websites, favorites and saved theme preferences?"))return;
+ customSites=[];favorites=[];activeTheme="Forest Green";nextCustomId=1;
+ save();buildCountryOptions();setTheme(activeTheme);resetForm();renderAll();
+ alert("Saved data reset.");
+});
+$("themeGrid").addEventListener("click",e=>{
+ const btn=e.target.closest("[data-theme]");
+ if(btn)setTheme(btn.dataset.theme);
+});
+
+/* Clock */
+function updateClock(){
+ const now=new Date();
+ $("clock").textContent=now.toLocaleDateString(undefined,{
+  weekday:"long",year:"numeric",month:"long",day:"numeric"
+ })+" · "+now.toLocaleTimeString();
+}
+
+/* Startup */
+safeLoad();
+buildCountryOptions();
+buildThemes();
 updateClock();
 setInterval(updateClock,1000);
-renderNews();
-renderCustom();
-renderStorageInfo();
+renderAll();
 </script>
 </body>
 </html>
