@@ -1,499 +1,741 @@
+Save as "medical_world_directory.html" and paste the complete code below.
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#137547">
-<title>Android App Launcher</title>
-
-<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Android%20App%20Launcher%22%2C%22short_name%22%3A%22App%20Launcher%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22theme_color%22%3A%22%23137547%22%2C%22background_color%22%3A%22%23f2f8f4%22%7D">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#087f69">
+<title>Medical & Healthcare World Directory</title>
 
 <style>
-:root {
-  --green:#137547;
-  --bg:#f2f8f4;
-  --card:#ffffff;
-  --text:#183126;
+:root{
+ --primary:#087f69;
+ --primary2:#075e50;
+ --bg:#eff8f5;
+ --card:#ffffff;
+ --text:#183a34;
+ --muted:#607a74;
+ --border:#d3e8e1;
+ --soft:#dff4ed;
 }
-* {box-sizing:border-box}
-body {
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:Arial,Helvetica,sans-serif;line-height:1.5
 }
-header {
-  background:var(--green);
-  color:white;
-  padding:20px 16px;
-  text-align:center;
+header{
+ padding:17px;background:linear-gradient(135deg,var(--primary),var(--primary2));
+ color:#fff;position:sticky;top:0;z-index:10;
+ box-shadow:0 3px 12px #0002
 }
-header h2 {margin:0 0 6px}
-header p {margin:0;font-size:13px}
-main {max-width:850px;margin:auto;padding:15px}
-.tabs {
-  display:flex;
-  gap:7px;
-  overflow-x:auto;
-  margin-bottom:15px;
+.head{display:flex;align-items:center;gap:12px}
+.logo{font-size:36px}
+h1{font-size:21px;margin:0}
+.subtitle{font-size:12px;opacity:.9}
+#clock{font-size:12px;margin-top:7px}
+main{max-width:1250px;margin:auto;padding:12px}
+nav{
+ display:flex;gap:7px;overflow-x:auto;padding:10px 0;
+ position:sticky;top:105px;z-index:8;background:var(--bg)
 }
-.tabs button {
-  flex:1;
-  min-width:90px;
-  border:0;
-  padding:12px 8px;
-  border-radius:10px;
-  background:#dcece2;
-  color:#17442c;
-  font-weight:bold;
+nav button{
+ white-space:nowrap;background:var(--card);color:var(--text);
+ border:1px solid var(--border)
 }
-.tabs button.active {
-  background:var(--green);
-  color:white;
+button{
+ padding:10px 13px;border:0;border-radius:9px;
+ background:var(--primary);color:#fff;font-weight:bold;
+ cursor:pointer;font-size:13px
 }
-.panel {display:none}
-.panel.active {display:block}
-.grid {
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
+button.active{background:var(--primary);color:white}
+button.secondary{background:var(--soft);color:var(--text)}
+button:active{transform:scale(.98)}
+.page{display:none}
+.page.active{display:block}
+h2{font-size:20px;margin:12px 0}
+h3{font-size:16px;margin:0 0 8px}
+p{margin:5px 0}
+.muted{font-size:13px;color:var(--muted)}
+.panel{
+ background:var(--card);border:1px solid var(--border);
+ border-radius:13px;padding:14px;margin:12px 0
 }
-.app {
-  border:0;
-  border-radius:15px;
-  background:var(--card);
-  padding:18px 10px;
-  min-height:105px;
-  box-shadow:0 2px 7px #0000000c;
-  color:var(--text);
-  font-size:15px;
-  font-weight:bold;
-  cursor:pointer;
+.notice{
+ background:var(--soft);border-left:4px solid var(--primary);
+ padding:12px;border-radius:8px;font-size:13px;margin:10px 0
 }
-.icon {display:block;font-size:30px;margin-bottom:9px}
-.card {
-  background:var(--card);
-  padding:16px;
-  border-radius:14px;
-  margin-bottom:13px;
+.warning{
+ background:#fff0d9;color:#70430a;border-left:4px solid #d88b18;
+ padding:12px;border-radius:8px;font-size:13px;margin:10px 0
 }
-label {display:block;font-size:14px;margin:12px 0 5px}
-input,select {
-  width:100%;
-  padding:12px;
-  border:1px solid #cbd8ce;
-  border-radius:9px;
-  background:white;
-  font-size:15px;
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.field{flex:1;min-width:150px}
+input,select{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:var(--card);color:var(--text);
+ font:inherit
 }
-.action {
-  border:0;
-  padding:12px 15px;
-  border-radius:9px;
-  background:var(--green);
-  color:white;
-  font-weight:bold;
-  margin-top:12px;
-  cursor:pointer;
+.grid{
+ display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+ gap:12px;margin-top:12px
 }
-.secondary {background:#e4eee7;color:#17442c}
-.delete {
-  background:#b42318;
-  color:white;
-  border:0;
-  border-radius:7px;
-  padding:7px 10px;
+.card{
+ display:flex;flex-direction:column;gap:8px;
+ background:var(--card);border:1px solid var(--border);
+ border-radius:13px;padding:14px;min-width:0;
+ box-shadow:0 2px 6px #00000008
 }
-.saved-item {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  padding:12px 0;
-  border-bottom:1px solid #e5ece7;
+.cardhead{display:flex;align-items:center;gap:10px}
+.icon{font-size:29px}
+.cardtitle{font-weight:bold;font-size:15px;overflow-wrap:anywhere}
+.desc{font-size:13px;color:var(--muted);flex:1}
+.badges{display:flex;flex-wrap:wrap;gap:5px}
+.badge{
+ display:inline-block;background:var(--soft);color:var(--primary2);
+ padding:4px 8px;border-radius:20px;font-size:11px
 }
-.note {font-size:13px;line-height:1.6;color:#53665a}
-.status {
-  background:#e0f2e5;
-  padding:12px;
-  border-radius:9px;
-  font-size:13px;
-  line-height:1.5;
-  margin-bottom:12px;
+.cardactions{display:flex;gap:7px;margin-top:5px}
+.cardactions button{flex:1}
+.link{
+ color:var(--primary);font-size:12px;overflow-wrap:anywhere
 }
-footer {text-align:center;padding:20px;font-size:12px;color:#607266}
-@media(min-width:600px) {
-  .grid {grid-template-columns:repeat(3,minmax(0,1fr))}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{
+ background:var(--card);border:1px solid var(--border);
+ border-radius:10px;padding:10px;text-align:center
+}
+.stat strong{display:block;font-size:22px;color:var(--primary)}
+.empty{text-align:center;padding:25px;color:var(--muted)}
+ul{padding-left:20px}
+footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
+@media(max-width:600px){
+ header{padding:12px}
+ h1{font-size:19px}
+ main{padding:8px}
+ nav{top:99px}
+ .grid{grid-template-columns:1fr}
+ .stats{gap:5px}
+ .stat{padding:8px 3px}
+ .stat strong{font-size:18px}
 }
 </style>
 </head>
-
 <body>
 
 <header>
-  <h2>📱 Android App Launcher</h2>
-  <p>Open apps, websites and your favourite shortcuts</p>
+ <div class="head">
+  <div class="logo">🏥</div>
+  <div>
+   <h1>Medical & Healthcare World Directory</h1>
+   <div class="subtitle">India · World · Hospitals · Doctors · Research · Education</div>
+  </div>
+ </div>
+ <div id="clock"></div>
 </header>
 
 <main>
-  <nav class="tabs">
-    <button class="active" data-tab="home">🏠 Home</button>
-    <button data-tab="custom">➕ My Apps</button>
-    <button data-tab="settings">⚙️ Settings</button>
-  </nav>
+ <div class="stats">
+  <div class="stat"><strong id="totalCount">0</strong>Resources</div>
+  <div class="stat"><strong id="countryCount">0</strong>Countries/regions</div>
+  <div class="stat"><strong id="favoriteCount">0</strong>Favorites</div>
+ </div>
 
-  <section id="home" class="panel active">
-    <div class="status" id="installStatus">
-      Open this page in Chrome on Android. Some shortcuts require their
-      corresponding app to be installed.
-    </div>
+ <div class="notice">
+  Use this directory to discover healthcare services and medical information.
+  Resource availability, eligibility, fees, and service areas may change.
+  Confirm details with the official provider.
+ </div>
 
-    <div class="grid">
-      <button class="app" onclick="openApp('https://wa.me/')">
-        <span class="icon">💬</span>WhatsApp
-      </button>
+ <nav id="nav">
+  <button class="active" data-page="all">🌐 All Resources</button>
+  <button data-page="india">🇮🇳 India Government</button>
+  <button data-page="facilities">🏥 Medical Facilities</button>
+  <button data-page="ngos">🤝 NGOs & Patient Support</button>
+  <button data-page="doctors">🩺 Doctor References</button>
+  <button data-page="research">🔬 Research & Trials</button>
+  <button data-page="journals">📚 Journals & Publications</button>
+  <button data-page="health">💚 Health Information</button>
+  <button data-page="education">🎓 Medical Education</button>
+  <button data-page="updates">📰 Latest Updates</button>
+  <button data-page="favorites">⭐ Favorites</button>
+  <button data-page="safety">⚠️ Safety</button>
+ </nav>
 
-      <button class="app" onclick="openApp('tel:')">
-        <span class="icon">📞</span>Phone
-      </button>
+ <section id="page-all" class="page active">
+  <h2>🌐 All Medical Resources</h2>
+  <div class="toolbar">
+   <div class="field">
+    <input id="search" placeholder="Search disease, hospital, research, journal, country...">
+   </div>
+   <div class="field">
+    <select id="countryFilter">
+     <option value="">All countries/regions</option>
+    </select>
+   </div>
+   <div class="field">
+    <select id="typeFilter">
+     <option value="">All resource types</option>
+    </select>
+   </div>
+   <div class="field">
+    <select id="sort">
+     <option value="name">Sort by name</option>
+     <option value="country">Sort by country</option>
+     <option value="type">Sort by resource type</option>
+    </select>
+   </div>
+  </div>
+  <div id="resultText" class="muted"></div>
+  <div id="resourceGrid" class="grid"></div>
+ </section>
 
-      <button class="app" onclick="openApp('sms:')">
-        <span class="icon">✉️</span>Messages
-      </button>
+ <section id="page-india" class="page">
+  <h2>🇮🇳 India: Government Medical Resources</h2>
+  <p class="muted">Government programmes, public-health information, regulation, insurance and medical services.</p>
+  <div id="indiaGrid" class="grid"></div>
+ </section>
 
-      <button class="app" onclick="openApp('mailto:')">
-        <span class="icon">📧</span>Email
-      </button>
+ <section id="page-facilities" class="page">
+  <h2>🏥 Medical Facilities & Care Services</h2>
+  <div class="notice">
+   This section includes official hospital networks, government health services,
+   telemedicine portals and facility-finding resources. It is not a live list of
+   hospital beds or real-time appointment availability.
+  </div>
+  <div id="facilitiesGrid" class="grid"></div>
+ </section>
 
-      <button class="app" onclick="openApp('https://maps.google.com/')">
-        <span class="icon">🗺️</span>Google Maps
-      </button>
+ <section id="page-ngos" class="page">
+  <h2>🤝 NGOs, Charities & Patient Support</h2>
+  <p class="muted">Organisations supporting different illnesses, access to care, disability, public health and patient welfare.</p>
+  <div class="warning">
+   An NGO listing does not guarantee financial assistance or eligibility.
+   Check registration, official contact information, programme criteria and payment requests carefully.
+  </div>
+  <div id="ngosGrid" class="grid"></div>
+ </section>
 
-      <button class="app" onclick="openApp('https://www.youtube.com/')">
-        <span class="icon">▶️</span>YouTube
-      </button>
+ <section id="page-doctors" class="page">
+  <h2>🩺 Medical Reference Websites Used by Healthcare Professionals</h2>
+  <p class="muted">Clinical guidelines, evidence summaries, drug references, diagnostic information and professional organisations.</p>
+  <div class="notice">
+   Some professional resources require registration, institutional access or a paid subscription.
+   These links are reference tools, not a replacement for clinical judgement.
+  </div>
+  <div id="doctorsGrid" class="grid"></div>
+ </section>
 
-      <button class="app" onclick="openApp('https://calendar.google.com/')">
-        <span class="icon">📅</span>Calendar
-      </button>
+ <section id="page-research" class="page">
+  <h2>🔬 Medical Research, Clinical Trials & Evidence</h2>
+  <div id="researchGrid" class="grid"></div>
+ </section>
 
-      <button class="app" onclick="openApp('https://drive.google.com/')">
-        <span class="icon">📁</span>Google Drive
-      </button>
+ <section id="page-journals" class="page">
+  <h2>📚 Medical Journals & Publications</h2>
+  <p class="muted">Scientific journals, medical publishers, review publications and open-access literature.</p>
+  <div id="journalsGrid" class="grid"></div>
+ </section>
 
-      <button class="app" onclick="openApp('https://photos.google.com/')">
-        <span class="icon">🖼️</span>Photos
-      </button>
+ <section id="page-health" class="page">
+  <h2>💚 Health Information & Disease Guides</h2>
+  <p class="muted">Patient-friendly information on diseases, symptoms, medicines, prevention and healthy living.</p>
+  <div id="healthGrid" class="grid"></div>
+ </section>
 
-      <button class="app" onclick="openApp('https://www.google.com/')">
-        <span class="icon">🌐</span>Browser
-      </button>
+ <section id="page-education" class="page">
+  <h2>🎓 Medical Education & Professional Learning</h2>
+  <div id="educationGrid" class="grid"></div>
+ </section>
 
-      <button class="app" onclick="openApp('https://play.google.com/store')">
-        <span class="icon">🛍️</span>Play Store
-      </button>
+ <section id="page-updates" class="page">
+  <h2>📰 Latest Medical Updates</h2>
+  <div class="notice">
+   Use these official newsrooms, safety alerts, research feeds and publication
+   portals to check the newest announcements. This tab opens source websites;
+   it does not automatically aggregate live headlines.
+  </div>
+  <div id="updatesGrid" class="grid"></div>
+ </section>
 
-      <button class="app" onclick="openApp('https://contacts.google.com/')">
-        <span class="icon">👥</span>Contacts
-      </button>
-    </div>
+ <section id="page-favorites" class="page">
+  <h2>⭐ Your Favorite Resources</h2>
+  <p class="muted">Favorite resources are saved in this browser.</p>
+  <div id="favoritesGrid" class="grid"></div>
+ </section>
 
-    <h3>⭐ My Shortcuts</h3>
-    <div class="grid" id="homeCustom"></div>
-  </section>
+ <section id="page-safety" class="page">
+  <h2>⚠️ Medical & Website Safety</h2>
+  <div class="panel">
+   <h3>Medical emergencies</h3>
+   <p>If someone has severe breathing difficulty, chest pain, signs of stroke, major bleeding, loss of consciousness or another life-threatening emergency, contact local emergency services immediately. Do not delay emergency care to search websites.</p>
+   <p>In India, the pan-India emergency number is <strong>112</strong>. Confirm local service availability where you live.</p>
+   <p><a href="https://112.gov.in/" target="_blank" rel="noopener noreferrer">Official India Emergency Response Support System</a></p>
+  </div>
+  <div class="panel">
+   <h3>Check medical information</h3>
+   <ul>
+    <li>Prefer official health ministries, recognised medical institutions, peer-reviewed research and professional clinical guidelines.</li>
+    <li>Check the date, authors, references, funding and possible conflicts of interest.</li>
+    <li>A research paper or preprint does not automatically mean that a treatment is safe or effective.</li>
+    <li>Do not start, stop or change prescription medicines based only on a website or AI-generated summary.</li>
+    <li>Do not upload identifiable medical records to unknown websites.</li>
+    <li>Be cautious of guaranteed cures, miracle treatments, fake clinical trials and requests for advance payment.</li>
+   </ul>
+  </div>
+  <div class="panel">
+   <h3>Verify providers and medicines</h3>
+   <p>Confirm doctors' registration with the appropriate medical regulator. Check hospital accreditation where relevant. For drug safety and regulatory notices, consult official regulator websites.</p>
+   <p><a href="https://www.nmc.org.in/" target="_blank" rel="noopener noreferrer">National Medical Commission, India</a></p>
+   <p><a href="https://cdsco.gov.in/" target="_blank" rel="noopener noreferrer">Central Drugs Standard Control Organisation, India</a></p>
+  </div>
+ </section>
 
-  <section id="custom" class="panel">
-    <div class="card">
-      <h3>Add an app or website</h3>
-      <p class="note">
-        Enter a website URL, Android intent URL, or app-supported deep link.
-        Standard Android package names alone are not enough to launch every app.
-      </p>
-
-      <label for="appName">App name</label>
-      <input id="appName" placeholder="My School App">
-
-      <label for="appIcon">Icon (emoji)</label>
-      <input id="appIcon" value="📲" maxlength="8">
-
-      <label for="appUrl">App URL or deep link</label>
-      <input id="appUrl" placeholder="https://example.com">
-
-      <button class="action" onclick="addApp()">Save App</button>
-      <button class="action secondary" onclick="installPWA()">Install PWA</button>
-    </div>
-
-    <div class="card">
-      <h3>Saved Apps</h3>
-      <div id="savedApps"></div>
-    </div>
-  </section>
-
-  <section id="settings" class="panel">
-    <div class="card">
-      <h3>⚙️ Settings</h3>
-
-      <label for="theme">Nature theme</label>
-      <select id="theme" onchange="changeTheme()">
-        <option value="green">🌿 Forest Green</option>
-        <option value="blue">🌊 Ocean Blue</option>
-        <option value="earth">🌍 Earth Brown</option>
-        <option value="purple">🌸 Flower Purple</option>
-        <option value="dark">🌙 Night Mode</option>
-      </select>
-
-      <button class="action" onclick="installPWA()">📲 Install PWA</button>
-      <button class="action secondary" onclick="exportApps()">Export Apps JSON</button>
-      <button class="action secondary" onclick="importApps()">Import Apps JSON</button>
-      <input id="importFile" type="file" accept=".json,application/json"
-             hidden onchange="readImport(event)">
-
-      <p class="note">
-        Your custom app shortcuts are saved in this browser on this device.
-        Clearing browser storage may remove them.
-      </p>
-    </div>
-
-    <div class="card">
-      <h3>About</h3>
-      <p class="note">
-        This is a standalone HTML app launcher. Android controls which
-        applications can be opened. Some links open in the browser rather
-        than the native app. Installing a PWA does not grant access to a
-        complete list of installed Android applications.
-      </p>
-    </div>
-  </section>
+ <footer>
+  Medical & Healthcare World Directory · Educational reference only ·
+  Always consult a qualified healthcare professional for individual care.
+ </footer>
 </main>
 
-<footer>Android App Launcher • Single HTML file</footer>
-
 <script>
+"use strict";
+
+/*
+ Resource fields:
+ name, url, section, type, country, description, icon
+
+ All links point to public websites. Links and services may change.
+*/
+
+const RESOURCES = [
+
+/* INDIA GOVERNMENT */
+["Ministry of Health and Family Welfare","https://mohfw.gov.in/","india","Government","India","National health ministry and programmes","🏛️"],
+["National Health Mission","https://nhm.gov.in/","india","Government programme","India","Public health programmes and health-system resources","🏥"],
+["Indian Council of Medical Research","https://www.icmr.gov.in/","india","Research organisation","India","National biomedical research organisation and announcements","🔬"],
+["National Centre for Disease Control","https://ncdc.mohfw.gov.in/","india","Public health","India","Communicable disease surveillance and health advisories","🦠"],
+["Central Drugs Standard Control Organisation","https://cdsco.gov.in/","india","Drug regulator","India","Indian drug and medical-device regulatory information","💊"],
+["National Medical Commission","https://www.nmc.org.in/","india","Medical regulator","India","Medical education, regulation and doctor registration information","🩺"],
+["National Health Authority","https://nha.gov.in/","india","Government programme","India","Ayushman Bharat Digital Mission and health coverage information","🏥"],
+["Ayushman Bharat PM-JAY","https://pmjay.gov.in/","india","Health coverage","India","Official information about eligible health coverage","💳"],
+["Ayushman Bharat Digital Mission","https://abdm.gov.in/","india","Digital health","India","Digital health ecosystem information","📱"],
+["eSanjeevani","https://esanjeevani.mohfw.gov.in/","india","Telemedicine","India","Government telemedicine service information","📞"],
+["National Health Portal","https://www.nhp.gov.in/","india","Health information","India","Public health information and resources","💚"],
+["India Government Services","https://www.india.gov.in/","india","Government portal","India","National government information and services","🏛️"],
+["Central Government Health Scheme","https://cghs.mohfw.gov.in/","india","Health services","India","CGHS information for eligible beneficiaries","🏥"],
+["National Organ and Tissue Transplant Organization","https://notto.mohfw.gov.in/","india","Transplant services","India","Organ and tissue donation and transplantation information","🫀"],
+["National AIDS Control Organisation","https://naco.gov.in/","india","Public health","India","HIV/AIDS programmes, services and information","❤️"],
+["National Tuberculosis Elimination Programme","https://tbcindia.mohfw.gov.in/","india","Public health","India","Official TB programme information and resources","🫁"],
+["Food Safety and Standards Authority of India","https://www.fssai.gov.in/","india","Food safety","India","Food safety and nutrition-related regulatory information","🥗"],
+["Indian Pharmacopoeia Commission","https://ipc.gov.in/","india","Medicines safety","India","Pharmacovigilance and medicine standards information","💊"],
+["Department of Health Research","https://dhr.gov.in/","india","Research organisation","India","Government health research programmes","🔬"],
+["National Institute of Health and Family Welfare","https://nihfw.ac.in/","india","Training and research","India","Public health training, research and health-system education","🎓"],
+["Indian Nursing Council","https://indiannursingcouncil.org/","india","Professional regulator","India","Nursing education and regulation","👩‍⚕️"],
+["Pharmacy Council of India","https://pci.nic.in/","india","Professional regulator","India","Pharmacy education and regulation","💊"],
+["National Institute of Mental Health and Neurosciences","https://nimhans.ac.in/","india","Specialist institute","India","Mental health and neuroscience services and research","🧠"],
+["AIIMS New Delhi","https://www.aiims.edu/","india","Hospital and education","India","Medical services, research and education","🏥"],
+["JIPMER","https://jipmer.edu.in/","india","Hospital and education","India","Medical care, research and medical education","🏥"],
+["PGIMER Chandigarh","https://pgimer.edu.in/","india","Hospital and education","India","Specialist medical care, education and research","🏥"],
+["Tata Memorial Centre","https://tmc.gov.in/","india","Cancer services","India","Cancer care, education and research","🎗️"],
+["National Institute of Cancer Prevention and Research","https://nicpr.org/","india","Cancer research","India","Cancer prevention and research information","🎗️"],
+
+/* FACILITIES, HEALTH SERVICES AND FINDERS */
+["eSanjeevani Telemedicine","https://esanjeevani.mohfw.gov.in/","facilities","Telemedicine","India","Government teleconsultation information","📞"],
+["Ayushman Bharat PM-JAY Hospitals","https://pmjay.gov.in/","facilities","Hospital network","India","Use the official portal to explore scheme and hospital information","🏥"],
+["AIIMS New Delhi","https://www.aiims.edu/","facilities","Hospital","India","Major public tertiary-care medical institution","🏥"],
+["JIPMER Puducherry","https://jipmer.edu.in/","facilities","Hospital","India","Public tertiary-care hospital and teaching institute","🏥"],
+["PGIMER Chandigarh","https://pgimer.edu.in/","facilities","Hospital","India","Public specialist hospital and teaching institute","🏥"],
+["Tata Memorial Centre","https://tmc.gov.in/","facilities","Cancer centre","India","Cancer treatment, research and education","🎗️"],
+["NIMHANS Bengaluru","https://nimhans.ac.in/","facilities","Mental health centre","India","Mental health and neuroscience services","🧠"],
+["National Health Service","https://www.nhs.uk/","facilities","Health service","United Kingdom","Public health information and service guidance","🏥"],
+["Find a Health Center","https://findahealthcenter.hrsa.gov/","facilities","Facility finder","United States","Find federally supported health centres in the US","📍"],
+["Medicare","https://www.medicare.gov/","facilities","Health coverage","United States","US Medicare information and provider resources","💳"],
+["Healthdirect Australia","https://www.healthdirect.gov.au/","facilities","Health service","Australia","Australian health information and service finder","🏥"],
+["Health Canada","https://www.canada.ca/en/health-canada.html","facilities","Government health service","Canada","Canadian health information and services","🏥"],
+["Government of New Zealand Health","https://www.health.govt.nz/","facilities","Government health service","New Zealand","New Zealand health system information","🏥"],
+["WHO Health Services","https://www.who.int/health-topics","facilities","Global health","International","International health topics and public health guidance","🌍"],
+["International Association for Medical Assistance to Travellers","https://www.iamat.org/","facilities","Travel health","International","Travel health information and directory resources","✈️"],
+
+/* NGOS AND PATIENT SUPPORT */
+["Indian Red Cross Society","https://indianredcross.org/","ngos","Humanitarian organisation","India","Humanitarian assistance, blood services and health activities","🤝"],
+["St John Ambulance India","https://www.stjohnambulanceindia.in/","ngos","First aid","India","First aid education and related services","⛑️"],
+["HelpAge India","https://www.helpageindia.org/","ngos","Older adults","India","Support and advocacy for older people","👵"],
+["Cancer Patients Aid Association","https://www.cpaaindia.org/","ngos","Cancer support","India","Cancer support and patient assistance information","🎗️"],
+["CanKids KidsCan","https://cankidsindia.org/","ngos","Childhood cancer","India","Support for children with cancer and their families","🎗️"],
+["Indian Cancer Society","https://www.indiancancersociety.org/","ngos","Cancer support","India","Cancer awareness, support and prevention activities","🎗️"],
+["The Banyan","https://thebanyan.org/","ngos","Mental health","India","Mental health and social care support","🧠"],
+["Sangath","https://sangath.in/","ngos","Mental health","India","Mental health research and community services","🧠"],
+["Smile Foundation","https://www.smilefoundationindia.org/","ngos","Community health","India","Health and social development programmes","🤝"],
+["Doctors For You","https://doctorsforyou.org/","ngos","Medical relief","India","Medical relief and humanitarian health activities","🩺"],
+["Goonj","https://goonj.org/","ngos","Community support","India","Community development and disaster relief","🤝"],
+["Karuna Trust","https://karunatrust.org/","ngos","Public health","India","Community health and primary-care initiatives","🏥"],
+["WHO Foundation","https://who.foundation/","ngos","Global health","International","Support for global health initiatives","🌍"],
+["International Committee of the Red Cross","https://www.icrc.org/","ngos","Humanitarian health","International","Health and humanitarian support in conflict settings","🤝"],
+["International Federation of Red Cross and Red Crescent Societies","https://www.ifrc.org/","ngos","Humanitarian health","International","Disaster response and community health","🤝"],
+["Médecins Sans Frontières","https://www.msf.org/","ngos","Medical humanitarian aid","International","Medical humanitarian assistance","🩺"],
+["Direct Relief","https://www.directrelief.org/","ngos","Medical aid","International","Medical assistance and emergency response","🤝"],
+["Partners In Health","https://www.pih.org/","ngos","Healthcare access","International","Healthcare delivery and global health programmes","🏥"],
+["PATH","https://www.path.org/","ngos","Global health","International","Health innovation and public health programmes","🌍"],
+["Clinton Health Access Initiative","https://www.clintonhealthaccess.org/","ngos","Global health","International","Access to healthcare and health systems work","🌍"],
+["Helen Keller Intl","https://helenkellerintl.org/","ngos","Nutrition and health","International","Nutrition, eye health and public health programmes","👁️"],
+["SightSavers","https://www.sightsavers.org/","ngos","Eye health","International","Eye health and disability inclusion","👁️"],
+["Orbis International","https://www.orbis.org/","ngos","Eye health","International","Eye health and ophthalmic training","👁️"],
+["The Carter Center","https://www.cartercenter.org/","ngos","Disease prevention","International","Public health and disease eradication initiatives","🌍"],
+["World Diabetes Foundation","https://www.worlddiabetesfoundation.org/","ngos","Diabetes","International","Diabetes prevention and care programmes","🩺"],
+["Union for International Cancer Control","https://www.uicc.org/","ngos","Cancer","International","Cancer prevention and control network","🎗️"],
+["International Diabetes Federation","https://idf.org/","ngos","Diabetes","International","Global diabetes information and professional network","🩺"],
+["Mental Health Foundation","https://www.mentalhealth.org.uk/","ngos","Mental health","United Kingdom","Mental health information and advocacy","🧠"],
+
+/* CLINICAL REFERENCES FOR DOCTORS */
+["Merck Manual Professional","https://www.merckmanuals.com/professional","doctors","Clinical reference","International","Professional medical reference","📘"],
+["MSD Manual Professional","https://www.msdmanuals.com/professional","doctors","Clinical reference","International","Clinical information for healthcare professionals","📘"],
+["BMJ Best Practice","https://bestpractice.bmj.com/","doctors","Clinical decision support","International","Evidence-based clinical decision support; access may require subscription","🩺"],
+["UpToDate","https://www.uptodate.com/","doctors","Clinical decision support","International","Clinical decision support; access may require subscription","🩺"],
+["DynaMed","https://www.dynamed.com/","doctors","Clinical decision support","International","Evidence-based clinical reference; access may require subscription","🩺"],
+["Cochrane Library","https://www.cochranelibrary.com/","doctors","Systematic reviews","International","Systematic reviews and evidence synthesis","📚"],
+["NICE Guidelines","https://www.nice.org.uk/guidance","doctors","Clinical guidelines","United Kingdom","Clinical and health-service guidance","📋"],
+["WHO Guidelines","https://www.who.int/publications/guidelines","doctors","Clinical guidelines","International","WHO public health and clinical guidelines","🌍"],
+["CDC Clinical Guidance","https://www.cdc.gov/","doctors","Clinical guidance","United States","Public health guidance, disease information and alerts","🦠"],
+["NICE Clinical Knowledge Summaries","https://cks.nice.org.uk/","doctors","Clinical reference","United Kingdom","Evidence-based primary-care guidance","📋"],
+["American College of Physicians","https://www.acponline.org/","doctors","Professional organisation","United States","Internal medicine education and clinical resources","🩺"],
+["American Medical Association","https://www.ama-assn.org/","doctors","Professional organisation","United States","Medical practice and professional resources","🩺"],
+["American Academy of Family Physicians","https://www.aafp.org/","doctors","Clinical reference","United States","Family medicine clinical resources","🩺"],
+["American Heart Association","https://www.heart.org/","doctors","Specialty guidance","United States","Cardiovascular health and professional resources","❤️"],
+["European Society of Cardiology","https://www.escardio.org/","doctors","Specialty guidance","International","Cardiology guidelines and professional education","❤️"],
+["American Diabetes Association","https://diabetes.org/","doctors","Specialty guidance","United States","Diabetes standards and clinical resources","🩺"],
+["American Society of Clinical Oncology","https://www.asco.org/","doctors","Specialty guidance","International","Cancer care guidance and professional education","🎗️"],
+["National Comprehensive Cancer Network","https://www.nccn.org/","doctors","Clinical guidelines","International","Oncology clinical practice guidelines; access terms apply","🎗️"],
+["Radiopaedia","https://radiopaedia.org/","doctors","Radiology reference","International","Radiology cases and educational reference","🩻"],
+["The Radiology Assistant","https://radiologyassistant.nl/","doctors","Radiology education","International","Radiology learning resources","🩻"],
+["DermNet","https://dermnetnz.org/","doctors","Dermatology reference","New Zealand","Dermatology education and clinical images","🧴"],
+["EyeWiki","https://eyewiki.org/","doctors","Ophthalmology reference","International","Ophthalmology education","👁️"],
+["LITFL","https://litfl.com/","doctors","Emergency medicine","International","Critical care, ECG and emergency medicine education","🚑"],
+["EMCrit","https://emcrit.org/","doctors","Critical care","International","Critical care and emergency medicine education","🚑"],
+["Indian Academy of Pediatrics","https://iapindia.org/","doctors","Specialty organisation","India","Paediatrics education and professional resources","👶"],
+["Indian Medical Association","https://www.ima-india.org/","doctors","Professional organisation","India","Indian medical professional organisation","🩺"],
+["National Centre for Disease Control","https://ncdc.mohfw.gov.in/","doctors","Public health guidance","India","Indian disease surveillance and public health information","🦠"],
+["ICMR Publications","https://www.icmr.gov.in/","doctors","Indian clinical research","India","Research reports, guidelines and institutional resources","🔬"],
+["Clinical Practice Guidelines India","https://www.mohfw.gov.in/","doctors","Guidelines portal","India","Check the ministry's official publications and guidelines","📋"],
+
+/* RESEARCH AND TRIALS */
+["PubMed","https://pubmed.ncbi.nlm.nih.gov/","research","Literature database","International","Biomedical literature search from the National Library of Medicine","🔬"],
+["PubMed Central","https://pmc.ncbi.nlm.nih.gov/","research","Open-access archive","International","Free full-text biomedical and life-science literature","📚"],
+["ClinicalTrials.gov","https://clinicaltrials.gov/","research","Clinical trials registry","United States","Search registered clinical studies worldwide","🧪"],
+["Clinical Trials Registry - India","https://ctri.nic.in/","research","Clinical trials registry","India","Indian clinical trials registration and search","🧪"],
+["WHO ICTRP","https://trialsearch.who.int/","research","Clinical trials registry","International","International clinical trials registry search portal","🧪"],
+["Cochrane","https://www.cochrane.org/","research","Evidence synthesis","International","Systematic reviews and evidence-based healthcare","📚"],
+["ICMR","https://www.icmr.gov.in/","research","Research organisation","India","Indian medical research and funding announcements","🔬"],
+["National Institutes of Health","https://www.nih.gov/","research","Research organisation","United States","Biomedical research, funding and scientific news","🔬"],
+["National Library of Medicine","https://www.nlm.nih.gov/","research","Medical library","United States","Medical literature, data and research resources","📚"],
+["Europe PMC","https://europepmc.org/","research","Literature database","International","Life-sciences literature, grants and preprints","🔬"],
+["WHO Research","https://www.who.int/health-topics/research","research","Research guidance","International","Global health research information","🌍"],
+["Research Square","https://www.researchsquare.com/","research","Preprints","International","Research preprints; findings may not be peer-reviewed","🧪"],
+["medRxiv","https://www.medrxiv.org/","research","Preprints","International","Health-science preprints; not all findings are peer-reviewed","🧪"],
+["bioRxiv","https://www.biorxiv.org/","research","Preprints","International","Biology preprints; findings may not be peer-reviewed","🧬"],
+["WHO Global Health Observatory","https://www.who.int/data/gho","research","Health data","International","Global health indicators and data","📊"],
+["Our World in Data - Health","https://ourworldindata.org/health-meta","research","Health data","International","Global health statistics and visualisations","📊"],
+["CDC Data","https://data.cdc.gov/","research","Health data","United States","Public health datasets and data tools","📊"],
+["World Bank Health Data","https://data.worldbank.org/topic/health","research","Health data","International","International health indicators and statistics","📊"],
+["ICMR Data Repository","https://www.icmr.gov.in/","research","Indian research data","India","Find research data portals through ICMR","📊"],
+["National Center for Biotechnology Information","https://www.ncbi.nlm.nih.gov/","research","Scientific database","United States","Genetics, molecular biology and biomedical databases","🧬"],
+
+/* JOURNALS AND PUBLICATIONS */
+["The Lancet","https://www.thelancet.com/","journals","Medical journal","International","Clinical medicine and global health","📚"],
+["The New England Journal of Medicine","https://www.nejm.org/","journals","Medical journal","United States","Clinical research and medicine","📚"],
+["JAMA","https://jamanetwork.com/","journals","Medical journal","United States","Medical research and clinical publications","📚"],
+["BMJ","https://www.bmj.com/","journals","Medical journal","United Kingdom","Medical research, analysis and clinical practice","📚"],
+["Nature Medicine","https://www.nature.com/nm/","journals","Research journal","International","Translational and clinical research","🧬"],
+["Nature","https://www.nature.com/","journals","Science journal","International","Scientific research across disciplines","🔬"],
+["Science","https://www.science.org/","journals","Science journal","United States","Scientific research and news","🔬"],
+["PLOS Medicine","https://journals.plos.org/plosmedicine/","journals","Open-access journal","International","Open-access clinical and public health research","📚"],
+["BMC Medicine","https://bmcmedicine.biomedcentral.com/","journals","Open-access journal","International","Clinical and translational medicine research","📚"],
+["Annals of Internal Medicine","https://www.acpjournals.org/journal/aim","journals","Medical journal","United States","Internal medicine research and reviews","📚"],
+["Circulation","https://www.ahajournals.org/journal/circ","journals","Cardiology journal","United States","Cardiovascular research and clinical information","❤️"],
+["Diabetes Care","https://diabetesjournals.org/care","journals","Specialty journal","International","Diabetes clinical research","🩺"],
+["The BMJ Global Health","https://gh.bmj.com/","journals","Global health journal","International","Global health research and policy","🌍"],
+["Indian Journal of Medical Research","https://journals.lww.com/ijmr/","journals","Medical journal","India","Biomedical research publication","📚"],
+["Indian Journal of Public Health","https://journals.lww.com/ijph/","journals","Public health journal","India","Public health research and practice","🌍"],
+["Indian Pediatrics","https://indianpediatrics.net/","journals","Paediatrics journal","India","Paediatric research and clinical publications","👶"],
+["Journal of the Association of Physicians of India","https://japi.org/","journals","Medical journal","India","Indian clinical medicine publication","🩺"],
+["Economic and Political Weekly","https://www.epw.in/","journals","Policy journal","India","Social science, health policy and public policy","📚"],
+["WHO Bulletin","https://www.who.int/publications/journals/bulletin","journals","Public health journal","International","Global public health research","🌍"],
+["Emerging Infectious Diseases","https://wwwnc.cdc.gov/eid/","journals","Infectious disease journal","United States","Emerging infections and epidemiology","🦠"],
+["American Journal of Public Health","https://ajph.aphapublications.org/","journals","Public health journal","United States","Public health research and policy","🌍"],
+["Cureus","https://www.cureus.com/","journals","Medical publication","International","Clinical case reports and research articles","📚"],
+["Scientific Reports","https://www.nature.com/srep/","journals","Open-access journal","International","Multidisciplinary scientific research","🔬"],
+["Frontiers in Medicine","https://www.frontiersin.org/journals/medicine","journals","Medical journal","International","Medical research and reviews","📚"],
+["BMJ Open","https://bmjopen.bmj.com/","journals","Open-access journal","International","Open-access medical research","📚"],
+["Annals of Oncology","https://www.annalsofoncology.org/","journals","Cancer journal","International","Oncology research and clinical information","🎗️"],
+
+/* HEALTH INFORMATION */
+["WHO Health Topics","https://www.who.int/health-topics","health","Health information","International","Health topics and global public health guidance","🌍"],
+["WHO India Health Topics","https://www.who.int/india/health-topics","health","Health information","India","Health topics relevant to India","🇮🇳"],
+["MedlinePlus","https://medlineplus.gov/","health","Patient health information","United States","Diseases, medicines, tests and health topics","💚"],
+["NHS Health A to Z","https://www.nhs.uk/conditions/","health","Patient health information","United Kingdom","Conditions, symptoms and treatments","💚"],
+["Mayo Clinic","https://www.mayoclinic.org/","health","Medical information","United States","Diseases, symptoms, tests and treatment information","🏥"],
+["Cleveland Clinic","https://my.clevelandclinic.org/health","health","Medical information","United States","Health conditions and patient education","🏥"],
+["Johns Hopkins Medicine","https://www.hopkinsmedicine.org/health","health","Medical information","United States","Health guides and medical education","🏥"],
+["Healthdirect Australia","https://www.healthdirect.gov.au/","health","Patient health information","Australia","Australian health information","💚"],
+["CDC Diseases and Conditions","https://www.cdc.gov/","health","Public health information","United States","Disease information, prevention and public health","🦠"],
+["National Institute of Mental Health","https://www.nimh.nih.gov/health","health","Mental health","United States","Mental health conditions and research information","🧠"],
+["National Institute on Aging","https://www.nia.nih.gov/health","health","Ageing health","United States","Health information for older adults","👵"],
+["National Cancer Institute","https://www.cancer.gov/","health","Cancer information","United States","Cancer information, prevention and research","🎗️"],
+["American Heart Association","https://www.heart.org/","health","Heart health","United States","Heart and stroke information","❤️"],
+["American Diabetes Association","https://diabetes.org/","health","Diabetes information","United States","Diabetes education and management resources","🩺"],
+["Arthritis Foundation","https://www.arthritis.org/","health","Arthritis information","United States","Arthritis education and patient resources","🦴"],
+["Alzheimer's Association","https://www.alz.org/","health","Brain health","United States","Dementia and Alzheimer's information","🧠"],
+["DermNet","https://dermnetnz.org/","health","Skin health","New Zealand","Skin conditions and dermatology education","🧴"],
+["NIDDK","https://www.niddk.nih.gov/","health","Specialist health information","United States","Diabetes, digestive, kidney and metabolic health","🩺"],
+["National Eye Institute","https://www.nei.nih.gov/","health","Eye health","United States","Eye diseases and vision research","👁️"],
+["National Institute of Allergy and Infectious Diseases","https://www.niaid.nih.gov/","health","Infectious diseases","United States","Allergy, immune and infectious disease research","🦠"],
+["NHS Medicines A to Z","https://www.nhs.uk/medicines/","health","Medicine information","United Kingdom","General medicine information and precautions","💊"],
+["DailyMed","https://dailymed.nlm.nih.gov/dailymed/","health","Drug labels","United States","Official drug labelling information","💊"],
+["LactMed","https://www.ncbi.nlm.nih.gov/books/NBK501922/","health","Medicine safety","United States","Information on medicines and breastfeeding","🤱"],
+["WHO Vaccines and Immunization","https://www.who.int/health-topics/vaccines-and-immunization","health","Vaccination","International","Vaccine and immunisation information","💉"],
+
+/* EDUCATION */
+["National Medical Commission","https://www.nmc.org.in/","education","Medical education","India","Medical education regulation and information","🎓"],
+["National Institute of Health and Family Welfare","https://nihfw.ac.in/","education","Public health education","India","Public health training and courses","🎓"],
+["AIIMS New Delhi","https://www.aiims.edu/","education","Medical education","India","Medical education and institutional resources","🎓"],
+["JIPMER","https://jipmer.edu.in/","education","Medical education","India","Medical education, research and training","🎓"],
+["PGIMER Chandigarh","https://pgimer.edu.in/","education","Medical education","India","Postgraduate medical education and research","🎓"],
+["Indian Nursing Council","https://indiannursingcouncil.org/","education","Nursing education","India","Nursing education and recognised institutions information","👩‍⚕️"],
+["Pharmacy Council of India","https://pci.nic.in/","education","Pharmacy education","India","Pharmacy education and regulation","💊"],
+["Coursera Health Courses","https://www.coursera.org/browse/health","education","Online learning","International","Online health-related courses; course fees vary","🎓"],
+["edX Health Courses","https://www.edx.org/learn/health","education","Online learning","International","Health and medical-related learning options","🎓"],
+["OpenWHO","https://openwho.org/","education","Public health training","International","WHO learning resources for public health emergencies","🌍"],
+["CDC TRAIN","https://www.train.org/cdctrain/","education","Public health training","United States","Public health training resources","🎓"],
+["NIH Clinical Center Education","https://clinicalcenter.nih.gov/","education","Clinical research education","United States","Clinical research and institutional information","🔬"],
+["Stanford Medicine","https://med.stanford.edu/","education","Medical education","United States","Medical education and research","🎓"],
+["Harvard Medical School","https://hms.harvard.edu/","education","Medical education","United States","Medical education, research and public engagement","🎓"],
+["Johns Hopkins Medicine","https://www.hopkinsmedicine.org/","education","Medical education","United States","Medical training and research information","🎓"],
+["BMJ Learning","https://learning.bmj.com/","education","Professional learning","International","Medical professional learning; access may require subscription","🎓"],
+["NEJM Learning","https://learning.nejm.org/","education","Professional learning","International","Continuing medical education resources","🎓"],
+["Medscape Education","https://www.medscape.org/","education","Professional learning","International","Medical news and continuing education resources","🎓"],
+["Radiopaedia Courses","https://radiopaedia.org/","education","Radiology learning","International","Radiology education and cases","🩻"],
+
+/* LATEST UPDATES */
+["ICMR News & Announcements","https://www.icmr.gov.in/","updates","Official updates","India","Research announcements, programmes and public notices","🔬"],
+["NCDC Health Advisories","https://ncdc.mohfw.gov.in/","updates","Official updates","India","Disease surveillance and health advisories","🦠"],
+["CDSCO Drug Safety Updates","https://cdsco.gov.in/","updates","Regulatory updates","India","Drug and medical-device regulatory notices","💊"],
+["MoHFW Updates","https://mohfw.gov.in/","updates","Official updates","India","Indian health ministry announcements","🏛️"],
+["WHO News","https://www.who.int/news","updates","Global health news","International","WHO news, alerts and statements","🌍"],
+["WHO Disease Outbreak News","https://www.who.int/emergencies/disease-outbreak-news","updates","Outbreak updates","International","Official disease outbreak reports","🦠"],
+["WHO Publications","https://www.who.int/publications","updates","Reports and guidelines","International","New reports, recommendations and publications","📚"],
+["CDC Newsroom","https://www.cdc.gov/media/","updates","Public health news","United States","CDC news releases and announcements","🦠"],
+["CDC Health Alerts","https://emergency.cdc.gov/han/","updates","Health alerts","United States","Health Alert Network notices","🚨"],
+["FDA Drug Safety Communications","https://www.fda.gov/drugs/drug-safety-and-availability","updates","Drug safety","United States","Official medicine safety communications","💊"],
+["FDA Medical Devices","https://www.fda.gov/medical-devices","updates","Medical device updates","United States","Medical-device safety and regulatory information","🩻"],
+["NIH News Releases","https://www.nih.gov/news-events/news-releases","updates","Research news","United States","Biomedical research announcements","🔬"],
+["PubMed Latest Research","https://pubmed.ncbi.nlm.nih.gov/","updates","Research discovery","International","Search the latest indexed biomedical literature","📚"],
+["ClinicalTrials.gov Updates","https://clinicaltrials.gov/","updates","Clinical trial updates","International","Search trial records and study status","🧪"],
+["The Lancet","https://www.thelancet.com/","updates","Journal updates","International","New medical research and editorial publications","📚"],
+["NEJM","https://www.nejm.org/","updates","Journal updates","International","New clinical research and medical reports","📚"],
+["BMJ","https://www.bmj.com/","updates","Journal updates","International","Medical research and analysis","📚"],
+["Nature Medicine","https://www.nature.com/nm/","updates","Research updates","International","New translational and clinical research","🧬"],
+["The Conversation Health","https://theconversation.com/global/topics/health-6","updates","Health analysis","International","Health articles by academics and researchers","💬"]
+];
+
 const $ = id => document.getElementById(id);
-let apps = [];
-let installPrompt = null;
+const FAVORITES_KEY = "medicalDirectoryFavoritesV1";
+let favorites = [];
+let currentPage = "all";
 
-try {
-  apps = JSON.parse(localStorage.getItem('androidLauncherApps') || '[]');
-  if (!Array.isArray(apps)) apps = [];
-} catch(e) {
-  apps = [];
+function esc(value){
+ return String(value ?? "").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
 }
 
-document.querySelectorAll('.tabs button').forEach(button => {
-  button.addEventListener('click', () => {
-    document.querySelectorAll('.tabs button').forEach(b =>
-      b.classList.toggle('active', b === button)
-    );
-    document.querySelectorAll('.panel').forEach(panel =>
-      panel.classList.toggle('active', panel.id === button.dataset.tab)
-    );
-    renderApps();
-  });
+function getResources(){
+ return RESOURCES.map((r,i)=>({
+  id:"med_"+i,
+  name:r[0],url:r[1],section:r[2],type:r[3],
+  country:r[4],desc:r[5],icon:r[6]
+ }));
+}
+
+function loadFavorites(){
+ try{
+  const data=JSON.parse(localStorage.getItem(FAVORITES_KEY)||"[]");
+  favorites=Array.isArray(data)?data:[];
+ }catch(e){favorites=[];}
+}
+
+function saveFavorites(){
+ try{
+  localStorage.setItem(FAVORITES_KEY,JSON.stringify(favorites));
+ }catch(e){
+  alert("Could not save favorites. Browser storage may be unavailable.");
+ }
+}
+
+function isFavorite(id){
+ return favorites.includes(id);
+}
+
+function toggleFavorite(id){
+ if(isFavorite(id))favorites=favorites.filter(x=>x!==id);
+ else favorites.push(id);
+ saveFavorites();
+ renderCurrentPage();
+ updateStats();
+}
+
+function openResource(url){
+ try{
+  const parsed=new URL(url);
+  if(!["https:","http:"].includes(parsed.protocol)){
+   alert("This link is not a valid web address.");
+   return;
+  }
+  window.open(parsed.href,"_blank","noopener,noreferrer");
+ }catch(e){
+  alert("This website address is invalid.");
+ }
+}
+
+function cardHTML(resource){
+ return `<article class="card">
+  <div class="cardhead">
+   <div class="icon">${esc(resource.icon)}</div>
+   <div><div class="cardtitle">${esc(resource.name)}</div>
+   <div class="muted">${esc(resource.country)}</div></div>
+  </div>
+  <div class="badges">
+   <span class="badge">${esc(resource.type)}</span>
+   <span class="badge">${esc(resource.section)}</span>
+  </div>
+  <div class="desc">${esc(resource.desc)}</div>
+  <div class="link">${esc(resource.url)}</div>
+  <div class="cardactions">
+   <button data-action="open" data-id="${esc(resource.id)}">↗ Open Website</button>
+   <button class="secondary" data-action="favorite" data-id="${esc(resource.id)}">${isFavorite(resource.id)?"★ Saved":"☆ Favorite"}</button>
+  </div>
+ </article>`;
+}
+
+function sortResources(items){
+ const mode=$("sort").value;
+ return items.slice().sort((a,b)=>{
+  const field=mode==="country"?"country":mode==="type"?"type":"name";
+  return a[field].localeCompare(b[field]);
+ });
+}
+
+function filteredResources(){
+ let items=getResources();
+ const query=$("search").value.trim().toLowerCase();
+ const country=$("countryFilter").value;
+ const type=$("typeFilter").value;
+
+ if(currentPage==="favorites"){
+  items=items.filter(r=>isFavorite(r.id));
+ }else if(currentPage!=="all"){
+  items=items.filter(r=>r.section===currentPage);
+ }
+
+ if(query){
+  items=items.filter(r=>
+   [r.name,r.url,r.country,r.type,r.desc,r.section]
+   .join(" ").toLowerCase().includes(query)
+  );
+ }
+ if(country)items=items.filter(r=>r.country===country);
+ if(type)items=items.filter(r=>r.type===type);
+
+ return sortResources(items);
+}
+
+function renderGrid(id,items){
+ $(id).innerHTML=items.length?
+  items.map(cardHTML).join(""):
+  '<div class="empty">No resources found for this selection.</div>';
+}
+
+function renderCurrentPage(){
+ const items=filteredResources();
+ if(currentPage==="all"){
+  $("resultText").textContent=`Showing ${items.length} resource(s)`;
+  renderGrid("resourceGrid",items);
+ }else if(currentPage==="favorites"){
+  renderGrid("favoritesGrid",items);
+ }else{
+  const map={
+   india:"indiaGrid",facilities:"facilitiesGrid",ngos:"ngosGrid",
+   doctors:"doctorsGrid",research:"researchGrid",journals:"journalsGrid",
+   health:"healthGrid",education:"educationGrid",updates:"updatesGrid"
+  };
+  if(map[currentPage])renderGrid(map[currentPage],items);
+ }
+}
+
+function updateStats(){
+ const resources=getResources();
+ $("totalCount").textContent=resources.length;
+ $("countryCount").textContent=new Set(resources.map(r=>r.country)).size;
+ $("favoriteCount").textContent=favorites.length;
+}
+
+function populateFilters(){
+ const resources=getResources();
+ const countries=[...new Set(resources.map(r=>r.country))].sort();
+ const types=[...new Set(resources.map(r=>r.type))].sort();
+
+ $("countryFilter").innerHTML=
+  '<option value="">All countries/regions</option>'+
+  countries.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
+
+ $("typeFilter").innerHTML=
+  '<option value="">All resource types</option>'+
+  types.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join("");
+}
+
+function showPage(page){
+ currentPage=page;
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ const target=$("page-"+page);
+ if(target)target.classList.add("active");
+
+ document.querySelectorAll("#nav button").forEach(b=>{
+  b.classList.toggle("active",b.dataset.page===page);
+ });
+
+ renderCurrentPage();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function updateClock(){
+ const now=new Date();
+ $("clock").textContent=now.toLocaleDateString(undefined,{
+  weekday:"long",year:"numeric",month:"long",day:"numeric"
+ })+" · "+now.toLocaleTimeString();
+}
+
+$("nav").addEventListener("click",e=>{
+ const btn=e.target.closest("button[data-page]");
+ if(btn)showPage(btn.dataset.page);
 });
 
-function openApp(url) {
-  if (!url) return;
-  // Use a normal browser navigation for broad compatibility.
-  // Android may route supported URLs to an installed app.
-  window.location.href = url;
-}
-
-function saveApps() {
-  localStorage.setItem('androidLauncherApps', JSON.stringify(apps));
-  renderApps();
-}
-
-function validUrl(value) {
-  try {
-    const u = new URL(value);
-    return ['https:', 'http:', 'intent:', 'mailto:', 'tel:', 'sms:',
-            'geo:', 'market:'].includes(u.protocol);
-  } catch(e) {
-    return false;
-  }
-}
-
-function addApp() {
-  const name = $('appName').value.trim();
-  const icon = $('appIcon').value.trim() || '📲';
-  const url = $('appUrl').value.trim();
-
-  if (!name || !url) {
-    alert('Please enter both an app name and URL.');
-    return;
-  }
-
-  if (!validUrl(url)) {
-    alert('Enter a valid URL or supported Android deep link.');
-    return;
-  }
-
-  apps.push({
-    id: Date.now() + Math.random(),
-    name, icon, url
-  });
-
-  saveApps();
-  $('appName').value = '';
-  $('appIcon').value = '📲';
-  $('appUrl').value = '';
-  alert('App shortcut saved.');
-}
-
-function removeApp(id) {
-  if (!confirm('Delete this shortcut?')) return;
-  apps = apps.filter(a => a.id !== id);
-  saveApps();
-}
-
-function renderApps() {
-  const list = $('savedApps');
-  const home = $('homeCustom');
-
-  list.innerHTML = '';
-  home.innerHTML = '';
-
-  if (!apps.length) {
-    list.textContent = 'No custom shortcuts saved yet.';
-    home.innerHTML =
-      '<p class="note">Add shortcuts from the My Apps tab.</p>';
-    return;
-  }
-
-  apps.forEach(app => {
-    const item = document.createElement('div');
-    item.className = 'saved-item';
-
-    const info = document.createElement('span');
-    info.textContent = app.icon + ' ' + app.name;
-
-    const controls = document.createElement('span');
-
-    const open = document.createElement('button');
-    open.className = 'action';
-    open.style.marginTop = '0';
-    open.textContent = 'Open';
-    open.onclick = () => openApp(app.url);
-
-    const del = document.createElement('button');
-    del.className = 'delete';
-    del.textContent = 'Delete';
-    del.style.marginLeft = '5px';
-    del.onclick = () => removeApp(app.id);
-
-    controls.append(open, del);
-    item.append(info, controls);
-    list.appendChild(item);
-
-    const button = document.createElement('button');
-    button.className = 'app';
-
-    const icon = document.createElement('span');
-    icon.className = 'icon';
-    icon.textContent = app.icon;
-
-    const title = document.createElement('span');
-    title.textContent = app.name;
-
-    button.append(icon, title);
-    button.onclick = () => openApp(app.url);
-    home.appendChild(button);
-  });
-}
-
-function changeTheme() {
-  const theme = $('theme').value;
-  const themes = {
-    green: {green:'#137547', bg:'#f2f8f4', card:'#ffffff', text:'#183126'},
-    blue: {green:'#126b91', bg:'#edf7fc', card:'#ffffff', text:'#163747'},
-    earth: {green:'#795548', bg:'#f8f1e8', card:'#fffaf3', text:'#49372d'},
-    purple: {green:'#7951a8', bg:'#f5effa', card:'#ffffff', text:'#39294b'},
-    dark: {green:'#24352b', bg:'#17211b', card:'#26352c', text:'#edf7ef'}
-  };
-  const t = themes[theme];
-  document.documentElement.style.setProperty('--green', t.green);
-  document.documentElement.style.setProperty('--bg', t.bg);
-  document.documentElement.style.setProperty('--card', t.card);
-  document.documentElement.style.setProperty('--text', t.text);
-  localStorage.setItem('androidLauncherTheme', theme);
-}
-
-function exportApps() {
-  const blob = new Blob([JSON.stringify(apps, null, 2)], {
-    type:'application/json'
-  });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'android-app-shortcuts.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-function importApps() {
-  $('importFile').click();
-}
-
-function readImport(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const data = JSON.parse(reader.result);
-      if (!Array.isArray(data)) throw new Error('Expected a JSON array');
-
-      const clean = data.filter(a =>
-        a && typeof a.name === 'string' &&
-        typeof a.url === 'string' && validUrl(a.url)
-      ).map(a => ({
-        id: Date.now() + Math.random(),
-        name: a.name.slice(0,100),
-        icon: typeof a.icon === 'string' ? a.icon.slice(0,8) : '📲',
-        url: a.url
-      }));
-
-      apps = apps.concat(clean);
-      saveApps();
-      alert('Imported ' + clean.length + ' shortcuts.');
-    } catch(e) {
-      alert('Could not import file. Please select a valid exported JSON file.');
-    }
-    event.target.value = '';
-  };
-  reader.readAsText(file);
-}
-
-async function installPWA() {
-  if (installPrompt) {
-    installPrompt.prompt();
-    await installPrompt.userChoice;
-    installPrompt = null;
-  } else {
-    alert(
-      'If available, open your browser menu and choose ' +
-      '"Install app" or "Add to Home screen". ' +
-      'For reliable PWA installation, host this page over HTTPS ' +
-      'with a separate manifest file and service worker.'
-    );
-  }
-}
-
-window.addEventListener('beforeinstallprompt', event => {
-  event.preventDefault();
-  installPrompt = event;
-  $('installStatus').textContent =
-    'Your browser may allow you to install this app from the Install PWA button.';
+document.addEventListener("click",e=>{
+ const btn=e.target.closest("button[data-action]");
+ if(!btn)return;
+ const item=getResources().find(r=>r.id===btn.dataset.id);
+ if(!item)return;
+ if(btn.dataset.action==="open")openResource(item.url);
+ if(btn.dataset.action==="favorite")toggleFavorite(item.id);
 });
 
-const oldTheme = localStorage.getItem('androidLauncherTheme');
-if (oldTheme && $('theme').querySelector('option[value="' + oldTheme + '"]')) {
-  $('theme').value = oldTheme;
-}
-changeTheme();
-renderApps();
+["search","countryFilter","typeFilter","sort"].forEach(id=>{
+ $(id).addEventListener(id==="search"?"input":"change",renderCurrentPage);
+});
+
+loadFavorites();
+populateFilters();
+updateStats();
+updateClock();
+setInterval(updateClock,1000);
+renderCurrentPage();
 </script>
-
 </body>
 </html>
