@@ -19,6 +19,7 @@ function autoCacheAllFiles() {
     "./",
     "./index.html",
     "./home.html",
+    "./start.html",
     "./style.css",
     "./app.js",
     "./manifest.json",
