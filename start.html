@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,12 +39,13 @@ input,select,textarea{width:100%;min-width:0;padding:10px;
  border:1px solid var(--line);border-radius:11px;background:var(--card);color:var(--text)}
 .panel,.toolbar,.stat{background:var(--card);border:1px solid var(--line);
  border-radius:16px;box-shadow:var(--shadow)}
-.toolbar{padding:12px;margin-bottom:13px}
-.searchrow{display:flex;gap:7px}
-.searchrow input{flex:1}
-.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
-.controls select{flex:1;min-width:125px}
-.filter-label{display:block;font-size:12px;color:var(--muted);margin:0 0 5px}
+.toolbar{padding:10px;margin-bottom:13px}
+.customize-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.customize-btn{display:flex;align-items:center;justify-content:center;gap:8px;
+ min-height:44px;padding:10px 16px;font-weight:800}
+.active-filters{font-size:12px;color:var(--muted);flex:1;min-width:100px}
+.filter-dot{display:inline-block;width:8px;height:8px;background:var(--primary);
+ border-radius:50%;margin-right:5px}
 .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:13px}
 .stat{padding:10px}
 .stat strong{display:block;font-size:22px}
@@ -90,6 +92,50 @@ input,select,textarea{width:100%;min-width:0;padding:10px;
 .group-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
 .group-edit{display:flex;gap:6px;margin-top:8px}
 .group-edit input{flex:1}
+
+/* Floating Customize panel */
+.customize-overlay{
+ position:fixed;inset:0;z-index:100;
+ display:flex;align-items:center;justify-content:center;
+ padding:14px;background:#10291d80;
+ backdrop-filter:blur(3px)
+}
+.customize-modal{
+ width:min(100%,520px);max-height:88dvh;overflow-y:auto;
+ background:var(--card);color:var(--text);
+ border:1px solid var(--line);border-radius:20px;
+ box-shadow:0 20px 70px #0003;
+ padding:16px;overscroll-behavior:contain
+}
+.customize-head{
+ display:flex;align-items:center;gap:10px;
+ position:sticky;top:-16px;z-index:2;
+ background:var(--card);padding:3px 0 12px;
+ border-bottom:1px solid var(--line);margin-bottom:10px
+}
+.customize-heading{flex:1;min-width:0}
+.customize-heading strong{font-size:18px;display:block}
+.customize-heading span{font-size:12px;color:var(--muted)}
+.close-customize{
+ width:39px;height:39px;flex-shrink:0;border:1px solid var(--line);
+ border-radius:12px;background:var(--soft);color:var(--text);
+ font-size:22px;font-weight:700
+}
+.customize-section{
+ padding:8px 0 12px;border-bottom:1px solid var(--line)
+}
+.customize-section:last-of-type{border-bottom:0}
+.customize-section h3{font-size:13px;margin:0 0 8px}
+.customize-section .field{margin:8px 0}
+.customize-section .controls{display:flex;gap:8px;flex-wrap:wrap}
+.customize-section .controls>div{flex:1;min-width:125px}
+.customize-footer{
+ display:flex;gap:8px;position:sticky;bottom:-16px;
+ background:var(--card);padding:12px 0 2px
+}
+.customize-footer button{flex:1}
+body.modal-open{overflow:hidden}
+
 .layout-list .app-grid{grid-template-columns:1fr}
 .layout-list .app-card{display:flex;align-items:center;gap:9px;text-align:left;padding:9px}
 .layout-list .app-icon{margin:0;width:40px;flex-shrink:0}
@@ -117,6 +163,7 @@ input,select,textarea{width:100%;min-width:0;padding:10px;
 .layout-rail .app-grid{grid-template-columns:1fr}
 .layout-rail .app-card{display:flex;align-items:center;gap:8px;text-align:left}
 .layout-rail .app-icon{margin:0}
+
 .bottomdock{position:fixed;z-index:30;bottom:0;left:0;right:0;
  display:flex;justify-content:center;gap:5px;background:var(--card);
  border-top:1px solid var(--line);padding:7px 10px calc(7px + env(safe-area-inset-bottom));
@@ -125,9 +172,10 @@ input,select,textarea{width:100%;min-width:0;padding:10px;
  color:var(--muted);font-size:12px;font-weight:750;padding:7px 4px}
 .dockbtn span{display:block;font-size:21px;margin-bottom:2px}
 .dockbtn.active{background:var(--soft);color:var(--primary2)}
-.toast{position:fixed;z-index:60;left:50%;bottom:95px;transform:translateX(-50%);
+.toast{position:fixed;z-index:120;left:50%;bottom:95px;transform:translateX(-50%);
  background:#183b2a;color:white;border-radius:12px;padding:11px 15px;
  box-shadow:var(--shadow);max-width:90vw;text-align:center;font-size:13px}
+
 body[data-theme="ocean"]{--bg:#eaf6fc;--text:#173a52;--muted:#627d8c;--primary:#087fa4;--primary2:#075b7c;--line:#cfe7f1;--soft:#d9f2fa}
 body[data-theme="meadow"]{--bg:#f1f8e8;--text:#344622;--muted:#74815e;--primary:#6c9b37;--primary2:#416c1f;--line:#dce8c9;--soft:#e5f2d4}
 body[data-theme="mint"]{--bg:#e8f8f3;--text:#164a3b;--muted:#68877c;--primary:#12a582;--primary2:#08775e;--line:#cdebe1;--soft:#d4f5e9}
@@ -137,6 +185,7 @@ body[data-theme="rose"]{--bg:#fff0f4;--text:#633545;--muted:#987582;--primary:#d
 body[data-theme="sky"]{--bg:#edf5ff;--text:#213e65;--muted:#7387a5;--primary:#4285d4;--primary2:#235da7;--line:#d4e3f8;--soft:#dcecff}
 body[data-theme="sand"]{--bg:#f8f2e7;--text:#51412a;--muted:#8a7c64;--primary:#a98750;--primary2:#775c31;--line:#e8dcc6;--soft:#efe4cf}
 body[data-theme="night"]{--bg:#111a18;--card:#1b2925;--text:#e4f5e9;--muted:#9bb3a4;--primary:#4ac987;--primary2:#16764a;--line:#31483c;--soft:#243d31}
+
 @media(min-width:700px){
  main{padding:20px}
  .app-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
@@ -152,6 +201,13 @@ body[data-theme="night"]{--bg:#111a18;--card:#1b2925;--text:#e4f5e9;--muted:#9bb
  .layout-icons .app-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
  .layout-split{grid-template-columns:1fr}
  .group-actions .btn{font-size:11px;padding:6px}
+ .customize-modal{padding:12px}
+ .customize-head{top:-12px}
+ .customize-footer{bottom:-12px}
+}
+@media(prefers-reduced-motion:no-preference){
+ .customize-modal{animation:popin .16s ease-out}
+ @keyframes popin{from{opacity:0;transform:translateY(8px) scale(.99)}to{opacity:1;transform:none}}
 }
 </style>
 </head>
@@ -165,7 +221,7 @@ body[data-theme="night"]{--bg:#111a18;--card:#1b2925;--text:#e4f5e9;--muted:#9bb
    <div class="subtitle">Personal Governance Simplified</div>
   </div>
   <div class="header-actions">
-   <button class="btn small" id="searchFocus" title="Search">🔎</button>
+   <button class="btn small" id="searchFocus" title="Search apps">🔎</button>
    <button class="btn small" id="cycleTheme" title="Change theme">🎨</button>
   </div>
  </div>
@@ -173,41 +229,69 @@ body[data-theme="night"]{--bg:#111a18;--card:#1b2925;--text:#e4f5e9;--muted:#9bb
 
 <main>
  <section id="homePage">
-  <div class="toolbar">
-   <div class="searchrow">
-    <input id="search" type="search" placeholder="Search apps and websites…" autocomplete="off">
-    <button class="btn" id="clearSearch">Clear</button>
-   </div>
-   <div class="controls">
-    <div style="flex:1;min-width:125px">
-     <label class="filter-label" for="categoryFilter">Category filter</label>
-     <select id="categoryFilter"><option value="all">All categories</option></select>
-    </div>
-    <div style="flex:1;min-width:125px">
-     <label class="filter-label" for="appFilter">Show apps</label>
-     <select id="appFilter">
-      <option value="all">All apps</option>
-      <option value="fav">⭐ Favourites</option>
-      <option value="recent">🕘 Recently opened</option>
-     </select>
-    </div>
-   </div>
 
-   <!-- NEW: expand/collapse all categories -->
-   <div class="controls">
-    <div style="flex:1;min-width:150px">
-     <label class="filter-label" for="allCategoriesToggle">Category sections</label>
+  <!-- Home screen: filters are now in the floating Customize panel -->
+  <div class="toolbar">
+   <div class="customize-row">
+    <button class="btn primary customize-btn" id="openCustomize" aria-haspopup="dialog" aria-controls="customizeOverlay">
+     ⚙️ Customize <span aria-hidden="true">⌄</span>
+    </button>
+    <div class="active-filters" id="activeFilterSummary">All categories · All apps</div>
+   </div>
+  </div>
+
+  <!-- Floating customize panel -->
+  <div id="customizeOverlay" class="customize-overlay hidden">
+   <section class="customize-modal" role="dialog" aria-modal="true"
+    aria-labelledby="customizeTitle" aria-describedby="customizeDescription">
+    <div class="customize-head">
+     <div class="customize-heading">
+      <strong id="customizeTitle">⚙️ Customize Home</strong>
+      <span id="customizeDescription">Filters, categories and app display</span>
+     </div>
+     <button type="button" class="close-customize" id="closeCustomize" aria-label="Close customization">×</button>
+    </div>
+
+    <div class="customize-section">
+     <h3>🔎 Search</h3>
+     <div class="searchrow">
+      <input id="search" type="search" placeholder="Search apps and websites…" autocomplete="off">
+      <button class="btn" id="clearSearch">Clear</button>
+     </div>
+    </div>
+
+    <div class="customize-section">
+     <h3>🔍 Filters</h3>
+     <div class="controls">
+      <div>
+       <label class="filter-label" for="categoryFilter">Category filter</label>
+       <select id="categoryFilter"><option value="all">All categories</option></select>
+      </div>
+      <div>
+       <label class="filter-label" for="appFilter">Show apps</label>
+       <select id="appFilter">
+        <option value="all">All apps</option>
+        <option value="fav">⭐ Favourites</option>
+        <option value="recent">🕘 Recently opened</option>
+       </select>
+      </div>
+     </div>
+    </div>
+
+    <div class="customize-section">
+     <h3>📂 Category sections</h3>
+     <label class="filter-label" for="allCategoriesToggle">Expand or collapse categories</label>
      <select id="allCategoriesToggle" aria-label="Expand or collapse all categories">
       <option value="individual">Individual category controls</option>
       <option value="expand">＋ Expand all categories</option>
       <option value="collapse">− Collapse all categories</option>
      </select>
+     <p class="muted">You can also expand or collapse each category using its heading on Home.</p>
     </div>
-   </div>
 
-   <div class="controls">
-    <div style="flex:1;min-width:125px">
-     <label class="filter-label" for="layout">App layout</label>
+    <div class="customize-section">
+     <h3>▦ App layout</h3>
+     <label class="filter-label" for="layout">Choose how apps appear</label>
      <select id="layout">
       <option value="grid">▦ Grid</option>
       <option value="compact">▤ Compact</option>
@@ -219,7 +303,12 @@ body[data-theme="night"]{--bg:#111a18;--card:#1b2925;--text:#e4f5e9;--muted:#9bb
       <option value="rail">▥ Group rails</option>
      </select>
     </div>
-   </div>
+
+    <div class="customize-footer">
+     <button class="btn" id="resetFilters">Reset filters</button>
+     <button class="btn primary" id="applyCustomize">Done ✓</button>
+    </div>
+   </section>
   </div>
 
   <div class="stats">
@@ -264,7 +353,7 @@ body[data-theme="night"]{--bg:#111a18;--card:#1b2925;--text:#e4f5e9;--muted:#9bb
 
   <div class="panel">
    <h2>↕ Reorganize apps</h2>
-   <p class="muted">Use Move on an app in Home, then select a destination category. You can also change the category selector directly on each app card.</p>
+   <p class="muted">Use Move on an app in Home, then select a destination category. You can also change the category selector directly on each app card. Drag cards to change their order.</p>
    <button class="btn" id="goHome">Go to Home</button>
   </div>
  </section>
@@ -392,15 +481,65 @@ function applyTheme(){
  $("theme").value=state.theme;
  $("layout").value=state.layout;
  $("defaultLayout").value=state.layout;
+ updateFilterSummary();
+}
+function openCustomize(focusSearch=false){
+ if(!$("homePage").classList.contains("hidden")){
+  $("customizeOverlay").classList.remove("hidden");
+  document.body.classList.add("modal-open");
+  if(focusSearch)setTimeout(()=>$("search").focus(),50);
+ }
+}
+function closeCustomize(){
+ $("customizeOverlay").classList.add("hidden");
+ document.body.classList.remove("modal-open");
+ $("openCustomize").focus({preventScroll:true});
+}
+function updateFilterSummary(){
+ const cat=$("categoryFilter").value;
+ const filter=$("appFilter").value;
+ const query=$("search").value.trim();
+ const parts=[];
+ parts.push(cat==="all"?"All categories":cat);
+ parts.push(filter==="fav"?"Favourites":filter==="recent"?"Recently opened":"All apps");
+ if(query)parts.push("Search: "+query);
+ $("activeFilterSummary").textContent=parts.join(" · ");
 }
 function changePage(page){
  cancelMove(false);
+ closeCustomize();
  ["home","organize","settings"].forEach(p=>$(p+"Page").classList.toggle("hidden",p!==page));
  document.querySelectorAll(".dockbtn").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
  if(page==="organize")renderGroups();
  window.scrollTo({top:0,behavior:"smooth"});
 }
 document.querySelectorAll(".dockbtn").forEach(b=>b.addEventListener("click",()=>changePage(b.dataset.page)));
+
+$("openCustomize").addEventListener("click",()=>openCustomize());
+$("closeCustomize").addEventListener("click",closeCustomize);
+$("applyCustomize").addEventListener("click",closeCustomize);
+$("customizeOverlay").addEventListener("click",e=>{
+ if(e.target===$("customizeOverlay"))closeCustomize();
+});
+$("searchFocus").addEventListener("click",()=>{
+ changePage("home");
+ openCustomize(true);
+});
+$("resetFilters").addEventListener("click",()=>{
+ $("search").value="";
+ $("categoryFilter").value="all";
+ $("appFilter").value="all";
+ $("allCategoriesToggle").value="individual";
+ renderApps();
+ toast("Filters reset.");
+ $("search").focus();
+});
+document.addEventListener("keydown",e=>{
+ if(e.key==="Escape"){
+  if(!$("customizeOverlay").classList.contains("hidden"))closeCustomize();
+  else cancelMove(true);
+ }
+});
 
 function refreshCategorySelects(){
  const filter=$("categoryFilter"),appGroup=$("appCategory");
@@ -416,6 +555,7 @@ function refreshCategorySelects(){
  });
  filter.value=state.groups.includes(oldFilter)?oldFilter:"all";
  appGroup.value=state.groups.includes(oldGroup)?oldGroup:state.groups[0];
+ updateFilterSummary();
 }
 function cancelMove(show=true){
  const had=!!movingId;movingId=null;
@@ -514,18 +654,12 @@ function getFilteredApps(){
  if(query)list=list.filter(a=>(a.name+" "+a.group+" "+a.url).toLowerCase().includes(query));
  return list;
 }
-
-/* NEW: expand/collapse all categories, preserving each category's state */
 function setAllCategoriesCollapsed(shouldCollapse){
- state.groups.forEach(group=>{
-  state.collapsed[group]=shouldCollapse;
- });
- save();
- renderApps();
+ state.groups.forEach(group=>{state.collapsed[group]=shouldCollapse});
+ save();renderApps();
  $("allCategoriesToggle").value=shouldCollapse?"collapse":"expand";
  toast(shouldCollapse?"All categories collapsed.":"All categories expanded.");
 }
-
 function makeSection(group,list){
  const section=document.createElement("section");section.className="group-section";
  section.dataset.group=group;
@@ -581,6 +715,7 @@ function renderApps(){
  });
  const orphaned=list.filter(a=>!state.groups.includes(a.group));
  if(orphaned.length)box.appendChild(makeSection("Other",orphaned));
+ updateFilterSummary();
 }
 function renderGroups(){
  const box=$("categoryManager");box.innerHTML="";
@@ -716,19 +851,19 @@ $("addCategory").addEventListener("click",addCategory);
 $("newCategory").addEventListener("keydown",e=>{if(e.key==="Enter")addCategory()});
 $("addApp").addEventListener("click",addCustomApp);
 $("goHome").addEventListener("click",()=>changePage("home"));
+
 $("search").addEventListener("input",renderApps);
-$("clearSearch").addEventListener("click",()=>{$("search").value="";renderApps();$("search").focus()});
-$("searchFocus").addEventListener("click",()=>{changePage("home");$("search").focus()});
+$("clearSearch").addEventListener("click",()=>{
+ $("search").value="";renderApps();$("search").focus();
+});
 $("categoryFilter").addEventListener("change",renderApps);
 $("appFilter").addEventListener("change",renderApps);
 
-/* NEW: dropdown action handler */
 $("allCategoriesToggle").addEventListener("change",e=>{
  const action=e.target.value;
  if(action==="expand")setAllCategoriesCollapsed(false);
  else if(action==="collapse")setAllCategoriesCollapsed(true);
 });
-
 $("layout").addEventListener("change",e=>{
  if(LAYOUTS.includes(e.target.value)){state.layout=e.target.value;save();applyTheme();renderApps()}
 });
@@ -749,7 +884,6 @@ $("backupFile").addEventListener("change",e=>{
  const file=e.target.files?.[0];if(file)importBackup(file);e.target.value="";
 });
 $("reset").addEventListener("click",reset);
-document.addEventListener("keydown",e=>{if(e.key==="Escape")cancelMove(true)});
 
 load();applyTheme();refreshCategorySelects();renderApps();renderGroups();save();
 </script>
