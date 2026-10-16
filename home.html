@@ -1,1795 +1,706 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport"
-content="width=device-width,initial-scale=1.0">
 
-<meta name="theme-color"
-content="#138a4b">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#138a4b">
+<meta name="color-scheme" content="light">
+<title>Swayam — Personal LifeSuite</title>
 
-<title>Swayam - Personal Management</title><style>
-
-/* =========================================================
-   SWAYAM HOME
-   Personal Governance Simplified
-   ========================================================= */
-
-*{
-    box-sizing:border-box;
-}
-
+<style>
+*{box-sizing:border-box}
 :root{
-
-    --primary:#138a4b;
-    --primary-dark:#086b38;
-    --primary-light:#e8f7ef;
-
-    --bg:#f4f8f5;
-    --card:#ffffff;
-
-    --text:#17231c;
-    --muted:#64736a;
-
-    --border:#dce9e1;
-
-    --shadow:
-        0 10px 30px rgba(0,0,0,.09);
-
+ --primary:#138a4b;--deep:#086b38;--soft:#e8f7ef;
+ --bg:#f2f7f3;--card:#fff;--text:#183327;--muted:#6b7c71;
+ --border:#dce9df;--shadow:0 4px 14px rgba(20,65,39,.07);
+ --hero1:#138a4b;--hero2:#075b34;
 }
-
-
-/* =========================================================
-   BODY
-   ========================================================= */
-
+html{
+ min-height:100%;
+ overflow-y:auto;
+ scrollbar-width:thin;
+ scrollbar-color:var(--primary) var(--soft);
+ scroll-behavior:smooth;
+}
+html::-webkit-scrollbar{width:9px}
+html::-webkit-scrollbar-track{background:var(--soft)}
+html::-webkit-scrollbar-thumb{
+ background:var(--primary);border-radius:10px;
+ border:2px solid var(--soft);
+}
 body{
-
-    margin:0;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    background:
-        var(--bg);
-
-    color:
-        var(--text);
-
-    transition:
-        background .3s,
-        color .3s;
-
+ margin:0;min-height:100vh;overflow-x:hidden;
+ font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+ background:var(--bg);color:var(--text);
+ transition:background .18s,color .18s;
 }
+button,select,a{-webkit-tap-highlight-color:transparent}
+button,select{font:inherit}
 
-
-/* =========================================================
-   HEADER
-   ========================================================= */
-
+/* HEADER */
 .header{
-
-    position:sticky;
-
-    top:0;
-
-    z-index:100;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--primary),
-            var(--primary-dark)
-        );
-
-    color:white;
-
-    padding:
-        12px 16px;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    gap:10px;
-
-    box-shadow:
-        0 4px 18px rgba(0,0,0,.18);
-
+ position:sticky;top:0;z-index:20;
+ display:flex;align-items:center;justify-content:space-between;gap:8px;
+ padding:10px 15px;color:white;
+ background:linear-gradient(120deg,var(--hero1),var(--hero2));
+ box-shadow:0 3px 12px #00000012;
 }
-
-.logo-area{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
-
-}
-
+.header-left{display:flex;align-items:center;gap:8px;min-width:0}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
 .logo{
-
-    width:44px;
-
-    height:44px;
-
-    border-radius:14px;
-
-    background:
-        rgba(255,255,255,.18);
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    font-size:25px;
-
+ display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;
+ border-radius:14px;background:#ffffff20;font-size:25px;
 }
+.brand h1{font-size:20px;margin:0;letter-spacing:.2px}
+.brand small{font-size:10px;opacity:.85}
 
-.logo-text h1{
-
-    margin:0;
-
-    font-size:21px;
-
+/* TEXT SIZE CONTROLS */
+.text-size-control{
+ display:flex;align-items:center;gap:3px;flex-shrink:0;
+ padding:3px;border:1px solid #ffffff45;
+ border-radius:11px;background:#ffffff16;
 }
-
-.logo-text span{
-
-    font-size:11px;
-
-    opacity:.85;
-
+.text-size-control button{
+ display:grid;place-items:center;width:28px;height:29px;padding:0;
+ border:0;border-radius:7px;background:#ffffff20;color:white;
+ font-size:16px;font-weight:800;cursor:pointer;
 }
-
+.text-size-control button:disabled{opacity:.45}
+.text-size-control output{
+ min-width:30px;text-align:center;font-size:10px;font-weight:750;
+}
+.theme-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.theme-wrap label{font-size:12px}
 .theme-select{
-
-    border:0;
-
-    outline:0;
-
-    border-radius:10px;
-
-    padding:
-        9px 10px;
-
-    font-size:13px;
-
+ width:132px;max-width:40vw;padding:9px 8px;
+ border:1px solid #ffffff50;border-radius:10px;
+ background:#ffffffed;color:#183327;outline:none;font-size:12px;
 }
 
-
-/* =========================================================
-   CLOCK
-   ========================================================= */
-
+/* CLOCK */
 .clock-bar{
-
-    display:flex;
-
-    justify-content:center;
-
-    flex-wrap:wrap;
-
-    gap:7px;
-
-    padding:9px;
-
-    background:
-        var(--card);
-
-    box-shadow:
-        0 2px 8px rgba(0,0,0,.05);
-
+ display:flex;justify-content:center;gap:7px;flex-wrap:wrap;
+ padding:8px 10px;background:var(--card);
+ border-bottom:1px solid var(--border);
 }
-
 .clock{
-
-    padding:
-        6px 10px;
-
-    border-radius:10px;
-
-    background:
-        var(--primary-light);
-
-    color:
-        var(--primary-dark);
-
-    font-size:12px;
-
-    font-weight:bold;
-
+ background:var(--soft);color:var(--deep);border-radius:9px;
+ padding:5px 9px;font-size:11px;font-weight:650;
 }
+main{max-width:1200px;margin:auto;padding:15px}
 
-
-/* =========================================================
-   MAIN
-   ========================================================= */
-
-.main{
-
-    max-width:1200px;
-
-    margin:auto;
-
-    padding:
-        18px;
-
-}
-
-
-/* =========================================================
-   HERO / DOOR
-   ========================================================= */
-
+/* HERO */
 .hero{
-
-    position:relative;
-
-    overflow:hidden;
-
-    background:
-        linear-gradient(
-            135deg,
-            #138a4b,
-            #086b38
-        );
-
-    color:white;
-
-    border-radius:26px;
-
-    padding:
-        30px 24px;
-
-    margin-bottom:20px;
-
-    box-shadow:
-        0 15px 40px rgba(8,107,56,.25);
-
+ position:relative;overflow:hidden;border-radius:23px;
+ padding:25px 22px;margin-bottom:19px;color:#fff;
+ background:linear-gradient(120deg,var(--hero1),var(--hero2));
 }
-
-.hero:before{
-
-    content:"";
-
-    position:absolute;
-
-    width:180px;
-
-    height:180px;
-
-    border-radius:50%;
-
-    right:-50px;
-
-    top:-70px;
-
-    background:
-        rgba(255,255,255,.10);
-
-}
-
 .hero:after{
-
-    content:"";
-
-    position:absolute;
-
-    width:120px;
-
-    height:120px;
-
-    border-radius:50%;
-
-    right:80px;
-
-    bottom:-80px;
-
-    background:
-        rgba(255,255,255,.07);
-
+ content:"🌿";position:absolute;right:16px;bottom:-22px;
+ font-size:104px;opacity:.13;transform:rotate(-15deg);
+ pointer-events:none;
 }
-
-.hero-content{
-
-    position:relative;
-
-    z-index:2;
-
-}
-
-.hero h2{
-
-    margin:
-        0 0 10px;
-
-    font-size:
-        clamp(
-            28px,
-            5vw,
-            42px
-        );
-
-}
-
+.hero-content{position:relative;z-index:1}
+.hero h2{font-size:clamp(25px,4vw,36px);margin:0 0 8px}
 .hero p{
-
-    max-width:760px;
-
-    margin:
-        0 0 18px;
-
-    font-size:16px;
-
-    line-height:1.6;
-
-    opacity:.92;
-
+ font-size:14px;line-height:1.6;max-width:680px;
+ margin:0 0 14px;opacity:.93;
 }
-
 .hero-quote{
-
-    display:inline-block;
-
-    padding:
-        10px 14px;
-
-    border-radius:13px;
-
-    background:
-        rgba(255,255,255,.14);
-
-    font-size:14px;
-
+ display:inline-block;padding:8px 11px;border-radius:10px;
+ background:#ffffff20;font-size:12px;line-height:1.5;
 }
 
-
-/* =========================================================
-   QUICK ACTIONS
-   ========================================================= */
-
-.section-title{
-
-    margin:
-        25px 0 12px;
-
+/* SECTION HEADINGS */
+.section-head{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:10px;margin:22px 1px 10px;
 }
-
-.section-title h2{
-
-    margin:0;
-
-    font-size:22px;
-
+.section-head h2{font-size:19px;margin:0}
+.section-head p{font-size:12px;color:var(--muted);margin:4px 0 0}
+.head-icon{font-size:23px}
+.launch-tools{display:flex;align-items:center;gap:6px}
+.scroll-btn{
+ display:grid;place-items:center;
+ border:1px solid var(--border);background:var(--card);color:var(--text);
+ border-radius:9px;min-width:32px;height:32px;cursor:pointer;
 }
+.scroll-btn:active{transform:scale(.95)}
+.scroll-hint{font-size:10px;color:var(--muted);white-space:nowrap}
 
-.section-title p{
-
-    margin:
-        5px 0 0;
-
-    color:
-        var(--muted);
-
-    font-size:14px;
-
-}
-
-
-/* =========================================================
-   APP GRID
-   ========================================================= */
-
+/* APP PANEL: HORIZONTAL SCROLLING */
 .app-grid{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(
-                220px,
-                1fr
-            )
-        );
-
-    gap:14px;
-
+ display:grid;
+ grid-template-rows:repeat(2,minmax(140px,auto));
+ grid-auto-flow:column;
+ grid-auto-columns:calc((100% - 36px)/4);
+ gap:12px;
+ width:100%;
+ overflow-x:auto;
+ overflow-y:hidden;
+ padding:4px 3px 13px;
+ border-radius:13px;
+ scroll-behavior:smooth;
+ scrollbar-width:thin;
+ scrollbar-color:var(--primary) var(--soft);
+ overscroll-behavior-x:contain;
+ -webkit-overflow-scrolling:touch;
+ align-items:stretch;
 }
-
-
-/* =========================================================
-   APP CARD
-   ========================================================= */
-
+.app-grid::-webkit-scrollbar{height:8px}
+.app-grid::-webkit-scrollbar-track{
+ background:var(--soft);border-radius:8px;
+}
+.app-grid::-webkit-scrollbar-thumb{
+ background:var(--primary);border-radius:8px;
+}
 .app-card{
-
-    background:
-        var(--card);
-
-    border:
-        1px solid var(--border);
-
-    border-radius:20px;
-
-    padding:18px;
-
-    box-shadow:
-        var(--shadow);
-
-    text-decoration:none;
-
-    color:
-        var(--text);
-
-    transition:
-        transform .2s,
-        box-shadow .2s,
-        border-color .2s;
-
-    display:block;
-
+ min-width:0;width:100%;min-height:140px;height:100%;
+ display:flex;flex-direction:column;align-items:flex-start;
+ padding:12px;border:1px solid var(--border);
+ border-radius:15px;background:var(--card);color:var(--text);
+ text-decoration:none;box-shadow:var(--shadow);
+ overflow-wrap:anywhere;word-break:normal;
+ transition:border-color .15s,transform .15s;
 }
-
-.app-card:hover{
-
-    transform:
-        translateY(-5px);
-
-    box-shadow:
-        0 16px 35px rgba(0,0,0,.14);
-
-    border-color:
-        var(--primary);
-
-}
-
+.app-card:active{transform:scale(.98)}
 .app-icon{
-
-    width:52px;
-
-    height:52px;
-
-    border-radius:16px;
-
-    background:
-        var(--primary-light);
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    font-size:29px;
-
-    margin-bottom:12px;
-
+ width:38px;height:38px;display:grid;place-items:center;
+ flex-shrink:0;margin-bottom:8px;border-radius:12px;
+ background:var(--soft);font-size:22px;
 }
-
 .app-card h3{
-
-    margin:
-        0 0 6px;
-
-    font-size:18px;
-
+ width:100%;font-size:13px;line-height:1.4;
+ margin:0 0 6px;overflow-wrap:anywhere;
 }
-
 .app-card p{
-
-    margin:0;
-
-    color:
-        var(--muted);
-
-    font-size:13px;
-
-    line-height:1.45;
-
+ width:100%;color:var(--muted);
+ font-size:11px;line-height:1.5;margin:0;
+ overflow-wrap:anywhere;
 }
-
 .open-text{
-
-    display:block;
-
-    margin-top:12px;
-
-    color:
-        var(--primary);
-
-    font-size:13px;
-
-    font-weight:bold;
-
+ margin-top:auto;padding-top:9px;
+ color:var(--primary);font-size:11px;font-weight:750;
 }
 
-
-/* =========================================================
-   WELLNESS SECTION
-   ========================================================= */
-
+/* WELLNESS */
 .wellness{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(
-                200px,
-                1fr
-            )
-        );
-
-    gap:12px;
-
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;
 }
-
 .wellness-card{
-
-    background:
-        var(--card);
-
-    border-radius:18px;
-
-    padding:17px;
-
-    box-shadow:
-        var(--shadow);
-
-    border:
-        1px solid var(--border);
-
+ min-width:0;padding:14px;border-radius:15px;
+ background:var(--card);border:1px solid var(--border);
 }
-
-.wellness-card .emoji{
-
-    font-size:28px;
-
-}
-
-.wellness-card h3{
-
-    margin:
-        8px 0 5px;
-
-    font-size:16px;
-
-}
-
+.wellness-card .emoji{font-size:24px}
+.wellness-card h3{font-size:14px;margin:6px 0 4px}
 .wellness-card p{
-
-    margin:0;
-
-    color:
-        var(--muted);
-
-    font-size:13px;
-
-    line-height:1.45;
-
+ font-size:11px;line-height:1.5;color:var(--muted);margin:0;
 }
-
-
-/* =========================================================
-   DAILY BALANCE
-   ========================================================= */
-
 .balance{
-
-    margin-top:20px;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--primary-light),
-            var(--card)
-        );
-
-    border-left:
-        5px solid var(--primary);
-
-    border-radius:20px;
-
-    padding:20px;
-
-    box-shadow:
-        var(--shadow);
-
+ margin-top:20px;padding:18px;border-radius:18px;
+ background:linear-gradient(120deg,var(--soft),var(--card));
+ border:1px solid var(--border);border-left:4px solid var(--primary);
 }
-
-.balance h2{
-
-    margin:
-        0 0 10px;
-
+.balance h2{font-size:19px;margin:0 0 7px}
+.balance>p{
+ font-size:12px;line-height:1.5;color:var(--muted);margin:0 0 13px;
 }
-
 .balance-grid{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(
-                130px,
-                1fr
-            )
-        );
-
-    gap:10px;
-
+ display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;
 }
-
 .balance-item{
-
-    text-align:center;
-
-    background:
-        var(--card);
-
-    border-radius:14px;
-
-    padding:13px;
-
+ min-width:0;text-align:center;padding:10px 3px;
+ border-radius:12px;background:var(--card);
 }
-
-.balance-item strong{
-
-    display:block;
-
-    font-size:22px;
-
-}
-
-.balance-item span{
-
-    color:
-        var(--muted);
-
-    font-size:12px;
-
-}
-
-
-/* =========================================================
-   FOOTER
-   ========================================================= */
-
+.balance-item strong{display:block;font-size:22px}
+.balance-item span{font-size:10px;color:var(--muted)}
 .footer{
+ text-align:center;padding:23px 12px;color:var(--muted);
+ font-size:12px;line-height:1.7;
+}
+.footer strong{color:var(--primary)}
 
-    text-align:center;
-
-    padding:
-        25px 12px;
-
-    color:
-        var(--muted);
-
-    font-size:13px;
-
+/* TEN NATURE THEMES */
+body[data-theme="forest"]{
+ --primary:#138a4b;--deep:#086b38;--soft:#e8f7ef;--bg:#f2f7f3;
+ --card:#fff;--text:#183327;--muted:#6b7c71;--border:#dce9df;
+ --hero1:#138a4b;--hero2:#075b34;
+}
+body[data-theme="ocean"]{
+ --primary:#087eaf;--deep:#075985;--soft:#e0f5fc;--bg:#eff8fc;
+ --card:#fff;--text:#163345;--muted:#637d8b;--border:#d4e9f2;
+ --hero1:#0798be;--hero2:#075985;
+}
+body[data-theme="meadow"]{
+ --primary:#678d27;--deep:#41651b;--soft:#edf6d9;--bg:#f7f9ee;
+ --card:#fff;--text:#303c20;--muted:#778064;--border:#e1e8ce;
+ --hero1:#8bac42;--hero2:#41651b;
+}
+body[data-theme="mint"]{
+ --primary:#168c83;--deep:#08685f;--soft:#ddf6f0;--bg:#f0faf7;
+ --card:#fff;--text:#173b36;--muted:#66817b;--border:#d4ebe4;
+ --hero1:#2ab6a3;--hero2:#08685f;
+}
+body[data-theme="sunset"]{
+ --primary:#d76a35;--deep:#984321;--soft:#fff0e3;--bg:#fff7f0;
+ --card:#fff;--text:#442e25;--muted:#887469;--border:#f0dfd2;
+ --hero1:#ed9250;--hero2:#a73d35;
+}
+body[data-theme="lavender"]{
+ --primary:#7959bd;--deep:#52368e;--soft:#f0eaff;--bg:#f7f4ff;
+ --card:#fff;--text:#302747;--muted:#79708c;--border:#e5dcf5;
+ --hero1:#9879d9;--hero2:#52368e;
+}
+body[data-theme="rose"]{
+ --primary:#c04f72;--deep:#8b294e;--soft:#ffebf1;--bg:#fff5f7;
+ --card:#fff;--text:#422632;--muted:#8b717c;--border:#f0dce4;
+ --hero1:#e57894;--hero2:#8b294e;
+}
+body[data-theme="sky"]{
+ --primary:#397bd0;--deep:#204f9b;--soft:#e8f2ff;--bg:#f3f8ff;
+ --card:#fff;--text:#1c3048;--muted:#687e98;--border:#dbe7f7;
+ --hero1:#65a5ed;--hero2:#204f9b;
+}
+body[data-theme="sand"]{
+ --primary:#a47b3d;--deep:#75552b;--soft:#f8efdc;--bg:#fbf7ee;
+ --card:#fffefa;--text:#3e3527;--muted:#837866;--border:#eae0cb;
+ --hero1:#c4a16a;--hero2:#75552b;
+}
+body[data-theme="night"]{
+ --primary:#61c89a;--deep:#183f30;--soft:#223a30;--bg:#101a16;
+ --card:#19251f;--text:#eef7f0;--muted:#b1c2b7;--border:#30483a;
+ --hero1:#205f48;--hero2:#101f19;
+}
+body[data-theme="night"] .clock{color:#baf2d2}
+body[data-theme="night"] .theme-select{
+ background:#19251f;color:#eef7f0;border-color:#405447;
+}
+body[data-theme="night"] .app-card,
+body[data-theme="night"] .wellness-card,
+body[data-theme="night"] .balance-item,
+body[data-theme="night"] .scroll-btn{box-shadow:none}
+body[data-theme="night"] .balance{
+ background:linear-gradient(120deg,#223a30,#19251f);
 }
 
-.footer strong{
-
-    color:
-        var(--primary);
-
+/* RESPONSIVE */
+@media(hover:hover){
+ .app-card:hover{transform:translateY(-2px);border-color:var(--primary)}
+ .scroll-btn:hover{border-color:var(--primary)}
+ .text-size-control button:hover{background:#ffffff35}
 }
-
-
-/* =========================================================
-   DARK THEME
-   ========================================================= */
-
-body.dark{
-
-    --bg:#0e1511;
-
-    --card:#1b241f;
-
-    --text:#f1f6f2;
-
-    --muted:#b4c0b9;
-
-    --border:#34423a;
-
-    --primary-light:#213d2e;
-
+@media(max-width:900px){
+ .app-grid{grid-auto-columns:calc((100% - 24px)/3)}
+ .balance-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
-
-body.dark .app-card{
-
-    color:#f1f6f2;
-
+@media(max-width:700px){
+ main{padding:11px}
+ .header{padding:9px 10px;gap:6px}
+ .header-left{gap:6px}
+ .brand{gap:7px}
+ .brand h1{font-size:18px}
+ .brand small{font-size:9px}
+ .logo{width:36px;height:36px;font-size:21px}
+ .text-size-control{gap:2px;padding:2px}
+ .text-size-control button{width:23px;height:26px;font-size:14px}
+ .text-size-control output{min-width:25px;font-size:9px}
+ .theme-wrap label{display:none}
+ .theme-select{width:115px;padding:8px 5px}
+ .hero{padding:21px 17px;border-radius:19px}
+ .hero h2{font-size:26px}
+ .hero p{font-size:13px;max-width:88%}
+ .hero:after{right:0;font-size:83px}
+ .section-head h2{font-size:17px}
+ .app-grid{
+  grid-template-rows:repeat(2,minmax(140px,auto));
+  grid-auto-columns:calc((100% - 10px)/2);
+  gap:10px;padding-bottom:12px;
+ }
+ .app-card{min-height:140px;padding:10px}
+ .wellness{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .wellness-card{padding:12px}
+ .scroll-hint{font-size:9px}
 }
-
-body.dark .balance{
-
-    background:
-        linear-gradient(
-            135deg,
-            #213d2e,
-            #1b241f
-        );
-
+@media(max-width:420px){
+ .header{padding:8px 7px}
+ .header-left{gap:4px}
+ .brand{gap:5px}
+ .brand h1{font-size:15px}
+ .brand small{display:none}
+ .logo{width:30px;height:30px;font-size:18px;border-radius:9px}
+ .text-size-control button{width:20px;height:25px;font-size:13px}
+ .text-size-control output{min-width:22px;font-size:8px}
+ .theme-select{width:94px;max-width:29vw;font-size:10px}
+ .section-head{align-items:flex-start}
+ .launch-tools{gap:4px}
+ .scroll-hint{display:none}
+ .balance{padding:13px}
+ .balance-grid{gap:5px}
+ .balance-item{padding:9px 2px}
 }
-
-
-/* =========================================================
-   BLUE THEME
-   ========================================================= */
-
-body.blue{
-
-    --primary:#1565c0;
-
-    --primary-dark:#0d47a1;
-
-    --primary-light:#e3f2fd;
-
-    --bg:#eef6fd;
-
-    --card:#ffffff;
-
-    --text:#17202a;
-
-    --muted:#5f6b75;
-
-    --border:#d5e4f0;
-
+@media(max-width:340px){
+ .brand h1{font-size:14px}
+ .text-size-control{gap:1px}
+ .text-size-control button{width:18px}
+ .text-size-control output{min-width:20px}
+ .theme-select{width:82px}
+ .app-grid{gap:7px;grid-auto-columns:calc((100% - 7px)/2)}
+ .app-card{padding:8px}
 }
-
-body.blue .hero{
-
-    background:
-        linear-gradient(
-            135deg,
-            #1565c0,
-            #0d47a1
-        );
-
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;transition:none!important}
 }
+</style>
+</head>
 
+<body data-theme="forest">
 
-/* =========================================================
-   MOBILE
-   ========================================================= */
+<header class="header">
+ <div class="header-left">
+  <div class="text-size-control" role="group" aria-label="Text size controls">
+   <button id="textDecrease" type="button" aria-label="Decrease text size">A−</button>
+   <output id="textSizeValue" aria-live="polite">100%</output>
+   <button id="textIncrease" type="button" aria-label="Increase text size">A+</button>
+  </div>
+  <div class="brand">
+   <div class="logo">🌿</div>
+   <div>
+    <h1>Swayam</h1>
+    <small>Personal Governance Simplified</small>
+   </div>
+  </div>
+ </div>
+ <div class="theme-wrap">
+  <label for="themeSelector">Theme</label>
+  <select id="themeSelector" class="theme-select" aria-label="Choose nature theme">
+   <option value="forest">🌲 Forest</option>
+   <option value="ocean">🌊 Ocean</option>
+   <option value="meadow">🌼 Meadow</option>
+   <option value="mint">🍃 Mint</option>
+   <option value="sunset">🌅 Sunset</option>
+   <option value="lavender">💜 Lavender</option>
+   <option value="rose">🌸 Rose</option>
+   <option value="sky">☁️ Sky</option>
+   <option value="sand">🏜️ Sand</option>
+   <option value="night">🌙 Night</option>
+  </select>
+ </div>
+</header>
 
-@media(max-width:600px){
-
-    .header{
-
-        padding:10px;
-
-    }
-
-    .logo{
-
-        width:40px;
-
-        height:40px;
-
-        font-size:22px;
-
-    }
-
-    .logo-text h1{
-
-        font-size:18px;
-
-    }
-
-    .main{
-
-        padding:12px;
-
-    }
-
-    .hero{
-
-        padding:
-            24px 18px;
-
-        border-radius:21px;
-
-    }
-
-    .hero h2{
-
-        font-size:28px;
-
-    }
-
-    .hero p{
-
-        font-size:14px;
-
-    }
-
-    .app-grid{
-
-        grid-template-columns:
-            repeat(
-                2,
-                1fr
-            );
-
-        gap:10px;
-
-    }
-
-    .app-card{
-
-        padding:14px;
-
-        border-radius:16px;
-
-    }
-
-    .app-icon{
-
-        width:45px;
-
-        height:45px;
-
-        font-size:24px;
-
-    }
-
-    .app-card h3{
-
-        font-size:15px;
-
-    }
-
-    .app-card p{
-
-        font-size:12px;
-
-    }
-
-    .section-title h2{
-
-        font-size:20px;
-
-    }
-
-}
-
-</style></head><body class="light"><!-- =======================================================
-     HEADER
-     ======================================================= --><header class="header"><div class="logo-area">
-
-    <div class="logo">
-        🌿
-    </div>
-
-    <div class="logo-text">
-
-        <h1>
-            Swayam
-        </h1>
-
-        <span>
-            Personal Governance Simplified
-        </span>
-
-    </div>
-
+<div class="clock-bar">
+ <span id="date" class="clock">📅 Loading...</span>
+ <span id="time12" class="clock">🕐 Loading...</span>
+ <span id="time24" class="clock">🕑 Loading...</span>
 </div>
 
-
-<select
-    id="themeSelector"
-    class="theme-select"
-    onchange="changeTheme(this.value)">
-
-    <option value="light">
-        ☀️ Light
-    </option>
-
-    <option value="dark">
-        🌙 Dark
-    </option>
-
-    <option value="blue">
-        💙 Blue
-    </option>
-
-</select>
-
-</header><!-- =======================================================
-     CLOCK
-     ======================================================= --><div class="clock-bar"><span
-    id="date"
-    class="clock">
-    📅 Loading...
-</span>
-
-<span
-    id="time12"
-    class="clock">
-    🕐 Loading...
-</span>
-
-<span
-    id="time24"
-    class="clock">
-    🕑 Loading...
-</span>
-
-</div><!-- =======================================================
-     MAIN
-     ======================================================= --><main class="main"><!-- =======================================================
-     WELCOME / DOOR
-     ======================================================= --><section class="hero"><div class="hero-content">
-
-    <h2>
-        🚪 Welcome to Swayam
-    </h2>
-
-    <p>
-
-        Your personal digital space for managing
-        everyday life, work, family, health,
-        learning, finances, creativity and
-        moments of relaxation.
-
-    </p>
-
-    <div class="hero-quote">
-
-        🌱 Organize life • Reduce stress •
-        Build healthy habits • Enjoy every day
-
-    </div>
-
-</div>
-
-</section><!-- =======================================================
-     PERSONAL MANAGEMENT
-     ======================================================= --><section class="section-title"><h2>
-    🧘 Personal Management
-</h2>
-
-<p>
-    Choose an area to enter your Swayam workspace.
-</p>
-
-</section>
-
-<section class="app-grid">
-
-<a
-href="/Myself/school/idea.html"
-class="app-card"
-onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-   ☕
-</div>
-
-<h3>
-    Every Day Thoughts!
-</h3>
-
-<p>
-Welcome and Enrich your life with engaging thoughts
-</p>
-
-<span class="open-text">
-    Open →
-</span>
-
-</a>
-
-
-<a
-href="/Myself/festival/navratri.html"
-class="app-card"
-onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-   💃🙏🏹
-</div>
-
-<h3>
-    Wish you all Happy Navratri!!
-</h3>
-
-<p>
-Fill Hapiness on your life with enigmatic Indian Festivals.
-</p>
-
-<span class="open-text">
-    Open →
-</span>
-
-</a>
-
-<a
-href="/Myself/school/todo1.html"
-class="app-card"
-onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-    ✏️
-</div>
-
-<h3>
-    To-do List
-</h3>
-
-<p>
-Make your everyday planned ahead with this.
-</p>
-
-<span class="open-text">
-    Open →
-</span>
-
-</a>
-
-<a href="util/Util_quick.html"
-class="app-card"
-onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-    ⚡
-</div>
-
-<h3>
-    Quick Notes
-</h3>
-
-<p>
-    Jot down fast thoughts, temporary reminders, and spontaneous ideas on the fly without missing a beat.
-</p>
-
-<span class="open-text">
-    Open Quick Notes→
-</span>
-</a>
-
-<a
-href="util/Util_fin.html"
-class="app-card"
-onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-    🏠
-</div>
-
-<h3>
-    Life & Home
-</h3>
-
-<p>
-Manage family,household,travels and everyday responsibilities.
-</p>
-
-<span class="open-text">
-    Open Life & Home →
-</span>
-
-</a>
-
-
-
-
-<a
-href="util/Util_karya.html"
-class="app-card"
-onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-    💼
-</div>
-
-<h3>
-    Work & Career
-</h3>
-
-<p>
-Organize work, attendance,training and interview preparation.
-</p>
-
-<span class="open-text">
-    Open Work →
-</span>
-
-</a>
-
-<a
-href="util/Util_laxmi.html"
-class="app-card"
-onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-   👨‍🎓
-</div>
-
-<h3>
-    Kids
-</h3>
-
-<p>Track your Kids Wellness,Learning and extra curricular activities.
-</p>
-
-<span class="open-text">
-    Click →
-</span>
-
-<a
-href="nari/nariraksha.html"
-class="app-card"
-onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-   👩
-</div>
-<h3>
-    Women
-</h3>
-
-<p>Prioritize Wellness. Inspire Confidence. Ensure Safety.
-</p>
-
-<span class="open-text">
-    Click →
-</span>
-
-</a>
-
-
-<a
-href="util/Util_yog.html"
-class="app-card"
-onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-    🧘
-</div>
-
-<h3>
-    Health & Fitness
-</h3>
-
-<p>
-    Support exercise, food awareness,
-    wellness and healthier daily routines.
-</p>
-
-<span class="open-text">
-    Open Wellness →
-</span>
-
-</a><a
-href="util/Util_sutra.html"
-class="app-card"
-onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-    📚
-</div>
-
-<h3>
-    Learning
-</h3>
-
-<p>
-    Keep mathematics, study material,
-    learning resources and knowledge organized.
-</p>
-
-<span class="open-text">
-    Open Learning →
-</span>
-
-</a><a
-href="util/Util_smart.html"
-class="app-card"
-onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-    🛠️
-</div>
-
-<h3>
-    Smart Tools
-</h3>
-
-<p>
-    Access calculators, productivity tools,
-    projects and useful utilities.
-</p>
-
-<span class="open-text">
-    Open Tools →
-</span>
-
-</a><a
-href="util/Util_chitra.html"
-class="app-card"
-onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-    🎨
-</div>
-
-<h3>
-    Creativity
-</h3>
-
-<p>
-    Work with images, documents, camera
-    scanning and PDF utilities.
-</p>
-
-<span class="open-text">
-    Open Creativity →
-</span>
-
-</a><a
-href="util/Util_sanskar.html"
-class="app-card"
-onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-    🌱
-</div>
-
-<h3>
-    Sanskar
-</h3>
-
-<p>
-    Create space for values, personal growth,
-    reflection and meaningful living.
-</p>
-
-<span class="open-text">
-    Open Sanskar →
-</span>
-
-</a><a
-href="util/Util_ranjan.html"
-class="app-card"
-onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-    🎮
-</div>
-
-<h3>
-    Relax & Enjoy
-</h3>
-
-<p>
-    Take healthy breaks with games, jokes,
-    puzzles and entertainment.
-</p>
-
-<span class="open-text">
-    Open Relaxation →
-</span>
-
-</a>
-
-<a href="util/Util_lang.html"
-class="app-card"
-onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-    🌐
-</div>
-
-<h3>
-    Language Learning
-</h3>
-
-<p>
-    Build communication skills, learn new         languages, expand your vocabulary and      connect with people and cultures around the world.
-</p>
-
-<span class="open-text">
-    Open Language Learning→
-</span>
-</a>
-
-
-<a href="util/Util_planet.html" 
-   class="app-card" 
-   onclick="openSwayamPage(event,this.href)">
-
-<div class="app-icon">
-    🧭
-</div>
-
-<h3>
-    Navigation
-</h3>
-
-<p>
-    Find your way around, explore maps, get real-time directions, and discover new destinations seamlessly.
-</p>
-
-<span class="open-text">
-    Open Navigation→
-</span>
-</a>
-
-
-
-
-</section><!-- =======================================================
-     HEALTHY LIFESTYLE
-     ======================================================= --><section class="section-title"><h2>
-    🌿 Healthy Lifestyle
-</h2>
-
-<p>
-    Small daily actions can create a calmer,
-    healthier and more balanced life.
-</p>
-
-</section><section class="wellness"><div class="wellness-card"><div class="emoji">
-    💧
-</div>
-
-<h3>
-    Hydration
-</h3>
-
-<p>
-    Keep water intake visible and make
-    hydration part of your daily routine.
-</p>
-
-</div><div class="wellness-card"><div class="emoji">
-    🥗
-</div>
-
-<h3>
-    Better Food
-</h3>
-
-<p>
-    Plan meals, notice eating patterns and
-    make simple healthier choices.
-</p>
-
-</div><div class="wellness-card"><div class="emoji">
-    🚶
-</div>
-
-<h3>
-    Movement
-</h3>
-
-<p>
-    Walk, stretch or exercise regularly
-    instead of remaining inactive for long periods.
-</p>
-
-</div><div class="wellness-card"><div class="emoji">
-    😴
-</div>
-
-<h3>
-    Good Sleep
-</h3>
-
-<p>
-    Protect your sleep schedule and give
-    your body enough time to recover.
-</p>
-
-</div><div class="wellness-card"><div class="emoji">
-    🧘
-</div>
-
-<h3>
-    Calm Mind
-</h3>
-
-<p>
-    Take short breaks, breathe slowly and
-    create moments without unnecessary screen pressure.
-</p>
-
-</div><div class="wellness-card"><div class="emoji">
-    ❤️
-</div>
-
-<h3>
-    Family Time
-</h3>
-
-<p>
-    Make time for family conversations,
-    children, relationships and meaningful moments.
-</p>
-
-</div></section><!-- =======================================================
-     DAILY BALANCE
-     ======================================================= --><section class="balance"><h2>
-    🌅 A Simple Daily Balance
-</h2>
-
-<p>
-    Swayam is not only about managing tasks.
-    It is about creating enough space for yourself.
-</p>
-
-
-<div class="balance-grid">
-
-
-    <div class="balance-item">
-
-        <strong>
-            🧠
-        </strong>
-
-        <span>
-            Learn
-        </span>
-
-    </div>
-
-
-    <div class="balance-item">
-
-        <strong>
-            💼
-        </strong>
-
-        <span>
-            Work
-        </span>
-
-    </div>
-
-
-    <div class="balance-item">
-
-        <strong>
-            🏃
-        </strong>
-
-        <span>
-            Move
-        </span>
-
-    </div>
-
-
-    <div class="balance-item">
-
-        <strong>
-            🥗
-        </strong>
-
-        <span>
-            Eat Well
-        </span>
-
-    </div>
-
-
-    <div class="balance-item">
-
-        <strong>
-            👨‍👩‍👦
-        </strong>
-
-        <span>
-            Family
-        </span>
-
-    </div>
-
-
-    <div class="balance-item">
-
-        <strong>
-            🧘
-        </strong>
-
-        <span>
-            Relax
-        </span>
-
-    </div>
-
-
-    <div class="balance-item">
-
-        <strong>
-            😴
-        </strong>
-
-        <span>
-            Sleep
-        </span>
-
-    </div>
-
-
-</div>
-
-</section></main><!-- =======================================================
-     FOOTER
-     ======================================================= --><footer class="footer"><strong>
-    🌿 Swayam
-</strong>
-
-<br>
-
-Personal Governance Simplified
-
-<br><br>
-
-Organize your life. Protect your health.
-Make time for what matters.
-
-</footer><script>
-
-/* =========================================================
-   SWAYAM CENTER NAVIGATION
-   ========================================================= */
-
-function openSwayamPage(event,url){
-
-    event.preventDefault();
-
-    try{
-
-        if(
-            window.parent &&
-            window.parent !== window
-        ){
-
-            var frame =
-                window.parent.document
-                .getElementById(
-                    "swayamFrame"
-                );
-
-
-            if(frame){
-
-                frame.src = url;
-
-
-                try{
-
-                    window.parent.localStorage.setItem(
-                        "swayam_selected_page",
-                        url.split("/").pop()
-                    );
-
-                }
-                catch(e){}
-
-
-                var menuLinks =
-                    window.parent.document
-                    .querySelectorAll(
-                        ".menu-button"
-                    );
-
-
-                for(
-                    var i=0;
-                    i<menuLinks.length;
-                    i++
-                ){
-
-                    menuLinks[i]
-                    .classList
-                    .remove("active");
-
-                }
-
-
-                for(
-                    var j=0;
-                    j<menuLinks.length;
-                    j++
-                ){
-
-                    var menuHref =
-                        menuLinks[j]
-                        .getAttribute("href");
-
-
-                    if(
-                        menuHref &&
-                        menuHref
-                        .split("/")
-                        .pop()
-                        ===
-                        url
-                        .split("/")
-                        .pop()
-                    ){
-
-                        menuLinks[j]
-                        .classList
-                        .add("active");
-
-
-                        try{
-
-                            menuLinks[j]
-                            .scrollIntoView({
-                                behavior:"smooth",
-                                block:"nearest",
-                                inline:"center"
-                            });
-
-                        }
-                        catch(e){}
-
-
-                        break;
-
-                    }
-
-                }
-
-
-                return;
-
-            }
-
-        }
-
-    }
-    catch(error){
-
-        console.log(
-            "Swayam navigation error:",
-            error
-        );
-
-    }
-
-
-    /*
-     * Direct-open fallback.
-     */
-
-    window.location.href = url;
-
-}
-
-
-/* =========================================================
-   THEME
-   ========================================================= */
+<main>
+ <section class="hero">
+  <div class="hero-content">
+   <h2>🌿 Welcome to Swayam</h2>
+   <p>Your personal digital space for managing everyday life, work, family, health, learning, finances, creativity and moments of relaxation.</p>
+   <div class="hero-quote">🌱 Organize life · Reduce stress · Build healthy habits · Enjoy every day</div>
+  </div>
+ </section>
+
+ <section>
+  <div class="section-head">
+   <div>
+    <h2>🧘 Personal Management</h2>
+    <p>Choose a workspace and get started.</p>
+   </div>
+   <div class="launch-tools">
+    <span class="scroll-hint">Scroll apps →</span>
+    <button class="scroll-btn" type="button" onclick="scrollApps(-1)" aria-label="Scroll apps left" title="Previous apps">←</button>
+    <button class="scroll-btn" type="button" onclick="scrollApps(1)" aria-label="Scroll apps right" title="Next apps">→</button>
+   </div>
+  </div>
+
+  <div class="app-grid" id="appGrid">
+   <a href="/Myself/school/idea.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">☕</div><h3>Every Day Thoughts!</h3>
+    <p>Welcome and enrich your life with engaging thoughts.</p><span class="open-text">Open →</span>
+   </a>
+   <a href="/Myself/festival/navratri.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">💃🙏🏹</div><h3>Indian Festivals</h3>
+    <p>Fill your life with happiness through festivals and wishes.</p><span class="open-text">Open →</span>
+   </a>
+   <a href="/Myself/school/todo1.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">✏️</div><h3>To-do List</h3>
+    <p>Plan your everyday tasks and stay organized.</p><span class="open-text">Open →</span>
+   </a>
+   <a href="util/Util_quick.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">⚡</div><h3>Quick Notes</h3>
+    <p>Capture fast thoughts, reminders and spontaneous ideas.</p><span class="open-text">Open →</span>
+   </a>
+   <a href="util/Util_fin.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">🏠</div><h3>Life &amp; Home</h3>
+    <p>Manage family, household, travel and daily responsibilities.</p><span class="open-text">Open →</span>
+   </a>
+   <a href="util/Util_karya.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">💼</div><h3>Work &amp; Career</h3>
+    <p>Organize work, attendance, training and interview preparation.</p><span class="open-text">Open →</span>
+   </a>
+   <a href="util/Util_laxmi.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">👨‍🎓</div><h3>Kids</h3>
+    <p>Track children's wellness, learning and extracurricular activities.</p><span class="open-text">Open →</span>
+   </a>
+   <a href="nari/nariraksha.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">👩</div><h3>Women &amp; Safety</h3>
+    <p>Prioritize wellness, confidence and personal safety.</p><span class="open-text">Open →</span>
+   </a>
+   <a href="util/Util_yog.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">🧘</div><h3>Health &amp; Fitness</h3>
+    <p>Support exercise, food awareness and healthy routines.</p><span class="open-text">Open →</span>
+   </a>
+   <a href="util/Util_sutra.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">📚</div><h3>Learning</h3>
+    <p>Organize study material, mathematics and knowledge resources.</p><span class="open-text">Open →</span>
+   </a>
+   <a href="util/Util_smart.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">🛠️</div><h3>Smart Tools</h3>
+    <p>Access calculators, productivity tools and useful utilities.</p><span class="open-text">Open →</span>
+   </a>
+   <a href="util/Util_chitra.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">🎨</div><h3>Creativity</h3>
+    <p>Work with images, documents, scanning and PDF utilities.</p><span class="open-text">Open →</span>
+   </a>
+   <a href="util/Util_sanskar.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">🌱</div><h3>Sanskar</h3>
+    <p>Explore values, personal growth and meaningful living.</p><span class="open-text">Open →</span>
+   </a>
+   <a href="util/Util_ranjan.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">🎮</div><h3>Relax &amp; Enjoy</h3>
+    <p>Take healthy breaks with games, jokes and puzzles.</p><span class="open-text">Open →</span>
+   </a>
+   <a href="util/Util_lang.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">🌐</div><h3>Language Learning</h3>
+    <p>Learn languages, build vocabulary and improve communication.</p><span class="open-text">Open →</span>
+   </a>
+   <a href="util/Util_planet.html" class="app-card" onclick="openSwayamPage(event,this.href)">
+    <div class="app-icon">🧭</div><h3>Navigation</h3>
+    <p>Explore maps, find directions and discover destinations.</p><span class="open-text">Open →</span>
+   </a>
+  </div>
+ </section>
+
+ <section>
+  <div class="section-head">
+   <div><h2>🌿 Healthy Lifestyle</h2><p>Small actions. Better everyday living.</p></div>
+   <span class="head-icon">🌳</span>
+  </div>
+  <div class="wellness">
+   <div class="wellness-card"><div class="emoji">💧</div><h3>Hydration</h3><p>Keep water intake visible and make hydration a daily habit.</p></div>
+   <div class="wellness-card"><div class="emoji">🥗</div><h3>Better Food</h3><p>Plan meals and make simple, balanced food choices.</p></div>
+   <div class="wellness-card"><div class="emoji">🚶</div><h3>Movement</h3><p>Walk, stretch or exercise regularly throughout the day.</p></div>
+   <div class="wellness-card"><div class="emoji">😴</div><h3>Good Sleep</h3><p>Protect your sleep schedule and allow time to recover.</p></div>
+   <div class="wellness-card"><div class="emoji">🧘</div><h3>Calm Mind</h3><p>Take breaks, breathe slowly and reduce screen pressure.</p></div>
+   <div class="wellness-card"><div class="emoji">❤️</div><h3>Family Time</h3><p>Make time for conversations and meaningful moments.</p></div>
+  </div>
+ </section>
+
+ <section class="balance">
+  <h2>🌅 A Simple Daily Balance</h2>
+  <p>Life is more than managing tasks. Make enough space for yourself, too.</p>
+  <div class="balance-grid">
+   <div class="balance-item"><strong>🧠</strong><span>Learn</span></div>
+   <div class="balance-item"><strong>💼</strong><span>Work</span></div>
+   <div class="balance-item"><strong>🏃</strong><span>Move</span></div>
+   <div class="balance-item"><strong>🥗</strong><span>Eat Well</span></div>
+   <div class="balance-item"><strong>👨‍👩‍👦</strong><span>Family</span></div>
+   <div class="balance-item"><strong>🧘</strong><span>Relax</span></div>
+   <div class="balance-item"><strong>😴</strong><span>Sleep</span></div>
+  </div>
+ </section>
+</main>
+
+<footer class="footer">
+ <strong>🌿 Swayam</strong><br>
+ Personal Governance Simplified<br><br>
+ Organize your life. Protect your health.<br>
+ Make time for what matters.
+</footer>
+
+<script>
+"use strict";
+
+/* NATURE THEMES */
+const themeSelector=document.getElementById("themeSelector");
+
+const themeColors={
+ forest:"#138a4b",ocean:"#087eaf",meadow:"#678d27",
+ mint:"#168c83",sunset:"#d76a35",lavender:"#7959bd",
+ rose:"#c04f72",sky:"#397bd0",sand:"#a47b3d",night:"#101a16"
+};
 
 function changeTheme(theme){
-
-    document.body.className =
-        theme;
-
-
-    localStorage.setItem(
-        "swayam_home_theme",
-        theme
-    );
-
+ if(!Object.prototype.hasOwnProperty.call(themeColors,theme)){
+  theme="forest";
+ }
+ document.body.dataset.theme=theme;
+ themeSelector.value=theme;
+ document.querySelector('meta[name="theme-color"]').content=themeColors[theme];
+ try{localStorage.setItem("swayam_home_theme",theme)}catch(e){}
 }
 
+try{
+ const savedTheme=localStorage.getItem("swayam_home_theme");
+ if(savedTheme)changeTheme(savedTheme);
+}catch(e){}
 
-/* =========================================================
-   LOAD SAVED THEME
-   ========================================================= */
+themeSelector.addEventListener("change",function(){
+ changeTheme(this.value);
+});
 
-(function(){
+/* TEXT SIZE CONTROL */
+const decreaseButton=document.getElementById("textDecrease");
+const increaseButton=document.getElementById("textIncrease");
+const textSizeValue=document.getElementById("textSizeValue");
 
-    var savedTheme =
-        localStorage.getItem(
-            "swayam_home_theme"
-        );
+const textSelectors=[
+ ".brand h1",".brand small",".hero h2",".hero p",".hero-quote",
+ ".section-head h2",".section-head p",".app-card h3",".app-card p",
+ ".open-text",".wellness-card h3",".wellness-card p",
+ ".balance h2",".balance>p",".balance-item span",".footer",
+ ".clock",".theme-wrap label"
+];
 
+let textScale=1;
+let textElements=[];
 
-    if(savedTheme){
+function collectTextElements(){
+ textElements=[];
+ const seen=new Set();
 
-        document.body.className =
-            savedTheme;
+ textSelectors.forEach(function(selector){
+  document.querySelectorAll(selector).forEach(function(el){
+   if(seen.has(el))return;
+   seen.add(el);
+   textElements.push({
+    element:el,
+    baseSize:parseFloat(getComputedStyle(el).fontSize)
+   });
+  });
+ });
+}
 
+function applyTextScale(){
+ textElements.forEach(function(item){
+  item.element.style.fontSize=(item.baseSize*textScale)+"px";
+ });
 
-        var selector =
-            document.getElementById(
-                "themeSelector"
-            );
+ textSizeValue.textContent=Math.round(textScale*100)+"%";
+ decreaseButton.disabled=textScale<=0.8;
+ increaseButton.disabled=textScale>=1.4;
 
+ try{
+  localStorage.setItem("swayam_home_text_scale",String(textScale));
+ }catch(e){}
+}
 
-        if(selector){
+function setTextScale(value){
+ textScale=Math.max(0.8,Math.min(1.4,Math.round(value*100)/100));
+ applyTextScale();
+}
 
-            selector.value =
-                savedTheme;
+collectTextElements();
 
-        }
+try{
+ const savedScale=parseFloat(localStorage.getItem("swayam_home_text_scale"));
+ if(Number.isFinite(savedScale)&&savedScale>=0.8&&savedScale<=1.4){
+  textScale=savedScale;
+ }
+}catch(e){}
 
-    }
+applyTextScale();
 
-})();
+decreaseButton.addEventListener("click",function(){
+ setTextScale(textScale-0.1);
+});
+increaseButton.addEventListener("click",function(){
+ setTextScale(textScale+0.1);
+});
 
+/* HORIZONTAL APP SCROLL CONTROLS */
+function scrollApps(direction){
+ const grid=document.getElementById("appGrid");
+ const firstCard=grid.querySelector(".app-card");
+ if(!firstCard)return;
 
-/* =========================================================
-   CLOCK
-   ========================================================= */
+ const cardWidth=firstCard.getBoundingClientRect().width;
+ const gap=parseFloat(getComputedStyle(grid).columnGap)||12;
+
+ grid.scrollBy({
+  left:direction*(cardWidth+gap)*2,
+  behavior:"smooth"
+ });
+}
+
+/* PARENT HUB IFRAME NAVIGATION WITH DIRECT-OPEN FALLBACK */
+function openSwayamPage(event,url){
+ event.preventDefault();
+
+ try{
+  if(window.parent&&window.parent!==window){
+   const parentDoc=window.parent.document;
+   const frame=parentDoc.getElementById("swayamFrame");
+
+   if(frame){
+    frame.src=url;
+
+    try{
+     window.parent.localStorage.setItem(
+      "swayam_selected_page",url.split("/").pop()
+     );
+    }catch(e){}
+
+    const menuLinks=parentDoc.querySelectorAll(".menu-button");
+    menuLinks.forEach(function(link){
+     link.classList.remove("active");
+     const href=link.getAttribute("href");
+
+     if(href&&href.split("/").pop()===url.split("/").pop()){
+      link.classList.add("active");
+      try{
+       link.scrollIntoView({
+        behavior:"smooth",block:"nearest",inline:"center"
+       });
+      }catch(e){}
+     }
+    });
+    return;
+   }
+  }
+ }catch(error){
+  console.log("Swayam navigation fallback:",error);
+ }
+
+ window.location.href=url;
+}
+
+/* LIVE DATE AND TIME */
+const dateEl=document.getElementById("date");
+const time12El=document.getElementById("time12");
+const time24El=document.getElementById("time24");
+
+const dateFormatter=new Intl.DateTimeFormat("en-IN",{
+ weekday:"short",day:"numeric",month:"short",year:"numeric"
+});
+const time12Formatter=new Intl.DateTimeFormat("en-IN",{
+ hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true
+});
+const time24Formatter=new Intl.DateTimeFormat("en-IN",{
+ hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false
+});
 
 function updateClock(){
-
-    var now =
-        new Date();
-
-
-    document.getElementById(
-        "date"
-    ).innerHTML =
-        "📅 " +
-        now.toLocaleDateString(
-            "en-IN",
-            {
-                weekday:"long",
-                year:"numeric",
-                month:"long",
-                day:"numeric"
-            }
-        );
-
-
-    document.getElementById(
-        "time12"
-    ).innerHTML =
-        "🕐 " +
-        now.toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit",
-                second:"2-digit",
-                hour12:true
-            }
-        );
-
-
-    document.getElementById(
-        "time24"
-    ).innerHTML =
-        "🕑 " +
-        now.toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit",
-                second:"2-digit",
-                hour12:false
-            }
-        );
-
+ const now=new Date();
+ dateEl.textContent="📅 "+dateFormatter.format(now);
+ time12El.textContent="🕐 "+time12Formatter.format(now);
+ time24El.textContent="🕑 "+time24Formatter.format(now);
 }
-
-
 updateClock();
-
-setInterval(
-    updateClock,
-    1000
-);
-
-</script></body></html>
+setInterval(updateClock,1000);
+</script>
+</body>
+</html>
