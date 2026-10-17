@@ -78,16 +78,7 @@ button,select{font:inherit}
  background:#ffffffed;color:#183327;outline:none;font-size:12px;
 }
 
-/* CLOCK */
-.clock-bar{
- display:flex;justify-content:center;gap:7px;flex-wrap:wrap;
- padding:8px 10px;background:var(--card);
- border-bottom:1px solid var(--border);
-}
-.clock{
- background:var(--soft);color:var(--deep);border-radius:9px;
- padding:5px 9px;font-size:11px;font-weight:650;
-}
+
 main{max-width:1200px;margin:auto;padding:15px}
 
 /* HERO */
@@ -363,14 +354,7 @@ body[data-theme="night"] .balance{
    <output id="textSizeValue" aria-live="polite">100%</output>
    <button id="textIncrease" type="button" aria-label="Increase text size">A+</button>
   </div>
-  <div class="brand">
-   <div class="logo">🌿</div>
-   <div>
-    <h1>Swayam</h1>
-    <small>Personal Governance Simplified</small>
-   </div>
-  </div>
- </div>
+
  <div class="theme-wrap">
   <label for="themeSelector">Theme</label>
   <select id="themeSelector" class="theme-select" aria-label="Choose nature theme">
@@ -387,12 +371,6 @@ body[data-theme="night"] .balance{
   </select>
  </div>
 </header>
-
-<div class="clock-bar">
- <span id="date" class="clock">📅 Loading...</span>
- <span id="time12" class="clock">🕐 Loading...</span>
- <span id="time24" class="clock">🕑 Loading...</span>
-</div>
 
 <main>
  <section class="hero">
@@ -516,9 +494,7 @@ body[data-theme="night"] .balance{
 
 <footer class="footer">
  <strong>🌿 Swayam</strong><br>
- Personal Governance Simplified<br><br>
- Organize your life. Protect your health.<br>
- Make time for what matters.
+ Personal Governance Simplified.
 </footer>
 
 <script>
@@ -678,29 +654,7 @@ function openSwayamPage(event,url){
  window.location.href=url;
 }
 
-/* LIVE DATE AND TIME */
-const dateEl=document.getElementById("date");
-const time12El=document.getElementById("time12");
-const time24El=document.getElementById("time24");
 
-const dateFormatter=new Intl.DateTimeFormat("en-IN",{
- weekday:"short",day:"numeric",month:"short",year:"numeric"
-});
-const time12Formatter=new Intl.DateTimeFormat("en-IN",{
- hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true
-});
-const time24Formatter=new Intl.DateTimeFormat("en-IN",{
- hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false
-});
-
-function updateClock(){
- const now=new Date();
- dateEl.textContent="📅 "+dateFormatter.format(now);
- time12El.textContent="🕐 "+time12Formatter.format(now);
- time24El.textContent="🕑 "+time24Formatter.format(now);
-}
-updateClock();
-setInterval(updateClock,1000);
 </script>
 </body>
 </html>
