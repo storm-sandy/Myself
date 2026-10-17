@@ -1,0 +1,1144 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#087852">
+<title>Travel LifeSuite Ultimate</title>
+<style>
+:root{
+ --bg:#eff8f2;--card:#fff;--text:#193c2e;--muted:#698074;
+ --primary:#087852;--border:#d6e7dc;--soft:#e1f4e8;
+ --shadow:0 5px 18px #173c2510;--radius:17px
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+ font:15px system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:23px 16px;color:#fff;
+ background:linear-gradient(130deg,#075638,#0ba875,#62b989)}
+header h1{font-size:clamp(23px,5vw,34px);margin:0}
+header p{margin:6px 0;opacity:.94}
+.wrap{max-width:1350px;margin:auto;padding:12px}
+.topline{display:flex;justify-content:space-between;align-items:center;
+ gap:8px;flex-wrap:wrap}
+.clock{font-size:13px}
+.nav{display:flex;gap:7px;overflow-x:auto;position:sticky;top:0;z-index:10;
+ background:var(--bg);padding:9px 0 12px;scrollbar-width:thin}
+.nav button{white-space:nowrap;border:1px solid var(--border);border-radius:25px;
+ padding:10px 14px;background:var(--card);color:var(--text);font-weight:700}
+.nav button.active{background:var(--primary);color:white}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+ padding:16px;margin-bottom:13px;box-shadow:var(--shadow);min-width:0}
+h2{font-size:20px;margin:0 0 13px}h3{font-size:16px;margin:0 0 9px}
+p{line-height:1.5}.muted{font-size:13px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.full{grid-column:1/-1}
+label{font-size:12px;font-weight:750;color:var(--muted)}
+input,select,textarea{font:inherit;width:100%;min-width:0;
+ border:1px solid var(--border);border-radius:10px;padding:11px;
+ background:var(--card);color:var(--text)}
+textarea{min-height:80px;resize:vertical}
+button{font:inherit;cursor:pointer}
+.btn{border:0;border-radius:10px;padding:10px 14px;background:var(--primary);
+ color:#fff;font-weight:700;display:inline-flex;align-items:center;
+ justify-content:center;gap:6px;text-decoration:none}
+.btn.secondary{background:var(--soft);color:var(--text)}
+.btn.danger{background:#ffe8e4;color:#a12b21}
+.btn.small{font-size:12px;padding:7px 10px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:13px}
+.stat{border:1px solid var(--border);border-radius:14px;background:var(--card);padding:13px}
+.stat b{display:block;font-size:clamp(18px,3vw,27px);overflow-wrap:anywhere}
+.stat span{font-size:12px;color:var(--muted)}
+.hero{border:0;color:white;background:linear-gradient(135deg,#07583d,#0e9b6d,#6ebc8d)}
+.hero .muted{color:#e4fff0}
+.quickgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.quick{display:flex;flex-direction:column;align-items:center;justify-content:center;
+ text-align:center;gap:7px;min-height:98px;padding:12px 5px;
+ border:1px solid var(--border);border-radius:15px;background:var(--card);
+ color:var(--text);font-weight:700}
+.quick span:first-child{font-size:27px}
+.quick:active{transform:scale(.97)}
+.item{border:1px solid var(--border);border-radius:12px;padding:13px;margin:9px 0;
+ overflow-wrap:anywhere;background:var(--card)}
+.item p{margin:5px 0;white-space:pre-wrap}
+.pill{display:inline-block;background:var(--soft);border-radius:20px;
+ padding:4px 8px;margin:3px;font-size:11px}
+a{color:var(--primary);overflow-wrap:anywhere}
+.linkgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.linkcard{border:1px solid var(--border);border-radius:12px;padding:12px;
+ background:var(--card);display:flex;flex-direction:column;gap:5px}
+.linkcard a{font-weight:750}
+.empty{text-align:center;padding:20px;color:var(--muted)}
+hr{border:0;border-top:1px solid var(--border);margin:16px 0}
+.bad{color:#b42e20}.good{color:#087852}
+.heat{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.heat div{min-height:34px;border-radius:6px;background:var(--soft);
+ font-size:11px;display:flex;align-items:center;justify-content:center}
+.heat .busy{background:#14835b;color:white}
+.heat .today{outline:2px solid #ed9d29}
+#notice{display:none;padding:12px;background:#fff0c9;border-radius:12px;margin-bottom:12px}
+footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
+body.ocean{--bg:#edf7fd;--text:#153e58;--muted:#607f91;--primary:#087da8;--border:#cde3ef;--soft:#dceff9}
+body.sunset{--bg:#fff4ed;--text:#653722;--muted:#906c56;--primary:#c95d35;--border:#f0d7c8;--soft:#ffeadc}
+body.lavender{--bg:#f6f1fc;--text:#44365f;--muted:#7e7094;--primary:#7957b7;--border:#e2d6f2;--soft:#eee5fa}
+body.meadow{--bg:#f5f7e9;--text:#384824;--muted:#73805e;--primary:#65872e;--border:#dfe6c8;--soft:#e8efcf}
+body.night{--bg:#101d19;--card:#1c2d26;--text:#e1f4e8;--muted:#abc1b5;--primary:#28a779;--border:#354e42;--soft:#294b3c;--shadow:none}
+@media(min-width:800px){
+ .wrap{padding:20px}.quickgrid{grid-template-columns:repeat(5,minmax(0,1fr))}
+ .linkgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:420px){
+ .grid{grid-template-columns:1fr}.full{grid-column:auto}
+ .quickgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .quick{font-size:12px}.linkgrid{grid-template-columns:1fr}
+ .stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .stat{padding:9px}
+}
+@media print{
+ .nav,.actions,header button,form{display:none!important}
+ .panel{display:block!important}.card{box-shadow:none;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<header>
+ <div class="topline">
+  <div><h1>✈ Travel LifeSuite Ultimate</h1>
+  <p>Plan smarter · Travel safer · Explore India and the world</p></div>
+  <div class="clock" id="clock">Your travel companion</div>
+ </div>
+</header>
+<div class="wrap">
+<div id="notice"></div>
+
+<div class="stats">
+ <div class="stat"><b id="tripCount">0</b><span>🧭 Trips</span></div>
+ <div class="stat"><b id="bookingCount">0</b><span>🎫 Transport bookings</span></div>
+ <div class="stat"><b id="placeCount">0</b><span>📍 Saved places</span></div>
+</div>
+
+<nav class="nav" id="nav">
+ <button class="active" data-tab="home">🏠 Home</button>
+ <button data-tab="trips">🧭 Trips</button>
+ <button data-tab="itinerary">🗓 Itinerary</button>
+ <button data-tab="reminders">🔔 Reminders</button>
+ <button data-tab="calendar">📅 Travel calendar</button>
+ <button data-tab="bus">🚌 Bus</button>
+ <button data-tab="rail">🚆 Railway</button>
+ <button data-tab="flight">✈ Flights</button>
+ <button data-tab="ship">🚢 Ship & ferry</button>
+ <button data-tab="local">🚕 Local transport</button>
+ <button data-tab="stays">🏨 Hotels & stays</button>
+ <button data-tab="places">📍 My places</button>
+ <button data-tab="india">🇮🇳 India tourism</button>
+ <button data-tab="world">🌍 World travel</button>
+ <button data-tab="maps">🗺 Maps</button>
+ <button data-tab="emergency">🆘 Safety</button>
+ <button data-tab="documents">📄 Documents</button>
+ <button data-tab="budget">💰 Budget</button>
+ <button data-tab="links">🔗 Travel links</button>
+ <button data-tab="data">💾 Data</button>
+ <button data-tab="settings">⚙ Settings</button>
+</nav>
+
+<!-- HOME -->
+<section id="home" class="panel active">
+ <div class="card hero">
+  <h2>Welcome to your travel command centre ✨</h2>
+  <p class="muted">Manage the journey from the first idea to the trip back home.</p>
+  <div class="grid">
+   <div class="field"><label style="color:white">Current trip</label><select id="activeTrip"></select></div>
+   <div class="field"><label style="color:white">Trip status</label><div id="tripStatus">Create your first trip</div></div>
+  </div>
+  <div class="actions">
+   <button class="btn" onclick="newTrip()">＋ Plan a trip</button>
+   <button class="btn secondary" onclick="newReminder()">🔔 Add reminder</button>
+   <button class="btn secondary" onclick="showTab('maps')">🗺 Plan a route</button>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>🚀 Everything at your fingertips</h2>
+  <div class="quickgrid">
+   <button class="quick" onclick="newTrip()"><span>🧭</span><span>New trip</span></button>
+   <button class="quick" onclick="showTab('itinerary')"><span>🗓</span><span>Daily itinerary</span></button>
+   <button class="quick" onclick="newReminder()"><span>🔔</span><span>Reminders</span></button>
+   <button class="quick" onclick="showTab('bus')"><span>🚌</span><span>Bus ticket</span></button>
+   <button class="quick" onclick="showTab('rail')"><span>🚆</span><span>Train ticket</span></button>
+   <button class="quick" onclick="showTab('flight')"><span>✈️</span><span>Flight ticket</span></button>
+   <button class="quick" onclick="showTab('ship')"><span>🚢</span><span>Ship / ferry</span></button>
+   <button class="quick" onclick="showTab('stays')"><span>🏨</span><span>Hotel booking</span></button>
+   <button class="quick" onclick="showTab('places')"><span>📍</span><span>My places</span></button>
+   <button class="quick" onclick="showTab('india')"><span>🇮🇳</span><span>India tourism</span></button>
+   <button class="quick" onclick="showTab('world')"><span>🌍</span><span>World travel</span></button>
+   <button class="quick" onclick="showTab('maps')"><span>🗺️</span><span>Maps & routes</span></button>
+   <button class="quick" onclick="showTab('emergency')"><span>🆘</span><span>Emergency</span></button>
+   <button class="quick" onclick="showTab('documents')"><span>📄</span><span>Documents</span></button>
+   <button class="quick" onclick="showTab('budget')"><span>💰</span><span>Trip budget</span></button>
+   <button class="quick" onclick="showTab('calendar')"><span>📅</span><span>Travel calendar</span></button>
+   <button class="quick" onclick="showTab('links')"><span>🔗</span><span>Useful links</span></button>
+   <button class="quick" onclick="showTab('data')"><span>💾</span><span>Backup data</span></button>
+   <button class="quick" onclick="showTab('settings')"><span>⚙️</span><span>Settings</span></button>
+  </div>
+ </div>
+
+ <div class="card"><h2>⏳ Upcoming activities & reminders</h2><div id="homeUpcoming"></div></div>
+ <div class="card"><h2>✅ Travel checklist</h2><div id="checklist"></div>
+ <div class="actions"><button class="btn secondary" onclick="showTab('documents')">Review documents</button><button class="btn secondary" onclick="showTab('data')">Backup my data</button></div>
+ </div>
+ <div class="card"><h2>🌟 Start exploring</h2>
+  <div class="linkgrid">
+   <div class="linkcard"><b>🚆 Rail tickets</b><a href="https://www.irctc.co.in/" target="_blank" rel="noopener">Official IRCTC</a></div>
+   <div class="linkcard"><b>🛂 Indian passport</b><a href="https://www.passportindia.gov.in/" target="_blank" rel="noopener">Passport Seva</a></div>
+   <div class="linkcard"><b>🏞 Indian tourism</b><a href="https://www.incredibleindia.gov.in/" target="_blank" rel="noopener">Incredible India</a></div>
+   <div class="linkcard"><b>🗺 Directions</b><a href="https://maps.google.com/" target="_blank" rel="noopener">Google Maps</a></div>
+   <div class="linkcard"><b>🚌 Bus booking</b><a href="https://www.redbus.in/" target="_blank" rel="noopener">redBus</a></div>
+   <div class="linkcard"><b>🆘 Emergency</b><a href="https://112.gov.in/" target="_blank" rel="noopener">India emergency services</a></div>
+  </div>
+ </div>
+</section>
+
+<!-- TRIPS -->
+<section id="trips" class="panel">
+ <div class="card"><h2>🧭 Create or edit a trip</h2>
+ <form id="tripForm" class="grid" data-list="trips">
+  <input type="hidden" name="id">
+  <div class="field"><label>Trip name *</label><input name="name" required placeholder="Family holiday"></div>
+  <div class="field"><label>Trip type</label><select name="type"><option>Holiday</option><option>Business</option><option>Pilgrimage</option><option>Adventure</option><option>Family</option><option>Education</option><option>Medical</option><option>Road trip</option><option>International</option><option>Other</option></select></div>
+  <div class="field"><label>Start date *</label><input type="date" name="start" required></div>
+  <div class="field"><label>End date *</label><input type="date" name="end" required></div>
+  <div class="field"><label>Starting location</label><input name="origin" placeholder="Mumbai"></div>
+  <div class="field"><label>Final destination</label><input name="destination" placeholder="Goa"></div>
+  <div class="field"><label>Travellers</label><input name="travelers" type="number" min="1" value="1"></div>
+  <div class="field"><label>Status</label><select name="status"><option>Planning</option><option>Booked</option><option>In progress</option><option>Completed</option><option>Cancelled</option></select></div>
+  <div class="field"><label>Budget</label><input name="budget" type="number" min="0" step=".01"></div>
+  <div class="field"><label>Currency</label><select name="currency"><option>INR</option><option>USD</option><option>EUR</option><option>GBP</option><option>AED</option><option>Other</option></select></div>
+  <div class="field full"><label>Traveller names / group details</label><textarea name="members"></textarea></div>
+  <div class="field full"><label>Notes and purpose</label><textarea name="notes"></textarea></div>
+  <div class="field full"><label>Emergency contact</label><input name="emergencyContact"></div>
+  <div class="field full actions"><button class="btn">💾 Save trip</button><button type="button" class="btn secondary" onclick="resetForm('tripForm')">Clear</button></div>
+ </form></div>
+ <div class="card"><h2>My trips</h2><div id="tripList"></div></div>
+</section>
+
+<!-- ITINERARY -->
+<section id="itinerary" class="panel">
+ <div class="card"><h2>🗓 Daily itinerary planner</h2>
+ <form id="dayForm" class="grid" data-list="itinerary">
+ <input type="hidden" name="id">
+ <div class="field"><label>Trip *</label><select name="trip" class="tripSelect" required></select></div>
+ <div class="field"><label>Date *</label><input name="date" type="date" required></div>
+ <div class="field"><label>Start time</label><input name="startTime" type="time"></div>
+ <div class="field"><label>End time</label><input name="endTime" type="time"></div>
+ <div class="field"><label>Activity type</label><select name="kind"><option>Sightseeing</option><option>Departure</option><option>Arrival</option><option>Boarding</option><option>Transfer</option><option>Check-in</option><option>Check-out</option><option>Meal</option><option>Rest</option><option>Shopping</option><option>Medical</option><option>Other</option></select></div>
+ <div class="field"><label>Activity / place *</label><input name="title" required></div>
+ <div class="field"><label>From</label><input name="from"></div>
+ <div class="field"><label>To</label><input name="to"></div>
+ <div class="field"><label>Duration (minutes)</label><input name="duration" type="number" min="0"></div>
+ <div class="field"><label>Estimated cost</label><input name="cost" type="number" min="0" step=".01"></div>
+ <div class="field full"><label>Instructions / notes</label><textarea name="notes"></textarea></div>
+ <div class="field full actions"><button class="btn">Save activity</button><button type="button" class="btn secondary" onclick="resetForm('dayForm')">Clear</button></div>
+ </form></div>
+ <div class="card"><h2>Schedule</h2><div id="dayList"></div></div>
+</section>
+
+<!-- REMINDERS -->
+<section id="reminders" class="panel">
+ <div class="card"><h2>🔔 Travel reminders</h2>
+ <p class="muted">Set the date and time in your device's local time. Keep this page open for in-page alerts. Browser notifications require permission and support.</p>
+ <div class="actions"><button class="btn" onclick="requestNotifications()">🔔 Enable notifications</button><button class="btn secondary" onclick="testReminder()">Test notification</button></div>
+ <form id="reminderForm" class="grid" data-list="reminders">
+ <input type="hidden" name="id">
+ <div class="field"><label>Reminder title *</label><input name="title" required placeholder="Reach station early"></div>
+ <div class="field"><label>Trip</label><select name="trip" class="tripSelect"></select></div>
+ <div class="field"><label>Date and time *</label><input name="when" type="datetime-local" required></div>
+ <div class="field"><label>Reminder category</label><select name="category"><option>Departure</option><option>Boarding</option><option>Check-in</option><option>Check-out</option><option>Transport</option><option>Hotel</option><option>Sightseeing</option><option>Document expiry</option><option>Payment</option><option>Medicine</option><option>Custom</option></select></div>
+ <div class="field"><label>Alert lead time</label><select name="lead"><option value="0">At reminder time</option><option value="5">5 minutes before</option><option value="15" selected>15 minutes before</option><option value="30">30 minutes before</option><option value="60">1 hour before</option><option value="1440">1 day before</option><option value="2880">2 days before</option></select></div>
+ <div class="field"><label>Repeat</label><select name="repeat"><option>None</option><option>Daily</option><option>Weekly</option></select></div>
+ <div class="field full"><label>Details</label><textarea name="notes"></textarea></div>
+ <div class="field full actions"><button class="btn">Save reminder</button><button type="button" class="btn secondary" onclick="resetForm('reminderForm')">Clear</button></div>
+ </form></div>
+ <div class="card"><h2>Active & upcoming reminders</h2><div id="reminderList"></div></div>
+ <div class="card"><h2>Reminder limitations</h2><p class="muted">This single-file app does not run a background service. If the page or browser is closed, reminders may not trigger. For critical departures, set a second alarm in your phone's clock app.</p></div>
+</section>
+
+<!-- CALENDAR -->
+<section id="calendar" class="panel">
+ <div class="card"><h2>📅 Travel calendar & activity heatmap</h2>
+ <div class="grid">
+ <div class="field"><label>Month</label><input type="month" id="calMonth"></div>
+ <div class="field"><label>Legend</label><p class="muted">Green = planned activities or trip dates · Orange outline = today</p></div>
+ </div>
+ <div class="heat" id="calendarHeat"></div>
+ <hr><h3>Activities this month</h3><div id="calendarEvents"></div>
+ </div>
+</section>
+
+<!-- TRANSPORT MODULES -->
+<section id="bus" class="panel"><div class="card"><h2>🚌 Bus booking</h2><div id="busArea"></div></div></section>
+<section id="rail" class="panel"><div class="card"><h2>🚆 Railway booking</h2><div id="railArea"></div></div></section>
+<section id="flight" class="panel"><div class="card"><h2>✈ Flight and airport booking</h2><div id="flightArea"></div></div></section>
+<section id="ship" class="panel"><div class="card"><h2>🚢 Ship, cruise and ferry</h2><div id="shipArea"></div></div></section>
+<section id="local" class="panel"><div class="card"><h2>🚕 Local transport and transfers</h2><div id="localArea"></div></div></section>
+
+<!-- STAYS -->
+<section id="stays" class="panel">
+ <div class="card"><h2>🏨 Hotels, resorts and stays</h2>
+ <form id="stayForm" class="grid" data-list="stays">
+ <input type="hidden" name="id">
+ <div class="field"><label>Trip *</label><select name="trip" class="tripSelect" required></select></div>
+ <div class="field"><label>Hotel / property *</label><input name="name" required></div>
+ <div class="field"><label>Type</label><select name="kind"><option>Hotel</option><option>Resort</option><option>Homestay</option><option>Hostel</option><option>Guesthouse</option><option>Camping</option><option>Relatives / friends</option><option>Other</option></select></div>
+ <div class="field"><label>Address *</label><input name="address" required></div>
+ <div class="field"><label>Check-in</label><input name="checkin" type="datetime-local"></div>
+ <div class="field"><label>Check-out</label><input name="checkout" type="datetime-local"></div>
+ <div class="field"><label>Confirmation reference</label><input name="reference"></div>
+ <div class="field"><label>Booking website URL</label><input name="url" type="url"></div>
+ <div class="field"><label>Contact number</label><input name="phone" type="tel"></div>
+ <div class="field"><label>Room / bed</label><input name="room"></div>
+ <div class="field"><label>Guests</label><input name="guests" type="number" min="1" value="1"></div>
+ <div class="field"><label>Rooms</label><input name="rooms" type="number" min="1" value="1"></div>
+ <div class="field"><label>Total price</label><input name="cost" type="number" min="0" step=".01"></div>
+ <div class="field"><label>Payment status</label><select name="payment"><option>Pending</option><option>Partially paid</option><option>Paid</option><option>Pay at property</option><option>Refunded</option></select></div>
+ <div class="field"><label>Reservation status</label><select name="status"><option>Planning</option><option>Booked</option><option>Confirmed</option><option>Cancelled</option><option>Checked in</option><option>Checked out</option></select></div>
+ <div class="field full"><label>Facilities, breakfast, parking, accessibility, notes</label><textarea name="notes"></textarea></div>
+ <div class="field full actions"><button class="btn">Save accommodation</button><button type="button" class="btn secondary" onclick="resetForm('stayForm')">Clear</button></div>
+ </form></div>
+ <div class="card"><h2>My accommodation</h2><div id="stayList"></div></div>
+</section>
+
+<!-- PLACES -->
+<section id="places" class="panel">
+ <div class="card"><h2>📍 My sightseeing places</h2>
+ <form id="placeForm" class="grid" data-list="places">
+ <input type="hidden" name="id">
+ <div class="field"><label>Trip *</label><select name="trip" class="tripSelect" required></select></div>
+ <div class="field"><label>Place name *</label><input name="name" required></div>
+ <div class="field"><label>Category</label><select name="category"><option>Pilgrimage</option><option>Science</option><option>Art / museum</option><option>Heritage</option><option>Nature</option><option>Beach</option><option>Adventure</option><option>Family</option><option>Food</option><option>Shopping</option><option>Medical</option><option>Other</option></select></div>
+ <div class="field"><label>Visit date</label><input name="date" type="date"></div>
+ <div class="field"><label>Start time</label><input name="startTime" type="time"></div>
+ <div class="field"><label>End time</label><input name="endTime" type="time"></div>
+ <div class="field"><label>Address / city</label><input name="address"></div>
+ <div class="field"><label>Maps URL</label><input name="mapUrl" type="url"></div>
+ <div class="field"><label>Duration (minutes)</label><input name="duration" type="number" min="0"></div>
+ <div class="field"><label>Entry cost</label><input name="cost" type="number" min="0" step=".01"></div>
+ <div class="field"><label>Opening hours</label><input name="hours" placeholder="Verify with official source"></div>
+ <div class="field"><label>Priority</label><select name="priority"><option>Must visit</option><option>High</option><option>Optional</option></select></div>
+ <div class="field"><label>Visit status</label><select name="status"><option>Planned</option><option>Booked</option><option>Visited</option><option>Skipped</option></select></div>
+ <div class="field full"><label>Notes / accessibility / things to see</label><textarea name="notes"></textarea></div>
+ <div class="field full actions"><button class="btn">Save place</button><button type="button" class="btn secondary" onclick="resetForm('placeForm')">Clear</button></div>
+ </form></div>
+ <div class="card"><h2>Saved places</h2><input id="placeSearch" placeholder="Search saved places..." oninput="renderPlaces()"><div id="placeList"></div></div>
+</section>
+
+<!-- INDIA TOURISM -->
+<section id="india" class="panel">
+ <div class="card"><h2>🇮🇳 India tourism explorer</h2>
+ <p class="muted">Curated starting points, not an exhaustive national gazetteer. Verify opening hours, permits, closures, accessibility and ticket prices with the official venue.</p>
+ <div class="grid">
+ <div class="field"><label>Search place, state or attraction</label><input id="indiaSearch" placeholder="e.g. Ajanta, Sikkim, science museum" oninput="renderIndia()"></div>
+ <div class="field"><label>Category</label><select id="indiaCategory" onchange="renderIndia()"><option value="">All categories</option><option>Pilgrimage</option><option>Science</option><option>Art & museums</option><option>Heritage & forts</option><option>UNESCO heritage</option><option>Nature & wildlife</option><option>Beaches & islands</option><option>Hill stations</option><option>Adventure</option><option>Culture & arts</option><option>Family & leisure</option></select></div>
+ </div>
+ <div id="indiaList" class="linkgrid"></div>
+ <hr><h3>Explore official tourism directories</h3>
+ <div class="linkgrid">
+ <div class="linkcard"><b>National tourism portal</b><a href="https://www.incredibleindia.gov.in/" target="_blank" rel="noopener">Incredible India</a></div>
+ <div class="linkcard"><b>Archaeology and monuments</b><a href="https://asi.nic.in/" target="_blank" rel="noopener">Archaeological Survey of India</a></div>
+ <div class="linkcard"><b>World Heritage</b><a href="https://whc.unesco.org/en/statesparties/in" target="_blank" rel="noopener">UNESCO India heritage</a></div>
+ <div class="linkcard"><b>National parks and wildlife</b><a href="https://moef.gov.in/" target="_blank" rel="noopener">Environment ministry</a></div>
+ <div class="linkcard"><b>Indian museums</b><a href="https://www.nationalmuseumindia.gov.in/" target="_blank" rel="noopener">National Museum</a></div>
+ <div class="linkcard"><b>State tourism</b><a href="https://www.incredibleindia.gov.in/en" target="_blank" rel="noopener">Find destinations and experiences</a></div>
+ </div>
+ </div>
+</section>
+
+<!-- WORLD TRAVEL -->
+<section id="world" class="panel">
+ <div class="card"><h2>🌍 International travel planner</h2>
+ <div class="grid">
+ <div class="field"><label>Destination country</label><input id="worldCountry" placeholder="e.g. Japan"></div>
+ <div class="field"><label>Destination city</label><input id="worldCity" placeholder="e.g. Tokyo"></div>
+ </div>
+ <div class="actions"><button class="btn" onclick="worldSearch()">Search destination</button></div>
+ <div class="linkgrid" style="margin-top:14px">
+ <div class="linkcard"><b>🛂 Visas & travel advice</b><a href="https://www.mea.gov.in/" target="_blank" rel="noopener">India Ministry of External Affairs</a><a href="https://www.iatatravelcentre.com/" target="_blank" rel="noopener">IATA Travel Centre</a></div>
+ <div class="linkcard"><b>🌐 Global tourism</b><a href="https://www.unwto.org/" target="_blank" rel="noopener">UN Tourism</a><a href="https://whc.unesco.org/en/list/" target="_blank" rel="noopener">World Heritage List</a></div>
+ <div class="linkcard"><b>🗺 Global maps</b><a href="https://maps.google.com/" target="_blank" rel="noopener">Google Maps</a><a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a></div>
+ <div class="linkcard"><b>🛡 Health & safety</b><a href="https://www.who.int/travel-advice" target="_blank" rel="noopener">WHO travel advice</a><a href="https://www.gov.uk/foreign-travel-advice" target="_blank" rel="noopener">Country travel advice</a></div>
+ <div class="linkcard"><b>🌦 Weather</b><a href="https://www.windy.com/" target="_blank" rel="noopener">Windy weather maps</a><a href="https://www.accuweather.com/" target="_blank" rel="noopener">AccuWeather</a></div>
+ <div class="linkcard"><b>🛂 Passport services</b><a href="https://www.passportindia.gov.in/" target="_blank" rel="noopener">Indian Passport Seva</a><a href="https://www.mea.gov.in/indian-missions-abroad.htm" target="_blank" rel="noopener">Indian missions abroad</a></div>
+ </div>
+ </div>
+</section>
+
+<!-- MAPS -->
+<section id="maps" class="panel">
+ <div class="card"><h2>🗺 Route and directions planner</h2>
+ <form id="mapForm" class="grid">
+ <div class="field"><label>Starting point</label><input name="origin" placeholder="Hotel / station"></div>
+ <div class="field"><label>Destination *</label><input name="destination" required placeholder="Enter a place"></div>
+ <div class="field"><label>Travel mode</label><select name="mode"><option value="driving">Driving</option><option value="walking">Walking</option><option value="bicycling">Cycling</option><option value="transit">Public transport</option></select></div>
+ <div class="field"><label>Waypoints, separated by semicolons</label><input name="waypoints" placeholder="Place A; Place B"></div>
+ <div class="field full actions"><button class="btn">Open directions</button><button type="button" class="btn secondary" onclick="mapSearch()">Search map</button></div>
+ </form>
+ <hr><h3>Saved places on maps</h3><div id="mapPlaces"></div>
+ <p><a href="https://www.google.com/maps/dir/" target="_blank" rel="noopener">Google Maps directions</a> · <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a></p>
+ </div>
+</section>
+
+<!-- SAFETY -->
+<section id="emergency" class="panel">
+ <div class="card"><h2>🆘 Travel safety and emergency</h2>
+ <p><b>India emergency number: 112.</b> For immediate danger, contact local emergency services. Confirm specialist railway and local helplines from official sources.</p>
+ <div class="actions"><a class="btn" href="tel:112">📞 Call 112</a><a class="btn secondary" href="https://112.gov.in/" target="_blank" rel="noopener">Official 112 portal</a><a class="btn secondary" href="https://www.indianrailways.gov.in/" target="_blank" rel="noopener">Indian Railways</a></div>
+ </div>
+ <div class="card"><h2>Emergency contacts</h2>
+ <form id="contactForm" class="grid" data-list="contacts">
+ <input type="hidden" name="id">
+ <div class="field"><label>Name *</label><input name="name" required></div>
+ <div class="field"><label>Relationship / service</label><input name="relation" placeholder="Family / police / insurance"></div>
+ <div class="field"><label>Phone *</label><input name="phone" type="tel" required></div>
+ <div class="field"><label>City / country</label><input name="location"></div>
+ <div class="field full"><label>Notes</label><textarea name="notes"></textarea></div>
+ <div class="field full actions"><button class="btn">Save contact</button></div>
+ </form><div id="contactList"></div>
+ </div>
+ <div class="card"><h2>Medical and insurance information</h2>
+ <form id="medicalForm" class="grid" data-list="medical">
+ <input type="hidden" name="id">
+ <div class="field"><label>Trip</label><select name="trip" class="tripSelect"></select></div>
+ <div class="field"><label>Insurance provider</label><input name="insurance"></div>
+ <div class="field"><label>Policy reference (avoid sensitive details)</label><input name="policy"></div>
+ <div class="field"><label>Assistance phone</label><input name="phone"></div>
+ <div class="field"><label>Doctor / medical facility</label><input name="doctor"></div>
+ <div class="field"><label>Medical notes / allergies</label><textarea name="notes"></textarea></div>
+ <div class="field full actions"><button class="btn">Save medical notes</button></div>
+ </form><div id="medicalList"></div>
+ </div>
+</section>
+
+<!-- DOCUMENTS -->
+<section id="documents" class="panel">
+ <div class="card"><h2>📄 Travel document register</h2>
+ <p class="muted">Store document labels and expiry dates, not scans, passwords, full passport numbers or payment-card details.</p>
+ <form id="docForm" class="grid" data-list="docs">
+ <input type="hidden" name="id">
+ <div class="field"><label>Trip</label><select name="trip" class="tripSelect"></select></div>
+ <div class="field"><label>Document type</label><select name="kind"><option>Passport</option><option>Visa</option><option>Identity proof</option><option>Insurance</option><option>Transport ticket</option><option>Hotel confirmation</option><option>Permit</option><option>Other</option></select></div>
+ <div class="field"><label>Document name *</label><input name="name" required></div>
+ <div class="field"><label>Reference / last few characters only</label><input name="reference"></div>
+ <div class="field"><label>Expiry date</label><input name="expiry" type="date"></div>
+ <div class="field"><label>Storage location</label><input name="location" placeholder="Phone files / paper folder"></div>
+ <div class="field full"><label>Notes</label><textarea name="notes"></textarea></div>
+ <div class="field full actions"><button class="btn">Save document</button></div>
+ </form><div id="docList"></div>
+ </div>
+</section>
+
+<!-- BUDGET -->
+<section id="budget" class="panel">
+ <div class="card"><h2>💰 Budget and expenses</h2>
+ <form id="expenseForm" class="grid" data-list="expenses">
+ <input type="hidden" name="id">
+ <div class="field"><label>Trip *</label><select name="trip" class="tripSelect" required></select></div>
+ <div class="field"><label>Description *</label><input name="name" required></div>
+ <div class="field"><label>Category</label><select name="category"><option>Transport</option><option>Accommodation</option><option>Food</option><option>Sightseeing</option><option>Shopping</option><option>Insurance</option><option>Medical</option><option>Other</option></select></div>
+ <div class="field"><label>Amount *</label><input name="amount" type="number" min="0" step=".01" required></div>
+ <div class="field"><label>Date</label><input name="date" type="date"></div>
+ <div class="field"><label>Payment</label><select name="paid"><option>Paid</option><option>Pending</option></select></div>
+ <div class="field full"><label>Receipt reference / notes</label><textarea name="notes"></textarea></div>
+ <div class="field full actions"><button class="btn">Save expense</button></div>
+ </form>
+ <div id="budgetSummary"></div><div id="expenseList"></div>
+ </div>
+</section>
+
+<!-- TRAVEL LINKS -->
+<section id="links" class="panel">
+ <div class="card"><h2>🔗 Travel, transport and hotel directory</h2>
+ <p class="muted">Quick links to commonly used services. These are external websites, not endorsements. Check the domain and final price before paying.</p>
+ <div class="grid">
+ <div class="field"><label>Search link directory</label><input id="linkSearch" placeholder="Search hotels, trains, flights..." oninput="renderLinks()"></div>
+ <div class="field"><label>Category</label><select id="linkCategory" onchange="renderLinks()"><option value="">All categories</option><option>Rail</option><option>Bus</option><option>Flights</option><option>Hotels</option><option>Ferries</option><option>Maps</option><option>Tourism</option><option>Visa & safety</option><option>Weather</option><option>Travel planning</option></select></div>
+ </div>
+ <div id="linksList" class="linkgrid" style="margin-top:14px"></div>
+ <hr><h3>Add your own travel website</h3>
+ <form id="customLinkForm" class="grid">
+ <div class="field"><label>Website name *</label><input name="name" required></div>
+ <div class="field"><label>Category</label><select name="category"><option>Travel planning</option><option>Rail</option><option>Bus</option><option>Flights</option><option>Hotels</option><option>Ferries</option><option>Maps</option><option>Tourism</option><option>Visa & safety</option><option>Weather</option></select></div>
+ <div class="field full"><label>Full HTTPS URL *</label><input name="url" type="url" required placeholder="https://example.com"></div>
+ <div class="field full actions"><button class="btn">Add website</button></div>
+ </form>
+ <div id="customLinks"></div>
+ </div>
+</section>
+
+<!-- DATA -->
+<section id="data" class="panel">
+ <div class="card"><h2>💾 Backup, import and export</h2>
+ <p>Export a backup regularly. Importing a backup merges records by ID; keep a separate backup before importing unfamiliar files.</p>
+ <div class="actions">
+ <button class="btn" onclick="exportJSON()">Export full JSON backup</button>
+ <button class="btn secondary" onclick="exportCSV('trips')">Trips CSV</button>
+ <button class="btn secondary" onclick="exportCSV('bookings')">Bookings CSV</button>
+ <button class="btn secondary" onclick="exportCSV('places')">Places CSV</button>
+ <button class="btn secondary" onclick="exportCSV('itinerary')">Itinerary CSV</button>
+ <button class="btn secondary" onclick="exportCSV('expenses')">Expenses CSV</button>
+ <button class="btn secondary" onclick="exportCSV('reminders')">Reminders CSV</button>
+ </div>
+ <hr><h3>Import JSON backup</h3>
+ <input type="file" id="importFile" accept=".json,application/json">
+ <div class="actions"><button class="btn" onclick="importJSON()">Validate and import</button></div>
+ <hr><h3>Storage status</h3><div id="storageInfo"></div>
+ <button class="btn danger" onclick="clearAll()">Delete all local data</button>
+ </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="panel">
+ <div class="card"><h2>⚙ Settings and preferences</h2>
+ <div class="grid">
+ <div class="field"><label>Theme</label><select id="theme"><option value="forest">Forest green</option><option value="ocean">Ocean blue</option><option value="sunset">Sunset</option><option value="lavender">Lavender</option><option value="meadow">Meadow</option><option value="night">Night mode</option></select></div>
+ <div class="field"><label>Map provider</label><select id="mapProvider"><option value="google">Google Maps</option><option value="osm">OpenStreetMap</option></select></div>
+ </div>
+ <div class="actions"><button class="btn" onclick="saveSettings()">Save settings</button><button class="btn secondary" onclick="window.print()">Print trip details</button></div>
+ <hr><h3>Important travel and privacy notes</h3>
+ <ul>
+ <li>This is a personal organizer, not a live booking engine.</li>
+ <li>Verify fares, reservations, gates, platforms, timetables, opening hours and permits with official providers.</li>
+ <li>Data is stored in this browser on this device. It does not automatically sync between devices.</li>
+ <li>Private browsing, clearing browser data or device failure may erase saved records.</li>
+ <li>JSON backups may contain personal information. Keep them secure.</li>
+ <li>Never save passwords, payment-card numbers, OTPs or full identity document numbers here.</li>
+ <li>External links open other websites. Check the domain before entering personal or payment information.</li>
+ <li>Notifications and reminders may not work when this page is closed or the operating system suspends the browser.</li>
+ <li>Maps, website directories and live information require an internet connection.</li>
+ </ul>
+ </div>
+</section>
+
+<footer>Travel LifeSuite Ultimate · Personal journey planner · Local browser storage</footer>
+</div>
+
+<script>
+"use strict";
+const KEY="travel_lifesuite_ultimate_v2";
+const initial={
+ trips:[],itinerary:[],reminders:[],bus:[],rail:[],flight:[],ship:[],local:[],
+ stays:[],places:[],contacts:[],medical:[],docs:[],expenses:[],
+ customLinks:[],settings:{theme:"forest",mapProvider:"google"}
+};
+let db=loadDB();
+function clone(x){return JSON.parse(JSON.stringify(x))}
+function loadDB(){
+ try{
+  const d=JSON.parse(localStorage.getItem(KEY)||"null");
+  if(!d)return clone(initial);
+  Object.keys(initial).forEach(k=>{
+   if(k==="settings")d[k]={...initial[k],...(d[k]||{})};
+   else if(!Array.isArray(d[k]))d[k]=[];
+  });
+  return d;
+ }catch(e){return clone(initial)}
+}
+function saveDB(){
+ try{localStorage.setItem(KEY,JSON.stringify(db));return true}
+ catch(e){alert("Storage is full or unavailable. Export a backup and remove large records.");return false}
+}
+function uid(){return Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,10)}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function num(v){return Number(v)||0}
+function dateFmt(v){
+ if(!v)return "Not set";
+ if(/^\d{4}-\d{2}-\d{2}$/.test(v)){
+  const d=new Date(v+"T12:00:00");
+  return isNaN(d)?"Not set":d.toLocaleDateString(undefined,{dateStyle:"medium"});
+ }
+ const d=new Date(v);
+ return isNaN(d)?v:d.toLocaleString(undefined,{dateStyle:"medium",timeStyle:"short"});
+}
+function tripName(id){return db.trips.find(t=>t.id===id)?.name||"No trip linked"}
+function val(f,n){return f.elements[n]?.value?.trim()||""}
+function setHTML(id,html){document.getElementById(id).innerHTML=html}
+function safeURL(s){
+ try{const u=new URL(s);return ["http:","https:"].includes(u.protocol)?u.href:"#"}
+ catch(e){return "#"}
+}
+function mapSearchURL(q){
+ return db.settings.mapProvider==="osm"
+  ?"https://www.openstreetmap.org/search?query="+encodeURIComponent(q)
+  :"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
+}
+function mapURL(a,b){
+ return "https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent(a)+"&destination="+encodeURIComponent(b);
+}
+function showTab(id){
+ const panel=document.getElementById(id);
+ if(!panel)return;
+ document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id===id));
+ document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));
+ if(id==="calendar")renderCalendar();
+ if(id==="india")renderIndia();
+ if(id==="links")renderLinks();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+document.getElementById("nav").addEventListener("click",e=>{
+ const b=e.target.closest("button[data-tab]");if(b)showTab(b.dataset.tab);
+});
+function notice(msg){
+ const n=document.getElementById("notice");n.textContent=msg;n.style.display="block";
+}
+function hideNotice(){document.getElementById("notice").style.display="none"}
+function resetForm(id){
+ const f=document.getElementById(id);if(!f)return;
+ f.reset();if(f.elements.id)f.elements.id.value="";
+ if(f.elements.trip&&document.getElementById("activeTrip").value)
+  f.elements.trip.value=document.getElementById("activeTrip").value;
+}
+function formObject(f){
+ const o={};
+ for(const el of f.elements)if(el.name)o[el.name]=el.value.trim();
+ return o;
+}
+function upsert(list,item){
+ if(item.id){
+  const i=list.findIndex(x=>x.id===item.id);
+  if(i>=0){list[i]=item;return}
+ }else item.id=uid();
+ list.push(item);
+}
+function bindForm(id,listName,after){
+ const f=document.getElementById(id);if(!f)return;
+ f.addEventListener("submit",e=>{
+  e.preventDefault();
+  const item=formObject(f);
+  if(!item.id)item.id=uid();
+  if(listName==="trips"&&item.end<item.start){alert("Trip end date cannot be before its start date.");return}
+  if(listName==="reminders"&&!item.when){alert("Choose a reminder date and time.");return}
+  upsert(db[listName],item);
+  if(!saveDB())return;
+  f.reset();if(f.elements.id)f.elements.id.value="";
+  render();if(after)after(item);
+  notice("Saved successfully: "+(item.title||item.name||listName));
+  setTimeout(hideNotice,3000);
+ });
+}
+bindForm("tripForm","trips");
+bindForm("dayForm","itinerary");
+bindForm("reminderForm","reminders");
+bindForm("stayForm","stays");
+bindForm("placeForm","places");
+bindForm("contactForm","contacts");
+bindForm("medicalForm","medical");
+bindForm("docForm","docs");
+bindForm("expenseForm","expenses");
+
+const bookingSchemas={
+ bus:[
+  ["trip","Trip","trip"],["operator","Bus operator / website","text"],["reference","Booking reference","text"],
+  ["ticket","Ticket number","text"],["from","Boarding city / point","text"],["to","Deboarding city / point","text"],
+  ["boarding","Boarding point","text"],["deboarding","Deboarding point","text"],
+  ["depart","Departure date and time","datetime-local"],["arrive","Arrival date and time","datetime-local"],
+  ["seat","Seat numbers","text"],["passengers","Passenger names","text"],["contact","Pickup contact","text"],
+  ["cost","Fare","number"],["status","Booking status","status"],["url","Booking URL","url"],["notes","Luggage / instructions","textarea"]
+ ],
+ rail:[
+  ["trip","Trip","trip"],["operator","Train name / number","text"],["reference","PNR","text"],["ticket","Ticket / transaction ID","text"],
+  ["from","From station","text"],["to","To station","text"],["boarding","Boarding station","text"],["deboarding","Destination station","text"],
+  ["depart","Departure","datetime-local"],["arrive","Arrival","datetime-local"],["seat","Class / coach","text"],
+  ["berth","Berth / seat details","text"],["passengers","Passenger names","text"],["cost","Fare","number"],
+  ["status","Ticket status","railstatus"],["url","Booking URL","url"],["notes","Platform / coach / luggage notes","textarea"]
+ ],
+ flight:[
+  ["trip","Trip","trip"],["operator","Airline / flight number","text"],["reference","Booking reference / PNR","text"],
+  ["ticket","E-ticket number","text"],["from","Departure airport","text"],["to","Arrival airport","text"],
+  ["terminal","Departure terminal","text"],["arrivalTerminal","Arrival terminal","text"],
+  ["boardingTime","Check-in / boarding time","datetime-local"],["depart","Flight departure","datetime-local"],
+  ["arrive","Flight arrival","datetime-local"],["gate","Gate","text"],["seat","Seat / cabin","text"],
+  ["baggage","Baggage allowance","text"],["passengers","Passenger names","text"],["cost","Fare","number"],
+  ["status","Flight status","status"],["url","Booking URL","url"],["notes","Layovers / immigration / transfers","textarea"]
+ ],
+ ship:[
+  ["trip","Trip","trip"],["operator","Operator / vessel","text"],["reference","Booking reference","text"],["ticket","Ticket number","text"],
+  ["from","Departure port","text"],["to","Arrival port","text"],["boarding","Boarding terminal","text"],["deboarding","Disembarkation point","text"],
+  ["boardingTime","Boarding time","datetime-local"],["depart","Departure","datetime-local"],["arrive","Arrival","datetime-local"],
+  ["seat","Cabin / seat","text"],["passengers","Passenger names","text"],["cost","Fare","number"],
+  ["status","Booking status","status"],["url","Booking URL","url"],["notes","Luggage / permit / visa notes","textarea"]
+ ],
+ local:[
+  ["trip","Trip","trip"],["operator","Transport type","localtype"],["reference","Booking reference","text"],
+  ["from","Pickup location","text"],["to","Drop location","text"],["depart","Pickup date and time","datetime-local"],
+  ["arrive","Estimated arrival","datetime-local"],["contact","Driver / contact","text"],["cost","Fare","number"],
+  ["status","Status","status"],["notes","Instructions / comments","textarea"]
+ ]
+};
+function optionsFor(type){
+ const opts={
+ status:["Planning","Booked","Confirmed","Cancelled","Completed"],
+ railstatus:["Planning","Booked","Confirmed","RAC","Waitlisted","Cancelled","Completed"],
+ localtype:["Taxi / cab","Auto-rickshaw","Metro","Local bus","Rental car","Bike rental","Airport transfer","Other"]
+ };
+ return (opts[type]||[]).map(x=>`<option>${esc(x)}</option>`).join("");
+}
+function createBookingForm(k){
+ const fields=bookingSchemas[k];
+ const controls=fields.map(([name,label,type])=>{
+  let html="";
+  if(type==="trip")html=`<select name="${name}" class="tripSelect" required></select>`;
+  else if(type==="textarea")html=`<textarea name="${name}"></textarea>`;
+  else if(["status","railstatus","localtype"].includes(type))html=`<select name="${name}">${optionsFor(type)}</select>`;
+  else html=`<input name="${name}" type="${type}" ${type==="number"?'min="0" step=".01"':""} ${["from","to"].includes(name)?'required':""}>`;
+  return `<div class="field ${type==="textarea"?"full":""}"><label>${esc(label)}${["from","to"].includes(name)?" *":""}</label>${html}</div>`;
+ }).join("");
+ return `<form id="${k}Form" class="grid"><input type="hidden" name="id">${fields.length?"" : ""}
+ ${controls}<div class="field full actions"><button class="btn">Save booking</button><button type="button" class="btn secondary" onclick="resetForm('${k}Form')">Clear</button></div></form>
+ <hr><h3>Saved bookings</h3><div id="${k}List"></div>`;
+}
+Object.keys(bookingSchemas).forEach(k=>{
+ setHTML(k+"Area",createBookingForm(k));
+ bindForm(k+"Form",k);
+});
+function editRecord(listName,id,formId){
+ const item=db[listName]?.find(x=>x.id===id);if(!item)return;
+ const f=document.getElementById(formId);if(!f)return;
+ resetForm(formId);
+ for(const el of f.elements)if(el.name&&item[el.name]!==undefined)el.value=item[el.name];
+ showTab(formId==="tripForm"?"trips":formId==="dayForm"?"itinerary":formId==="reminderForm"?"reminders":
+ formId==="stayForm"?"stays":formId==="placeForm"?"places":
+ ["busForm","railForm","flightForm","shipForm","localForm"].includes(formId)?formId.replace("Form",""):
+ formId==="expenseForm"?"budget":["contactForm","medicalForm"].includes(formId)?"emergency":"documents");
+ f.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function removeRecord(listName,id){
+ if(!confirm("Delete this record?"))return;
+ db[listName]=db[listName].filter(x=>x.id!==id);
+ saveDB();render();
+}
+function actionHTML(list,id,formId){
+ return `<div class="actions"><button class="btn small secondary" onclick="editRecord('${list}','${id}','${formId}')">✏️ Edit</button><button class="btn small danger" onclick="removeRecord('${list}','${id}')">🗑 Delete</button></div>`;
+}
+function recordCard(title,sub,details,list,id,formId){
+ return `<article class="item"><h3>${esc(title||"Untitled")}</h3>${sub?`<p class="muted">${esc(sub)}</p>`:""}${details?`<p>${details}</p>`:""}${actionHTML(list,id,formId)}</article>`;
+}
+function empty(msg="No records yet."){return `<div class="empty">${esc(msg)}</div>`}
+function tripSelects(){
+ const active=document.getElementById("activeTrip"),old=active.value;
+ const opts=db.trips.map(t=>`<option value="${esc(t.id)}">${esc(t.name)} · ${esc(t.start||"No date")}</option>`).join("");
+ active.innerHTML='<option value="">Select trip</option>'+opts;
+ if(db.trips.some(t=>t.id===old))active.value=old;
+ else if(db.trips.length)active.value=db.trips[0].id;
+ document.querySelectorAll(".tripSelect").forEach(s=>{
+  const v=s.value;s.innerHTML='<option value="">Select trip</option>'+opts;
+  if(db.trips.some(t=>t.id===v))s.value=v;else if(active.value)s.value=active.value;
+ });
+}
+function renderTrips(){
+ setHTML("tripList",db.trips.length?db.trips.map(t=>recordCard(t.name,
+ `${t.type||"Trip"} · ${dateFmt(t.start)} – ${dateFmt(t.end)}`,
+ `Route: ${esc(t.origin||"Not set")} → ${esc(t.destination||"Not set")}<br>Travellers: ${esc(t.travelers||1)} · Status: ${esc(t.status||"Planning")}<br>Budget: ${esc(t.currency||"INR")} ${esc(t.budget||0)}<br>${esc(t.members||"")}<br>${esc(t.notes||"")}`,
+ "trips",t.id,"tripForm")).join(""):empty());
+}
+function renderDays(){
+ const a=[...db.itinerary].sort((x,y)=>(x.date+x.startTime).localeCompare(y.date+y.startTime));
+ setHTML("dayList",a.length?a.map(x=>recordCard(x.title,
+ `${tripName(x.trip)} · ${dateFmt(x.date)} · ${x.startTime||"--:--"}–${x.endTime||"--:--"}`,
+ `${esc(x.kind)} · ${esc(x.duration||0)} min<br>${esc(x.from||"")} → ${esc(x.to||"")}<br>Cost: ${esc(x.cost||0)}<br>${esc(x.notes||"")}`,
+ "itinerary",x.id,"dayForm")).join(""):empty());
+}
+function renderBookings(k){
+ const labels={bus:"Bus",rail:"Railway",flight:"Flight",ship:"Ship / ferry",local:"Local transport"};
+ setHTML(k+"List",db[k].length?db[k].map(x=>recordCard(
+ `${labels[k]}: ${x.operator||x.from||"Booking"}`,
+ `${tripName(x.trip)} · ${x.status||"Planning"} · Ref: ${x.reference||"Not provided"}`,
+ `Route: ${esc(x.from||"")} → ${esc(x.to||"")}<br>Boarding: ${esc(x.boarding||x.terminal||x.boardingTime||"")} · Deboarding: ${esc(x.deboarding||x.arrivalTerminal||"")}<br>Departure: ${dateFmt(x.depart)} · Arrival: ${dateFmt(x.arrive)}<br>Seat: ${esc(x.seat||"")} · Passengers: ${esc(x.passengers||"")}<br>Contact: ${esc(x.contact||"")} · Fare: ${esc(x.cost||0)}<br>${esc(x.notes||"")}${x.url?`<br><a href="${safeURL(x.url)}" target="_blank" rel="noopener">Booking website</a>`:""}<br><a target="_blank" rel="noopener" href="${mapURL(x.from||"",x.to||"")}">Open route map</a>`,
+ k,x.id,k+"Form")).join(""):empty());
+}
+function renderStays(){
+ setHTML("stayList",db.stays.length?db.stays.map(x=>recordCard(x.name,
+ `${tripName(x.trip)} · ${x.kind||"Stay"}`,
+ `Address: ${esc(x.address)}<br>Check-in: ${dateFmt(x.checkin)}<br>Check-out: ${dateFmt(x.checkout)}<br>Confirmation: ${esc(x.reference||"")} · Room: ${esc(x.room||"")}<br>Guests: ${esc(x.guests||1)} · Rooms: ${esc(x.rooms||1)}<br>Price: ${esc(x.cost||0)} · ${esc(x.payment||"")} · ${esc(x.status||"")}<br>Contact: ${esc(x.phone||"")}<br>${esc(x.notes||"")}<br><a target="_blank" rel="noopener" href="${mapSearchURL(x.address)}">Map / directions</a>${x.url?`<br><a target="_blank" rel="noopener" href="${safeURL(x.url)}">Booking website</a>`:""}`,
+ "stays",x.id,"stayForm")).join(""):empty());
+}
+function renderPlaces(){
+ const q=(document.getElementById("placeSearch")?.value||"").toLowerCase();
+ const places=db.places.filter(x=>(x.name+" "+x.address+" "+x.category).toLowerCase().includes(q));
+ setHTML("placeList",places.length?places.map(x=>recordCard(x.name,
+ `${tripName(x.trip)} · ${dateFmt(x.date)} · ${x.category||"Place"}`,
+ `Address: ${esc(x.address||"")}<br>Visit: ${esc(x.startTime||"--:--")}–${esc(x.endTime||"--:--")} · Duration: ${esc(x.duration||0)} min<br>Entry cost: ${esc(x.cost||0)} · ${esc(x.priority||"Optional")} · ${esc(x.status||"Planned")}<br>Hours: ${esc(x.hours||"Verify before visiting")}<br>${esc(x.notes||"")}<br><a target="_blank" rel="noopener" href="${x.mapUrl?safeURL(x.mapUrl):mapSearchURL((x.name+" "+x.address).trim())}">Open map</a>`,
+ "places",x.id,"placeForm")).join(""):empty());
+ setHTML("mapPlaces",db.places.length?db.places.map(x=>`<div class="item"><b>${esc(x.name)}</b><p>${esc(x.address||"")}</p><a target="_blank" rel="noopener" href="${mapSearchURL(x.name+" "+x.address)}">Open map / search</a></div>`).join(""):empty());
+}
+function renderContacts(){
+ setHTML("contactList",db.contacts.length?db.contacts.map(x=>`<article class="item"><b>${esc(x.name)}</b> · ${esc(x.relation||"Contact")}<p>${esc(x.phone)} · ${esc(x.location||"")}</p><p>${esc(x.notes||"")}</p><div class="actions"><a class="btn small" href="tel:${encodeURIComponent(x.phone)}">Call</a><button class="btn small danger" onclick="removeRecord('contacts','${x.id}')">Delete</button></div></article>`).join(""):empty());
+ setHTML("medicalList",db.medical.length?db.medical.map(x=>recordCard("Medical / insurance record",tripName(x.trip),`Insurance: ${esc(x.insurance||"")}<br>Policy reference: ${esc(x.policy||"")}<br>Assistance phone: ${esc(x.phone||"")}<br>Doctor / facility: ${esc(x.doctor||"")}<br>${esc(x.notes||"")}`,"medical",x.id,"medicalForm")).join(""):empty());
+}
+function renderDocs(){
+ setHTML("docList",db.docs.length?db.docs.map(x=>recordCard(x.name,`${tripName(x.trip)} · ${x.kind||"Document"}`,`Reference: ${esc(x.reference||"")}<br>Expiry: ${dateFmt(x.expiry)}<br>Storage: ${esc(x.location||"")}<br>${esc(x.notes||"")}`,"docs",x.id,"docForm")).join(""):empty());
+}
+function renderBudget(){
+ const active=document.getElementById("activeTrip").value;
+ const expenses=db.expenses.filter(x=>!active||x.trip===active);
+ const trip=db.trips.find(x=>x.id===active);
+ const spent=expenses.filter(x=>x.paid==="Paid").reduce((s,x)=>s+num(x.amount),0);
+ const pending=expenses.filter(x=>x.paid!=="Paid").reduce((s,x)=>s+num(x.amount),0);
+ const budget=num(trip?.budget);
+ setHTML("budgetSummary",`<div class="stats"><div class="stat"><b>${spent.toFixed(2)}</b><span>Paid expenses</span></div><div class="stat"><b>${pending.toFixed(2)}</b><span>Pending expenses</span></div><div class="stat"><b>${(budget-spent-pending).toFixed(2)}</b><span>Budget balance</span></div></div>`);
+ setHTML("expenseList",expenses.length?expenses.map(x=>recordCard(x.name,`${tripName(x.trip)} · ${x.category||"Other"} · ${dateFmt(x.date)}`,`Amount: ${esc(x.amount)} · ${esc(x.paid||"Pending")}<br>${esc(x.notes||"")}`,"expenses",x.id,"expenseForm")).join(""):empty());
+}
+function reminderTime(r){return new Date(r.when).getTime()-num(r.lead)*60000}
+function renderReminders(){
+ const a=[...db.reminders].sort((x,y)=>new Date(x.when)-new Date(y.when));
+ setHTML("reminderList",a.length?a.map(x=>{
+ const overdue=new Date(x.when).getTime()<Date.now();
+ return recordCard(x.title,`${dateFmt(x.when)} · ${x.category||"Custom"} · ${tripName(x.trip)}`,
+ `<span class="pill">${overdue?"Past time":"Scheduled"}</span><br>Alert lead: ${esc(x.lead||0)} minutes · Repeat: ${esc(x.repeat||"None")}<br>${esc(x.notes||"")}`,
+ "reminders",x.id,"reminderForm");
+ }).join(""):empty());
+}
+function renderDashboard(){
+ const t=db.trips.find(x=>x.id===document.getElementById("activeTrip").value);
+ setHTML("tripStatus",t?`<b>${esc(t.status||"Planning")}</b><br>${dateFmt(t.start)} – ${dateFmt(t.end)}<br>${esc(t.origin||"")} → ${esc(t.destination||"")}`:"No trip selected");
+ const rows=db.itinerary.filter(x=>!t||x.trip===t.id).filter(x=>x.date).sort((a,b)=>(a.date+a.startTime).localeCompare(b.date+b.startTime)).slice(0,6);
+ const upcomingRem=db.reminders.filter(x=>new Date(x.when).getTime()>Date.now()).sort((a,b)=>new Date(a.when)-new Date(b.when)).slice(0,6);
+ const content=[
+ ...rows.map(x=>({when:x.date+(x.startTime?"T"+x.startTime:""),title:x.title,sub:"Itinerary · "+tripName(x.trip)})),
+ ...upcomingRem.map(x=>({when:x.when,title:x.title,sub:"Reminder · "+tripName(x.trip)}))
+ ].sort((a,b)=>new Date(a.when)-new Date(b.when)).slice(0,8);
+ setHTML("homeUpcoming",content.length?content.map(x=>`<div class="item"><b>${dateFmt(x.when)}</b><p>${esc(x.title)}</p><p class="muted">${esc(x.sub)}</p></div>`).join(""):empty("No upcoming activities. Add an itinerary or reminder."));
+ const tasks=[
+ ["Create a trip",db.trips.length>0,"trips"],
+ ["Add transport booking",["bus","rail","flight","ship","local"].some(k=>db[k].length),"rail"],
+ ["Reserve accommodation",db.stays.length>0,"stays"],
+ ["Add sightseeing",db.places.length>0,"places"],
+ ["Add emergency contact",db.contacts.length>0,"emergency"],
+ ["Create a reminder",db.reminders.length>0,"reminders"],
+ ["Export a backup",false,"data"]
+ ];
+ setHTML("checklist",tasks.map(([s,done,tab])=>`<p><a href="#" onclick="showTab('${tab}');return false">${done?"✅":"⬜"} ${esc(s)}</a></p>`).join(""));
+}
+function renderStorage(){
+ let size=0;try{size=new Blob([JSON.stringify(db)]).size}catch(e){}
+ const count=Object.keys(db).filter(k=>Array.isArray(db[k])).reduce((n,k)=>n+db[k].length,0);
+ setHTML("storageInfo",`<p>Trips: ${db.trips.length}</p><p>All saved records: ${count}</p><p>Approximate data size: ${(size/1024).toFixed(1)} KB</p><p>Storage: localStorage · this browser and device</p>`);
+}
+function renderCalendar(){
+ const inp=document.getElementById("calMonth");
+ if(!inp.value)inp.value=new Date().toISOString().slice(0,7);
+ const [yy,mm]=inp.value.split("-").map(Number);
+ const first=new Date(yy,mm-1,1),days=new Date(yy,mm,0).getDate();
+ const offset=(first.getDay()+6)%7;
+ const activeDates=new Set();
+ db.itinerary.forEach(x=>{if(x.date?.startsWith(inp.value))activeDates.add(Number(x.date.slice(8,10)))});
+ db.trips.forEach(t=>{
+  if(!t.start||!t.end)return;
+  for(let d=1;d<=days;d++){
+   const day=`${yy}-${String(mm).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+   if(day>=t.start&&day<=t.end)activeDates.add(d);
+  }
+ });
+ const cells=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(x=>`<div style="font-weight:800">${x}</div>`);
+ for(let i=0;i<offset;i++)cells.push("<div></div>");
+ const today=new Date();
+ for(let d=1;d<=days;d++){
+  const todayClass=today.getFullYear()===yy&&today.getMonth()+1===mm&&today.getDate()===d?" today":"";
+  cells.push(`<div class="${activeDates.has(d)?"busy":""}${todayClass}" title="${activeDates.has(d)?"Travel activity or trip":""}">${d}</div>`);
+ }
+ setHTML("calendarHeat",cells.join(""));
+ const ev=db.itinerary.filter(x=>x.date?.startsWith(inp.value)).sort((a,b)=>(a.date+a.startTime).localeCompare(b.date+b.startTime));
+ const trips=db.trips.filter(x=>x.start?.startsWith(inp.value)||x.end?.startsWith(inp.value));
+ setHTML("calendarEvents",[...ev.map(x=>`<div class="item"><b>${dateFmt(x.date)} ${esc(x.startTime||"")}</b><p>${esc(x.title)} · ${esc(tripName(x.trip))}</p></div>`),...trips.map(x=>`<div class="item"><b>${esc(x.name)}</b><p>${dateFmt(x.start)} – ${dateFmt(x.end)}</p></div>`)].join("")||empty("No trips or activities for this month."));
+}
+document.getElementById("calMonth").addEventListener("change",renderCalendar);
+function render(){
+ tripSelects();
+ document.getElementById("tripCount").textContent=db.trips.length;
+ document.getElementById("bookingCount").textContent=["bus","rail","flight","ship","local"].reduce((s,k)=>s+db[k].length,0);
+ document.getElementById("placeCount").textContent=db.places.length;
+ renderTrips();renderDays();
+ ["bus","rail","flight","ship","local"].forEach(renderBookings);
+ renderStays();renderPlaces();renderContacts();renderDocs();renderBudget();renderReminders();renderDashboard();renderStorage();
+ renderCalendar();renderIndia();renderLinks();renderCustomLinks();
+}
+document.getElementById("activeTrip").addEventListener("change",()=>{renderDashboard();renderBudget()});
+function newTrip(){showTab("trips");resetForm("tripForm");document.getElementById("tripForm").scrollIntoView({behavior:"smooth"})}
+function newReminder(){
+ showTab("reminders");resetForm("reminderForm");
+ const d=new Date(Date.now()+3600000);d.setMinutes(d.getMinutes()-d.getMinutes()%5);
+ document.querySelector('#reminderForm [name="when"]').value=
+ `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}T${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+ document.getElementById("reminderForm").scrollIntoView({behavior:"smooth"});
+}
+function requestNotifications(){
+ if(!("Notification" in window)){alert("Notifications are not supported by this browser.");return}
+ Notification.requestPermission().then(p=>alert(p==="granted"?"Notifications enabled while this page can run.":"Notification permission was not granted."));
+}
+function testReminder(){
+ if("Notification" in window&&Notification.permission==="granted")new Notification("Travel LifeSuite",{body:"Test notification. Check your upcoming travel plans."});
+ else alert("Test reminder: check your travel plans. Enable browser notification permission for system notifications.");
+}
+const fired=new Set();
+function checkReminders(){
+ const now=Date.now();
+ db.reminders.forEach(r=>{
+  const t=reminderTime(r);
+  if(!Number.isFinite(t)||t>now||now-t>65000)return;
+  const key=r.id+"-"+r.when+"-"+r.lead;
+  if(fired.has(key))return;
+  fired.add(key);
+  const msg=r.title+" · "+dateFmt(r.when);
+  notice("🔔 Travel reminder: "+msg);
+  if("Notification" in window&&Notification.permission==="granted"){
+   try{new Notification("Travel LifeSuite reminder",{body:msg})}catch(e){}
+  }
+ });
+}
+function mapSearch(){
+ const q=document.querySelector('#mapForm [name="destination"]').value.trim();
+ if(!q){alert("Enter a destination first.");return}
+ window.open(mapSearchURL(q),"_blank","noopener");
+}
+document.getElementById("mapForm").addEventListener("submit",e=>{
+ e.preventDefault();const f=e.target;
+ const o=val(f,"origin"),d=val(f,"destination"),mode=val(f,"mode"),wps=val(f,"waypoints");
+ let url="https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(d)+"&travelmode="+encodeURIComponent(mode);
+ if(o)url+="&origin="+encodeURIComponent(o);
+ if(wps)url+="&waypoints="+encodeURIComponent(wps.split(";").map(s=>s.trim()).filter(Boolean).join("|"));
+ window.open(url,"_blank","noopener");
+});
+function saveSettings(){
+ db.settings.theme=document.getElementById("theme").value;
+ db.settings.mapProvider=document.getElementById("mapProvider").value;
+ saveDB();applyTheme();alert("Settings saved.");
+}
+function applyTheme(){
+ document.body.className=db.settings.theme==="forest"?"":db.settings.theme;
+ document.getElementById("theme").value=db.settings.theme||"forest";
+ document.getElementById("mapProvider").value=db.settings.mapProvider||"google";
+}
+function downloadFile(name,data,type){
+ const blob=new Blob([data],{type}),url=URL.createObjectURL(blob);
+ const a=document.createElement("a");a.href=url;a.download=name;a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function exportJSON(){
+ downloadFile("travel-lifesuite-"+new Date().toISOString().slice(0,10)+".json",JSON.stringify(db,null,2),"application/json");
+}
+function csvCell(v){
+ let s=String(v??"");
+ if(/^[=+\-@]/.test(s))s="'"+s;
+ return '"'+s.replace(/"/g,'""')+'"';
+}
+function exportCSV(k){
+ const lists={
+ trips:db.trips,bookings:["bus","rail","flight","ship","local"].flatMap(k=>db[k].map(x=>({...x,transportType:k}))),
+ places:db.places,itinerary:db.itinerary,expenses:db.expenses,reminders:db.reminders
+ };
+ const rows=lists[k]||[];
+ if(!rows.length){alert("No records to export.");return}
+ const keys=[...new Set(rows.flatMap(Object.keys))];
+ const csv=[keys.map(csvCell).join(","),...rows.map(r=>keys.map(k=>csvCell(r[k])).join(","))].join("\r\n");
+ downloadFile("travel-"+k+".csv","\ufeff"+csv,"text/csv;charset=utf-8");
+}
+function importJSON(){
+ const file=document.getElementById("importFile").files[0];
+ if(!file){alert("Choose a JSON backup first.");return}
+ const reader=new FileReader();
+ reader.onload=()=>{
+  try{
+   const incoming=JSON.parse(reader.result);
+   const keys=Object.keys(initial).filter(k=>Array.isArray(initial[k]));
+   for(const k of keys)if(incoming[k]!==undefined&&!Array.isArray(incoming[k]))throw Error("Invalid list: "+k);
+   if(!confirm("Merge this backup with existing records?"))return;
+   keys.forEach(k=>{
+    if(!Array.isArray(incoming[k]))return;
+    const m=new Map(db[k].map(x=>[x.id,x]));
+    incoming[k].forEach(x=>{if(!x.id)x.id=uid();m.set(x.id,x)});
+    db[k]=[...m.values()];
+   });
+   if(incoming.settings&&typeof incoming.settings==="object")db.settings={...db.settings,...incoming.settings};
+   if(!saveDB())return;applyTheme();render();alert("Import completed.");
+  }catch(e){alert("Could not import backup: "+e.message)}
+ };
+ reader.readAsText(file);
+}
+function clearAll(){
+ if(!confirm("Permanently delete ALL travel data from this browser? Export a backup first."))return;
+ if(!confirm("Final confirmation: delete trips, tickets, reminders, contacts and expenses?"))return;
+ db=clone(initial);saveDB();applyTheme();render();alert("Local data cleared.");
+}
+document.getElementById("customLinkForm").addEventListener("submit",e=>{
+ e.preventDefault();const f=e.target;
+ const name=val(f,"name"),url=val(f,"url"),category=val(f,"category");
+ if(!/^https?:\/\//i.test(url)){alert("Enter a valid HTTP or HTTPS website URL.");return}
+ db.customLinks.push({id:uid(),name,url,category});
+ if(!saveDB())return;f.reset();renderCustomLinks();renderLinks();alert("Website added.");
+});
+function renderCustomLinks(){
+ setHTML("customLinks",db.customLinks.length?db.customLinks.map(x=>`<div class="item"><b>${esc(x.name)}</b> · ${esc(x.category)}<p><a href="${safeURL(x.url)}" target="_blank" rel="noopener">${esc(x.url)}</a></p><button class="btn small danger" onclick="removeRecord('customLinks','${x.id}')">Delete website</button></div>`).join(""):empty("No custom websites added."));
+}
+const directory=[
+["IRCTC","Rail","https://www.irctc.co.in/","Official Indian railway booking"],
+["National Train Enquiry","Rail","https://enquiry.indianrail.gov.in/","Train running information"],
+["Indian Railways","Rail","https://www.indianrailways.gov.in/","Official railway portal"],
+["redBus","Bus","https://www.redbus.in/","Bus search and booking"],
+["AbhiBus","Bus","https://www.abhibus.com/","Bus booking"],
+["IntrCity SmartBus","Bus","https://www.intrcity.com/","Intercity bus service"],
+["Air India","Flights","https://www.airindia.com/","Airline website"],
+["IndiGo","Flights","https://www.goindigo.in/","Airline website"],
+["Akasa Air","Flights","https://www.akasaair.com/","Airline website"],
+["SpiceJet","Flights","https://www.spicejet.com/","Airline website"],
+["Air India Express","Flights","https://www.airindiaexpress.com/","Airline website"],
+["Google Flights","Flights","https://www.google.com/travel/flights","Compare flight options"],
+["MakeMyTrip","Travel planning","https://www.makemytrip.com/","Travel and booking portal"],
+["Cleartrip","Travel planning","https://www.cleartrip.com/","Travel booking portal"],
+["Yatra","Travel planning","https://www.yatra.com/","Travel booking portal"],
+["EaseMyTrip","Travel planning","https://www.easemytrip.com/","Travel booking portal"],
+["Booking.com","Hotels","https://www.booking.com/","Hotel and accommodation search"],
+["Agoda","Hotels","https://www.agoda.com/","Accommodation search"],
+["Airbnb","Hotels","https://www.airbnb.co.in/","Homes and stays"],
+["OYO","Hotels","https://www.oyorooms.com/","Hotel search"],
+["IHCL / Taj Hotels","Hotels","https://www.tajhotels.com/","Official hotel group"],
+["ITC Hotels","Hotels","https://www.itchotels.com/","Official hotel group"],
+["Marriott","Hotels","https://www.marriott.com/","Official hotel group"],
+["Hilton","Hotels","https://www.hilton.com/","Official hotel group"],
+["Accor","Hotels","https://all.accor.com/","Official hotel group"],
+["Google Maps","Maps","https://maps.google.com/","Maps and navigation"],
+["OpenStreetMap","Maps","https://www.openstreetmap.org/","Open map"],
+["Google Maps directions","Maps","https://www.google.com/maps/dir/","Route planning"],
+["Incredible India","Tourism","https://www.incredibleindia.gov.in/","Indian tourism"],
+["ASI","Tourism","https://asi.nic.in/","Monuments and archaeology"],
+["UNESCO World Heritage","Tourism","https://whc.unesco.org/en/list/","World heritage places"],
+["Maharashtra Tourism","Tourism","https://maharashtratourism.gov.in/","State tourism"],
+["Kerala Tourism","Tourism","https://www.keralatourism.org/","State tourism"],
+["Rajasthan Tourism","Tourism","https://www.tourism.rajasthan.gov.in/","State tourism"],
+["Gujarat Tourism","Tourism","https://www.gujarattourism.com/","State tourism"],
+["Goa Tourism","Tourism","https://goa-tourism.com/","State tourism"],
+["Tamil Nadu Tourism","Tourism","https://www.tamilnadutourism.tn.gov.in/","State tourism"],
+["Karnataka Tourism","Tourism","https://karnatakatourism.org/","State tourism"],
+["Uttar Pradesh Tourism","Tourism","https://uptourism.gov.in/","State tourism"],
+["Passport Seva","Visa & safety","https://www.passportindia.gov.in/","Indian passport services"],
+["Ministry of External Affairs","Visa & safety","https://www.mea.gov.in/","Official foreign affairs information"],
+["IATA Travel Centre","Visa & safety","https://www.iatatravelcentre.com/","Travel document guidance"],
+["India emergency portal","Visa & safety","https://112.gov.in/","India emergency services"],
+["WHO travel advice","Visa & safety","https://www.who.int/travel-advice","Travel health advice"],
+["Indian missions abroad","Visa & safety","https://www.mea.gov.in/indian-missions-abroad.htm","Embassy and consular links"],
+["AccuWeather","Weather","https://www.accuweather.com/","Weather forecasts"],
+["Windy","Weather","https://www.windy.com/","Weather maps"],
+["India Meteorological Department","Weather","https://mausam.imd.gov.in/","Official Indian weather"],
+["Rome2Rio","Travel planning","https://www.rome2rio.com/","Compare route options"],
+["Wikivoyage","Travel planning","https://www.wikivoyage.org/","Destination guides"],
+["UN Tourism","Tourism","https://www.unwto.org/","Global tourism information"],
+["Cruise.com","Ferries","https://www.cruise.com/","Cruise search"],
+["Direct Ferries","Ferries","https://www.directferries.com/","International ferry search"],
+["Mumbai Port Authority","Ferries","https://mumbaiport.gov.in/","Port information"]
+];
+function renderLinks(){
+ const q=(document.getElementById("linkSearch")?.value||"").toLowerCase();
+ const c=document.getElementById("linkCategory")?.value||"";
+ const all=[...directory,...db.customLinks];
+ const filtered=all.filter(x=>(!c||x[1]===c)&&((x[0]+" "+x[1]+" "+x[2]+" "+x[3]).toLowerCase().includes(q)));
+ setHTML("linksList",filtered.length?filtered.map(x=>`<div class="linkcard"><b>${esc(x[0])}</b><span class="pill">${esc(x[1])}</span><a href="${safeURL(x[2])}" target="_blank" rel="noopener">Open website ↗</a><span class="muted">${esc(x[3]||"Custom website")}</span></div>`).join(""):empty("No matching links."));
+}
+const indiaPlaces=[
+["Tirupati Balaji Temple","Pilgrimage","Tirupati, Andhra Pradesh","https://www.tirumala.org/"],
+["Sri Jagannath Temple","Pilgrimage","Puri, Odisha","https://shreejagannath.in/"],
+["Golden Temple","Pilgrimage","Amritsar, Punjab","https://sgpc.net/"],
+["Kashi Vishwanath","Pilgrimage","Varanasi, Uttar Pradesh","https://shrikashivishwanath.org/"],
+["Somnath Temple","Pilgrimage","Prabhas Patan, Gujarat","https://somnath.org/"],
+["Dwarkadhish Temple","Pilgrimage","Dwarka, Gujarat","https://www.dwarkadhish.org/"],
+["Vaishno Devi","Pilgrimage","Katra, Jammu and Kashmir","https://www.maavaishnodevi.org/"],
+["Shirdi Sai Baba","Pilgrimage","Shirdi, Maharashtra","https://sai.org.in/"],
+["Siddhivinayak Temple","Pilgrimage","Mumbai, Maharashtra","https://www.siddhivinayak.org/"],
+["Meenakshi Amman Temple","Pilgrimage","Madurai, Tamil Nadu","https://maduraimeenakshi.hrce.tn.gov.in/"],
+["Bodh Gaya Mahabodhi Temple","Pilgrimage","Bodh Gaya, Bihar","https://bodhgayatemple.com/"],
+["Ramanathaswamy Temple","Pilgrimage","Rameswaram, Tamil Nadu","https://rameswaramramanathar.hrce.tn.gov.in/"],
+["Basilica of Bom Jesus","Pilgrimage","Old Goa, Goa","https://www.goa-tourism.com/"],
+["Ajmer Sharif Dargah","Pilgrimage","Ajmer, Rajasthan","https://www.tourism.rajasthan.gov.in/"],
+["Science City","Science","Kolkata, West Bengal","https://sciencecitykolkata.org.in/"],
+["Nehru Science Centre","Science","Mumbai, Maharashtra","https://nehrusciencecentre.gov.in/"],
+["National Science Centre","Science","New Delhi","https://nscd.gov.in/"],
+["Visvesvaraya Industrial and Technological Museum","Science","Bengaluru, Karnataka","https://mitmuseum.gov.in/"],
+["Gujarat Science City","Science","Ahmedabad, Gujarat","https://sciencecity.gujarat.gov.in/"],
+["Indian Institute of Astrophysics","Science","Bengaluru, Karnataka","https://www.iiap.res.in/"],
+["Vikram Sarabhai Space Exhibition","Science","Ahmedabad, Gujarat","https://www.vssc.gov.in/"],
+["National Museum","Art & museums","New Delhi","https://www.nationalmuseumindia.gov.in/"],
+["Chhatrapati Shivaji Maharaj Vastu Sangrahalaya","Art & museums","Mumbai, Maharashtra","https://www.csmvs.in/"],
+["Indian Museum","Art & museums","Kolkata, West Bengal","https://indianmuseumkolkata.org/"],
+["Salar Jung Museum","Art & museums","Hyderabad, Telangana","https://salarjungmuseum.in/"],
+["Government Museum","Art & museums","Chennai, Tamil Nadu","https://www.chennaimuseum.org/"],
+["National Gallery of Modern Art","Art & museums","New Delhi","https://ngmaindia.gov.in/"],
+["Dr Bhau Daji Lad Museum","Art & museums","Mumbai, Maharashtra","https://www.bdlmuseum.org/"],
+["Albert Hall Museum","Art & museums","Jaipur, Rajasthan","https://alberthalljaipur.gov.in/"],
+["Red Fort","Heritage & forts","Delhi","https://asi.nic.in/"],
+["Agra Fort","Heritage & forts","Agra, Uttar Pradesh","https://asi.nic.in/"],
+["Amber Fort","Heritage & forts","Jaipur, Rajasthan","https://www.tourism.rajasthan.gov.in/"],
+["Chittorgarh Fort","Heritage & forts","Chittorgarh, Rajasthan","https://www.tourism.rajasthan.gov.in/"],
+["Golconda Fort","Heritage & forts","Hyderabad, Telangana","https://tourism.telangana.gov.in/"],
+["Gateway of India","Heritage & forts","Mumbai, Maharashtra","https://maharashtratourism.gov.in/"],
+["Hampi","UNESCO heritage","Vijayanagara, Karnataka","https://whc.unesco.org/en/list/"],
+["Ajanta Caves","UNESCO heritage","Chhatrapati Sambhajinagar, Maharashtra","https://asi.nic.in/"],
+["Ellora Caves","UNESCO heritage","Chhatrapati Sambhajinagar, Maharashtra","https://asi.nic.in/"],
+["Konark Sun Temple","UNESCO heritage","Konark, Odisha","https://odishatourism.gov.in/"],
+["Khajuraho Group of Monuments","UNESCO heritage","Madhya Pradesh","https://www.mptourism.com/"],
+["Kaziranga National Park","Nature & wildlife","Assam","https://kaziranga.assam.gov.in/"],
+["Gir National Park","Nature & wildlife","Gujarat","https://girlion.gujarat.gov.in/"],
+["Ranthambore National Park","Nature & wildlife","Rajasthan","https://www.tourism.rajasthan.gov.in/"],
+["Periyar Tiger Reserve","Nature & wildlife","Kerala","https://www.periyartigerreserve.org/"],
+["Sundarbans","Nature & wildlife","West Bengal","https://www.wbforest.gov.in/"],
+["Jim Corbett National Park","Nature & wildlife","Uttarakhand","https://corbettonline.uk.gov.in/"],
+["Radhanagar Beach","Beaches & islands","Havelock Island, Andaman and Nicobar Islands","https://www.andamantourism.gov.in/"],
+["Palolem Beach","Beaches & islands","South Goa, Goa","https://goa-tourism.com/"],
+["Marina Beach","Beaches & islands","Chennai, Tamil Nadu","https://www.tamilnadutourism.tn.gov.in/"],
+["Kovalam Beach","Beaches & islands","Kerala","https://www.keralatourism.org/"],
+["Pangong Lake","Nature & wildlife","Ladakh","https://leh.nic.in/"],
+["Munnar","Hill stations","Kerala","https://www.keralatourism.org/"],
+["Mahabaleshwar","Hill stations","Maharashtra","https://maharashtratourism.gov.in/"],
+["Ooty","Hill stations","Tamil Nadu","https://www.tamilnadutourism.tn.gov.in/"],
+["Darjeeling","Hill stations","West Bengal","https://www.wbtourism.gov.in/"],
+["Shimla","Hill stations","Himachal Pradesh","https://himachaltourism.gov.in/"],
+["Manali","Adventure","Himachal Pradesh","https://himachaltourism.gov.in/"],
+["Rishikesh","Adventure","Uttarakhand","https://uttarakhandtourism.gov.in/"],
+["Auli","Adventure","Uttarakhand","https://uttarakhandtourism.gov.in/"],
+["Ziro Valley","Culture & arts","Arunachal Pradesh","https://arunachaltourism.com/"],
+["Hornbill Festival","Culture & arts","Nagaland","https://tourism.nagaland.gov.in/"],
+["Kala Ghoda Art Precinct","Culture & arts","Mumbai, Maharashtra","https://www.kalaghodaassociation.com/"],
+["Dilli Haat","Culture & arts","New Delhi","https://delhitourism.gov.in/"],
+["Ramoji Film City","Family & leisure","Hyderabad, Telangana","https://www.ramojifilmcity.com/"],
+["Wonderla","Family & leisure","Multiple Indian cities","https://www.wonderla.com/"],
+["National Rail Museum","Art & museums","New Delhi","https://nrmindia.org/"],
+["Rail Museum","Art & museums","Mysuru, Karnataka","https://www.swr.indianrailways.gov.in/"]
+];
+function renderIndia(){
+ const q=(document.getElementById("indiaSearch")?.value||"").toLowerCase();
+ const c=document.getElementById("indiaCategory")?.value||"";
+ const filtered=indiaPlaces.filter(x=>(!c||x[1]===c)&&x.join(" ").toLowerCase().includes(q));
+ setHTML("indiaList",filtered.length?filtered.map(x=>`<div class="linkcard"><b>${esc(x[0])}</b><span class="pill">${esc(x[1])}</span><span>${esc(x[2])}</span><a href="${safeURL(x[3])}" target="_blank" rel="noopener">Official / information website ↗</a><a href="${mapSearchURL(x[0]+", "+x[2])}" target="_blank" rel="noopener">Find on map ↗</a><button class="btn small secondary" onclick="saveTouristPlace('${esc(x[0]).replace(/'/g,"&#39;")}','${esc(x[1]).replace(/'/g,"&#39;")}','${esc(x[2]).replace(/'/g,"&#39;")}')">＋ Add to my places</button></div>`).join(""):empty("No matching destinations."));
+}
+function saveTouristPlace(name,category,address){
+ if(!db.trips.length){alert("Create a trip first, then add this destination.");showTab("trips");return}
+ const trip=document.getElementById("activeTrip").value||db.trips[0].id;
+ db.places.push({id:uid(),trip,name,category,address,status:"Planned",priority:"Must visit"});
+ if(saveDB()){render();alert(name+" added to your saved places.");}
+}
+function worldSearch(){
+ const c=document.getElementById("worldCountry").value.trim();
+ const city=document.getElementById("worldCity").value.trim();
+ const q=[city,c].filter(Boolean).join(", ");
+ if(!q){alert("Enter a country or city first.");return}
+ window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q),"_blank","noopener");
+}
+function applyClock(){
+ document.getElementById("clock").textContent=new Date().toLocaleString(undefined,{dateStyle:"medium",timeStyle:"medium"});
+}
+document.getElementById("theme").addEventListener("change",e=>{
+ document.body.className=e.target.value==="forest"?"":e.target.value;
+});
+applyTheme();render();applyClock();setInterval(applyClock,1000);setInterval(checkReminders,15000);
+</script>
+</body>
+</html>
