@@ -1,1068 +1,435 @@
-<!DOCTYPE html><html lang="en"><head>
-<link rel="manifest"        
-href="/Myself/manifest.json">
-<meta charset="UTF-8"><meta name="viewport"
-content="width=device-width,
-initial-scale=1.0,
-maximum-scale=1.0,
-viewport-fit=cover">
 
-<meta name="theme-color" content="#4CAF50"><title>Swayam PWA</title><style>
-
-/* =========================================================
-   SWAYAM PWA
-   MENU ALWAYS VISIBLE
-   PAGE OPENS IN CENTER
-   SPCK FRIENDLY
-========================================================= */
-
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#138a4b">
+<link rel="manifest" href="/Myself/manifest.json">
+<title>Swayam — Personal LifeSuite</title>
+<style>
+:root{
+ --bg:#eff7f0;--panel:#fff;--text:#173c2b;--muted:#6a8273;
+ --primary:#138a4b;--deep:#086b38;--soft:#e5f5e9;--line:#dce9df;
+ --head1:#086b38;--head2:#45b96b;--shadow:0 8px 28px #14412619;
 }
-
-html,
-body{
-    width:100%;
-    height:100%;
-}
-
-body{
-
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Arial,
-        sans-serif;
-
-    background:#f3f6f4;
-
-    color:#222;
-
-    overflow:hidden;
-}
-
-
-/* =========================================================
-   HEADER
-========================================================= */
-
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text)}
+body{overflow:hidden}
+button,a{-webkit-tap-highlight-color:transparent}
+button{font:inherit}
 .header{
-
-    height:58px;
-
-    width:100%;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    padding:0 14px;
-
-    color:white;
-
-    background:
-        linear-gradient(
-            135deg,
-            #2e7d32,
-            #66bb6a
-        );
-
-    box-shadow:
-        0 2px 8px rgba(0,0,0,.25);
-
-    position:relative;
-
-    z-index:1000;
+ height:60px;display:flex;align-items:center;justify-content:space-between;
+ gap:8px;padding:0 12px;color:white;
+ background:linear-gradient(120deg,var(--head1),var(--head2));
+ box-shadow:0 3px 14px #143d2926;position:relative;z-index:20
 }
-
-.title{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:7px;
-
-    font-size:18px;
-
-    font-weight:700;
-}
-
-.version{
-
-    font-size:10px;
-
-    padding:3px 7px;
-
-    border-radius:10px;
-
-    background:
-        rgba(255,255,255,.2);
-}
-
+.brand{display:flex;align-items:center;gap:8px;min-width:0}
+.brand-mark{width:34px;height:34px;display:grid;place-items:center;background:#ffffff24;border:1px solid #ffffff40;border-radius:11px;font-size:20px}
+.title{font-size:17px;font-weight:800;white-space:nowrap}
+.version{font-size:9px;padding:3px 6px;border-radius:20px;background:#ffffff25;margin-left:3px}
+.header-right{display:flex;align-items:center;gap:6px}
 .clock{
-
-    font-size:11px;
-
-    padding:6px 9px;
-
-    border-radius:8px;
-
-    background:
-        rgba(255,255,255,.18);
-
-    white-space:nowrap;
+ border:1px solid #ffffff45;color:white;background:#ffffff20;
+ border-radius:10px;padding:7px 9px;font-size:11px;font-weight:750;
+ white-space:nowrap;cursor:pointer
 }
-
-
-/* =========================================================
-   MAIN APPLICATION
-========================================================= */
-
-.app{
-
-    width:100%;
-
-    height:
-        calc(100vh - 58px);
-
-    display:flex;
-
-    overflow:hidden;
+.theme-mini{
+ width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;
+ border:1px solid #ffffff55;border-radius:10px;background:#ffffff22;
+ color:white;font-size:17px;cursor:pointer
 }
-
-
-/* =========================================================
-   LEFT MENU
-========================================================= */
-
+.clock:hover,.theme-mini:hover{background:#ffffff40}
+.app{height:calc(100vh - 60px);height:calc(100dvh - 60px);display:flex;overflow:hidden}
 .menu{
-
-    width:225px;
-
-    min-width:225px;
-
-    height:100%;
-
-    background:#ffffff;
-
-    border-right:1px solid #dcdcdc;
-
-    padding:8px;
-
-    overflow-y:auto;
-
-    overflow-x:hidden;
-
-    scrollbar-width:thin;
-
-    z-index:500;
+ width:225px;min-width:225px;background:var(--panel);
+ border-right:1px solid var(--line);padding:10px 8px;
+ overflow-y:auto;scrollbar-width:thin
 }
-
-
-/* =========================================================
-   MENU ITEMS
-========================================================= */
-
+.menu-caption{padding:5px 10px 10px;color:var(--muted);font-size:10px;letter-spacing:1px;font-weight:800;text-transform:uppercase}
 .menu-button{
-
-    display:flex;
-
-    align-items:center;
-
-    width:100%;
-
-    min-height:45px;
-
-    padding:9px 12px;
-
-    margin-bottom:4px;
-
-    border-left:4px solid transparent;
-
-    border-radius:9px;
-
-    background:#ffffff;
-
-    color:#333;
-
-    text-decoration:none;
-
-    font-size:14px;
-
-    font-weight:500;
-
-    cursor:pointer;
-
-    transition:
-        background .2s ease,
-        color .2s ease,
-        transform .15s ease;
+ display:flex;align-items:center;gap:9px;width:100%;min-height:44px;
+ padding:9px 11px;margin-bottom:5px;border:1px solid transparent;
+ border-radius:11px;background:transparent;color:var(--text);
+ text-decoration:none;font-size:13px;font-weight:650;cursor:pointer
 }
+.menu-icon{width:25px;height:25px;display:grid;place-items:center;background:var(--bg);border-radius:8px;flex:0 0 25px}
+.menu-button:hover{background:var(--soft);color:var(--deep)}
+.menu-button.active{background:var(--soft);border-color:var(--line);color:var(--deep);font-weight:800}
+.menu-button.active .menu-icon{background:var(--primary);color:white}
+.menu-foot{margin:12px 7px;padding:11px;background:var(--bg);border-radius:11px;font-size:11px;color:var(--muted);line-height:1.5}
+.content{flex:1;min-width:0;min-height:0;position:relative;background:var(--bg);overflow:hidden}
+.page-frame{width:100%;height:100%;display:block;border:0;background:var(--panel)}
+.loading{position:absolute;z-index:5;top:12px;left:50%;transform:translateX(-50%);display:none;background:var(--panel);color:var(--deep);padding:8px 14px;border:1px solid var(--line);border-radius:30px;box-shadow:var(--shadow);font-size:12px;font-weight:700}
+.loading.show{display:block}
 
-
-/* Hover */
-
-.menu-button:hover{
-
-    background:#f1f8e9;
-
-    color:#2e7d32;
-
-    transform:translateX(2px);
+/* Floating calendar */
+.calendar-pop{
+ position:fixed;z-index:1000;top:67px;right:12px;
+ width:min(345px,calc(100vw - 20px));padding:15px;
+ background:var(--panel);border:1px solid var(--line);
+ border-radius:18px;box-shadow:0 18px 55px #102b1c35;display:none
 }
-
-
-/* Active */
-
-.menu-button.active{
-
-    background:#e8f5e9;
-
-    color:#1b5e20;
-
-    border-left-color:#4CAF50;
-
-    font-weight:700;
-}
-
-
-/* =========================================================
-   CENTER AREA
-========================================================= */
-
-.content{
-
-    flex:1;
-
-    min-width:0;
-
-    height:100%;
-
-    background:#f5f7f6;
-
-    overflow:hidden;
-
-    position:relative;
-}
-
-
-/* =========================================================
-   IFRAME
-========================================================= */
-
-.page-frame{
-
-    width:100%;
-
-    height:100%;
-
-    display:block;
-
-    border:none;
-
-    background:white;
-}
-
-
-/* =========================================================
-   LOADING
-========================================================= */
-
-.loading{
-
-    position:absolute;
-
-    top:50%;
-
-    left:50%;
-
-    transform:
-        translate(-50%,-50%);
-
-    padding:15px 22px;
-
-    border-radius:12px;
-
-    background:white;
-
-    box-shadow:
-        0 5px 20px rgba(0,0,0,.15);
-
-    color:#2e7d32;
-
-    font-weight:600;
-
-    z-index:10;
-
-    display:none;
-}
-
-
-/* =========================================================
-   HOME PAGE
-========================================================= */
-
-.home-screen{
-
-    width:100%;
-
-    height:100%;
-
-    overflow:auto;
-
-    padding:25px;
-}
-
-.home-card{
-
-    max-width:1000px;
-
-    margin:0 auto;
-
-    background:white;
-
-    border-radius:20px;
-
-    padding:45px 20px;
-
-    text-align:center;
-
-    box-shadow:
-        0 5px 25px rgba(0,0,0,.08);
-}
-
-.home-icon{
-
-    font-size:65px;
-
-    margin-bottom:15px;
-}
-
-.home-card h1{
-
-    color:#2e7d32;
-
-    font-size:
-        clamp(25px,4vw,40px);
-
-    margin-bottom:10px;
-}
-
-.home-card p{
-
-    color:#666;
-
-    font-size:16px;
-
-    line-height:1.6;
-}
-
-.quick-grid{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(170px,1fr)
-        );
-
-    gap:15px;
-
-    max-width:1000px;
-
-    margin:20px auto 0;
-}
-
-.quick-card{
-
-    background:white;
-
-    border-radius:15px;
-
-    padding:20px;
-
-    text-align:center;
-
-    box-shadow:
-        0 3px 15px rgba(0,0,0,.07);
-
-    transition:
-        transform .2s;
-}
-
-.quick-card:hover{
-
-    transform:
-        translateY(-4px);
-}
-
-.quick-icon{
-
-    font-size:32px;
-
-    margin-bottom:8px;
-}
-
-.quick-title{
-
-    font-weight:700;
-
-    color:#333;
-}
-
-.quick-text{
-
-    font-size:12px;
-
-    color:#777;
-
-    margin-top:5px;
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
+.calendar-pop.open{display:block}
+.cal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.cal-title{font-size:15px;font-weight:800}
+.cal-actions{display:flex;gap:4px}
+.cal-btn{width:31px;height:31px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:9px;cursor:pointer}
+.cal-week,.cal-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+.cal-week span{font-size:10px;font-weight:800;color:var(--muted);padding:6px 0}
+.cal-day{aspect-ratio:1;border:0;border-radius:9px;background:transparent;color:var(--text);font-size:12px;cursor:pointer}
+.cal-day:hover{background:var(--soft)}
+.cal-day.muted{opacity:.45}
+.cal-day.today{background:var(--primary);color:white;font-weight:800}
+.cal-day.selected{outline:2px solid var(--primary);outline-offset:-2px}
+.cal-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:11px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+.cal-today{color:var(--primary);font-size:11px;font-weight:800;border:0;background:transparent;padding:6px;cursor:pointer}
+
+/* Theme picker */
+.theme-panel{position:fixed;z-index:1001;inset:0;background:#102b1c66;display:none;align-items:center;justify-content:center;padding:12px}
+.theme-panel.open{display:flex}
+.theme-box{width:min(510px,100%);height:min(720px,90dvh);background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:15px;box-shadow:0 20px 70px #102b1c35;display:flex;flex-direction:column}
+.theme-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.theme-top h2{font-size:17px}
+.close-btn{width:33px;height:33px;border:0;background:var(--bg);color:var(--text);border-radius:10px;font-size:20px;cursor:pointer}
+.theme-sub{font-size:11px;color:var(--muted);margin:6px 0 12px}
+.theme-search{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:var(--bg);color:var(--text);outline-color:var(--primary);margin-bottom:10px}
+.theme-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow-y:auto;overscroll-behavior:contain;padding:2px 3px 5px}
+.theme-option{display:flex;align-items:center;gap:9px;padding:9px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);text-align:left;cursor:pointer;font-size:11px;font-weight:750;min-width:0}
+.theme-option[aria-pressed="true"]{outline:2px solid var(--primary);background:var(--soft)}
+.swatch{width:30px;height:30px;flex:0 0 30px;border-radius:10px;background:linear-gradient(135deg,var(--s1),var(--s2))}
+.theme-label{min-width:0}
+.theme-option small{display:block;font-weight:500;color:var(--muted);margin-top:2px}
+.theme-count{font-size:10px;color:var(--muted);padding-top:9px}
 
 @media(max-width:768px){
-
-    body{
-
-        overflow:hidden;
-    }
-
-
-    .header{
-
-        height:54px;
-
-        padding:0 9px;
-    }
-
-    .title{
-
-        font-size:15px;
-    }
-
-    .clock{
-
-        font-size:9px;
-
-        padding:5px 6px;
-    }
-
-
-    .app{
-
-        height:
-            calc(100vh - 54px);
-
-        display:block;
-    }
-
-
-    /* ---------------------------------------------
-       MOBILE MENU ALWAYS VISIBLE
-    --------------------------------------------- */
-
-    .menu{
-
-        width:100%;
-
-        min-width:100%;
-
-        height:56px;
-
-        display:flex;
-
-        align-items:center;
-
-        gap:4px;
-
-        padding:5px;
-
-        overflow-x:auto;
-
-        overflow-y:hidden;
-
-        white-space:nowrap;
-
-        border-right:0;
-
-        border-bottom:1px solid #ddd;
-
-        scrollbar-width:none;
-
-        -webkit-overflow-scrolling:touch;
-
-        position:relative;
-
-        z-index:500;
-    }
-
-    .menu::-webkit-scrollbar{
-
-        display:none;
-    }
-
-
-    .menu-button{
-
-        flex:0 0 auto;
-
-        width:auto;
-
-        min-width:max-content;
-
-        height:44px;
-
-        min-height:44px;
-
-        margin:0;
-
-        padding:0 13px;
-
-        justify-content:center;
-
-        border:0;
-
-        border-bottom:3px solid transparent;
-
-        border-radius:8px;
-
-        font-size:13px;
-    }
-
-
-    .menu-button:hover{
-
-        transform:none;
-    }
-
-
-    .menu-button.active{
-
-        border-left:0;
-
-        border-bottom-color:#4CAF50;
-    }
-
-
-    /* ---------------------------------------------
-       CENTER PAGE
-    --------------------------------------------- */
-
-    .content{
-
-        width:100%;
-
-        height:
-            calc(100vh - 110px);
-
-        overflow:hidden;
-    }
-
-
-    .page-frame{
-
-        width:100%;
-
-        height:100%;
-    }
-
+ .header{height:54px;padding:0 8px;gap:4px}
+ .brand{gap:6px}.brand-mark{width:29px;height:29px;font-size:17px}
+ .title{font-size:14px}.version{display:none}
+ .header-right{gap:5px}.clock{font-size:10px;padding:7px 6px}
+ .theme-mini{width:31px;height:31px;flex-basis:31px;font-size:16px}
+ .app{height:calc(100vh - 54px);height:calc(100dvh - 54px);flex-direction:column}
+ .menu{order:0;width:100%;min-width:0;height:55px;flex:0 0 55px;display:flex;align-items:center;gap:4px;padding:5px 6px;overflow-x:auto;overflow-y:hidden;border-right:0;border-bottom:1px solid var(--line);scrollbar-width:none;white-space:nowrap}
+ .menu::-webkit-scrollbar{display:none}
+ .menu-caption,.menu-foot{display:none}
+ .menu-button{flex:0 0 auto;width:auto;min-height:41px;height:41px;padding:0 9px;margin:0;gap:5px;border-radius:10px;font-size:11px;white-space:nowrap}
+ .menu-icon{width:23px;height:23px;flex-basis:23px}
+ .content{order:1;flex:1;width:100%;min-height:0}
+ .calendar-pop{top:60px;right:6px}
+ .theme-box{height:86dvh;padding:12px}
 }
-
-
-/* =========================================================
-   SMALL MOBILE
-========================================================= */
-
-@media(max-width:400px){
-
-    .header{
-
-        height:50px;
-    }
-
-    .app{
-
-        height:
-            calc(100vh - 50px);
-    }
-
-    .menu{
-
-        height:52px;
-    }
-
-    .menu-button{
-
-        height:40px;
-
-        min-height:40px;
-
-        padding:0 10px;
-
-        font-size:12px;
-    }
-
-    .content{
-
-        height:
-            calc(100vh - 102px);
-    }
-
+@media(max-width:350px){
+ .title{font-size:13px}.clock{font-size:9px;padding:6px 4px}
+ .brand-mark{display:none}
+ .theme-list{gap:5px}.theme-option{padding:7px;gap:6px}
 }
-
-
-/* =========================================================
-   MOBILE LANDSCAPE
-========================================================= */
-
-@media(max-width:768px)
-       and (orientation:landscape){
-
-    .app{
-
-        display:flex;
-
-        height:
-            calc(100vh - 48px);
-    }
-
-
-    .menu{
-
-        width:155px;
-
-        min-width:155px;
-
-        height:100%;
-
-        display:block;
-
-        overflow-x:hidden;
-
-        overflow-y:auto;
-
-        border-right:1px solid #ddd;
-
-        border-bottom:0;
-
-        padding:5px;
-    }
-
-
-    .menu-button{
-
-        width:100%;
-
-        height:40px;
-
-        min-height:40px;
-
-        justify-content:flex-start;
-
-        font-size:12px;
-
-        border:0;
-
-        border-left:3px solid transparent;
-    }
-
-
-    .menu-button.active{
-
-        border-left-color:#4CAF50;
-
-        border-bottom:0;
-    }
-
-
-    .content{
-
-        width:auto;
-
-        height:100%;
-    }
-
+@media(max-width:768px) and (orientation:landscape){
+ .app{flex-direction:row}
+ .menu{width:150px;min-width:150px;height:100%;flex:0 0 150px;display:block;overflow-y:auto;overflow-x:hidden;border-bottom:0;border-right:1px solid var(--line);padding:6px}
+ .menu-caption{display:block}.menu-foot{display:block}
+ .menu-button{width:100%;height:auto;min-height:38px;white-space:normal;padding:7px}
+ .content{height:100%}
 }
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
 
+<header class="header">
+ <div class="brand">
+  <div class="brand-mark">🌿</div>
+  <div class="title">Swayam <span class="version">LIFESUITE · v1.2</span></div>
+ </div>
+ <div class="header-right">
+  <button class="clock" id="clock" type="button" aria-haspopup="dialog" aria-expanded="false">Loading…</button>
+  <button class="theme-mini" id="openThemes" type="button" title="Choose theme" aria-label="Choose nature theme">🎨</button>
+ </div>
+</header>
 
-/* =========================================================
-   LARGE DESKTOP
-========================================================= */
+<div class="app">
+ <nav class="menu" aria-label="Swayam Navigation">
+  <div class="menu-caption">Your workspace</div>
+  <a href="./home.html" class="menu-button active" target="swayamFrame"><span class="menu-icon">🏡</span>MyNest</a>
+  <a href="util/clock.html" class="menu-button" target="swayamFrame"><span class="menu-icon">🕘</span>Clock</a>
+  <a href="./start.html" class="menu-button" target="swayamFrame"><span class="menu-icon">💠</span>App Center</a>
+  <a href="util/Util_launch.html" class="menu-button" target="swayamFrame"><span class="menu-icon">🔗</span>Websites</a>
+  <a href="util/install.html" class="menu-button" target="swayamFrame"><span class="menu-icon">📱</span>Install</a>
+  <a href="util/Util_admin.html" class="menu-button" target="swayamFrame"><span class="menu-icon">🔐</span>Admin</a>
+  <a href="site/aboutus.html" class="menu-button" target="swayamFrame"><span class="menu-icon">🚀</span>Share App</a>
+  
+  
+  
+  <div class="menu-foot">🌱 Your personal space for everyday life.</div>
+ </nav>
 
-@media(min-width:1400px){
-
-    .menu{
-
-        width:250px;
-
-        min-width:250px;
-    }
-
-    .menu-button{
-
-        min-height:48px;
-
-        font-size:15px;
-    }
-
-}
-
-
-/* =========================================================
-   IFRAME ERROR STYLE
-========================================================= */
-
-iframe{
-
-    background:#fff;
-}
-
-</style></head><body><!-- =======================================================
-     HEADER
-======================================================= --><header class="header"><div class="title">
-
-    🌿 Swayam
-
-    <span class="version">
-        v1.0
-    </span>
-
+ <main class="content">
+  <div class="loading" id="loading" role="status">Opening page…</div>
+  <iframe id="swayamFrame" name="swayamFrame" class="page-frame" src="home.html" title="Swayam Application Content"></iframe>
+ </main>
 </div>
 
+<section class="calendar-pop" id="calendarPop" role="dialog" aria-label="Calendar">
+ <div class="cal-head">
+  <div class="cal-title" id="monthTitle">Calendar</div>
+  <div class="cal-actions">
+   <button class="cal-btn" id="prevMonth" aria-label="Previous month">‹</button>
+   <button class="cal-btn" id="nextMonth" aria-label="Next month">›</button>
+   <button class="cal-btn" id="closeCalendar" aria-label="Close calendar">×</button>
+  </div>
+ </div>
+ <div class="cal-week"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+ <div class="cal-days" id="calendarDays"></div>
+ <div class="cal-foot"><span id="selectedDateText"></span><button class="cal-today" id="goToday">Go to today</button></div>
+</section>
 
-<div
-    class="clock"
-    id="clock">
-
-    Loading...
-
+<div class="theme-panel" id="themePanel" role="dialog" aria-modal="true" aria-labelledby="themeHeading">
+ <div class="theme-box">
+  <div class="theme-top">
+   <h2 id="themeHeading">🌍 Theme Gallery</h2>
+   <button class="close-btn" id="closeThemes" aria-label="Close themes">×</button>
+  </div>
+  <p class="theme-sub">60 themes • Snow, Water, Fire, Earth, Nature and more</p>
+  <input id="themeSearch" class="theme-search" type="search" placeholder="Search themes…">
+  <div class="theme-list" id="themeOptions"></div>
+  <div class="theme-count" id="themeCount">60 themes available</div>
+ </div>
 </div>
 
-</header><!-- =======================================================
-     APPLICATION
-======================================================= --><div class="app"><!-- ===================================================
-     MENU - ALWAYS VISIBLE
-==================================================== -->
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
 
-<nav
-    class="menu"
-    id="menu"
-    aria-label="Swayam Navigation">
+/* 60 locally generated palettes: no image files, fonts, or libraries. */
+const themeInfo=[
+['forest','🌲 Forest',120],['ocean','🌊 Ocean',198],['meadow','🌼 Meadow',83],
+['mint','🍃 Mint',158],['sunset','🌇 Sunset',23],['lavender','🪻 Lavender',267],
+['rose','🌹 Rose Garden',340],['sky','☁️ Sky',213],['sand','🏜️ Sand & Earth',36],
+['night','🌌 Night Forest',145],
 
+['snow','❄️ Snow',205],['water','💧 Water',190],['fire','🔥 Fire',8],
+['earth','🌍 Earth',32],['rain','🌧️ Rain',207],['thunder','⛈️ Thunder',254],
+['glacier','🧊 Glacier',187],['volcano','🌋 Volcano',2],['desert','🏜️ Desert Dunes',42],
+['jungle','🌴 Tropical Jungle',132],['bamboo','🎋 Bamboo Grove',103],
+['autumn','🍂 Autumn Leaves',25],['spring','🌷 Spring Blossom',328],
+['winter','🌨️ Winter Pine',196],['coral','🪸 Coral Reef',174],
+['lagoon','🏝️ Blue Lagoon',184],['river','🏞️ Riverbank',164],
+['waterfall','💦 Waterfall',190],['lake','🛶 Alpine Lake',202],
+['mountain','⛰️ Mountain Mist',220],['moss','🌿 Moss Garden',94],
+['fern','🌱 Fern Valley',111],['olive','🫒 Olive Grove',78],
+['palm','🌴 Palm Island',153],['orchid','🌺 Orchid',305],
+['cherry','🌸 Cherry Blossom',350],['lotus','🪷 Lotus Pond',326],
+['sunrise','🌄 Sunrise',28],['dusk','🌆 Dusk',277],
+['dawn','🌅 Dawn Glow',15],['moonlight','🌙 Moonlight',235],
+['starlight','✨ Starlight',249],['aurora','🌌 Aurora',169],
+['rainforest','🌳 Rainforest',143],['wildflower','🌻 Wildflower',48],
+['canyon','🪨 Red Canyon',15],['clay','🏺 Terracotta Earth',17],
+['stone','🪨 Stone & Slate',215],['crystal','💎 Crystal',188],
+['rainbow','🌈 Rainbow Garden',285],['honey','🍯 Honey Meadow',39],
+['lavenderfield','💜 Lavender Fields',280],['pine','🌲 Pine Forest',151],
+['cactus','🌵 Cactus Garden',91],['savanna','🦒 Savanna',46],
+['tundra','🐾 Arctic Tundra',200],['deepsea','🐋 Deep Sea',218],
+['seaglass','🫧 Sea Glass',168],['pebble','🪨 River Pebbles',174],
+['earthnight','🌑 Earth at Night',135],['cosmos','🪐 Cosmic Nature',263]
+];
 
-    <a
-        href="./home.html"
-        class="menu-button active"
-        target="swayamFrame">
+function hsl(h,s,l){return 'hsl('+h+' '+s+'% '+l+'%)'}
 
-        🏡 MyNest
+const themes=themeInfo.map((v,i)=>{
+ const [id,name,h]=v;
+ const dark=id==='night'||id==='earthnight'||id==='deepsea';
+ const primary=hsl(h,dark?57:65,dark?64:37);
+ const deep=hsl(h,dark?42:65,dark?75:27);
+ const head1=hsl(h,62,dark?13:27);
+ const head2=hsl((h+35)%360,65,dark?29:53);
+ const bg=dark?hsl(h,26,11):hsl(h,42,97);
+ const panel=dark?hsl(h,25,16):(i%3===0?'#ffffff':hsl(h,35,99));
+ const text=dark?hsl(h,25,92):hsl(h,35,20);
+ const muted=dark?hsl(h,18,69):hsl(h,18,47);
+ const soft=dark?hsl(h,30,23):hsl(h,42,91);
+ const line=dark?hsl(h,25,29):hsl(h,27,87);
+ return {id,name,h,bg,panel,text,muted,primary,deep,soft,line,head1,head2,dark};
+});
 
-    </a>
+function setTheme(id,save=true){
+ const t=themes.find(x=>x.id===id)||themes[0];
+ const root=document.documentElement;
+ ['bg','panel','text','muted','primary','deep','soft','line','head1','head2']
+ .forEach(k=>root.style.setProperty('--'+k,t[k]));
 
+ root.style.setProperty('--shadow',t.dark?'0 8px 28px #0005':'0 8px 28px #14412619');
+ document.querySelector('meta[name="theme-color"]').content=t.head1;
+ document.querySelector('meta[name="color-scheme"]')?.setAttribute('content',t.dark?'dark':'light');
 
+ document.querySelectorAll('.theme-option').forEach(b=>{
+  b.setAttribute('aria-pressed',String(b.dataset.theme===t.id));
+ });
+ if(save){try{localStorage.setItem('swayam_nature_theme',t.id)}catch(e){}}
+}
 
-<a
-        href="util/clock.html"
-        class="menu-button"
-        target="swayamFrame">
+function buildThemes(){
+ const box=$('themeOptions');
+ themes.forEach(t=>{
+  const b=document.createElement('button');
+  b.type='button';b.className='theme-option';b.dataset.theme=t.id;
+  b.setAttribute('aria-pressed','false');
+  b.setAttribute('aria-label','Apply '+t.name+' theme');
 
-        🕘 Clock
+  const sw=document.createElement('span');
+  sw.className='swatch';
+  sw.style.setProperty('--s1',t.head1);
+  sw.style.setProperty('--s2',t.head2);
 
-    </a>
-<a
-        href="./start.html"
-        class="menu-button"
-        target="swayamFrame">
+  const label=document.createElement('span');
+  label.className='theme-label';
+  label.append(document.createTextNode(t.name));
 
-        💠 App Center
+  const small=document.createElement('small');
+  small.textContent=t.dark?'Dark nature palette':'Nature colour palette';
+  label.append(small);
+  b.append(sw,label);
 
-</a>
+  b.addEventListener('click',()=>{
+   setTheme(t.id);
+   $('themePanel').classList.remove('open');
+  });
+  box.append(b);
+ });
+ $('themeCount').textContent=themes.length+' themes available';
+}
 
-<a
-        href="util/Util_launch.html"
-        class="menu-button"
-        target="swayamFrame">
+function filterThemes(){
+ const q=$('themeSearch').value.trim().toLowerCase();
+ let count=0;
+ document.querySelectorAll('.theme-option').forEach(b=>{
+  const match=b.textContent.toLowerCase().includes(q);
+  b.hidden=!match;
+  if(match)count++;
+ });
+ $('themeCount').textContent=count+' theme'+(count===1?'':'s')+' found';
+}
+buildThemes();
+$('themeSearch').addEventListener('input',filterThemes);
 
-        🔗 Websites
+try{setTheme(localStorage.getItem('swayam_nature_theme')||'forest',false)}
+catch(e){setTheme('forest',false)}
 
-    </a>
+function openThemes(){
+ $('calendarPop').classList.remove('open');
+ $('clock').setAttribute('aria-expanded','false');
+ $('themePanel').classList.add('open');
+ $('themeSearch').value='';
+ filterThemes();
+ $('closeThemes').focus();
+}
+$('openThemes').addEventListener('click',openThemes);
+$('closeThemes').addEventListener('click',()=>$('themePanel').classList.remove('open'));
+$('themePanel').addEventListener('click',e=>{
+ if(e.target===$('themePanel'))$('themePanel').classList.remove('open');
+});
 
-<a
-        href="util/install.html"
-        class="menu-button"
-        target="swayamFrame">
-
-        📱 Install
-
-    </a>
-
-<a
-        href="util/Util_admin.html"
-        class="menu-button"
-        target="swayamFrame">
-
-        🔐 Admin
-
-    </a>
-
-<a
-        href="site/aboutus.html"
-        class="menu-button"
-        target="swayamFrame">
-
-        🚀 Share App.
-
-    </a>
-
-</nav>
-
-
-
-<!-- ===================================================
-     CENTER CONTENT
-==================================================== -->
-
-<main class="content">
-
-
-    <div
-        class="loading"
-        id="loading">
-
-        Loading...
-
-    </div>
-
-
-    <iframe
-        id="swayamFrame"
-        name="swayamFrame"
-        class="page-frame"
-        src="home.html"
-        title="Swayam Application Content">
-
-    </iframe>
-
-
-</main>
-
-</div><script>
-
-/* =========================================================
-   LIVE CLOCK
-========================================================= */
-
+/* Live clock */
 function updateClock(){
-
-    var clock =
-        document.getElementById("clock");
-
-    if(!clock){
-
-        return;
-
-    }
-
-
-    var now =
-        new Date();
-
-
-    var date =
-        now.toLocaleDateString(
-            "en-IN",
-            {
-                weekday:"short",
-                month:"short",
-                day:"numeric"
-            }
-        );
-
-
-    var time =
-        now.toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit",
-                hour12:true
-            }
-        );
-
-
-    clock.textContent =
-        date + " | " + time;
-
+ const n=new Date();
+ $('clock').textContent=
+  n.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'})+
+  ' · '+n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
 }
-
-
 updateClock();
+setInterval(updateClock,30000);
 
+/* Floating calendar */
+let viewDate=new Date(),selectedDate=new Date();
+function sameDay(a,b){
+ return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
+}
+function renderCalendar(){
+ const y=viewDate.getFullYear(),m=viewDate.getMonth();
+ const start=new Date(y,m,1).getDay();
+ const count=new Date(y,m+1,0).getDate();
+ const today=new Date();
+ $('monthTitle').textContent=viewDate.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+ const box=$('calendarDays');
+ box.replaceChildren();
 
-setInterval(
-    updateClock,
-    1000
-);
-
-
-/* =========================================================
-   MENU ACTIVE STATE
-========================================================= */
-
-var menuLinks =
-    document.querySelectorAll(
-        ".menu-button"
-    );
-
-
-for(
-    var i = 0;
-    i < menuLinks.length;
-    i++
-){
-
-    menuLinks[i].addEventListener(
-        "click",
-        function(){
-
-            /*
-             * Remove active from all menu items
-             */
-
-            for(
-                var j = 0;
-                j < menuLinks.length;
-                j++
-            ){
-
-                menuLinks[j]
-                    .classList
-                    .remove("active");
-
-            }
-
-
-            /*
-             * Highlight selected item
-             */
-
-            this.classList.add(
-                "active"
-            );
-
-
-            /*
-             * Save selected page
-             */
-
-            try{
-
-                localStorage.setItem(
-                    "swayam_selected_page",
-                    this.getAttribute(
-                        "href"
-                    )
-                );
-
-            }
-            catch(e){}
-
-
-            /*
-             * On mobile, automatically
-             * bring selected menu into view
-             */
-
-            try{
-
-                this.scrollIntoView({
-                    behavior:"smooth",
-                    block:"nearest",
-                    inline:"center"
-                });
-
-            }
-            catch(e){}
-
-        }
-    );
-
+ for(let i=0;i<42;i++){
+  const n=i-start+1;
+  let d=n<1?new Date(y,m,n):n>count?new Date(y,m+1,n-count):new Date(y,m,n);
+  const b=document.createElement('button');
+  b.type='button';b.className='cal-day';b.textContent=d.getDate();
+  b.setAttribute('aria-label',d.toLocaleDateString('en-IN',{dateStyle:'full'}));
+  if(d.getMonth()!==m)b.classList.add('muted');
+  if(sameDay(d,today))b.classList.add('today');
+  if(sameDay(d,selectedDate))b.classList.add('selected');
+  b.addEventListener('click',()=>{
+   selectedDate=new Date(d);
+   renderCalendar();
+  });
+  box.append(b);
+ }
+ $('selectedDateText').textContent=selectedDate.toLocaleDateString('en-IN',{
+  weekday:'short',day:'numeric',month:'short',year:'numeric'
+ });
 }
 
+$('clock').addEventListener('click',()=>{
+ const open=$('calendarPop').classList.toggle('open');
+ $('clock').setAttribute('aria-expanded',String(open));
+ $('themePanel').classList.remove('open');
+ if(open)renderCalendar();
+});
+$('closeCalendar').addEventListener('click',()=>{
+ $('calendarPop').classList.remove('open');
+ $('clock').setAttribute('aria-expanded','false');
+});
+$('prevMonth').addEventListener('click',()=>{
+ viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()-1,1);renderCalendar();
+});
+$('nextMonth').addEventListener('click',()=>{
+ viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,1);renderCalendar();
+});
+$('goToday').addEventListener('click',()=>{
+ viewDate=new Date();selectedDate=new Date();renderCalendar();
+});
 
-/* =========================================================
-   IFRAME LOADING
-========================================================= */
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'){
+  $('calendarPop').classList.remove('open');
+  $('themePanel').classList.remove('open');
+  $('clock').setAttribute('aria-expanded','false');
+ }
+});
+document.addEventListener('click',e=>{
+ if(!$('calendarPop').contains(e.target)&&!$('clock').contains(e.target)){
+  $('calendarPop').classList.remove('open');
+  $('clock').setAttribute('aria-expanded','false');
+ }
+});
 
-var frame =
-    document.getElementById(
-        "swayamFrame"
-    );
-
-var loading =
-    document.getElementById(
-        "loading"
-    );
-
-
-frame.addEventListener(
-    "load",
-    function(){
-
-        loading.style.display =
-            "none";
-
-    }
-);
-
-
-frame.addEventListener(
-    "loadstart",
-    function(){
-
-        loading.style.display =
-            "block";
-
-    }
-);
-
-
-/* =========================================================
-   SAVE CURRENT PAGE
-========================================================= */
-
-window.addEventListener(
-    "beforeunload",
-    function(){
-
-        try{
-
-            /*
-             * Current iframe URL is not always
-             * accessible for local files because
-             * of browser security restrictions.
-             *
-             * Menu click already stores it.
-             */
-
-        }
-        catch(e){}
-
-    }
-);
-
+/* Main navigation */
+const frame=$('swayamFrame'),loading=$('loading');
+const links=[...document.querySelectorAll('.menu-button[href]')];
+let loadTimer;
+function showLoading(){
+ loading.classList.add('show');
+ clearTimeout(loadTimer);
+ loadTimer=setTimeout(()=>loading.classList.remove('show'),2500);
+}
+frame.addEventListener('load',()=>{
+ loading.classList.remove('show');
+ clearTimeout(loadTimer);
+});
+links.forEach(a=>{
+ a.addEventListener('click',function(){
+  links.forEach(x=>x.classList.remove('active'));
+  this.classList.add('active');
+  try{localStorage.setItem('swayam_selected_page',this.getAttribute('href'))}catch(e){}
+  this.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  showLoading();
+ });
+});
+})();
 </script>
-<script src="/Myself/app.js"></script>
-</body></html>
+<script src="/Myself/app.js" defer></script>
+</body>
+</html>
