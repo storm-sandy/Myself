@@ -1,1032 +1,522 @@
+
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport"
-content="width=device-width,
-initial-scale=1.0,
-maximum-scale=1.0">
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#138a4b">
+<title>Swayam Smart Settings</title>
 
-<meta name="theme-color" content="#2e7d32"><title>Smart Watch</title><style>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
 
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+:root{
+ --bg:#eff7f0;
+ --panel:#fff;
+ --text:#203b2b;
+ --muted:#718176;
+ --primary:#138a4b;
+ --deep:#086b38;
+ --soft:#e4f5e8;
+ --border:#d9e9dc;
+ --shadow:0 4px 15px rgba(0,0,0,.07);
 }
 
-html,
 body{
-    width:100%;
-    min-height:100%;
+ font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+ background:var(--bg);
+ color:var(--text);
+ min-height:100vh;
+ transition:background .25s,color .25s;
 }
 
-body{
-
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Arial,
-        sans-serif;
-
-    background:
-        linear-gradient(
-            135deg,
-            #f8fff8,
-            #ffffff
-        );
-
-    color:#222;
-
-    transition:.3s;
+body[data-theme="forest"]{
+ --bg:#eaf5eb;--panel:#fff;--text:#173b25;--muted:#64806b;
+ --primary:#138a4b;--deep:#086b38;--soft:#dff2e3;--border:#cce2d0;
 }
-
-
-/* =========================================================
-   HEADER
-========================================================= */
+body[data-theme="ocean"]{
+ --bg:#eaf7fc;--panel:#fff;--text:#163b50;--muted:#607f90;
+ --primary:#0288a8;--deep:#005b78;--soft:#d9f2fa;--border:#c6e6ef;
+}
+body[data-theme="meadow"]{
+ --bg:#f2f8e8;--panel:#fff;--text:#34451d;--muted:#7b8964;
+ --primary:#689f38;--deep:#47751f;--soft:#eaf4d9;--border:#dce8c9;
+}
+body[data-theme="mint"]{
+ --bg:#e9f8f3;--panel:#fff;--text:#174b40;--muted:#6c9187;
+ --primary:#159b83;--deep:#08745e;--soft:#d9f3eb;--border:#c7e9df;
+}
+body[data-theme="sunset"]{
+ --bg:#fff1e8;--panel:#fff;--text:#60351f;--muted:#a07a64;
+ --primary:#e87536;--deep:#b94c20;--soft:#ffe5d5;--border:#f3d3c1;
+}
+body[data-theme="lavender"]{
+ --bg:#f3efff;--panel:#fff;--text:#3c315c;--muted:#81769c;
+ --primary:#8060c9;--deep:#593ba2;--soft:#e9e1ff;--border:#ddd1f7;
+}
+body[data-theme="rose"]{
+ --bg:#fff0f3;--panel:#fff;--text:#592c3b;--muted:#9a7582;
+ --primary:#d94e79;--deep:#a82b55;--soft:#ffe0e9;--border:#f3ccd9;
+}
+body[data-theme="sky"]{
+ --bg:#edf5ff;--panel:#fff;--text:#213d62;--muted:#7186a5;
+ --primary:#347bd2;--deep:#2058a2;--soft:#dfebff;--border:#cfdef5;
+}
+body[data-theme="sand"]{
+ --bg:#f8f2e7;--panel:#fffdf8;--text:#51432e;--muted:#92836a;
+ --primary:#a77a3c;--deep:#785321;--soft:#f1e5cf;--border:#e8dac0;
+}
+body[data-theme="night"]{
+ --bg:#121b20;--panel:#202d33;--text:#e6f1f3;--muted:#a0b2b8;
+ --primary:#62c6a2;--deep:#329b79;--soft:#293e3c;--border:#3c5055;
+ --shadow:0 4px 15px rgba(0,0,0,.2);
+}
 
 .module-header{
-
-    padding:14px 18px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    gap:12px;
-
-    color:white;
-
-    background:
-        linear-gradient(
-            135deg,
-            #43a047,
-            #66bb6a
-        );
-
-    box-shadow:
-        0 3px 12px rgba(0,0,0,.15);
-
-    position:sticky;
-
-    top:0;
-
-    z-index:10;
+ position:sticky;
+ top:0;
+ z-index:20;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:12px;
+ padding:13px 16px;
+ color:white;
+ background:linear-gradient(135deg,var(--deep),var(--primary));
+ box-shadow:0 3px 12px rgba(0,0,0,.15);
 }
 
-.title-area{
+.title-area{display:flex;align-items:center;gap:10px;min-width:0}
+.watch-icon{font-size:29px}
+.title-area h1{font-size:clamp(18px,3vw,25px);line-height:1.2}
+.subtitle{font-size:11px;opacity:.88;margin-top:3px}
 
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
-}
-
-.watch-icon{
-
-    font-size:30px;
-}
-
-.title-area h1{
-
-    font-size:
-        clamp(20px,3vw,30px);
-}
-
-.subtitle{
-
-    font-size:11px;
-
-    opacity:.85;
-}
-
-
-/* =========================================================
-   THEME
-========================================================= */
-
+.theme-box{display:flex;align-items:center;gap:6px}
+.theme-label{font-size:12px;white-space:nowrap}
 .theme-box select{
-
-    min-height:36px;
-
-    padding:6px 10px;
-
-    border:0;
-
-    border-radius:8px;
-
-    background:white;
-
-    color:#222;
-
-    cursor:pointer;
+ max-width:145px;
+ min-height:38px;
+ padding:7px 9px;
+ border:1px solid rgba(255,255,255,.5);
+ border-radius:9px;
+ background:#fff;
+ color:#26382b;
+ font:inherit;
+ font-size:12px;
+ cursor:pointer;
 }
 
+.page-intro{padding:16px 15px 10px}
+.page-intro h2{font-size:20px;color:var(--primary)}
+.page-intro p{font-size:12px;color:var(--muted);margin-top:4px}
 
-/* =========================================================
-   CLOCK
-========================================================= */
+.shortcut-section{margin:0 0 18px}
+.section-heading{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:8px;
+ padding:0 15px 9px;
+}
+.section-heading h2{font-size:16px;color:var(--text)}
+.section-heading span{font-size:11px;color:var(--muted)}
 
-.clock-panel{
-
-    margin:15px;
-
-    padding:14px;
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(3,1fr);
-
-    gap:10px;
-
-    background:white;
-
-    border-radius:15px;
-
-    box-shadow:
-        0 3px 15px rgba(0,0,0,.08);
+.shortcut-row{
+ display:flex;
+ gap:11px;
+ overflow-x:auto;
+ overflow-y:hidden;
+ padding:3px 15px 13px;
+ scroll-snap-type:x mandatory;
+ scrollbar-width:thin;
+ scrollbar-color:var(--primary) var(--soft);
+ -webkit-overflow-scrolling:touch;
+}
+.shortcut-row::-webkit-scrollbar{height:5px}
+.shortcut-row::-webkit-scrollbar-track{
+ background:var(--soft);border-radius:10px
+}
+.shortcut-row::-webkit-scrollbar-thumb{
+ background:var(--primary);border-radius:10px
 }
 
-.time-box{
-
-    padding:10px;
-
-    text-align:center;
-
-    border-radius:10px;
-
-    background:#f1f8e9;
+.shortcut{
+ flex:0 0 125px;
+ min-width:0;
+ min-height:124px;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+ padding:13px 8px;
+ border:1px solid var(--border);
+ border-radius:16px;
+ background:var(--panel);
+ color:var(--text);
+ text-align:center;
+ text-decoration:none;
+ box-shadow:var(--shadow);
+ scroll-snap-align:start;
+ cursor:pointer;
+ transition:transform .18s,background .18s;
 }
-
-.time-label{
-
-    display:block;
-
-    font-size:10px;
-
-    color:#777;
-
-    text-transform:uppercase;
+.shortcut:hover{transform:translateY(-3px);background:var(--soft)}
+.shortcut:active{transform:scale(.97)}
+.shortcut-icon{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ width:49px;
+ height:49px;
+ border-radius:15px;
+ background:var(--soft);
+ font-size:27px;
 }
-
-.time-value{
-
-    display:block;
-
-    margin-top:4px;
-
-    color:#2e7d32;
-
-    font-size:
-        clamp(12px,2vw,17px);
-
-    font-weight:700;
-}
-
-
-/* =========================================================
-   CARDS
-========================================================= */
-
-.list-grid{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(
-                230px,
-                1fr
-            )
-        );
-
-    gap:15px;
-
-    padding:
-        0 15px 15px;
-}
-
-.card{
-
-    padding:18px;
-
-    border-radius:16px;
-
-    background:white;
-
-    box-shadow:
-        0 3px 15px rgba(0,0,0,.08);
-
-    transition:.2s;
-}
-
-.card:hover{
-
-    transform:
-        translateY(-3px);
-
-    box-shadow:
-        0 7px 20px rgba(0,0,0,.12);
-}
-
-.card-header{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
-
-    margin-bottom:10px;
-
-    padding-bottom:10px;
-
-    border-bottom:1px solid #e5e5e5;
-}
-
-.card-icon{
-
-    font-size:27px;
-}
-
-.card h2{
-
-    color:#2e7d32;
-
-    font-size:18px;
-}
-
-
-/* =========================================================
-   LINKS
-========================================================= */
-
-.card ul{
-
-    list-style:none;
-}
-
-.card li{
-
-    margin:5px 0;
-}
-
-.card a{
-
-    display:flex;
-
-    align-items:center;
-
-    min-height:44px;
-
-    padding:9px 11px;
-
-    border-radius:9px;
-
-    color:#333;
-
-    text-decoration:none;
-
-    font-size:14px;
-
-    font-weight:500;
-
-    cursor:pointer;
-
-    transition:.2s;
-}
-
-.card a:hover{
-
-    background:#e8f5e9;
-
-    color:#2e7d32;
-
-    transform:
-        translateX(3px);
-}
-
-
-/* =========================================================
-   INFO
-========================================================= */
+.shortcut-title{font-size:12px;font-weight:700;line-height:1.3}
+.shortcut-subtitle{font-size:10px;color:var(--muted);line-height:1.25}
 
 .info-box{
-
-    margin:
-        0 15px 15px;
-
-    padding:13px 15px;
-
-    border-radius:12px;
-
-    background:#e8f5e9;
-
-    color:#2e7d32;
-
-    font-size:12px;
+ margin:4px 15px 18px;
+ padding:13px 15px;
+ border:1px solid var(--border);
+ border-radius:13px;
+ background:var(--soft);
+ color:var(--text);
+ font-size:12px;
+ line-height:1.6;
 }
+.footer{text-align:center;padding:0 15px 20px;color:var(--muted);font-size:11px}
 
-
-/* =========================================================
-   DARK
-========================================================= */
-
-body.dark{
-
-    background:#181818;
-
-    color:#eee;
+@media(max-width:450px){
+ .module-header{padding:11px 10px;gap:7px}
+ .watch-icon{font-size:24px}
+ .title-area{gap:7px}
+ .title-area h1{font-size:17px}
+ .subtitle{font-size:9px}
+ .theme-label{display:none}
+ .theme-box select{max-width:115px;min-height:35px;font-size:11px;padding:5px}
+ .page-intro{padding:14px 12px 9px}
+ .shortcut-row{padding-left:12px;padding-right:12px}
+ .section-heading{padding-left:12px;padding-right:12px}
+ .shortcut{flex-basis:112px;min-height:116px}
+ .shortcut-icon{width:44px;height:44px;font-size:24px}
+ .shortcut-title{font-size:11px}
+ .info-box{margin-left:12px;margin-right:12px}
 }
-
-body.dark .module-header{
-
-    background:
-        linear-gradient(
-            135deg,
-            #1b5e20,
-            #2e7d32
-        );
-}
-
-body.dark .clock-panel,
-body.dark .card{
-
-    background:#252525;
-}
-
-body.dark .time-box{
-
-    background:#303030;
-}
-
-body.dark .time-label{
-
-    color:#aaa;
-}
-
-body.dark .time-value{
-
-    color:#81c784;
-}
-
-body.dark .card-header{
-
-    border-bottom-color:#444;
-}
-
-body.dark .card h2{
-
-    color:#81c784;
-}
-
-body.dark .card a{
-
-    color:#eee;
-}
-
-body.dark .card a:hover{
-
-    background:#303030;
-
-    color:#81c784;
-}
-
-body.dark .info-box{
-
-    background:#263d27;
-
-    color:#a5d6a7;
-}
-
-
-/* =========================================================
-   BLUE
-========================================================= */
-
-body.blue{
-
-    background:
-        linear-gradient(
-            135deg,
-            #eef7ff,
-            #ffffff
-        );
-}
-
-body.blue .module-header{
-
-    background:
-        linear-gradient(
-            135deg,
-            #1565c0,
-            #42a5f5
-        );
-}
-
-body.blue .time-box{
-
-    background:#e3f2fd;
-}
-
-body.blue .time-value{
-
-    color:#1565c0;
-}
-
-body.blue .card h2{
-
-    color:#1565c0;
-}
-
-body.blue .card a:hover{
-
-    background:#e3f2fd;
-
-    color:#1565c0;
-}
-
-body.blue .info-box{
-
-    background:#e3f2fd;
-
-    color:#1565c0;
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media(max-width:700px){
-
-    .module-header{
-
-        padding:11px;
-
-    }
-
-    .watch-icon{
-
-        font-size:24px;
-    }
-
-    .title-area h1{
-
-        font-size:19px;
-    }
-
-    .subtitle{
-
-        font-size:9px;
-    }
-
-    .theme-box select{
-
-        font-size:11px;
-
-        min-height:34px;
-    }
-
-    .clock-panel{
-
-        margin:10px;
-
-        padding:8px;
-
-        gap:6px;
-    }
-
-    .time-box{
-
-        padding:8px 4px;
-    }
-
-    .time-label{
-
-        font-size:8px;
-    }
-
-    .time-value{
-
-        font-size:11px;
-    }
-
-    .list-grid{
-
-        grid-template-columns:1fr;
-
-        padding:
-            0 10px 10px;
-
-        gap:10px;
-    }
-
-    .card{
-
-        padding:14px;
-    }
-
-    .card a{
-
-        min-height:44px;
-
-        font-size:14px;
-    }
-
-    .info-box{
-
-        margin:
-            0 10px 10px;
-    }
-
-}
-
-
-/* =========================================================
-   SMALL MOBILE
-========================================================= */
-
-@media(max-width:400px){
-
-    .clock-panel{
-
-        grid-template-columns:1fr;
-    }
-
-}
-
-
-/* =========================================================
-   LANDSCAPE
-========================================================= */
-
-@media(max-width:700px)
-       and (orientation:landscape){
-
-    .list-grid{
-
-        grid-template-columns:
-            repeat(3,1fr);
-    }
-
-    .card a{
-
-        font-size:12px;
-
-        min-height:36px;
-    }
-
-}
-
-</style></head><body class="light"><!-- =======================================================
-     HEADER
-======================================================= --><header class="module-header"><div class="title-area">
-
-    <div class="watch-icon">
-        ⌚
-    </div>
-
-    <div>
-
-        <h1>
-            Smart Settings
-        </h1>
-
-        <div class="subtitle">
-            Swayam Smart Settings
-        </div>
-
-    </div>
-
+</style>
+</head>
+
+<body data-theme="forest">
+
+<header class="module-header">
+ <div class="title-area">
+  <div class="watch-icon">⌚</div>
+  <div>
+   <h1>Smart Settings</h1>
+   <div class="subtitle">Swayam Smart Settings</div>
+  </div>
+ </div>
+
+ <div class="theme-box">
+  <span class="theme-label">🌿 Theme</span>
+  <select id="themeSelect" aria-label="Choose nature theme" onchange="changeTheme(this.value)">
+   <option value="forest">🌲 Forest</option>
+   <option value="ocean">🌊 Ocean</option>
+   <option value="meadow">🌿 Meadow</option>
+   <option value="mint">🍃 Mint</option>
+   <option value="sunset">🌅 Sunset</option>
+   <option value="lavender">💜 Lavender</option>
+   <option value="rose">🌹 Rose</option>
+   <option value="sky">☁️ Sky</option>
+   <option value="sand">🏜️ Sand</option>
+   <option value="night">🌙 Night</option>
+  </select>
+ </div>
+</header>
+
+<div class="page-intro">
+ <h2>🌱 Settings & Utilities</h2>
+ <p>Swipe horizontally through each row to explore shortcuts.</p>
 </div>
 
+<!-- ROW 1: ADMIN -->
+<section class="shortcut-section">
+ <div class="section-heading">
+  <h2>🔐 Admin & System</h2>
+  <span>Swipe →</span>
+ </div>
 
-<div class="theme-box">
+ <div class="shortcut-row">
+  <a class="shortcut" href="/Myself/admin/sqlchk.html" onclick="openSwayamPage(event,this.href)">
+   <span class="shortcut-icon">🗄️</span>
+   <span class="shortcut-title">SQLite Offline Check</span>
+   <span class="shortcut-subtitle">Database status</span>
+  </a>
 
-    <select
-        id="themeSelect"
-        onchange="changeTheme(this.value)">
+  <a class="shortcut" href="/Myself/admin/phonechk.html" onclick="openSwayamPage(event,this.href)">
+   <span class="shortcut-icon">📱</span>
+   <span class="shortcut-title">Phone Status</span>
+   <span class="shortcut-subtitle">Device check</span>
+  </a>
 
-        <option value="light">
-            Light
-        </option>
+  <a class="shortcut" href="/Myself/admin/sqlwin.html" onclick="openSwayamPage(event,this.href)">
+   <span class="shortcut-icon">⌨️</span>
+   <span class="shortcut-title">SQLite Query Window</span>
+   <span class="shortcut-subtitle">SQL workspace</span>
+  </a>
 
-        <option value="dark">
-            Dark
-        </option>
+  <a class="shortcut" href="#" onclick="showDummy(event,'System Dashboard')">
+   <span class="shortcut-icon">🖥️</span>
+   <span class="shortcut-title">System Dashboard</span>
+   <span class="shortcut-subtitle">Coming soon</span>
+  </a>
 
-        <option value="blue">
-            Blue
-        </option>
+  <a class="shortcut" href="#" onclick="showDummy(event,'Storage Manager')">
+   <span class="shortcut-icon">💾</span>
+   <span class="shortcut-title">Storage Manager</span>
+   <span class="shortcut-subtitle">Coming soon</span>
+  </a>
 
-    </select>
-
-</div>
-
-</header><!-- =======================================================
-     CLOCK
-======================================================= --><section class="clock-panel"><div class="time-box">
-
-    <span class="time-label">
-        Date
-    </span>
-
-    <span
-        class="time-value"
-        id="mdate">
-        --
-    </span>
-
-</div>
-
-
-<div class="time-box">
-
-    <span class="time-label">
-        12 Hour
-    </span>
-
-    <span
-        class="time-value"
-        id="mtime12">
-        --
-    </span>
-
-</div>
-
-
-<div class="time-box">
-
-    <span class="time-label">
-        24 Hour
-    </span>
-
-    <span
-        class="time-value"
-        id="mtime24">
-        --
-    </span>
-
-</div>
-
-</section><!-- =======================================================
-     CARDS
-======================================================= -->
-<main class="list-grid">
-
-<!-- UTILITIES -->
-
-<section class="card">
-
-    <div class="card-header">
-
-        <div class="card-icon">
-            🔐
-        </div>
-
-        <h2>
-            Admin Page
-        </h2>
-
-    </div>
-
-
-<ul>
-
-
-<li>
-<a href="/Myself/admin/sqlchk.html"              onclick="openSwayamPage(event,this.href)">
-                🔌 SQLite Offline Check
-</a>
-</li>
-
-<li>
-<a href="/Myself/admin/phonechk.html"              onclick="openSwayamPage(event,this.href)">
-                🔌 Phone Status Check
-</a>
-</li>
-
-<li>
-<a href="/Myself/admin/sqlwin.html"              onclick="openSwayamPage(event,this.href)">
-                🔌 SQlite Query Window
-</a>
-</li>
-
-</ul>
-
+  <a class="shortcut" href="#" onclick="showDummy(event,'Backup Center')">
+   <span class="shortcut-icon">📦</span>
+   <span class="shortcut-title">Backup Center</span>
+   <span class="shortcut-subtitle">Coming soon</span>
+  </a>
+ </div>
 </section>
 
+<!-- ROW 2: TEST APPS -->
+<section class="shortcut-section">
+ <div class="section-heading">
+  <h2>🧪 Apps in Testing</h2>
+  <span>Swipe →</span>
+ </div>
 
+ <div class="shortcut-row">
+  <a class="shortcut" href="/Myself/test/a.html" onclick="openSwayamPage(event,this.href)">
+   <span class="shortcut-icon">🧪</span>
+   <span class="shortcut-title">Test App 1</span>
+   <span class="shortcut-subtitle">Testing mode</span>
+  </a>
 
-<section class="card">
+  <a class="shortcut" href="/Myself/test/b.html" onclick="openSwayamPage(event,this.href)">
+   <span class="shortcut-icon">🧩</span>
+   <span class="shortcut-title">Test App 2</span>
+   <span class="shortcut-subtitle">Testing mode</span>
+  </a>
 
-    <div class="card-header">
+  <a class="shortcut" href="/Myself/test/c.html" onclick="openSwayamPage(event,this.href)">
+   <span class="shortcut-icon">⚙️</span>
+   <span class="shortcut-title">Test App 3</span>
+   <span class="shortcut-subtitle">Testing mode</span>
+  </a>
 
-        <div class="card-icon">
-            🔐
-        </div>
+  <a class="shortcut" href="/Myself/test/d.html" onclick="openSwayamPage(event,this.href)">
+   <span class="shortcut-icon">🚀</span>
+   <span class="shortcut-title">Test App 4</span>
+   <span class="shortcut-subtitle">Testing mode</span>
+  </a>
 
-        <h2>
-            Apps in Testing mode.
-        </h2>
+  <a class="shortcut" href="#" onclick="showDummy(event,'Beta App Lab')">
+   <span class="shortcut-icon">🔬</span>
+   <span class="shortcut-title">Beta App Lab</span>
+   <span class="shortcut-subtitle">Coming soon</span>
+  </a>
 
-    </div>
-
-
-<ul>
-
-
-<li>
-<a href="/Myself/test/a.html"              onclick="openSwayamPage(event,this.href)">
-                🔌 Test App 1
-</a>
-</li>
-
-<li>
-<a href="/Myself/test/b.html"              onclick="openSwayamPage(event,this.href)">
-                🔌 Test App 2
-</a>
-</li>
-
-<li>
-<a href="/Myself/test/c.html"              onclick="openSwayamPage(event,this.href)">
-                🔌 Test App 3
-</a>
-</li>
-
-      
-<li>
-<a href="/Myself/test/d.html"              onclick="openSwayamPage(event,this.href)">
-                🔌 Test App 4
-</a>
-</li>
-
-
-
-
-</ul>
-
+  <a class="shortcut" href="#" onclick="showDummy(event,'Preview Center')">
+   <span class="shortcut-icon">👁️</span>
+   <span class="shortcut-title">Preview Center</span>
+   <span class="shortcut-subtitle">Coming soon</span>
+  </a>
+ </div>
 </section>
 
+<!-- ROW 3: DUMMY SHORTCUTS -->
+<section class="shortcut-section">
+ <div class="section-heading">
+  <h2>🌍 More Shortcuts</h2>
+  <span>Swipe →</span>
+ </div>
 
+ <div class="shortcut-row">
+  <a class="shortcut" href="#" onclick="showDummy(event,'Nature Gallery')">
+   <span class="shortcut-icon">🌳</span>
+   <span class="shortcut-title">Nature Gallery</span>
+   <span class="shortcut-subtitle">Photos & scenes</span>
+  </a>
 
+  <a class="shortcut" href="#" onclick="showDummy(event,'Weather Hub')">
+   <span class="shortcut-icon">🌦️</span>
+   <span class="shortcut-title">Weather Hub</span>
+   <span class="shortcut-subtitle">Weather tools</span>
+  </a>
 
+  <a class="shortcut" href="#" onclick="showDummy(event,'Travel Explorer')">
+   <span class="shortcut-icon">🗺️</span>
+   <span class="shortcut-title">Travel Explorer</span>
+   <span class="shortcut-subtitle">Places & maps</span>
+  </a>
 
+  <a class="shortcut" href="#" onclick="showDummy(event,'Music & Sounds')">
+   <span class="shortcut-icon">🎵</span>
+   <span class="shortcut-title">Music & Sounds</span>
+   <span class="shortcut-subtitle">Nature audio</span>
+  </a>
 
+  <a class="shortcut" href="#" onclick="showDummy(event,'Personal Tools')">
+   <span class="shortcut-icon">🧰</span>
+   <span class="shortcut-title">Personal Tools</span>
+   <span class="shortcut-subtitle">Useful utilities</span>
+  </a>
 
+  <a class="shortcut" href="#" onclick="showDummy(event,'Games & Fun')">
+   <span class="shortcut-icon">🎮</span>
+   <span class="shortcut-title">Games & Fun</span>
+   <span class="shortcut-subtitle">Fun activities</span>
+  </a>
 
+  <a class="shortcut" href="#" onclick="showDummy(event,'Education Hub')">
+   <span class="shortcut-icon">📚</span>
+   <span class="shortcut-title">Education Hub</span>
+   <span class="shortcut-subtitle">Learn & explore</span>
+  </a>
 
-</main>
-<div class="info-box">ℹ️
-Select any utility to open it in the
-Swayam center area.
+  <a class="shortcut" href="#" onclick="showDummy(event,'AI Assistant')">
+   <span class="shortcut-icon">🤖</span>
+   <span class="shortcut-title">AI Assistant</span>
+   <span class="shortcut-subtitle">Coming soon</span>
+  </a>
+
+  <a class="shortcut" href="#" onclick="showDummy(event,'World News')">
+   <span class="shortcut-icon">📰</span>
+   <span class="shortcut-title">World News</span>
+   <span class="shortcut-subtitle">News shortcuts</span>
+  </a>
+
+  <a class="shortcut" href="#" onclick="showDummy(event,'Help Center')">
+   <span class="shortcut-icon">💡</span>
+   <span class="shortcut-title">Help Center</span>
+   <span class="shortcut-subtitle">Guides & help</span>
+  </a>
+ </div>
+</section>
+
+<div class="info-box" id="infoBox">
+ ℹ️ Select a shortcut to open it in the Swayam center area. Dummy shortcuts are placeholders and can be connected to pages later.
 </div>
+
+<footer class="footer">🌿 Swayam Smart Settings · Personal LifeSuite</footer>
 
 <script>
-
-/* =========================================================
-   OPEN PAGE IN PARENT SWAYAM CENTER
-========================================================= */
-
+/* OPEN PAGE IN PARENT SWAYAM CENTER */
 function openSwayamPage(event,url){
+ event.preventDefault();
 
-    event.preventDefault();
+ try{
+  if(window.parent && window.parent!==window){
+   var frame=window.parent.document.getElementById("swayamFrame");
 
+   if(frame){
+    frame.src=url;
 
-    /*
-     * We are inside the Swayam iframe.
-     *
-     * window.parent = Swayam index page
-     */
+    var pageName=url.split("/").pop();
+    var menuLinks=window.parent.document.querySelectorAll(".menu-button");
+
+    for(var i=0;i<menuLinks.length;i++){
+     menuLinks[i].classList.remove("active");
+    }
+
+    for(var j=0;j<menuLinks.length;j++){
+     var href=menuLinks[j].getAttribute("href")||"";
+     if(href===pageName || href.endsWith("/"+pageName)){
+      menuLinks[j].classList.add("active");
+      try{
+       menuLinks[j].scrollIntoView({
+        behavior:"smooth",block:"nearest",inline:"center"
+       });
+      }catch(e){}
+      break;
+     }
+    }
 
     try{
+     window.parent.localStorage.setItem("swayam_selected_page",pageName);
+    }catch(e){}
 
-        if(
-            window.parent &&
-            window.parent !== window
-        ){
+    return;
+   }
+  }
+ }catch(error){
+  console.log("Parent navigation error:",error);
+ }
 
-            var frame =
-                window.parent.document
-                .getElementById(
-                    "swayamFrame"
-                );
-
-
-            if(frame){
-
-                frame.src = url;
-
-
-                /*
-                 * Tell parent to update
-                 * the menu selection.
-                 */
-
-                var menuLinks =
-                    window.parent.document
-                    .querySelectorAll(
-                        ".menu-button"
-                    );
-
-
-                for(
-                    var i=0;
-                    i<menuLinks.length;
-                    i++
-                ){
-
-                    menuLinks[i]
-                        .classList
-                        .remove("active");
-
-                }
-
-
-                /*
-                 * Find matching Swayam menu.
-                 */
-
-                for(
-                    var j=0;
-                    j<menuLinks.length;
-                    j++
-                ){
-
-                    if(
-                        menuLinks[j]
-                        .getAttribute("href")
-                        === url.split("/").pop()
-                    ){
-
-                        menuLinks[j]
-                            .classList
-                            .add("active");
-
-                        try{
-
-                            menuLinks[j]
-                                .scrollIntoView({
-                                    behavior:"smooth",
-                                    block:"nearest",
-                                    inline:"center"
-                                });
-
-                        }catch(e){}
-
-                        break;
-
-                    }
-
-                }
-
-
-                /*
-                 * Save page.
-                 */
-
-                try{
-
-                    window.parent.localStorage
-                    .setItem(
-                        "swayam_selected_page",
-                        url.split("/").pop()
-                    );
-
-                }catch(e){}
-
-
-                return;
-
-            }
-
-        }
-
-    }
-    catch(error){
-
-        console.log(
-            "Parent navigation error:",
-            error
-        );
-
-    }
-
-
-    /*
-     * Fallback if this page is opened
-     * directly instead of inside Swayam.
-     */
-
-    window.location.href = url;
-
+ window.location.href=url;
 }
 
+/* DUMMY SHORTCUTS */
+function showDummy(event,name){
+ event.preventDefault();
 
-/* =========================================================
-   THEME
-========================================================= */
+ var info=document.getElementById("infoBox");
+ info.textContent="✨ "+name+" is a placeholder shortcut. Add its HTML page URL when this feature is ready.";
 
+ try{
+  info.scrollIntoView({behavior:"smooth",block:"nearest"});
+ }catch(e){}
+}
+
+/* TEN NATURE THEMES */
 function changeTheme(theme){
+ var validThemes=[
+  "forest","ocean","meadow","mint","sunset",
+  "lavender","rose","sky","sand","night"
+ ];
 
-    document.body.className =
-        theme;
+ if(validThemes.indexOf(theme)===-1) theme="forest";
 
-    localStorage.setItem(
-        "swayam_watch_theme",
-        theme
-    );
+ document.body.setAttribute("data-theme",theme);
 
+ try{
+  localStorage.setItem("swayam_watch_theme",theme);
+ }catch(e){}
+
+ var colors={
+  forest:"#138a4b",
+  ocean:"#0288a8",
+  meadow:"#689f38",
+  mint:"#159b83",
+  sunset:"#e87536",
+  lavender:"#8060c9",
+  rose:"#d94e79",
+  sky:"#347bd2",
+  sand:"#a77a3c",
+  night:"#121b20"
+ };
+
+ var meta=document.querySelector('meta[name="theme-color"]');
+ if(meta) meta.setAttribute("content",colors[theme]||colors.forest);
 }
 
+/* RESTORE SAVED THEME */
+(function(){
+ var saved="forest";
 
-var savedTheme =
-    localStorage.getItem(
-        "swayam_watch_theme"
-    );
+ try{
+  saved=localStorage.getItem("swayam_watch_theme")||"forest";
+ }catch(e){}
 
+ var select=document.getElementById("themeSelect");
+ var valid=Array.from(select.options).some(function(option){
+  return option.value===saved;
+ });
 
-if(savedTheme){
+ if(!valid) saved="forest";
 
-    document.body.className =
-        savedTheme;
-
-    document.getElementById(
-        "themeSelect"
-    ).value =
-        savedTheme;
-
-}
-
-
-/* =========================================================
-   CLOCK
-========================================================= */
-
-function updateClock(){
-
-    var now =
-        new Date();
-
-
-    document.getElementById(
-        "mtime24"
-    ).textContent =
-        now.toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit",
-                second:"2-digit",
-                hour12:false
-            }
-        );
-
-
-    document.getElementById(
-        "mtime12"
-    ).textContent =
-        now.toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit",
-                second:"2-digit",
-                hour12:true
-            }
-        );
-
-
-    document.getElementById(
-        "mdate"
-    ).textContent =
-        now.toLocaleDateString(
-            "en-IN",
-            {
-                weekday:"long",
-                year:"numeric",
-                month:"long",
-                day:"numeric"
-            }
-        );
-
-}
-
-
-updateClock();
-
-
-setInterval(
-    updateClock,
-    1000
-);
-
+ select.value=saved;
+ changeTheme(saved);
+})();
 </script>
+
 </body>
 </html>
