@@ -1,983 +1,471 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport"
-content="width=device-width,
-initial-scale=1.0,
-maximum-scale=1.0">
 
-<meta name="theme-color" content="#2e7d32"><title>Smart Watch</title><style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#138a4b">
+<title>Swayam Nature Launcher</title>
 
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+ --bg:#edf7ed;--panel:#fff;--primary:#138a4b;
+ --deep:#086b38;--accent:#79c982;--text:#193b2a;
+ --muted:#718578;--border:#dcebdd;--soft:#e4f5e6;
+ --hero1:#086b38;--hero2:#65bd71;
 }
 
-html,
 body{
-    width:100%;
-    min-height:100%;
+ min-height:100vh;
+ font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+ background:var(--bg);color:var(--text);
+ transition:background .3s,color .3s;
+ overflow-x:hidden;
 }
 
-body{
+a,select{-webkit-tap-highlight-color:transparent}
+.app{max-width:1100px;margin:auto;padding:14px}
 
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Arial,
-        sans-serif;
+/* HEADER */
 
-    background:
-        linear-gradient(
-            135deg,
-            #f8fff8,
-            #ffffff
-        );
-
-    color:#222;
-
-    transition:.3s;
+.header{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:12px;padding:17px;border-radius:23px;color:white;
+ background:linear-gradient(130deg,var(--hero1),var(--hero2));
+ box-shadow:0 8px 25px #0002;position:relative;overflow:hidden;
 }
 
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-.module-header{
-
-    padding:14px 18px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    gap:12px;
-
-    color:white;
-
-    background:
-        linear-gradient(
-            135deg,
-            #43a047,
-            #66bb6a
-        );
-
-    box-shadow:
-        0 3px 12px rgba(0,0,0,.15);
-
-    position:sticky;
-
-    top:0;
-
-    z-index:10;
+.header:after{
+ content:"";position:absolute;width:170px;height:170px;
+ right:-65px;top:-105px;border:1px solid #ffffff55;
+ border-radius:50%;box-shadow:0 0 0 25px #ffffff12,
+ 0 0 0 50px #ffffff0d;pointer-events:none;
 }
 
-.title-area{
+.brand{display:flex;align-items:center;gap:12px;min-width:0;z-index:1}
+.brand-icon{
+ width:52px;height:52px;display:grid;place-items:center;
+ border-radius:16px;background:#ffffff28;border:1px solid #ffffff55;
+ font-size:29px;flex-shrink:0;
+}
+.brand h1{font-size:clamp(20px,4vw,28px);line-height:1.2}
+.subtitle{font-size:12px;margin-top:5px;opacity:.9}
 
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
+.theme-area{position:relative;z-index:2;flex-shrink:0}
+.theme-select{
+ width:155px;max-width:38vw;min-height:42px;padding:8px;
+ border:0;border-radius:12px;background:#fff;color:#173c29;
+ font-size:12px;font-weight:700;cursor:pointer;
 }
 
-.watch-icon{
+/* INTRO */
 
-    font-size:30px;
+.intro{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:12px;padding:16px 4px 12px;
+}
+.intro h2{font-size:19px}
+.intro p{font-size:12px;color:var(--muted);margin-top:4px}
+.intro-icon{font-size:27px}
+
+/* THREE HORIZONTAL ROWS */
+
+.row-section{margin-bottom:15px}
+.row-heading{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:8px;margin:8px 2px 7px;
+}
+.row-heading strong{font-size:14px}
+.row-heading span{font-size:11px;color:var(--muted)}
+
+.shortcut-row{
+ display:flex;gap:11px;overflow-x:auto;overflow-y:hidden;
+ padding:4px 2px 12px;
+ scroll-snap-type:x mandatory;
+ scrollbar-width:thin;scrollbar-color:var(--accent) transparent;
+ -webkit-overflow-scrolling:touch;
+}
+.shortcut-row::-webkit-scrollbar{height:5px}
+.shortcut-row::-webkit-scrollbar-thumb{
+ background:var(--accent);border-radius:20px;
 }
 
-.title-area h1{
-
-    font-size:
-        clamp(20px,3vw,30px);
+.tile{
+ flex:0 0 145px;min-height:112px;
+ display:flex;flex-direction:column;justify-content:space-between;
+ gap:10px;padding:13px;
+ border:1px solid var(--border);border-radius:18px;
+ background:var(--panel);color:var(--text);
+ text-decoration:none;box-shadow:0 4px 14px #00000008;
+ scroll-snap-align:start;
+ transition:transform .2s,border-color .2s,box-shadow .2s;
 }
-
-.subtitle{
-
-    font-size:11px;
-
-    opacity:.85;
+.tile:hover{
+ transform:translateY(-3px);
+ border-color:var(--accent);
+ box-shadow:0 7px 20px #00000012;
 }
+.tile:active{transform:scale(.97)}
 
-
-/* =========================================================
-   THEME
-========================================================= */
-
-.theme-box select{
-
-    min-height:36px;
-
-    padding:6px 10px;
-
-    border:0;
-
-    border-radius:8px;
-
-    background:white;
-
-    color:#222;
-
-    cursor:pointer;
+.tile-icon{
+ width:42px;height:42px;display:grid;place-items:center;
+ border-radius:14px;background:var(--soft);font-size:24px;
 }
-
-
-/* =========================================================
-   CLOCK
-========================================================= */
-
-.clock-panel{
-
-    margin:15px;
-
-    padding:14px;
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(3,1fr);
-
-    gap:10px;
-
-    background:white;
-
-    border-radius:15px;
-
-    box-shadow:
-        0 3px 15px rgba(0,0,0,.08);
+.tile-bottom{
+ display:flex;align-items:center;justify-content:space-between;gap:5px;
 }
+.tile-name{font-size:12px;font-weight:750;line-height:1.4}
+.tile-arrow{font-size:20px;color:var(--primary)}
 
-.time-box{
-
-    padding:10px;
-
-    text-align:center;
-
-    border-radius:10px;
-
-    background:#f1f8e9;
-}
-
-.time-label{
-
-    display:block;
-
-    font-size:10px;
-
-    color:#777;
-
-    text-transform:uppercase;
-}
-
-.time-value{
-
-    display:block;
-
-    margin-top:4px;
-
-    color:#2e7d32;
-
-    font-size:
-        clamp(12px,2vw,17px);
-
-    font-weight:700;
-}
-
-
-/* =========================================================
-   CARDS
-========================================================= */
-
-.list-grid{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(
-                230px,
-                1fr
-            )
-        );
-
-    gap:15px;
-
-    padding:
-        0 15px 15px;
-}
-
-.card{
-
-    padding:18px;
-
-    border-radius:16px;
-
-    background:white;
-
-    box-shadow:
-        0 3px 15px rgba(0,0,0,.08);
-
-    transition:.2s;
-}
-
-.card:hover{
-
-    transform:
-        translateY(-3px);
-
-    box-shadow:
-        0 7px 20px rgba(0,0,0,.12);
-}
-
-.card-header{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
-
-    margin-bottom:10px;
-
-    padding-bottom:10px;
-
-    border-bottom:1px solid #e5e5e5;
-}
-
-.card-icon{
-
-    font-size:27px;
-}
-
-.card h2{
-
-    color:#2e7d32;
-
-    font-size:18px;
-}
-
-
-/* =========================================================
-   LINKS
-========================================================= */
-
-.card ul{
-
-    list-style:none;
-}
-
-.card li{
-
-    margin:5px 0;
-}
-
-.card a{
-
-    display:flex;
-
-    align-items:center;
-
-    min-height:44px;
-
-    padding:9px 11px;
-
-    border-radius:9px;
-
-    color:#333;
-
-    text-decoration:none;
-
-    font-size:14px;
-
-    font-weight:500;
-
-    cursor:pointer;
-
-    transition:.2s;
-}
-
-.card a:hover{
-
-    background:#e8f5e9;
-
-    color:#2e7d32;
-
-    transform:
-        translateX(3px);
-}
-
-
-/* =========================================================
-   INFO
-========================================================= */
+/* INFO */
 
 .info-box{
+ display:flex;align-items:flex-start;gap:10px;
+ padding:14px 15px;margin-top:8px;
+ border-radius:16px;border:1px solid var(--border);
+ background:var(--soft);color:var(--deep);
+ font-size:12px;line-height:1.7;
+}
+.footer{text-align:center;color:var(--muted);font-size:11px;padding:18px 5px 8px}
+.footer b{color:var(--primary)}
 
-    margin:
-        0 15px 15px;
+/* NATURE THEMES */
 
-    padding:13px 15px;
-
-    border-radius:12px;
-
-    background:#e8f5e9;
-
-    color:#2e7d32;
-
-    font-size:12px;
+body[data-theme="forest"]{
+ --bg:#edf7ed;--panel:#fff;--primary:#138a4b;--deep:#086b38;
+ --accent:#79c982;--text:#193b2a;--muted:#718578;
+ --border:#dcebdd;--soft:#e4f5e6;--hero1:#086b38;--hero2:#65bd71;
+}
+body[data-theme="ocean"]{
+ --bg:#eaf6fc;--panel:#fff;--primary:#087eaf;--deep:#075985;
+ --accent:#65c5e5;--text:#183849;--muted:#6a8797;
+ --border:#d4eaf5;--soft:#dff3fc;--hero1:#075985;--hero2:#29a9cf;
+}
+body[data-theme="sunset"]{
+ --bg:#fff2e9;--panel:#fff;--primary:#d65c36;--deep:#a63e22;
+ --accent:#ffad75;--text:#4a2c25;--muted:#98766b;
+ --border:#f4daca;--soft:#ffe6d5;--hero1:#c44830;--hero2:#ff9a58;
+}
+body[data-theme="meadow"]{
+ --bg:#f3f8df;--panel:#fff;--primary:#658a24;--deep:#456618;
+ --accent:#b5d96b;--text:#344321;--muted:#7d896b;
+ --border:#e1ebc6;--soft:#eaf4d1;--hero1:#587b20;--hero2:#a1c957;
+}
+body[data-theme="lavender"]{
+ --bg:#f4efff;--panel:#fff;--primary:#7754ba;--deep:#55358f;
+ --accent:#b7a1ed;--text:#33284b;--muted:#81778f;
+ --border:#e5dcf7;--soft:#eee7ff;--hero1:#6545a6;--hero2:#a48ae5;
+}
+body[data-theme="rose"]{
+ --bg:#fff0f3;--panel:#fff;--primary:#c4476b;--deep:#9f284d;
+ --accent:#f39ab0;--text:#492934;--muted:#957780;
+ --border:#f4d8e0;--soft:#ffe3ea;--hero1:#a92e54;--hero2:#ec8ba7;
+}
+body[data-theme="sky"]{
+ --bg:#edf7ff;--panel:#fff;--primary:#347ac0;--deep:#20518d;
+ --accent:#8ccafa;--text:#21384f;--muted:#72879b;
+ --border:#d8e9f8;--soft:#e0f1ff;--hero1:#20518d;--hero2:#66b8f2;
+}
+body[data-theme="sand"]{
+ --bg:#f8f1e5;--panel:#fffdf8;--primary:#98703a;--deep:#705026;
+ --accent:#d9bb83;--text:#41372a;--muted:#8e8270;
+ --border:#e9decb;--soft:#f3e7d0;--hero1:#88612e;--hero2:#d0a967;
+}
+body[data-theme="night"]{
+ --bg:#101922;--panel:#1b2733;--primary:#7bd3b1;--deep:#a3e7cb;
+ --accent:#4eaa8d;--text:#e5f1f4;--muted:#a2b5c1;
+ --border:#304452;--soft:#263d43;--hero1:#152d3b;--hero2:#276b70;
+}
+body[data-theme="autumn"]{
+ --bg:#fbf0e4;--panel:#fffaf4;--primary:#b75b24;--deep:#863d18;
+ --accent:#e9a45e;--text:#482f21;--muted:#947968;
+ --border:#f0dcc7;--soft:#fce6ce;--hero1:#9b421d;--hero2:#df8a3e;
 }
 
+/* RESPONSIVE */
 
-/* =========================================================
-   DARK
-========================================================= */
-
-body.dark{
-
-    background:#181818;
-
-    color:#eee;
+@media(max-width:600px){
+ .app{padding:10px}
+ .header{padding:13px;border-radius:19px;gap:8px}
+ .brand{gap:9px}
+ .brand-icon{width:43px;height:43px;font-size:25px}
+ .brand h1{font-size:19px}
+ .subtitle{font-size:10px}
+ .theme-select{width:120px;max-width:35vw;font-size:11px;padding:7px 5px}
+ .intro h2{font-size:17px}
+ .tile{flex-basis:137px;min-height:106px;padding:12px}
+ .shortcut-row{gap:9px}
 }
-
-body.dark .module-header{
-
-    background:
-        linear-gradient(
-            135deg,
-            #1b5e20,
-            #2e7d32
-        );
+@media(max-width:360px){
+ .header{flex-wrap:wrap}
+ .theme-area{margin-left:auto}
+ .tile{flex-basis:125px}
 }
-
-body.dark .clock-panel,
-body.dark .card{
-
-    background:#252525;
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after{transition:none!important}
 }
-
-body.dark .time-box{
-
-    background:#303030;
-}
-
-body.dark .time-label{
-
-    color:#aaa;
-}
-
-body.dark .time-value{
-
-    color:#81c784;
-}
-
-body.dark .card-header{
-
-    border-bottom-color:#444;
-}
-
-body.dark .card h2{
-
-    color:#81c784;
-}
-
-body.dark .card a{
-
-    color:#eee;
-}
-
-body.dark .card a:hover{
-
-    background:#303030;
-
-    color:#81c784;
-}
-
-body.dark .info-box{
-
-    background:#263d27;
-
-    color:#a5d6a7;
-}
-
-
-/* =========================================================
-   BLUE
-========================================================= */
-
-body.blue{
-
-    background:
-        linear-gradient(
-            135deg,
-            #eef7ff,
-            #ffffff
-        );
-}
-
-body.blue .module-header{
-
-    background:
-        linear-gradient(
-            135deg,
-            #1565c0,
-            #42a5f5
-        );
-}
-
-body.blue .time-box{
-
-    background:#e3f2fd;
-}
-
-body.blue .time-value{
-
-    color:#1565c0;
-}
-
-body.blue .card h2{
-
-    color:#1565c0;
-}
-
-body.blue .card a:hover{
-
-    background:#e3f2fd;
-
-    color:#1565c0;
-}
-
-body.blue .info-box{
-
-    background:#e3f2fd;
-
-    color:#1565c0;
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media(max-width:700px){
-
-    .module-header{
-
-        padding:11px;
-
-    }
-
-    .watch-icon{
-
-        font-size:24px;
-    }
-
-    .title-area h1{
-
-        font-size:19px;
-    }
-
-    .subtitle{
-
-        font-size:9px;
-    }
-
-    .theme-box select{
-
-        font-size:11px;
-
-        min-height:34px;
-    }
-
-    .clock-panel{
-
-        margin:10px;
-
-        padding:8px;
-
-        gap:6px;
-    }
-
-    .time-box{
-
-        padding:8px 4px;
-    }
-
-    .time-label{
-
-        font-size:8px;
-    }
-
-    .time-value{
-
-        font-size:11px;
-    }
-
-    .list-grid{
-
-        grid-template-columns:1fr;
-
-        padding:
-            0 10px 10px;
-
-        gap:10px;
-    }
-
-    .card{
-
-        padding:14px;
-    }
-
-    .card a{
-
-        min-height:44px;
-
-        font-size:14px;
-    }
-
-    .info-box{
-
-        margin:
-            0 10px 10px;
-    }
-
-}
-
-
-/* =========================================================
-   SMALL MOBILE
-========================================================= */
-
-@media(max-width:400px){
-
-    .clock-panel{
-
-        grid-template-columns:1fr;
-    }
-
-}
-
-
-/* =========================================================
-   LANDSCAPE
-========================================================= */
-
-@media(max-width:700px)
-       and (orientation:landscape){
-
-    .list-grid{
-
-        grid-template-columns:
-            repeat(3,1fr);
-    }
-
-    .card a{
-
-        font-size:12px;
-
-        min-height:36px;
-    }
-
-}
-
-</style></head><body class="light"><!-- =======================================================
-     HEADER
-======================================================= --><header class="module-header"><div class="title-area">
-
-    <div class="watch-icon">
-        🌐
-    </div>
-
-    <div>
-
-        <h1>
-            Smart Launcher
-        </h1>
-
-        <div class="subtitle">
-            Swayam Website Launcher
-        </div>
-
-    </div>
-
+</style>
+</head>
+
+<body data-theme="forest">
+<div class="app">
+
+<header class="header">
+ <div class="brand">
+  <div class="brand-icon" id="brandIcon">🌲</div>
+  <div>
+   <h1>Swayam Launcher</h1>
+   <div class="subtitle">Nature inspired · Smart Website Hub</div>
+  </div>
+ </div>
+
+ <div class="theme-area">
+  <select id="themeSelect" class="theme-select" aria-label="Choose nature theme">
+   <option value="forest">🌲 Forest</option>
+   <option value="ocean">🌊 Ocean</option>
+   <option value="sunset">🌅 Sunset</option>
+   <option value="meadow">🌿 Meadow</option>
+   <option value="lavender">💜 Lavender</option>
+   <option value="rose">🌹 Rose</option>
+   <option value="sky">☁️ Sky</option>
+   <option value="sand">🏜️ Sand</option>
+   <option value="night">🌙 Night</option>
+   <option value="autumn">🍂 Autumn</option>
+  </select>
+ </div>
+</header>
+
+<div class="intro">
+ <div>
+  <h2>🧭 Explore Swayam</h2>
+  <p>Three rows of horizontal shortcut menus</p>
+ </div>
+ <div class="intro-icon">🌐</div>
 </div>
 
+<!-- ROW 1: ESSENTIAL WEBSITES -->
 
-<div class="theme-box">
+<section class="row-section">
+ <div class="row-heading">
+  <strong>🌐 Essential Websites</strong>
+  <span>ROW 1 · SWIPE ↔</span>
+ </div>
 
-    <select
-        id="themeSelect"
-        onchange="changeTheme(this.value)">
+ <nav class="shortcut-row" aria-label="Essential websites">
+  <a class="tile" href="/Myself/launch/a.html" onclick="openSwayamPage(event,this.href)">
+   <span class="tile-icon">🩺</span>
+   <span class="tile-bottom"><span class="tile-name">Medical Directory</span><span class="tile-arrow">›</span></span>
+  </a>
 
-        <option value="light">
-            Light
-        </option>
+  <a class="tile" href="/Myself/launch/b.html" onclick="openSwayamPage(event,this.href)">
+   <span class="tile-icon">📱</span>
+   <span class="tile-bottom"><span class="tile-name">App Directory</span><span class="tile-arrow">›</span></span>
+  </a>
 
-        <option value="dark">
-            Dark
-        </option>
+  <a class="tile" href="/Myself/launch/c.html" onclick="openSwayamPage(event,this.href)">
+   <span class="tile-icon">🏛️</span>
+   <span class="tile-bottom"><span class="tile-name">Government Sites</span><span class="tile-arrow">›</span></span>
+  </a>
 
-        <option value="blue">
-            Blue
-        </option>
-
-    </select>
-
-</div>
-
-</header><!-- =======================================================
-     CLOCK
-======================================================= --><section class="clock-panel"><div class="time-box">
-
-    <span class="time-label">
-        Date
-    </span>
-
-    <span
-        class="time-value"
-        id="mdate">
-        --
-    </span>
-
-</div>
-
-
-<div class="time-box">
-
-    <span class="time-label">
-        12 Hour
-    </span>
-
-    <span
-        class="time-value"
-        id="mtime12">
-        --
-    </span>
-
-</div>
-
-
-<div class="time-box">
-
-    <span class="time-label">
-        24 Hour
-    </span>
-
-    <span
-        class="time-value"
-        id="mtime24">
-        --
-    </span>
-
-</div>
-
-</section><!-- =======================================================
-     CARDS
-======================================================= --><main class="list-grid"><!-- UTILITIES -->
-
-<!-- Launchers -->
-
-<section class="card">
-
-    <div class="card-header">
-
-        <div class="card-icon">
-           🔗🌐
-        </div>
-
-        <h2>
-         Internet Website Launchers
-        </h2>
-
-    </div>
-
-
-    <ul>
-
-<li>
-<a href="/Myself/launch/a.html"          onclick="openSwayamPage(event,this.href)">
-🔗 Medical Directory</a>
-</li>
-
-<li>
-<a href="/Myself/launch/b.html"          onclick="openSwayamPage(event,this.href)">
-🔗 App Directory</a>
-</li>
-
-<li>
-<a href="/Myself/launch/c.html"          onclick="openSwayamPage(event,this.href)">
-🔗 Government Sites</a>
-</li>
-
-<li>
-<a href="/Myself/launch/d.html"          onclick="openSwayamPage(event,this.href)">
-🔗 Educational & AI/ML</a>
-</li>
-
-
-<li>
-<a href="/Myself/launch/e.html"          onclick="openSwayamPage(event,this.href)">
-🔗 World News</a>
-</li>
-
-<li>
-<a href="/Myself/launch/note.html"          onclick="openSwayamPage(event,this.href)">
-📌 Kindly Read Note before using any Apps/Links</a>
-</li>
-
-
-
-</ul>
+  <!-- Dummy shortcut -->
+  <a class="tile" href="#" onclick="showDummy(event,'Digital Services')">
+   <span class="tile-icon">🧰</span>
+   <span class="tile-bottom"><span class="tile-name">Digital Services</span><span class="tile-arrow">›</span></span>
+  </a>
+ </nav>
 </section>
 
+<!-- ROW 2: LEARNING AND NEWS -->
 
+<section class="row-section">
+ <div class="row-heading">
+  <strong>🎓 Learning & Information</strong>
+  <span>ROW 2 · SWIPE ↔</span>
+ </div>
 
+ <nav class="shortcut-row" aria-label="Learning and information">
+  <a class="tile" href="/Myself/launch/d.html" onclick="openSwayamPage(event,this.href)">
+   <span class="tile-icon">🤖</span>
+   <span class="tile-bottom"><span class="tile-name">Education & AI/ML</span><span class="tile-arrow">›</span></span>
+  </a>
 
+  <a class="tile" href="/Myself/launch/e.html" onclick="openSwayamPage(event,this.href)">
+   <span class="tile-icon">📰</span>
+   <span class="tile-bottom"><span class="tile-name">World News</span><span class="tile-arrow">›</span></span>
+  </a>
 
-</main><div class="info-box">ℹ️
-Select any utility to open it in the
-Swayam center area.
+  <a class="tile" href="/Myself/launch/note.html" onclick="openSwayamPage(event,this.href)">
+   <span class="tile-icon">📌</span>
+   <span class="tile-bottom"><span class="tile-name">Important Note</span><span class="tile-arrow">›</span></span>
+  </a>
 
-</div><script>
+  <!-- Dummy shortcut -->
+  <a class="tile" href="#" onclick="showDummy(event,'Knowledge Hub')">
+   <span class="tile-icon">📚</span>
+   <span class="tile-bottom"><span class="tile-name">Knowledge Hub</span><span class="tile-arrow">›</span></span>
+  </a>
+ </nav>
+</section>
 
-/* =========================================================
-   OPEN PAGE IN PARENT SWAYAM CENTER
-========================================================= */
+<!-- ROW 3: DUMMY SHORTCUTS -->
 
-function openSwayamPage(event,url){
+<section class="row-section">
+ <div class="row-heading">
+  <strong>🌳 More Nature Shortcuts</strong>
+  <span>ROW 3 · SWIPE ↔</span>
+ </div>
 
-    event.preventDefault();
+ <nav class="shortcut-row" aria-label="Dummy shortcuts">
 
+  <a class="tile" href="#" onclick="showDummy(event,'Nature Gallery')">
+   <span class="tile-icon">🌺</span>
+   <span class="tile-bottom"><span class="tile-name">Nature Gallery</span><span class="tile-arrow">›</span></span>
+  </a>
 
-    /*
-     * We are inside the Swayam iframe.
-     *
-     * window.parent = Swayam index page
-     */
+  <a class="tile" href="#" onclick="showDummy(event,'Weather Hub')">
+   <span class="tile-icon">🌦️</span>
+   <span class="tile-bottom"><span class="tile-name">Weather Hub</span><span class="tile-arrow">›</span></span>
+  </a>
 
-    try{
+  <a class="tile" href="#" onclick="showDummy(event,'Travel Explorer')">
+   <span class="tile-icon">🗺️</span>
+   <span class="tile-bottom"><span class="tile-name">Travel Explorer</span><span class="tile-arrow">›</span></span>
+  </a>
 
-        if(
-            window.parent &&
-            window.parent !== window
-        ){
+  <a class="tile" href="#" onclick="showDummy(event,'Music & Sounds')">
+   <span class="tile-icon">🎵</span>
+   <span class="tile-bottom"><span class="tile-name">Music & Sounds</span><span class="tile-arrow">›</span></span>
+  </a>
 
-            var frame =
-                window.parent.document
-                .getElementById(
-                    "swayamFrame"
-                );
+  <a class="tile" href="#" onclick="showDummy(event,'Personal Tools')">
+   <span class="tile-icon">🧩</span>
+   <span class="tile-bottom"><span class="tile-name">Personal Tools</span><span class="tile-arrow">›</span></span>
+  </a>
 
+  <a class="tile" href="#" onclick="showDummy(event,'Games & Fun')">
+   <span class="tile-icon">🎮</span>
+   <span class="tile-bottom"><span class="tile-name">Games & Fun</span><span class="tile-arrow">›</span></span>
+  </a>
+ </nav>
+</section>
 
-            if(frame){
+<div class="info-box" id="infoBox" role="status" aria-live="polite">
+ <span style="font-size:21px">💡</span>
+ <div>
+  <strong>Your personal website hub</strong><br>
+  Swipe each row horizontally to explore shortcuts. Dummy links are placeholders
+  and can be connected to real pages later. Choose a theme from the top-right menu.
+ </div>
+</div>
 
-                frame.src = url;
+<footer class="footer">
+ Made with <b>🌿 Swayam</b> · Personal Website Launcher
+</footer>
 
+</div>
 
-                /*
-                 * Tell parent to update
-                 * the menu selection.
-                 */
+<script>
+/* TEN NATURE THEMES */
 
-                var menuLinks =
-                    window.parent.document
-                    .querySelectorAll(
-                        ".menu-button"
-                    );
+const themeIcons={
+ forest:"🌲",ocean:"🌊",sunset:"🌅",meadow:"🌿",
+ lavender:"💜",rose:"🌹",sky:"☁️",sand:"🏜️",
+ night:"🌙",autumn:"🍂"
+};
 
+const themeColors={
+ forest:"#138a4b",ocean:"#087eaf",sunset:"#d65c36",
+ meadow:"#658a24",lavender:"#7754ba",rose:"#c4476b",
+ sky:"#347ac0",sand:"#98703a",night:"#152d3b",autumn:"#b75b24"
+};
 
-                for(
-                    var i=0;
-                    i<menuLinks.length;
-                    i++
-                ){
-
-                    menuLinks[i]
-                        .classList
-                        .remove("active");
-
-                }
-
-
-                /*
-                 * Find matching Swayam menu.
-                 */
-
-                for(
-                    var j=0;
-                    j<menuLinks.length;
-                    j++
-                ){
-
-                    if(
-                        menuLinks[j]
-                        .getAttribute("href")
-                        === url.split("/").pop()
-                    ){
-
-                        menuLinks[j]
-                            .classList
-                            .add("active");
-
-                        try{
-
-                            menuLinks[j]
-                                .scrollIntoView({
-                                    behavior:"smooth",
-                                    block:"nearest",
-                                    inline:"center"
-                                });
-
-                        }catch(e){}
-
-                        break;
-
-                    }
-
-                }
-
-
-                /*
-                 * Save page.
-                 */
-
-                try{
-
-                    window.parent.localStorage
-                    .setItem(
-                        "swayam_selected_page",
-                        url.split("/").pop()
-                    );
-
-                }catch(e){}
-
-
-                return;
-
-            }
-
-        }
-
-    }
-    catch(error){
-
-        console.log(
-            "Parent navigation error:",
-            error
-        );
-
-    }
-
-
-    /*
-     * Fallback if this page is opened
-     * directly instead of inside Swayam.
-     */
-
-    window.location.href = url;
-
-}
-
-
-/* =========================================================
-   THEME
-========================================================= */
+const themeSelect=document.getElementById("themeSelect");
 
 function changeTheme(theme){
+ if(!Object.prototype.hasOwnProperty.call(themeIcons,theme)){
+  theme="forest";
+ }
 
-    document.body.className =
-        theme;
+ document.body.dataset.theme=theme;
+ themeSelect.value=theme;
+ document.getElementById("brandIcon").textContent=themeIcons[theme];
+ document.querySelector('meta[name="theme-color"]').content=themeColors[theme];
 
-    localStorage.setItem(
-        "swayam_watch_theme",
-        theme
-    );
-
+ try{localStorage.setItem("swayam_watch_theme",theme)}catch(e){}
 }
 
+themeSelect.addEventListener("change",function(){
+ changeTheme(this.value);
+});
 
-var savedTheme =
-    localStorage.getItem(
-        "swayam_watch_theme"
-    );
+try{
+ const saved=localStorage.getItem("swayam_watch_theme");
+ changeTheme(saved&&themeIcons[saved]?saved:"forest");
+}catch(e){changeTheme("forest")}
 
+/* DUMMY LINK FEEDBACK */
 
-if(savedTheme){
-
-    document.body.className =
-        savedTheme;
-
-    document.getElementById(
-        "themeSelect"
-    ).value =
-        savedTheme;
-
+function showDummy(event,name){
+ event.preventDefault();
+ const box=document.getElementById("infoBox");
+ box.innerHTML=
+  '<span style="font-size:21px">🚧</span><div><strong>'+
+  name+
+  '</strong><br>This is a dummy shortcut. Connect it to your desired HTML page when ready.</div>';
 }
 
+/* OPEN PAGE IN SWAYAM CENTER */
 
-/* =========================================================
-   CLOCK
-========================================================= */
+function openSwayamPage(event,url){
+ event.preventDefault();
 
-function updateClock(){
+ try{
+  if(window.parent&&window.parent!==window){
+   const parentDoc=window.parent.document;
+   const frame=parentDoc.getElementById("swayamFrame");
 
-    var now =
-        new Date();
+   if(frame){
+    const target=new URL(url,window.location.href);
 
+    if(target.origin!==window.location.origin){
+     window.location.href=target.href;
+     return;
+    }
 
-    document.getElementById(
-        "mtime24"
-    ).textContent =
-        now.toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit",
-                second:"2-digit",
-                hour12:false
-            }
-        );
+    frame.src=target.pathname+target.search+target.hash;
 
+    const filename=target.pathname.split("/").pop();
+    const menuLinks=parentDoc.querySelectorAll(".menu-button");
 
-    document.getElementById(
-        "mtime12"
-    ).textContent =
-        now.toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit",
-                second:"2-digit",
-                hour12:true
-            }
-        );
+    menuLinks.forEach(function(link){
+     link.classList.remove("active");
 
+     const href=link.getAttribute("href")||"";
+     if(href===filename||href===target.pathname){
+      link.classList.add("active");
+      try{
+       link.scrollIntoView({
+        behavior:"smooth",block:"nearest",inline:"center"
+       });
+      }catch(e){}
+     }
+    });
 
-    document.getElementById(
-        "mdate"
-    ).textContent =
-        now.toLocaleDateString(
-            "en-IN",
-            {
-                weekday:"long",
-                year:"numeric",
-                month:"long",
-                day:"numeric"
-            }
-        );
+    try{
+     window.parent.localStorage.setItem("swayam_selected_page",filename);
+    }catch(e){}
 
+    return;
+   }
+  }
+ }catch(error){
+  console.log("Parent navigation unavailable:",error);
+ }
+
+ window.location.href=url;
 }
-
-
-updateClock();
-
-
-setInterval(
-    updateClock,
-    1000
-);
-
-</script></body></html>
+</script>
+</body>
+</html>
