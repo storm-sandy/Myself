@@ -1,0 +1,574 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#138a4b">
+<title>Swayam Railway Hub</title>
+<style>
+:root{
+ --bg:#eef7f0;--card:#fff;--text:#183b2a;--muted:#6a8072;
+ --primary:#138a4b;--deep:#086b38;--border:#d8e8dc;
+ --soft:#e4f3e8;--shadow:0 4px 16px #163e2810;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+ font:15px/1.5 system-ui,-apple-system,Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:var(--deep);overflow-wrap:anywhere}
+header{background:linear-gradient(125deg,var(--deep),var(--primary));color:white;padding:18px 15px}
+.headrow{display:flex;align-items:center;gap:12px}
+.logo{width:49px;height:49px;border-radius:15px;background:#ffffff25;
+ display:grid;place-items:center;font-size:28px;flex-shrink:0}
+header h1{margin:0;font-size:23px}
+header p{margin:3px 0 0;font-size:13px;color:#e3f6e8}
+main{max-width:1250px;margin:auto;padding:12px}
+input,select,textarea{
+ width:100%;padding:11px 12px;border:1px solid var(--border);
+ background:var(--card);color:var(--text);border-radius:10px;min-width:0
+}
+button:focus-visible,a:focus-visible,input:focus-visible,
+select:focus-visible,textarea:focus-visible{outline:3px solid #65b9ff;outline-offset:2px}
+.searchbox,.panel,.card{
+ background:var(--card);border:1px solid var(--border);
+ border-radius:15px;box-shadow:var(--shadow)
+}
+.searchbox{padding:12px;margin-bottom:10px}
+.searchrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:7px}
+#search{font-size:16px}
+.btn,.searchrow button{
+ border:0;background:var(--primary);color:white;border-radius:10px;
+ padding:10px 12px;font-weight:650
+}
+.btn.secondary{background:var(--soft);color:var(--deep);border:1px solid var(--border)}
+.btn.danger{background:#b73535;color:#fff}
+.filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:12px}
+.filters.hidden{display:none}
+.filter-label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.result-count{font-size:13px;color:var(--muted);margin:7px 0 0}
+
+/* Navigation: icon and complete label on separate lines */
+.tabs{
+ display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;overflow-y:hidden;
+ padding:8px 3px 14px;margin:0;background:var(--bg);position:sticky;top:0;
+ z-index:5;scrollbar-width:thin;-webkit-overflow-scrolling:touch;
+}
+.tab{
+ flex:0 0 91px;min-width:91px;min-height:76px;padding:9px 5px;
+ display:flex;flex-direction:column;justify-content:center;align-items:center;
+ gap:5px;white-space:normal;overflow:visible;text-align:center;
+ line-height:1.25;font-size:12px;font-weight:700;
+ border:1px solid var(--border);border-radius:12px;background:var(--card);
+ color:var(--text);
+}
+.tab-icon{display:block;font-size:22px;line-height:1.1;flex-shrink:0}
+.tab-label{display:block;max-width:100%;overflow-wrap:anywhere;word-break:normal}
+.tab.active{background:var(--deep);border-color:var(--deep);color:#fff;box-shadow:0 3px 8px #0002}
+
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px}
+.stat b{display:block;font-size:22px;color:var(--deep)}
+.stat span{font-size:12px;color:var(--muted)}
+h2{font-size:20px;margin:10px 0}
+h3{font-size:16px;margin:0}
+h4{margin:8px 0}
+.muted{color:var(--muted);font-size:13px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.card{padding:14px;min-width:0}
+.cardtop{display:flex;gap:10px;align-items:flex-start}
+.emoji{font-size:26px;line-height:1.3;flex-shrink:0}
+.card h3{overflow-wrap:anywhere}
+.card p{font-size:13px;color:var(--muted);margin:8px 0}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}
+.tag{font-size:11px;background:var(--soft);color:var(--deep);padding:3px 7px;border-radius:20px}
+.cardactions{display:flex;gap:7px;align-items:center;margin-top:12px}
+.cardactions a,.cardactions button{
+ border-radius:9px;padding:8px 10px;font-size:13px;text-decoration:none;
+ border:1px solid var(--border);background:var(--card);color:var(--deep)
+}
+.cardactions a{background:var(--primary);color:white;border-color:var(--primary);flex:1;text-align:center}
+.cardactions .fav{font-size:19px;min-width:42px}
+.panel{padding:15px;margin-bottom:12px}
+.quickgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.quick{border:1px solid var(--border);border-radius:12px;background:var(--card);
+ padding:12px 8px;text-align:center;color:var(--text)}
+.quick span{display:block;font-size:24px}
+.quick b{font-size:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1}
+.hidden{display:none!important}
+.notice{padding:11px;background:var(--soft);border:1px solid var(--border);border-radius:10px;font-size:13px}
+.empty{text-align:center;padding:30px 10px;color:var(--muted);grid-column:1/-1}
+.theme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
+.theme-option{display:flex;align-items:center;gap:10px;text-align:left;width:100%;
+ padding:10px;border:1px solid var(--border);border-radius:12px;background:var(--card);color:var(--text)}
+.theme-option.selected{outline:2px solid var(--primary);border-color:var(--primary)}
+.swatches{display:flex;gap:3px;flex-shrink:0}
+.swatches i{width:14px;height:28px;border-radius:5px;display:block}
+.theme-option strong{display:block;font-size:13px}
+.theme-option small{display:block;color:var(--muted);font-size:11px}
+.checklist{padding-left:20px}
+.checklist li{margin:6px 0}
+footer{text-align:center;padding:24px 10px;color:var(--muted);font-size:12px}
+body.dark{--bg:#101d16;--card:#192a20;--text:#e2f2e6;--muted:#a2b8a8;
+ --primary:#239c59;--deep:#50c47b;--border:#334b3b;--soft:#244733;--shadow:0 4px 16px #0002}
+@media(max-width:760px){
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .quickgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .filters{grid-template-columns:1fr}
+ .searchrow{grid-template-columns:minmax(0,1fr) auto}
+ .searchrow input{grid-column:1/-1}
+ .searchrow button{width:100%}
+ .tab{flex-basis:86px;min-width:86px;min-height:74px;font-size:12px}
+}
+@media(max-width:430px){
+ main{padding:9px}
+ .grid{grid-template-columns:1fr}
+ header h1{font-size:21px}
+ .theme-grid{grid-template-columns:1fr}
+ .card{padding:12px}
+ .tab{flex-basis:82px;min-width:82px;min-height:72px;font-size:11px}
+ .tab-icon{font-size:21px}
+}
+</style>
+</head>
+<body>
+<header>
+ <div class="headrow">
+  <div class="logo">🚆</div>
+  <div><h1>Swayam Railway Hub</h1>
+   <p>Indian railway resources, passenger services and journeys</p></div>
+ </div>
+</header>
+
+<main>
+ <section class="searchbox">
+  <div class="searchrow">
+   <input id="search" type="search" placeholder="Search ..." autocomplete="off" aria-label="Search railway resources">
+   <button type="button" onclick="runSearch()">Search</button>
+   <button type="button" class="btn secondary" onclick="clearSearch()">Clear</button>
+   <button type="button" id="filterToggle" class="btn secondary" aria-expanded="false" aria-controls="searchFilters" onclick="toggleFilters()">☰ Filters ▾</button>
+  </div>
+  <div id="searchFilters" class="filters hidden">
+   <div><label class="filter-label" for="categoryFilter">Category</label><select id="categoryFilter"><option value="">All categories</option></select></div>
+   <div><label class="filter-label" for="typeFilter">Resource type</label>
+    <select id="typeFilter"><option value="">All types</option><option value="website">Websites</option><option value="app">Apps / services</option><option value="luxury">Luxury / special trains</option></select>
+   </div>
+   <div><label class="filter-label" for="trustFilter">Provider</label>
+    <select id="trustFilter"><option value="">All providers</option><option value="official">Official</option><option value="third">Non-official</option></select>
+   </div>
+  </div>
+  <div id="searchStatus" class="result-count">Search across the entire directory.</div>
+ </section>
+
+ <nav class="tabs" aria-label="Railway navigation">
+  <button class="tab active" data-tab="home"><span class="tab-icon">🏠</span><span class="tab-label">Home</span></button>
+  <button class="tab" data-tab="websites"><span class="tab-icon">🌐</span><span class="tab-label">All Websites</span></button>
+  <button class="tab" data-tab="official"><span class="tab-icon">🛡️</span><span class="tab-label">Official Apps</span></button>
+  <button class="tab" data-tab="third"><span class="tab-icon">📱</span><span class="tab-label">Non-Official</span></button>
+  <button class="tab" data-tab="luxury"><span class="tab-icon">✨</span><span class="tab-label">Luxury & Special</span></button>
+  <button class="tab" data-tab="favourites"><span class="tab-icon">⭐</span><span class="tab-label">Favourites</span></button>
+  <button class="tab" data-tab="tools"><span class="tab-icon">🧰</span><span class="tab-label">Travel Tools</span></button>
+  <button class="tab" data-tab="settings"><span class="tab-icon">⚙️</span><span class="tab-label">Settings</span></button>
+ </nav>
+
+ <section id="home" class="page">
+  <div class="stats">
+   <div class="stat"><b id="totalCount">0</b><span>Directory entries</span></div>
+   <div class="stat"><b id="officialCount">0</b><span>Official listings</span></div>
+   <div class="stat"><b id="thirdCount">0</b><span>Third-party listings</span></div>
+   <div class="stat"><b id="favCount">0</b><span>Favourites</span></div>
+  </div>
+
+  <div id="homeSearchPanel" class="panel hidden">
+   <div class="section-head"><h2>Search results</h2><span id="homeResultCount" class="muted"></span></div>
+   <div id="homeResults" class="grid"></div>
+  </div>
+
+  <div class="panel">
+   <h2>Quick railway services</h2>
+   <div class="quickgrid">
+    <button class="quick" onclick="openQuick('ntes')"><span>🚉</span><b>Train enquiry</b></button>
+    <button class="quick" onclick="openQuick('irctc')"><span>🎟️</span><b>Ticket booking</b></button>
+    <button class="quick" onclick="openQuick('railmadad')"><span>🆘</span><b>Passenger help</b></button>
+    <button class="quick" onclick="openQuick('railone')"><span>📲</span><b>RailOne info</b></button>
+    <button class="quick" onclick="openQuick('uts')"><span>🚇</span><b>Unreserved tickets</b></button>
+    <button class="quick" onclick="openQuick('food')"><span>🍱</span><b>Food on train</b></button>
+    <button class="quick" onclick="openQuick('retiring')"><span>🛏️</span><b>Retiring rooms</b></button>
+    <button class="quick" onclick="showTab('luxury')"><span>👑</span><b>Luxury trains</b></button>
+   </div>
+  </div>
+
+  <div class="panel">
+   <h2>Popular railway resources</h2>
+   <div id="popularGrid" class="grid"></div>
+  </div>
+
+  <div class="panel">
+   <h2>Recently opened</h2>
+   <div id="recentGrid" class="grid"></div>
+  </div>
+
+  <div class="panel">
+   <h2>Passenger travel checklist</h2>
+   <ul class="checklist">
+    <li>Check train running status and schedule before departure.</li>
+    <li>Confirm the train number, boarding station, date and destination.</li>
+    <li>Check ticket status and booking details using the official provider.</li>
+    <li>Verify platform announcements and station displays when you arrive.</li>
+    <li>Use official passenger assistance channels for complaints or help.</li>
+    <li>For luxury and tourist trains, confirm itinerary, inclusions and departure dates with the operator.</li>
+   </ul>
+  </div>
+  <div class="notice"><b>Important:</b> This is a railway directory, not an official Indian Railways app. Live running status, seat availability, fares and ticket transactions are handled by the linked providers.</div>
+ </section>
+
+ <section id="websites" class="page hidden">
+  <h2>All Railway Websites</h2><p class="muted">Official railway portals, regional zones, tourism and independent information sites.</p>
+  <div id="websiteGrid" class="grid"></div>
+ </section>
+ <section id="official" class="page hidden">
+  <h2>Official Apps & Services</h2><p class="muted">Official provider listings. A link may open a website or app-information page.</p>
+  <div id="officialGrid" class="grid"></div>
+ </section>
+ <section id="third" class="page hidden">
+  <h2>Non-Official Apps & Websites</h2>
+  <div class="notice">Third-party services are independent of Indian Railways. Check their terms, fees, privacy and accuracy.</div><br>
+  <div id="thirdGrid" class="grid"></div>
+ </section>
+ <section id="luxury" class="page hidden">
+  <h2>Luxury & Special Trains</h2>
+  <p class="muted">Luxury tourist trains, themed tours, heritage railways and mountain train journeys.</p>
+  <div id="luxuryGrid" class="grid"></div>
+ </section>
+ <section id="favourites" class="page hidden">
+  <h2>My Favourites ⭐</h2><div id="favouriteGrid" class="grid"></div>
+ </section>
+
+ <section id="tools" class="page hidden">
+  <h2>Railway Travel Tools</h2>
+  <div class="grid">
+   <div class="card"><h3>🔎 Search a train or route</h3>
+    <p>Search the web for a train number, route, station or timetable.</p>
+    <input id="routeQuery" placeholder="e.g. Mumbai to Pune or train number">
+    <br><br><button class="btn" onclick="routeSearch()">Search route</button>
+   </div>
+   <div class="card"><h3>🧾 Train / PNR enquiry</h3><p>Open the official train enquiry service. Enter your details there.</p><button class="btn" onclick="openQuick('ntes')">Open NTES</button></div>
+   <div class="card"><h3>🎟️ Booking</h3><p>Open the official reserved ticket booking portal.</p><button class="btn" onclick="openQuick('irctc')">Open IRCTC</button></div>
+   <div class="card"><h3>🆘 Passenger assistance</h3><p>Find the railway grievance and assistance portal.</p><button class="btn" onclick="openQuick('railmadad')">Open RailMadad</button></div>
+   <div class="card"><h3>📦 Parcel and luggage</h3><p>Find railway parcel service information and links.</p><button class="btn" onclick="openQuick('parcel')">Open parcel info</button></div>
+   <div class="card"><h3>🍽️ Food on train</h3><p>Find the railway e-catering service.</p><button class="btn" onclick="openQuick('food')">Open food service</button></div>
+   <div class="card"><h3>🏨 Railway tourism</h3><p>Explore tour packages and tourist train services.</p><button class="btn" onclick="openQuick('tourism')">Open tourism</button></div>
+   <div class="card"><h3>🚆 Regional railways</h3><p>Search the directory for your railway zone or division.</p><button class="btn" onclick="showTab('websites')">Browse websites</button></div>
+  </div>
+ </section>
+
+ <section id="settings" class="page hidden">
+  <h2>Settings & Personalisation</h2>
+  <div class="panel">
+   <h3>🌿 Ten nature themes</h3>
+   <p class="muted">Your selected theme is saved on this device.</p>
+   <div id="themeGrid" class="theme-grid"></div>
+  </div>
+  <div class="panel">
+   <h3>➕ Add a website, app or train</h3>
+   <p class="muted">Add your own resource to the directory. Only label a provider official after verifying its ownership.</p>
+   <form id="addForm">
+    <input id="newName" required placeholder="Resource name"><br><br>
+    <input id="newUrl" type="url" required placeholder="https://example.com"><br><br>
+    <div class="row">
+     <select id="newType"><option value="website">Website</option><option value="app">App / service</option><option value="luxury">Luxury / special train</option></select>
+     <select id="newTrust"><option value="third">Non-official / unverified</option><option value="official">Official (verified)</option></select>
+    </div><br>
+    <input id="newCategory" required placeholder="Category, e.g. Booking, Tourism, Regional"><br><br>
+    <textarea id="newDesc" rows="3" placeholder="Description and search keywords"></textarea><br><br>
+    <button class="btn" type="submit">Save resource</button>
+    <button class="btn secondary" type="reset">Reset form</button>
+   </form>
+  </div>
+  <div class="panel">
+   <h3>💾 Backup & restore</h3>
+   <p class="muted">Export or import custom resources, favourites, recent visits and selected theme as JSON.</p>
+   <div class="row">
+    <button class="btn" onclick="exportData()">Export JSON backup</button>
+    <button class="btn secondary" onclick="document.getElementById('importFile').click()">Import JSON backup</button>
+    <input id="importFile" type="file" accept=".json,application/json" hidden>
+   </div>
+  </div>
+  <div class="panel">
+   <h3>🧹 Manage local data</h3>
+   <div class="row">
+    <button class="btn secondary" onclick="clearRecent()">Clear recent visits</button>
+    <button class="btn danger" onclick="resetCustom()">Delete custom entries</button>
+   </div>
+  </div>
+  <div class="panel">
+   <h3>About Swayam Railway Hub</h3>
+   <p class="muted">An independent shortcut directory. It is not affiliated with the Ministry of Railways. Official labels refer to the intended provider of a listing, not a guarantee of current availability. Some URLs or app offerings may change over time.</p>
+  </div>
+ </section>
+</main>
+<footer>Swayam Railway Hub · Personal railway directory · 10 nature themes</footer>
+
+<script>
+"use strict";
+
+const BASE=[
+{id:"railone",name:"RailOne",type:"app",trust:"official",category:"Official app",icon:"📲",desc:"Indian Railways passenger-service SuperApp information. Check the official railway portal for current app availability.",keywords:"superapp booking enquiry tickets services cris",url:"https://indianrailways.gov.in/"},
+{id:"irctc",name:"IRCTC Ticket Booking",type:"website",trust:"official",category:"Booking",icon:"🎟️",desc:"Reserved railway ticket booking, account management and journey planning.",keywords:"reservation e-ticket tatkal pnr booking seat availability",url:"https://www.irctc.co.in/nget/"},
+{id:"irctcapp",name:"IRCTC Rail Connect",type:"app",trust:"official",category:"Official app",icon:"📱",desc:"Official app information for reserved train booking on supported mobile devices.",keywords:"android ios ticket app rail connect",url:"https://contents.irctc.co.in/en/IRCTC_andriod_App.html"},
+{id:"ntes",name:"NTES Train Enquiry",type:"website",trust:"official",category:"Train enquiry",icon:"🚉",desc:"National Train Enquiry System for running status, train schedules and enquiry.",keywords:"live train status delay arrival departure schedule",url:"https://enquiry.indianrail.gov.in/mntes/"},
+{id:"cris",name:"CRIS Railway Technology",type:"website",trust:"official",category:"Official information",icon:"💻",desc:"Centre for Railway Information Systems, the railway IT organisation and project information.",keywords:"cris technology projects applications systems",url:"https://cris.org.in/"},
+{id:"railmadad",name:"RailMadad",type:"website",trust:"official",category:"Help & safety",icon:"🆘",desc:"Railway passenger assistance and grievance registration.",keywords:"complaint help safety train station feedback assistance",url:"https://railmadad.indianrailways.gov.in/madad/final/foishome.jsp"},
+{id:"indianrail",name:"Indian Railways Portal",type:"website",trust:"official",category:"Official information",icon:"🇮🇳",desc:"Indian Railways official portal for railway information and related links.",keywords:"ministry railways railway board government",url:"https://indianrailways.gov.in/"},
+{id:"uts",name:"UTS / Unreserved Ticketing Information",type:"app",trust:"official",category:"Official app",icon:"🚇",desc:"Information about unreserved ticketing services. Verify current app availability and rules on official channels.",keywords:"local train suburban unreserved ticket platform ticket",url:"https://cris.org.in/"},
+{id:"food",name:"IRCTC eCatering – Food on Track",type:"website",trust:"official",category:"Food",icon:"🍱",desc:"Railway e-catering and food ordering for eligible train journeys and stations.",keywords:"food train meal delivery seat coach catering",url:"https://www.ecatering.irctc.co.in/"},
+{id:"tourism",name:"IRCTC Tourism",type:"website",trust:"official",category:"Tourism",icon:"🧳",desc:"Railway tourism packages, holidays, tourist trains and travel services.",keywords:"holiday tour package bharat gaurav tourism",url:"https://www.irctctourism.com/"},
+{id:"retiring",name:"IRCTC Retiring Rooms",type:"website",trust:"official",category:"Accommodation",icon:"🛏️",desc:"Railway retiring-room and station accommodation information. Confirm eligibility and availability on the portal.",keywords:"dormitory hotel room station stay accommodation",url:"https://rr.irctc.co.in/"
+},
+{id:"parcel",name:"Railway Parcel Information",type:"website",trust:"official",category:"Parcel & freight",icon:"📦",desc:"Find railway parcel, luggage and freight information through official railway channels.",keywords:"parcel luggage cargo freight booking consignment",url:"https://parcel.indianrail.gov.in/"},
+{id:"wr",name:"Western Railway",type:"website",trust:"official",category:"Regional railway",icon:"🚆",desc:"Western Railway official portal, notices and passenger information including suburban railway updates.",keywords:"mumbai suburban western railway timetable local train",url:"https://wr.indianrailways.gov.in/"},
+{id:"wrtt",name:"Western Railway Timetable",type:"website",trust:"official",category:"Timetable",icon:"🕒",desc:"Find suburban timetable information through the Western Railway official portal.",keywords:"western line churchgate virar dahanu timetable local",url:"https://wr.indianrailways.gov.in/"},
+{id:"cr",name:"Central Railway",type:"website",trust:"official",category:"Regional railway",icon:"🚆",desc:"Central Railway portal for passenger notices, timetables and regional railway information.",keywords:"mumbai pune local train timetable central railway",url:"https://cr.indianrailways.gov.in/"},
+{id:"sr",name:"Southern Railway",type:"website",trust:"official",category:"Regional railway",icon:"🚉",desc:"Southern Railway official portal and passenger information.",keywords:"chennai tamil nadu railway",url:"https://sr.indianrailways.gov.in/"},
+{id:"ser",name:"South Eastern Railway",type:"website",trust:"official",category:"Regional railway",icon:"🚉",desc:"South Eastern Railway official portal.",keywords:"kolkata railway",url:"https://ser.indianrailways.gov.in/"},
+{id:"ner",name:"North Eastern Railway",type:"website",trust:"official",category:"Regional railway",icon:"🚉",desc:"North Eastern Railway official portal and notices.",keywords:"gorakhpur railway",url:"https://ner.indianrailways.gov.in/"},
+{id:"nwr",name:"North Western Railway",type:"website",trust:"official",category:"Regional railway",icon:"🚉",desc:"North Western Railway official portal.",keywords:"jaipur rajasthan railway",url:"https://nwr.indianrailways.gov.in/"},
+{id:"nr",name:"Northern Railway",type:"website",trust:"official",category:"Regional railway",icon:"🚉",desc:"Northern Railway official portal and passenger notices.",keywords:"delhi ambala jammu railway",url:"https://nr.indianrailways.gov.in/"},
+{id:"scr",name:"South Central Railway",type:"website",trust:"official",category:"Regional railway",icon:"🚉",desc:"South Central Railway official portal.",keywords:"hyderabad telangana railway",url:"https://scr.indianrailways.gov.in/"},
+{id:"ecr",name:"East Central Railway",type:"website",trust:"official",category:"Regional railway",icon:"🚉",desc:"East Central Railway official portal.",keywords:"patna bihar railway",url:"https://ecr.indianrailways.gov.in/"},
+{id:"ecor",name:"East Coast Railway",type:"website",trust:"official",category:"Regional railway",icon:"🚉",desc:"East Coast Railway official portal.",keywords:"bhubaneswar odisha railway",url:"https://ecor.indianrailways.gov.in/"},
+{id:"ncr",name:"North Central Railway",type:"website",trust:"official",category:"Regional railway",icon:"🚉",desc:"North Central Railway official portal.",keywords:"prayagraj agra railway",url:"https://ncr.indianrailways.gov.in/"},
+{id:"wcr",name:"West Central Railway",type:"website",trust:"official",category:"Regional railway",icon:"🚉",desc:"West Central Railway official portal.",keywords:"jabalpur bhopal kota railway",url:"https://wcr.indianrailways.gov.in/"},
+{id:"ecr-east",name:"Eastern Railway",type:"website",trust:"official",category:"Regional railway",icon:"🚉",desc:"Eastern Railway official portal and passenger notices.",keywords:"kolkata howrah sealdah railway",url:"https://er.indianrailways.gov.in/"},
+{id:"serail",name:"South Western Railway",type:"website",trust:"official",category:"Regional railway",icon:"🚉",desc:"South Western Railway official portal.",keywords:"bengaluru hubballi mysuru railway",url:"https://swr.indianrailways.gov.in/"},
+{id:"kr",name:"Konkan Railway",type:"website",trust:"official",category:"Regional railway",icon:"🌊",desc:"Konkan Railway official website and coastal route information.",keywords:"konkan coast goa mumbai mangalore",url:"https://konkanrailway.com/"},
+{id:"metro-kolkata",name:"Kolkata Metro Railway",type:"website",trust:"official",category:"Metro railway",icon:"🚇",desc:"Official Kolkata Metro Railway information and passenger notices.",keywords:"kolkata metro schedule route",url:"https://mtp.indianrailways.gov.in/"},
+{id:"metro-chennai",name:"Chennai Metro",type:"website",trust:"third",category:"Metro & urban transit",icon:"🚇",desc:"Chennai Metro Rail Ltd urban transit website; separate from Indian Railways.",keywords:"chennai metro fares routes",url:"https://chennaimetrorail.org/"},
+{id:"metro-mumbai",name:"Mumbai Metro One",type:"website",trust:"third",category:"Metro & urban transit",icon:"🚇",desc:"Mumbai Metro Line 1 operator website; separate from Indian Railways suburban rail.",keywords:"mumbai metro line 1 fares service",url:"https://www.mumbaimetroone.com/"},
+{id:"maharajas",name:"Maharajas' Express",type:"luxury",trust:"official",category:"Luxury train",icon:"👑",desc:"Luxury tourist train journeys, itineraries and booking information.",keywords:"royal luxury train itinerary india palace",url:"https://www.the-maharajas.com/"},
+{id:"palace",name:"Palace on Wheels",type:"luxury",trust:"official",category:"Luxury train",icon:"🏰",desc:"Luxury rail tours focused on Rajasthan and royal heritage destinations.",keywords:"rajasthan heritage luxury royal train",url:"https://www.palaceonwheels.rajasthan.gov.in/"},
+{id:"deccan",name:"Deccan Odyssey",type:"luxury",trust:"official",category:"Luxury train",icon:"✨",desc:"Luxury tourist train journeys across Maharashtra and other destinations.",keywords:"maharashtra luxury tourist train heritage",url:"https://www.deccanodyssey.com/"},
+{id:"golden",name:"Golden Chariot",type:"luxury",trust:"official",category:"Luxury train",icon:"🌟",desc:"Luxury tourist train journeys around South Indian destinations.",keywords:"karnataka south india heritage luxury",url:"https://www.goldenchariot.org/"},
+{id:"bharatgaurav",name:"Bharat Gaurav Tourist Trains",type:"website",trust:"official",category:"Tourist train",icon:"🧭",desc:"Themed tourist train packages, pilgrimage circuits and guided rail tours.",keywords:"bharat gaurav pilgrimage tourist circuit package",url:"https://www.irctctourism.com/"},
+{id:"heritage",name:"Heritage Train Information",type:"website",trust:"official",category:"Heritage train",icon:"🚂",desc:"Discover heritage railway journeys and special tourist services through railway and tourism portals.",keywords:"steam heritage tourist train special",url:"https://www.irctctourism.com/"},
+{id:"mountain",name:"Mountain Railway Information",type:"website",trust:"official",category:"Heritage train",icon:"⛰️",desc:"Explore mountain and toy train destinations such as Darjeeling, Shimla and Nilgiri.",keywords:"toy train darjeeling shimla nilgiri unesco",url:"https://www.india.gov.in/"},
+{id:"ixigo",name:"ixigo Trains",type:"app",trust:"third",category:"Third-party app",icon:"📱",desc:"Independent train search, PNR information and journey planning tools.",keywords:"pnr train running status platform booking",url:"https://www.ixigo.com/trains"},
+{id:"confirmtkt",name:"ConfirmTkt",type:"app",trust:"third",category:"Third-party app",icon:"🎫",desc:"Independent ticket search and travel planning service.",keywords:"ticket availability waitlist prediction",url:"https://www.confirmtkt.com/"},
+{id:"railyatri",name:"RailYatri",type:"app",trust:"third",category:"Third-party app",icon:"🚆",desc:"Independent rail travel information and related services.",keywords:"train status pnr bus food",url:"https://www.railyatri.in/"},
+{id:"trainman",name:"Trainman",type:"app",trust:"third",category:"Third-party app",icon:"🚉",desc:"Independent train discovery and journey information.",keywords:"train search pnr seat availability",url:"https://www.trainman.in/"},
+{id:"where",name:"Where Is My Train",type:"app",trust:"third",category:"Third-party app",icon:"📍",desc:"Third-party train tracking app information. Confirm current availability with the app provider.",keywords:"offline train tracking running status",url:"https://www.google.com/search?q=Where+Is+My+Train+app"},
+{id:"etrain",name:"eTrain.info",type:"website",trust:"third",category:"Third-party website",icon:"🗓️",desc:"Independent railway timetable and train information.",keywords:"timetable schedule train number station",url:"https://etrain.info/"},
+{id:"indiarailinfo",name:"India Rail Info",type:"website",trust:"third",category:"Third-party website",icon:"👥",desc:"Community railway information, routes, reviews and train details.",keywords:"railfan train route coach position reviews",url:"https://indiarailinfo.com/"},
+{id:"railmitra",name:"RailMitra",type:"website",trust:"third",category:"Third-party website",icon:"🍽️",desc:"Independent rail travel and food-related information.",keywords:"food train pnr running status",url:"https://www.railmitra.com/"},
+{id:"railway-search",name:"Train Route Web Search",type:"website",trust:"third",category:"Search tool",icon:"🔎",desc:"Search the web for train numbers, station lists, timetables and routes.",keywords:"train number station schedule route search",url:"https://www.google.com/search?q=Indian+Railways+train+route+schedule"}
+];
+
+const THEMES={
+forest:{name:"Forest",emoji:"🌲",bg:"#eef7f0",card:"#ffffff",text:"#183b2a",muted:"#6a8072",primary:"#138a4b",deep:"#086b38",border:"#d8e8dc",soft:"#e4f3e8"},
+ocean:{name:"Ocean",emoji:"🌊",bg:"#eaf6fc",card:"#ffffff",text:"#15394d",muted:"#5e7e90",primary:"#1686b8",deep:"#07567c",border:"#cce4f0",soft:"#ddf1fa"},
+meadow:{name:"Meadow",emoji:"🌼",bg:"#f5f8e9",card:"#ffffff",text:"#394626",muted:"#78825d",primary:"#799c28",deep:"#4b6813",border:"#dfe8c5",soft:"#edf4d7"},
+mint:{name:"Mint",emoji:"🍃",bg:"#eaf8f4",card:"#ffffff",text:"#16463b",muted:"#62877c",primary:"#1a9a81",deep:"#08735f",border:"#cde9df",soft:"#dcf5eb"},
+sunset:{name:"Sunset",emoji:"🌅",bg:"#fff1e9",card:"#ffffff",text:"#593224",muted:"#9b7466",primary:"#e8753f",deep:"#a74321",border:"#f2d7c7",soft:"#ffe5d7"},
+lavender:{name:"Lavender",emoji:"🪻",bg:"#f3effb",card:"#ffffff",text:"#392b55",muted:"#82749c",primary:"#8865c9",deep:"#5a3b9c",border:"#e1d7f2",soft:"#eee5ff"},
+rose:{name:"Rose Garden",emoji:"🌹",bg:"#fff0f4",card:"#ffffff",text:"#562b3a",muted:"#987080",primary:"#d75b83",deep:"#a52d58",border:"#f0d3de",soft:"#ffe2ec"},
+sky:{name:"Sky",emoji:"☁️",bg:"#eef5ff",card:"#ffffff",text:"#1c3557",muted:"#6e82a0",primary:"#477fd0",deep:"#2455a0",border:"#d2e0f6",soft:"#e0ecff"},
+sand:{name:"Sand",emoji:"🏜️",bg:"#f8f1e5",card:"#fffdf9",text:"#493c2b",muted:"#8b7a64",primary:"#b38a4d",deep:"#795b2e",border:"#e8dbc4",soft:"#f4e8d1"},
+night:{name:"Night",emoji:"🌙",bg:"#101d16",card:"#192a20",text:"#e2f2e6",muted:"#a2b8a8",primary:"#239c59",deep:"#50c47b",border:"#334b3b",soft:"#244733"}
+};
+
+function loadJSON(key,fallback){
+ try{return JSON.parse(localStorage.getItem(key))??fallback}catch(e){return fallback}
+}
+let custom=loadJSON("swayamRailCustom",[]);
+let favourites=new Set(loadJSON("swayamRailFav",[]));
+let recents=loadJSON("swayamRailRecent",[]);
+let currentTheme=localStorage.getItem("swayamRailTheme")||"forest";
+let activeTab="home";
+
+function allResources(){return [...BASE,...custom]}
+function byId(id){return allResources().find(x=>x.id===id)}
+function safeUrl(value){
+ try{const u=new URL(value);return ["https:","http:"].includes(u.protocol)?u.href:null}
+ catch(e){return null}
+}
+function esc(value){
+ return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))
+}
+function saveState(){
+ localStorage.setItem("swayamRailCustom",JSON.stringify(custom));
+ localStorage.setItem("swayamRailFav",JSON.stringify([...favourites]));
+ localStorage.setItem("swayamRailRecent",JSON.stringify(recents.slice(0,15)));
+}
+function toggleFilters(){
+ const p=document.getElementById("searchFilters"),b=document.getElementById("filterToggle");
+ const open=p.classList.contains("hidden");
+ p.classList.toggle("hidden",!open);
+ b.setAttribute("aria-expanded",String(open));
+ b.textContent=open?"☰ Filters ▴":"☰ Filters ▾";
+}
+function populateCategories(){
+ const el=document.getElementById("categoryFilter"),old=el.value;
+ const cats=[...new Set(allResources().map(x=>x.category))].sort();
+ el.innerHTML='<option value="">All categories</option>'+cats.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+ if(cats.includes(old))el.value=old;
+}
+function filteredResources(){
+ const q=document.getElementById("search").value.trim().toLowerCase();
+ const cat=document.getElementById("categoryFilter").value;
+ const type=document.getElementById("typeFilter").value;
+ const trust=document.getElementById("trustFilter").value;
+ return allResources().filter(x=>{
+  const hay=[x.name,x.desc,x.category,x.keywords,x.type,x.trust].join(" ").toLowerCase();
+  return (!q||hay.includes(q))&&(!cat||x.category===cat)&&(!type||x.type===type)&&(!trust||x.trust===trust);
+ });
+}
+function cardHTML(x){
+ const url=safeUrl(x.url),trust=x.trust==="official"?"Official listing":"Third-party / independent";
+ return `<article class="card">
+ <div class="cardtop"><div class="emoji">${esc(x.icon||"🚆")}</div><div><h3>${esc(x.name)}</h3><div class="muted">${esc(x.category)}</div></div></div>
+ <p>${esc(x.desc)}</p>
+ <div class="tags"><span class="tag">${esc(x.type)}</span><span class="tag">${esc(trust)}</span></div>
+ <div class="cardactions">${url?`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer" onclick="recordVisit('${esc(x.id)}')">Open resource ↗</a>`:"<span class='muted'>Invalid URL</span>"}
+ <button class="fav" title="Toggle favourite" aria-label="Toggle favourite" onclick="toggleFav('${esc(x.id)}')">${favourites.has(x.id)?"★":"☆"}</button></div>
+ </article>`;
+}
+function renderGrid(id,list,empty="No matching resources found."){
+ const el=document.getElementById(id);
+ if(!list.length){el.innerHTML=`<div class="empty">${esc(empty)}</div>`;return}
+ el.innerHTML=list.map(cardHTML).join("");
+}
+function renderAll(){
+ const all=allResources();populateCategories();
+ document.getElementById("totalCount").textContent=all.length;
+ document.getElementById("officialCount").textContent=all.filter(x=>x.trust==="official").length;
+ document.getElementById("thirdCount").textContent=all.filter(x=>x.trust==="third").length;
+ document.getElementById("favCount").textContent=favourites.size;
+ const list=filteredResources(),q=document.getElementById("search").value.trim();
+ document.getElementById("searchStatus").textContent=`${list.length} resource(s)${q?" matching “"+q+"”":" in directory"}.`;
+ document.getElementById("homeSearchPanel").classList.toggle("hidden",!q);
+ document.getElementById("homeResultCount").textContent=list.length+" found";
+ renderGrid("homeResults",list,"No results. Try another keyword or filter.");
+ renderGrid("popularGrid",BASE.filter(x=>["railone","irctc","ntes","railmadad","food","tourism"].includes(x.id)));
+ renderGrid("websiteGrid",list.filter(x=>x.type==="website"));
+ renderGrid("officialGrid",list.filter(x=>x.trust==="official"&&x.type==="app"));
+ renderGrid("thirdGrid",list.filter(x=>x.trust==="third"));
+ renderGrid("luxuryGrid",list.filter(x=>x.type==="luxury"||["Tourist train","Heritage train"].includes(x.category)));
+ renderGrid("favouriteGrid",all.filter(x=>favourites.has(x.id)),"No favourites yet. Tap ☆ on a resource to save it.");
+ renderGrid("recentGrid",recents.map(byId).filter(Boolean).slice(0,6),"No recent visits yet.");
+}
+function showTab(tab){
+ activeTab=tab;
+ document.querySelectorAll(".page").forEach(x=>x.classList.toggle("hidden",x.id!==tab));
+ document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===tab));
+ renderAll();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>showTab(btn.dataset.tab)));
+function runSearch(){
+ renderAll();
+ if(activeTab!=="home")showTab(activeTab);
+ else if(!document.getElementById("search").value.trim())document.getElementById("search").focus();
+}
+function clearSearch(){
+ document.getElementById("search").value="";
+ document.getElementById("categoryFilter").value="";
+ document.getElementById("typeFilter").value="";
+ document.getElementById("trustFilter").value="";
+ renderAll();
+}
+document.getElementById("search").addEventListener("input",renderAll);
+["categoryFilter","typeFilter","trustFilter"].forEach(id=>document.getElementById(id).addEventListener("change",renderAll));
+function toggleFav(id){
+ if(favourites.has(id))favourites.delete(id);else favourites.add(id);
+ saveState();renderAll();
+}
+function recordVisit(id){
+ recents=[id,...recents.filter(x=>x!==id)].slice(0,15);saveState();
+}
+function openQuick(id){
+ const x=byId(id);
+ if(!x){alert("Resource not found. Use search to locate it.");return}
+ const u=safeUrl(x.url);
+ if(!u){alert("This resource URL is invalid.");return}
+ recordVisit(x.id);renderAll();window.open(u,"_blank","noopener,noreferrer");
+}
+function routeSearch(){
+ const q=document.getElementById("routeQuery").value.trim();
+ if(!q){alert("Enter a route, train or station name.");return}
+ window.open("https://www.google.com/search?q="+encodeURIComponent("Indian Railways "+q),"_blank","noopener,noreferrer");
+}
+
+/* Nature themes */
+function applyTheme(name){
+ if(!THEMES[name])name="forest";
+ currentTheme=name;
+ const t=THEMES[name],root=document.documentElement.style;
+ ["bg","card","text","muted","primary","deep","border","soft"].forEach(k=>root.setProperty("--"+k,t[k]));
+ document.querySelector('meta[name="theme-color"]').content=t.deep;
+ localStorage.setItem("swayamRailTheme",name);
+ renderThemes();
+}
+function renderThemes(){
+ document.getElementById("themeGrid").innerHTML=Object.entries(THEMES).map(([key,t])=>
+ `<button type="button" class="theme-option ${currentTheme===key?"selected":""}" onclick="applyTheme('${key}')" aria-pressed="${currentTheme===key}">
+ <span class="swatches"><i style="background:${t.bg}"></i><i style="background:${t.primary}"></i><i style="background:${t.deep}"></i><i style="background:${t.border}"></i></span>
+ <span><strong>${t.emoji} ${esc(t.name)}</strong><small>${currentTheme===key?"Currently selected":"Tap to apply theme"}</small></span></button>`
+ ).join("");
+}
+function clearRecent(){recents=[];saveState();renderAll()}
+function resetCustom(){
+ if(!confirm("Delete all custom resources from this device?"))return;
+ const ids=new Set(custom.map(x=>x.id));custom=[];
+ ids.forEach(id=>favourites.delete(id));recents=recents.filter(id=>!ids.has(id));
+ saveState();renderAll();
+}
+document.getElementById("addForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const name=document.getElementById("newName").value.trim();
+ const url=safeUrl(document.getElementById("newUrl").value.trim());
+ if(!url){alert("Enter a valid http or https URL.");return}
+ custom.push({
+ id:"custom-"+Date.now(),name,url,
+ type:document.getElementById("newType").value,
+ trust:document.getElementById("newTrust").value,
+ category:document.getElementById("newCategory").value.trim(),
+ desc:document.getElementById("newDesc").value.trim()||"Custom railway resource.",
+ keywords:"custom user added",icon:"🔖"
+ });
+ saveState();e.target.reset();renderAll();alert("Resource saved locally.");
+});
+function downloadFile(filename,content,type){
+ const blob=new Blob([content],{type}),url=URL.createObjectURL(blob);
+ const a=document.createElement("a");a.href=url;a.download=filename;a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function exportData(){
+ const data={app:"Swayam Railway Hub",version:1,exportedAt:new Date().toISOString(),custom,favourites:[...favourites],recents,theme:currentTheme};
+ downloadFile("swayam-railway-backup.json",JSON.stringify(data,null,2),"application/json");
+}
+document.getElementById("importFile").addEventListener("change",async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  const data=JSON.parse(await file.text());
+  if(!data||!Array.isArray(data.custom)||!Array.isArray(data.favourites))throw new Error("Invalid Swayam Railway Hub backup.");
+  const valid=data.custom.filter(x=>x&&typeof x.name==="string"&&safeUrl(x.url));
+  if(!confirm(`Import ${valid.length} custom entries and replace existing custom entries and favourites?`))return;
+  custom=valid.map((x,i)=>({...x,id:String(x.id||("custom-import-"+Date.now()+"-"+i))}));
+  favourites=new Set(data.favourites.filter(x=>typeof x==="string"));
+  recents=Array.isArray(data.recents)?data.recents.filter(x=>typeof x==="string").slice(0,15):[];
+  saveState();if(THEMES[data.theme])applyTheme(data.theme);
+  renderAll();alert("Backup imported.");
+ }catch(err){alert("Import failed: "+err.message)}
+ finally{e.target.value=""}
+});
+renderThemes();
+applyTheme(currentTheme);
+renderAll();
+</script>
+</body>
+</html>
