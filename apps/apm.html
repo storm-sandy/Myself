@@ -1,0 +1,927 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#138a4b">
+<title>Swayam — App Manager</title>
+<style>
+*{box-sizing:border-box}
+:root{
+ --primary:#138a4b;--deep:#086b38;--bg:#eff7f0;--panel:#fff;
+ --text:#183b2a;--muted:#65796b;--border:#d8e8dc;
+ --soft:#e4f4e8;--danger:#b42318;--shadow:0 3px 14px #163c2010;
+ --radius:15px;--font:14px
+}
+body[data-theme="ocean"]{--primary:#087eaa;--deep:#075477;--bg:#edf8fc;--text:#153c50;--soft:#dff3fa;--border:#d0e8f1}
+body[data-theme="meadow"]{--primary:#629b35;--deep:#3e7020;--bg:#f4f8e9;--text:#34472a;--soft:#eaf4d8;--border:#dce9c8}
+body[data-theme="mint"]{--primary:#009688;--deep:#00695c;--bg:#eaf8f5;--text:#16483f;--soft:#d7f2eb;--border:#cce9e2}
+body[data-theme="sunset"]{--primary:#d96a32;--deep:#a84420;--bg:#fff4eb;--text:#583323;--soft:#ffe7d6;--border:#f3d8c7}
+body[data-theme="lavender"]{--primary:#8059b8;--deep:#57378a;--bg:#f5f0fc;--text:#392b50;--soft:#ebe1fa;--border:#e0d4f2}
+body[data-theme="night"]{--primary:#63c98d;--deep:#2b9b5d;--bg:#14251c;--panel:#20352a;--text:#e6f5e9;--muted:#b0c7b7;--soft:#2b4837;--border:#3a5946}
+body[data-theme="snow"]{--primary:#477fbd;--deep:#2b578d;--bg:#f3f8ff;--text:#263b54;--soft:#e2edfc;--border:#d6e2f3}
+body[data-theme="water"]{--primary:#078bba;--deep:#056589;--bg:#e9f9fc;--text:#194453;--soft:#d6f2f8;--border:#c9eaf0}
+body[data-theme="fire"]{--primary:#d74c24;--deep:#992e16;--bg:#fff0e9;--text:#522c21;--soft:#ffe0d0;--border:#f1d0c0}
+body[data-theme="earth"]{--primary:#887044;--deep:#5d4729;--bg:#f4f0e5;--text:#443c2c;--soft:#e8e0ca;--border:#ded4ba}
+html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:var(--font)}
+body{background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.app{max-width:1500px;margin:auto;padding:12px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--border);padding:14px 16px;border-radius:20px;box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:11px}
+.logo{width:46px;height:46px;flex:0 0 46px;border-radius:14px;background:var(--soft);display:grid;place-items:center;font-size:26px}
+h1{font-size:21px;margin:0;color:var(--deep)}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.header-actions{display:flex;gap:7px;flex-wrap:wrap}
+.nav{display:flex;gap:7px;overflow-x:auto;margin:12px 0;padding:3px 0;scrollbar-width:thin}
+.nav button{white-space:nowrap;border:1px solid var(--border);border-radius:12px;background:var(--panel);color:var(--text);padding:10px 14px;font-weight:750}
+.nav button.active{background:var(--primary);color:white;border-color:var(--primary)}
+.page{display:none}.page.active{display:block}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;box-shadow:var(--shadow);min-width:0}
+.panel-title{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.panel-title h2,.panel h2{font-size:17px;margin:0}
+.muted,.smalltext{color:var(--muted)}.smalltext{font-size:12px}
+.btn{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:9px 12px;border-radius:10px;font-weight:650}
+.btn.primary{background:var(--primary);color:white;border-color:var(--primary)}
+.btn.soft{background:var(--soft);color:var(--deep)}
+.btn.danger{color:var(--danger)}
+.btn.small{padding:6px 9px;font-size:12px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field label{font-size:12px;font-weight:750;color:var(--muted)}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--panel);color:var(--text);min-width:0}
+textarea{min-height:85px;resize:vertical}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.stat{background:var(--soft);border:1px solid var(--border);border-radius:13px;padding:13px;min-width:0}
+.stat .number{font-size:27px;font-weight:850;color:var(--deep);overflow-wrap:anywhere}
+.stat .label{font-size:12px;color:var(--muted)}
+.toolbar{display:grid;grid-template-columns:minmax(180px,2fr) repeat(3,minmax(120px,1fr));gap:9px;align-items:end}
+.actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.table-wrap{width:100%;overflow:auto;border:1px solid var(--border);border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:940px;background:var(--panel)}
+th,td{padding:10px 9px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;font-size:12px}
+th{background:var(--soft);color:var(--deep);font-size:11px;position:sticky;top:0;z-index:1;white-space:nowrap}
+tbody tr:hover{background:color-mix(in srgb,var(--soft) 55%,transparent)}
+tbody tr:last-child td{border-bottom:0}
+td input[type=checkbox],th input[type=checkbox]{width:16px;height:16px;accent-color:var(--primary)}
+td select{padding:6px;min-width:115px;font-size:12px}
+.path{overflow-wrap:anywhere;word-break:break-word;max-width:340px;color:var(--deep);font-family:ui-monospace,monospace;font-size:11px}
+.app-name{font-weight:800;overflow-wrap:anywhere}
+.app-sub{color:var(--muted);font-size:11px;margin-top:3px}
+.badge{display:inline-block;padding:4px 7px;border-radius:20px;background:var(--soft);color:var(--deep);font-size:10px;font-weight:750;white-space:nowrap}
+.badge.off{background:#fce8e6;color:#a12b22}
+.table-actions{display:flex;gap:5px;flex-wrap:wrap;min-width:135px}
+.chart-box{min-height:260px}
+#categoryChart{width:100%;height:280px;display:block}
+.legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px}
+.legend-item{display:flex;justify-content:space-between;gap:8px;padding:8px;border:1px solid var(--border);border-radius:9px;font-size:12px}
+.legend-item span:first-child{overflow-wrap:anywhere}
+.category-table{min-width:480px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.wide{grid-column:1/-1}
+.note{background:var(--soft);border-radius:10px;padding:11px;font-size:12px;line-height:1.6}
+.progress{height:11px;background:var(--soft);border-radius:20px;overflow:hidden}
+.progress span{display:block;height:100%;width:0;background:var(--primary);border-radius:20px}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px}
+.kv:last-child{border-bottom:0}
+.kv strong{overflow-wrap:anywhere;text-align:right}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--deep);color:white;padding:11px 16px;border-radius:12px;box-shadow:var(--shadow);z-index:100;display:none;max-width:90%;text-align:center}
+#fileInput{display:none}
+.empty{padding:25px;text-align:center;color:var(--muted)}
+code{overflow-wrap:anywhere}
+hr{border:0;border-top:1px solid var(--border);margin:15px 0}
+@media(max-width:850px){
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .toolbar{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .grid3{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:600px){
+ .app{padding:7px}
+ h1{font-size:18px}
+ .panel{padding:10px}
+ .stats{gap:7px}
+ .stat{padding:10px}
+ .stat .number{font-size:23px}
+ .toolbar,.grid2,.grid3,.form-grid{grid-template-columns:1fr}
+ .wide{grid-column:auto}
+ .legend{grid-template-columns:1fr}
+ .nav button{padding:9px 11px;font-size:12px}
+ .header-actions{width:100%}
+ .header-actions .btn{flex:1}
+}
+@media print{
+ .nav,.header-actions,.btn,.toolbar,#toast{display:none!important}
+ .page{display:block!important}
+ body{background:white;color:black}
+ .panel{box-shadow:none;break-inside:avoid}
+}
+</style>
+</head>
+<body data-theme="forest">
+<div class="app">
+<header>
+ <div class="brand">
+  <div class="logo">🌿</div>
+  <div>
+   <h1>Swayam App Manager</h1>
+   <p>Personal LifeSuite · App registry, paths, storage and management</p>
+  </div>
+ </div>
+ <div class="header-actions">
+  <button class="btn" id="quickExport">⬇ Backup</button>
+  <button class="btn" id="quickAdd">＋ Add app</button>
+ </div>
+</header>
+
+<nav class="nav" aria-label="App Manager navigation">
+ <button class="active" data-page="dashboard">📊 Overview</button>
+ <button data-page="apps">📋 App List</button>
+ <button data-page="categories">📂 Categories</button>
+ <button data-page="editor">✏️ Add / Edit</button>
+ <button data-page="storage">💾 Storage & Size</button>
+ <button data-page="backup">♻️ Backup</button>
+ <button data-page="settings">⚙️ Settings</button>
+</nav>
+
+<main>
+<!-- OVERVIEW -->
+<section class="page active" id="page-dashboard">
+ <div class="stats">
+  <div class="stat"><div class="label">Total apps</div><div class="number" id="statTotal">0</div><div class="smalltext">Registered app entries</div></div>
+  <div class="stat"><div class="label">Enabled apps</div><div class="number" id="statEnabled">0</div><div class="smalltext">Available to launch</div></div>
+  <div class="stat"><div class="label">Categories</div><div class="number" id="statCategories">0</div><div class="smalltext">App groups</div></div>
+  <div class="stat"><div class="label">Favourites</div><div class="number" id="statFav">0</div><div class="smalltext">Starred app entries</div></div>
+ </div>
+
+ <div class="grid2">
+  <div class="panel chart-box">
+   <div class="panel-title"><h2>📊 Apps by category</h2><span class="smalltext">Live chart</span></div>
+   <canvas id="categoryChart" aria-label="Bar chart of app counts by category"></canvas>
+   <div class="smalltext">Each bar shows the number of registered apps in that category.</div>
+  </div>
+  <div class="panel">
+   <div class="panel-title"><h2>📌 Registry summary</h2></div>
+   <div class="kv"><span>Total registered apps</span><strong id="sumTotal">0</strong></div>
+   <div class="kv"><span>Enabled / disabled</span><strong id="sumStatus">0 / 0</strong></div>
+   <div class="kv"><span>Apps with a path</span><strong id="sumPaths">0</strong></div>
+   <div class="kv"><span>Apps without a path</span><strong id="sumNoPaths">0</strong></div>
+   <div class="kv"><span>Local storage used by this app</span><strong id="sumStorage">Calculating…</strong></div>
+   <div class="kv"><span>Last saved</span><strong id="lastSaved">—</strong></div>
+   <div class="actions" style="margin-top:13px">
+    <button class="btn primary" data-goto="apps">View all apps</button>
+    <button class="btn" data-goto="categories">Category report</button>
+   </div>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="panel-title"><h2>📂 Category counts</h2><span class="smalltext">Select a category to filter the app table</span></div>
+  <div class="table-wrap">
+   <table class="category-table">
+    <thead><tr><th>Category</th><th>Total apps</th><th>Enabled</th><th>Disabled</th><th>With path</th><th>Action</th></tr></thead>
+    <tbody id="dashboardCategories"></tbody>
+   </table>
+  </div>
+ </div>
+ <div class="note">Data source: the app registry saved in this browser under <code>swayam_lifesuite_v5</code>. If that registry has no apps, the supplied Swayam defaults are loaded automatically.</div>
+</section>
+
+<!-- TABLE-ONLY APP LIST -->
+<section class="page" id="page-apps">
+ <div class="panel">
+  <div class="panel-title">
+   <div><h2>📋 All apps — tabular view</h2><div class="smalltext">One row per app. Full category and path are visible in the table.</div></div>
+   <div class="actions">
+    <button class="btn primary" data-goto="editor">＋ Add app</button>
+    <button class="btn" id="refreshSizes">↻ Check page sizes</button>
+   </div>
+  </div>
+  <div class="toolbar">
+   <div class="field">
+    <label for="search">Search name, ID, path or category</label>
+    <input id="search" type="search" placeholder="🔎 Search apps…">
+   </div>
+   <div class="field">
+    <label for="filterCategory">Category</label>
+    <select id="filterCategory"><option value="all">All categories</option></select>
+   </div>
+   <div class="field">
+    <label for="filterStatus">Status</label>
+    <select id="filterStatus">
+     <option value="all">All statuses</option><option value="enabled">Enabled</option>
+     <option value="disabled">Disabled</option><option value="favorite">Favourites</option>
+     <option value="missing">Missing path</option>
+    </select>
+   </div>
+   <div class="field">
+    <label for="sortBy">Sort by</label>
+    <select id="sortBy">
+     <option value="name">Name A–Z</option><option value="nameDesc">Name Z–A</option>
+     <option value="category">Category</option><option value="newest">Newest</option>
+     <option value="size">Known page size</option>
+    </select>
+   </div>
+  </div>
+  <div class="actions" style="margin:12px 0">
+   <button class="btn small" id="selectVisible">☑ Select visible</button>
+   <button class="btn small" id="clearSelected">Clear selection</button>
+   <button class="btn small" id="clearFilters">Clear filters</button>
+   <span class="smalltext" id="listCount">0 apps</span>
+   <span class="smalltext" id="selectionCount">0 selected</span>
+  </div>
+  <div class="panel" style="background:var(--soft);box-shadow:none">
+   <div class="panel-title"><h2>Bulk actions</h2><span class="smalltext">Apply to selected rows</span></div>
+   <div class="actions">
+    <select id="bulkCategory" style="width:auto;max-width:210px"><option value="">Move to category…</option></select>
+    <button class="btn small" id="bulkMove">Move</button>
+    <button class="btn small" id="bulkEnable">Enable</button>
+    <button class="btn small" id="bulkDisable">Disable</button>
+    <button class="btn small" id="bulkFavorite">Favourite</button>
+    <button class="btn small" id="bulkUnfavorite">Unfavourite</button>
+    <button class="btn small danger" id="bulkDelete">Delete</button>
+   </div>
+  </div>
+  <div class="table-wrap">
+   <table>
+    <thead><tr>
+     <th><input type="checkbox" id="selectAll" aria-label="Select all visible rows"></th>
+     <th># / ID</th><th>App name</th><th>Category</th><th>Full app path / URL</th>
+     <th>Status</th><th>Favourite</th><th>HTML page size</th><th>Actions</th>
+    </tr></thead>
+    <tbody id="appsTable"></tbody>
+   </table>
+  </div>
+  <p class="smalltext">Page size checks attempt a same-origin fetch and may fail on GitHub Pages, offline files, or protected URLs. A failed check is shown as “Unknown”, not zero.</p>
+ </div>
+</section>
+
+<!-- CATEGORY REPORT -->
+<section class="page" id="page-categories">
+ <div class="panel">
+  <div class="panel-title"><div><h2>📂 Category management</h2><div class="smalltext">Rename, create or delete categories. Renaming updates the associated apps.</div></div></div>
+  <div class="form-grid">
+   <div class="field"><label for="newCategory">New category name</label><input id="newCategory" placeholder="e.g. Finance"></div>
+   <div class="field" style="justify-content:end"><button class="btn primary" id="addCategory">＋ Add category</button></div>
+  </div>
+ </div>
+ <div class="panel">
+  <div class="panel-title"><h2>Category report</h2><span class="smalltext" id="categoryCount">0 categories</span></div>
+  <div class="table-wrap">
+   <table class="category-table">
+    <thead><tr><th>Category</th><th>Total apps</th><th>Enabled</th><th>Disabled</th><th>Favourites</th><th>With path</th><th>Actions</th></tr></thead>
+    <tbody id="categoryTable"></tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<!-- ADD / EDIT -->
+<section class="page" id="page-editor">
+ <div class="panel">
+  <div class="panel-title"><div><h2 id="editorTitle">＋ Add new app</h2><div class="smalltext">Create a registry entry or modify an existing app.</div></div><span class="badge" id="editMode">NEW</span></div>
+  <input type="hidden" id="formId">
+  <div class="form-grid">
+   <div class="field"><label for="formName">App name *</label><input id="formName" placeholder="e.g. Travel Planner" required></div>
+   <div class="field"><label for="formIcon">Icon / emoji</label><input id="formIcon" maxlength="16" value="📱" placeholder="📱"></div>
+   <div class="field"><label for="formCategory">Category *</label><select id="formCategory"></select></div>
+   <div class="field"><label for="formUrl">App path or URL</label><input id="formUrl" placeholder="/Myself/travel/yatra.html or https://example.com"></div>
+   <div class="field"><label for="formEnabled">Status</label><select id="formEnabled"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>
+   <div class="field"><label for="formFavorite">Favourite</label><select id="formFavorite"><option value="false">No</option><option value="true">Yes</option></select></div>
+   <div class="field wide"><label for="formDescription">Description / notes</label><textarea id="formDescription" placeholder="Optional purpose, notes, or maintenance details"></textarea></div>
+  </div>
+  <div class="actions" style="margin-top:14px">
+   <button class="btn primary" id="saveApp">💾 Save app</button>
+   <button class="btn" id="resetForm">Clear form</button>
+   <button class="btn" id="duplicateCurrent" disabled>⧉ Duplicate</button>
+   <button class="btn" id="testPath">↗ Test path</button>
+   <button class="btn danger" id="deleteCurrent" disabled>Delete app</button>
+  </div>
+  <p class="smalltext" style="margin-top:12px">Supported links: relative paths such as <code>/Myself/example.html</code>, <code>./example.html</code>, <code>../example.html</code>, and HTTP(S) URLs. Paths are registry data; changing a path does not move or rename a real HTML file.</p>
+ </div>
+ <div class="panel">
+  <h2>Selected app details</h2>
+  <div class="kv"><span>App ID</span><strong id="detailId">—</strong></div>
+  <div class="kv"><span>Created</span><strong id="detailCreated">—</strong></div>
+  <div class="kv"><span>Page size</span><strong id="detailSize">Unknown</strong></div>
+  <div class="kv"><span>Path</span><strong id="detailPath">—</strong></div>
+ </div>
+</section>
+
+<!-- STORAGE AND FILE SIZES -->
+<section class="page" id="page-storage">
+ <div class="stats">
+  <div class="stat"><div class="label">App registry JSON</div><div class="number" id="registrySize">—</div><div class="smalltext">Estimated serialized data size</div></div>
+  <div class="stat"><div class="label">Local storage usage</div><div class="number" id="localUsage">—</div><div class="smalltext">This app's storage key</div></div>
+  <div class="stat"><div class="label">Known HTML sizes</div><div class="number" id="knownFiles">0</div><div class="smalltext">Successfully checked paths</div></div>
+  <div class="stat"><div class="label">Unknown HTML sizes</div><div class="number" id="unknownFiles">0</div><div class="smalltext">Not yet measurable</div></div>
+ </div>
+ <div class="panel">
+  <div class="panel-title"><h2>💾 Browser storage</h2><button class="btn" id="refreshStorage">↻ Refresh usage</button></div>
+  <div class="kv"><span>App registry storage key</span><strong>swayam_lifesuite_v5</strong></div>
+  <div class="kv"><span>Serialized registry size</span><strong id="storageJson">—</strong></div>
+  <div class="kv"><span>Estimated UTF-16 string storage</span><strong id="storageUtf16">—</strong></div>
+  <div class="kv"><span>All localStorage entries (approx.)</span><strong id="storageAll">—</strong></div>
+  <div class="kv"><span>Browser storage estimate</span><strong id="storageQuota">Not available</strong></div>
+  <div class="note" style="margin-top:12px">Browser quota is browser-managed and varies by device. The figures shown here are estimates, not a guarantee of remaining disk space. This page cannot inspect private browser storage or other websites' localStorage.</div>
+ </div>
+ <div class="panel">
+  <div class="panel-title"><h2>📄 HTML page-size report</h2><button class="btn primary" id="checkAllSizes">Check all paths</button></div>
+  <p class="smalltext">Checks same-origin HTML paths using fetch when permitted. Results are approximate transfer sizes, not necessarily the exact size on disk. Cross-origin URLs and offline pages may not be measurable.</p>
+  <div class="table-wrap">
+   <table>
+    <thead><tr><th>App</th><th>Path</th><th>Size</th><th>Check result</th><th>Action</th></tr></thead>
+    <tbody id="sizeTable"></tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<!-- BACKUP -->
+<section class="page" id="page-backup">
+ <div class="panel">
+  <div class="panel-title"><h2>♻️ Backup and restore</h2></div>
+  <p class="smalltext">Export app records, categories, preferences and recent history. Backups are JSON/CSV files you can keep separately.</p>
+  <div class="actions">
+   <button class="btn primary" id="exportBackup">⬇ Full JSON backup</button>
+   <button class="btn" id="exportApps">⬇ Apps JSON</button>
+   <button class="btn" id="exportCsv">⬇ Apps CSV</button>
+   <button class="btn" id="importBackup">⬆ Import JSON / CSV</button>
+   <input type="file" id="importFile" accept=".json,.csv,application/json,text/csv" hidden>
+  </div>
+  <hr>
+  <div class="field"><label for="backupText">Backup JSON preview / paste JSON to restore</label><textarea id="backupText" style="min-height:190px;font-family:monospace" placeholder="Click Preview backup, or paste a JSON backup here…"></textarea></div>
+  <div class="actions" style="margin-top:10px">
+   <button class="btn" id="previewBackup">Preview backup</button>
+   <button class="btn primary" id="restoreText">Restore pasted JSON</button>
+   <button class="btn" id="copyBackup">Copy JSON</button>
+  </div>
+  <p class="smalltext" id="backupInfo" style="margin-top:10px"></p>
+ </div>
+ <div class="panel">
+  <h2>⚠️ Reset registry</h2>
+  <p class="smalltext">Reset replaces current app and category data with the supplied default apps. Export a backup first if you need your custom records.</p>
+  <button class="btn danger" id="resetDefaults">Reset to supplied defaults</button>
+ </div>
+</section>
+
+<!-- SETTINGS -->
+<section class="page" id="page-settings">
+ <div class="panel">
+  <h2>🎨 Appearance</h2>
+  <div class="form-grid" style="margin-top:12px">
+   <div class="field"><label for="themeSelect">Nature theme</label>
+    <select id="themeSelect">
+     <option value="forest">🌲 Forest</option><option value="ocean">🌊 Ocean</option>
+     <option value="meadow">🌿 Meadow</option><option value="mint">🍃 Mint</option>
+     <option value="sunset">🌇 Sunset</option><option value="lavender">🪻 Lavender</option>
+     <option value="night">🌙 Night</option><option value="snow">❄️ Snow</option>
+     <option value="water">💧 Water</option><option value="fire">🔥 Fire</option><option value="earth">🌍 Earth</option>
+    </select>
+   </div>
+   <div class="field"><label for="fontSelect">Text size</label>
+    <select id="fontSelect"><option value="13px">Small</option><option value="14px">Normal</option><option value="16px">Large</option><option value="18px">Extra large</option></select>
+   </div>
+  </div>
+  <button class="btn primary" id="saveSettings" style="margin-top:12px">Save preferences</button>
+ </div>
+ <div class="panel">
+  <h2>ℹ️ About this manager</h2>
+  <div class="kv"><span>Storage key</span><strong>swayam_lifesuite_v5</strong></div>
+  <div class="kv"><span>Default app records</span><strong>26</strong></div>
+  <div class="kv"><span>Default categories</span><strong>10</strong></div>
+  <div class="kv"><span>App list display</span><strong>Table only</strong></div>
+  <div class="kv"><span>External libraries</span><strong>None required</strong></div>
+  <div class="kv"><span>Data location</span><strong>This browser / device</strong></div>
+  <div class="note" style="margin-top:12px">For a GitHub Pages deployment, keep the app path aligned with the actual file location. For example, <code>/Myself/school/idea.html</code> assumes the site is hosted at the domain root. If your GitHub Pages site is a project site, use the correct project prefix such as <code>/Myself/school/idea.html</code> only if that is the actual published path.</div>
+ </div>
+</section>
+</main>
+<footer class="smalltext" style="text-align:center;padding:15px">Swayam App Manager · Local-first registry · Table-based management</footer>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+const STORAGE_KEY="swayam_lifesuite_v5";
+const THEMES=["forest","ocean","meadow","mint","sunset","lavender","night","snow","water","fire","earth"];
+const DEFAULT_GROUPS=["Personal","Family","Work","Health","Learning","Tools","Creativity","Travel","Entertainment","Other"];
+const DEFAULT_APPS=[
+{id:"thoughts",name:"Every Day Thoughts",icon:"☕",category:"Personal",url:"/Myself/school/idea.html"},
+{id:"festivals",name:"Indian Festivals",icon:"🙏",category:"Personal",url:"/Myself/festival/navratri.html"},
+{id:"todo",name:"To-do List",icon:"✏️",category:"Personal",url:"/Myself/school/todo1.html"},
+{id:"quicknotes",name:"Quick Notes",icon:"⚡",category:"Personal",url:"/Myself/util/Util_quick.html"},
+{id:"lifehome",name:"Life & Home",icon:"🏠",category:"Family",url:"/Myself/util/Util_fin.html"},
+{id:"career",name:"Work & Career",icon:"💼",category:"Work",url:"/Myself/util/Util_karya.html"},
+{id:"kids",name:"Kids",icon:"👨‍🎓",category:"Family",url:"/Myself/util/Util_laxmi.html"},
+{id:"safety",name:"Women & Safety",icon:"👩",category:"Family",url:"/Myself/nari/nariraksha.html"},
+{id:"health",name:"Health & Fitness",icon:"🧘",category:"Health",url:"/Myself/util/Util_yog.html"},
+{id:"learning",name:"Learning",icon:"📚",category:"Learning",url:"/Myself/util/Util_sutra.html"},
+{id:"smarttools",name:"Smart Tools",icon:"🛠️",category:"Tools",url:"/Myself/util/Util_smart.html"},
+{id:"creativity",name:"Creativity",icon:"🎨",category:"Creativity",url:"/Myself/util/Util_chitra.html"},
+{id:"sanskar",name:"Sanskar",icon:"🌱",category:"Personal",url:"/Myself/util/Util_sanskar.html"},
+{id:"relax",name:"Relax & Enjoy",icon:"🎮",category:"Entertainment",url:"/Myself/util/Util_ranjan.html"},
+{id:"language",name:"Language Learning",icon:"🌐",category:"Learning",url:"/Myself/util/Util_lang.html"},
+{id:"nav1",name:"Navigation",icon:"🧭",category:"Travel",url:"/Myself/util/Util_planet.html"},
+{id:"nav2",name:"Tourist Places",icon:"🏞️",category:"Travel",url:"/Myself/travel/yatri.html"},
+{id:"nav3",name:"Travel Planner",icon:"🧳",category:"Travel",url:"/Myself/travel/yatra.html"},
+{id:"onetrack",name:"One Track",icon:"🎯",category:"Tools",url:"/Myself/age/Aug26_fit.html"},
+{id:"vendor",name:"Vendor",icon:"📦",category:"Tools",url:"/Myself/apps/vendor.html"},
+{id:"issuetrack",name:"Issue Tracker",icon:"🧰",category:"Tools",url:"/Myself/apps/issuetracker.html"},
+{id:"school",name:"School",icon:"🏫",category:"Learning",url:"/Myself/school/school.html"},
+{id:"institute",name:"Institute",icon:"🎓",category:"Learning",url:"/Myself/apps/institute.html"},
+{id:"clinic",name:"Clinic",icon:"🏥",category:"Health",url:"/Myself/clinic/clinic.html"},
+{id:"pivot",name:"Pivot Chart",icon:"📊",category:"Tools",url:"/Myself/img/PivotChart.html"}
+];
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const bytes=n=>{if(!Number.isFinite(n)||n<0)return"Unknown";if(n<1024)return n+" B";if(n<1024*1024)return(n/1024).toFixed(1)+" KB";return(n/1024/1024).toFixed(2)+" MB"};
+const dateText=v=>v?new Date(v).toLocaleString():"—";
+let toastTimer=null,selected=new Set(),pageSizes={},editingId=null,lastSaved=null;
+function defaults(){return{groups:[...DEFAULT_GROUPS],apps:DEFAULT_APPS.map((a,i)=>({...a,enabled:true,favorite:false,created:Date.now()+i,description:""})),recent:[],theme:"forest",layout:"grid",fontSize:"14px",selectedGroup:"all",categoryFilter:"all",managerLastSaved:Date.now()}}
+function normalize(raw){
+ const base=defaults(),d=raw&&typeof raw==="object"?raw:{};
+ let groups=Array.isArray(d.groups)?d.groups.filter(x=>typeof x==="string"&&x.trim()):base.groups;
+ groups=[...new Set(groups.map(x=>x.trim()))];if(!groups.length)groups=["Other"];
+ let apps=Array.isArray(d.apps)?d.apps:base.apps;
+ apps=apps.filter(a=>a&&typeof a.name==="string"&&a.name.trim()).map((a,i)=>({
+  id:String(a.id||("app_"+i+"_"+Date.now().toString(36))),
+  name:String(a.name).trim(),icon:String(a.icon||"📱"),
+  category:groups.includes(a.category)?a.category:(groups.includes("Other")?"Other":groups[0]),
+  url:String(a.url||a.path||""),favorite:!!a.favorite,enabled:a.enabled!==false,
+  created:Number(a.created)||Date.now(),description:String(a.description||a.notes||"")
+ }));
+ return{...base,...d,groups,apps,recent:Array.isArray(d.recent)?d.recent:[],
+ theme:THEMES.includes(d.theme)?d.theme:"forest",
+ fontSize:["13px","14px","16px","18px"].includes(d.fontSize)?d.fontSize:"14px"};
+}
+function loadState(){
+ try{
+  const raw=localStorage.getItem(STORAGE_KEY);
+  if(!raw)return defaults();
+  const parsed=JSON.parse(raw);
+  // If the existing key is present but has no apps, initialize the requested defaults.
+  if(!parsed||!Array.isArray(parsed.apps)||parsed.apps.length===0)return defaults();
+  return normalize(parsed);
+ }catch(e){return defaults()}
+}
+let state=loadState();
+function saveState(){
+ state.managerLastSaved=Date.now();
+ try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));lastSaved=state.managerLastSaved}
+ catch(e){toast("Save failed: browser storage may be full.");return false}
+ updateSummary();return true;
+}
+function toast(msg){
+ $("toast").textContent=msg;$("toast").style.display="block";
+ clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").style.display="none",2600);
+}
+function groups(){return [...new Set(state.groups)]}
+function newId(){return"app_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,8)}
+function setPage(name){
+ document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===name));
+ document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+name));
+ if(name==="dashboard")renderDashboard();
+ if(name==="apps")renderApps();
+ if(name==="categories")renderCategories();
+ if(name==="storage")renderStorage();
+ if(name==="settings")loadSettings();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.page)));
+document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.goto)));
+function setTheme(){
+ document.body.dataset.theme=state.theme||"forest";
+ document.documentElement.style.setProperty("--font",state.fontSize||"14px");
+}
+function fillCategorySelect(id,includeAll=false,firstLabel="Choose category"){
+ const el=$(id),old=el.value;
+ el.innerHTML=(includeAll?'<option value="all">All categories</option>':'')+
+  (!includeAll?'<option value="">'+esc(firstLabel)+'</option>':'')+
+  groups().map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join("");
+ if([...el.options].some(o=>o.value===old))el.value=old;
+}
+function fillAllCategorySelects(){
+ fillCategorySelect("filterCategory",true);
+ fillCategorySelect("formCategory",false,"Choose category");
+ fillCategorySelect("bulkCategory",false,"Move to category…");
+}
+function updateSummary(){
+ const total=state.apps.length,enabled=state.apps.filter(a=>a.enabled).length;
+ $("statTotal").textContent=total;$("statEnabled").textContent=enabled;
+ $("statCategories").textContent=groups().length;
+ $("statFav").textContent=state.apps.filter(a=>a.favorite).length;
+ $("sumTotal").textContent=total;
+ $("sumStatus").textContent=enabled+" / "+(total-enabled);
+ $("sumPaths").textContent=state.apps.filter(a=>a.url.trim()).length;
+ $("sumNoPaths").textContent=state.apps.filter(a=>!a.url.trim()).length;
+ $("sumStorage").textContent=bytes(new Blob([JSON.stringify(state)]).size);
+ $("lastSaved").textContent=dateText(state.managerLastSaved||lastSaved);
+}
+function categoryCounts(){
+ return groups().map(g=>{
+  const apps=state.apps.filter(a=>a.category===g);
+  return{group:g,total:apps.length,enabled:apps.filter(a=>a.enabled).length,
+   disabled:apps.filter(a=>!a.enabled).length,favorite:apps.filter(a=>a.favorite).length,
+   paths:apps.filter(a=>a.url.trim()).length};
+ });
+}
+function renderDashboard(){
+ updateSummary();
+ $("dashboardCategories").innerHTML=categoryCounts().map(c=>`<tr>
+  <td><strong>${esc(c.group)}</strong></td><td>${c.total}</td><td>${c.enabled}</td>
+  <td>${c.disabled}</td><td>${c.paths}</td><td><button class="btn small" data-filter-cat="${esc(c.group)}">View apps</button></td>
+ </tr>`).join("")||'<tr><td colspan="6" class="empty">No categories</td></tr>';
+ drawChart();
+}
+function drawChart(){
+ const canvas=$("categoryChart"),rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+ const width=Math.max(280,rect.width||500),height=280;
+ canvas.width=width*dpr;canvas.height=height*dpr;
+ const ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);
+ const css=getComputedStyle(document.body),primary=css.getPropertyValue("--primary").trim(),muted=css.getPropertyValue("--muted").trim(),border=css.getPropertyValue("--border").trim();
+ ctx.clearRect(0,0,width,height);
+ const data=categoryCounts(),max=Math.max(1,...data.map(x=>x.total));
+ const left=34,right=12,top=14,bottom=65,plotH=height-top-bottom,plotW=width-left-right;
+ ctx.font="11px system-ui";ctx.textAlign="right";ctx.textBaseline="middle";
+ for(let i=0;i<=4;i++){const y=top+plotH-i*plotH/4;ctx.strokeStyle=border;ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(width-right,y);ctx.stroke();ctx.fillStyle=muted;ctx.fillText(String(Math.round(max*i/4)),left-7,y)}
+ const slot=plotW/Math.max(1,data.length),bw=Math.min(35,slot*.58);
+ data.forEach((d,i)=>{
+  const x=left+i*slot+(slot-bw)/2,h=d.total/max*plotH,y=top+plotH-h;
+  ctx.fillStyle=primary;ctx.beginPath();
+  const radius=Math.min(5,bw/2);ctx.roundRect(x,y,bw,Math.max(2,h),[radius,radius,0,0]);ctx.fill();
+  ctx.fillStyle=muted;ctx.textAlign="center";ctx.textBaseline="bottom";ctx.fillText(String(d.total),x+bw/2,Math.max(top+10,y-3));
+  ctx.save();ctx.translate(x+bw/2,top+plotH+8);ctx.rotate(-Math.PI/4);ctx.textAlign="right";ctx.textBaseline="middle";ctx.fillStyle=muted;ctx.fillText(d.group,0,0);ctx.restore();
+ });
+}
+$("dashboardCategories").addEventListener("click",e=>{
+ const b=e.target.closest("[data-filter-cat]");if(!b)return;
+ setPage("apps");$("filterCategory").value=b.dataset.filterCat;renderApps();
+});
+window.addEventListener("resize",()=>{if($("page-dashboard").classList.contains("active"))drawChart()});
+
+function filteredApps(){
+ const q=$("search").value.trim().toLowerCase(),cat=$("filterCategory").value,status=$("filterStatus").value,sort=$("sortBy").value;
+ let arr=state.apps.filter(a=>[a.name,a.id,a.icon,a.category,a.url,a.description].some(v=>String(v||"").toLowerCase().includes(q)));
+ if(cat&&cat!=="all")arr=arr.filter(a=>a.category===cat);
+ if(status==="enabled")arr=arr.filter(a=>a.enabled);
+ if(status==="disabled")arr=arr.filter(a=>!a.enabled);
+ if(status==="favorite")arr=arr.filter(a=>a.favorite);
+ if(status==="missing")arr=arr.filter(a=>!a.url.trim());
+ arr.sort((a,b)=>{
+  if(sort==="nameDesc")return b.name.localeCompare(a.name);
+  if(sort==="category")return a.category.localeCompare(b.category)||a.name.localeCompare(b.name);
+  if(sort==="newest")return b.created-a.created;
+  if(sort==="size")return(sizeValue(b.id)-sizeValue(a.id))||a.name.localeCompare(b.name);
+  return a.name.localeCompare(b.name);
+ });
+ return arr;
+}
+function sizeValue(id){const n=pageSizes[id]?.bytes;return Number.isFinite(n)?n:-1}
+function renderApps(){
+ fillAllCategorySelects();
+ const arr=filteredApps();
+ $("listCount").textContent=`${arr.length} of ${state.apps.length} apps`;
+ $("selectionCount").textContent=`${selected.size} selected`;
+ $("selectAll").checked=arr.length>0&&arr.every(a=>selected.has(a.id));
+ $("appsTable").innerHTML=arr.map((a,i)=>`<tr>
+  <td><input type="checkbox" data-select-id="${esc(a.id)}" ${selected.has(a.id)?"checked":""} aria-label="Select ${esc(a.name)}"></td>
+  <td><div>${i+1}</div><div class="app-sub">${esc(a.id)}</div></td>
+  <td><div class="app-name">${esc(a.icon)} ${esc(a.name)}</div><div class="app-sub">${esc(a.description||"")}</div></td>
+  <td><select data-row-category="${esc(a.id)}" aria-label="Category for ${esc(a.name)}">${groups().map(g=>`<option value="${esc(g)}" ${g===a.category?"selected":""}>${esc(g)}</option>`).join("")}</select></td>
+  <td><div class="path">${esc(a.url||"No path saved")}</div><div class="app-sub">${a.url?(/^(https?:)?\/\//i.test(a.url)?"URL":"Relative / site path"):"Add a path to launch this app"}</div></td>
+  <td><span class="badge ${a.enabled?"":"off"}">${a.enabled?"Enabled":"Disabled"}</span></td>
+  <td>${a.favorite?"⭐ Yes":"—"}</td>
+  <td><strong>${esc(pageSizes[a.id]?.label||"Not checked")}</strong><div class="app-sub">${esc(pageSizes[a.id]?.status||"")}</div></td>
+  <td><div class="table-actions">
+   <button class="btn small" data-action="edit" data-id="${esc(a.id)}">Edit</button>
+   <button class="btn small" data-action="open" data-id="${esc(a.id)}">Open</button>
+   <button class="btn small" data-action="duplicate" data-id="${esc(a.id)}">Copy</button>
+   <button class="btn small" data-action="toggle" data-id="${esc(a.id)}">${a.enabled?"Disable":"Enable"}</button>
+   <button class="btn small danger" data-action="delete" data-id="${esc(a.id)}">Delete</button>
+  </div></td>
+ </tr>`).join("")||'<tr><td colspan="9" class="empty">No apps match the current filters.</td></tr>';
+}
+["search","filterCategory","filterStatus","sortBy"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",renderApps));
+$("clearFilters").addEventListener("click",()=>{$("search").value="";$("filterCategory").value="all";$("filterStatus").value="all";$("sortBy").value="name";renderApps()});
+$("selectVisible").addEventListener("click",()=>{filteredApps().forEach(a=>selected.add(a.id));renderApps()});
+$("clearSelected").addEventListener("click",()=>{selected.clear();renderApps()});
+$("selectAll").addEventListener("change",e=>{filteredApps().forEach(a=>e.target.checked?selected.add(a.id):selected.delete(a.id));renderApps()});
+$("appsTable").addEventListener("change",e=>{
+ const cb=e.target.closest("[data-select-id]");
+ if(cb){cb.checked?selected.add(cb.dataset.selectId):selected.delete(cb.dataset.selectId);renderApps();return}
+ const sel=e.target.closest("[data-row-category]");
+ if(sel){const a=state.apps.find(x=>x.id===sel.dataset.rowCategory);if(a){a.category=sel.value;saveState();renderAll();toast("Category updated.")}}
+});
+$("appsTable").addEventListener("click",e=>{
+ const b=e.target.closest("[data-action]");if(!b)return;
+ const {action,id}=b.dataset;
+ if(action==="edit")loadEditor(id);
+ if(action==="open")openApp(id);
+ if(action==="duplicate")duplicateApp(id);
+ if(action==="toggle")toggleEnabled(id);
+ if(action==="delete")deleteApp(id);
+});
+function selectedApps(){return state.apps.filter(a=>selected.has(a.id))}
+function bulk(action){
+ const arr=selectedApps();if(!arr.length){toast("Select at least one app.");return}
+ if(action==="delete"){
+  if(!confirm(`Permanently delete ${arr.length} selected app(s)?`))return;
+  const ids=new Set(arr.map(a=>a.id));state.apps=state.apps.filter(a=>!ids.has(a.id));state.recent=state.recent.filter(id=>!ids.has(id));selected.clear();
+ }else if(action==="move"){
+  const cat=$("bulkCategory").value;if(!cat){toast("Choose a destination category.");return}
+  arr.forEach(a=>a.category=cat);
+ }else if(action==="enable")arr.forEach(a=>a.enabled=true);
+ else if(action==="disable")arr.forEach(a=>a.enabled=false);
+ else if(action==="favorite")arr.forEach(a=>a.favorite=true);
+ else if(action==="unfavorite")arr.forEach(a=>a.favorite=false);
+ saveState();renderAll();toast("Bulk action completed.");
+}
+$("bulkMove").addEventListener("click",()=>bulk("move"));
+$("bulkEnable").addEventListener("click",()=>bulk("enable"));
+$("bulkDisable").addEventListener("click",()=>bulk("disable"));
+$("bulkFavorite").addEventListener("click",()=>bulk("favorite"));
+$("bulkUnfavorite").addEventListener("click",()=>bulk("unfavorite"));
+$("bulkDelete").addEventListener("click",()=>bulk("delete"));
+
+function clearForm(){
+ editingId=null;
+ ["formId"].forEach(id=>$(id).value="");
+ $("formName").value="";$("formIcon").value="📱";$("formUrl").value="";
+ $("formEnabled").value="true";$("formFavorite").value="false";$("formDescription").value="";
+ $("editorTitle").textContent="＋ Add new app";$("editMode").textContent="NEW";
+ $("saveApp").textContent="💾 Save app";$("duplicateCurrent").disabled=true;$("deleteCurrent").disabled=true;
+ $("detailId").textContent="—";$("detailCreated").textContent="—";$("detailSize").textContent="Unknown";$("detailPath").textContent="—";
+}
+function loadEditor(id){
+ const a=state.apps.find(x=>x.id===id);if(!a)return;
+ editingId=id;fillAllCategorySelects();
+ $("formId").value=a.id;$("formName").value=a.name;$("formIcon").value=a.icon||"📱";
+ $("formCategory").value=a.category;$("formUrl").value=a.url||"";
+ $("formEnabled").value=String(a.enabled);$("formFavorite").value=String(a.favorite);
+ $("formDescription").value=a.description||"";
+ $("editorTitle").textContent="✏️ Edit: "+a.name;$("editMode").textContent="EDIT";
+ $("saveApp").textContent="💾 Update app";$("duplicateCurrent").disabled=false;$("deleteCurrent").disabled=false;
+ $("detailId").textContent=a.id;$("detailCreated").textContent=dateText(a.created);
+ $("detailSize").textContent=pageSizes[a.id]?.label||"Unknown";$("detailPath").textContent=a.url||"No path";
+ setPage("editor");
+}
+function saveForm(){
+ const name=$("formName").value.trim(),category=$("formCategory").value,url=$("formUrl").value.trim();
+ if(!name){toast("Enter an app name.");$("formName").focus();return}
+ if(!category){toast("Create or choose a category.");return}
+ if(url&&!/^(https?:\/\/|\/|\.\/|\.\.\/|mailto:|tel:)/i.test(url)){toast("Use https:// or a relative path such as /Myself/example.html.");return}
+ const data={name,icon:$("formIcon").value.trim()||"📱",category,url,
+  enabled:$("formEnabled").value==="true",favorite:$("formFavorite").value==="true",
+  description:$("formDescription").value.trim()};
+ if(editingId){
+  const a=state.apps.find(x=>x.id===editingId);if(a)Object.assign(a,data);
+  toast("App updated.");
+ }else{
+  const id=newId();state.apps.push({id,...data,created:Date.now()});editingId=id;toast("App added.");
+ }
+ saveState();renderAll();loadEditor(editingId);
+}
+$("saveApp").addEventListener("click",saveForm);
+$("resetForm").addEventListener("click",clearForm);
+$("formName").addEventListener("keydown",e=>{if(e.key==="Enter")saveForm()});
+$("quickAdd").addEventListener("click",()=>{clearForm();fillAllCategorySelects();setPage("editor")});
+$("duplicateCurrent").addEventListener("click",()=>{if(editingId)duplicateApp(editingId)});
+$("deleteCurrent").addEventListener("click",()=>{if(editingId)deleteApp(editingId)});
+$("testPath").addEventListener("click",()=>{const path=$("formUrl").value.trim();if(!path){toast("Enter a path first.");return}openUrl(path)});
+function openUrl(path){
+ try{
+  const url=new URL(path,location.href);
+  if(!["http:","https:","mailto:","tel:"].includes(url.protocol)){toast("Unsupported URL scheme.");return}
+  if(url.protocol==="mailto:"||url.protocol==="tel:")location.href=url.href;
+  else window.open(url.href,"_blank","noopener");
+ }catch(e){toast("Invalid path or URL.")}
+}
+function openApp(id){
+ const a=state.apps.find(x=>x.id===id);if(!a)return;
+ if(!a.enabled){toast("This app is disabled.");return}
+ if(!a.url){toast("This app has no path. Add one in the editor.");loadEditor(id);return}
+ state.recent=[id,...state.recent.filter(x=>x!==id)].slice(0,20);saveState();openUrl(a.url);
+}
+function toggleEnabled(id){
+ const a=state.apps.find(x=>x.id===id);if(!a)return;
+ a.enabled=!a.enabled;saveState();renderAll();toast(a.enabled?"App enabled.":"App disabled.");
+}
+function toggleFavorite(id){
+ const a=state.apps.find(x=>x.id===id);if(!a)return;
+ a.favorite=!a.favorite;saveState();renderAll();
+}
+function duplicateApp(id){
+ const a=state.apps.find(x=>x.id===id);if(!a)return;
+ const copy={...a,id:newId(),name:a.name+" (Copy)",created:Date.now()};
+ state.apps.push(copy);saveState();renderAll();loadEditor(copy.id);toast("App duplicated.");
+}
+function deleteApp(id){
+ const a=state.apps.find(x=>x.id===id);if(!a)return;
+ if(!confirm(`Delete "${a.name}" from the app registry? This does not delete the actual HTML file.`))return;
+ state.apps=state.apps.filter(x=>x.id!==id);state.recent=state.recent.filter(x=>x!==id);selected.delete(id);
+ if(editingId===id)clearForm();
+ saveState();renderAll();toast("App entry deleted.");
+}
+function renderCategories(){
+ $("categoryCount").textContent=groups().length+" categories";
+ $("categoryTable").innerHTML=categoryCounts().map(c=>`<tr>
+  <td><strong>${esc(c.group)}</strong></td><td>${c.total}</td><td>${c.enabled}</td><td>${c.disabled}</td><td>${c.favorite}</td><td>${c.paths}</td>
+  <td><div class="table-actions"><button class="btn small" data-cat-action="view" data-cat="${esc(c.group)}">View apps</button><button class="btn small" data-cat-action="rename" data-cat="${esc(c.group)}">Rename</button><button class="btn small danger" data-cat-action="delete" data-cat="${esc(c.group)}">Delete</button></div></td>
+ </tr>`).join("")||'<tr><td colspan="7" class="empty">No categories.</td></tr>';
+ fillAllCategorySelects();
+}
+$("categoryTable").addEventListener("click",e=>{
+ const b=e.target.closest("[data-cat-action]");if(!b)return;
+ const name=b.dataset.cat,act=b.dataset.catAction;
+ if(act==="view"){setPage("apps");$("filterCategory").value=name;renderApps()}
+ if(act==="rename")renameCategory(name);
+ if(act==="delete")deleteCategory(name);
+});
+function addCategory(){
+ const name=$("newCategory").value.trim();if(!name){toast("Enter a category name.");return}
+ if(groups().some(g=>g.toLowerCase()===name.toLowerCase())){toast("That category already exists.");return}
+ state.groups.push(name);$("newCategory").value="";saveState();renderAll();toast("Category added.");
+}
+$("addCategory").addEventListener("click",addCategory);
+$("newCategory").addEventListener("keydown",e=>{if(e.key==="Enter")addCategory()});
+function renameCategory(old){
+ const next=prompt("Rename category:",old);if(next===null)return;
+ const name=next.trim();if(!name){toast("Category name cannot be empty.");return}
+ if(name!==old&&groups().some(g=>g.toLowerCase()===name.toLowerCase())){toast("That category already exists.");return}
+ state.groups=state.groups.map(g=>g===old?name:g);state.apps.forEach(a=>{if(a.category===old)a.category=name});
+ saveState();renderAll();toast("Category renamed.");
+}
+function deleteCategory(name){
+ const dest=groups().filter(g=>g!==name);
+ if(!dest.length){toast("Add another category before deleting the last category.");return}
+ const n=state.apps.filter(a=>a.category===name).length;
+ const target=prompt(`"${name}" contains ${n} app(s).\nEnter the category to move them into:\n${dest.join(", ")}`,dest.includes("Other")?"Other":dest[0]);
+ if(target===null)return;
+ if(!dest.includes(target)){toast("Choose an existing destination category.");return}
+ if(!confirm(`Delete "${name}" and move its ${n} app(s) to "${target}"?`))return;
+ state.apps.forEach(a=>{if(a.category===name)a.category=target});
+ state.groups=state.groups.filter(g=>g!==name);saveState();renderAll();toast("Category deleted.");
+}
+function localStorageBytes(){
+ let total=0;
+ try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i),v=localStorage.getItem(k)||"";total+=(k.length+v.length)*2}}
+ catch(e){}
+ return total;
+}
+async function renderStorage(){
+ const json=JSON.stringify(state),bytesJson=new Blob([json]).size;
+ $("registrySize").textContent=bytes(bytesJson);$("localUsage").textContent=bytes((json.length)*2);
+ $("storageJson").textContent=bytes(bytesJson);$("storageUtf16").textContent=bytes(json.length*2);
+ $("storageAll").textContent=bytes(localStorageBytes());
+ const known=Object.values(pageSizes).filter(x=>Number.isFinite(x.bytes)).length;
+ $("knownFiles").textContent=known;$("unknownFiles").textContent=Math.max(0,state.apps.filter(a=>a.url&&!/^(https?:\/\/|mailto:|tel:)/i.test(a.url)).length-known);
+ if(navigator.storage&&navigator.storage.estimate){
+  try{const e=await navigator.storage.estimate();$("storageQuota").textContent=`${bytes(e.usage||0)} used of ${bytes(e.quota||0)} estimated quota`}
+  catch(e){$("storageQuota").textContent="Unavailable"}
+ }else $("storageQuota").textContent="Storage estimate API unavailable";
+ $("sizeTable").innerHTML=state.apps.map(a=>`<tr><td><strong>${esc(a.name)}</strong><div class="app-sub">${esc(a.id)}</div></td><td><div class="path">${esc(a.url||"No path")}</div></td><td>${esc(pageSizes[a.id]?.label||"Unknown")}</td><td>${esc(pageSizes[a.id]?.status||"Not checked")}</td><td><button class="btn small" data-check-size="${esc(a.id)}">Check</button></td></tr>`).join("")||'<tr><td colspan="5" class="empty">No apps.</td></tr>';
+}
+$("refreshStorage").addEventListener("click",()=>renderStorage().then(()=>toast("Storage figures refreshed.")));
+$("refreshSizes").addEventListener("click",()=>checkAllSizes());
+$("checkAllSizes").addEventListener("click",()=>checkAllSizes());
+$("sizeTable").addEventListener("click",async e=>{
+ const b=e.target.closest("[data-check-size]");if(!b)return;
+ await checkSize(b.dataset.checkSize);renderStorage();renderApps();
+});
+async function checkSize(id){
+ const a=state.apps.find(x=>x.id===id);if(!a||!a.url){pageSizes[id]={label:"No path",status:"No path saved"};return}
+ if(/^(mailto:|tel:)/i.test(a.url)){pageSizes[id]={label:"N/A",status:"Not an HTML page"};return}
+ let url;
+ try{url=new URL(a.url,location.href)}catch(e){pageSizes[id]={label:"Unknown",status:"Invalid URL"};return}
+ if(url.origin!==location.origin){pageSizes[id]={label:"Unknown",status:"Cross-origin; size unavailable"};return}
+ pageSizes[id]={label:"Checking…",status:"Fetching headers/content"};
+ try{
+  let response=await fetch(url.href,{method:"HEAD",cache:"no-store"});
+  let length=response.headers.get("content-length");
+  if(!response.ok||!length||length==="0"){
+   response=await fetch(url.href,{method:"GET",cache:"no-store"});
+   if(!response.ok)throw Error("HTTP "+response.status);
+   const blob=await response.blob();length=blob.size;
+  }
+  const n=Number(length);
+  if(!Number.isFinite(n))throw Error("Size not supplied");
+  pageSizes[id]={bytes:n,label:bytes(n),status:"Checked "+new Date().toLocaleTimeString()};
+ }catch(e){pageSizes[id]={label:"Unknown",status:"Unavailable: "+String(e.message||"fetch blocked").slice(0,75)}}
+}
+async function checkAllSizes(){
+ const list=state.apps.filter(a=>a.url);
+ if(!list.length){toast("No app paths to check.");return}
+ toast("Checking app page sizes…");
+ for(let i=0;i<list.length;i++){await checkSize(list[i].id);if(i%4===3){renderApps();renderStorage()}}
+ renderApps();renderStorage();toast("Page-size checks finished. Unknown means the browser could not measure it.");
+}
+function download(name,content,type){
+ const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);
+}
+function exportBackup(){
+ const payload={...state,exportedAt:new Date().toISOString(),format:"Swayam App Manager backup"};
+ download("swayam-app-manager-backup.json",JSON.stringify(payload,null,2),"application/json");
+ toast("Full backup exported.");
+}
+function exportApps(){download("swayam-apps.json",JSON.stringify(state.apps,null,2),"application/json");toast("Apps exported.")}
+function exportCSV(){
+ const cols=["id","name","icon","category","url","enabled","favorite","created","description"];
+ const csv=[cols,...state.apps.map(a=>cols.map(k=>a[k]??""))].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\r\n");
+ download("swayam-apps.csv","\uFEFF"+csv,"text/csv;charset=utf-8");toast("CSV exported.");
+}
+function parseCSV(text){
+ const rows=[];let row=[],cell="",quoted=false;text=text.replace(/^\uFEFF/,"");
+ for(let i=0;i<text.length;i++){
+  const c=text[i],next=text[i+1];
+  if(c==='"'&&quoted&&next==='"'){cell+='"';i++}
+  else if(c==='"')quoted=!quoted;
+  else if(c===","&&!quoted){row.push(cell);cell=""}
+  else if((c==="\n"||c==="\r")&&!quoted){if(c==="\r"&&next==="\n")i++;row.push(cell);if(row.some(v=>v!==""))rows.push(row);row=[];cell=""}
+  else cell+=c;
+ }
+ row.push(cell);if(row.some(v=>v!==""))rows.push(row);
+ if(!rows.length)return[];
+ const headers=rows.shift().map(h=>h.trim().toLowerCase());
+ return rows.map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]||""])));
+}
+function importData(data,replace=false){
+ const isFull=data&&!Array.isArray(data)&&Array.isArray(data.apps);
+ const incoming=Array.isArray(data)?data:(isFull?data.apps:null);
+ if(!incoming)throw Error("The file does not contain an app array.");
+ if(!confirm(`${replace?"Replace":"Import"} ${incoming.length} app records? ${replace?"Current app data will be replaced.":"Existing app records will be kept; imported records will be added."}`))return;
+ if(replace&&isFull){
+  state=normalize(data);
+ }else{
+  incoming.forEach((a,i)=>{
+   if(!a||!String(a.name||"").trim())return;
+   let cat=String(a.category||"Other");
+   if(!groups().includes(cat))state.groups.push(cat);
+   state.apps.push({id:newId(),name:String(a.name).trim(),icon:String(a.icon||"📱"),category:cat,
+    url:String(a.url||a.path||""),enabled:!(a.enabled===false||String(a.enabled).toLowerCase()==="false"),
+    favorite:a.favorite===true||String(a.favorite).toLowerCase()==="true",created:Date.now()+i,description:String(a.description||a.notes||"")});
+  });
+ }
+ if(replace&&isFull){
+  state=normalize(data);
+ }
+ saveState();setTheme();renderAll();toast("Import completed.");
+}
+$("exportBackup").addEventListener("click",exportBackup);
+$("quickExport").addEventListener("click",exportBackup);
+$("exportApps").addEventListener("click",exportApps);
+$("exportCsv").addEventListener("click",exportCSV);
+$("importBackup").addEventListener("click",()=>$("importFile").click());
+$("importFile").addEventListener("change",e=>{
+ const file=e.target.files[0];if(!file)return;
+ const reader=new FileReader();
+ reader.onload=()=>{
+  try{const text=String(reader.result);const data=file.name.toLowerCase().endsWith(".csv")?parseCSV(text):JSON.parse(text);importData(data,false)}
+  catch(err){toast("Import failed: "+String(err.message||"invalid file"))}
+ };
+ reader.readAsText(file);e.target.value="";
+});
+$("previewBackup").addEventListener("click",()=>{$("backupText").value=JSON.stringify({...state,exportedAt:new Date().toISOString()},null,2);$("backupInfo").textContent="Backup preview generated from current app data."});
+$("copyBackup").addEventListener("click",async()=>{
+ try{await navigator.clipboard.writeText($("backupText").value||JSON.stringify(state,null,2));toast("JSON copied.")}
+ catch(e){$("backupText").focus();$("backupText").select();toast("Select the text and copy it manually.")}
+});
+$("restoreText").addEventListener("click",()=>{
+ try{const d=JSON.parse($("backupText").value);importData(d,true)}
+ catch(e){toast("Invalid JSON backup.")}
+});
+$("resetDefaults").addEventListener("click",()=>{
+ if(!confirm("Replace all apps and categories with the supplied 26 default apps and 10 categories? Export a backup first if needed."))return;
+ state=defaults();selected.clear();pageSizes={};clearForm();saveState();setTheme();renderAll();toast("Default apps restored.");
+});
+function loadSettings(){$("themeSelect").value=state.theme;$("fontSelect").value=state.fontSize}
+$("saveSettings").addEventListener("click",()=>{
+ state.theme=$("themeSelect").value;state.fontSize=$("fontSelect").value;setTheme();saveState();toast("Preferences saved.");
+});
+function renderAll(){
+ setTheme();fillAllCategorySelects();renderDashboard();renderApps();renderCategories();
+ if($("page-storage").classList.contains("active"))renderStorage();
+ if($("page-settings").classList.contains("active"))loadSettings();
+}
+function init(){
+ // Seed supplied defaults on a clean install. Existing compatible launcher data is reused.
+ if(!localStorage.getItem(STORAGE_KEY)){
+  saveState();
+ }else{
+  try{
+   const raw=JSON.parse(localStorage.getItem(STORAGE_KEY));
+   if(!raw||!Array.isArray(raw.apps)||raw.apps.length===0){state=defaults();saveState()}
+   else state=normalize(raw);
+  }catch(e){state=defaults();saveState()}
+ }
+ setTheme();fillAllCategorySelects();clearForm();renderAll();
+}
+init();
+</script>
+</body>
+</html>
