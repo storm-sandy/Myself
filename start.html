@@ -7,1045 +7,806 @@
 <meta name="theme-color" content="#138a4b">
 <title>Swayam LifeSuite</title>
 <style>
-:root{
- --bg:#eef7f0;--card:#fff;--text:#173c2b;--muted:#698073;
- --primary:#138a4b;--primary2:#086b38;--line:#d7e8db;
- --soft:#e1f3e6;--shadow:0 4px 16px #153c2610
-}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:100px}
+:root{
+ --primary:#138a4b;--deep:#086b38;--bg:#eff7f0;--panel:#fff;
+ --text:#183b2a;--muted:#65796b;--border:#d8e8dc;--soft:#e4f4e8;
+ --shadow:0 3px 14px #163c2010;--radius:16px;--font:14px
+}
+body[data-theme="ocean"]{--primary:#087eaa;--deep:#075477;--bg:#edf8fc;--text:#153c50;--soft:#dff3fa;--border:#d0e8f1}
+body[data-theme="meadow"]{--primary:#629b35;--deep:#3e7020;--bg:#f4f8e9;--text:#34472a;--soft:#eaf4d8;--border:#dce9c8}
+body[data-theme="mint"]{--primary:#009688;--deep:#00695c;--bg:#eaf8f5;--text:#16483f;--soft:#d7f2eb;--border:#cce9e2}
+body[data-theme="sunset"]{--primary:#d96a32;--deep:#a84420;--bg:#fff4eb;--text:#583323;--soft:#ffe7d6;--border:#f3d8c7}
+body[data-theme="lavender"]{--primary:#8059b8;--deep:#57378a;--bg:#f5f0fc;--text:#392b50;--soft:#ebe1fa;--border:#e0d4f2}
+body[data-theme="rose"]{--primary:#c24f78;--deep:#8d3053;--bg:#fff0f4;--text:#542b3a;--soft:#fce0e9;--border:#f0d1dc}
+body[data-theme="sky"]{--primary:#347bc4;--deep:#20538d;--bg:#eff6ff;--text:#203b5c;--soft:#dfedff;--border:#d3e3f8}
+body[data-theme="sand"]{--primary:#a57b39;--deep:#79551f;--bg:#faf5e9;--text:#493c27;--soft:#efe5cc;--border:#e7dcc2}
+body[data-theme="night"]{--primary:#63c98d;--deep:#2b9b5d;--bg:#14251c;--panel:#20352a;--text:#e6f5e9;--muted:#b0c7b7;--soft:#2b4837;--border:#3a5946;--shadow:0 3px 14px #0003}
+body[data-theme="snow"]{--primary:#477fbd;--deep:#2b578d;--bg:#f3f8ff;--text:#263b54;--soft:#e2edfc;--border:#d6e2f3}
+body[data-theme="water"]{--primary:#078bba;--deep:#056589;--bg:#e9f9fc;--text:#194453;--soft:#d6f2f8;--border:#c9eaf0}
+body[data-theme="fire"]{--primary:#d74c24;--deep:#992e16;--bg:#fff0e9;--text:#522c21;--soft:#ffe0d0;--border:#f1d0c0}
+body[data-theme="earth"]{--primary:#887044;--deep:#5d4729;--bg:#f4f0e5;--text:#443c2c;--soft:#e8e0ca;--border:#ded4ba}
+html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:var(--font)}
+body{background:var(--bg);color:var(--text)}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
-header{background:var(--card);border-bottom:1px solid var(--line);padding:12px 14px;box-shadow:var(--shadow)}
-.topline{display:flex;align-items:center;gap:10px}
-.logo{width:45px;height:45px;display:grid;place-items:center;border-radius:15px;background:var(--soft);font-size:27px}
-.brand{font-weight:850;font-size:20px}
-.subtitle{font-size:12px;color:var(--muted)}
-.header-actions{margin-left:auto;display:flex;gap:6px}
-main{max-width:1100px;margin:auto;padding:14px}
-.btn{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:11px;padding:9px 12px;font-weight:650}
-.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
-.btn.danger{color:#b42318;border-color:#f1c6c2}
-.btn.small{font-size:12px;padding:6px 9px;border-radius:9px}
-input,select,textarea{width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:11px;background:var(--card);color:var(--text)}
-.panel,.toolbar,.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
-.toolbar{padding:10px;margin-bottom:13px}
-.customize-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.customize-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;font-weight:800}
-.active-filters{font-size:12px;color:var(--muted);flex:1;min-width:100px}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:13px}
-.stat{padding:10px}
-.stat strong{display:block;font-size:22px}
-.stat span{font-size:11px;color:var(--muted)}
-.panel{padding:14px;margin-bottom:14px}
-.panel h2{font-size:17px;margin:0 0 9px}
-.panel h3{font-size:14px;margin:15px 0 8px}
-.muted{color:var(--muted);font-size:12px;line-height:1.5}
-.hidden{display:none!important}
-.group-section{margin-bottom:14px;min-width:0}
-.group-head{display:flex;align-items:center;gap:7px;padding:4px 1px;margin-bottom:8px}
-.group-title{font-weight:850;font-size:16px;flex:1;overflow-wrap:anywhere;cursor:pointer}
-.group-count{font-size:11px;background:var(--soft);color:var(--primary2);padding:4px 8px;border-radius:20px;white-space:nowrap}
-.app-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.app-card{position:relative;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:15px;padding:11px 7px;text-align:center;box-shadow:var(--shadow)}
-.app-card.move-selected{outline:3px solid var(--primary);background:var(--soft)}
-.app-card.drop-target{outline:3px dashed var(--primary)}
-.app-icon{font-size:29px;margin-bottom:4px;line-height:1.3}
-.app-name{font-size:12px;font-weight:800;overflow-wrap:anywhere}
-.app-group{font-size:10px;color:var(--muted);margin-top:4px}
-.star{position:absolute;right:4px;top:3px;border:0;background:transparent;color:#c5a83c;font-size:20px;padding:0}
-.app-actions{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-top:8px}
-.app-actions button{font-size:11px;padding:5px 7px}
-.destination{margin-top:7px!important;padding:6px!important;font-size:11px!important}
-.move-banner{position:sticky;top:5px;z-index:10;display:flex;gap:8px;align-items:center;background:var(--primary2);color:#fff;padding:11px;border-radius:13px;margin-bottom:12px}
-.move-banner span{flex:1;font-size:12px}
-.move-banner button{background:transparent;color:white;border:1px solid #ffffff70;border-radius:8px;padding:6px 9px}
-.empty{text-align:center;padding:25px;color:var(--muted);font-size:14px}
-.field{margin:10px 0}
-.field label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}
-.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.group-row{padding:12px 0;border-bottom:1px solid var(--line)}
-.group-row:last-child{border-bottom:0}
-.group-top{display:flex;align-items:center;gap:7px}
-.group-name{font-weight:800;flex:1;overflow-wrap:anywhere}
-.group-meta{font-size:11px;color:var(--muted);margin-top:4px}
-.group-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
-.group-edit{display:flex;gap:6px;margin-top:8px}
-.group-edit input{flex:1}
-
-/* Customize modal */
-.customize-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:14px;background:#10291d80;backdrop-filter:blur(3px)}
-.customize-modal{width:min(100%,520px);max-height:88dvh;overflow-y:auto;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 70px #0003;padding:16px;overscroll-behavior:contain}
-.customize-head{display:flex;align-items:center;gap:10px;position:sticky;top:-16px;z-index:2;background:var(--card);padding:3px 0 12px;border-bottom:1px solid var(--line);margin-bottom:10px}
-.customize-heading{flex:1;min-width:0}
-.customize-heading strong{font-size:18px;display:block}
-.customize-heading span{font-size:12px;color:var(--muted)}
-.close-customize{width:39px;height:39px;flex-shrink:0;border:1px solid var(--line);border-radius:12px;background:var(--soft);color:var(--text);font-size:22px;font-weight:700}
-.customize-section{padding:8px 0 12px;border-bottom:1px solid var(--line)}
-.customize-section:last-of-type{border-bottom:0}
-.customize-section h3{font-size:13px;margin:0 0 8px}
-.customize-section .field{margin:8px 0}
-.customize-section .controls{display:flex;gap:8px;flex-wrap:wrap}
-.customize-section .controls>div{flex:1;min-width:125px}
-.customize-footer{display:flex;gap:8px;position:sticky;bottom:-16px;background:var(--card);padding:12px 0 2px}
-.customize-footer button{flex:1}
-body.modal-open{overflow:hidden}
-
-.layout-list .app-grid{grid-template-columns:1fr}
-.layout-list .app-card{display:flex;align-items:center;gap:9px;text-align:left;padding:9px}
-.layout-list .app-icon{margin:0;width:40px;flex-shrink:0}
-.layout-list .app-info{flex:1;min-width:0}
-.layout-list .app-actions{margin:0}
-.layout-list .star{position:static;order:4}
-.layout-compact .app-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
-.layout-compact .app-card{padding:8px 3px}
-.layout-compact .app-icon{font-size:23px}
-.layout-compact .app-name{font-size:10px}
-.layout-icons .app-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
-.layout-icons .app-card{padding:8px 2px}
-.layout-icons .app-icon{font-size:25px}
-.layout-icons .app-name{font-size:10px}
-.layout-split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.layout-split .app-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
-.layout-split .app-card{padding:8px 3px}
-.layout-split .app-icon{font-size:23px}
-.layout-split .app-name{font-size:10px}
-.layout-dashboard .app-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-.layout-horizontal .app-grid{display:flex;overflow-x:auto;padding:3px 2px 10px}
-.layout-horizontal .app-card{flex:0 0 120px}
-.layout-rail{display:flex;gap:10px;overflow-x:auto}
-.layout-rail .group-section{flex:0 0 215px}
-.layout-rail .app-grid{grid-template-columns:1fr}
-.layout-rail .app-card{display:flex;align-items:center;gap:8px;text-align:left}
-.layout-rail .app-icon{margin:0}
-
-/* Persistent Home quick access */
-.quick-access{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:14px}
-.quick-section{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:11px;box-shadow:var(--shadow);min-width:0}
-.quick-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px;font-weight:850;margin-bottom:9px}
-.quick-count{font-size:11px;color:var(--primary2);background:var(--soft);padding:3px 8px;border-radius:20px}
-.quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
-.quick-app{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;min-height:75px;padding:8px 4px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--text);cursor:pointer;text-align:center}
-.quick-app:active{transform:scale(.97)}
-.quick-app-icon{font-size:25px;line-height:1.25}
-.quick-app-name{font-size:11px;font-weight:750;overflow-wrap:anywhere;line-height:1.3}
-.quick-empty{color:var(--muted);font-size:12px;padding:5px 1px 2px}
-
-.bottomdock{position:fixed;z-index:30;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:5px;background:var(--card);border-top:1px solid var(--line);padding:7px 10px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -4px 18px #153c2610}
-.dockbtn{flex:1;max-width:180px;border:0;border-radius:12px;background:transparent;color:var(--muted);font-size:12px;font-weight:750;padding:7px 4px}
-.dockbtn span{display:block;font-size:21px;margin-bottom:2px}
-.dockbtn.active{background:var(--soft);color:var(--primary2)}
-.toast{position:fixed;z-index:120;left:50%;bottom:95px;transform:translateX(-50%);background:#183b2a;color:white;border-radius:12px;padding:11px 15px;box-shadow:var(--shadow);max-width:90vw;text-align:center;font-size:13px}
-
-body[data-theme="ocean"]{--bg:#eaf6fc;--text:#173a52;--muted:#627d8c;--primary:#087fa4;--primary2:#075b7c;--line:#cfe7f1;--soft:#d9f2fa}
-body[data-theme="meadow"]{--bg:#f1f8e8;--text:#344622;--muted:#74815e;--primary:#6c9b37;--primary2:#416c1f;--line:#dce8c9;--soft:#e5f2d4}
-body[data-theme="mint"]{--bg:#e8f8f3;--text:#164a3b;--muted:#68877c;--primary:#12a582;--primary2:#08775e;--line:#cdebe1;--soft:#d4f5e9}
-body[data-theme="sunset"]{--bg:#fff1e8;--text:#66372b;--muted:#967568;--primary:#e87941;--primary2:#b84c25;--line:#f1d9cc;--soft:#ffe2d0}
-body[data-theme="lavender"]{--bg:#f3efff;--text:#40345f;--muted:#81769a;--primary:#8265c9;--primary2:#5e43a0;--line:#e0d7f6;--soft:#e9e0ff}
-body[data-theme="rose"]{--bg:#fff0f4;--text:#633545;--muted:#987582;--primary:#d94c7d;--primary2:#a72f5a;--line:#f4d4df;--soft:#ffe0e9}
-body[data-theme="sky"]{--bg:#edf5ff;--text:#213e65;--muted:#7387a5;--primary:#4285d4;--primary2:#235da7;--line:#d4e3f8;--soft:#dcecff}
-body[data-theme="sand"]{--bg:#f8f2e7;--text:#51412a;--muted:#8a7c64;--primary:#a98750;--primary2:#775c31;--line:#e8dcc6;--soft:#efe4cf}
-body[data-theme="night"]{--bg:#111a18;--card:#1b2925;--text:#e4f5e9;--muted:#9bb3a4;--primary:#4ac987;--primary2:#16764a;--line:#31483c;--soft:#243d31}
-
-@media(min-width:700px){
- main{padding:20px}
- .app-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
- .layout-compact .app-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
- .layout-icons .app-grid{grid-template-columns:repeat(8,minmax(0,1fr))}
- .layout-split .app-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
- .layout-dashboard .app-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
- .quick-access{grid-template-columns:repeat(2,minmax(0,1fr))}
- .quick-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.app{max-width:1350px;margin:auto;padding:12px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--border);padding:14px 16px;border-radius:20px;box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.logo{width:47px;height:47px;flex:0 0 47px;border-radius:15px;background:var(--soft);display:grid;place-items:center;font-size:27px}
+.brand h1{font-size:21px;margin:0;color:var(--deep)}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.header-right{text-align:right}.clock{font-weight:750;font-size:14px;line-height:1.5}
+#clockDate{font-size:12px;color:var(--muted)}
+.nav{display:flex;gap:7px;overflow-x:auto;margin:12px 0;padding:3px 0}
+.nav button{white-space:nowrap;border:1px solid var(--border);border-radius:12px;background:var(--panel);color:var(--text);padding:10px 15px;font-weight:750}
+.nav button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.page{display:none}.page.active{display:block}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:15px;margin-bottom:12px;box-shadow:var(--shadow)}
+.panel-title{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.panel-title h2{font-size:17px;margin:0}
+.muted{color:var(--muted)}.smalltext{font-size:12px;color:var(--muted)}
+.btn{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:9px 12px;border-radius:11px;font-weight:650}
+.btn.primary{background:var(--primary);color:white;border-color:var(--primary)}
+.btn.soft{background:var(--soft);color:var(--deep)}
+.btn.danger{color:#b42318}
+.btn.small{padding:6px 9px;font-size:12px}
+.btn.active{background:var(--soft);border-color:var(--primary);color:var(--deep)}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field label{font-size:12px;font-weight:750;color:var(--muted)}
+input,select,textarea{width:100%;padding:10px 11px;border:1px solid var(--border);border-radius:11px;background:var(--panel);color:var(--text);min-width:0}
+textarea{resize:vertical;min-height:70px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.form-grid .wide{grid-column:1/-1}
+.quick-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:11px}
+.quick-buttons{display:flex;gap:7px;flex-wrap:wrap}
+.category-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:15px 0 8px}
+.category-heading h2{font-size:16px;margin:0}
+.category-tabs{display:flex;gap:7px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin}
+.category-tab{flex:0 0 auto;display:flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:13px;padding:9px 12px;font-weight:700;white-space:nowrap}
+.category-tab.active{background:var(--primary);border-color:var(--primary);color:white}
+.count{font-size:11px;border-radius:20px;background:var(--soft);color:var(--deep);padding:2px 7px}
+.category-tab.active .count{background:#ffffff35;color:white}
+.apps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.app-card{min-width:0;border:1px solid var(--border);border-radius:16px;background:var(--panel);padding:13px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;transition:transform .15s}
+.app-card:hover{transform:translateY(-2px)}
+.app-card.disabled-app{opacity:.58}
+.app-top{display:flex;align-items:flex-start;gap:10px;min-width:0}
+.app-icon{width:45px;height:45px;flex:0 0 45px;border-radius:14px;background:var(--soft);display:grid;place-items:center;font-size:24px}
+.app-info{min-width:0;flex:1}.app-info h3{font-size:14px;margin:2px 0 6px;overflow-wrap:anywhere}
+.app-info p{font-size:11px;color:var(--muted);margin:0}
+.star{font-size:20px;border:0;background:transparent;padding:0 2px;color:#d39a22}
+.app-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:auto}
+.app-actions .btn{padding:7px 9px;font-size:12px}
+.app-actions select{padding:6px 7px;font-size:11px;flex:1;min-width:75px}
+.apps.layout-compact{grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.layout-compact .app-card{padding:9px;gap:7px;border-radius:12px}
+.layout-compact .app-icon{width:35px;height:35px;flex-basis:35px;font-size:19px}
+.layout-compact .app-info h3{font-size:12px}.layout-compact .app-info p{display:none}
+.layout-compact .app-actions .move-select{display:none}
+.apps.layout-list{grid-template-columns:1fr;gap:7px}
+.layout-list .app-card{flex-direction:row;align-items:center;gap:12px;padding:11px 14px}
+.layout-list .app-top{align-items:center;flex:1}
+.layout-list .app-info h3{margin:0 0 4px}
+.layout-list .app-actions{margin-top:0;flex:0 0 auto;max-width:48%}
+.apps.layout-icons{grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}
+.layout-icons .app-card{align-items:center;text-align:center;padding:12px 5px;gap:7px}
+.layout-icons .app-top{flex-direction:column;align-items:center;gap:7px}
+.layout-icons .app-icon{width:54px;height:54px;flex-basis:54px;font-size:28px}
+.layout-icons .app-info h3{font-size:12px}.layout-icons .app-info p{display:none}
+.layout-icons .app-actions{justify-content:center}
+.layout-icons .app-actions .move-select,.layout-icons .app-actions .open-label{display:none}
+.apps.layout-large{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.layout-large .app-card{padding:18px;min-height:140px}
+.layout-large .app-icon{width:58px;height:58px;flex-basis:58px;font-size:31px}
+.layout-large .app-info h3{font-size:16px}
+.apps.layout-two{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.layout-two .app-card{padding:11px}.layout-two .app-icon{width:39px;height:39px;flex-basis:39px;font-size:21px}
+.apps.layout-dashboard{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.layout-dashboard .app-card{padding:15px;min-height:125px;background:linear-gradient(145deg,var(--panel),var(--soft))}
+.layout-dashboard .app-top{flex-direction:column;gap:9px}
+.layout-dashboard .app-icon{width:48px;height:48px;flex-basis:48px}
+.layout-dashboard .app-actions .move-select{display:none}
+.empty{padding:28px 12px;text-align:center;border:1px dashed var(--border);border-radius:14px;color:var(--muted)}
+.manager-toolbar{display:grid;grid-template-columns:minmax(180px,2fr) repeat(3,minmax(125px,1fr));gap:9px;align-items:end}
+.manager-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.manager-list{display:grid;gap:8px}
+.manager-row{display:grid;grid-template-columns:auto minmax(0,2fr) minmax(110px,1fr) auto;align-items:center;gap:10px;border:1px solid var(--border);border-radius:13px;padding:10px;background:var(--panel)}
+.manager-row.selected{border-color:var(--primary);background:var(--soft)}
+.manager-main{display:flex;align-items:center;gap:10px;min-width:0}
+.manager-icon{width:40px;height:40px;flex:0 0 40px;border-radius:12px;background:var(--soft);display:grid;place-items:center;font-size:22px}
+.manager-name{font-weight:750;overflow-wrap:anywhere}
+.manager-meta{font-size:11px;color:var(--muted);margin-top:3px}
+.manager-row .row-actions{display:flex;gap:5px;justify-content:flex-end;flex-wrap:wrap}
+.manager-row input[type=checkbox],#selectAll{width:18px;height:18px;accent-color:var(--primary)}
+.item-list{display:grid;gap:8px}
+.item-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--border);border-radius:12px;padding:10px}
+.item-row .left{min-width:0;overflow-wrap:anywhere}
+.item-row .actions{display:flex;gap:5px;flex-wrap:wrap}
+.theme-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.theme-choice{border:1px solid var(--border);background:var(--panel);border-radius:12px;padding:10px;text-align:center;color:var(--text)}
+.theme-dot{height:22px;width:22px;border-radius:50%;display:block;margin:0 auto 6px;background:var(--swatch)}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:15px}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--deep);color:white;padding:11px 16px;border-radius:12px;box-shadow:var(--shadow);z-index:100;display:none;max-width:90%;text-align:center}
+#fileInput{display:none}
+@media(max-width:950px){
+ .apps{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .apps.layout-compact{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .apps.layout-icons{grid-template-columns:repeat(5,minmax(0,1fr))}
+ .manager-toolbar{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .theme-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
-@media(max-width:380px){
- .formgrid{grid-template-columns:1fr}
- .app-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
- .layout-compact .app-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
- .layout-icons .app-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
- .layout-split{grid-template-columns:1fr}
- .group-actions .btn{font-size:11px;padding:6px}
- .customize-modal{padding:12px}
- .customize-head{top:-12px}
- .customize-footer{bottom:-12px}
- .quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:650px){
+ .app{padding:8px}.brand h1{font-size:18px}
+ .manager-toolbar{grid-template-columns:1fr 1fr}
+ .manager-toolbar .search-field{grid-column:1/-1}
+ .manager-row{grid-template-columns:auto minmax(0,1fr) auto;gap:8px}
+ .manager-row>.manager-category{grid-column:2/3}
+ .manager-row>.row-actions{grid-column:2/-1;justify-content:flex-start}
+ .apps{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .apps.layout-compact{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .apps.layout-icons{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .apps.layout-dashboard{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .apps.layout-large{grid-template-columns:1fr}
+ .layout-list .app-card{flex-wrap:wrap}
+ .layout-list .app-actions{max-width:none;width:100%;padding-left:49px}
+ .grid2,.form-grid{grid-template-columns:1fr}
+ .form-grid .wide{grid-column:auto}
+ .theme-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
-@media(prefers-reduced-motion:no-preference){
- .customize-modal{animation:popin .16s ease-out}
- @keyframes popin{from{opacity:0;transform:translateY(8px) scale(.99)}to{opacity:1;transform:none}}
+@media(max-width:390px){
+ .brand p{font-size:10px}
+ .manager-toolbar{grid-template-columns:1fr}
+ .manager-toolbar .search-field{grid-column:auto}
+ .apps.layout-compact{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 </style>
 </head>
 <body data-theme="forest">
-
+<div class="app">
 <header>
- <div class="topline">
+ <div class="brand">
   <div class="logo">🌿</div>
-  <div>
-   <div class="brand">Swayam LifeSuite</div>
-   <div class="subtitle">Personal Governance Simplified</div>
-  </div>
-  <div class="header-actions">
-   <button class="btn small" id="searchFocus" title="Search apps">🔎</button>
-   <button class="btn small" id="cycleTheme" title="Change theme">🎨</button>
-  </div>
+  <div><h1>Swayam LifeSuite</h1><p>Personal LifeSuite · Personal Governance Simplified</p></div>
  </div>
+
 </header>
 
+<nav class="nav">
+ <button class="active" data-page="home">🏠 Home</button>
+ <button data-page="manager">📱 App Manager</button>
+ <button data-page="organize">📂 Organize</button>
+ <button data-page="settings">⚙️ Settings</button>
+</nav>
+
 <main>
- <section id="homePage">
-  <div class="toolbar">
-   <div class="customize-row">
-    <button class="btn primary customize-btn" id="openCustomize" aria-haspopup="dialog" aria-controls="customizeOverlay">
-     ⚙️ Customize <span aria-hidden="true">⌄</span>
-    </button>
-    <div class="active-filters" id="activeFilterSummary">All categories · All apps</div>
-   </div>
+<!-- HOME -->
+<section class="page active" id="page-home">
+ <div class="panel">
+  <div class="panel-title">
+   <div><h2>Welcome to Swayam</h2><div class="smalltext" id="homeSummary">Your apps, arranged your way.</div></div>
   </div>
-
-  <div id="customizeOverlay" class="customize-overlay hidden">
-   <section class="customize-modal" role="dialog" aria-modal="true" aria-labelledby="customizeTitle" aria-describedby="customizeDescription">
-    <div class="customize-head">
-     <div class="customize-heading">
-      <strong id="customizeTitle">⚙️ Customize Home</strong>
-      <span id="customizeDescription">Filters, categories and app display</span>
-     </div>
-     <button type="button" class="close-customize" id="closeCustomize" aria-label="Close customization">×</button>
-    </div>
-
-    <div class="customize-section">
-     <h3>🔎 Search</h3>
-     <div class="searchrow">
-      <input id="search" type="search" placeholder="Search apps and websites…" autocomplete="off">
-      <button class="btn" id="clearSearch">Clear</button>
-     </div>
-    </div>
-
-    <div class="customize-section">
-     <h3>🔍 Filters</h3>
-     <div class="controls">
-      <div>
-       <label class="filter-label" for="categoryFilter">Category filter</label>
-       <select id="categoryFilter"><option value="all">All categories</option></select>
-      </div>
-      <div>
-       <label class="filter-label" for="appFilter">Show apps</label>
-       <select id="appFilter">
-        <option value="all">All apps</option>
-        <option value="fav">⭐ Favourites</option>
-        <option value="recent">🕘 Recently opened</option>
-       </select>
-      </div>
-     </div>
-    </div>
-
-    <div class="customize-section">
-     <h3>📂 Category sections</h3>
-     <label class="filter-label" for="allCategoriesToggle">Expand or collapse categories</label>
-     <select id="allCategoriesToggle" aria-label="Expand or collapse all categories">
-      <option value="individual">Individual category controls</option>
-      <option value="expand">＋ Expand all categories</option>
-      <option value="collapse">− Collapse all categories</option>
-     </select>
-     <p class="muted">You can also expand or collapse each category using its heading on Home.</p>
-    </div>
-
-    <div class="customize-section">
-     <h3>▦ App layout</h3>
-     <label class="filter-label" for="layout">Choose how apps appear</label>
-     <select id="layout">
-      <option value="grid">▦ Grid</option><option value="compact">▤ Compact</option>
-      <option value="icons">🔹 Icon layout</option><option value="list">☷ List</option>
-      <option value="split">🧩 Two-column</option><option value="dashboard">📊 Dashboard</option>
-      <option value="horizontal">↔ Horizontal</option><option value="rail">▥ Group rails</option>
-     </select>
-    </div>
-
-    <div class="customize-footer">
-     <button class="btn" id="resetFilters">Reset filters</button>
-     <button class="btn primary" id="applyCustomize">Done ✓</button>
-    </div>
-   </section>
-  </div>
-
-  <div class="stats">
-   <div class="stat"><strong id="appCount">0</strong><span>Apps shown</span></div>
-   <div class="stat"><strong id="favouriteCount">0</strong><span>Favourites</span></div>
-   <div class="stat"><strong id="categoryCount">0</strong><span>Categories</span></div>
-  </div>
-
-  <div id="quickAccess" class="quick-access">
-   <section class="quick-section" id="favouriteSection">
-    <div class="quick-heading"><span>⭐ Favourites</span><span class="quick-count" id="quickFavCount">0</span></div>
-    <div class="quick-grid" id="quickFavouriteApps"></div>
-    <div class="quick-empty" id="quickFavEmpty">Star an app to add it here.</div>
-   </section>
-   <section class="quick-section" id="recentSection">
-    <div class="quick-heading"><span>🕘 Recently Opened</span><span class="quick-count" id="quickRecentCount">0</span></div>
-    <div class="quick-grid" id="quickRecentApps"></div>
-    <div class="quick-empty" id="quickRecentEmpty">Open an app and it will appear here.</div>
-   </section>
-  </div>
-
-  <div id="moveBanner" class="move-banner hidden">
-   <span id="moveText">Select a destination category.</span>
-   <button id="cancelMove">Cancel</button>
-  </div>
-  <div id="appContainer"></div>
-  <div id="empty" class="empty hidden">No matching apps. Try another category or search.</div>
- </section>
-
- <section id="organizePage" class="hidden">
-  <div class="panel">
-   <h2>🗂️ Manage categories</h2>
-   <p class="muted">Add, rename, update, collapse or delete categories here. Changes appear immediately in Home and in the category filter. Apps are preserved when a category is deleted.</p>
-   <div class="field">
-    <label for="newCategory">New category name</label>
-    <div class="searchrow">
-     <input id="newCategory" placeholder="Example: Finance">
-     <button class="btn primary" id="addCategory">Add</button>
-    </div>
-   </div>
-   <div id="categoryManager"></div>
-  </div>
-
-  <div class="panel">
-   <h2>➕ Add an app or website</h2>
-   <div class="formgrid">
-    <div class="field"><label for="appName">App name</label><input id="appName" placeholder="My website"></div>
-    <div class="field"><label for="appIcon">Icon</label><input id="appIcon" value="🌐" maxlength="8"></div>
-    <div class="field"><label for="appUrl">URL or relative HTML path</label><input id="appUrl" placeholder="https://example.com or page.html"></div>
-    <div class="field"><label for="appCategory">Category</label><select id="appCategory"></select></div>
-   </div>
-   <button class="btn primary" id="addApp">Add app</button>
-   <p class="muted">Only add trusted links. Adding a website does not verify its safety.</p>
-  </div>
-
-  <div class="panel">
-   <h2>↕ Reorganize apps</h2>
-   <p class="muted">Use Move on an app in Home, then select a destination category. You can also change the category selector directly on each app card. Drag cards to change their order.</p>
-   <button class="btn" id="goHome">Go to Home</button>
-  </div>
- </section>
-
- <section id="settingsPage" class="hidden">
-  <div class="panel">
-   <h2>🎨 Appearance</h2>
-   <div class="field">
-    <label for="theme">Nature theme</label>
-    <select id="theme">
-     <option value="forest">🌲 Forest</option><option value="ocean">🌊 Ocean</option>
-     <option value="meadow">🌿 Meadow</option><option value="mint">🍃 Mint</option>
-     <option value="sunset">🌅 Sunset</option><option value="lavender">🪻 Lavender</option>
-     <option value="rose">🌹 Rose</option><option value="sky">☁️ Sky</option>
-     <option value="sand">🏜️ Sand</option><option value="night">🌙 Night</option>
+  <div class="manager-toolbar">
+   <div class="field"><label for="categoryFilter">Filter category tabs</label><select id="categoryFilter"></select></div>
+   <div class="field search-field"><label for="appSearch">Search apps</label><input id="appSearch" type="search" placeholder="🔎 Search apps…"></div>
+   <div class="field"><label for="layoutSelect">App layout</label>
+    <select id="layoutSelect">
+     <option value="grid">▦ Standard Grid</option><option value="compact">▤ Compact Grid</option>
+     <option value="list">☰ List View</option><option value="icons">◉ Icon View</option>
+     <option value="large">▣ Large Cards</option><option value="two">▥ Two Columns</option>
+     <option value="dashboard">▦ Dashboard</option>
     </select>
    </div>
-   <p class="muted">Change the app layout from Home → Customize.</p>
   </div>
-  <div class="panel">
-   <h2>💾 Backup and restore</h2>
-   <div class="controls">
-    <button class="btn primary" id="exportBackup">Export backup</button>
-    <button class="btn" id="importBackup">Import backup</button>
-    <input id="backupFile" class="hidden" type="file" accept=".json,application/json">
-    <button class="btn" id="exportCsv">Export apps CSV</button>
+  <div class="quick-row">
+   <div class="quick-buttons">
+    <button class="btn small" id="showAll">🌿 All apps</button>
+    <button class="btn small" id="showFav">⭐ Favourites</button>
+    <button class="btn small" id="showRecent">🕘 Recent</button>
+   </div>
+   <span class="smalltext" id="resultCount"></span>
+  </div>
+  <div class="category-heading"><h2>Browse categories</h2><span class="smalltext">Select a category tab</span></div>
+  <div class="category-tabs" id="categoryTabs"></div>
+  <div class="category-heading"><h2 id="appsHeading">All apps</h2><span class="smalltext" id="layoutHint"></span></div>
+  <div class="apps layout-grid" id="appsGrid"></div>
+ </div>
+</section>
+
+<!-- APP MANAGER -->
+<section class="page" id="page-manager">
+ <div class="panel">
+  <div class="panel-title">
+   <div><h2>📱 App Manager</h2><div class="smalltext">Manage every app shortcut from one place.</div></div>
+   <button class="btn primary" id="newAppBtn">＋ Add app</button>
+  </div>
+  <div class="grid2" style="margin-bottom:12px">
+   <div class="panel" style="margin:0;background:var(--soft);box-shadow:none">
+    <div class="smalltext">Total apps</div><div id="statTotal" style="font-size:26px;font-weight:850">0</div>
+   </div>
+   <div class="panel" style="margin:0;background:var(--soft);box-shadow:none">
+    <div class="smalltext">Enabled apps</div><div id="statEnabled" style="font-size:26px;font-weight:850">0</div>
+   </div>
+   <div class="panel" style="margin:0;background:var(--soft);box-shadow:none">
+    <div class="smalltext">Favourites</div><div id="statFav" style="font-size:26px;font-weight:850">0</div>
+   </div>
+   <div class="panel" style="margin:0;background:var(--soft);box-shadow:none">
+    <div class="smalltext">Categories</div><div id="statCategories" style="font-size:26px;font-weight:850">0</div>
    </div>
   </div>
-  <div class="panel">
-   <h2>🛡️ Safety notes</h2>
-   <p class="muted">Use apps at your own comfort level. Avoid suspicious links and never enter sensitive information on untrusted websites. Verify government website domains before sharing personal information. Export backups regularly; clearing browser data can remove local settings.</p>
-   <p class="muted" id="storageInfo">Local storage status</p>
-   <button class="btn danger" id="reset">Reset launcher</button>
-  </div>
- </section>
-</main>
 
-<nav class="bottomdock" aria-label="Main navigation">
- <button class="dockbtn active" data-page="home"><span>🏡</span>Home</button>
- <button class="dockbtn" data-page="organize"><span>🗂️</span>Organize</button>
- <button class="dockbtn" data-page="settings"><span>⚙️</span>Settings</button>
-</nav>
-<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+  <div class="panel-title"><h2 id="appFormHeading">Add a new app</h2><span class="smalltext">App links stay hidden from launcher cards</span></div>
+  <div class="form-grid">
+   <div class="field"><label for="formName">App name *</label><input id="formName" placeholder="e.g. My Notes"></div>
+   <div class="field"><label for="formIcon">Emoji icon</label><input id="formIcon" maxlength="8" value="📱" placeholder="📱"></div>
+   <div class="field"><label for="formCategory">Category</label><select id="formCategory"></select></div>
+   <div class="field"><label for="formUrl">App link / URL</label><input id="formUrl" placeholder="/Myself/example.html or https://example.com"></div>
+   <div class="field"><label for="formStatus">Status</label><select id="formStatus"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>
+   <div class="field"><label for="formFavorite">Favourite</label><select id="formFavorite"><option value="false">No</option><option value="true">Yes</option></select></div>
+  </div>
+  <div class="quick-row">
+   <div class="quick-buttons"><button class="btn primary" id="saveApp">Save app</button><button class="btn" id="cancelForm">Clear form</button></div>
+   <span class="smalltext">Fields marked * are required.</span>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="panel-title"><h2>Manage app list</h2><span class="smalltext" id="managerCount">0 apps</span></div>
+  <div class="manager-toolbar">
+   <div class="field search-field"><label for="managerSearch">Search apps</label><input id="managerSearch" placeholder="Name or category…"></div>
+   <div class="field"><label for="managerCategory">Category</label><select id="managerCategory"></select></div>
+   <div class="field"><label for="managerStatus">Status</label><select id="managerStatus"><option value="all">All statuses</option><option value="enabled">Enabled</option><option value="disabled">Disabled</option><option value="favorites">Favourites</option></select></div>
+   <div class="field"><label for="managerSort">Sort by</label><select id="managerSort">
+    <option value="name">Name A–Z</option><option value="nameDesc">Name Z–A</option>
+    <option value="category">Category</option><option value="newest">Recently added</option>
+    <option value="favorites">Favourites first</option>
+   </select></div>
+  </div>
+
+  <div class="quick-row">
+   <div class="quick-buttons">
+    <button class="btn small" id="selectVisible">☑ Select visible</button>
+    <button class="btn small" id="clearSelection">Clear selection</button>
+   </div>
+   <span class="smalltext" id="selectedCount">0 selected</span>
+  </div>
+
+  <div class="panel" style="margin-top:12px;margin-bottom:12px;background:var(--soft);box-shadow:none">
+   <div class="panel-title"><h2>Bulk actions</h2><span class="smalltext">Applies to selected apps</span></div>
+   <div class="quick-buttons">
+    <select id="bulkCategory" style="width:auto;max-width:190px"><option value="">Move to category…</option></select>
+    <button class="btn small" id="bulkMove">Move</button>
+    <button class="btn small" id="bulkEnable">Enable</button>
+    <button class="btn small" id="bulkDisable">Disable</button>
+    <button class="btn small" id="bulkFavorite">Add favourites</button>
+    <button class="btn small" id="bulkUnfavorite">Remove favourites</button>
+    <button class="btn small danger" id="bulkDelete">Delete selected</button>
+   </div>
+  </div>
+
+  <div class="quick-row" style="margin-bottom:10px">
+   <label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700"><input id="selectAll" type="checkbox"> Select all visible</label>
+   <div class="quick-buttons">
+    <button class="btn small" id="exportAppsJson">Export app data</button>
+    <button class="btn small" id="exportAppsCsv">Export CSV</button>
+    <button class="btn small" id="importAppsBtn">Import JSON/CSV</button>
+    <input id="managerFile" type="file" accept=".json,.csv,application/json,text/csv" hidden>
+   </div>
+  </div>
+  <div class="manager-list" id="managerList"></div>
+ </div>
+</section>
+
+<!-- ORGANIZE -->
+<section class="page" id="page-organize">
+ <div class="grid2">
+  <div class="panel">
+   <div class="panel-title"><h2>📂 Categories</h2></div>
+   <div class="field"><label for="newCategoryName">New category name</label><input id="newCategoryName" placeholder="Enter category name"></div>
+   <button class="btn primary" id="addCategory" style="margin-top:9px">＋ Add category</button>
+   <div class="item-list" id="categoryManageList" style="margin-top:12px"></div>
+  </div>
+  <div class="panel">
+   <div class="panel-title"><h2>📊 App organization</h2></div>
+   <p class="smalltext">For app edits, moving shortcuts, status, favourites, duplication, or deletion, use the App Manager tab.</p>
+   <button class="btn primary" id="openManager">Open App Manager →</button>
+   <hr style="border:0;border-top:1px solid var(--border);margin:16px 0">
+   <h3 style="font-size:14px">How categories work</h3>
+   <ul class="smalltext" style="line-height:1.9;padding-left:20px">
+    <li>Create categories for your app groups.</li>
+    <li>Rename categories to update all apps in that category.</li>
+    <li>Delete a category to move its apps to another category.</li>
+    <li>Home category tabs update automatically.</li>
+   </ul>
+  </div>
+ </div>
+</section>
+
+<!-- SETTINGS -->
+<section class="page" id="page-settings">
+ <div class="panel"><div class="panel-title"><h2>🎨 Nature themes</h2><span class="smalltext">Saved on this device</span></div><div class="theme-grid" id="themeGrid"></div></div>
+ <div class="grid2">
+  <div class="panel">
+   <h2>💾 Full backup</h2><p class="smalltext">Save or restore all apps, categories, favourites, enabled status, recent apps, and preferences.</p>
+   <div class="quick-buttons"><button class="btn primary" id="exportBackup">⬇ Export JSON backup</button><button class="btn" id="importBackup">⬆ Import JSON backup</button><input id="backupFile" type="file" accept=".json,application/json" hidden></div>
+  </div>
+  <div class="panel">
+   <h2>🛠️ Preferences</h2>
+   <div class="field" style="margin-top:10px"><label for="defaultLayout">Default layout</label><select id="defaultLayout">
+    <option value="grid">Standard Grid</option><option value="compact">Compact Grid</option><option value="list">List View</option><option value="icons">Icon View</option><option value="large">Large Cards</option><option value="two">Two Columns</option><option value="dashboard">Dashboard</option>
+   </select></div>
+   <div class="field" style="margin-top:10px"><label for="fontSize">Text size</label><select id="fontSize"><option value="13px">Small</option><option value="14px">Normal</option><option value="16px">Large</option><option value="18px">Extra large</option></select></div>
+   <button class="btn" id="savePreferences" style="margin-top:10px">Save preferences</button>
+  </div>
+ </div>
+ <div class="panel"><h2>♻️ Reset</h2><p class="smalltext">Restore default apps and categories. This removes your local customizations.</p><button class="btn danger" id="resetApp">Reset to default</button></div>
+</section>
+</main>
+<footer>Swayam LifeSuite · Saved locally in your browser</footer>
+</div>
+<div id="toast" role="status"></div>
 
 <script>
 "use strict";
-
-const KEY="swayam_lifesuite_v5";
-const DEFAULT_GROUPS=["Personal","Family","Work","Health","Learning","Tools","Creativity","Travel","Entertainment","Other"];
-
-const DEFAULT_APPS=[
-{id:"thoughts",name:"Every Day Thoughts",icon:"☕",group:"Personal",url:"/Myself/school/idea.html"},
-{id:"festivals",name:"Indian Festivals",icon:"🙏",group:"Personal",url:"/Myself/festival/navratri.html"},
-{id:"todo",name:"To-do List",icon:"✏️",group:"Personal",url:"/Myself/school/todo1.html"},
-{id:"quicknotes",name:"Quick Notes",icon:"⚡",group:"Personal",url:"/Myself/util/Util_quick.html"},
-{id:"lifehome",name:"Life & Home",icon:"🏠",group:"Family",url:"/Myself/util/Util_fin.html"},
-{id:"career",name:"Work & Career",icon:"💼",group:"Work",url:"/Myself/util/Util_karya.html"},
-{id:"kids",name:"Kids",icon:"👨‍🎓",group:"Family",url:"/Myself/util/Util_laxmi.html"},
-{id:"safety",name:"Women & Safety",icon:"👩",group:"Family",url:"/Myself/nari/nariraksha.html"},
-{id:"health",name:"Health & Fitness",icon:"🧘",group:"Health",url:"/Myself/util/Util_yog.html"},
-{id:"learning",name:"Learning",icon:"📚",group:"Learning",url:"/Myself/util/Util_sutra.html"},
-{id:"smarttools",name:"Smart Tools",icon:"🛠️",group:"Tools",url:"/Myself/util/Util_smart.html"},
-{id:"creativity",name:"Creativity",icon:"🎨",group:"Creativity",url:"/Myself/util/Util_chitra.html"},
-{id:"sanskar",name:"Sanskar",icon:"🌱",group:"Personal",url:"/Myself/util/Util_sanskar.html"},
-{id:"relax",name:"Relax & Enjoy",icon:"🎮",group:"Entertainment",url:"/Myself/util/Util_ranjan.html"},
-{id:"language",name:"Language Learning",icon:"🌐",group:"Learning",url:"/Myself/util/Util_lang.html"},
-{id:"nav1",name:"Navigation",icon:"🧭",group:"Travel",url:"/Myself/util/Util_planet.html"},
-
-{id:"nav2",name:"Tourist Place",icon:"🧭",group:"Travel",url:"/Myself/travel/yatri.html"},
-
-{id:"nav3",name:"Travel Planner",icon:"🧭",group:"Travel",url:"/Myself/travel/yatra.html"},
-
-
-
-{id:"onetrack",name:"One Track",icon:"🛠️",group:"Tools",url:"/Myself/age/Aug26_fit.html"},
-{id:"vendor",name:"Vendor",icon:"🛠️",group:"Tools",url:"/Myself/apps/vendor.html"},
-{id:"issuetrack",name:"Issue Tracker",icon:"🛠️",group:"Tools",url:"/Myself/apps/issuetracker.html"},
-{id:"school",name:"School",icon:"🛠️",group:"Tools",url:"/Myself/school/school.html"},
-{id:"institute",name:"Institute",icon:"🛠️",group:"Tools",url:"/Myself/apps/institute.html"},
-{id:"clinic",name:"Clinic",icon:"🛠️",group:"Tools",url:"/Myself/clinic/clinic.html"},
-{id:"pivot",name:"Pivot Chart",icon:"🛠️",group:"Tools",url:"/Myself/img/PivotChart.html"}
+const STORAGE_KEY="swayam_lifesuite_v5";
+const THEMES=[
+ ["forest","🌲 Forest","#138a4b"],["ocean","🌊 Ocean","#087eaa"],["meadow","🌿 Meadow","#629b35"],
+ ["mint","🍃 Mint","#009688"],["sunset","🌇 Sunset","#d96a32"],["lavender","🪻 Lavender","#8059b8"],
+ ["rose","🌹 Rose","#c24f78"],["sky","☁️ Sky","#347bc4"],["sand","🏜️ Sand","#a57b39"],
+ ["night","🌙 Night","#63c98d"],["snow","❄️ Snow","#477fbd"],["water","💧 Water","#078bba"],
+ ["fire","🔥 Fire","#d74c24"],["earth","🌍 Earth","#887044"]
 ];
-
-const THEMES=["forest","ocean","meadow","mint","sunset","lavender","rose","sky","sand","night"];
-const LAYOUTS=["grid","compact","icons","list","split","dashboard","horizontal","rail"];
-
-let state={
- theme:"forest",layout:"grid",groups:[...DEFAULT_GROUPS],
- assignments:{},favourites:[],recents:[],
- order:DEFAULT_APPS.map(a=>a.id),customApps:[],collapsed:{}
-};
-
-let movingId=null,toastTimer=null,draggedId=null;
+const LAYOUTS={grid:"Standard Grid",compact:"Compact Grid",list:"List View",icons:"Icon View",large:"Large Cards",two:"Two Columns",dashboard:"Dashboard"};
+const DEFAULT_GROUPS=["Personal","Family","Work","Health","Learning","Tools","Creativity","Travel","Entertainment","Other"];
+const DEFAULT_APPS=[
+ {id:"thoughts",name:"Every Day Thoughts",icon:"☕",category:"Personal",url:"/Myself/school/idea.html"},
+ {id:"festivals",name:"Indian Festivals",icon:"🙏",category:"Personal",url:"/Myself/festival/navratri.html"},
+ {id:"todo",name:"To-do List",icon:"✏️",category:"Personal",url:"/Myself/school/todo1.html"},
+ {id:"quicknotes",name:"Quick Notes",icon:"⚡",category:"Personal",url:"/Myself/util/Util_quick.html"},
+ {id:"lifehome",name:"Life & Home",icon:"🏠",category:"Family",url:"/Myself/util/Util_fin.html"},
+ {id:"career",name:"Work & Career",icon:"💼",category:"Work",url:"/Myself/util/Util_karya.html"},
+ {id:"kids",name:"Kids",icon:"👨‍🎓",category:"Family",url:"/Myself/util/Util_laxmi.html"},
+ {id:"safety",name:"Women & Safety",icon:"👩",category:"Family",url:"/Myself/nari/nariraksha.html"},
+ {id:"health",name:"Health & Fitness",icon:"🧘",category:"Health",url:"/Myself/util/Util_yog.html"},
+ {id:"learning",name:"Learning",icon:"📚",category:"Learning",url:"/Myself/util/Util_sutra.html"},
+ {id:"smarttools",name:"Smart Tools",icon:"🛠️",category:"Tools",url:"/Myself/util/Util_smart.html"},
+ {id:"creativity",name:"Creativity",icon:"🎨",category:"Creativity",url:"/Myself/util/Util_chitra.html"},
+ {id:"sanskar",name:"Sanskar",icon:"🌱",category:"Personal",url:"/Myself/util/Util_sanskar.html"},
+ {id:"relax",name:"Relax & Enjoy",icon:"🎮",category:"Entertainment",url:"/Myself/util/Util_ranjan.html"},
+ {id:"language",name:"Language Learning",icon:"🌐",category:"Learning",url:"/Myself/util/Util_lang.html"},
+ {id:"nav1",name:"Navigation",icon:"🧭",category:"Travel",url:"/Myself/util/Util_planet.html"},
+ {id:"nav2",name:"Tourist Places",icon:"🏞️",category:"Travel",url:"/Myself/travel/yatri.html"},
+ {id:"nav3",name:"Travel Planner",icon:"🧳",category:"Travel",url:"/Myself/travel/yatra.html"},
+ {id:"onetrack",name:"One Track",icon:"🎯",category:"Tools",url:"/Myself/age/Aug26_fit.html"},
+ {id:"vendor",name:"Vendor",icon:"📦",category:"Tools",url:"/Myself/apps/vendor.html"},
+ {id:"issuetrack",name:"Issue Tracker",icon:"🧰",category:"Tools",url:"/Myself/apps/issuetracker.html"},
+ {id:"school",name:"School",icon:"🏫",category:"Learning",url:"/Myself/school/school.html"},
+ {id:"institute",name:"Institute",icon:"🎓",category:"Learning",url:"/Myself/apps/institute.html"},
+ {id:"clinic",name:"Clinic",icon:"🏥",category:"Health",url:"/Myself/clinic/clinic.html"},
+ {id:"pivot",name:"Pivot Chart",icon:"📊",category:"Tools",url:"/Myself/img/PivotChart.html"}
+];
+function defaults(){return{groups:[...DEFAULT_GROUPS],apps:DEFAULT_APPS.map(a=>({...a,favorite:false,enabled:true,created:Date.now()})),recent:[],theme:"forest",layout:"grid",fontSize:"14px",selectedGroup:"all",categoryFilter:"all"}}
+function loadState(){
+ try{
+  const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return defaults();
+  const d=JSON.parse(raw),s={...defaults(),...d};
+  s.groups=Array.isArray(d.groups)&&d.groups.length?d.groups.filter(x=>typeof x==="string"&&x.trim()):DEFAULT_GROUPS.slice();
+  if(!s.groups.length)s.groups=["Other"];
+  s.apps=Array.isArray(d.apps)?d.apps.filter(a=>a&&typeof a.name==="string").map((a,i)=>({
+   id:String(a.id||("app_"+i)),name:a.name,icon:a.icon||"📱",
+   category:s.groups.includes(a.category)?a.category:s.groups[0],url:a.url||"",
+   favorite:!!a.favorite,enabled:a.enabled!==false,created:Number(a.created)||Date.now()
+  })):defaults().apps;
+  s.recent=Array.isArray(d.recent)?d.recent:[];
+  if(!THEMES.some(t=>t[0]===s.theme))s.theme="forest";
+  if(!LAYOUTS[s.layout])s.layout="grid";
+  if(!["13px","14px","16px","18px"].includes(s.fontSize))s.fontSize="14px";
+  return s;
+ }catch(e){return defaults()}
+}
+let state=loadState(),activeMode="all",editingId=null,selectedIds=new Set(),toastTimer=null;
 const $=id=>document.getElementById(id);
-
-function apps(){
- const combined=[
-  ...DEFAULT_APPS.map(a=>({...a,group:state.assignments[a.id]||a.group})),
-  ...state.customApps.map(a=>({...a,group:state.assignments[a.id]||a.group}))
- ];
- const map=new Map(combined.map(a=>[a.id,a]));
- const out=[];
- (state.order||[]).forEach(id=>{
-  if(map.has(id)){out.push(map.get(id));map.delete(id)}
- });
- map.forEach(a=>out.push(a));
- return out;
-}
-
-function toast(message){
- $("toast").textContent=message;
- $("toast").classList.remove("hidden");
- clearTimeout(toastTimer);
- toastTimer=setTimeout(()=>$("toast").classList.add("hidden"),2500);
-}
-
-function save(){
- try{
-  localStorage.setItem(KEY,JSON.stringify(state));
-  $("storageInfo").textContent="Saved locally on this device · "+apps().length+" apps.";
- }catch(e){toast("Unable to save. Browser storage may be full.")}
-}
-
-function load(){
- try{
-  const d=JSON.parse(localStorage.getItem(KEY)||"null");
-  if(!d)return;
-  if(THEMES.includes(d.theme))state.theme=d.theme;
-  if(LAYOUTS.includes(d.layout))state.layout=d.layout;
-  if(Array.isArray(d.groups))state.groups=[...new Set(d.groups.filter(g=>typeof g==="string"&&g.trim()).map(g=>g.trim()))];
-  if(!state.groups.length)state.groups=[...DEFAULT_GROUPS];
-  if(d.assignments&&typeof d.assignments==="object")state.assignments=d.assignments;
-  if(Array.isArray(d.favourites))state.favourites=d.favourites;
-  if(Array.isArray(d.recents))state.recents=d.recents;
-  if(Array.isArray(d.order))state.order=d.order;
-  if(Array.isArray(d.customApps))state.customApps=d.customApps.filter(a=>a&&a.id&&a.name&&a.url);
-  if(d.collapsed&&typeof d.collapsed==="object")state.collapsed=d.collapsed;
- }catch(e){console.warn("Could not read saved launcher settings",e)}
-}
-
-function applyTheme(){
- document.body.dataset.theme=state.theme;
- $("theme").value=state.theme;
- $("layout").value=state.layout;
- updateFilterSummary();
-}
-
-function openCustomize(focusSearch=false){
- if(!$("homePage").classList.contains("hidden")){
-  $("customizeOverlay").classList.remove("hidden");
-  document.body.classList.add("modal-open");
-  if(focusSearch)setTimeout(()=>$("search").focus(),50);
- }
-}
-
-function closeCustomize(){
- $("customizeOverlay").classList.add("hidden");
- document.body.classList.remove("modal-open");
- $("openCustomize").focus({preventScroll:true});
-}
-
-function updateFilterSummary(){
- const cat=$("categoryFilter").value;
- const filter=$("appFilter").value;
- const query=$("search").value.trim();
- const parts=[];
- parts.push(cat==="all"?"All categories":cat);
- parts.push(filter==="fav"?"Favourites":filter==="recent"?"Recently opened":"All apps");
- if(query)parts.push("Search: "+query);
- $("activeFilterSummary").textContent=parts.join(" · ");
-}
-
-function changePage(page){
- cancelMove(false);
- closeCustomize();
- ["home","organize","settings"].forEach(p=>$(p+"Page").classList.toggle("hidden",p!==page));
- document.querySelectorAll(".dockbtn").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
- if(page==="organize")renderGroups();
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){showToast("Could not save; storage may be full.")}}
+function showToast(msg){const el=$("toast");el.textContent=msg;el.style.display="block";clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.style.display="none",2400)}
+function idNew(){return "app_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,7)}
+function groups(){return state.groups.filter((g,i,a)=>a.indexOf(g)===i)}
+function setPage(page){
+ document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+ document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+page));
+ if(page==="manager"){populateCategoryInputs();renderManager()}
+ if(page==="organize")renderCategories();
+ if(page==="settings"){renderThemes();$("defaultLayout").value=state.layout;$("fontSize").value=state.fontSize}
  window.scrollTo({top:0,behavior:"smooth"});
 }
-
-document.querySelectorAll(".dockbtn").forEach(b=>b.addEventListener("click",()=>changePage(b.dataset.page)));
-
-$("openCustomize").addEventListener("click",()=>openCustomize());
-$("closeCustomize").addEventListener("click",closeCustomize);
-$("applyCustomize").addEventListener("click",closeCustomize);
-
-$("customizeOverlay").addEventListener("click",e=>{
- if(e.target===$("customizeOverlay"))closeCustomize();
-});
-
-$("searchFocus").addEventListener("click",()=>{
- changePage("home");
- openCustomize(true);
-});
-
-$("resetFilters").addEventListener("click",()=>{
- $("search").value="";
- $("categoryFilter").value="all";
- $("appFilter").value="all";
- $("allCategoriesToggle").value="individual";
- renderApps();
- toast("Filters reset.");
- $("search").focus();
-});
-
-document.addEventListener("keydown",e=>{
- if(e.key==="Escape"){
-  if(!$("customizeOverlay").classList.contains("hidden"))closeCustomize();
-  else cancelMove(true);
+function populateSelect(id,includeAll){
+ const el=$(id),old=el.value;
+ el.innerHTML=(includeAll?'<option value="all">All categories</option>':'')+
+ groups().map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join("");
+ if(includeAll)el.insertAdjacentHTML("beforeend",'');
+ if([...el.options].some(o=>o.value===old))el.value=old;
+}
+function populateCategoryInputs(){
+ ["formCategory","managerCategory"].forEach(id=>populateSelect(id,id==="managerCategory"));
+ const old=$("bulkCategory").value;
+ $("bulkCategory").innerHTML='<option value="">Move to category…</option>'+groups().map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join("");
+ if(groups().includes(old))$("bulkCategory").value=old;
+}
+function setMode(mode){activeMode=mode;state.selectedGroup="all";saveState();renderHome()}
+function searchMatches(a,q){return !q||[a.name,a.category,a.icon].some(v=>String(v||"").toLowerCase().includes(q))}
+function homeApps(){
+ const q=$("appSearch").value.trim().toLowerCase();
+ let arr=state.apps.filter(a=>a.enabled&&searchMatches(a,q));
+ if(activeMode==="favorites")arr=arr.filter(a=>a.favorite);
+ if(activeMode==="recent")arr=arr.filter(a=>state.recent.includes(a.id));
+ if(activeMode==="all"&&state.selectedGroup!=="all")arr=arr.filter(a=>a.category===state.selectedGroup);
+ return arr;
+}
+function renderHome(){
+ const filter=$("categoryFilter"),old=state.categoryFilter||"all";
+ filter.innerHTML='<option value="all">All categories</option>'+groups().map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join("");
+ filter.value=groups().includes(old)?old:"all";state.categoryFilter=filter.value;
+ let visible=groups();if(filter.value!=="all")visible=visible.filter(g=>g===filter.value);
+ const q=$("appSearch").value.trim().toLowerCase(),matched=state.apps.filter(a=>a.enabled&&searchMatches(a,q));
+ let html=`<button class="category-tab ${state.selectedGroup==="all"&&activeMode==="all"?"active":""}" data-group="all">🌿 All apps <span class="count">${matched.length}</span></button>`;
+ visible.forEach(g=>html+=`<button class="category-tab ${state.selectedGroup===g&&activeMode==="all"?"active":""}" data-group="${esc(g)}">${esc(g)} <span class="count">${matched.filter(a=>a.category===g).length}</span></button>`);
+ $("categoryTabs").innerHTML=html;
+ const arr=homeApps(),grid=$("appsGrid");grid.className="apps layout-"+state.layout;
+ $("layoutSelect").value=state.layout;$("resultCount").textContent=`${arr.length} apps`;
+ $("homeSummary").textContent=`${state.apps.length} apps · ${groups().length} categories`;
+ $("layoutHint").textContent=LAYOUTS[state.layout];
+ $("appsHeading").textContent=activeMode==="favorites"?"⭐ Favourites":activeMode==="recent"?"🕘 Recent apps":state.selectedGroup==="all"?"All apps":state.selectedGroup;
+ if(!arr.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1">🔎<p>No apps found.</p><button class="btn small" data-action="clearSearch">Clear search</button></div>';return}
+ grid.innerHTML=arr.map(a=>`
+ <article class="app-card">
+  <div class="app-top"><div class="app-icon">${esc(a.icon)}</div><div class="app-info"><h3>${esc(a.name)}</h3><p>${esc(a.category)}</p></div>
+  <button class="star" data-action="favorite" data-id="${esc(a.id)}" aria-label="Toggle favourite">${a.favorite?"★":"☆"}</button></div>
+  <div class="app-actions"><button class="btn primary open-label" data-action="open" data-id="${esc(a.id)}">↗ Open</button>
+  <button class="btn small" data-action="manage" data-id="${esc(a.id)}" title="Manage app">⚙️</button>
+  <select class="move-select" data-action="move" data-id="${esc(a.id)}" aria-label="Move category">${groups().map(g=>`<option value="${esc(g)}" ${g===a.category?"selected":""}>${esc(g)}</option>`).join("")}</select></div>
+ </article>`).join("");
+}
+function resetForm(){
+ editingId=null;$("formName").value="";$("formIcon").value="📱";$("formUrl").value="";
+ $("formStatus").value="true";$("formFavorite").value="false";
+ $("appFormHeading").textContent="Add a new app";$("saveApp").textContent="Save app";
+}
+function loadForm(id){
+ const a=state.apps.find(x=>x.id===id);if(!a)return;
+ editingId=id;setPage("manager");populateCategoryInputs();
+ $("formName").value=a.name;$("formIcon").value=a.icon||"📱";$("formUrl").value=a.url||"";
+ $("formCategory").value=a.category;$("formStatus").value=String(a.enabled!==false);
+ $("formFavorite").value=String(!!a.favorite);
+ $("appFormHeading").textContent="Edit app: "+a.name;$("saveApp").textContent="💾 Update app";
+ $("formName").focus();
+}
+function saveForm(){
+ const name=$("formName").value.trim(),icon=$("formIcon").value.trim()||"📱";
+ const category=$("formCategory").value,url=$("formUrl").value.trim();
+ if(!name){showToast("Enter an app name.");$("formName").focus();return}
+ if(!category){showToast("Create a category first.");return}
+ if(url&&!/^(https?:\/\/|\/|\.\/|\.\.\/|mailto:|tel:)/i.test(url)){showToast("Use https:// or a relative app path.");return}
+ const data={name,icon,category,url,enabled:$("formStatus").value==="true",favorite:$("formFavorite").value==="true"};
+ if(editingId){
+  const a=state.apps.find(x=>x.id===editingId);if(a)Object.assign(a,data);
+  showToast("App updated.");
+ }else{
+  state.apps.push({id:idNew(),...data,created:Date.now()});showToast("App added.");
  }
-});
-
-function refreshCategorySelects(){
- const filter=$("categoryFilter"),appGroup=$("appCategory");
- const oldFilter=filter.value,oldGroup=appGroup.value;
- filter.innerHTML="";
- const all=document.createElement("option");
- all.value="all";all.textContent="All categories";filter.appendChild(all);
- state.groups.forEach(g=>{
-  const o=document.createElement("option");
-  o.value=g;o.textContent=g;filter.appendChild(o);
+ state.selectedGroup="all";state.categoryFilter="all";activeMode="all";
+ saveState();resetForm();populateCategoryInputs();renderManager();renderHome();
+}
+function renderManager(){
+ populateCategoryInputs();
+ const q=$("managerSearch").value.trim().toLowerCase(),cat=$("managerCategory").value||"all",status=$("managerStatus").value,sort=$("managerSort").value;
+ let arr=state.apps.filter(a=>searchMatches(a,q));
+ if(cat!=="all")arr=arr.filter(a=>a.category===cat);
+ if(status==="enabled")arr=arr.filter(a=>a.enabled);
+ if(status==="disabled")arr=arr.filter(a=>!a.enabled);
+ if(status==="favorites")arr=arr.filter(a=>a.favorite);
+ arr.sort((a,b)=>{
+  if(sort==="nameDesc")return b.name.localeCompare(a.name);
+  if(sort==="category")return a.category.localeCompare(b.category)||a.name.localeCompare(b.name);
+  if(sort==="newest")return b.created-a.created;
+  if(sort==="favorites")return Number(b.favorite)-Number(a.favorite)||a.name.localeCompare(b.name);
+  return a.name.localeCompare(b.name);
  });
- appGroup.innerHTML="";
- state.groups.forEach(g=>{
-  const o=document.createElement("option");
-  o.value=g;o.textContent=g;appGroup.appendChild(o);
- });
- filter.value=state.groups.includes(oldFilter)?oldFilter:"all";
- appGroup.value=state.groups.includes(oldGroup)?oldGroup:state.groups[0];
- updateFilterSummary();
+ $("statTotal").textContent=state.apps.length;
+ $("statEnabled").textContent=state.apps.filter(a=>a.enabled).length;
+ $("statFav").textContent=state.apps.filter(a=>a.favorite).length;
+ $("statCategories").textContent=groups().length;
+ $("managerCount").textContent=`${arr.length} app${arr.length===1?"":"s"}`;
+ $("selectedCount").textContent=`${selectedIds.size} selected`;
+ $("selectAll").checked=arr.length>0&&arr.every(a=>selectedIds.has(a.id));
+ $("managerList").innerHTML=arr.map(a=>`
+ <div class="manager-row ${selectedIds.has(a.id)?"selected":""}">
+  <input type="checkbox" data-action="select" data-id="${esc(a.id)}" ${selectedIds.has(a.id)?"checked":""} aria-label="Select ${esc(a.name)}">
+  <div class="manager-main"><div class="manager-icon">${esc(a.icon)}</div><div style="min-width:0"><div class="manager-name">${esc(a.name)}</div><div class="manager-meta">${a.favorite?"⭐ Favourite · ":""}${a.enabled?"🟢 Enabled":"⚪ Disabled"}</div></div></div>
+  <div class="manager-category"><select data-action="rowMove" data-id="${esc(a.id)}" aria-label="Move ${esc(a.name)}">${groups().map(g=>`<option value="${esc(g)}" ${a.category===g?"selected":""}>${esc(g)}</option>`).join("")}</select></div>
+  <div class="row-actions">
+   <button class="btn small" data-action="edit" data-id="${esc(a.id)}">✏️ Edit</button>
+   <button class="btn small" data-action="duplicate" data-id="${esc(a.id)}">⧉ Copy</button>
+   <button class="btn small" data-action="toggle" data-id="${esc(a.id)}">${a.enabled?"Disable":"Enable"}</button>
+   <button class="btn small" data-action="favorite" data-id="${esc(a.id)}">${a.favorite?"★":"☆"}</button>
+   <button class="btn small danger" data-action="delete" data-id="${esc(a.id)}">Delete</button>
+  </div>
+ </div>`).join("")||'<div class="empty">No apps match these filters.</div>';
 }
-
-function cancelMove(show=true){
- const had=!!movingId;
- movingId=null;
- $("moveBanner").classList.add("hidden");
- if(show&&had)toast("Move cancelled.");
+function renderCategories(){
+ $("categoryManageList").innerHTML=groups().map(g=>{
+  const n=state.apps.filter(a=>a.category===g).length;
+  return `<div class="item-row"><div class="left"><strong>${esc(g)}</strong><div class="smalltext">${n} app(s)</div></div><div class="actions"><button class="btn small" data-action="rename" data-category="${esc(g)}">Rename</button><button class="btn small danger" data-action="deleteCategory" data-category="${esc(g)}">Delete</button></div></div>`;
+ }).join("")||'<div class="empty">No categories yet.</div>';
 }
-
-function startMove(id){
- const a=apps().find(x=>x.id===id);
- if(!a)return;
- movingId=id;
- $("moveBanner").classList.remove("hidden");
- $("moveText").textContent="Moving "+a.name+" — tap a category heading or choose a category from its selector.";
- renderApps();
- toast("Choose a destination category.");
-}
-
-function moveApp(id,group){
- if(!id||!state.groups.includes(group))return;
- const a=apps().find(x=>x.id===id);
- if(!a)return;
- state.assignments[id]=group;
- movingId=null;
- save();
- refreshCategorySelects();
- renderApps();
- renderGroups();
- toast(a.name+" moved to "+group+".");
-}
-
-function toggleFavourite(id){
- state.favourites=state.favourites.includes(id)
-  ?state.favourites.filter(x=>x!==id)
-  :[id,...state.favourites];
-
- save();
- renderApps();
-}
-
-function openApp(id){
- const a=apps().find(x=>x.id===id);
- if(!a)return;
- movingId=null;
- $("moveBanner").classList.add("hidden");
- state.recents=[id,...state.recents.filter(x=>x!==id)].slice(0,15);
- save();
- renderQuickAccess();
-
- try{
-  if(window.parent!==window){
-   const frame=window.parent.document.getElementById("swayamFrame");
-   if(frame){frame.src=a.url;return;}
-  }
- }catch(e){}
- window.location.href=a.url;
-}
-
-function makeDestination(app){
- const sel=document.createElement("select");
- sel.className="destination";
- sel.setAttribute("aria-label","Move "+app.name+" to category");
- state.groups.forEach(g=>{
-  const o=document.createElement("option");
-  o.value=g;o.textContent="Category: "+g;
-  o.selected=g===app.group;
-  sel.appendChild(o);
- });
- sel.addEventListener("change",()=>moveApp(app.id,sel.value));
- return sel;
-}
-
-function reorderApps(source,target){
- if(!source||!target||source===target)return;
- const ids=apps().map(a=>a.id);
- const from=ids.indexOf(source),to=ids.indexOf(target);
- if(from<0||to<0)return;
- ids.splice(from,1);
- ids.splice(to,0,source);
- state.order=ids;
- save();
- renderApps();
- toast("App order updated.");
-}
-
-function makeCard(a){
- const card=document.createElement("article");
- card.className="app-card";
- card.draggable=true;
- card.dataset.id=a.id;
- if(movingId===a.id)card.classList.add("move-selected");
-
- const star=document.createElement("button");
- star.className="star";
- star.textContent=state.favourites.includes(a.id)?"★":"☆";
- star.title="Toggle favourite";
- star.setAttribute("aria-label","Toggle favourite");
- star.addEventListener("click",e=>{e.stopPropagation();toggleFavourite(a.id)});
-
- const icon=document.createElement("div");
- icon.className="app-icon";
- icon.textContent=a.icon||"🌐";
-
- const info=document.createElement("div");
- info.className="app-info";
- const name=document.createElement("div");
- name.className="app-name";
- name.textContent=a.name;
- const group=document.createElement("div");
- group.className="app-group";
- group.textContent=a.group;
- info.append(name,group);
-
- const actions=document.createElement("div");
- actions.className="app-actions";
-
- const open=document.createElement("button");
- open.className="btn primary small";
- open.textContent="Open";
- open.addEventListener("click",()=>openApp(a.id));
-
- const move=document.createElement("button");
- move.className="btn small";
- move.textContent="Move";
- move.addEventListener("click",()=>startMove(a.id));
-
- actions.append(open,move);
- card.append(star,icon,info,actions,makeDestination(a));
-
- card.addEventListener("dragstart",e=>{
-  draggedId=a.id;
-  card.classList.add("move-selected");
-  if(e.dataTransfer){e.dataTransfer.setData("text/plain",a.id);e.dataTransfer.effectAllowed="move"}
- });
- card.addEventListener("dragend",()=>{
-  draggedId=null;
-  document.querySelectorAll(".drop-target").forEach(x=>x.classList.remove("drop-target"));
- });
- card.addEventListener("dragover",e=>{
-  if(draggedId&&draggedId!==a.id){e.preventDefault();card.classList.add("drop-target")}
- });
- card.addEventListener("dragleave",()=>card.classList.remove("drop-target"));
- card.addEventListener("drop",e=>{
-  e.preventDefault();card.classList.remove("drop-target");
-  const id=e.dataTransfer?.getData("text/plain")||draggedId;
-  if(id&&id!==a.id)reorderApps(id,a.id);
- });
- return card;
-}
-
-function getFilteredApps(){
- let list=apps();
- const cat=$("categoryFilter").value;
- const filter=$("appFilter").value;
- const query=$("search").value.trim().toLowerCase();
- if(cat!=="all")list=list.filter(a=>a.group===cat);
- if(filter==="fav")list=list.filter(a=>state.favourites.includes(a.id));
- if(filter==="recent"){
-  const ranks=new Map(state.recents.map((id,i)=>[id,i]));
-  list=list.filter(a=>ranks.has(a.id)).sort((a,b)=>ranks.get(a.id)-ranks.get(b.id));
- }
- if(query)list=list.filter(a=>(a.name+" "+a.group+" "+a.url).toLowerCase().includes(query));
- return list;
-}
-
-function renderQuickAccess(){
- const allApps=apps();
- const appMap=new Map(allApps.map(a=>[a.id,a]));
- state.favourites=state.favourites.filter(id=>appMap.has(id));
- state.recents=state.recents.filter(id=>appMap.has(id));
- const favourites=state.favourites.map(id=>appMap.get(id)).filter(Boolean);
- const recent=state.recents.map(id=>appMap.get(id)).filter(Boolean).slice(0,6);
-
- function renderCards(containerId,list){
-  const container=$(containerId);
-  container.innerHTML="";
-  list.forEach(app=>{
-   const card=document.createElement("button");
-   card.type="button";card.className="quick-app";card.title="Open "+app.name;
-   const icon=document.createElement("span");
-   icon.className="quick-app-icon";icon.textContent=app.icon||"🌐";
-   const name=document.createElement("span");
-   name.className="quick-app-name";name.textContent=app.name;
-   card.append(icon,name);
-   card.addEventListener("click",()=>openApp(app.id));
-   container.appendChild(card);
-  });
- }
- renderCards("quickFavouriteApps",favourites);
- renderCards("quickRecentApps",recent);
- $("quickFavCount").textContent=favourites.length;
- $("quickRecentCount").textContent=recent.length;
- $("quickFavEmpty").classList.toggle("hidden",favourites.length>0);
- $("quickRecentEmpty").classList.toggle("hidden",recent.length>0);
- $("favouriteSection").classList.remove("hidden");
- $("recentSection").classList.remove("hidden");
-}
-
-function setAllCategoriesCollapsed(shouldCollapse){
- state.groups.forEach(group=>state.collapsed[group]=shouldCollapse);
- save();renderApps();
- $("allCategoriesToggle").value=shouldCollapse?"collapse":"expand";
- toast(shouldCollapse?"All categories collapsed.":"All categories expanded.");
-}
-
-function makeSection(group,list){
- const section=document.createElement("section");
- section.className="group-section";section.dataset.group=group;
- const head=document.createElement("div");head.className="group-head";
-
- const toggle=document.createElement("button");
- toggle.className="btn small";toggle.textContent=state.collapsed[group]?"＋":"−";
- toggle.title=state.collapsed[group]?"Expand category":"Collapse category";
- toggle.setAttribute("aria-label",(state.collapsed[group]?"Expand ":"Collapse ")+group);
- toggle.addEventListener("click",()=>{
-  state.collapsed[group]=!state.collapsed[group];save();renderApps();
-  $("allCategoriesToggle").value="individual";
- });
-
- const title=document.createElement("div");
- title.className="group-title";title.textContent=group;
- title.title=movingId?"Tap to move selected app here":"Tap to collapse or expand category";
- title.addEventListener("click",()=>{
-  if(movingId){moveApp(movingId,group);return}
-  state.collapsed[group]=!state.collapsed[group];save();renderApps();
-  $("allCategoriesToggle").value="individual";
- });
-
- const count=document.createElement("span");
- count.className="group-count";count.textContent=list.length+" apps";
- head.append(toggle,title,count);
-
- const grid=document.createElement("div");grid.className="app-grid";
- list.forEach(a=>grid.appendChild(makeCard(a)));
- if(state.collapsed[group])grid.classList.add("hidden");
-
- [head,grid].forEach(el=>{
-  el.addEventListener("dragover",e=>{if(draggedId){e.preventDefault();section.classList.add("drop-target")}});
-  el.addEventListener("dragleave",e=>{if(!section.contains(e.relatedTarget))section.classList.remove("drop-target")});
-  el.addEventListener("drop",e=>{
-   e.preventDefault();section.classList.remove("drop-target");
-   const id=e.dataTransfer?.getData("text/plain")||draggedId;
-   if(id)moveApp(id,group);
-  });
- });
- section.append(head,grid);
- return section;
-}
-
-function renderApps(){
- renderQuickAccess();
- const box=$("appContainer");
- box.innerHTML="";
- box.className="layout-"+state.layout;
- const list=getFilteredApps();
- $("appCount").textContent=list.length;
- $("favouriteCount").textContent=state.favourites.length;
- $("categoryCount").textContent=state.groups.length;
- $("empty").classList.toggle("hidden",list.length>0);
- $("moveBanner").classList.toggle("hidden",!movingId);
- if(movingId){
-  const a=apps().find(x=>x.id===movingId);
-  $("moveText").textContent=a?"Moving "+a.name+" — tap a category heading.":"Choose a destination category.";
- }
- state.groups.forEach(group=>{
-  const matches=list.filter(a=>a.group===group);
-  if(matches.length)box.appendChild(makeSection(group,matches));
- });
- const orphaned=list.filter(a=>!state.groups.includes(a.group));
- if(orphaned.length)box.appendChild(makeSection("Other",orphaned));
- updateFilterSummary();
-}
-
-function renderGroups(){
- const box=$("categoryManager");
- box.innerHTML="";
- state.groups.forEach(group=>{
-  const row=document.createElement("div");row.className="group-row";
-  const top=document.createElement("div");top.className="group-top";
-  const name=document.createElement("div");name.className="group-name";name.textContent=group;
-  const count=document.createElement("span");count.className="group-count";
-  count.textContent=apps().filter(a=>a.group===group).length+" apps";
-  top.append(name,count);
-
-  const actions=document.createElement("div");actions.className="group-actions";
-  const rename=document.createElement("button");rename.className="btn small";rename.textContent="Rename / Update";
-  const collapse=document.createElement("button");collapse.className="btn small";collapse.textContent=state.collapsed[group]?"Expand":"Collapse";
-  const moveHere=document.createElement("button");moveHere.className="btn small";moveHere.textContent="Move selected here";
-  const del=document.createElement("button");del.className="btn small danger";del.textContent="Delete";
-  actions.append(rename,collapse,moveHere,del);
-  row.append(top,actions);
-
-  const editor=document.createElement("div");editor.className="group-edit hidden";
-  const input=document.createElement("input");input.value=group;input.setAttribute("aria-label","Updated category name");
-  const saveBtn=document.createElement("button");saveBtn.className="btn primary small";saveBtn.textContent="Save";
-  const cancelBtn=document.createElement("button");cancelBtn.className="btn small";cancelBtn.textContent="Cancel";
-  editor.append(input,saveBtn,cancelBtn);row.appendChild(editor);
-
-  rename.addEventListener("click",()=>{
-   // Close any other inline editors; show this category's editor.
-   box.querySelectorAll(".group-edit").forEach(ed=>ed.classList.add("hidden"));
-   editor.classList.remove("hidden");
-   input.value=group;
-   input.focus();
-   input.select();
-  });
-
-  cancelBtn.addEventListener("click",()=>editor.classList.add("hidden"));
-  input.addEventListener("keydown",e=>{
-   if(e.key==="Enter"){e.preventDefault();saveBtn.click()}
-   if(e.key==="Escape")editor.classList.add("hidden");
-  });
-
-  saveBtn.addEventListener("click",()=>{
-   const next=input.value.trim();
-   if(!next){toast("Category name cannot be empty.");input.focus();return}
-   if(next!==group&&state.groups.some(g=>g.toLowerCase()===next.toLowerCase())){
-    toast("A category with that name already exists.");input.focus();return;
-   }
-
-   if(next===group){
-    editor.classList.add("hidden");
-    toast("Category name unchanged.");
-    return;
-   }
-
-   // Rename transaction: update the category list, app assignments and
-   // collapse state before saving/rendering, so no app reverts to its
-   // built-in default group after the category is renamed.
-   state.groups=state.groups.map(g=>g===group?next:g);
-
-   apps().forEach(app=>{
-    if(app.group===group)state.assignments[app.id]=next;
-   });
-
-   // Also migrate any explicit assignment values for this category.
-   Object.keys(state.assignments).forEach(id=>{
-    if(state.assignments[id]===group)state.assignments[id]=next;
-   });
-
-   if(Object.prototype.hasOwnProperty.call(state.collapsed,group)){
-    state.collapsed[next]=state.collapsed[group];
-    delete state.collapsed[group];
-   }
-
-   if($("categoryFilter").value===group)$("categoryFilter").value=next;
-   if($("appCategory").value===group)$("appCategory").value=next;
-
-   editor.classList.add("hidden");
-   save();
-   refreshCategorySelects();
-   renderApps();
-   renderGroups();
-   toast('Category renamed to "'+next+'".');
-  });
-
-  collapse.addEventListener("click",()=>{
-   state.collapsed[group]=!state.collapsed[group];save();renderApps();renderGroups();
-  });
-
-  moveHere.addEventListener("click",()=>{
-   if(!movingId){toast("Tap Move on an app in Home first.");return}
-   moveApp(movingId,group);
-  });
-
-  del.addEventListener("click",()=>{
-   if(state.groups.length<=1){toast("Keep at least one category.");return}
-   if(!confirm('Delete "'+group+'"? Apps in it will be moved to another category.'))return;
-   let destination=state.groups.find(g=>g!==group&&g==="Other");
-   if(!destination)destination=state.groups.find(g=>g!==group);
-   apps().filter(a=>a.group===group).forEach(a=>state.assignments[a.id]=destination);
-   state.groups=state.groups.filter(g=>g!==group);
-   delete state.collapsed[group];
-   if(movingId&&apps().find(a=>a.id===movingId)?.group===destination)movingId=null;
-   save();refreshCategorySelects();renderApps();renderGroups();
-   toast("Category deleted. Apps moved to "+destination+".");
-  });
-
-  box.appendChild(row);
- });
-}
-
 function addCategory(){
- const input=$("newCategory"),name=input.value.trim();
- if(!name){toast("Enter a category name.");return}
- if(state.groups.some(g=>g.toLowerCase()===name.toLowerCase())){toast("That category already exists.");return}
- state.groups.push(name);input.value="";
- save();refreshCategorySelects();renderApps();renderGroups();toast("Category added.");
+ const name=$("newCategoryName").value.trim();
+ if(!name){showToast("Enter a category name.");return}
+ if(groups().some(g=>g.toLowerCase()===name.toLowerCase())){showToast("Category already exists.");return}
+ state.groups.push(name);$("newCategoryName").value="";
+ saveState();populateCategoryInputs();renderCategories();renderHome();renderManager();showToast("Category added.");
 }
-
-function addCustomApp(){
- const name=$("appName").value.trim(),url=$("appUrl").value.trim();
- const icon=$("appIcon").value.trim()||"🌐",group=$("appCategory").value;
- if(!name||!url){toast("Enter an app name and URL.");return}
- if(/^javascript:/i.test(url)||/^data:/i.test(url)){toast("This URL type is not allowed.");return}
- if(!/^(https?:\/\/|\/|\.{0,2}\/|[a-zA-Z0-9_-]+\/)/i.test(url)){toast("Use https:// or a relative HTML path.");return}
- const id="custom_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,7);
- state.customApps.push({id,name,icon,url,group});state.order.push(id);
- $("appName").value="";$("appUrl").value="";$("appIcon").value="🌐";
- save();renderApps();renderGroups();toast("App added to "+group+".");
+function renameCategory(oldName){
+ const value=prompt("Enter new category name:",oldName);if(value===null)return;
+ const name=value.trim();if(!name){showToast("Name cannot be empty.");return}
+ if(name!==oldName&&groups().some(g=>g.toLowerCase()===name.toLowerCase())){showToast("Category already exists.");return}
+ state.groups=state.groups.map(g=>g===oldName?name:g);
+ state.apps.forEach(a=>{if(a.category===oldName)a.category=name});
+ if(state.selectedGroup===oldName)state.selectedGroup=name;
+ if(state.categoryFilter===oldName)state.categoryFilter=name;
+ saveState();populateCategoryInputs();renderCategories();renderHome();renderManager();showToast("Category renamed.");
 }
-
-function download(blob,filename){
- const url=URL.createObjectURL(blob),a=document.createElement("a");
- a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
- setTimeout(()=>URL.revokeObjectURL(url),1000);
+function deleteCategory(name){
+ const n=state.apps.filter(a=>a.category===name).length;
+ if(!confirm(`Delete "${name}"? ${n} app(s) will be moved to another category.`))return;
+ state.groups=state.groups.filter(g=>g!==name);if(!state.groups.length)state.groups=["Other"];
+ const dest=state.groups.includes("Other")?"Other":state.groups[0];
+ state.apps.forEach(a=>{if(a.category===name)a.category=dest});
+ if(state.selectedGroup===name)state.selectedGroup="all";
+ if(state.categoryFilter===name)state.categoryFilter="all";
+ saveState();populateCategoryInputs();renderCategories();renderHome();renderManager();showToast("Category deleted.");
 }
-
-function exportBackup(){
- download(new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),"swayam-backup.json");
+function openApp(id){
+ const a=state.apps.find(x=>x.id===id);if(!a)return;
+ if(!a.enabled){showToast("This app is disabled. Enable it in App Manager.");return}
+ if(!a.url){showToast("Add an app link in App Manager.");loadForm(id);return}
+ let url=a.url.trim();
+ try{
+  if(!/^(https?:\/\/|mailto:|tel:)/i.test(url)){if(!url.startsWith("/"))url="/"+url;url=new URL(url,location.href).href}
+ }catch(e){showToast("Invalid app link.");return}
+ state.recent=[id,...state.recent.filter(x=>x!==id)].slice(0,12);saveState();renderHome();
+ if(/^(mailto:|tel:)/i.test(url)){location.href=url;return}
+ const w=window.open(url,"_blank");if(!w)showToast("Popup blocked. Allow popups to open this app.");
 }
-
-function exportCsv(){
- const rows=[["id","name","icon","category","url","favourite"]];
- apps().forEach(a=>rows.push([a.id,a.name,a.icon,a.group,a.url,state.favourites.includes(a.id)?"yes":"no"]));
- const csv="\uFEFF"+rows.map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
- download(new Blob([csv],{type:"text/csv;charset=utf-8"}),"swayam-apps.csv");
+function toggleFavorite(id){
+ const a=state.apps.find(x=>x.id===id);if(!a)return;
+ a.favorite=!a.favorite;saveState();renderHome();renderManager();
 }
-
-function importBackup(file){
+function moveApp(id,category){
+ const a=state.apps.find(x=>x.id===id);if(!a||!groups().includes(category))return;
+ a.category=category;saveState();renderHome();renderManager();showToast("App moved.");
+}
+function duplicateApp(id){
+ const a=state.apps.find(x=>x.id===id);if(!a)return;
+ state.apps.push({...a,id:idNew(),name:a.name+" (Copy)",created:Date.now()});
+ saveState();renderHome();renderManager();showToast("App duplicated.");
+}
+function deleteApp(id){
+ const a=state.apps.find(x=>x.id===id);if(!a)return;
+ if(!confirm(`Delete "${a.name}" permanently from this launcher?`))return;
+ state.apps=state.apps.filter(x=>x.id!==id);state.recent=state.recent.filter(x=>x!==id);selectedIds.delete(id);
+ saveState();renderHome();renderManager();showToast("App deleted.");
+}
+function selectedApps(){return state.apps.filter(a=>selectedIds.has(a.id))}
+function bulkAction(action){
+ const arr=selectedApps();if(!arr.length){showToast("Select at least one app first.");return}
+ if(action==="delete"){
+  if(!confirm(`Delete ${arr.length} selected app(s)?`))return;
+  const ids=new Set(arr.map(a=>a.id));state.apps=state.apps.filter(a=>!ids.has(a.id));state.recent=state.recent.filter(id=>!ids.has(id));selectedIds.clear();
+ }else if(action==="move"){
+  const cat=$("bulkCategory").value;if(!cat){showToast("Choose a destination category.");return}
+  arr.forEach(a=>a.category=cat);
+ }else if(action==="enable")arr.forEach(a=>a.enabled=true);
+ else if(action==="disable")arr.forEach(a=>a.enabled=false);
+ else if(action==="favorite")arr.forEach(a=>a.favorite=true);
+ else if(action==="unfavorite")arr.forEach(a=>a.favorite=false);
+ saveState();renderHome();renderManager();showToast("Bulk action completed.");
+}
+function renderThemes(){
+ $("themeGrid").innerHTML=THEMES.map(t=>`<button class="theme-choice" data-theme-choice="${t[0]}" style="border-color:${state.theme===t[0]?"var(--primary)":"var(--border)"};outline:${state.theme===t[0]?"2px solid var(--primary)":"none"}"><span class="theme-dot" style="--swatch:${t[2]}"></span>${esc(t[1])}${state.theme===t[0]?'<div class="smalltext">Selected ✓</div>':""}</button>`).join("");
+}
+function downloadFile(filename,content,type){
+ const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function exportFullBackup(){saveState();downloadFile("swayam-full-backup.json",JSON.stringify(state,null,2),"application/json");showToast("Full backup exported.")}
+function exportAppsJSON(){downloadFile("swayam-apps.json",JSON.stringify(state.apps,null,2),"application/json");showToast("App data exported.")}
+function exportCSV(){
+ const cols=["id","name","icon","category","url","favorite","enabled","created"];
+ const csv=[cols,...state.apps.map(a=>cols.map(k=>a[k]??""))].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\r\n");
+ downloadFile("swayam-apps.csv","\uFEFF"+csv,"text/csv;charset=utf-8");showToast("CSV exported.");
+}
+function parseCSV(text){
+ const rows=[];let row=[],cell="",quoted=false;
+ text=text.replace(/^\uFEFF/,"");
+ for(let i=0;i<text.length;i++){
+  const c=text[i],next=text[i+1];
+  if(c==='"'&&quoted&&next==='"'){cell+='"';i++}
+  else if(c==='"')quoted=!quoted;
+  else if(c===","&&!quoted){row.push(cell);cell=""}
+  else if((c==="\n"||c==="\r")&&!quoted){
+   if(c==="\r"&&next==="\n")i++;
+   row.push(cell);if(row.some(v=>v!==""))rows.push(row);row=[];cell="";
+  }else cell+=c;
+ }
+ row.push(cell);if(row.some(v=>v!==""))rows.push(row);
+ if(!rows.length)return[];
+ const headers=rows.shift().map(h=>h.trim().toLowerCase());
+ return rows.map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]||""])));
+}
+function importFile(file,full){
+ if(!file)return;
  const reader=new FileReader();
  reader.onload=()=>{
   try{
-   const d=JSON.parse(reader.result);
-   if(!d||!Array.isArray(d.groups)||!Array.isArray(d.customApps))throw new Error("Invalid Swayam backup.");
-   if(!confirm("Replace current launcher settings with this backup?"))return;
-   const groups=[...new Set(d.groups.filter(g=>typeof g==="string"&&g.trim()).map(g=>g.trim()))];
-   if(!groups.length)throw new Error("Backup has no categories.");
-   state={
-    theme:THEMES.includes(d.theme)?d.theme:"forest",
-    layout:LAYOUTS.includes(d.layout)?d.layout:"grid",
-    groups,
-    assignments:d.assignments&&typeof d.assignments==="object"?d.assignments:{},
-    favourites:Array.isArray(d.favourites)?d.favourites:[],
-    recents:Array.isArray(d.recents)?d.recents:[],
-    order:Array.isArray(d.order)?d.order:[],
-    customApps:d.customApps.filter(a=>a&&a.id&&a.name&&a.url),
-    collapsed:d.collapsed&&typeof d.collapsed==="object"?d.collapsed:{}
-   };
-   save();applyTheme();refreshCategorySelects();renderApps();renderGroups();toast("Backup imported.");
-  }catch(e){toast("Import failed: "+e.message)}
+   const isCSV=file.name.toLowerCase().endsWith(".csv");
+   let data=JSON.parse(reader.result);
+   if(isCSV)data=parseCSV(reader.result);
+   if(!Array.isArray(data)&&!(data&&Array.isArray(data.apps)))throw Error("Invalid");
+   const imported=Array.isArray(data)?data:data.apps;
+   if(!imported.length){showToast("No apps found in the file.");return}
+   if(!confirm(`Import ${imported.length} app record(s)? Existing apps will be kept and imported apps added.`))return;
+   if(full&&data.groups&&Array.isArray(data.groups)){
+    state.groups=data.groups.filter(g=>typeof g==="string"&&g.trim());
+    if(!state.groups.length)state.groups=["Other"];
+   }
+   let added=0;
+   imported.forEach((a,i)=>{
+    if(!a||!String(a.name||"").trim())return;
+    let cat=String(a.category||state.groups[0]);
+    if(!state.groups.includes(cat))state.groups.push(cat);
+    state.apps.push({
+     id:idNew(),name:String(a.name).trim(),icon:String(a.icon||"📱"),
+     category:cat,url:String(a.url||""),favorite:a.favorite===true||String(a.favorite).toLowerCase()==="true",
+     enabled:!(a.enabled===false||String(a.enabled).toLowerCase()==="false"),created:Date.now()+i
+    });added++;
+   });
+   if(full&&data.theme&&THEMES.some(t=>t[0]===data.theme))state.theme=data.theme;
+   saveState();document.body.dataset.theme=state.theme;
+   populateCategoryInputs();renderHome();renderManager();renderCategories();renderThemes();
+   showToast(`${added} app(s) imported.`);
+  }catch(e){showToast("Invalid file. Use Swayam JSON or CSV exported from this app.")}
  };
- reader.readAsText(file);
+ if(file.name.toLowerCase().endsWith(".csv"))reader.readAsText(file);
+ else reader.readAsText(file);
+}
+function resetAll(){
+ if(!confirm("Reset all Swayam apps and categories to defaults? This removes local changes."))return;
+ state=defaults();activeMode="all";selectedIds.clear();
+ document.body.dataset.theme=state.theme;document.documentElement.style.setProperty("--font",state.fontSize);
+ resetForm();saveState();populateCategoryInputs();renderHome();renderManager();renderCategories();renderThemes();
+ showToast("Defaults restored.");
+}
+function updateClock(){
+ const d=new Date();
+ $("clockTime").textContent=d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+ $("clockDate").textContent=d.toLocaleDateString([],{weekday:"short",day:"numeric",month:"short",year:"numeric"});
 }
 
-function reset(){
- if(!confirm("Reset this launcher and remove saved categories, custom apps, favourites and settings? Export a backup first if needed."))return;
- state={theme:"forest",layout:"grid",groups:[...DEFAULT_GROUPS],assignments:{},favourites:[],recents:[],order:DEFAULT_APPS.map(a=>a.id),customApps:[],collapsed:{}};
- movingId=null;save();applyTheme();refreshCategorySelects();renderApps();renderGroups();toast("Launcher reset.");
-}
+/* Navigation */
+document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.page)));
+$("openManager").addEventListener("click",()=>setPage("manager"));
 
+/* Home actions */
+$("categoryFilter").addEventListener("change",e=>{
+ state.categoryFilter=e.target.value;state.selectedGroup=e.target.value==="all"?"all":e.target.value;activeMode="all";saveState();renderHome();
+});
+$("categoryTabs").addEventListener("click",e=>{
+ const b=e.target.closest("[data-group]");if(!b)return;
+ state.selectedGroup=b.dataset.group;activeMode="all";
+ if(state.selectedGroup!=="all"&&state.categoryFilter!=="all"&&state.categoryFilter!==state.selectedGroup)state.categoryFilter=state.selectedGroup;
+ saveState();renderHome();
+});
+$("appSearch").addEventListener("input",renderHome);
+$("layoutSelect").addEventListener("change",e=>{state.layout=e.target.value;saveState();renderHome()});
+$("showAll").addEventListener("click",()=>setMode("all"));
+$("showFav").addEventListener("click",()=>setMode("favorites"));
+$("showRecent").addEventListener("click",()=>setMode("recent"));
+$("appsGrid").addEventListener("click",e=>{
+ const b=e.target.closest("[data-action]");if(!b)return;
+ const id=b.dataset.id,act=b.dataset.action;
+ if(act==="open")openApp(id);
+ if(act==="favorite")toggleFavorite(id);
+ if(act==="manage"){setPage("manager");loadForm(id)}
+ if(act==="clearSearch"){$("appSearch").value="";state.selectedGroup="all";activeMode="all";renderHome()}
+});
+$("appsGrid").addEventListener("change",e=>{
+ const s=e.target.closest('select[data-action="move"]');if(s)moveApp(s.dataset.id,s.value);
+});
+
+/* App Manager form */
+$("newAppBtn").addEventListener("click",()=>{resetForm();$("formName").focus();document.querySelector("#page-manager .panel").scrollIntoView({behavior:"smooth"})});
+$("saveApp").addEventListener("click",saveForm);
+$("cancelForm").addEventListener("click",resetForm);
+$("formName").addEventListener("keydown",e=>{if(e.key==="Enter")saveForm()});
+
+/* App Manager list */
+["managerSearch","managerCategory","managerStatus","managerSort"].forEach(id=>$(id).addEventListener(id==="managerSearch"?"input":"change",renderManager));
+$("managerList").addEventListener("change",e=>{
+ const el=e.target;
+ if(el.dataset.action==="select"){
+  if(el.checked)selectedIds.add(el.dataset.id);else selectedIds.delete(el.dataset.id);
+  renderManager();
+ }
+ if(el.dataset.action==="rowMove")moveApp(el.dataset.id,el.value);
+});
+$("managerList").addEventListener("click",e=>{
+ const b=e.target.closest("[data-action]");if(!b)return;
+ const id=b.dataset.id,act=b.dataset.action;
+ if(act==="edit")loadForm(id);
+ if(act==="duplicate")duplicateApp(id);
+ if(act==="toggle"){
+  const a=state.apps.find(x=>x.id===id);if(a){a.enabled=!a.enabled;saveState();renderManager();renderHome();showToast(a.enabled?"App enabled.":"App disabled.")}
+ }
+ if(act==="favorite")toggleFavorite(id);
+ if(act==="delete")deleteApp(id);
+});
+$("selectAll").addEventListener("change",e=>{
+ const q=$("managerSearch").value.trim().toLowerCase(),cat=$("managerCategory").value,status=$("managerStatus").value;
+ let arr=state.apps.filter(a=>searchMatches(a,q));
+ if(cat!=="all")arr=arr.filter(a=>a.category===cat);
+ if(status==="enabled")arr=arr.filter(a=>a.enabled);
+ if(status==="disabled")arr=arr.filter(a=>!a.enabled);
+ if(status==="favorites")arr=arr.filter(a=>a.favorite);
+ arr.forEach(a=>e.target.checked?selectedIds.add(a.id):selectedIds.delete(a.id));renderManager();
+});
+$("selectVisible").addEventListener("click",()=>{
+ document.querySelectorAll('#managerList input[data-action="select"]').forEach(el=>selectedIds.add(el.dataset.id));renderManager();
+});
+$("clearSelection").addEventListener("click",()=>{selectedIds.clear();renderManager()});
+$("bulkMove").addEventListener("click",()=>bulkAction("move"));
+$("bulkEnable").addEventListener("click",()=>bulkAction("enable"));
+$("bulkDisable").addEventListener("click",()=>bulkAction("disable"));
+$("bulkFavorite").addEventListener("click",()=>bulkAction("favorite"));
+$("bulkUnfavorite").addEventListener("click",()=>bulkAction("unfavorite"));
+$("bulkDelete").addEventListener("click",()=>bulkAction("delete"));
+$("exportAppsJson").addEventListener("click",exportAppsJSON);
+$("exportAppsCsv").addEventListener("click",exportCSV);
+$("importAppsBtn").addEventListener("click",()=>$("managerFile").click());
+$("managerFile").addEventListener("change",e=>{importFile(e.target.files[0],false);e.target.value=""});
+
+/* Categories */
 $("addCategory").addEventListener("click",addCategory);
-$("newCategory").addEventListener("keydown",e=>{if(e.key==="Enter")addCategory()});
-$("addApp").addEventListener("click",addCustomApp);
-$("goHome").addEventListener("click",()=>changePage("home"));
-$("search").addEventListener("input",renderApps);
-$("clearSearch").addEventListener("click",()=>{$("search").value="";renderApps();$("search").focus()});
-$("categoryFilter").addEventListener("change",renderApps);
-$("appFilter").addEventListener("change",renderApps);
-
-$("allCategoriesToggle").addEventListener("change",e=>{
- if(e.target.value==="expand")setAllCategoriesCollapsed(false);
- else if(e.target.value==="collapse")setAllCategoriesCollapsed(true);
+$("newCategoryName").addEventListener("keydown",e=>{if(e.key==="Enter")addCategory()});
+$("categoryManageList").addEventListener("click",e=>{
+ const b=e.target.closest("[data-action]");if(!b)return;
+ if(b.dataset.action==="rename")renameCategory(b.dataset.category);
+ if(b.dataset.action==="deleteCategory")deleteCategory(b.dataset.category);
 });
 
-$("layout").addEventListener("change",e=>{
- if(LAYOUTS.includes(e.target.value)){state.layout=e.target.value;save();applyTheme();renderApps()}
+/* Settings */
+$("themeGrid").addEventListener("click",e=>{
+ const b=e.target.closest("[data-theme-choice]");if(!b)return;
+ state.theme=b.dataset.themeChoice;document.body.dataset.theme=state.theme;saveState();renderThemes();showToast("Theme changed.");
 });
-
-$("theme").addEventListener("change",e=>{
- if(THEMES.includes(e.target.value)){state.theme=e.target.value;save();applyTheme()}
+$("savePreferences").addEventListener("click",()=>{
+ state.layout=$("defaultLayout").value;state.fontSize=$("fontSize").value;
+ document.documentElement.style.setProperty("--font",state.fontSize);saveState();$("layoutSelect").value=state.layout;renderHome();showToast("Preferences saved.");
 });
-
-$("cycleTheme").addEventListener("click",()=>{
- state.theme=THEMES[(THEMES.indexOf(state.theme)+1)%THEMES.length];save();applyTheme();
-});
-
-$("cancelMove").addEventListener("click",()=>cancelMove(true));
-$("exportBackup").addEventListener("click",exportBackup);
-$("exportCsv").addEventListener("click",exportCsv);
+$("exportBackup").addEventListener("click",exportFullBackup);
 $("importBackup").addEventListener("click",()=>$("backupFile").click());
-$("backupFile").addEventListener("change",e=>{const file=e.target.files?.[0];if(file)importBackup(file);e.target.value=""});
-$("reset").addEventListener("click",reset);
+$("backupFile").addEventListener("change",e=>{importFile(e.target.files[0],true);e.target.value=""});
+$("resetApp").addEventListener("click",resetAll);
 
-load();
-applyTheme();
-refreshCategorySelects();
-renderApps();
-renderGroups();
-save();
+function init(){
+ document.body.dataset.theme=state.theme;
+ document.documentElement.style.setProperty("--font",state.fontSize);
+ populateCategoryInputs();renderHome();renderManager();renderCategories();renderThemes();
+ $("defaultLayout").value=state.layout;$("fontSize").value=state.fontSize;
+ updateClock();setInterval(updateClock,1000);
+}
+init();
 </script>
 </body>
 </html>
