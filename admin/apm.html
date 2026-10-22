@@ -5,1180 +5,806 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#138a4b">
-<title>Swayam — App Manager</title>
+<title>Swayam — Advanced App Manager</title>
 <style>
 :root{
-  --primary:#138a4b;--deep:#086b38;--bg:#eff7f0;
-  --panel:#fff;--text:#183b29;--muted:#687b6e;
-  --line:#d8e7da;--soft:#e5f4e8;--danger:#b42318;
+ --primary:#138a4b;--deep:#086b38;--bg:#eff7f0;--panel:#fff;
+ --text:#193326;--muted:#64776b;--border:#d8e7dc;--soft:#e5f4e8;
+ --danger:#b42318;--shadow:0 3px 12px #12351a12;
 }
 *{box-sizing:border-box}
-body{
-  margin:0;background:var(--bg);color:var(--text);
-  font:14px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;
-  transition:background .2s,color .2s;
-}
+body{margin:0;background:var(--bg);color:var(--text);
+ font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial}
 button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-header{
-  background:linear-gradient(125deg,var(--deep),var(--primary));
-  color:white;padding:16px;position:sticky;top:0;z-index:5;
-  box-shadow:0 3px 12px #173d2220;
-}
-.head{max-width:1400px;margin:auto;display:flex;gap:12px;
-  align-items:center;justify-content:space-between;flex-wrap:wrap}
-h1{font-size:21px;margin:0}
-.sub{font-size:12px;opacity:.85}
-main{max-width:1400px;margin:auto;padding:14px}
-.status{font-size:12px;margin-top:5px;opacity:.9}
-.tabs{
-  display:flex;gap:7px;overflow-x:auto;padding:5px 0 12px;
-  scrollbar-width:thin
-}
-.tab{
-  white-space:nowrap;border:1px solid var(--line);border-radius:9px;
-  padding:10px 13px;background:var(--panel);color:var(--text)
-}
-.tab.active{background:var(--primary);color:white;border-color:var(--primary)}
-.panel{
-  background:var(--panel);border:1px solid var(--line);border-radius:13px;
-  padding:15px;margin-bottom:14px;min-width:0
-}
-h2{font-size:18px;margin:0 0 12px}
-h3{font-size:15px;margin:0 0 10px}
-.muted{color:var(--muted)}
-.small{font-size:12px}
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.metric{padding:14px;border:1px solid var(--line);border-radius:11px;background:var(--panel)}
-.metric strong{display:block;font-size:25px;color:var(--primary)}
-.metric span{color:var(--muted);font-size:12px}
-.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
-.between{justify-content:space-between}
-.field{display:flex;flex-direction:column;gap:5px;min-width:0}
-.field label{font-size:12px;font-weight:700}
-input,select,textarea{
-  background:var(--panel);color:var(--text);
-  border:1px solid var(--line);border-radius:8px;padding:10px;
-  width:100%;min-width:0
-}
-textarea{min-height:70px;resize:vertical}
-button.btn{
-  padding:9px 12px;border:1px solid var(--line);border-radius:8px;
-  color:var(--text);background:var(--panel)
-}
-button.primary{background:var(--primary);border-color:var(--primary);color:white}
-button.danger{color:var(--danger);border-color:#e7b9b5}
-button:disabled{opacity:.5;cursor:not-allowed}
-.formgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.tablewrap{width:100%;overflow:auto;border:1px solid var(--line);border-radius:9px}
-table{border-collapse:collapse;width:100%;min-width:980px;background:var(--panel)}
-th,td{padding:10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
-th{background:var(--soft);position:sticky;top:0;white-space:nowrap}
-tbody tr:last-child td{border-bottom:0}
-td.path{overflow-wrap:anywhere;max-width:260px;font-family:ui-monospace,monospace;font-size:12px}
-td.actions{white-space:nowrap}
-td.actions button{margin:2px;padding:5px 7px}
-.pill{display:inline-block;border-radius:30px;padding:3px 8px;background:var(--soft);font-size:11px}
-.pill.off{background:#fbe8e7;color:var(--danger)}
-.barlist{display:grid;gap:10px}
-.barrow{display:grid;grid-template-columns:minmax(90px,150px) 1fr 35px;gap:10px;align-items:center}
-.bartrack{height:14px;background:var(--soft);border-radius:20px;overflow:hidden}
-.barfill{height:100%;background:var(--primary);border-radius:20px;min-width:0}
-.hide{display:none!important}
-.notice{padding:11px;border-radius:8px;background:var(--soft);margin-bottom:12px}
-.error{background:#fff0ef;color:#8b1e17}
-.footer{padding:20px 5px;color:var(--muted);font-size:12px}
-a{color:var(--primary)}
-.themeBox{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.themeBox label{font-size:12px;font-weight:700}
-.themeBox select{
-  width:auto;min-width:145px;max-width:190px;
-  background:#ffffff;color:#183b29;border:1px solid #ffffff80;
-  padding:9px;border-radius:8px
-}
-.themeBox select option{background:white;color:#183b29}
-@media(max-width:760px){
-  main{padding:9px}
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .formgrid{grid-template-columns:1fr 1fr}
-  header{padding:12px}
-  .panel{padding:11px}
-}
-@media(max-width:460px){
-  .formgrid{grid-template-columns:1fr}
-  h1{font-size:18px}
-  .metric strong{font-size:22px}
-  .themeBox{width:100%}
-  .themeBox select{flex:1;max-width:none}
-}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 12px;
+ background:var(--primary);color:white;font-weight:650}
+button:hover{filter:brightness(.95)}
+button:disabled{opacity:.5;cursor:wait}
+button.secondary{background:var(--soft);color:var(--deep);border:1px solid var(--border)}
+button.danger{background:var(--danger);color:white}
+button.small{padding:5px 8px;font-size:12px}
+input,select,textarea{width:100%;min-width:0;padding:9px;
+ border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--text)}
+input[type=checkbox]{width:auto;accent-color:var(--primary)}
+label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px}
+header{background:linear-gradient(120deg,var(--deep),var(--primary));color:#fff;padding:16px}
+.header-inner,main{max-width:1500px;margin:auto}
+header h1{font-size:22px;margin:0 0 4px}
+header p{margin:0;opacity:.9}
+main{padding:13px}
+.tabs{display:flex;gap:7px;overflow-x:auto;margin-bottom:12px;padding:2px 0 8px}
+.tab{flex:0 0 auto;background:#e2eee5;color:var(--deep)}
+.tab.active{background:var(--primary);color:white}
+.page{display:none}.page.active{display:block}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;
+ padding:13px;margin-bottom:12px;box-shadow:var(--shadow)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:11px}
+.field{min-width:0}
+.actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.stat{background:var(--soft);border-radius:10px;padding:10px;min-width:0}
+.stat b{font-size:20px;display:block;overflow-wrap:anywhere}
+.stat span{font-size:12px;color:var(--muted)}
+.help{font-size:12px;color:var(--muted);margin-top:5px;overflow-wrap:anywhere}
+.good{color:#13803d}.bad{color:var(--danger)}.warn{color:#986500}
+.note{padding:10px;border-radius:8px;background:#fff5d9;color:#725600;margin:10px 0}
+.table-wrap{overflow:auto;max-height:68vh;border:1px solid var(--border);border-radius:8px}
+table{width:100%;border-collapse:collapse;min-width:1420px;background:var(--panel)}
+th,td{padding:7px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}
+th{background:var(--soft);position:sticky;top:0;z-index:2;white-space:nowrap}
+td input,td select{padding:7px;min-width:85px}
+td .name-input{min-width:140px}
+td .path-input{min-width:260px}
+td .category-input{min-width:120px}
+.row-actions{display:flex;gap:5px;flex-wrap:wrap}
+.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;overflow-wrap:anywhere}
+.status{font-weight:700;font-size:12px}
+.details-row td{background:var(--bg);padding:10px}
+.details-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px}
+.detail-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:9px;min-width:0}
+.detail-card b{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}
+.detail-card div{overflow-wrap:anywhere;white-space:pre-wrap}
+.header-list{white-space:pre-wrap;overflow-wrap:anywhere;max-height:300px;overflow:auto}
+.empty{text-align:center;padding:25px;color:var(--muted)}
+hr{border:0;border-top:1px solid var(--border);margin:17px 0}
+footer{text-align:center;color:var(--muted);padding:12px}
+.theme-dots{display:flex;gap:7px;flex-wrap:wrap}
+.theme-dot{width:34px;height:34px;border-radius:50%;border:2px solid white;outline:1px solid #aab8ad;padding:0}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){main{padding:8px}.panel{padding:10px}header h1{font-size:19px}}
 </style>
 </head>
 <body>
 <header>
-  <div class="head">
-    <div>
-      <h1>🌿 Swayam — App Manager</h1>
-      <div class="sub">Personal LifeSuite · App catalogue and administration</div>
-      <div class="status" id="loadStatus">Loading apps-data.json…</div>
-    </div>
-    <div class="themeBox">
-      <label for="natureTheme">🎨 Nature theme</label>
-      <select id="natureTheme" aria-label="Choose nature theme">
-        <option value="forest">🌲 Forest</option>
-        <option value="ocean">🌊 Ocean</option>
-        <option value="meadow">🌼 Meadow</option>
-        <option value="sunset">🌅 Sunset</option>
-        <option value="lavender">💜 Lavender</option>
-        <option value="rose">🌹 Rose Garden</option>
-        <option value="sky">☁️ Sky</option>
-        <option value="sand">🏜️ Sand</option>
-        <option value="autumn">🍂 Autumn</option>
-        <option value="midnight">🌙 Midnight</option>
-      </select>
-    </div>
-  </div>
+ <div class="header-inner">
+  <h1>🌿 Swayam — Advanced App Manager</h1>
+  <p>App directory · HTTP diagnostics · File size · Headers · Backup</p>
+ </div>
 </header>
 
 <main>
-  <nav class="tabs" aria-label="App manager sections">
-    <button class="tab active" data-tab="dashboard">📊 Dashboard</button>
-    <button class="tab" data-tab="apps">📋 All Apps</button>
-    <button class="tab" data-tab="editor">✏️ Add / Edit</button>
-    <button class="tab" data-tab="categories">🗂 Categories</button>
-    <button class="tab" data-tab="storage">💾 Storage & Page Info</button>
-    <button class="tab" data-tab="backup">🔄 Backup & Settings</button>
-  </nav>
+ <nav class="tabs" aria-label="App Manager tabs">
+  <button class="tab active" data-page="apps">📱 Apps</button>
+  <button class="tab" data-page="add">➕ Add App</button>
+  <button class="tab" data-page="backup">💾 Backup</button>
+  <button class="tab" data-page="settings">⚙️ Settings</button>
+  <button class="tab" data-page="themes">🎨 Themes</button>
+ </nav>
 
-  <div id="notice" class="notice hide" role="status"></div>
-
-  <section id="dashboard" class="tabpage">
-    <div class="grid" style="margin-bottom:14px">
-      <div class="metric"><strong id="totalApps">0</strong><span>Total apps</span></div>
-      <div class="metric"><strong id="enabledApps">0</strong><span>Enabled apps</span></div>
-      <div class="metric"><strong id="categoryCount">0</strong><span>Categories</span></div>
-      <div class="metric"><strong id="favoriteCount">0</strong><span>Favourites</span></div>
-    </div>
-    <div class="panel">
-      <div class="row between">
-        <h2>Apps by category</h2>
-        <button class="btn" onclick="renderDashboard()">Refresh chart</button>
-      </div>
-      <div id="categoryChart" class="barlist"></div>
-    </div>
-    <div class="panel">
-      <h2>App status</h2>
-      <div id="statusChart" class="barlist"></div>
-    </div>
-    <div class="panel">
-      <h2>Recently managed</h2>
-      <div id="recentSummary" class="muted">No recent changes.</div>
-    </div>
-  </section>
-
-  <section id="apps" class="tabpage hide">
-    <div class="panel">
-      <div class="row between">
-        <h2>All apps — table view</h2>
-        <button class="btn primary" onclick="newApp()">＋ Add app</button>
-      </div>
-      <div class="formgrid" style="margin-bottom:12px">
-        <div class="field">
-          <label for="search">Search name, ID, category or path</label>
-          <input id="search" placeholder="Search apps…" oninput="renderApps()">
-        </div>
-        <div class="field">
-          <label for="filterCategory">Category</label>
-          <select id="filterCategory" onchange="renderApps()"><option value="">All categories</option></select>
-        </div>
-        <div class="field">
-          <label for="filterStatus">Status</label>
-          <select id="filterStatus" onchange="renderApps()">
-            <option value="">All statuses</option>
-            <option value="enabled">Enabled</option>
-            <option value="disabled">Disabled</option>
-            <option value="favorite">Favourites</option>
-          </select>
-        </div>
-      </div>
-      <div class="row" style="margin-bottom:12px">
-        <button class="btn" onclick="selectAllVisible(true)">Select visible</button>
-        <button class="btn" onclick="selectAllVisible(false)">Clear selection</button>
-        <button class="btn" onclick="bulkAction('enable')">Enable selected</button>
-        <button class="btn" onclick="bulkAction('disable')">Disable selected</button>
-        <button class="btn" onclick="bulkAction('favorite')">Toggle favourite</button>
-        <button class="btn danger" onclick="bulkAction('delete')">Delete selected</button>
-        <select id="bulkCategory" aria-label="Move selected to category">
-          <option value="">Move selected to…</option>
-        </select>
-        <button class="btn" onclick="bulkAction('move')">Move</button>
-      </div>
-      <div class="tablewrap">
-        <table>
-          <thead><tr>
-            <th><input type="checkbox" id="selectHeader" onchange="selectAllVisible(this.checked)" aria-label="Select visible apps"></th>
-            <th>Name / ID</th><th>Category</th><th>App path</th><th>Status</th><th>Favourite</th><th>Actions</th>
-          </tr></thead>
-          <tbody id="appRows"></tbody>
-        </table>
-      </div>
-      <div class="row between" style="margin-top:10px">
-        <span id="resultCount" class="muted small">0 apps</span>
-        <span class="muted small">Use the horizontal scrollbar to view the complete table on mobile.</span>
-      </div>
-    </div>
-  </section>
-
-  <section id="editor" class="tabpage hide">
-    <div class="panel">
-      <h2 id="editorTitle">Add app</h2>
-      <form id="appForm">
-        <input type="hidden" id="originalId">
-        <div class="formgrid">
-          <div class="field"><label for="appId">Unique app ID</label><input id="appId" required placeholder="e.g. my-tool"></div>
-          <div class="field"><label for="appName">App name</label><input id="appName" required placeholder="App name"></div>
-          <div class="field"><label for="appIcon">Icon / emoji</label><input id="appIcon" value="📱" maxlength="12"></div>
-          <div class="field"><label for="appCategory">Category</label><select id="appCategory" required></select></div>
-          <div class="field"><label for="appUrl">HTML path / URL</label><input id="appUrl" required placeholder="tools/my-tool.html"></div>
-          <div class="field"><label for="appEnabled">Status</label><select id="appEnabled"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>
-        </div>
-        <div class="row" style="margin-top:12px">
-          <label><input type="checkbox" id="appFavorite" style="width:auto"> Favourite</label>
-          <button class="btn primary" type="submit">Save app</button>
-          <button class="btn" type="button" onclick="resetForm()">Clear form</button>
-          <button class="btn" type="button" onclick="showTab('apps')">Back to app list</button>
-        </div>
-      </form>
-    </div>
-    <div class="panel">
-      <h3>Path guidance</h3>
-      <p class="muted">For GitHub Pages, a relative path such as <code>tools/my-tool.html</code> is normally easiest to maintain. An absolute path such as <code>/Myself/tools/my-tool.html</code> is also supported. Check that the path matches your actual file and capitalization.</p>
-    </div>
-  </section>
-
-  <section id="categories" class="tabpage hide">
-    <div class="panel">
-      <h2>Manage categories</h2>
-      <form id="categoryForm" class="row">
-        <div class="field" style="flex:1;min-width:180px">
-          <label for="newCategory">New category name</label>
-          <input id="newCategory" required placeholder="Enter category">
-        </div>
-        <button class="btn primary" type="submit">＋ Add category</button>
-      </form>
-    </div>
-    <div class="panel">
-      <div class="tablewrap">
-        <table style="min-width:500px">
-          <thead><tr><th>Category</th><th>App count</th><th>Actions</th></tr></thead>
-          <tbody id="categoryRows"></tbody>
-        </table>
-      </div>
-      <p class="muted small">Renaming a category updates the category of all apps assigned to it. Deleting a category moves its apps to Other.</p>
-    </div>
-  </section>
-
-  <section id="storage" class="tabpage hide">
-    <div class="grid" style="margin-bottom:14px">
-      <div class="metric"><strong id="localBytes">—</strong><span>App data size in localStorage</span></div>
-      <div class="metric"><strong id="originBytes">—</strong><span>Estimated origin storage used</span></div>
-      <div class="metric"><strong id="pageBytes">—</strong><span>Current HTML page size</span></div>
-      <div class="metric"><strong id="checkedPages">0</strong><span>App pages checked</span></div>
-    </div>
-    <div class="panel">
-      <h2>App page sizes</h2>
-      <p class="muted">Checks the page paths in the app list. Page sizes are estimates based on fetched response bodies. Cross-origin restrictions, missing files, or offline access can prevent a check.</p>
-      <div class="row" style="margin-bottom:12px">
-        <button class="btn primary" onclick="checkPageSizes()">Check app page sizes</button>
-        <button class="btn" onclick="refreshStorage()">Refresh storage</button>
-      </div>
-      <div class="tablewrap">
-        <table style="min-width:700px">
-          <thead><tr><th>App</th><th>Path</th><th>Result</th><th>Size</th></tr></thead>
-          <tbody id="pageRows"></tbody>
-        </table>
-      </div>
-    </div>
-    <div class="panel">
-      <h2>Storage details</h2>
-      <div id="storageDetails" class="muted">Storage information will appear here.</div>
-    </div>
-  </section>
-
-  <section id="backup" class="tabpage hide">
-    <div class="panel">
-      <h2>JSON backup and restore</h2>
-      <p class="muted">Export includes your app list, categories, groups, and supported launcher settings. Restore replaces the current app-manager state after confirmation.</p>
-      <div class="row">
-        <button class="btn primary" onclick="exportJSON()">Export JSON backup</button>
-        <label class="btn">Import JSON backup
-          <input id="jsonImport" type="file" accept=".json,application/json" hidden>
-        </label>
-        <button class="btn" onclick="exportCSV()">Export apps as CSV</button>
-        <label class="btn">Import apps from CSV
-          <input id="csvImport" type="file" accept=".csv,text/csv" hidden>
-        </label>
-      </div>
-    </div>
-    <div class="panel">
-      <h2>JSON source</h2>
-      <p class="muted">The JSON file supplies the initial catalogue and default categories. Changes made here are stored in localStorage. Reloading the JSON does not overwrite an existing saved catalogue.</p>
-      <div class="row">
-        <button class="btn" onclick="loadJsonAgain()">Reload JSON source</button>
-        <button class="btn" onclick="downloadJsonSource()">Download current catalogue JSON</button>
-      </div>
-      <p id="jsonInfo" class="small muted">Waiting for JSON…</p>
-    </div>
-    <div class="panel">
-      <h2>Reset app manager</h2>
-      <p class="muted">Restore the catalogue from apps-data.json. This replaces the current saved app list. Export a backup first if you want to keep your changes.</p>
-      <button class="btn danger" onclick="resetToJson()">Restore JSON catalogue</button>
-    </div>
-  </section>
-
-  <div class="footer">
-    Swayam LifeSuite · Data is stored in this browser unless you export it.
-    The JSON file is the initial data source; app edits are saved locally.
+ <section id="page-apps" class="page active">
+  <div class="stats">
+   <div class="stat"><b id="totalCount">0</b><span>Total apps</span></div>
+   <div class="stat"><b id="enabledCount">0</b><span>Enabled apps</span></div>
+   <div class="stat"><b id="checkedCount">0</b><span>Checked paths</span></div>
+   <div class="stat"><b id="successCount">0</b><span>Successful checks</span></div>
+   <div class="stat"><b id="totalSize">—</b><span>Known total size</span></div>
   </div>
+
+  <div class="panel">
+   <div class="grid">
+    <div class="field"><label for="search">Search</label>
+     <input id="search" placeholder="Name, category, ID, path"></div>
+    <div class="field"><label for="categoryFilter">Category</label>
+     <select id="categoryFilter"><option value="">All categories</option></select></div>
+    <div class="field"><label for="statusFilter">Filter</label>
+     <select id="statusFilter">
+      <option value="">All apps</option><option value="enabled">Enabled</option>
+      <option value="disabled">Disabled</option><option value="favorite">Favorites</option>
+      <option value="unchecked">Not checked</option><option value="failed">Failed checks</option>
+     </select></div>
+    <div class="field"><label for="sortBy">Sort by</label>
+     <select id="sortBy">
+      <option value="name">Name</option><option value="id">ID</option>
+      <option value="category">Category</option><option value="url">File path</option>
+      <option value="size">File size</option><option value="status">HTTP status</option>
+      <option value="duration">Response time</option><option value="checked">Last checked</option>
+     </select></div>
+   </div>
+   <div class="actions" style="margin-top:12px">
+    <button id="refreshBtn">🔄 Fetch JSON & Refresh</button>
+    <button id="checkAllBtn">🔍 Check All</button>
+    <button id="checkSelectedBtn" class="secondary">Check Selected</button>
+    <button id="saveBtn" class="secondary">💾 Save Edits</button>
+   </div>
+   <div id="message" class="help" role="status">Loading app data…</div>
+   <div class="help">Automatic checks run after loading the app list. Check requests may take time for large lists. Cross-origin servers may restrict header visibility.</div>
+  </div>
+
+  <div class="panel">
+   <div class="actions" style="justify-content:space-between;margin-bottom:10px">
+    <b>App directory and HTTP information</b>
+    <span id="shownCount" class="help">0 records</span>
+   </div>
+   <div class="table-wrap">
+    <table>
+     <thead>
+      <tr>
+       <th><input id="selectAll" type="checkbox" aria-label="Select all visible"></th>
+       <th>Icon</th><th>Name</th><th>Category</th><th>App file path</th>
+       <th>Favorite</th><th>Enabled</th><th>HTTP</th><th>Size</th>
+       <th>Response time</th><th>Last modified</th><th>Last checked</th><th>Actions</th>
+      </tr>
+     </thead>
+     <tbody id="appRows"><tr><td colspan="13" class="empty">Loading…</td></tr></tbody>
+    </table>
+   </div>
+   <div class="help">Use HTTP Details in any row to view all accessible response headers and diagnostic fields.</div>
+  </div>
+ </section>
+
+ <section id="page-add" class="page">
+  <div class="panel">
+   <h3>Add a new app</h3>
+   <form id="addForm">
+    <div class="grid">
+     <div><label for="newId">App ID</label><input id="newId" required placeholder="my-new-app"></div>
+     <div><label for="newName">App name</label><input id="newName" required placeholder="My New App"></div>
+     <div><label for="newIcon">Icon</label><input id="newIcon" value="📱"></div>
+     <div><label for="newCategory">Category</label>
+      <select id="newCategory">
+       <option>Personal</option><option>Family</option><option>Work</option>
+       <option>Health</option><option>Learning</option><option>Tools</option>
+       <option>Creativity</option><option>Travel</option><option>Entertainment</option><option>Other</option>
+      </select></div>
+     <div style="grid-column:1/-1"><label for="newPath">App file path</label>
+      <input id="newPath" required placeholder="util/Util_yog.html">
+      <div class="help">Relative path or full HTTPS URL. Relative paths use the Base App Path from Settings.</div></div>
+    </div>
+    <p><label><input id="newFavorite" type="checkbox"> Favorite</label>
+    <label><input id="newEnabled" type="checkbox" checked> Enabled</label></p>
+    <div class="actions">
+     <button type="submit">Add App</button>
+     <button type="button" class="secondary" id="testNewPath">Test Path & Size</button>
+    </div>
+    <div id="newPathResult" class="help"></div>
+   </form>
+  </div>
+ </section>
+
+ <section id="page-backup" class="page">
+  <div class="panel">
+   <h3>Backup and restore</h3>
+   <div class="actions">
+    <button id="exportJson">Export Apps JSON</button>
+    <button id="exportCsv" class="secondary">Export CSV</button>
+    <button id="exportBackup" class="secondary">Full Local Backup</button>
+   </div>
+   <hr>
+   <label for="importFile">Import JSON</label>
+   <input type="file" id="importFile" accept=".json,application/json">
+   <div class="actions" style="margin-top:10px">
+    <button id="importBtn">Import JSON</button>
+    <button id="resetLocal" class="danger">Reset Local App Data</button>
+   </div>
+   <div class="note">Exports contain app records. Full Local Backup also contains cached HTTP metadata and settings. Exported JSON must be uploaded to your GitHub repository manually to update the hosted source file.</div>
+  </div>
+ </section>
+
+ <section id="page-settings" class="page">
+  <div class="panel">
+   <h3>⚙️ Source and path settings</h3>
+   <label for="jsonUrl">Apps JSON source URL</label>
+   <input id="jsonUrl" placeholder="https://storm-sandy.github.io/Myself/apps-data.json">
+   <div class="help">The app fetches this URL on startup and when you click Fetch JSON & Refresh.</div>
+   <hr>
+   <label for="basePath">Base App Path</label>
+   <input id="basePath" placeholder="https://storm-sandy.github.io/Myself/">
+   <div class="help">Example: https://storm-sandy.github.io/Myself/</div>
+   <div class="help">Relative app paths such as util/Util_yog.html resolve against this base. A leading slash in an app path is also treated as relative to this app root.</div>
+   <hr>
+   <div class="grid">
+    <div><label for="timeoutMs">Request timeout (milliseconds)</label>
+     <input id="timeoutMs" type="number" min="1000" max="60000" value="12000"></div>
+    <div><label for="parallel">Parallel requests</label>
+     <select id="parallel"><option value="1">1 — Slow, cautious</option>
+      <option value="3">3 — Balanced</option><option value="5">5 — Faster</option></select></div>
+   </div>
+   <div class="actions" style="margin-top:12px">
+    <button id="saveSettings">Save Settings</button>
+    <button id="testBase" class="secondary">Validate Base Path</button>
+    <button id="checkJson" class="secondary">Test JSON URL</button>
+   </div>
+   <div id="settingsResult" class="help"></div>
+   <div class="note"><b>Browser limitations:</b> HTTPS pages may be inspected only if the target server allows cross-origin requests. If the browser blocks access, this app cannot recover the hidden headers. The app does not bypass CORS.</div>
+  </div>
+
+  <div class="panel">
+   <h3>HTTP information collected</h3>
+   <div class="grid">
+    <div><b>Response</b><div class="help">Status, status text, type, final URL, redirects, duration, check time.</div></div>
+    <div><b>File metadata</b><div class="help">Content-Type, Content-Length, measured size, encoding, language, disposition, Last-Modified.</div></div>
+    <div><b>Cache and version</b><div class="help">ETag, Cache-Control, Expires, Age, Vary, Date.</div></div>
+    <div><b>Server</b><div class="help">Server, Via, X-Powered-By and other exposed headers.</div></div>
+    <div><b>Security</b><div class="help">CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy.</div></div>
+    <div><b>CORS</b><div class="help">Access-Control-Allow-Origin and Access-Control-Expose-Headers when visible.</div></div>
+   </div>
+  </div>
+ </section>
+
+ <section id="page-themes" class="page">
+  <div class="panel">
+   <h3>🎨 Nature themes</h3>
+   <p class="help">Choose a palette for the app manager. Your selection is saved locally.</p>
+   <div id="themeList" class="theme-dots"></div>
+   <div id="themeName" class="help"></div>
+  </div>
+ </section>
 </main>
+<footer>Swayam LifeSuite · Advanced App Manager</footer>
 
 <script>
+(function(){
 "use strict";
 
-const STORAGE_KEY = "swayam_lifesuite_v5";
-const JSON_URL = "./apps-data.json";
-const THEME_KEY = "swayam_app_manager_nature_theme";
-
-const themes = {
-  forest:{
-    primary:"#138a4b",deep:"#086b38",bg:"#eff7f0",
-    panel:"#ffffff",text:"#183b29",muted:"#687b6e",
-    line:"#d8e7da",soft:"#e5f4e8"
-  },
-  ocean:{
-    primary:"#087eaa",deep:"#064e70",bg:"#eaf7fc",
-    panel:"#ffffff",text:"#123747",muted:"#5d7785",
-    line:"#c9e4ef",soft:"#d9f1fa"
-  },
-  meadow:{
-    primary:"#638b25",deep:"#365d13",bg:"#f3f8e9",
-    panel:"#ffffff",text:"#344421",muted:"#748064",
-    line:"#dce8c9",soft:"#e8f2d8"
-  },
-  sunset:{
-    primary:"#d86632",deep:"#94351f",bg:"#fff2e9",
-    panel:"#ffffff",text:"#502b20",muted:"#8c6b5e",
-    line:"#f1d7c8",soft:"#ffe4d3"
-  },
-  lavender:{
-    primary:"#8062bd",deep:"#51377f",bg:"#f5f0ff",
-    panel:"#ffffff",text:"#342747",muted:"#7b708b",
-    line:"#e2d8f3",soft:"#eee5ff"
-  },
-  rose:{
-    primary:"#c34f75",deep:"#85304e",bg:"#fff0f4",
-    panel:"#ffffff",text:"#4c2734",muted:"#8b6c77",
-    line:"#f0d4df",soft:"#ffe2eb"
-  },
-  sky:{
-    primary:"#387fc2",deep:"#20558d",bg:"#eef6ff",
-    panel:"#ffffff",text:"#1c3551",muted:"#6c7e91",
-    line:"#d3e3f5",soft:"#e0edff"
-  },
-  sand:{
-    primary:"#a77b35",deep:"#73501f",bg:"#faf4e7",
-    panel:"#fffdf8",text:"#443821",muted:"#82765d",
-    line:"#e9dec7",soft:"#f3e8cf"
-  },
-  autumn:{
-    primary:"#ad5828",deep:"#71351c",bg:"#f8eee4",
-    panel:"#fffaf5",text:"#452b20",muted:"#887164",
-    line:"#e8d5c6",soft:"#f3e0d0"
-  },
-  midnight:{
-    primary:"#55bd92",deep:"#123d36",bg:"#142622",
-    panel:"#203831",text:"#edf8f0",muted:"#b1c9bd",
-    line:"#38584b",soft:"#29483a"
-  }
+const $=id=>document.getElementById(id);
+const KEYS={
+ apps:"swayam_appdir_working_data",
+ settings:"swayam_appdir_settings",
+ meta:"swayam_appdir_file_meta",
+ theme:"swayam_appdir_theme"
 };
+const DEFAULT_JSON="https://storm-sandy.github.io/Myself/apps-data.json";
+const DEFAULT_BASE="https://storm-sandy.github.io/Myself/";
+let apps=[],meta=readStore(KEYS.meta,{}),selected=new Set(),busy=false;
+let requestQueueToken=0;
 
-let sourceData = null;
-let state = null;
-let pageResults = {};
-let selectedIds = new Set();
-let recentChanges = [];
+const themes=[
+ {name:"Forest",primary:"#138a4b",deep:"#086b38",bg:"#eff7f0",soft:"#e5f4e8"},
+ {name:"Ocean",primary:"#087eaa",deep:"#075477",bg:"#edf8fc",soft:"#dff2fa"},
+ {name:"Meadow",primary:"#598d32",deep:"#345e1d",bg:"#f2f8e9",soft:"#e6f2d9"},
+ {name:"Mint",primary:"#159b83",deep:"#08695a",bg:"#edfaf6",soft:"#d9f3ea"},
+ {name:"Sunset",primary:"#d66a32",deep:"#8d3c1c",bg:"#fff4ec",soft:"#ffe6d5"},
+ {name:"Lavender",primary:"#8164bd",deep:"#4e3881",bg:"#f6f1ff",soft:"#ebe2ff"},
+ {name:"Rose",primary:"#c54d73",deep:"#84304d",bg:"#fff2f6",soft:"#ffe0eb"},
+ {name:"Sky",primary:"#4389d8",deep:"#24538e",bg:"#f0f7ff",soft:"#dcecff"},
+ {name:"Sand",primary:"#a98142",deep:"#6d5127",bg:"#faf6ed",soft:"#f0e6d0"},
+ {name:"Night",primary:"#5d9c7c",deep:"#183f35",bg:"#172a25",soft:"#253d34",text:"#e5f3e9",border:"#365247",panel:"#20352d"}
+];
 
-const $ = id => document.getElementById(id);
-
-function applyTheme(name, save=true){
-  if(!themes[name]) name="forest";
-  const theme=themes[name];
-  const root=document.documentElement;
-  Object.entries(theme).forEach(([key,value])=>{
-    root.style.setProperty("--"+key,value);
+function readStore(key,fallback){
+ try{const s=localStorage.getItem(key);return s?JSON.parse(s):fallback;}
+ catch(e){return fallback;}
+}
+function store(key,value){
+ try{localStorage.setItem(key,JSON.stringify(value));}
+ catch(e){message("Could not save local storage: "+e.message,"bad");}
+}
+function settings(){
+ const s=readStore(KEYS.settings,{});
+ return {
+  jsonUrl:s.jsonUrl||DEFAULT_JSON,
+  basePath:s.basePath||DEFAULT_BASE,
+  timeoutMs:Math.max(1000,Math.min(60000,Number(s.timeoutMs)||12000)),
+  parallel:Math.max(1,Math.min(5,Number(s.parallel)||3))
+ };
+}
+function message(text,kind){
+ $("message").textContent=text;
+ $("message").className="help "+(kind||"");
+}
+function normalizeApp(a){
+ return {
+  id:String(a.id||("app-"+Math.random().toString(36).slice(2,9))),
+  name:String(a.name||"Unnamed app"),
+  icon:String(a.icon||"📱"),
+  category:String(a.category||"Other"),
+  url:String(a.url||a.path||""),
+  favorite:a.favorite===true,
+  enabled:a.enabled!==false
+ };
+}
+function resolveURL(path){
+ path=String(path||"").trim();
+ if(!path)throw Error("App file path is empty.");
+ if(/^https?:\/\//i.test(path))return new URL(path).href;
+ if(/^\/\//.test(path))throw Error("Protocol-relative URLs are not supported; enter a full HTTPS URL.");
+ let base=settings().basePath.trim();
+ if(!base)throw Error("Set Base App Path in Settings.");
+ const uBase=new URL(base,location.href);
+ if(!uBase.pathname.endsWith("/"))uBase.pathname+="/";
+ return new URL(path.replace(/^\/+/,""),uBase).href;
+}
+function fmtSize(n){
+ if(n===null||n===undefined||!Number.isFinite(Number(n)))return "Unknown";
+ n=Number(n);if(n<1024)return n+" B";
+ const units=["KB","MB","GB","TB"];let i=-1;
+ do{n/=1024;i++;}while(n>=1024&&i<units.length-1);
+ return n.toFixed(n>=100?0:n>=10?1:2)+" "+units[i];
+}
+function fmtDate(s){
+ if(!s)return "—";const d=new Date(s);
+ return isNaN(d.getTime())?String(s):d.toLocaleString();
+}
+function saveApps(){store(KEYS.apps,apps);store(KEYS.meta,meta);}
+function readTableEdits(){
+ document.querySelectorAll("#appRows tr[data-id]").forEach(tr=>{
+  const a=apps.find(x=>x.id===tr.dataset.id);if(!a)return;
+  tr.querySelectorAll("[data-field]").forEach(el=>{
+   const f=el.dataset.field;
+   if(f==="favorite"||f==="enabled")a[f]=el.checked;
+   else if(["name","icon","category","url"].includes(f))a[f]=el.value.trim();
   });
-  $("natureTheme").value=name;
-  document.querySelector('meta[name="theme-color"]')
-    .setAttribute("content",theme.deep);
-  if(save){
-    try{localStorage.setItem(THEME_KEY,name)}catch(e){}
-  }
+ });
 }
-
-$("natureTheme").addEventListener("change",event=>{
-  applyTheme(event.target.value);
-});
-
-try{
-  applyTheme(localStorage.getItem(THEME_KEY)||"forest",false);
-}catch(e){
-  applyTheme("forest",false);
+function saveEdits(){
+ readTableEdits();
+ const ids=new Set();
+ for(const a of apps){
+  if(!a.id||!a.name||!a.url){alert("Every app needs an ID, name and path.");return;}
+  if(ids.has(a.id)){alert("Duplicate app ID: "+a.id);return;}
+  ids.add(a.id);
+ }
+ saveApps();render();message("Edits saved on this device. Export JSON to publish them.","good");
 }
-
-function esc(value) {
-  return String(value ?? "").replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  })[c]);
+function categories(){
+ return [...new Set(apps.map(a=>a.category).filter(Boolean))].sort();
 }
-
-function notify(message, isError=false) {
-  const el = $("notice");
-  el.textContent = message;
-  el.classList.remove("hide","error");
-  if (isError) el.classList.add("error");
-  window.scrollTo({top:0,behavior:"smooth"});
+function updateCategories(){
+ const el=$("categoryFilter"),prev=el.value;
+ el.replaceChildren(new Option("All categories",""));
+ categories().forEach(c=>el.add(new Option(c,c)));
+ if(categories().includes(prev))el.value=prev;
 }
-
-function clearNotice() {
-  $("notice").classList.add("hide");
-}
-
-function safePath(path) {
-  const value = String(path || "").trim();
-  if (!value) return false;
-  if (/^\s*javascript:/i.test(value)) return false;
-  if (/^\s*data:/i.test(value)) return false;
-  if (/^\s*vbscript:/i.test(value)) return false;
+function filteredApps(){
+ const q=$("search").value.trim().toLowerCase();
+ const cat=$("categoryFilter").value,status=$("statusFilter").value,sort=$("sortBy").value;
+ let list=apps.filter(a=>{
+  const m=meta[a.id]||{};
+  if(q&&!([a.id,a.name,a.icon,a.category,a.url].join(" ").toLowerCase().includes(q)))return false;
+  if(cat&&a.category!==cat)return false;
+  if(status==="enabled"&&!a.enabled)return false;
+  if(status==="disabled"&&a.enabled)return false;
+  if(status==="favorite"&&!a.favorite)return false;
+  if(status==="unchecked"&&!m.checkedAt)return false;
+  if(status==="failed"&&(!m.checkedAt||m.ok))return false;
   return true;
+ });
+ list.sort((a,b)=>{
+  const ma=meta[a.id]||{},mb=meta[b.id]||{};
+  if(sort==="size")return (Number(ma.size)||0)-(Number(mb.size)||0);
+  if(sort==="duration")return (Number(ma.durationMs)||0)-(Number(mb.durationMs)||0);
+  if(sort==="status")return String(ma.status||"").localeCompare(String(mb.status||""));
+  if(sort==="checked")return String(ma.checkedAt||"").localeCompare(String(mb.checkedAt||""));
+  return String(a[sort]||"").localeCompare(String(b[sort]||""),undefined,{numeric:true,sensitivity:"base"});
+ });
+ return list;
+}
+function input(value,field,cls){
+ const el=document.createElement("input");el.value=value??"";el.dataset.field=field;
+ el.setAttribute("aria-label",field);if(cls)el.className=cls;return el;
+}
+function check(value,field){
+ const el=document.createElement("input");el.type="checkbox";el.checked=!!value;
+ el.dataset.field=field;el.setAttribute("aria-label",field);return el;
+}
+function cell(tr,child){const td=document.createElement("td");td.appendChild(child);tr.appendChild(td);return td;}
+function btn(text,cls,fn){
+ const b=document.createElement("button");b.type="button";b.textContent=text;b.className=cls||"small";
+ b.addEventListener("click",fn);return b;
+}
+function statusText(m){
+ if(!m||!m.checkedAt)return "Not checked";
+ if(m.ok)return "OK "+(m.status||"");
+ return (m.status||"Failed")+"";
+}
+function render(){
+ updateCategories();
+ const tbody=$("appRows"),list=filteredApps();tbody.replaceChildren();
+ if(!list.length){
+  const tr=document.createElement("tr"),td=document.createElement("td");
+  td.colSpan=13;td.className="empty";td.textContent="No apps found.";
+  tr.appendChild(td);tbody.appendChild(tr);
+ }
+ list.forEach(a=>{
+  const tr=document.createElement("tr");tr.dataset.id=a.id;
+  const sel=check(selected.has(a.id),"selected");
+  sel.addEventListener("change",()=>{sel.checked?selected.add(a.id):selected.delete(a.id);updateStats();});
+  cell(tr,sel);cell(tr,input(a.icon,"icon"));cell(tr,input(a.name,"name","name-input"));
+  cell(tr,input(a.category,"category","category-input"));cell(tr,input(a.url,"url","path-input"));
+  cell(tr,check(a.favorite,"favorite"));cell(tr,check(a.enabled,"enabled"));
+  const m=meta[a.id]||{};
+  const st=document.createElement("span");st.className="status "+(m.ok?"good":m.checkedAt?"bad":"");
+  st.textContent=statusText(m);cell(tr,st);
+  cell(tr,document.createTextNode(fmtSize(m.size)));
+  cell(tr,document.createTextNode(m.durationMs==null?"—":m.durationMs+" ms"));
+  cell(tr,document.createTextNode(fmtDate(m.lastModified)));
+  cell(tr,document.createTextNode(fmtDate(m.checkedAt)));
+  const actions=document.createElement("div");actions.className="row-actions";
+  actions.appendChild(btn("Check","small secondary",()=>checkOne(a.id)));
+  actions.appendChild(btn("HTTP Details","small secondary",()=>toggleDetails(a.id,tr)));
+  actions.appendChild(btn("Open","small",()=>{
+   try{window.open(resolveURL(a.url),"_blank","noopener");}
+   catch(e){message(e.message,"bad");}
+  }));
+  actions.appendChild(btn("Delete","small danger",()=>{
+   if(!confirm('Delete "'+a.name+'" from the local list?'))return;
+   apps=apps.filter(x=>x.id!==a.id);selected.delete(a.id);
+   saveApps();render();
+  }));
+  cell(tr,actions);tbody.appendChild(tr);
+ });
+ $("shownCount").textContent=list.length+" shown / "+apps.length+" total";
+ $("selectAll").checked=list.length>0&&list.every(a=>selected.has(a.id));
+ updateStats();
+}
+function updateStats(){
+ $("totalCount").textContent=apps.length;
+ $("enabledCount").textContent=apps.filter(a=>a.enabled).length;
+ $("checkedCount").textContent=apps.filter(a=>meta[a.id]?.checkedAt).length;
+ $("successCount").textContent=apps.filter(a=>meta[a.id]?.checkedAt&&meta[a.id]?.ok).length;
+ const sizes=apps.map(a=>meta[a.id]?.size).filter(n=>Number.isFinite(Number(n)));
+ $("totalSize").textContent=sizes.length?fmtSize(sizes.reduce((s,n)=>s+Number(n),0)):"—";
+}
+function detailsFields(m){
+ const fields=[
+  ["Resolved URL",m.url],["Final URL",m.finalUrl],["HTTP status",m.status],
+  ["Status text",m.statusText],["Response type",m.responseType],["Redirected",m.redirected],
+  ["Successful",m.ok],["Content type",m.contentType],["Content length header",m.contentLength],
+  ["Measured body size",m.measuredBodySize],["Reported size",m.size],["Content encoding",m.contentEncoding],
+  ["Content language",m.contentLanguage],["Content disposition",m.contentDisposition],
+  ["Last modified",m.lastModified],["ETag",m.etag],["Cache control",m.cacheControl],
+  ["Expires",m.expires],["Age",m.age],["Vary",m.vary],["Date",m.date],
+  ["Server",m.server],["Via",m.via],["X-Powered-By",m.xPoweredBy],
+  ["Content-Security-Policy",m.csp],["Strict-Transport-Security",m.hsts],
+  ["X-Frame-Options",m.xFrameOptions],["X-Content-Type-Options",m.xContentTypeOptions],
+  ["Referrer-Policy",m.referrerPolicy],["Permissions-Policy",m.permissionsPolicy],
+  ["Access-Control-Allow-Origin",m.allowOrigin],["Access-Control-Expose-Headers",m.exposedHeaders],
+  ["Response duration (ms)",m.durationMs],["Check time",m.checkedAt],["Error",m.error],
+  ["Body read error",m.bodyReadError]
+ ];
+ return fields.filter(x=>x[1]!==undefined&&x[1]!==null&&x[1]!=="");
+}
+function toggleDetails(id,tr){
+ const next=tr.nextElementSibling;
+ if(next&&next.classList.contains("details-row")){next.remove();return;}
+ const m=meta[id]||{};
+ const detailTr=document.createElement("tr");detailTr.className="details-row";
+ const td=document.createElement("td");td.colSpan=13;
+ const title=document.createElement("h3");title.textContent="HTTP Details — "+(apps.find(a=>a.id===id)?.name||id);td.appendChild(title);
+ const grid=document.createElement("div");grid.className="details-grid";
+ detailsFields(m).forEach(([k,v])=>{
+  const card=document.createElement("div");card.className="detail-card";
+  const b=document.createElement("b");b.textContent=k;
+  const val=document.createElement("div");val.textContent=typeof v==="object"?JSON.stringify(v):String(v);
+  card.append(b,val);grid.appendChild(card);
+ });
+ td.appendChild(grid);
+ const h=document.createElement("h4");h.textContent="All browser-accessible response headers";
+ td.appendChild(h);
+ const pre=document.createElement("div");pre.className="detail-card header-list mono";
+ pre.textContent=m.headers&&Object.keys(m.headers).length?
+  Object.entries(m.headers).map(([k,v])=>k+": "+v).join("\n"):
+  "No headers available. The request may not have succeeded or the browser may have blocked cross-origin access.";
+ td.appendChild(pre);
+ if(m.error){
+  const p=document.createElement("p");p.className="bad";
+  p.textContent="Diagnostic: "+m.error;td.appendChild(p);
+ }
+ detailTr.appendChild(td);tr.after(detailTr);
 }
 
-function appUrl(path) {
-  if (!safePath(path)) return "";
-  try {
-    const url=new URL(path,window.location.href);
-    if(!["http:","https:"].includes(url.protocol))return "";
-    return url.href;
-  } catch {
-    return "";
+/* HTTP header retrieval:
+   HEAD first; GET is used if necessary. Browser-exposed headers only. */
+async function fetchWithTimeout(url,method){
+ const controller=new AbortController();
+ const timer=setTimeout(()=>controller.abort(),settings().timeoutMs);
+ try{
+  return await fetch(url,{method,cache:"no-store",signal:controller.signal,redirect:"follow"});
+ }finally{clearTimeout(timer);}
+}
+async function inspectURL(url){
+ const start=performance.now();
+ const m={url,checkedAt:new Date().toISOString(),ok:false,size:null,
+  measuredBodySize:null,headers:{},error:""};
+ let response;
+ try{
+  try{response=await fetchWithTimeout(url,"HEAD");}
+  catch(e){response=null;m.headError=e.message;}
+  const needGet=!response||!response.ok||!response.headers.get("content-length");
+  if(response&&(response.status===404||response.status===410)){
+   m.status=response.status;m.statusText=response.statusText;
+   m.finalUrl=response.url;m.redirected=response.redirected;m.responseType=response.type;
+   m.error="File not found";m.durationMs=Math.round(performance.now()-start);return m;
   }
-}
-
-function makeId(name) {
-  return String(name || "app")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g,"-")
-    .replace(/^-|-$/g,"") || "app";
-}
-
-function normaliseApp(app, index=0) {
-  return {
-    id: String(app.id || makeId(app.name || "app-" + index)),
-    name: String(app.name || "Unnamed app"),
-    icon: String(app.icon || "📱"),
-    category: String(app.category || "Other"),
-    url: String(app.url || ""),
-    favorite: app.favorite === true || app.favorite === "true",
-    enabled: app.enabled !== false && app.enabled !== "false",
-    created: app.created || new Date().toISOString()
+  if(needGet){
+   try{response=await fetchWithTimeout(url,"GET");}
+   catch(e){throw e;}
+  }
+  m.status=response.status;m.statusText=response.statusText;
+  m.finalUrl=response.url;m.redirected=response.redirected;m.responseType=response.type;
+  m.ok=response.ok;
+  response.headers.forEach((v,k)=>m.headers[k]=v);
+  const get=k=>response.headers.get(k)||"";
+  const map={
+   contentType:"content-type",contentLength:"content-length",
+   contentEncoding:"content-encoding",contentLanguage:"content-language",
+   contentDisposition:"content-disposition",lastModified:"last-modified",etag:"etag",
+   cacheControl:"cache-control",expires:"expires",age:"age",vary:"vary",date:"date",
+   server:"server",via:"via",xPoweredBy:"x-powered-by",
+   csp:"content-security-policy",hsts:"strict-transport-security",
+   xFrameOptions:"x-frame-options",xContentTypeOptions:"x-content-type-options",
+   referrerPolicy:"referrer-policy",permissionsPolicy:"permissions-policy",
+   allowOrigin:"access-control-allow-origin",exposedHeaders:"access-control-expose-headers"
   };
-}
-
-function defaultState(data) {
-  const categories = [...new Set([
-    ...(data.categories || []),
-    ...(data.groups || []),
-    "Other"
-  ])];
-
-  return {
-    groups: data.groups || [],
-    categories,
-    apps: (data.apps || []).map(normaliseApp),
-    recent: [],
-    theme: "forest",
-    layout: "list",
-    fontSize: 100,
-    selectedGroup: "All",
-    categoryFilter: ""
-  };
-}
-
-function normaliseState(saved, data) {
-  const base = defaultState(data);
-  const result = {...base, ...saved};
-
-  result.groups = Array.isArray(result.groups) ? result.groups : base.groups;
-  result.categories = Array.isArray(result.categories)
-    ? result.categories : base.categories;
-
-  result.categories = [...new Set([
-    ...result.categories,
-    ...result.groups,
-    ...((Array.isArray(result.apps)?result.apps:[]).map(a => a.category || "Other")),
-    "Other"
-  ])];
-
-  result.apps = Array.isArray(result.apps)
-    ? result.apps.map(normaliseApp)
-    : base.apps;
-
-  result.recent = Array.isArray(result.recent) ? result.recent : [];
-  return result;
-}
-
-function saveState(action="Updated app data") {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    recentChanges.unshift({
-      action,
-      time: new Date().toLocaleString()
-    });
-    recentChanges = recentChanges.slice(0,5);
-    $("loadStatus").textContent =
-      "Loaded · Saved locally · " + state.apps.length + " apps";
-    renderAll();
-  } catch (error) {
-    notify("Could not save to localStorage: " + error.message, true);
+  for(const key in map)m[key]=get(map[key]);
+  if(m.contentLength!==""&&Number.isFinite(Number(m.contentLength)))m.size=Number(m.contentLength);
+  if(response.ok&&response.body&&![204,304].includes(response.status)){
+   try{
+    const buffer=await response.arrayBuffer();
+    m.measuredBodySize=buffer.byteLength;
+    if(m.size===null)m.size=buffer.byteLength;
+   }catch(e){m.bodyReadError=e.message;}
   }
+  if(!response.ok)m.error="HTTP "+response.status;
+ }catch(e){
+  m.ok=false;
+  m.error=e.name==="AbortError"?"Request timed out":
+   "Network/CORS error: "+e.message;
+ }
+ m.durationMs=Math.round(performance.now()-start);
+ return m;
 }
-
-async function loadJsonAgain() {
-  $("loadStatus").textContent = "Loading " + JSON_URL + "…";
-  try {
-    const response = await fetch(JSON_URL, {cache:"no-store"});
-    if (!response.ok) throw new Error("HTTP " + response.status);
-    const data = await response.json();
-    if (!data || !Array.isArray(data.apps)) {
-      throw new Error("JSON must contain an apps array.");
-    }
-    sourceData = data;
-
-    const savedText = localStorage.getItem(STORAGE_KEY);
-    if (savedText) {
-      try {
-        state = normaliseState(JSON.parse(savedText), data);
-      } catch {
-        state = defaultState(data);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      }
-    } else {
-      state = defaultState(data);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    $("jsonInfo").textContent =
-      "Source loaded: " + JSON_URL + " · " + data.apps.length +
-      " JSON apps · " + (data.categories || []).length + " categories.";
-    $("loadStatus").textContent =
-      "Loaded · " + state.apps.length + " apps · Shared localStorage key: " + STORAGE_KEY;
-    renderAll();
-  } catch (error) {
-    $("loadStatus").textContent = "JSON load failed";
-    $("jsonInfo").textContent =
-      "Unable to load " + JSON_URL + ". " + error.message +
-      " Serve both files from the same folder using HTTP/HTTPS.";
-    notify("JSON could not be loaded. Put app-manager.html and apps-data.json in the same folder and open them through a web server or GitHub Pages.", true);
+async function checkOne(id){
+ const a=apps.find(x=>x.id===id);if(!a)return;
+ message("Checking "+a.name+"…");
+ try{
+  const url=resolveURL(a.url);
+  meta[id]=await inspectURL(url);
+  store(KEYS.meta,meta);render();
+  message(a.name+": "+(meta[id].ok?
+   "HTTP "+meta[id].status+" · "+fmtSize(meta[id].size):
+   (meta[id].error||"Check failed")),(meta[id].ok?"good":"bad"));
+ }catch(e){
+  meta[id]={url:a.url,checkedAt:new Date().toISOString(),ok:false,status:"Error",error:e.message};
+  store(KEYS.meta,meta);render();message(e.message,"bad");
+ }
+}
+async function checkMany(ids){
+ if(busy)return;
+ readTableEdits();saveApps();busy=true;
+ const token=++requestQueueToken,parallel=settings().parallel;
+ $("checkAllBtn").disabled=true;$("checkSelectedBtn").disabled=true;
+ let cursor=0,finished=0,success=0;
+ const workers=Array.from({length:Math.min(parallel,ids.length)},async()=>{
+  while(cursor<ids.length&&token===requestQueueToken){
+   const id=ids[cursor++],a=apps.find(x=>x.id===id);if(!a)continue;
+   try{
+    meta[id]=await inspectURL(resolveURL(a.url));
+   }catch(e){
+    meta[id]={checkedAt:new Date().toISOString(),ok:false,status:"Error",error:e.message};
+   }
+   finished++;if(meta[id].ok)success++;
+   store(KEYS.meta,meta);
+   message("Checking paths: "+finished+" / "+ids.length+" · "+success+" successful");
+   render();
   }
+ });
+ try{
+  await Promise.all(workers);
+  message("Checks complete: "+success+" successful, "+(finished-success)+" failed or blocked.","good");
+ }finally{
+  busy=false;$("checkAllBtn").disabled=false;$("checkSelectedBtn").disabled=false;
+ }
 }
-
-function showTab(name) {
-  document.querySelectorAll(".tabpage").forEach(section =>
-    section.classList.toggle("hide", section.id !== name)
-  );
-  document.querySelectorAll(".tab").forEach(button =>
-    button.classList.toggle("active", button.dataset.tab === name)
-  );
-  if (name === "storage") refreshStorage();
-  clearNotice();
-}
-
-document.querySelectorAll(".tab").forEach(button => {
-  button.addEventListener("click", () => showTab(button.dataset.tab));
-});
-
-function renderAll() {
-  if (!state) return;
-  renderDashboard();
-  renderApps();
-  renderCategories();
-  fillCategorySelects();
-  refreshStorage();
-  $("recentSummary").innerHTML = recentChanges.length
-    ? recentChanges.map(item =>
-        "<div>" + esc(item.time) + " — " + esc(item.action) + "</div>"
-      ).join("")
-    : '<span class="muted">Changes made during this session will appear here.</span>';
-}
-
-function renderDashboard() {
-  if (!state) return;
-  const apps = state.apps;
-  $("totalApps").textContent = apps.length;
-  $("enabledApps").textContent = apps.filter(a => a.enabled).length;
-  $("categoryCount").textContent = state.categories.length;
-  $("favoriteCount").textContent = apps.filter(a => a.favorite).length;
-
-  const counts = state.categories.map(category => ({
-    category,
-    count: apps.filter(a => a.category === category).length
-  })).sort((a,b) => b.count - a.count || a.category.localeCompare(b.category));
-
-  const max = Math.max(1, ...counts.map(x => x.count));
-  $("categoryChart").innerHTML = counts.map(item => `
-    <div class="barrow">
-      <span>${esc(item.category)}</span>
-      <div class="bartrack" role="img" aria-label="${esc(item.category)}: ${item.count} apps">
-        <div class="barfill" style="width:${item.count/max*100}%"></div>
-      </div>
-      <strong>${item.count}</strong>
-    </div>`).join("") || '<span class="muted">No categories available.</span>';
-
-  const enabled = apps.filter(a => a.enabled).length;
-  const disabled = apps.length - enabled;
-  $("statusChart").innerHTML = [
-    {name:"Enabled",count:enabled},
-    {name:"Disabled",count:disabled}
-  ].map(item => `
-    <div class="barrow">
-      <span>${item.name}</span>
-      <div class="bartrack">
-        <div class="barfill" style="width:${apps.length ? item.count/apps.length*100 : 0}%"></div>
-      </div>
-      <strong>${item.count}</strong>
-    </div>`).join("");
-}
-
-function fillCategorySelects() {
-  const options = state.categories
-    .map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
-
-  const filter = $("filterCategory");
-  const oldFilter = filter.value;
-  filter.innerHTML = '<option value="">All categories</option>' + options;
-  if (state.categories.includes(oldFilter)) filter.value = oldFilter;
-
-  const bulk = $("bulkCategory");
-  const oldBulk = bulk.value;
-  bulk.innerHTML = '<option value="">Move selected to…</option>' + options;
-  if (state.categories.includes(oldBulk)) bulk.value = oldBulk;
-
-  const editor = $("appCategory");
-  const oldEditor = editor.value;
-  editor.innerHTML = options;
-  if (state.categories.includes(oldEditor)) editor.value = oldEditor;
-}
-
-function getVisibleApps() {
-  const q = $("search").value.toLowerCase().trim();
-  const category = $("filterCategory").value;
-  const status = $("filterStatus").value;
-
-  return state.apps.filter(app => {
-    const text = [app.id,app.name,app.icon,app.category,app.url].join(" ").toLowerCase();
-    if (q && !text.includes(q)) return false;
-    if (category && app.category !== category) return false;
-    if (status === "enabled" && !app.enabled) return false;
-    if (status === "disabled" && app.enabled) return false;
-    if (status === "favorite" && !app.favorite) return false;
-    return true;
-  }).sort((a,b) => a.name.localeCompare(b.name));
-}
-
-function renderApps() {
-  if (!state) return;
-  const apps = getVisibleApps();
-
-  $("appRows").innerHTML = apps.map(app => {
-    const checked = selectedIds.has(app.id) ? "checked" : "";
-    const status = app.enabled
-      ? '<span class="pill">Enabled</span>'
-      : '<span class="pill off">Disabled</span>';
-    const path = esc(app.url);
-    const link = appUrl(app.url);
-
-    return `<tr>
-      <td><input type="checkbox" ${checked} aria-label="Select ${esc(app.name)}"
-        onchange="toggleSelected('${esc(app.id)}',this.checked)"></td>
-      <td><strong>${esc(app.icon)} ${esc(app.name)}</strong><br>
-        <span class="muted small">${esc(app.id)}</span></td>
-      <td>${esc(app.category)}</td>
-      <td class="path">${path}<br>
-        <button class="btn" onclick="copyPath('${esc(app.id)}')">Copy path</button>
-        ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">Open</a>` : ""}
-      </td>
-      <td>${status}</td>
-      <td>${app.favorite ? "⭐ Yes" : "—"}</td>
-      <td class="actions">
-        <button class="btn" onclick="editApp('${esc(app.id)}')">Edit</button>
-        <button class="btn" onclick="toggleEnabled('${esc(app.id)}')">${app.enabled ? "Disable" : "Enable"}</button>
-        <button class="btn" onclick="toggleFavorite('${esc(app.id)}')">⭐</button>
-        <button class="btn danger" onclick="deleteApp('${esc(app.id)}')">Delete</button>
-      </td>
-    </tr>`;
-  }).join("") || '<tr><td colspan="7" class="muted">No matching apps.</td></tr>';
-
-  $("resultCount").textContent = apps.length + " matching apps · " + selectedIds.size + " selected";
-  $("selectHeader").checked = apps.length > 0 && apps.every(a => selectedIds.has(a.id));
-}
-
-function toggleSelected(id, checked) {
-  if (checked) selectedIds.add(id);
-  else selectedIds.delete(id);
-  renderApps();
-}
-
-function selectAllVisible(checked) {
-  getVisibleApps().forEach(app => {
-    if (checked) selectedIds.add(app.id);
-    else selectedIds.delete(app.id);
+async function loadRemote(){
+ if(busy)return;
+ busy=true;$("refreshBtn").disabled=true;message("Fetching latest JSON…");
+ try{
+  readTableEdits();
+  const s=settings();
+  const u=new URL(s.jsonUrl,location.href);u.searchParams.set("_refresh",Date.now());
+  const response=await fetch(u.href,{cache:"no-store"});
+  if(!response.ok)throw Error("HTTP "+response.status+" while fetching JSON");
+  const data=await response.json();
+  const remote=Array.isArray(data)?data:(data.apps||data.data);
+  if(!Array.isArray(remote))throw Error("The JSON does not contain an apps array.");
+  const local=readStore(KEYS.apps,[]);
+  const localMap=new Map((Array.isArray(local)?local:[]).map(a=>[String(a.id),normalizeApp(a)]));
+  const remoteIds=new Set(remote.map(a=>String(a.id)));
+  apps=remote.map(raw=>{
+   const r=normalizeApp(raw),l=localMap.get(r.id);
+   return l?normalizeApp({...r,...l}):r;
   });
-  renderApps();
-}
-
-function findApp(id) {
-  return state.apps.find(app => app.id === id);
-}
-
-function copyPath(id) {
-  const app = findApp(id);
-  if (!app) return;
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(app.url)
-      .then(() => notify("Path copied."))
-      .catch(() => prompt("Copy app path:", app.url));
-  } else {
-    prompt("Copy app path:", app.url);
-  }
-}
-
-function toggleEnabled(id) {
-  const app = findApp(id);
-  if (!app) return;
-  app.enabled = !app.enabled;
-  saveState((app.enabled ? "Enabled " : "Disabled ") + app.name);
-}
-
-function toggleFavorite(id) {
-  const app = findApp(id);
-  if (!app) return;
-  app.favorite = !app.favorite;
-  saveState("Changed favourite: " + app.name);
-}
-
-function deleteApp(id) {
-  const app = findApp(id);
-  if (!app || !confirm('Delete "' + app.name + '" from the saved catalogue?')) return;
-  state.apps = state.apps.filter(a => a.id !== id);
-  selectedIds.delete(id);
-  saveState("Deleted " + app.name);
-}
-
-function bulkAction(action) {
-  const ids = [...selectedIds];
-  if (!ids.length) return notify("Select at least one app first.", true);
-
-  if (action === "delete" &&
-      !confirm("Delete " + ids.length + " selected app(s)?")) return;
-
-  if (action === "move" && !$("bulkCategory").value) {
-    return notify("Choose a destination category first.", true);
-  }
-
-  state.apps = state.apps.filter(app => {
-    if (!selectedIds.has(app.id)) return true;
-    if (action === "delete") return false;
-    if (action === "enable") app.enabled = true;
-    if (action === "disable") app.enabled = false;
-    if (action === "favorite") app.favorite = !app.favorite;
-    if (action === "move") app.category = $("bulkCategory").value;
-    return true;
+  (Array.isArray(local)?local:[]).forEach(raw=>{
+   const a=normalizeApp(raw);if(!remoteIds.has(a.id))apps.push(a);
   });
-
-  selectedIds.clear();
-  saveState("Bulk action: " + action);
+  store(KEYS.apps,apps);render();
+  message("Loaded "+remote.length+" remote records. Starting automatic HTTP checks…","good");
+ }catch(e){
+  const local=readStore(KEYS.apps,[]);
+  if(Array.isArray(local)&&local.length){apps=local.map(normalizeApp);render();}
+  message("Could not fetch JSON: "+e.message+(apps.length?" — showing saved local records.":""),"bad");
+ }finally{
+  busy=false;$("refreshBtn").disabled=false;
+ }
+ if(apps.length)checkMany(apps.map(a=>a.id));
+}
+function download(name,data,type){
+ const blob=new Blob([data],{type}),url=URL.createObjectURL(blob);
+ const a=document.createElement("a");a.href=url;a.download=name;a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+function exportJSON(){
+ readTableEdits();
+ const payload={version:1,storageKey:"swayam_lifesuite_v5",appName:"Swayam LifeSuite",apps};
+ download("apps-data.json",JSON.stringify(payload,null,2),"application/json");
+}
+function exportCSV(){
+ readTableEdits();
+ const cols=["id","name","icon","category","url","favorite","enabled"];
+ const esc=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+ const csv=[cols.map(esc).join(","),...apps.map(a=>cols.map(k=>esc(a[k])).join(","))].join("\r\n");
+ download("apps-data.csv",csv,"text/csv;charset=utf-8");
+}
+function populateSettings(){
+ const s=settings();$("jsonUrl").value=s.jsonUrl;$("basePath").value=s.basePath;
+ $("timeoutMs").value=s.timeoutMs;$("parallel").value=String(s.parallel);
+}
+function saveSettings(){
+ const jsonUrl=$("jsonUrl").value.trim()||DEFAULT_JSON;
+ const basePath=$("basePath").value.trim()||DEFAULT_BASE;
+ const timeoutMs=Math.max(1000,Math.min(60000,Number($("timeoutMs").value)||12000));
+ const parallel=Math.max(1,Math.min(5,Number($("parallel").value)||3));
+ try{new URL(jsonUrl,location.href);new URL(basePath,location.href);}
+ catch(e){$("settingsResult").textContent="Invalid URL: "+e.message;return;}
+ store(KEYS.settings,{jsonUrl,basePath,timeoutMs,parallel});
+ $("settingsResult").textContent="Settings saved on this device.";
+ $("settingsResult").className="help good";
+}
+function showPage(page){
+ document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+ document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+page));
+}
+function setTheme(t){
+ const root=document.documentElement;
+ root.style.setProperty("--primary",t.primary);
+ root.style.setProperty("--deep",t.deep);
+ root.style.setProperty("--bg",t.bg);
+ root.style.setProperty("--soft",t.soft);
+ root.style.setProperty("--text",t.text||"#193326");
+ root.style.setProperty("--border",t.border||"#d8e7dc");
+ root.style.setProperty("--panel",t.panel||"#fff");
+ document.querySelector('meta[name="theme-color"]').content=t.primary;
+ store(KEYS.theme,t.name);
+ $("themeName").textContent="Current theme: "+t.name;
+}
+function renderThemes(){
+ const holder=$("themeList");holder.replaceChildren();
+ themes.forEach(t=>{
+  const b=document.createElement("button");b.className="theme-dot";
+  b.title=t.name;b.setAttribute("aria-label",t.name);
+  b.style.background=t.primary;
+  b.addEventListener("click",()=>setTheme(t));
+  holder.appendChild(b);
+ });
+ const saved=readStore(KEYS.theme,"Forest");
+ setTheme(themes.find(t=>t.name===saved)||themes[0]);
 }
 
-function newApp() {
-  resetForm();
-  showTab("editor");
-}
-
-function resetForm() {
-  $("appForm").reset();
-  $("originalId").value = "";
-  $("appId").disabled = false;
-  $("appIcon").value = "📱";
-  $("appEnabled").value = "true";
-  $("appFavorite").checked = false;
-  $("editorTitle").textContent = "Add app";
-  fillCategorySelects();
-}
-
-function editApp(id) {
-  const app = findApp(id);
-  if (!app) return;
-
-  $("originalId").value = app.id;
-  $("appId").value = app.id;
-  $("appId").disabled = true;
-  $("appName").value = app.name;
-  $("appIcon").value = app.icon;
-  $("appUrl").value = app.url;
-  $("appEnabled").value = String(app.enabled);
-  $("appFavorite").checked = app.favorite;
-  fillCategorySelects();
-  $("appCategory").value = app.category;
-  $("editorTitle").textContent = "Edit app: " + app.name;
-  showTab("editor");
-}
-
-$("appForm").addEventListener("submit", event => {
-  event.preventDefault();
-  if (!state) return;
-
-  const originalId = $("originalId").value;
-  const id = $("appId").value.trim();
-  const name = $("appName").value.trim();
-  const url = $("appUrl").value.trim();
-
-  if (!/^[a-zA-Z0-9_-]+$/.test(id)) {
-    return notify("App ID may contain letters, numbers, hyphens and underscores only.", true);
-  }
-  if (!name) return notify("Enter an app name.", true);
-  if (!safePath(url)) return notify("Enter a valid app path or URL.", true);
-
-  const duplicate = state.apps.some(app =>
-    app.id.toLowerCase() === id.toLowerCase() && app.id !== originalId
-  );
-  if (duplicate) return notify("That app ID already exists.", true);
-
-  const app = {
-    id,
-    name,
-    icon: $("appIcon").value.trim() || "📱",
-    category: $("appCategory").value || "Other",
-    url,
-    favorite: $("appFavorite").checked,
-    enabled: $("appEnabled").value === "true",
-    created: (findApp(originalId) || {}).created || new Date().toISOString()
-  };
-
-  if (originalId) {
-    const index = state.apps.findIndex(a => a.id === originalId);
-    if (index >= 0) state.apps[index] = app;
-  } else {
-    state.apps.push(app);
-  }
-
-  if (!state.categories.includes(app.category)) state.categories.push(app.category);
-  saveState((originalId ? "Updated " : "Added ") + app.name);
-  resetForm();
-  showTab("apps");
+/* Navigation and filters */
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
+["search","categoryFilter","statusFilter","sortBy"].forEach(id=>$(id).addEventListener("input",render));
+$("refreshBtn").addEventListener("click",()=>{
+ saveSettings();loadRemote();
+});
+$("saveBtn").addEventListener("click",saveEdits);
+$("checkAllBtn").addEventListener("click",()=>checkMany(apps.map(a=>a.id)));
+$("checkSelectedBtn").addEventListener("click",()=>{
+ const ids=selected.size?[...selected]:filteredApps().map(a=>a.id);
+ checkMany(ids);
+});
+$("selectAll").addEventListener("change",()=>{
+ filteredApps().forEach(a=>$("selectAll").checked?selected.add(a.id):selected.delete(a.id));
+ render();
+});
+$("saveSettings").addEventListener("click",saveSettings);
+$("testBase").addEventListener("click",()=>{
+ try{
+  const base=new URL($("basePath").value.trim(),location.href);
+  if(!base.pathname.endsWith("/"))base.pathname+="/";
+  $("settingsResult").textContent="Base path is valid: "+base.href;
+  $("settingsResult").className="help good";
+ }catch(e){
+  $("settingsResult").textContent="Invalid base path: "+e.message;
+  $("settingsResult").className="help bad";
+ }
+});
+$("checkJson").addEventListener("click",async()=>{
+ saveSettings();$("settingsResult").textContent="Testing JSON URL…";
+ try{
+  const u=new URL($("jsonUrl").value.trim(),location.href);u.searchParams.set("_test",Date.now());
+  const r=await fetch(u.href,{cache:"no-store"});
+  if(!r.ok)throw Error("HTTP "+r.status);
+  const data=await r.json(),list=Array.isArray(data)?data:data.apps;
+  $("settingsResult").textContent="JSON is accessible. App records: "+(Array.isArray(list)?list.length:"Unknown");
+  $("settingsResult").className="help good";
+ }catch(e){
+  $("settingsResult").textContent="JSON test failed: "+e.message;
+  $("settingsResult").className="help bad";
+ }
+});
+$("addForm").addEventListener("submit",e=>{
+ e.preventDefault();readTableEdits();
+ const id=$("newId").value.trim();
+ if(apps.some(a=>a.id===id)){alert("An app with this ID already exists.");return;}
+ const a=normalizeApp({
+  id,name:$("newName").value.trim(),icon:$("newIcon").value.trim()||"📱",
+  category:$("newCategory").value,url:$("newPath").value.trim(),
+  favorite:$("newFavorite").checked,enabled:$("newEnabled").checked
+ });
+ if(!a.url){alert("Enter a path.");return;}
+ apps.push(a);saveApps();render();showPage("apps");
+ $("addForm").reset();$("newIcon").value="📱";$("newEnabled").checked=true;
+ message("App added locally. Use Check to inspect its path and headers.","good");
+});
+$("testNewPath").addEventListener("click",async()=>{
+ const out=$("newPathResult");out.textContent="Checking…";
+ try{
+  const url=resolveURL($("newPath").value);
+  const m=await inspectURL(url);
+  out.textContent="Resolved: "+url+" · "+(m.ok?"HTTP "+m.status+" · "+fmtSize(m.size):m.error);
+  out.className="help "+(m.ok?"good":"bad");
+ }catch(e){out.textContent=e.message;out.className="help bad";}
+});
+$("exportJson").addEventListener("click",exportJSON);
+$("exportCsv").addEventListener("click",exportCSV);
+$("exportBackup").addEventListener("click",()=>{
+ readTableEdits();
+ download("swayam-full-backup.json",JSON.stringify({
+  exportedAt:new Date().toISOString(),apps,meta,settings:settings()
+ },null,2),"application/json");
+});
+$("importBtn").addEventListener("click",async()=>{
+ const file=$("importFile").files[0];
+ if(!file){alert("Select a JSON file first.");return;}
+ try{
+  const data=JSON.parse(await file.text());
+  const list=Array.isArray(data)?data:data.apps;
+  if(!Array.isArray(list))throw Error("No apps array found.");
+  if(!confirm("Import "+list.length+" app records and replace your local app list?"))return;
+  apps=list.map(normalizeApp);
+  const ids=new Set();
+  for(const a of apps){if(ids.has(a.id))throw Error("Duplicate app ID: "+a.id);ids.add(a.id);}
+  selected.clear();saveApps();render();showPage("apps");
+  message("Imported "+apps.length+" app records locally.","good");
+ }catch(e){alert("Import failed: "+e.message);}
+});
+$("resetLocal").addEventListener("click",async()=>{
+ if(!confirm("Clear local app records and HTTP metadata, then fetch the hosted JSON?"))return;
+ localStorage.removeItem(KEYS.apps);localStorage.removeItem(KEYS.meta);
+ meta={};apps=[];await loadRemote();
+});
+$("appRows").addEventListener("change",e=>{
+ if(e.target.matches("[data-field]"))message("Unsaved edits. Press Save Edits before leaving.","warn");
 });
 
-$("categoryForm").addEventListener("submit", event => {
-  event.preventDefault();
-  const name = $("newCategory").value.trim();
-  if (!name) return;
-  if (state.categories.some(c => c.toLowerCase() === name.toLowerCase())) {
-    return notify("That category already exists.", true);
-  }
-  state.categories.push(name);
-  if (!state.groups.includes(name)) state.groups.push(name);
-  $("newCategory").value = "";
-  saveState("Added category " + name);
-});
-
-function renderCategories() {
-  if (!state) return;
-  $("categoryRows").innerHTML = state.categories.map(category => {
-    const count = state.apps.filter(a => a.category === category).length;
-    return `<tr>
-      <td>${esc(category)}</td><td>${count}</td>
-      <td class="actions">
-        <button class="btn" onclick="renameCategory('${esc(category)}')">Rename</button>
-        <button class="btn danger" onclick="deleteCategory('${esc(category)}')">Delete</button>
-      </td>
-    </tr>`;
-  }).join("");
-}
-
-function renameCategory(oldName) {
-  const next = prompt("Rename category:", oldName);
-  if (next === null) return;
-  const name = next.trim();
-  if (!name) return notify("Category name cannot be empty.", true);
-  if (state.categories.some(c => c.toLowerCase() === name.toLowerCase() && c !== oldName)) {
-    return notify("A category with that name already exists.", true);
-  }
-  state.categories = state.categories.map(c => c === oldName ? name : c);
-  state.groups = state.groups.map(c => c === oldName ? name : c);
-  state.apps.forEach(app => {
-    if (app.category === oldName) app.category = name;
-  });
-  saveState("Renamed category " + oldName + " to " + name);
-}
-
-function deleteCategory(name) {
-  if (name === "Other" && state.categories.length === 1) {
-    return notify("At least one category must remain.", true);
-  }
-  if (!confirm('Delete category "' + name + '"? Apps in it will move to Other.')) return;
-  if (!state.categories.includes("Other")) state.categories.push("Other");
-  state.apps.forEach(app => {
-    if (app.category === name) app.category = "Other";
-  });
-  state.categories = state.categories.filter(c => c !== name);
-  state.groups = state.groups.filter(c => c !== name);
-  saveState("Deleted category " + name);
-}
-
-function downloadBlob(filename, content, type) {
-  const blob = new Blob([content], {type});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-function exportJSON() {
-  if (!state) return;
-  downloadBlob("swayam-app-manager-backup.json",
-    JSON.stringify(state, null, 2), "application/json");
-}
-
-function downloadJsonSource() {
-  if (!state) return;
-  const data = {
-    version: 1,
-    storageKey: STORAGE_KEY,
-    appName: "Swayam LifeSuite",
-    groups: state.groups,
-    categories: state.categories,
-    apps: state.apps
-  };
-  downloadBlob("apps-data.json", JSON.stringify(data, null, 2), "application/json");
-}
-
-$("jsonImport").addEventListener("change", async event => {
-  const file = event.target.files[0];
-  if (!file) return;
-  try {
-    const data = JSON.parse(await file.text());
-    if (!Array.isArray(data.apps)) throw new Error("Backup must contain an apps array.");
-    if (!confirm("Replace the saved app list and categories with this backup?")) return;
-    state = normaliseState(data, sourceData || {apps:[],categories:[],groups:[]});
-    selectedIds.clear();
-    saveState("Imported JSON backup");
-    notify("JSON backup imported.");
-  } catch (error) {
-    notify("Import failed: " + error.message, true);
-  } finally {
-    event.target.value = "";
-  }
-});
-
-function csvEscape(value) {
-  const text = String(value ?? "");
-  return '"' + text.replace(/"/g,'""') + '"';
-}
-
-function toCSV(apps) {
-  const headers = ["id","name","icon","category","url","favorite","enabled"];
-  return [headers.join(","), ...apps.map(app =>
-    headers.map(key => csvEscape(app[key])).join(",")
-  )].join("\r\n");
-}
-
-function exportCSV() {
-  if (!state) return;
-  downloadBlob("swayam-apps.csv", toCSV(state.apps), "text/csv;charset=utf-8");
-}
-
-function parseCSV(text) {
-  const rows = [];
-  let row = [], field = "", quoted = false;
-  for (let i=0; i<text.length; i++) {
-    const c = text[i];
-    if (quoted) {
-      if (c === '"' && text[i+1] === '"') { field += '"'; i++; }
-      else if (c === '"') quoted = false;
-      else field += c;
-    } else {
-      if (c === '"' && field === "") quoted = true;
-      else if (c === ",") { row.push(field); field = ""; }
-      else if (c === "\n") {
-        row.push(field); rows.push(row); row=[]; field="";
-      } else if (c !== "\r") field += c;
-    }
-  }
-  if (field.length || row.length) { row.push(field); rows.push(row); }
-  return rows;
-}
-
-$("csvImport").addEventListener("change", async event => {
-  const file = event.target.files[0];
-  if (!file) return;
-  try {
-    const rows = parseCSV(await file.text());
-    if (rows.length < 2) throw new Error("CSV has no app rows.");
-    const headers = rows.shift().map(s => s.trim());
-    if (!headers.includes("name") || !headers.includes("url")) {
-      throw new Error("CSV must include name and url columns.");
-    }
-
-    const incoming = rows.filter(r => r.some(v => v.trim())).map(row => {
-      const obj = {};
-      headers.forEach((key,i) => obj[key] = row[i] ?? "");
-      return normaliseApp({
-        ...obj,
-        favorite: obj.favorite === true || obj.favorite === "true",
-        enabled: obj.enabled !== "false"
-      });
-    });
-
-    if (!confirm("Import " + incoming.length + " app(s)? Existing IDs will be updated.")) return;
-    incoming.forEach(app => {
-      const index = state.apps.findIndex(old => old.id === app.id);
-      if (index >= 0) state.apps[index] = app;
-      else state.apps.push(app);
-      if (!state.categories.includes(app.category)) state.categories.push(app.category);
-    });
-    saveState("Imported CSV apps");
-    notify("CSV import complete.");
-  } catch (error) {
-    notify("CSV import failed: " + error.message, true);
-  } finally {
-    event.target.value = "";
-  }
-});
-
-function resetToJson() {
-  if (!sourceData) return notify("Load apps-data.json successfully first.", true);
-  if (!confirm("Replace your saved catalogue with the original JSON catalogue?")) return;
-  state = defaultState(sourceData);
-  selectedIds.clear();
-  saveState("Restored JSON catalogue");
-  notify("Catalogue restored from JSON.");
-}
-
-function bytesLabel(bytes) {
-  if (!Number.isFinite(bytes) || bytes < 0) return "Unavailable";
-  if (bytes < 1024) return bytes + " B";
-  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + " KB";
-  return (bytes/1024/1024).toFixed(2) + " MB";
-}
-
-function localDataBytes() {
-  let total = 0;
-  try {
-    for (let i=0; i<localStorage.length; i++) {
-      const key = localStorage.key(i);
-      const value = localStorage.getItem(key) || "";
-      total += (key.length + value.length) * 2;
-    }
-  } catch {}
-  return total;
-}
-
-async function refreshStorage() {
-  if (!state) return;
-  $("localBytes").textContent = bytesLabel(
-    new Blob([localStorage.getItem(STORAGE_KEY) || ""]).size
-  );
-  $("pageBytes").textContent = "Checking…";
-  $("checkedPages").textContent = Object.keys(pageResults).length;
-  let originInfo = "Browser storage estimate is not available.";
-  try {
-    if (navigator.storage && navigator.storage.estimate) {
-      const estimate = await navigator.storage.estimate();
-      $("originBytes").textContent = bytesLabel(estimate.usage || 0);
-      originInfo = "Estimated origin usage: " + bytesLabel(estimate.usage || 0) +
-        " · Quota: " + bytesLabel(estimate.quota || 0) +
-        ". This estimate may include other data for this website.";
-    } else {
-      $("originBytes").textContent = "Unavailable";
-    }
-  } catch {
-    $("originBytes").textContent = "Unavailable";
-  }
-
-  $("storageDetails").innerHTML =
-    "<div>LocalStorage app-manager record: " +
-    esc(bytesLabel(new Blob([localStorage.getItem(STORAGE_KEY) || ""]).size)) +
-    "</div><div>Estimated total localStorage text: " +
-    esc(bytesLabel(localDataBytes())) +
-    "</div><div>" + esc(originInfo) + "</div>" +
-    "<div>Storage key: <code>" + esc(STORAGE_KEY) + "</code></div>";
-
-  const sizes = Object.values(pageResults)
-    .filter(x => Number.isFinite(x.bytes))
-    .reduce((sum,x) => sum+x.bytes, 0);
-  $("pageBytes").textContent = Object.values(pageResults).some(x => Number.isFinite(x.bytes))
-    ? bytesLabel(sizes) + " total checked"
-    : "Not checked";
-}
-
-async function checkPageSizes() {
-  if (!state) return;
-  const apps = state.apps.slice();
-  $("pageRows").innerHTML = apps.map(app => `<tr>
-    <td>${esc(app.name)}</td><td class="path">${esc(app.url)}</td>
-    <td>Checking…</td><td>—</td></tr>`).join("");
-
-  pageResults = {};
-  const results = [];
-
-  for (const app of apps) {
-    const url = appUrl(app.url);
-    let result;
-    if (!url) {
-      result = {status:"Invalid path",bytes:null};
-    } else {
-      try {
-        const response = await fetch(url, {method:"GET",cache:"no-store"});
-        if (!response.ok) {
-          result = {status:"HTTP " + response.status,bytes:null};
-        } else {
-          const blob = await response.blob();
-          result = {status:"OK",bytes:blob.size};
-        }
-      } catch {
-        result = {status:"Unavailable (CORS/offline/missing)",bytes:null};
-      }
-    }
-    pageResults[app.id] = result;
-    results.push({app,...result});
-  }
-
-  $("pageRows").innerHTML = results.map(item => `<tr>
-    <td>${esc(item.app.name)}</td>
-    <td class="path">${esc(item.app.url)}</td>
-    <td>${esc(item.status)}</td>
-    <td>${Number.isFinite(item.bytes) ? esc(bytesLabel(item.bytes)) : "—"}</td>
-  </tr>`).join("");
-
-  $("checkedPages").textContent = results.filter(x => Number.isFinite(x.bytes)).length;
-  const total = results.reduce((sum,x) => sum + (x.bytes || 0),0);
-  $("pageBytes").textContent = bytesLabel(total) + " checked";
-  refreshStorage();
-}
-
-loadJsonAgain();
+/* Startup */
+populateSettings();
+renderThemes();
+const saved=readStore(KEYS.apps,[]);
+if(Array.isArray(saved)&&saved.length){apps=saved.map(normalizeApp);render();}
+loadRemote();
+})();
 </script>
 </body>
 </html>
