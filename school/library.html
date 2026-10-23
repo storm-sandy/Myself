@@ -1,0 +1,827 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#16834a">
+<title>Little Library — Smart Library Manager</title>
+<style>
+:root{
+--bg:#f0f8f0;--panel:#fff;--text:#203b2b;--muted:#6b806f;
+--primary:#16834a;--deep:#075e32;--soft:#dff3e3;--border:#d5e8d8;
+--danger:#c43d4b;--warning:#a76b00;--shadow:0 5px 18px #174d2712
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px system-ui,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 13px;background:var(--primary);color:white;font-weight:650}
+button:hover{filter:brightness(.95)}
+input,select,textarea{width:100%;min-width:0;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--panel);color:var(--text)}
+label{display:block;font-weight:650;margin-bottom:5px}
+.app{max-width:1250px;margin:auto;padding:12px}
+header{background:linear-gradient(135deg,var(--primary),var(--deep));color:white;padding:20px;border-radius:20px}
+.headerrow,.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{font-size:38px;background:#ffffff25;padding:8px 12px;border-radius:15px}
+h1{margin:0;font-size:clamp(22px,5vw,32px)}
+header p{margin:5px 0 0;opacity:.9}
+header button{background:#ffffff20;border:1px solid #ffffff50}
+.tabs{display:flex;gap:7px;overflow-x:auto;padding:12px 0}
+.tab{flex:0 0 auto;background:var(--panel);color:var(--text);border:1px solid var(--border)}
+.tab.active{background:var(--primary);color:white}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:17px;padding:15px;margin-bottom:14px;box-shadow:var(--shadow)}
+h2{font-size:20px;margin:0}
+h3{font-size:16px;margin:0 0 10px}
+.muted{color:var(--muted)}
+.toolbar,.form-actions,.row-actions{display:flex;gap:8px;flex-wrap:wrap}
+.toolbar{margin:13px 0}
+.toolbar>*{flex:1;min-width:130px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{min-width:0}
+.full{grid-column:1/-1}
+.notice{background:var(--soft);color:var(--deep);padding:11px;border-radius:11px;margin:12px 0}
+.secondary{background:var(--soft);color:var(--deep)}
+.danger{background:var(--danger);color:white}
+.warning{background:#fff0cc;color:#805400}
+.small{padding:6px 9px;font-size:12px}
+.hidden{display:none!important}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:11px}
+table{width:100%;border-collapse:collapse;min-width:820px}
+th,td{text-align:left;padding:10px;border-bottom:1px solid var(--border);vertical-align:top}
+th{background:var(--soft);font-size:12px}
+tr:last-child td{border-bottom:0}
+.badge{display:inline-block;padding:4px 8px;border-radius:20px;background:var(--soft);color:var(--deep);font-size:11px;font-weight:750}
+.badge.issued{background:#fff0cc;color:#805400}
+.badge.overdue{background:#ffe0e0;color:#a52232}
+.badge.returned{background:#dff3e3;color:#17623a}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+.stat{padding:15px;border:1px solid var(--border);background:var(--panel);border-radius:14px}
+.stat .number{font-size:27px;font-weight:800;color:var(--primary)}
+.stat .label{color:var(--muted);font-size:12px}
+.empty{text-align:center;padding:30px;color:var(--muted)}
+.chart-wrap{max-width:1000px;margin:15px auto;min-height:300px}
+canvas{display:block;width:100%;height:390px}
+#chartLegend{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.legend-item{font-size:12px;display:flex;gap:5px;align-items:center}
+.legend-dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px}
+.theme-choice{background:var(--panel);color:var(--text);border:2px solid var(--border);text-align:left}
+.theme-choice.selected{border-color:var(--primary)}
+.swatches{display:flex;gap:5px;margin-top:8px}
+.swatch{width:21px;height:21px;border-radius:50%}
+#toast{display:none;position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:20;background:#173d29;color:white;padding:12px 18px;border-radius:12px;max-width:92%;box-shadow:var(--shadow)}
+footer{text-align:center;padding:15px;color:var(--muted);font-size:12px}
+@media(max-width:600px){
+.app{padding:8px}header{padding:14px}.panel{padding:11px}
+.form-grid{grid-template-columns:1fr}.full{grid-column:auto}
+canvas{height:340px}.tab{padding:9px 11px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="headerrow">
+  <div class="brand"><div class="logo">📚</div><div><h1>Little Library</h1><p>Read • Learn • Grow 🌱</p></div></div>
+  <div class="form-actions">
+   <button id="quickAdd">＋ Add Book</button>
+   <button id="exportTop">⬇ Export CSV</button>
+  </div>
+ </div>
+</header>
+
+<nav class="tabs">
+ <button class="tab active" data-tab="books">📚 Library Books</button>
+ <button class="tab" data-tab="summary">📊 Book Summary</button>
+ <button class="tab" data-tab="due">📅 Due Date Watch</button>
+ <button class="tab" data-tab="history">🧑‍🎓 Borrower History</button>
+ <button class="tab" data-tab="settings">⚙️ Settings</button>
+</nav>
+
+<main>
+<section id="books" class="tab-page">
+ <div class="panel">
+  <div class="section-head"><h2>📖 Library Books</h2><button id="showForm">＋ Add New Book</button></div>
+  <div id="bookFormPanel" class="notice hidden">
+   <h3 id="formHeading">Add a new book</h3>
+   <form id="bookForm">
+    <input type="hidden" id="bookId">
+    <div class="form-grid">
+     <div class="field"><label for="title">Book title *</label><input id="title" required maxlength="150"></div>
+     <div class="field"><label for="author">Author</label><input id="author" maxlength="120"></div>
+     <div class="field"><label for="category">Category *</label><select id="category" required></select></div>
+     <div class="field"><label for="isbn">ISBN / Book ID</label><input id="isbn" maxlength="60"></div>
+     <div class="field"><label for="borrower">Borrower name</label><input id="borrower" maxlength="120"></div>
+     <div class="field"><label for="borrowerId">Borrower ID / Class</label><input id="borrowerId" maxlength="80"></div>
+     <div class="field"><label for="checkoutDate">Checkout / Issue date</label><input id="checkoutDate" type="date"></div>
+     <div class="field"><label for="checkinDate">Check-in / Return date</label><input id="checkinDate" type="date"></div>
+     <div class="field"><label for="status">Book status</label><select id="status"><option>Available</option><option>Issued</option><option>Returned</option></select></div>
+     <div class="field"><label for="shelf">Shelf / Location</label><input id="shelf" maxlength="80"></div>
+     <div class="field full"><label for="notes">Notes</label><textarea id="notes" rows="2" maxlength="500"></textarea></div>
+    </div>
+    <p class="muted">Issued books require a borrower and issue date. Returned books require both dates. Return date must be later than issue date.</p>
+    <div class="form-actions"><button type="submit">💾 Save Book</button><button type="button" id="cancelForm" class="secondary">Cancel</button></div>
+   </form>
+  </div>
+  <div class="toolbar">
+   <input id="searchBooks" placeholder="🔍 Search books, borrower, author or ID">
+   <select id="filterCategory"><option value="">All categories</option></select>
+   <select id="filterStatus"><option value="">All statuses</option><option>Available</option><option>Issued</option><option>Returned</option></select>
+   <button id="clearFilters" class="secondary">Clear filters</button>
+  </div>
+  <div id="bookCount" class="muted"></div>
+  <div class="table-wrap"><table>
+   <thead><tr><th>Book</th><th>Category</th><th>Borrower</th><th>Issue date</th><th>Due date</th><th>Return date</th><th>Status</th><th>Actions</th></tr></thead>
+   <tbody id="bookRows"></tbody>
+  </table></div>
+  <div id="booksEmpty" class="empty hidden">📚<p>No books found.</p></div>
+ </div>
+</section>
+
+<section id="summary" class="tab-page hidden">
+ <div class="panel">
+  <div class="section-head"><h2>📊 Book Summary</h2><button id="refreshChart" class="secondary">↻ Refresh</button></div>
+  <p class="muted">Explore book distribution across your categories using 15 chart types.</p>
+  <div class="form-grid" style="margin-top:14px">
+   <div class="field"><label for="chartType">Chart type</label>
+    <select id="chartType">
+     <option value="bar">1. Vertical Bar</option>
+     <option value="horizontal">2. Horizontal Bar</option>
+     <option value="line">3. Line Chart</option>
+     <option value="area">4. Area Chart</option>
+     <option value="pie">5. Pie Chart</option>
+     <option value="doughnut">6. Doughnut Chart</option>
+     <option value="polar">7. Polar Area</option>
+     <option value="radar">8. Radar Chart</option>
+     <option value="stacked">9. Stacked Bar</option>
+     <option value="lollipop">10. Lollipop Chart</option>
+     <option value="dot">11. Dot Plot</option>
+     <option value="waffle">12. Waffle Chart</option>
+     <option value="pictogram">13. Pictogram</option>
+     <option value="funnel">14. Funnel Chart</option>
+     <option value="treemap">15. Treemap</option>
+    </select>
+   </div>
+   <div class="field"><label for="chartScope">Count books by</label>
+    <select id="chartScope"><option value="all">All books</option><option value="Available">Available books</option><option value="Issued">Issued books</option><option value="Returned">Returned books</option></select>
+   </div>
+  </div>
+  <div class="chart-wrap"><canvas id="categoryChart" aria-label="Books by category chart"></canvas></div>
+  <div id="chartLegend"></div>
+  <div id="chartEmpty" class="empty hidden">🌱<p>Add books to display the category chart.</p></div>
+ </div>
+</section>
+
+<section id="due" class="tab-page hidden">
+ <div class="panel">
+  <div class="section-head"><h2>📅 Due Date Watch</h2><button id="refreshDue" class="secondary">↻ Refresh</button></div>
+  <p class="muted">Due dates are calculated from the issue date and the loan period in Settings.</p>
+  <div class="cards">
+   <div class="stat"><div class="number" id="statActive">0</div><div class="label">Active loans</div></div>
+   <div class="stat"><div class="number" id="statDueSoon">0</div><div class="label">Due soon</div></div>
+   <div class="stat"><div class="number" id="statDueToday">0</div><div class="label">Due today</div></div>
+   <div class="stat"><div class="number" id="statOverdue">0</div><div class="label">Overdue</div></div>
+  </div>
+  <div class="notice"><b>🔔 Reminder note</b><div id="reminderNote" style="margin-top:5px">No reminders.</div></div>
+  <div class="form-actions"><button id="enableNotifications">🔔 Enable browser alerts</button><button id="checkAlerts" class="secondary">Check reminders now</button></div>
+  <p class="muted">Browser notifications depend on browser permission and may require HTTPS or localhost. In-app reminders work while this page is open.</p>
+ </div>
+ <div class="panel">
+  <h3>⏰ Active Loan Watchlist</h3>
+  <div class="toolbar">
+   <input id="searchDue" placeholder="Search book or borrower">
+   <select id="filterDue"><option value="">All active loans</option><option value="overdue">Overdue</option><option value="today">Due today</option><option value="soon">Due soon</option><option value="upcoming">Not due soon</option></select>
+  </div>
+  <div class="table-wrap"><table>
+   <thead><tr><th>Book</th><th>Borrower</th><th>Issue date</th><th>Due date</th><th>Days left / overdue</th><th>Reminder</th><th>Action</th></tr></thead>
+   <tbody id="dueRows"></tbody>
+  </table></div>
+  <div id="dueEmpty" class="empty hidden">🎉<p>No active loans match this filter.</p></div>
+ </div>
+</section>
+
+<section id="history" class="tab-page hidden">
+ <div class="panel">
+  <div class="section-head"><h2>🧑‍🎓 Borrower History</h2><div class="form-actions"><button id="exportHistory" class="secondary">⬇ Export History CSV</button><button id="clearHistory" class="danger">🗑 Clear History</button></div></div>
+  <p class="muted">Issue, return and book updates are recorded automatically.</p>
+  <div class="toolbar"><input id="searchHistory" placeholder="Search borrower, book or ID">
+   <select id="historyType"><option value="">All activities</option><option>Issued</option><option>Returned</option><option>Book added</option><option>Book updated</option><option>Book deleted</option></select>
+  </div>
+  <div class="table-wrap"><table><thead><tr><th>Date & Time</th><th>Activity</th><th>Book</th><th>Borrower</th><th>Borrower ID / Class</th><th>Issue date</th><th>Due date</th><th>Return date</th></tr></thead><tbody id="historyRows"></tbody></table></div>
+  <div id="historyEmpty" class="empty hidden">📝<p>No history records yet.</p></div>
+ </div>
+</section>
+
+<section id="settings" class="tab-page hidden">
+ <div class="panel">
+  <h2>⚙️ Loan & Reminder Settings</h2>
+  <p class="muted">Set your default loan period and reminder timing.</p>
+  <form id="settingsForm">
+   <div class="form-grid">
+    <div class="field"><label for="loanPeriod">Default loan period (days)</label><input id="loanPeriod" type="number" min="1" max="365" required></div>
+    <div class="field"><label for="reminderDays">Remind this many days before due</label><input id="reminderDays" type="number" min="0" max="60" required></div>
+    <div class="field full"><label for="reminderNoteSetting">Default reminder note</label><textarea id="reminderNoteSetting" rows="3" maxlength="500"></textarea></div>
+   </div>
+   <div class="form-actions"><button type="submit">💾 Save Settings</button><button type="button" id="resetSettings" class="secondary">Reset defaults</button></div>
+  </form>
+  <div class="notice">Example: a 14-day loan issued on 1 October is due on 15 October. A 3-day reminder begins on 12 October.</div>
+ </div>
+
+ <div class="panel">
+  <h2>🏷️ Category Manager</h2>
+  <p class="muted">Add, rename, search and delete categories. Existing books are preserved when a category is renamed or reassigned.</p>
+  <form id="categoryForm">
+   <input type="hidden" id="editCategoryId">
+   <div class="form-grid">
+    <div class="field"><label for="categoryName">Category name *</label><input id="categoryName" maxlength="60" placeholder="e.g. Environmental Studies" required></div>
+    <div class="field"><label for="categoryDescription">Description</label><input id="categoryDescription" maxlength="200" placeholder="Optional description"></div>
+   </div>
+   <div class="form-actions" style="margin-top:12px"><button type="submit" id="saveCategoryBtn">＋ Add Category</button><button type="button" id="cancelCategoryEdit" class="secondary">Cancel</button></div>
+  </form>
+  <div class="toolbar"><input id="searchCategories" placeholder="🔍 Search categories"><button id="resetCategories" class="secondary">Restore Default Categories</button></div>
+  <div class="table-wrap"><table style="min-width:650px"><thead><tr><th>Category</th><th>Description</th><th>Books</th><th>Actions</th></tr></thead><tbody id="categoryRows"></tbody></table></div>
+  <div id="categoryEmpty" class="empty hidden">🏷️<p>No categories found.</p></div>
+ </div>
+
+ <div class="panel">
+  <h2>🎨 Nature Themes</h2><p class="muted">Choose your library colours.</p><div id="themeGrid" class="theme-grid"></div>
+ </div>
+
+ <div class="panel">
+  <h2>📦 Backup & Data</h2>
+  <div class="form-actions">
+   <button id="exportJson">⬇ Export JSON Backup</button>
+   <button id="importJsonBtn" class="secondary">⬆ Import JSON Backup</button>
+   <button id="importCsvBtn" class="secondary">⬆ Import Books CSV</button>
+   <button id="sampleData" class="secondary">🧪 Load Sample Books</button>
+   <button id="clearAll" class="danger">🗑 Clear All Data</button>
+  </div>
+  <input type="file" id="jsonFile" accept=".json,application/json" class="hidden">
+  <input type="file" id="csvFile" accept=".csv,text/csv" class="hidden">
+  <p class="muted" id="storageInfo"></p>
+  <div class="notice">Data is saved in this browser, not in a cloud database. Export a JSON backup regularly.</div>
+ </div>
+</section>
+</main>
+<footer>Little Library 🌿 • Smart loan tracking and reminders</footer>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+const DATA_KEY="little_library_smart_v2";
+const THEME_KEY="little_library_theme_v2";
+const SETTINGS_KEY="little_library_settings_v2";
+const CATEGORY_KEY="little_library_categories_v2";
+const defaults={loanPeriod:14,reminderDays:3,reminderNote:"Please return the borrowed book on or before the due date."};
+const DEFAULT_CATEGORIES=["Story Books","Science","Mathematics","Language","History","Geography","Comics","Biography","Reference","Art & Craft","Technology","Other"];
+let settings={...defaults},books=[],history=[],categories=[],activeTheme="forest";
+const $=id=>document.getElementById(id);
+const makeId=()=>"id"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const stamp=()=>new Date().toISOString();
+const nowISO=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`};
+const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const dateText=x=>x?esc(x):"—";
+
+const themes=[
+{id:"forest",name:"🌲 Forest",v:["#f0f8f0","#fff","#203b2b","#6b806f","#16834a","#075e32","#dff3e3","#d5e8d8"]},
+{id:"ocean",name:"🌊 Ocean",v:["#edf7fc","#fff","#18384a","#627f8e","#1684b5","#075477","#d9f0fb","#cce5f1"]},
+{id:"sunshine",name:"☀️ Sunshine",v:["#fff9e9","#fff","#57421b","#8a774d","#d99a19","#98640a","#fff0c7","#efdfb7"]},
+{id:"lavender",name:"💜 Lavender",v:["#f7f1ff","#fff","#3d2e55","#827195","#8c5bc5","#5d328e","#eee1ff","#e2d2f5"]},
+{id:"rose",name:"🌹 Rose",v:["#fff2f4","#fff","#502a35","#906a75","#d64f77","#9c284c","#ffe0e9","#f2cfda"]},
+{id:"mint",name:"🍃 Mint",v:["#eafbf6","#fff","#1e443a","#67877d","#159b7c","#08705a","#d5f5e9","#c5e9dd"]},
+{id:"autumn",name:"🍂 Autumn",v:["#fff4e9","#fff","#4d3322","#8b705b","#c56a2a","#8b4317","#fbe2cb","#eed2b7"]},
+{id:"night",name:"🌙 Night",v:["#18232d","#24333f","#ecf4fa","#b0c2cf","#63b7a2","#2d8b77","#29483f","#3b515d"]},
+{id:"meadow",name:"🌼 Meadow",v:["#f4fae9","#fff","#344524","#71805d","#719e32","#486c19","#e6f2cf","#d9e6c3"]},
+{id:"sky",name:"☁️ Sky",v:["#eef5ff","#fff","#243c60","#7183a2","#477bd1","#2853a0","#dfebff","#d1dff5"]}
+];
+
+function toast(message){
+ $("toast").textContent=message;$("toast").style.display="block";
+ clearTimeout(toast.timer);toast.timer=setTimeout(()=>$("toast").style.display="none",3000);
+}
+function parseLocalDate(s){
+ if(!s||!/^\d{4}-\d{2}-\d{2}$/.test(s))return null;
+ const [y,m,d]=s.split("-").map(Number),dt=new Date(Date.UTC(y,m-1,d));
+ return dt.getUTCFullYear()===y&&dt.getUTCMonth()===m-1&&dt.getUTCDate()===d?dt:null;
+}
+function addDays(s,n){
+ const d=parseLocalDate(s);if(!d)return "";
+ d.setUTCDate(d.getUTCDate()+Number(n));
+ return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,"0")}-${String(d.getUTCDate()).padStart(2,"0")}`;
+}
+function daysBetween(a,b){
+ const x=parseLocalDate(a),y=parseLocalDate(b);
+ return x&&y?Math.round((y-x)/86400000):null;
+}
+function dueDate(b){
+ if(!b.checkoutDate)return "";
+ if(b.status==="Issued"&&b.dueDate&&parseLocalDate(b.dueDate))return b.dueDate;
+ return addDays(b.checkoutDate,settings.loanPeriod);
+}
+function dueInfo(b){
+ const due=dueDate(b),diff=daysBetween(nowISO(),due);
+ if(!due||diff===null)return {due:"",diff:null,state:"invalid",label:"Missing issue date"};
+ if(diff<0)return {due,diff,state:"overdue",label:`${Math.abs(diff)} day(s) overdue`};
+ if(diff===0)return {due,diff,state:"today",label:"Due today"};
+ if(diff<=settings.reminderDays)return {due,diff,state:"soon",label:`Due in ${diff} day(s)`};
+ return {due,diff,state:"upcoming",label:`${diff} day(s) left`};
+}
+function saveData(){
+ try{localStorage.setItem(DATA_KEY,JSON.stringify({version:3,books,history}));updateStorageInfo()}
+ catch(e){toast("Unable to save. Browser storage may be full.")}
+}
+function saveSettings(){localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings))}
+function saveCategories(){localStorage.setItem(CATEGORY_KEY,JSON.stringify(categories))}
+function loadAll(){
+ try{const d=JSON.parse(localStorage.getItem(DATA_KEY)||"{}");books=Array.isArray(d.books)?d.books:[];history=Array.isArray(d.history)?d.history:[]}catch{books=[];history=[]}
+ try{settings={...defaults,...JSON.parse(localStorage.getItem(SETTINGS_KEY)||"{}")}}catch{settings={...defaults}}
+ activeTheme=localStorage.getItem(THEME_KEY)||"forest";
+ try{
+  const saved=JSON.parse(localStorage.getItem(CATEGORY_KEY)||"null");
+  categories=Array.isArray(saved)?saved:[];
+ }catch{categories=[]}
+ if(!categories.length)categories=DEFAULT_CATEGORIES.map(name=>({id:makeId(),name,description:""}));
+ books.forEach(b=>{
+  b.category=(b.category||"Other").trim();
+  if(!categories.some(c=>c.name.toLowerCase()===b.category.toLowerCase()))
+   categories.push({id:makeId(),name:b.category,description:"Recovered from existing book"});
+ });
+ categories=categories.filter((c,i,a)=>c&&c.name&&a.findIndex(x=>x.name.toLowerCase()===c.name.toLowerCase())===i);
+ saveCategories();
+}
+function addHistory(b,activity,details=""){
+ history.unshift({id:makeId(),timestamp:stamp(),activity,bookId:b.id||"",title:b.title||"",author:b.author||"",category:b.category||"",borrower:b.borrower||"",borrowerId:b.borrowerId||"",checkoutDate:b.checkoutDate||"",dueDate:b.dueDate||(b.checkoutDate?addDays(b.checkoutDate,settings.loanPeriod):""),checkinDate:b.checkinDate||"",details});
+}
+function validateBook(b){
+ if(!b.title)return "Book title is required.";
+ if(!categories.some(c=>c.name===b.category))return "Choose a valid category.";
+ if(b.checkoutDate&&!parseLocalDate(b.checkoutDate))return "Invalid issue date.";
+ if(b.checkinDate&&!parseLocalDate(b.checkinDate))return "Invalid return date.";
+ if(b.checkoutDate&&b.checkinDate&&b.checkinDate<=b.checkoutDate)return "Return date must be later than issue date.";
+ if(b.status==="Issued"){
+  if(!b.borrower)return "Enter the borrower's name before issuing the book.";
+  if(!b.checkoutDate)return "Enter an issue date before issuing the book.";
+  if(b.checkinDate)return "An issued book cannot already have a return date.";
+ }
+ if(b.status==="Returned"){
+  if(!b.checkoutDate||!b.checkinDate)return "Returned books require both issue and return dates.";
+  if(b.checkinDate<=b.checkoutDate)return "Return date must be later than issue date.";
+ }
+ return "";
+}
+function populateBookCategories(){
+ const sel=$("category"),old=sel.value;
+ sel.innerHTML=categories.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join("");
+ if(categories.some(c=>c.name===old))sel.value=old;
+}
+function openForm(b=null){
+ $("bookForm").reset();$("bookId").value=b?.id||"";
+ $("formHeading").textContent=b?"✏️ Edit book":"➕ Add a new book";
+ populateBookCategories();
+ if(b) ["title","author","category","isbn","borrower","borrowerId","checkoutDate","checkinDate","status","shelf","notes"].forEach(k=>$(k).value=b[k]??"");
+ $("bookFormPanel").classList.remove("hidden");
+ $("books").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function closeForm(){$("bookFormPanel").classList.add("hidden");$("bookForm").reset();$("bookId").value=""}
+function formBook(){
+ const old=books.find(b=>b.id===$("bookId").value);
+ const b={id:$("bookId").value||makeId(),title:$("title").value.trim(),author:$("author").value.trim(),category:$("category").value, isbn:$("isbn").value.trim(),borrower:$("borrower").value.trim(),borrowerId:$("borrowerId").value.trim(),checkoutDate:$("checkoutDate").value,checkinDate:$("checkinDate").value,status:$("status").value,shelf:$("shelf").value.trim(),notes:$("notes").value.trim()};
+ if(old&&old.checkoutDate===b.checkoutDate&&old.dueDate)b.dueDate=old.dueDate;
+ else if(b.checkoutDate)b.dueDate=addDays(b.checkoutDate,settings.loanPeriod);
+ return b;
+}
+$("bookForm").addEventListener("submit",e=>{
+ e.preventDefault();const b=formBook(),problem=validateBook(b);
+ if(problem){alert("Date / loan validation:\n"+problem);return}
+ const old=books.find(x=>x.id===b.id);
+ if(old){
+  const changed=old.status!==b.status||old.borrower!==b.borrower||old.checkoutDate!==b.checkoutDate||old.checkinDate!==b.checkinDate;
+  books=books.map(x=>x.id===b.id?b:x);addHistory(b,"Book updated");
+  if(changed&&b.status==="Issued")addHistory(b,"Issued","Loan details saved");
+  if(changed&&b.status==="Returned")addHistory(b,"Returned","Return details saved");
+  toast("Book updated.");
+ }else{
+  books.unshift(b);addHistory(b,"Book added");
+  if(b.status==="Issued")addHistory(b,"Issued","New loan");
+  if(b.status==="Returned")addHistory(b,"Returned","Return recorded");
+  toast("Book added.");
+ }
+ saveData();closeForm();renderAll();
+});
+$("showForm").onclick=()=>openForm();
+$("quickAdd").onclick=()=>{switchTab("books");openForm()};
+$("cancelForm").onclick=closeForm;
+
+function statusBadge(status,info){
+ const cls=info?.state==="overdue"?"overdue":status==="Issued"?"issued":status==="Returned"?"returned":"";
+ return `<span class="badge ${cls}">${esc(status)}</span>`;
+}
+function renderCategoryFilter(){
+ const sel=$("filterCategory"),old=sel.value;
+ sel.innerHTML='<option value="">All categories</option>'+categories.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join("");
+ if(categories.some(c=>c.name===old))sel.value=old;
+}
+function renderBooks(){
+ const q=$("searchBooks").value.toLowerCase().trim(),cat=$("filterCategory").value,stat=$("filterStatus").value;
+ const list=books.filter(b=>{
+  const text=[b.title,b.author,b.borrower,b.borrowerId,b.isbn,b.category,b.shelf].join(" ").toLowerCase();
+  return (!q||text.includes(q))&&(!cat||b.category===cat)&&(!stat||b.status===stat);
+ });
+ $("bookCount").textContent=`Showing ${list.length} of ${books.length} book(s)`;
+ $("bookRows").innerHTML=list.map(b=>{
+  const info=dueInfo(b);
+  return `<tr>
+   <td><b>${esc(b.title)}</b><div class="muted">${esc(b.author||"Unknown author")}</div><div class="muted">ID: ${esc(b.isbn||"—")} · Shelf: ${esc(b.shelf||"—")}</div></td>
+   <td>${esc(b.category)}</td><td>${esc(b.borrower||"—")}<div class="muted">${esc(b.borrowerId||"")}</div></td>
+   <td>${dateText(b.checkoutDate)}</td><td>${b.status==="Issued"?dateText(info.due):"—"}</td><td>${dateText(b.checkinDate)}</td><td>${statusBadge(b.status,b.status==="Issued"?info:null)}</td>
+   <td><div class="row-actions"><button class="small" data-edit="${esc(b.id)}">Edit</button><button class="small secondary" data-issue="${esc(b.id)}">Issue</button><button class="small secondary" data-return="${esc(b.id)}">Return</button><button class="small danger" data-delete="${esc(b.id)}">Delete</button></div></td>
+  </tr>`;
+ }).join("");
+ $("booksEmpty").classList.toggle("hidden",list.length>0);
+ renderCategoryFilter();
+}
+$("bookRows").addEventListener("click",e=>{
+ const btn=e.target.closest("button");if(!btn)return;
+ const id=btn.dataset.edit||btn.dataset.issue||btn.dataset.return||btn.dataset.delete,b=books.find(x=>x.id===id);if(!b)return;
+ if(btn.dataset.edit!==undefined){openForm(b);return}
+ if(btn.dataset.issue!==undefined){
+  if(b.status==="Issued"){toast("This book is already issued.");return}
+  openForm({...b,status:"Issued",checkoutDate:nowISO(),checkinDate:"",dueDate:addDays(nowISO(),settings.loanPeriod)});return;
+ }
+ if(btn.dataset.return!==undefined){
+  if(b.status!=="Issued"){toast("Only an issued book can be returned.");return}
+  if(nowISO()<=b.checkoutDate){alert("Return date must be later than issue date. Select a later return date.");openForm({...b,status:"Returned",checkinDate:""});return}
+  openForm({...b,status:"Returned",checkinDate:nowISO()});return;
+ }
+ if(btn.dataset.delete!==undefined&&confirm(`Delete "${b.title}"? Previous history will be retained.`)){
+  addHistory(b,"Book deleted");books=books.filter(x=>x.id!==id);saveData();renderAll();toast("Book deleted.");
+ }
+});
+["searchBooks","filterCategory","filterStatus"].forEach(id=>$(id).addEventListener(id==="searchBooks"?"input":"change",renderBooks));
+$("clearFilters").onclick=()=>{$("searchBooks").value="";$("filterCategory").value="";$("filterStatus").value="";renderBooks()};
+
+/* CATEGORY CRUD */
+function resetCategoryForm(){
+ $("categoryForm").reset();$("editCategoryId").value="";$("saveCategoryBtn").textContent="＋ Add Category";
+}
+function renderCategories(){
+ const q=$("searchCategories").value.toLowerCase().trim();
+ const list=categories.filter(c=>(c.name+" "+(c.description||"")).toLowerCase().includes(q)).sort((a,b)=>a.name.localeCompare(b.name));
+ $("categoryRows").innerHTML=list.map(c=>{
+  const count=books.filter(b=>b.category===c.name).length;
+  return `<tr><td><b>${esc(c.name)}</b></td><td>${esc(c.description||"—")}</td><td>${count}</td><td><div class="row-actions"><button class="small" data-cat-edit="${esc(c.id)}">Edit</button><button class="small danger" data-cat-delete="${esc(c.id)}">Delete</button></div></td></tr>`;
+ }).join("");
+ $("categoryEmpty").classList.toggle("hidden",list.length>0);
+}
+$("categoryForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const id=$("editCategoryId").value,name=$("categoryName").value.trim(),description=$("categoryDescription").value.trim();
+ if(!name){alert("Enter a category name.");return}
+ if(categories.some(c=>c.name.toLowerCase()===name.toLowerCase()&&c.id!==id)){alert("A category with this name already exists.");return}
+ if(id){
+  const old=categories.find(c=>c.id===id);if(!old)return;
+  const oldName=old.name;
+  categories=categories.map(c=>c.id===id?{...c,name,description}:c);
+  if(oldName!==name){
+   books=books.map(b=>b.category===oldName?{...b,category:name}:b);
+   history.forEach(h=>{if(h.category===oldName)h.category=name});
+   addHistory({id:"",title:"Category: "+name,category:name},"Book updated",`Category renamed from "${oldName}" to "${name}"`);
+  }
+  toast("Category updated.");
+ }else{
+  categories.push({id:makeId(),name,description});toast("Category added.");
+ }
+ saveCategories();saveData();resetCategoryForm();renderAll();
+});
+$("cancelCategoryEdit").onclick=resetCategoryForm;
+$("searchCategories").addEventListener("input",renderCategories);
+$("categoryRows").addEventListener("click",e=>{
+ const btn=e.target.closest("button");if(!btn)return;
+ const id=btn.dataset.catEdit||btn.dataset.catDelete,c=categories.find(x=>x.id===id);if(!c)return;
+ if(btn.dataset.catEdit!==undefined){
+  $("editCategoryId").value=c.id;$("categoryName").value=c.name;$("categoryDescription").value=c.description||"";
+  $("saveCategoryBtn").textContent="💾 Update Category";$("categoryName").focus();return;
+ }
+ const count=books.filter(b=>b.category===c.name).length;
+ if(count){
+  const options=categories.filter(x=>x.id!==id);
+  if(!options.length){alert("Create another category before deleting this category.");return}
+  const promptText="This category has "+count+" book(s). Enter the exact name of the category to which these books should be moved:\n\n"+options.map(x=>x.name).join("\n");
+  const targetName=prompt(promptText,options[0].name);
+  if(targetName===null)return;
+  const target=options.find(x=>x.name.toLowerCase()===targetName.trim().toLowerCase());
+  if(!target){alert("Category not found. Nothing was deleted.");return}
+  books=books.map(b=>b.category===c.name?{...b,category:target.name}:b);
+  history.forEach(h=>{if(h.category===c.name)h.category=target.name});
+ }
+ if(!confirm(`Delete category "${c.name}"?`))return;
+ categories=categories.filter(x=>x.id!==id);
+ saveCategories();saveData();resetCategoryForm();renderAll();toast("Category deleted.");
+});
+$("resetCategories").onclick=()=>{
+ if(!confirm("Restore the default categories? Custom categories will be removed. Books in custom categories will be moved to Other."))return;
+ const old=categories.map(c=>c.name);
+ categories=DEFAULT_CATEGORIES.map(name=>({id:makeId(),name,description:""}));
+ books=books.map(b=>DEFAULT_CATEGORIES.includes(b.category)?b:{...b,category:"Other"});
+ history.forEach(h=>{if(old.includes(h.category)&&!DEFAULT_CATEGORIES.includes(h.category))h.category="Other"});
+ saveCategories();saveData();resetCategoryForm();renderAll();toast("Default categories restored.");
+};
+
+/* 15 CANVAS CHART TYPES — no external chart library */
+const chartColors=["#16834a","#3188c8","#e9a323","#925bc4","#df5575","#169b98","#d27635","#718b35","#526ac4","#b04e9a","#54a6a0","#d7a74d"];
+function renderChart(){
+ const canvas=$("categoryChart"),ctx=canvas.getContext("2d");
+ const width=Math.max(280,canvas.parentElement.clientWidth||600),height=390,dpr=window.devicePixelRatio||1;
+ canvas.width=width*dpr;canvas.height=height*dpr;canvas.style.height=height+"px";
+ ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);
+ const scope=$("chartScope").value;
+ const counts={};categories.forEach(c=>counts[c.name]=0);
+ books.filter(b=>scope==="all"||b.status===scope).forEach(b=>counts[b.category||"Other"]=(counts[b.category||"Other"]||0)+1);
+ const entries=Object.entries(counts).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
+ $("chartEmpty").classList.toggle("hidden",entries.length>0);
+ canvas.classList.toggle("hidden",!entries.length);$("chartLegend").innerHTML="";
+ if(!entries.length)return;
+ const colors=entries.map((_,i)=>chartColors[i%chartColors.length]),total=entries.reduce((s,x)=>s+x[1],0);
+ const css=getComputedStyle(document.documentElement),primary=css.getPropertyValue("--primary").trim(),muted=css.getPropertyValue("--muted").trim(),border=css.getPropertyValue("--border").trim(),text=css.getPropertyValue("--text").trim();
+ ctx.fillStyle=text;ctx.strokeStyle=border;ctx.lineWidth=1;ctx.font="12px system-ui";
+ function legend(){ $("chartLegend").innerHTML=entries.map(([n,v],i)=>`<span class="legend-item"><span class="legend-dot" style="background:${colors[i]}"></span>${esc(n)}: ${v} (${(100*v/total).toFixed(1)}%)</span>`).join("") }
+ function labelLines(name,x,y,maxLen=16){
+  const words=name.split(" ");let line="",lines=[];
+  words.forEach(w=>{if((line+" "+w).trim().length>maxLen&&line){lines.push(line);line=w}else line=(line+" "+w).trim()});
+  if(line)lines.push(line);
+  lines.slice(0,3).forEach((l,i)=>ctx.fillText(l,x,y+i*13));
+ }
+ function axes(max,left,top,cw,ch){
+  const step=Math.max(1,Math.ceil(max/4));
+  for(let v=0;v<=max;v+=step){const y=top+ch-(v/max||0)*ch;ctx.strokeStyle=border;ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(left+cw,y);ctx.stroke();ctx.fillStyle=muted;ctx.textAlign="right";ctx.fillText(v,left-7,y)}
+ }
+ function pie(doughnut=false,polar=false){
+  const cx=width/2,cy=height/2,r=Math.min(width*.30,height*.34),inner=doughnut?r*.56:0;
+  let angle=-Math.PI/2;
+  entries.forEach(([n,v],i)=>{
+   const sweep=polar?Math.PI*2/entries.length:Math.PI*2*v/total;
+   ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,angle,angle+sweep);ctx.closePath();ctx.fillStyle=colors[i];ctx.fill();
+   if(inner){ctx.beginPath();ctx.arc(cx,cy,inner,0,Math.PI*2);ctx.fillStyle=css.getPropertyValue("--panel").trim();ctx.fill()}
+   if(polar){const rr=r*v/Math.max(...entries.map(x=>x[1]));ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,rr,angle,angle+sweep);ctx.closePath();ctx.fillStyle=colors[i];ctx.fill()}
+   angle+=sweep;
+  });
+  if(doughnut){ctx.fillStyle=text;ctx.textAlign="center";ctx.font="bold 25px system-ui";ctx.fillText(total,cx,cy+3);ctx.font="12px system-ui";ctx.fillText("Books",cx,cy+22)}
+ }
+ const type=$("chartType").value,max=Math.max(...entries.map(x=>x[1]));
+ if(["pie","doughnut","polar"].includes(type)){pie(type==="doughnut",type==="polar");legend();return}
+ if(type==="radar"){
+  const cx=width/2,cy=height/2,r=Math.min(width*.31,height*.32),n=entries.length;
+  for(let ring=1;ring<=4;ring++){
+   ctx.beginPath();entries.forEach((_,i)=>{const a=-Math.PI/2+i*2*Math.PI/n,x=cx+Math.cos(a)*r*ring/4,y=cy+Math.sin(a)*r*ring/4;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.closePath();ctx.strokeStyle=border;ctx.stroke();
+  }
+  entries.forEach(([name,val],i)=>{const a=-Math.PI/2+i*2*Math.PI/n,x=cx+Math.cos(a)*r*val/max,y=cy+Math.sin(a)*r*val/max;ctx.beginPath();ctx.arc(x,y,5,0,7);ctx.fillStyle=colors[i];ctx.fill();ctx.fillStyle=text;ctx.textAlign=x<cx?"right":"left";ctx.fillText(name,x+Math.cos(a)*15,y+Math.sin(a)*15)});
+  legend();return;
+ }
+ if(type==="waffle"||type==="pictogram"){
+  const cols=type==="waffle"?10:Math.max(5,Math.floor(width/48)),rows=type==="waffle"?10:Math.ceil(total/cols),gap=4;
+  const cell=Math.min((width-40)/cols-gap,(height-55)/rows-gap,25),used=Math.min(type==="waffle"?100:total,type==="waffle"?100:total);
+  const countsToDraw=type==="waffle"?entries.map(x=>Math.round(x[1]/total*100)):entries.map(x=>x[1]);
+  let index=0;
+  countsToDraw.forEach((cnt,i)=>{for(let j=0;j<cnt&&index<used;j++,index++){
+   const x=20+(index%cols)*(cell+gap),y=15+Math.floor(index/cols)*(cell+gap);
+   ctx.fillStyle=colors[i];ctx.beginPath();
+   if(type==="pictogram"){ctx.arc(x+cell/2,y+cell/2,cell*.38,0,Math.PI*2);ctx.fill()}
+   else{ctx.roundRect(x,y,cell,cell,3);ctx.fill()}
+  }});
+  legend();return;
+ }
+ if(type==="treemap"){
+  let x=8,y=8,w=width-16,h=height-16;
+  entries.forEach(([name,val],i)=>{
+   const area=(width-16)*(height-16)*val/total;
+   let rw=Math.max(25,w*(val/max));
+   if(i===entries.length-1||rw>w)rw=w;
+   let rh=Math.min(h,area/Math.max(rw,1));
+   if(rh<35){rw=Math.min(w,area/35);rh=Math.min(h,area/Math.max(rw,1))}
+   ctx.fillStyle=colors[i];ctx.fillRect(x,y,rw-3,rh-3);
+   ctx.fillStyle="#fff";ctx.textAlign="left";ctx.font="bold 12px system-ui";
+   if(rw>45&&rh>25){ctx.fillText(name.slice(0,Math.floor(rw/7)),x+5,y+17);ctx.fillText(String(val),x+5,y+33)}
+   if(rw>=w-2){x=8;y+=rh;w=width-16;h-=rh}
+   else{x+=rw;w-=rw}
+  });
+  legend();return;
+ }
+ const left=type==="horizontal"?125:42,right=12,top=20,bottom=type==="horizontal"?25:90,cw=width-left-right,ch=height-top-bottom;
+ axes(max,left,top,cw,ch);
+ if(type==="horizontal"){
+  entries.forEach(([name,val],i)=>{const row=ch/entries.length,y=top+i*row+row*.18,bh=row*.62;ctx.fillStyle=colors[i];ctx.fillRect(left,y,cw*val/max,bh);ctx.fillStyle=text;ctx.textAlign="right";ctx.fillText(name.length>18?name.slice(0,16)+"…":name,left-8,y+bh*.7);ctx.textAlign="left";ctx.fillText(val,left+cw*val/max+5,y+bh*.7)});
+  legend();return;
+ }
+ if(type==="line"||type==="area"){
+  const pts=entries.map((e,i)=>({x:left+(i+.5)*cw/entries.length,y:top+ch-ch*e[1]/max}));
+  if(type==="area"){ctx.beginPath();ctx.moveTo(pts[0].x,top+ch);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,top+ch);ctx.closePath();ctx.fillStyle=primary+"35";ctx.fill()}
+  ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle=primary;ctx.lineWidth=3;ctx.stroke();
+  pts.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x,p.y,5,0,7);ctx.fillStyle=colors[i];ctx.fill();ctx.fillStyle=text;ctx.textAlign="center";ctx.fillText(entries[i][1],p.x,p.y-10);ctx.save();ctx.translate(p.x,top+ch+12);ctx.rotate(-Math.PI/4);ctx.fillStyle=muted;ctx.textAlign="right";ctx.fillText(entries[i][0].slice(0,20),0,0);ctx.restore()});
+  legend();return;
+ }
+ if(type==="radar")return;
+ const slot=cw/entries.length,bw=Math.min(55,slot*.6);
+ entries.forEach(([name,val],i)=>{
+  const x=left+i*slot+(slot-bw)/2,bh=val/max*ch,y=top+ch-bh;
+  if(type==="bar"||type==="stacked"){
+   ctx.fillStyle=colors[i];ctx.beginPath();ctx.roundRect(x,y,bw,Math.max(1,bh),4);ctx.fill();
+  }else if(type==="lollipop"){
+   ctx.strokeStyle=colors[i];ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x+bw/2,top+ch);ctx.lineTo(x+bw/2,y);ctx.stroke();ctx.beginPath();ctx.arc(x+bw/2,y,7,0,7);ctx.fillStyle=colors[i];ctx.fill();
+  }else if(type==="dot"){
+   ctx.beginPath();ctx.arc(x+bw/2,y,7,0,7);ctx.fillStyle=colors[i];ctx.fill();
+  }else if(type==="funnel"){
+   const rw=cw*(val/max),rx=left+(cw-rw)/2,fh=ch/entries.length;
+   ctx.fillStyle=colors[i];ctx.fillRect(rx,top+i*fh,rw,fh-3);
+   ctx.fillStyle="#fff";ctx.textAlign="center";ctx.fillText(name.slice(0,22)+" · "+val,left+cw/2,top+i*fh+fh/2);
+  }
+  if(type!=="funnel"){ctx.fillStyle=text;ctx.textAlign="center";ctx.font="bold 12px system-ui";ctx.fillText(String(val),x+bw/2,Math.max(12,y-5));ctx.save();ctx.translate(x+bw/2,top+ch+12);ctx.rotate(-Math.PI/4);ctx.fillStyle=muted;ctx.textAlign="right";ctx.font="11px system-ui";ctx.fillText(name.length>23?name.slice(0,21)+"…":name,0,0);ctx.restore()}
+ });
+ legend();
+}
+$("chartType").onchange=renderChart;$("chartScope").onchange=renderChart;$("refreshChart").onclick=renderChart;
+
+/* DUE DATE WATCH */
+function renderDue(){
+ const active=books.filter(b=>b.status==="Issued"),infos=active.map(b=>({b,info:dueInfo(b)}));
+ $("statActive").textContent=active.length;
+ $("statDueSoon").textContent=infos.filter(x=>x.info.state==="soon").length;
+ $("statDueToday").textContent=infos.filter(x=>x.info.state==="today").length;
+ $("statOverdue").textContent=infos.filter(x=>x.info.state==="overdue").length;
+ const urgent=infos.filter(x=>["overdue","today","soon"].includes(x.info.state));
+ $("reminderNote").innerHTML=!urgent.length
+  ?(active.length?"No urgent reminders. Active loans are currently on track.":"There are no active loans.")
+  :urgent.slice(0,8).map(({b,info})=>`<div style="margin:5px 0"><b>${esc(b.borrower)}</b> — ${esc(b.title)}: <b>${esc(info.label)}</b> (due ${esc(info.due)}). ${esc(settings.reminderNote)}</div>`).join("")+(urgent.length>8?`<div>And ${urgent.length-8} more reminder(s).</div>`:"");
+ const q=$("searchDue").value.toLowerCase().trim(),filter=$("filterDue").value;
+ const rows=infos.filter(({b,info})=>(!q||[b.title,b.borrower,b.borrowerId,b.isbn].join(" ").toLowerCase().includes(q))&&(!filter||info.state===filter));
+ $("dueRows").innerHTML=rows.map(({b,info})=>`<tr><td><b>${esc(b.title)}</b><div class="muted">${esc(b.author||"")}</div></td><td>${esc(b.borrower||"—")}<div class="muted">${esc(b.borrowerId||"")}</div></td><td>${dateText(b.checkoutDate)}</td><td>${dateText(info.due)}</td><td><span class="badge ${info.state==="overdue"?"overdue":["soon","today"].includes(info.state)?"issued":""}">${esc(info.label)}</span></td><td>${info.state==="overdue"?"🚨 OVERDUE":info.state==="today"?"🔔 DUE TODAY":info.state==="soon"?"⏰ Due soon":"✅ On track"}</td><td><button class="small secondary" data-due-edit="${esc(b.id)}">Edit / Return</button></td></tr>`).join("");
+ $("dueEmpty").classList.toggle("hidden",rows.length>0);
+}
+$("dueRows").addEventListener("click",e=>{const b=e.target.closest("[data-due-edit]");if(b){switchTab("books");const book=books.find(x=>x.id===b.dataset.dueEdit);if(book)openForm(book)}});
+$("searchDue").addEventListener("input",renderDue);$("filterDue").addEventListener("change",renderDue);
+$("refreshDue").onclick=()=>{renderDue();toast("Due-date watch refreshed.")};
+
+function renderHistory(){
+ const q=$("searchHistory").value.toLowerCase().trim(),type=$("historyType").value;
+ const list=history.filter(h=>(!q||[h.title,h.author,h.borrower,h.borrowerId,h.category,h.details,h.activity].join(" ").toLowerCase().includes(q))&&(!type||h.activity===type));
+ $("historyRows").innerHTML=list.map(h=>`<tr><td>${esc(new Date(h.timestamp).toLocaleString())}</td><td><span class="badge">${esc(h.activity)}</span><div class="muted">${esc(h.details||"")}</div></td><td><b>${esc(h.title||"Deleted book")}</b><div class="muted">${esc(h.category||"")}</div></td><td>${esc(h.borrower||"—")}</td><td>${esc(h.borrowerId||"—")}</td><td>${dateText(h.checkoutDate)}</td><td>${dateText(h.dueDate)}</td><td>${dateText(h.checkinDate)}</td></tr>`).join("");
+ $("historyEmpty").classList.toggle("hidden",list.length>0);
+}
+$("searchHistory").addEventListener("input",renderHistory);$("historyType").addEventListener("change",renderHistory);
+$("clearHistory").onclick=()=>{if(confirm("Clear all borrower history? This will not delete books.")){history=[];saveData();renderHistory();toast("History cleared.")}};
+
+function switchTab(id){
+ document.querySelectorAll(".tab-page").forEach(p=>p.classList.toggle("hidden",p.id!==id));
+ document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===id));
+ if(id==="summary")requestAnimationFrame(renderChart);
+ if(id==="due")renderDue();if(id==="history")renderHistory();if(id==="settings")updateStorageInfo();
+}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>switchTab(t.dataset.tab));
+
+$("settingsForm").addEventListener("submit",e=>{
+ e.preventDefault();const loan=Number($("loanPeriod").value),rem=Number($("reminderDays").value);
+ if(!Number.isInteger(loan)||loan<1||loan>365){alert("Loan period must be 1–365 whole days.");return}
+ if(!Number.isInteger(rem)||rem<0||rem>60){alert("Reminder days must be 0–60 whole days.");return}
+ const changed=settings.loanPeriod!==loan;
+ settings={loanPeriod:loan,reminderDays:rem,reminderNote:$("reminderNoteSetting").value.trim()||defaults.reminderNote};
+ if(changed)books=books.map(b=>b.status==="Issued"&&b.checkoutDate?{...b,dueDate:addDays(b.checkoutDate,loan)}:b);
+ saveSettings();saveData();renderAll();toast("Settings saved.");
+});
+function populateSettings(){$("loanPeriod").value=settings.loanPeriod;$("reminderDays").value=settings.reminderDays;$("reminderNoteSetting").value=settings.reminderNote}
+$("resetSettings").onclick=()=>{settings={...defaults};saveSettings();populateSettings();renderAll();toast("Default settings restored.")};
+
+async function enableNotifications(){
+ if(!("Notification" in window)){alert("This browser does not support notifications. Use the in-app Due Date Watch.");return}
+ try{const p=await Notification.requestPermission();if(p==="granted"){toast("Browser alerts enabled.");sendDueNotifications()}else toast("Notification permission not granted.")}
+ catch{toast("Browser alerts unavailable here.")}
+}
+function sendDueNotifications(){
+ if(!("Notification" in window)||Notification.permission!=="granted")return;
+ const urgent=books.filter(b=>b.status==="Issued").map(b=>({b,info:dueInfo(b)})).filter(x=>["overdue","today","soon"].includes(x.info.state));
+ if(!urgent.length){toast("No urgent loan reminders.");return}
+ urgent.slice(0,4).forEach(({b,info})=>{try{new Notification(info.state==="overdue"?"Library book overdue":info.state==="today"?"Library book due today":"Library book due soon",{body:`${b.title} — ${b.borrower}. ${info.label}. Due: ${info.due}.`,tag:`library-${b.id}-${info.due}`})}catch{}});
+ toast(`${urgent.length} reminder(s) checked.`);
+}
+$("enableNotifications").onclick=enableNotifications;
+$("checkAlerts").onclick=()=>{renderDue();if("Notification" in window&&Notification.permission==="granted")sendDueNotifications();else toast("In-app reminders refreshed. Enable browser alerts if desired.")};
+
+/* THEMES */
+function renderThemes(){
+ $("themeGrid").innerHTML=themes.map(t=>`<button class="theme-choice ${activeTheme===t.id?"selected":""}" data-theme="${t.id}"><b>${t.name}</b><div class="swatches">${[t.v[0],t.v[4],t.v[5],t.v[6]].map(c=>`<span class="swatch" style="background:${c}"></span>`).join("")}</div></button>`).join("");
+}
+function applyTheme(id){
+ const t=themes.find(x=>x.id===id)||themes[0];activeTheme=t.id;
+ ["--bg","--panel","--text","--muted","--primary","--deep","--soft","--border"].forEach((n,i)=>document.documentElement.style.setProperty(n,t.v[i]));
+ document.querySelector('meta[name="theme-color"]').content=t.v[4];
+ localStorage.setItem(THEME_KEY,t.id);renderThemes();
+}
+$("themeGrid").addEventListener("click",e=>{const b=e.target.closest("[data-theme]");if(b){applyTheme(b.dataset.theme);toast("Theme applied.")}});
+
+/* IMPORT / EXPORT */
+function updateStorageInfo(){
+ const data=localStorage.getItem(DATA_KEY)||"";
+ $("storageInfo").textContent=`Books: ${books.length} · Categories: ${categories.length} · History: ${history.length} · Approximate book/history storage: ${(data.length/1024).toFixed(1)} KB`;
+}
+function renderAll(){
+ populateBookCategories();renderBooks();renderCategories();renderHistory();renderDue();renderThemes();populateSettings();updateStorageInfo();
+ if(!$("summary").classList.contains("hidden"))renderChart();
+}
+function downloadFile(name,content,type){
+ const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function csvCell(v){const s=String(v??"");return /[",\r\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+function exportBooksCsv(){
+ const fields=["id","title","author","category","isbn","borrower","borrowerId","checkoutDate","dueDate","checkinDate","status","shelf","notes"];
+ downloadFile("library-books.csv",[fields.join(","),...books.map(b=>fields.map(k=>csvCell(k==="dueDate"&&b.status==="Issued"?dueDate(b):b[k])).join(","))].join("\r\n"),"text/csv;charset=utf-8");
+}
+function exportHistoryCsv(){
+ const fields=["timestamp","activity","title","author","category","borrower","borrowerId","checkoutDate","dueDate","checkinDate","details"];
+ downloadFile("borrower-history.csv",[fields.join(","),...history.map(h=>fields.map(k=>csvCell(h[k])).join(","))].join("\r\n"),"text/csv;charset=utf-8");
+}
+$("exportTop").onclick=exportBooksCsv;$("exportHistory").onclick=exportHistoryCsv;
+$("exportJson").onclick=()=>{downloadFile("library-backup.json",JSON.stringify({version:3,exportedAt:stamp(),settings,categories,books,history,activeTheme},null,2),"application/json");toast("Backup exported.")};
+function parseCsv(text){
+ const rows=[];let row=[],cell="",quoted=false;text=text.replace(/^\uFEFF/,"");
+ for(let i=0;i<text.length;i++){
+  const c=text[i],n=text[i+1];
+  if(quoted){if(c==='"'&&n==='"'){cell+='"';i++}else if(c==='"')quoted=false;else cell+=c}
+  else if(c==='"')quoted=true;
+  else if(c===","){row.push(cell);cell=""}
+  else if(c==="\n"){row.push(cell);rows.push(row);row=[];cell=""}
+  else if(c!=="\r")cell+=c;
+ }
+ if(cell||row.length){row.push(cell);rows.push(row)}
+ return rows.filter(r=>r.some(v=>v.trim()));
+}
+$("importJsonBtn").onclick=()=>$("jsonFile").click();$("importCsvBtn").onclick=()=>$("csvFile").click();
+$("jsonFile").addEventListener("change",async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  const d=JSON.parse(await file.text());if(!Array.isArray(d.books))throw Error("Backup does not contain a books array.");
+  if(!confirm("Replace current books, history, categories and settings with this backup?"))return;
+  settings={...defaults,...(d.settings||{})};
+  books=d.books.map(b=>({...b,id:b.id||makeId(),status:["Available","Issued","Returned"].includes(b.status)?b.status:"Available"}));
+  history=Array.isArray(d.history)?d.history:[];
+  categories=Array.isArray(d.categories)&&d.categories.length?d.categories:DEFAULT_CATEGORIES.map(name=>({id:makeId(),name,description:""}));
+  books.forEach(b=>{if(!categories.some(c=>c.name===b.category))categories.push({id:makeId(),name:b.category||"Other",description:"Imported category"})});
+  if(d.activeTheme)activeTheme=d.activeTheme;
+  saveSettings();saveCategories();saveData();applyTheme(activeTheme);renderAll();toast("Backup imported.");
+ }catch(err){alert("Import failed: "+err.message)}
+ finally{e.target.value=""}
+});
+$("csvFile").addEventListener("change",async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  const rows=parseCsv(await file.text());if(rows.length<2)throw Error("CSV has no book rows.");
+  const heads=rows[0].map(h=>h.trim().toLowerCase()),ix={};heads.forEach((h,i)=>ix[h]=i);
+  if(ix.title===undefined)throw Error("CSV must include a title column.");
+  const get=(r,k)=>r[ix[k.toLowerCase()]]||"";let incoming=[];
+  for(const r of rows.slice(1)){
+   const b={id:makeId(),title:get(r,"title").trim(),author:get(r,"author"),category:get(r,"category")||"Other",isbn:get(r,"isbn"),borrower:get(r,"borrower"),borrowerId:get(r,"borrowerid"),checkoutDate:get(r,"checkoutdate"),checkinDate:get(r,"checkindate"),status:get(r,"status")||"Available",shelf:get(r,"shelf"),notes:get(r,"notes")};
+   if(!b.title)continue;
+   if(!["Available","Issued","Returned"].includes(b.status))b.status="Available";
+   if(!categories.some(c=>c.name.toLowerCase()===b.category.toLowerCase()))categories.push({id:makeId(),name:b.category,description:"Imported from CSV"});
+   const problem=validateBook(b);if(problem)throw Error(`Invalid row "${b.title}": ${problem}`);
+   if(b.checkoutDate)b.dueDate=addDays(b.checkoutDate,settings.loanPeriod);
+   incoming.push(b);
+  }
+  incoming.forEach(b=>{books.unshift(b);addHistory(b,"Book added","Imported from CSV");if(b.status==="Issued")addHistory(b,"Issued","Imported from CSV");if(b.status==="Returned")addHistory(b,"Returned","Imported from CSV")});
+  saveCategories();saveData();renderAll();toast(`${incoming.length} book(s) imported.`);
+ }catch(err){alert("CSV import failed: "+err.message)}
+ finally{e.target.value=""}
+});
+
+/* SAMPLE DATA */
+$("sampleData").onclick=()=>{
+ if(books.length&&!confirm("Add sample books to your existing library?"))return;
+ const samples=[
+ {title:"The Jungle Book",author:"Rudyard Kipling",category:"Story Books",isbn:"S-001",borrower:"",borrowerId:"",checkoutDate:"",checkinDate:"",status:"Available",shelf:"A-01",notes:""},
+ {title:"Fun with Numbers",author:"School Library",category:"Mathematics",isbn:"M-001",borrower:"Aarav",borrowerId:"Class 1",checkoutDate:nowISO(),checkinDate:"",status:"Issued",shelf:"B-01",notes:""},
+ {title:"Our Amazing Planet",author:"Nature Press",category:"Science",isbn:"SC-001",borrower:"",borrowerId:"",checkoutDate:"",checkinDate:"",status:"Available",shelf:"C-02",notes:""},
+ {title:"Colourful Art",author:"Mira Shah",category:"Art & Craft",isbn:"A-001",borrower:"Diya",borrowerId:"Class 2",checkoutDate:"2026-01-10",checkinDate:"2026-01-15",status:"Returned",shelf:"D-01",notes:""}
+ ];
+ samples.forEach(s=>{
+  if(!categories.some(c=>c.name===s.category))categories.push({id:makeId(),name:s.category,description:""});
+  const b={...s,id:makeId()};if(b.checkoutDate)b.dueDate=addDays(b.checkoutDate,settings.loanPeriod);
+  books.unshift(b);addHistory(b,"Book added","Sample data");
+  if(b.status==="Issued")addHistory(b,"Issued","Sample data");
+  if(b.status==="Returned")addHistory(b,"Returned","Sample data");
+ });
+ saveCategories();saveData();renderAll();toast("Sample books added.");
+};
+$("clearAll").onclick=()=>{
+ if(!confirm("Delete all books and history? Categories and settings will be retained."))return;
+ books=[];history=[];saveData();renderAll();toast("Library data cleared.");
+};
+window.addEventListener("resize",()=>{if(!$("summary").classList.contains("hidden"))renderChart()});
+
+/* START */
+loadAll();
+applyTheme(activeTheme);
+populateSettings();
+renderAll();
+</script>
+</body>
+</html>
