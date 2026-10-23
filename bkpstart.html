@@ -68,54 +68,100 @@ function load(){
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch{toast("Storage full; export a backup.")}}
 function toast(m){$("toast").textContent=m;$("toast").style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>$("toast").style.display="none",2400)}
-function normalize(data,merge=false){
-  const incoming=Array.isArray(data)?data:(data&&Array.isArray(data.apps)?data.apps:null);
-  if(!incoming)throw Error("JSON must be an array of apps or an object containing an apps array.");
-  const previousApps=[...state.apps];
-  const previousById=new Map(previousApps.map(a=>[String(a.id),a]));
-  const suppliedGroups=Array.isArray(data.groups)?data.groups:Array.isArray(data.categories)?data.categories:[];
-  if(!merge){
-    // JSON supplies catalogue fields, while personal choices remain local.
-    // In particular, reloading a JSON with favorite:false must not clear a user's favourites.
-    state.groups=[...new Set([...suppliedGroups.filter(g=>typeof g==="string"&&g.trim()).map(g=>g.trim()),...state.groups])];
+
+
+function normalize(data, merge = false) {
+  const incoming = Array.isArray(data)
+    ? data
+    : (data && Array.isArray(data.apps) ? data.apps : null);
+
+  if (!incoming) {
+    throw Error("JSON must be an array of apps or an object containing an apps array.");
   }
-  suppliedGroups.forEach(g=>{if(typeof g==="string"&&g.trim()&&!state.groups.includes(g.trim()))state.groups.push(g.trim())});
-  const nextApps=merge?[...state.apps]:[];
-  let added=0;
-  incoming.forEach((a,i)=>{
-    if(!a||!String(a.name||"").trim())return;
-    const originalId=String(a.id||"app_"+Date.now().toString(36)+"_"+i);
-    const old=previousById.get(originalId)||state.apps.find(x=>String(x.id)===originalId);
-    let id=originalId;
-    if(merge&&nextApps.some(x=>String(x.id)===id)){
-      // Update matching record rather than duplicating it; new records are appended.
-      const at=nextApps.findIndex(x=>String(x.id)===id);
-      if(at>=0){
-        const existing=nextApps[at];
-        nextApps[at]={...existing,name:String(a.name).trim(),icon:String(a.icon||existing.icon||"📱"),category:String(a.category||existing.category||"Other"),url:String(a.url??existing.url??"")};
-        if(!state.groups.includes(nextApps[at].category))state.groups.push(nextApps[at].category);
+
+  const previousApps = [...state.apps];
+  const previousById = new Map(previousApps.map(a => [String(a.id), a]));
+
+  const suppliedGroups = Array.isArray(data.groups)
+    ? data.groups
+    : Array.isArray(data.categories) ? data.categories : [];
+
+  // Preserve existing categories and add categories from the latest JSON.
+  state.groups = [
+    ...new Set([
+      ...state.groups,
+      ...suppliedGroups.filter(g => typeof g === "string" && g.trim()).map(g => g.trim())
+    ])
+  ];
+
+  const nextApps = merge ? [...state.apps] : [];
+  let added = 0;
+
+  incoming.forEach((a, i) => {
+    if (!a || !String(a.name || "").trim()) return;
+
+    const id = String(a.id || ("app_" + Date.now().toString(36) + "_" + i));
+    const old = previousById.get(id);
+
+    const category = String(a.category || old?.category || "Other");
+
+    if (!state.groups.includes(category)) {
+      state.groups.push(category);
+    }
+
+    const record = {
+      id,
+      name: String(a.name).trim(),
+      icon: String(a.icon || old?.icon || "📱"),
+      category,
+      url: String(a.url ?? old?.url ?? ""),
+
+      // Personal settings always take priority over JSON values.
+      favorite: old ? !!old.favorite : !!a.favorite,
+      enabled: old ? old.enabled !== false : a.enabled !== false,
+
+      created: Number(old?.created || a.created) || Date.now() + i,
+
+      // Preserve personal usage history for matching apps.
+      lastOpened: old?.lastOpened || a.lastOpened || "",
+      openCount: Number(old?.openCount ?? a.openCount) || 0
+    };
+
+    if (merge) {
+      const existingIndex = nextApps.findIndex(x => String(x.id) === id);
+
+      if (existingIndex >= 0) {
+        nextApps[existingIndex] = {
+          ...nextApps[existingIndex],
+          ...record,
+          favorite: !!nextApps[existingIndex].favorite,
+          enabled: nextApps[existingIndex].enabled !== false,
+          created: nextApps[existingIndex].created || record.created,
+          lastOpened: nextApps[existingIndex].lastOpened || "",
+          openCount: Number(nextApps[existingIndex].openCount) || 0
+        };
         return;
       }
     }
-    const cat=String(a.category||old?.category||"Other");
-    if(!state.groups.includes(cat))state.groups.push(cat);
-    const record={
-      id,name:String(a.name).trim(),icon:String(a.icon||old?.icon||"📱"),category:cat,url:String(a.url??old?.url??""),
-      favorite:old?!!old.favorite:!!a.favorite,
-      enabled:old?old.enabled!==false:a.enabled!==false,
-      created:Number(old?.created||a.created)||Date.now()+i,
-      lastOpened:old?.lastOpened||a.lastOpened||"",
-      openCount:Number(old?.openCount??a.openCount)||0
-    };
-    if(merge&&nextApps.some(x=>String(x.id)===id))id=id+"_import"+Math.random().toString(36).slice(2,5),record.id=id;
-    nextApps.push(record);added++;
+
+    nextApps.push(record);
+    added++;
   });
-  state.apps=nextApps;
-  if(data&&data.theme&&THEMES.some(t=>t[0]===data.theme)&&!localStorage.getItem(KEY))state.theme=data.theme;
-  if(data&&Array.isArray(data.recent)&&state.recent.length===0)state.recent=data.recent;
-  state.source="Catalogue saved locally · "+new Date().toLocaleString();
-  save();refresh();return added;
+
+  state.apps = nextApps;
+
+  // IMPORTANT:
+  // Do not import or replace recent activity from catalogue JSON.
+  // state.recent remains the user's own locally saved recent-app list.
+
+  state.source = "Catalogue synchronised · " + new Date().toLocaleString();
+
+  save();
+  refresh();
+
+  return added;
 }
+
 function setPage(p){document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===p));document.querySelectorAll(".page").forEach(x=>x.classList.toggle("active",x.id==="page-"+p));if(p==="manager")refresh();if(p==="settings")renderThemes();if(p==="charts")renderCharts();window.scrollTo({top:0,behavior:"smooth"})}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setPage(b.dataset.page));document.querySelectorAll("[data-goto]").forEach(b=>b.onclick=()=>setPage(b.dataset.goto));
 function fillSelect(id,all=false){let el=$(id),old=el.value;el.innerHTML=(all?'<option value="all">All categories</option>':'')+state.groups.map(g=>`<option>${esc(g)}</option>`).join("");if([...el.options].some(o=>o.value===old))el.value=old}
@@ -164,28 +210,49 @@ $("importSqliteBtn").onclick=()=>$("sqliteFile").click();$("sqliteFile").onchang
 $("clock").textContent=new Date().toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"});setInterval(()=>$("clock").textContent=new Date().toLocaleString(),30000);
 // First-run bootstrap only: once a catalogue is saved locally, never replace it on each open.
 // This prevents JSON defaults from resetting favourites and removes the need to upload JSON every time.
-async function loadDefaultCatalogue(){
-  const url="./apps-data.json";
-  if(state.apps.length){
-    // Saved catalogue is authoritative after first import. Keep it and avoid repeat fetches.
-    if(!$('jsonUrl').value.trim() && state.jsonUrl) $('jsonUrl').value=state.jsonUrl;
-    return;
-  }
-  if(!$('jsonUrl').value.trim()) $('jsonUrl').value=url;
-  try{
-    const response=await fetch(url,{cache:"no-store"});
-    if(!response.ok) throw new Error("HTTP "+response.status);
-    const data=await response.json();
-    normalize(data,false);
-    state.jsonUrl=url;
-    state.source="First-run catalogue imported and saved locally";
-    save();refresh();
-    toast("Catalogue imported and saved. It will not be reloaded on every open.");
-  }catch(error){
-    state.source=state.apps.length ? "Using saved local catalogue" : "No saved catalogue yet — import apps-data.json once from Settings";
-    save();refresh();
-    console.warn("First-run catalogue load unavailable:",error);
+
+
+async function loadDefaultCatalogue() {
+  // Use the saved shared URL, or the default GitHub Pages JSON.
+  const url = (state.jsonUrl || "./apps-data.json").trim();
+
+  $("jsonUrl").value = url;
+
+  try {
+    const response = await fetch(url, {
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
+    }
+
+    const data = await response.json();
+
+    // Reload catalogue fields while preserving local user preferences.
+    normalize(data, false);
+
+    state.jsonUrl = url;
+    state.source = "Automatically synchronised from " + url;
+
+    save();
+    refresh();
+
+    toast("Latest JSON loaded. Favourites and recent activity preserved.");
+  } catch (error) {
+    // Keep existing saved apps and user activity if fetching fails.
+    refresh();
+
+    console.warn("Automatic JSON loading failed:", error);
+
+    toast(
+      state.apps.length
+        ? "JSON unavailable. Using saved catalogue and activity."
+        : "JSON unavailable. Check the URL, hosting or CORS settings."
+    );
   }
 }
+
+
 $("prefFont").value=state.fontSize;$("prefLayout").value=state.layout;refresh();renderThemes();loadDefaultCatalogue();
 </script></body></html>
