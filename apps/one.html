@@ -31,6 +31,7 @@ h2{font-size:20px;margin:3px 0 5px}h3{font-size:15px;margin:0 0 10px}
 .btn.danger{background:#b83232}.btn.small{padding:6px 8px;font-size:12px}
 .field{min-width:0}.field label{display:block;font-weight:700;font-size:12px;margin-bottom:5px}
 .field input,.field select,.field textarea{width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--tx)}
+.field select{cursor:pointer}
 .field textarea{min-height:70px}.wide{grid-column:1/-1}
 .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:9px}
 table{border-collapse:collapse;width:100%;min-width:720px;font-size:12px}
@@ -52,77 +53,193 @@ th{background:var(--soft);white-space:nowrap}
 hr{border:0;border-top:1px solid var(--line);margin:15px 0}
 #toast{display:none;position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#173c28;color:white;padding:12px 18px;border-radius:10px;z-index:50;max-width:90%}
 footer{text-align:center;color:var(--mut);font-size:11px;padding:18px}
-@media(max-width:520px){main{padding:8px}.panel{padding:10px}.formgrid{grid-template-columns:1fr}.wide{grid-column:auto}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat .num{font-size:19px}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.navtile{padding:9px 3px;min-height:88px}.navicon{font-size:24px}}
-@media print{header,.no-print,button{display:none!important}.page{display:none!important}#page-summary{display:block!important}body{background:white;color:black}}
+@media(max-width:520px){
+ main{padding:8px}.panel{padding:10px}.formgrid{grid-template-columns:1fr}
+ .wide{grid-column:auto}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .stat .num{font-size:19px}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .navtile{padding:9px 3px;min-height:88px}.navicon{font-size:24px}
+}
+@media print{
+ header,.no-print,button{display:none!important}
+ .page{display:none!important}#page-summary{display:block!important}
+ body{background:white;color:black}
+}
 </style>
 </head>
 <body>
+
 <header>
- <div><div class="brand">🌿 Personal LifeSuite</div><div style="font-size:11px">Personal · Family · Home · Finance</div></div>
-  <div class="actions"><button class="btn secondary" onclick="show('home')">🏡</button>
- 
- <div class="actions"><button class="btn secondary" onclick="show('summary')">📊</button>
- 
- <button class="btn secondary" onclick="show('settings')">⚙️</button></div>
+ <div>
+  <div class="brand">🌿 Personal LifeSuite</div>
+  <div style="font-size:11px">Personal · Family · Home · Finance</div>
+ </div>
+ <div class="actions">
+  <button class="btn secondary" onclick="show('home')">🏡</button>
+  <button class="btn secondary" onclick="show('summary')">📊</button>
+  <button class="btn secondary" onclick="show('settings')">⚙️</button>
+ </div>
 </header>
+
 <main>
 <section class="page active" id="page-home">
- <div class="sectionhead"><div><h2>🏡 My Dashboard</h2><div id="todayText" class="muted"></div></div><button class="btn" onclick="addRecord('homeExpense')">＋ Quick Entry</button></div>
+ <div class="sectionhead">
+  <div><h2>🏡 My Dashboard</h2><div id="todayText" class="muted"></div></div>
+  <button class="btn" onclick="addRecord('homeExpense')">＋ Quick Entry</button>
+ </div>
  <div class="stats" id="homeStats"></div>
  <div class="panel"><h3>🧭 All Sections</h3><div class="grid" id="navGrid"></div></div>
- <div class="panel"><div class="sectionhead"><h3>🕒 Recent Records</h3><button class="btn secondary small" onclick="show('summary')">Summary</button></div><div id="recent"></div></div>
+ <div class="panel">
+  <div class="sectionhead"><h3>🕒 Recent Records</h3><button class="btn secondary small" onclick="show('summary')">Summary</button></div>
+  <div id="recent"></div>
+ </div>
 </section>
 
 <section class="page" id="page-summary">
- <div class="sectionhead"><div><h2>📊 Expense Summary</h2><div class="muted">Charts and monthly expense calendar</div></div><button class="btn outline" onclick="print()">Print / PDF</button></div>
- <div class="panel"><div class="formgrid">
- <div class="field"><label>From date</label><input type="date" id="sumFrom"></div>
- <div class="field"><label>To date</label><input type="date" id="sumTo"></div></div>
- <div class="actions" style="margin-top:10px"><button class="btn" onclick="renderSummary()">Apply</button><button class="btn secondary" onclick="sumFrom.value='';sumTo.value='';renderSummary()">All dates</button></div></div>
+ <div class="sectionhead">
+  <div><h2>📊 Expense Summary</h2><div class="muted">Charts and monthly expense calendar</div></div>
+  <button class="btn outline" onclick="print()">Print / PDF</button>
+ </div>
+ <div class="panel">
+  <div class="formgrid">
+   <div class="field"><label>From date</label><input type="date" id="sumFrom"></div>
+   <div class="field"><label>To date</label><input type="date" id="sumTo"></div>
+  </div>
+  <div class="actions" style="margin-top:10px">
+   <button class="btn" onclick="renderSummary()">Apply</button>
+   <button class="btn secondary" onclick="clearSummaryDates()">All dates</button>
+  </div>
+ </div>
  <div class="stats" id="sumStats"></div>
  <div class="panel"><h3>📈 Category-wise Expenses</h3><div id="bars"></div></div>
  <div class="panel"><h3>🍩 Expense Distribution</h3><div id="donut"></div></div>
- <div class="panel"><div class="monthrow"><div><h3>🗓️ Expense Heatmap</h3><div class="muted">Tap a date to see its expenses</div></div><div class="actions"><button class="btn secondary small" onclick="shiftMonth(-1)">◀</button><strong id="monthLabel"></strong><button class="btn secondary small" onclick="shiftMonth(1)">▶</button></div></div>
- <div class="daynames"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
- <div class="heatmap" id="heatmap"></div><div class="legend" id="legend"></div><div id="heatDetail"></div></div>
+ <div class="panel">
+  <div class="monthrow">
+   <div><h3>🗓️ Expense Heatmap</h3><div class="muted">Tap a date to see its expenses</div></div>
+   <div class="actions">
+    <button class="btn secondary small" onclick="shiftMonth(-1)">◀</button>
+    <strong id="monthLabel"></strong>
+    <button class="btn secondary small" onclick="shiftMonth(1)">▶</button>
+   </div>
+  </div>
+  <div class="daynames"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+  <div class="heatmap" id="heatmap"></div>
+  <div class="legend" id="legend"></div>
+  <div id="heatDetail"></div>
+ </div>
 </section>
 
 <section class="page" id="page-entry">
  <h2>✍️ Add / Edit Record</h2>
- <div class="panel"><form id="entryForm"><div class="formgrid">
- <div class="field"><label>Section *</label><select id="eModule" required></select></div>
- <div class="field"><label>Date *</label><input type="date" id="eDate" required></div>
- <div class="field"><label>Title / Description *</label><input id="eTitle" required maxlength="180"></div>
- <div class="field"><label>Category</label><input id="eCategory" list="categoryOptions"><datalist id="categoryOptions"></datalist></div>
- <div class="field"><label>Amount (₹)</label><input id="eAmount" type="number" min="0" step=".01" value="0"></div>
- <div class="field"><label>Status</label><select id="eStatus"><option>Recorded</option><option>Pending</option><option>Completed</option><option>Paid</option><option>Unpaid</option><option>In Progress</option><option>Cancelled</option></select></div>
- <div class="field"><label>Person / Student / Vendor</label><input id="ePerson"></div>
- <div class="field"><label>Due / End Date</label><input type="date" id="eDue"></div>
- <div class="field wide"><label>Notes</label><textarea id="eNotes"></textarea></div>
- </div><div class="actions" style="margin-top:12px"><button class="btn" type="submit" id="saveBtn">Save Record</button><button class="btn secondary" type="button" onclick="resetForm()">Clear</button><button class="btn outline" type="button" onclick="show('home')">Cancel</button></div></form></div>
+ <div class="panel">
+  <form id="entryForm">
+   <div class="formgrid">
+    <div class="field">
+     <label>Section *</label>
+     <select id="eModule" required></select>
+    </div>
+    <div class="field">
+     <label>Date *</label>
+     <input type="date" id="eDate" required>
+    </div>
+    <div class="field">
+     <label>Title / Description *</label>
+     <input id="eTitle" required maxlength="180">
+    </div>
+
+    <!-- FIXED CATEGORY DROPDOWN -->
+    <div class="field">
+     <label>Category *</label>
+     <select id="eCategory">
+      <option value="">Select category</option>
+     </select>
+    </div>
+    <div class="field">
+     <label>Custom Category (optional)</label>
+     <input id="eCustomCategory" maxlength="100" placeholder="Enter a new category">
+    </div>
+
+    <div class="field">
+     <label>Amount (₹)</label>
+     <input id="eAmount" type="number" min="0" step=".01" value="0">
+    </div>
+    <div class="field">
+     <label>Status</label>
+     <select id="eStatus">
+      <option>Recorded</option><option>Pending</option><option>Completed</option>
+      <option>Paid</option><option>Unpaid</option><option>In Progress</option>
+      <option>Cancelled</option>
+     </select>
+    </div>
+    <div class="field">
+     <label>Person / Student / Vendor</label>
+     <input id="ePerson">
+    </div>
+    <div class="field">
+     <label>Due / End Date</label>
+     <input type="date" id="eDue">
+    </div>
+    <div class="field wide">
+     <label>Notes</label>
+     <textarea id="eNotes"></textarea>
+    </div>
+   </div>
+   <div class="actions" style="margin-top:12px">
+    <button class="btn" type="submit" id="saveBtn">Save Record</button>
+    <button class="btn secondary" type="button" onclick="resetForm()">Clear</button>
+    <button class="btn outline" type="button" onclick="show('home')">Cancel</button>
+   </div>
+  </form>
+ </div>
 </section>
 
 <div id="modulePages"></div>
 
 <section class="page" id="page-settings">
- <h2>⚙️ Settings</h2><div class="muted">Themes, data import, backup and export</div>
- <div class="panel"><h3>💾 Import / Export</h3><div class="actions">
- <button class="btn" onclick="exportJSON()">Export JSON</button><button class="btn" onclick="exportCSV()">Export CSV / Excel</button><button class="btn" onclick="exportHTML()">Export HTML Report</button><button class="btn" onclick="exportTXT()">Export TXT</button><button class="btn secondary" onclick="print()">Print / PDF</button></div>
- <hr><div class="field"><label>Import JSON or CSV</label><input id="importFile" type="file" accept=".json,.csv,.txt"></div>
- <div class="field" style="margin-top:10px"><label>JSON import method</label><select id="importMode"><option value="merge">Merge records</option><option value="replace">Replace all records</option></select></div>
- <div class="actions" style="margin-top:10px"><button class="btn" onclick="importData()">Import File</button><button class="btn outline" onclick="templateCSV()">CSV Template</button></div>
- <p class="muted">CSV files open in spreadsheet applications. Export a backup before replacing records.</p></div>
+ <h2>⚙️ Settings</h2>
+ <div class="muted">Themes, data import, backup and export</div>
+ <div class="panel">
+  <h3>💾 Import / Export</h3>
+  <div class="actions">
+   <button class="btn" onclick="exportJSON()">Export JSON</button>
+   <button class="btn" onclick="exportCSV()">Export CSV / Excel</button>
+   <button class="btn" onclick="exportHTML()">Export HTML Report</button>
+   <button class="btn" onclick="exportTXT()">Export TXT</button>
+   <button class="btn secondary" onclick="print()">Print / PDF</button>
+  </div>
+  <hr>
+  <div class="field"><label>Import JSON or CSV</label><input id="importFile" type="file" accept=".json,.csv,.txt"></div>
+  <div class="field" style="margin-top:10px">
+   <label>JSON import method</label>
+   <select id="importMode"><option value="merge">Merge records</option><option value="replace">Replace all records</option></select>
+  </div>
+  <div class="actions" style="margin-top:10px">
+   <button class="btn" onclick="importData()">Import File</button>
+   <button class="btn outline" onclick="templateCSV()">CSV Template</button>
+  </div>
+  <p class="muted">CSV files open in spreadsheet applications. Export a backup before replacing records.</p>
+ </div>
  <div class="panel"><h3>🎨 Themes</h3><div class="themes" id="themes"></div></div>
- <div class="panel"><h3>🧰 Storage</h3><div class="stats" id="storageStats"></div><button class="btn danger" onclick="clearAll()">Delete All Records</button><p class="muted">Deletion is permanent in this browser. Export a backup first.</p></div>
- <div class="panel"><h3>ℹ️ About</h3><p>Personal LifeSuite stores records in your browser. Clearing site data may erase your records. Back up regularly.</p></div>
+ <div class="panel">
+  <h3>🧰 Storage</h3>
+  <div class="stats" id="storageStats"></div>
+  <button class="btn danger" onclick="clearAll()">Delete All Records</button>
+  <p class="muted">Deletion is permanent in this browser. Export a backup first.</p>
+ </div>
+ <div class="panel">
+  <h3>ℹ️ About</h3>
+  <p>Personal LifeSuite stores records in your browser. Clearing site data may erase your records. Back up regularly.</p>
+ </div>
 </section>
 <footer>Personal Management LifeSuite</footer>
 </main>
 <div id="toast"></div>
+
 <script>
 "use strict";
+
 const MODULES=[
-["home","Home","🏡","nav"],["summary","Summary","📊","nav"],
+["home","Home","🏡","nav"],
+["summary","Summary","📊","nav"],
 ["homeExpense","Home Expense","🏠","expense","Rent,Electricity,Water,Gas,Internet,Groceries,Furniture,Other"],
 ["travel","Travel Expense","🚆","expense","Train,Bus,Flight,Taxi,Fuel,Hotel,Toll,Other"],
 ["tea","Tea & Snack Expense","☕","expense","Tea,Coffee,Snacks,Bakery,Refreshments,Other"],
@@ -142,7 +259,9 @@ const MODULES=[
 ["hygiene","Hygiene","🧴","expense","Personal Care,Cleaning,Laundry,Toiletries,Sanitation,Other"],
 ["settings","Settings","⚙️","nav"]
 ];
+
 const colors=["#2e8b57","#4285f4","#ff9800","#9c5bd6","#e85d75","#12a6a0","#d5a400","#e46b36","#687c91","#71a83c"];
+
 const themes=[
 ["forest","Forest Green","#176b45","#104b32","#f0f6ef","#ffffff","#e3f2e5"],
 ["ocean","Ocean Blue","#176b8b","#104c68","#eef7fb","#ffffff","#dceff8"],
@@ -155,19 +274,42 @@ const themes=[
 ["mint","Mint Fresh","#138a75","#086455","#edfaf6","#ffffff","#d5f3e9"],
 ["slate","Slate Grey","#536579","#344657","#f1f4f7","#ffffff","#e0e7ed"]
 ];
-const KEY="personal_lifesuite_records_v1",THEME_KEY="personal_lifesuite_theme_v1";
+
+const KEY="personal_lifesuite_records_v1";
+const THEME_KEY="personal_lifesuite_theme_v1";
 let records=[],editId=null,heatDate=new Date(),selectedDay="";
+
 const $=id=>document.getElementById(id);
 const mod=id=>MODULES.find(m=>m[0]===id)||MODULES[2];
 const modName=id=>mod(id)[1];
-const today=()=>new Date().toLocaleDateString("en-CA");
+const today=()=>{
+ const d=new Date();
+ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money=n=>"₹"+Number(n||0).toLocaleString("en-IN",{maximumFractionDigits:2});
 const sum=list=>list.reduce((a,r)=>a+Number(r.amount||0),0);
 const dateLabel=s=>s?new Date(s+"T12:00:00").toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}):"—";
-function notify(s){$("toast").textContent=s;$("toast").style.display="block";clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$("toast").style.display="none",2600)}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(records))}catch(e){notify("Storage full. Export a backup.")}}
-function load(){try{let x=JSON.parse(localStorage.getItem(KEY)||"[]");records=Array.isArray(x)?x.filter(r=>r&&r.id):[]}catch(e){records=[]}}
+
+function notify(s){
+ $("toast").textContent=s;
+ $("toast").style.display="block";
+ clearTimeout(window.toastTimer);
+ window.toastTimer=setTimeout(()=>$("toast").style.display="none",2600);
+}
+
+function save(){
+ try{localStorage.setItem(KEY,JSON.stringify(records))}
+ catch(e){notify("Storage full. Export a backup.")}
+}
+
+function load(){
+ try{
+  let x=JSON.parse(localStorage.getItem(KEY)||"[]");
+  records=Array.isArray(x)?x.filter(r=>r&&r.id):[];
+ }catch(e){records=[]}
+}
+
 function show(id){
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
  $("page-"+id)?.classList.add("active");
@@ -177,211 +319,599 @@ function show(id){
  if(MODULES.some(m=>m[0]===id&&m[3]!=="nav"))renderModule(id);
  window.scrollTo({top:0,behavior:"smooth"});
 }
+
 function init(){
  $("todayText").textContent=new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
- $("navGrid").innerHTML=MODULES.map(m=>`<button class="navtile" onclick="show('${m[0]}')"><span class="navicon">${m[2]}</span><span class="navlabel">${esc(m[1])}</span></button>`).join("");
- $("eModule").innerHTML=MODULES.filter(m=>m[3]!=="nav").map(m=>`<option value="${m[0]}">${m[2]} ${esc(m[1])}</option>`).join("");
- $("eModule").addEventListener("change",updateCats);
- $("eDate").value=today();
- $("modulePages").innerHTML=MODULES.filter(m=>m[3]!=="nav").map(m=>`<section class="page" id="page-${m[0]}"><div id="module-${m[0]}"></div></section>`).join("");
- updateCats();applyTheme(localStorage.getItem(THEME_KEY)||"forest",false);
- renderHome();renderSummary();renderSettings();
-}
-function updateCats(){
- let cats=(mod($("eModule").value)[4]||"General").split(",");
- $("categoryOptions").innerHTML=cats.map(c=>`<option value="${esc(c)}"></option>`).join("");
-}
-function resetForm(){
- editId=null;$("entryForm").reset();$("eDate").value=today();$("eAmount").value="0";$("saveBtn").textContent="Save Record";updateCats();
-}
-function addRecord(id){
- resetForm();$("eModule").value=id;updateCats();show("entry");
-}
-$("entryForm").addEventListener("submit",e=>{
- e.preventDefault();
- let title=$("eTitle").value.trim(),amount=Number($("eAmount").value||0);
- if(!title)return notify("Enter a title");
- if(!Number.isFinite(amount)||amount<0)return notify("Enter a valid amount");
- let old=records.find(r=>r.id===editId);
- let r={id:editId||"r_"+Date.now()+"_"+Math.random().toString(36).slice(2,8),
- module:$("eModule").value,date:$("eDate").value||today(),title,
- category:$("eCategory").value.trim()||"General",amount,status:$("eStatus").value,
- person:$("ePerson").value.trim(),due:$("eDue").value,notes:$("eNotes").value.trim(),
- created:old?.created||new Date().toISOString(),updated:new Date().toISOString()};
- if(old)records=records.map(x=>x.id===editId?r:x);else records.push(r);
- save();resetForm();notify(old?"Updated":"Saved");show(r.module);
-});
-function editRecord(id){
- let r=records.find(x=>x.id===id);if(!r)return;
- editId=id;show("entry");$("eModule").value=r.module;updateCats();
- ["Date","Title","Category","Amount","Status","Person","Due","Notes"].forEach((n,i)=>{
-  let key=["date","title","category","amount","status","person","due","notes"][i];
-  $("e"+n).value=r[key]??(key==="amount"?0:"");
+
+ $("navGrid").innerHTML=MODULES.map(m=>
+  `<button class="navtile" onclick="show('${m[0]}')"><span class="navicon">${m[2]}</span><span class="navlabel">${esc(m[1])}</span></button>`
+ ).join("");
+
+ $("eModule").innerHTML=MODULES.filter(m=>m[3]!=="nav").map(m=>
+  `<option value="${m[0]}">${m[2]} ${esc(m[1])}</option>`
+ ).join("");
+
+ $("eModule").addEventListener("change",()=>{
+  updateCats();
+  $("eCustomCategory").value="";
  });
- $("saveBtn").textContent="Update Record";
-}
-function deleteRecord(id){
- if(!confirm("Delete this record?"))return;
- let r=records.find(x=>x.id===id);records=records.filter(x=>x.id!==id);save();notify("Deleted");
- if(r)show(r.module);
-}
-function toggleStatus(id){
- let r=records.find(x=>x.id===id);if(!r)return;
- r.status=["Completed","Paid"].includes(r.status)?"Pending":"Completed";r.updated=new Date().toISOString();save();renderModule(r.module);
+
+ $("eCategory").addEventListener("change",()=>{
+  if($("eCategory").value==="Other"){
+   $("eCustomCategory").focus();
+  }
+ });
+
+ $("eDate").value=today();
+
+ $("modulePages").innerHTML=MODULES.filter(m=>m[3]!=="nav").map(m=>
+  `<section class="page" id="page-${m[0]}"><div id="module-${m[0]}"></div></section>`
+ ).join("");
+
+ updateCats();
+ applyTheme(localStorage.getItem(THEME_KEY)||"forest",false);
+ renderHome();
+ renderSummary();
+ renderSettings();
 }
 
-/* SEARCH FIX:
-   Read search/filter values before drawing the register. After updating the
-   table, restore focus and cursor to the same search box. */
+/* FIX 1: Populate a real dropdown based on the selected section. */
+function updateCats(selectedValue=""){
+ const categorySelect=$("eCategory");
+ if(!categorySelect)return;
+
+ const currentValue=selectedValue||categorySelect.value;
+ const categories=(mod($("eModule").value)[4]||"General")
+  .split(",")
+  .map(c=>c.trim())
+  .filter(Boolean);
+
+ const uniqueCategories=[...new Set(categories)];
+
+ categorySelect.innerHTML=
+  '<option value="">Select category</option>'+
+  uniqueCategories.map(c=>
+   `<option value="${esc(c)}">${esc(c)}</option>`
+  ).join("");
+
+ // Keep Other as a dropdown choice even if a section's list changes.
+ if(!uniqueCategories.includes("Other")){
+  categorySelect.insertAdjacentHTML("beforeend",'<option value="Other">Other</option>');
+ }
+
+ if(currentValue&&[...categorySelect.options].some(o=>o.value===currentValue)){
+  categorySelect.value=currentValue;
+ }else{
+  categorySelect.value="";
+ }
+}
+
+/* FIX 2: Reset both dropdown and custom-category input. */
+function resetForm(){
+ editId=null;
+ $("entryForm").reset();
+ $("eDate").value=today();
+ $("eAmount").value="0";
+ $("eCustomCategory").value="";
+ $("saveBtn").textContent="Save Record";
+ updateCats();
+}
+
+function addRecord(id){
+ resetForm();
+ $("eModule").value=id;
+ updateCats();
+ show("entry");
+}
+
+$("entryForm").addEventListener("submit",e=>{
+ e.preventDefault();
+
+ let title=$("eTitle").value.trim();
+ let amount=Number($("eAmount").value||0);
+
+ if(!title)return notify("Enter a title");
+ if(!Number.isFinite(amount)||amount<0)return notify("Enter a valid amount");
+
+ // Custom category takes priority when supplied.
+ const customCategory=$("eCustomCategory").value.trim();
+ const selectedCategory=$("eCategory").value.trim();
+
+ if(!customCategory&&!selectedCategory){
+  return notify("Please select or enter a category");
+ }
+
+ const category=customCategory||selectedCategory;
+ let old=records.find(r=>r.id===editId);
+
+ let r={
+  id:editId||"r_"+Date.now()+"_"+Math.random().toString(36).slice(2,8),
+  module:$("eModule").value,
+  date:$("eDate").value||today(),
+  title,
+  category,
+  amount,
+  status:$("eStatus").value,
+  person:$("ePerson").value.trim(),
+  due:$("eDue").value,
+  notes:$("eNotes").value.trim(),
+  created:old?.created||new Date().toISOString(),
+  updated:new Date().toISOString()
+ };
+
+ if(old)records=records.map(x=>x.id===editId?r:x);
+ else records.push(r);
+
+ save();
+ resetForm();
+ notify(old?"Updated":"Saved");
+ renderHome();
+ renderSummary();
+ show(r.module);
+});
+
+/* FIX 3: Restore saved categories correctly while editing. */
+function editRecord(id){
+ let r=records.find(x=>x.id===id);
+ if(!r)return;
+
+ editId=id;
+ show("entry");
+
+ $("eModule").value=r.module;
+ updateCats();
+
+ $("eDate").value=r.date||today();
+ $("eTitle").value=r.title||"";
+ $("eAmount").value=r.amount??0;
+ $("eStatus").value=r.status||"Recorded";
+ $("ePerson").value=r.person||"";
+ $("eDue").value=r.due||"";
+ $("eNotes").value=r.notes||"";
+
+ const knownCategories=(mod(r.module)[4]||"General")
+  .split(",")
+  .map(c=>c.trim());
+
+ if(knownCategories.includes(r.category)||r.category==="Other"){
+  $("eCategory").value=r.category;
+  $("eCustomCategory").value="";
+ }else{
+  $("eCategory").value="";
+  $("eCustomCategory").value=r.category||"";
+ }
+
+ $("saveBtn").textContent="Update Record";
+}
+
+function deleteRecord(id){
+ if(!confirm("Delete this record?"))return;
+ let r=records.find(x=>x.id===id);
+ records=records.filter(x=>x.id!==id);
+ save();
+ notify("Deleted");
+ renderHome();
+ renderSummary();
+ if(r)show(r.module);
+}
+
+function toggleStatus(id){
+ let r=records.find(x=>x.id===id);
+ if(!r)return;
+ r.status=["Completed","Paid"].includes(r.status)?"Pending":"Completed";
+ r.updated=new Date().toISOString();
+ save();
+ renderModule(r.module);
+}
+
+/* Search and filters retain their values and cursor while typing. */
 function renderModule(id){
- const m=mod(id),host=$("module-"+id);if(!host)return;
- const oldSearch=$("search-"+id),oldStatus=$("status-"+id),oldFrom=$("from-"+id),oldTo=$("to-"+id);
+ const m=mod(id),host=$("module-"+id);
+ if(!host)return;
+
+ const oldSearch=$("search-"+id);
+ const oldStatus=$("status-"+id);
+ const oldFrom=$("from-"+id);
+ const oldTo=$("to-"+id);
  const activeId=document.activeElement?.id||"";
+
  let cursorStart=null,cursorEnd=null;
  if(activeId==="search-"+id&&oldSearch){
-  cursorStart=oldSearch.selectionStart;cursorEnd=oldSearch.selectionEnd;
+  cursorStart=oldSearch.selectionStart;
+  cursorEnd=oldSearch.selectionEnd;
  }
+
  const search=oldSearch?oldSearch.value.toLowerCase():"";
  const status=oldStatus?oldStatus.value:"";
- const from=oldFrom?oldFrom.value:"",to=oldTo?oldTo.value:"";
+ const from=oldFrom?oldFrom.value:"";
+ const to=oldTo?oldTo.value:"";
+
  const all=records.filter(r=>r.module===id);
- const list=all.filter(r=>(!search||[r.title,r.category,r.person,r.notes,r.status,r.date].join(" ").toLowerCase().includes(search))
- &&(!status||r.status===status)&&(!from||r.date>=from)&&(!to||r.date<=to))
- .sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+ const list=all.filter(r=>
+  (!search||[r.title,r.category,r.person,r.notes,r.status,r.date].join(" ").toLowerCase().includes(search))&&
+  (!status||r.status===status)&&
+  (!from||r.date>=from)&&
+  (!to||r.date<=to)
+ ).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+
  const pending=all.filter(r=>["Pending","Unpaid","In Progress"].includes(r.status));
+
  host.innerHTML=`
- <div class="sectionhead"><div><h2>${m[2]} ${esc(m[1])}</h2><div class="muted">${all.length} records · Total ${money(sum(all))}</div></div>
- <div class="actions"><button class="btn" onclick="addRecord('${id}')">＋ Add Record</button><button class="btn outline" onclick="exportModuleCSV('${id}')">Export CSV</button></div></div>
- <div class="stats"><div class="stat"><div class="lbl">Records</div><div class="num">${all.length}</div></div>
- <div class="stat"><div class="lbl">Total amount</div><div class="num">${money(sum(all))}</div></div>
- <div class="stat"><div class="lbl">Pending</div><div class="num">${pending.length}</div></div></div>
- <div class="panel"><div class="sectionhead"><h3>🔎 Search & Filter</h3><button class="btn secondary small" onclick="clearFilters('${id}')">Clear Filters</button></div>
- <div class="formgrid"><div class="field"><label>Search title, category, person, notes, status or date</label>
- <input id="search-${id}" type="search" autocomplete="off" placeholder="Type to search..." value="${esc(search)}"></div>
- <div class="field"><label>Status</label><select id="status-${id}"><option value="">All statuses</option>
- ${["Recorded","Pending","Completed","Paid","Unpaid","In Progress","Cancelled"].map(s=>`<option value="${s}" ${status===s?"selected":""}>${s}</option>`).join("")}</select></div>
- <div class="field"><label>From date</label><input id="from-${id}" type="date" value="${esc(from)}"></div>
- <div class="field"><label>To date</label><input id="to-${id}" type="date" value="${esc(to)}"></div></div></div>
- <div class="panel"><div class="sectionhead"><h3>📋 Register</h3><span class="muted">${list.length} matching records</span></div>
- ${list.length?`<div class="tablewrap"><table><thead><tr><th>Date</th><th>Title</th><th>Category</th><th>Person</th><th>Amount</th><th>Due Date</th><th>Status</th><th>Notes</th><th>Actions</th></tr></thead><tbody>
- ${list.map(r=>`<tr><td>${esc(dateLabel(r.date))}</td><td><strong>${esc(r.title)}</strong></td><td>${esc(r.category)}</td><td>${esc(r.person||"—")}</td><td>${money(r.amount)}</td><td>${esc(dateLabel(r.due))}</td><td><span class="pill">${esc(r.status)}</span></td><td>${esc(r.notes||"—")}</td><td><div class="actions"><button class="btn small" onclick="editRecord('${esc(r.id)}')">Edit</button><button class="btn secondary small" onclick="toggleStatus('${esc(r.id)}')">Status</button><button class="btn danger small" onclick="deleteRecord('${esc(r.id)}')">Delete</button></div></td></tr>`).join("")}
- </tbody></table></div>`:`<div class="empty">${search||status||from||to?"No records match your search or filters.":"No records yet. Tap Add Record."}</div>`}</div>`;
+ <div class="sectionhead">
+  <div><h2>${m[2]} ${esc(m[1])}</h2><div class="muted">${all.length} records · Total ${money(sum(all))}</div></div>
+  <div class="actions">
+   <button class="btn" onclick="addRecord('${id}')">＋ Add Record</button>
+   <button class="btn outline" onclick="exportModuleCSV('${id}')">Export CSV</button>
+  </div>
+ </div>
+ <div class="stats">
+  <div class="stat"><div class="lbl">Records</div><div class="num">${all.length}</div></div>
+  <div class="stat"><div class="lbl">Total amount</div><div class="num">${money(sum(all))}</div></div>
+  <div class="stat"><div class="lbl">Pending</div><div class="num">${pending.length}</div></div>
+ </div>
+ <div class="panel">
+  <div class="sectionhead"><h3>🔎 Search & Filter</h3><button class="btn secondary small" onclick="clearFilters('${id}')">Clear Filters</button></div>
+  <div class="formgrid">
+   <div class="field"><label>Search title, category, person, notes, status or date</label>
+    <input id="search-${id}" type="search" autocomplete="off" placeholder="Type to search..." value="${esc(search)}">
+   </div>
+   <div class="field"><label>Status</label>
+    <select id="status-${id}">
+     <option value="">All statuses</option>
+     ${["Recorded","Pending","Completed","Paid","Unpaid","In Progress","Cancelled"].map(s=>`<option value="${s}" ${status===s?"selected":""}>${s}</option>`).join("")}
+    </select>
+   </div>
+   <div class="field"><label>From date</label><input id="from-${id}" type="date" value="${esc(from)}"></div>
+   <div class="field"><label>To date</label><input id="to-${id}" type="date" value="${esc(to)}"></div>
+  </div>
+ </div>
+ <div class="panel">
+  <div class="sectionhead"><h3>📋 Register</h3><span class="muted">${list.length} matching records</span></div>
+  ${list.length?`
+   <div class="tablewrap"><table>
+    <thead><tr><th>Date</th><th>Title</th><th>Category</th><th>Person</th><th>Amount</th><th>Due Date</th><th>Status</th><th>Notes</th><th>Actions</th></tr></thead>
+    <tbody>${list.map(r=>`
+     <tr>
+      <td>${esc(dateLabel(r.date))}</td>
+      <td><strong>${esc(r.title)}</strong></td>
+      <td>${esc(r.category)}</td>
+      <td>${esc(r.person||"—")}</td>
+      <td>${money(r.amount)}</td>
+      <td>${esc(dateLabel(r.due))}</td>
+      <td><span class="pill">${esc(r.status)}</span></td>
+      <td>${esc(r.notes||"—")}</td>
+      <td><div class="actions">
+       <button class="btn small" onclick="editRecord('${esc(r.id)}')">Edit</button>
+       <button class="btn secondary small" onclick="toggleStatus('${esc(r.id)}')">Status</button>
+       <button class="btn danger small" onclick="deleteRecord('${esc(r.id)}')">Delete</button>
+      </div></td>
+     </tr>`).join("")}
+    </tbody>
+   </table></div>
+  `:`<div class="empty">${search||status||from||to?"No records match your search or filters.":"No records yet. Tap Add Record."}</div>`}
+ </div>`;
+
  const searchEl=$("search-"+id);
  searchEl.addEventListener("input",()=>renderModule(id));
  $("status-"+id).addEventListener("change",()=>renderModule(id));
  $("from-"+id).addEventListener("change",()=>renderModule(id));
  $("to-"+id).addEventListener("change",()=>renderModule(id));
- /* Restore focus only when typing in the search box, not when changing filters. */
+
  if(activeId==="search-"+id){
   searchEl.focus({preventScroll:true});
   try{searchEl.setSelectionRange(cursorStart,cursorEnd)}catch(e){}
  }
 }
+
 function clearFilters(id){
- ["search-","status-","from-","to-"].forEach(p=>{if($(p+id))$(p+id).value=""});
+ ["search-","status-","from-","to-"].forEach(p=>{
+  if($(p+id))$(p+id).value="";
+ });
  renderModule(id);
 }
+
 function renderHome(){
- const month=today().slice(0,7),monthRows=records.filter(r=>(r.date||"").startsWith(month));
+ const month=today().slice(0,7);
+ const monthRows=records.filter(r=>(r.date||"").startsWith(month));
  const pending=records.filter(r=>["Pending","Unpaid","In Progress"].includes(r.status));
- $("homeStats").innerHTML=[["💰","All-time total",money(sum(records))],["📅","This month",money(sum(monthRows))],["🗂️","Total records",records.length],["⏳","Pending",pending.length]]
- .map(x=>`<div class="stat"><div class="lbl">${x[0]} ${x[1]}</div><div class="num">${x[2]}</div></div>`).join("");
+
+ $("homeStats").innerHTML=[
+  ["💰","All-time total",money(sum(records))],
+  ["📅","This month",money(sum(monthRows))],
+  ["🗂️","Total records",records.length],
+  ["⏳","Pending",pending.length]
+ ].map(x=>`<div class="stat"><div class="lbl">${x[0]} ${x[1]}</div><div class="num">${x[2]}</div></div>`).join("");
+
  let recent=[...records].sort((a,b)=>(b.updated||b.date||"").localeCompare(a.updated||a.date||"")).slice(0,8);
- $("recent").innerHTML=recent.length?`<div class="tablewrap"><table><thead><tr><th>Date</th><th>Section</th><th>Title</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>
- ${recent.map(r=>`<tr><td>${esc(dateLabel(r.date))}</td><td>${mod(r.module)[2]} ${esc(modName(r.module))}</td><td>${esc(r.title)}</td><td>${money(r.amount)}</td><td>${esc(r.status)}</td><td><button class="btn small" onclick="editRecord('${esc(r.id)}')">Edit</button></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No records yet. Select a section to begin.</div>`;
+
+ $("recent").innerHTML=recent.length?`
+  <div class="tablewrap"><table>
+   <thead><tr><th>Date</th><th>Section</th><th>Title</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+   <tbody>${recent.map(r=>`
+    <tr>
+     <td>${esc(dateLabel(r.date))}</td>
+     <td>${mod(r.module)[2]} ${esc(modName(r.module))}</td>
+     <td>${esc(r.title)}</td>
+     <td>${money(r.amount)}</td>
+     <td>${esc(r.status)}</td>
+     <td><button class="btn small" onclick="editRecord('${esc(r.id)}')">Edit</button></td>
+    </tr>`).join("")}
+   </tbody>
+  </table></div>
+ `:`<div class="empty">No records yet. Select a section to begin.</div>`;
 }
-function filteredSummary(){let f=$("sumFrom").value,t=$("sumTo").value;return records.filter(r=>(!f||r.date>=f)&&(!t||r.date<=t))}
+
+function filteredSummary(){
+ let f=$("sumFrom").value,t=$("sumTo").value;
+ return records.filter(r=>(!f||r.date>=f)&&(!t||r.date<=t));
+}
+
+function clearSummaryDates(){
+ $("sumFrom").value="";
+ $("sumTo").value="";
+ renderSummary();
+}
+
 function renderSummary(){
- const list=filteredSummary(),expenses=list.filter(r=>Number(r.amount)>0);
+ const list=filteredSummary();
+ const expenses=list.filter(r=>Number(r.amount)>0);
  const pending=list.filter(r=>["Pending","Unpaid","In Progress"].includes(r.status));
  const completed=list.filter(r=>["Completed","Paid"].includes(r.status));
- $("sumStats").innerHTML=[["💸","Expenses",money(sum(expenses))],["📋","Records",list.length],["⏳","Pending",pending.length],["✅","Completed / paid",completed.length]]
- .map(x=>`<div class="stat"><div class="lbl">${x[0]} ${x[1]}</div><div class="num">${x[2]}</div></div>`).join("");
- const totals={};expenses.forEach(r=>totals[r.module]=(totals[r.module]||0)+Number(r.amount||0));
- const sorted=Object.entries(totals).sort((a,b)=>b[1]-a[1]),max=sorted[0]?.[1]||1,grand=sum(expenses);
- $("bars").innerHTML=sorted.length?sorted.map(([id,v],i)=>`<div class="barrow"><div>${mod(id)[2]} ${esc(modName(id))}</div><div class="bartrack"><div class="barfill" style="width:${v/max*100}%;background:${colors[i%colors.length]}"></div></div><strong>${money(v)}</strong></div>`).join(""):`<div class="empty">No expense data for this date range.</div>`;
- let offset=0,stops=sorted.map(([id,v],i)=>{let start=offset;offset+=v/(grand||1)*100;return `${colors[i%colors.length]} ${start}% ${offset}%`});
- $("donut").innerHTML=grand?`<div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap"><div style="width:145px;height:145px;border-radius:50%;background:conic-gradient(${stops.join(",")});position:relative;flex-shrink:0"><div style="position:absolute;inset:30px;background:var(--panel);border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:13px">${money(grand)}</div></div><div>${sorted.map(([id,v],i)=>`<p><span class="dot" style="background:${colors[i%colors.length]}"></span> ${esc(modName(id))}: ${money(v)} (${(v/grand*100).toFixed(1)}%)</p>`).join("")}</div></div>`:`<div class="empty">No expenses to display.</div>`;
+
+ $("sumStats").innerHTML=[
+  ["💸","Expenses",money(sum(expenses))],
+  ["📋","Records",list.length],
+  ["⏳","Pending",pending.length],
+  ["✅","Completed / paid",completed.length]
+ ].map(x=>`<div class="stat"><div class="lbl">${x[0]} ${x[1]}</div><div class="num">${x[2]}</div></div>`).join("");
+
+ const totals={};
+ expenses.forEach(r=>totals[r.module]=(totals[r.module]||0)+Number(r.amount||0));
+ const sorted=Object.entries(totals).sort((a,b)=>b[1]-a[1]);
+ const max=sorted[0]?.[1]||1;
+ const grand=sum(expenses);
+
+ $("bars").innerHTML=sorted.length?sorted.map(([id,v],i)=>`
+  <div class="barrow">
+   <div>${mod(id)[2]} ${esc(modName(id))}</div>
+   <div class="bartrack"><div class="barfill" style="width:${v/max*100}%;background:${colors[i%colors.length]}"></div></div>
+   <strong>${money(v)}</strong>
+  </div>`).join(""):`<div class="empty">No expense data for this date range.</div>`;
+
+ let offset=0;
+ let stops=sorted.map(([id,v],i)=>{
+  let start=offset;
+  offset+=v/(grand||1)*100;
+  return `${colors[i%colors.length]} ${start}% ${offset}%`;
+ });
+
+ $("donut").innerHTML=grand?`
+  <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+   <div style="width:145px;height:145px;border-radius:50%;background:conic-gradient(${stops.join(",")});position:relative;flex-shrink:0">
+    <div style="position:absolute;inset:30px;background:var(--panel);border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:13px">${money(grand)}</div>
+   </div>
+   <div>${sorted.map(([id,v],i)=>`<p><span class="dot" style="background:${colors[i%colors.length]}"></span> ${esc(modName(id))}: ${money(v)} (${(v/grand*100).toFixed(1)}%)</p>`).join("")}</div>
+  </div>`:`<div class="empty">No expenses to display.</div>`;
+
  renderHeatmap();
 }
-function shiftMonth(n){heatDate=new Date(heatDate.getFullYear(),heatDate.getMonth()+n,1);renderHeatmap()}
+
+function shiftMonth(n){
+ heatDate=new Date(heatDate.getFullYear(),heatDate.getMonth()+n,1);
+ renderHeatmap();
+}
+
 function renderHeatmap(){
- const y=heatDate.getFullYear(),m=heatDate.getMonth(),days=new Date(y,m+1,0).getDate(),offset=new Date(y,m,1).getDay();
+ const y=heatDate.getFullYear(),m=heatDate.getMonth();
+ const days=new Date(y,m+1,0).getDate();
+ const offset=new Date(y,m,1).getDay();
+
  $("monthLabel").textContent=heatDate.toLocaleDateString("en-IN",{month:"long",year:"numeric"});
- let sums={};records.filter(r=>Number(r.amount)>0&&(r.date||"").startsWith(`${y}-${String(m+1).padStart(2,"0")}`)).forEach(r=>sums[r.date]=(sums[r.date]||0)+Number(r.amount||0));
- let max=Math.max(0,...Object.values(sums)),palette=["var(--panel)","#d8f0df","#93d9a8","#4cbb79","#248752","#155b39"],html="";
+
+ let sums={};
+ records.filter(r=>Number(r.amount)>0&&(r.date||"").startsWith(`${y}-${String(m+1).padStart(2,"0")}`))
+ .forEach(r=>sums[r.date]=(sums[r.date]||0)+Number(r.amount||0));
+
+ let max=Math.max(0,...Object.values(sums));
+ let palette=["var(--panel)","#d8f0df","#93d9a8","#4cbb79","#248752","#155b39"];
+ let html="";
+
  for(let i=0;i<offset;i++)html+='<div class="day blank"></div>';
- for(let d=1;d<=days;d++){let ds=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`,v=sums[ds]||0,level=v?Math.min(5,Math.ceil(v/(max||1)*5)):0;
- html+=`<button class="day" title="${ds}: ${money(v)}" onclick="heatDay('${ds}')" style="background:${palette[level]};color:${level>=4?'white':'var(--tx)'};outline:${selectedDay===ds?'2px solid var(--p)':'none'}">${d}${v?'<span style="font-size:8px"> ₹</span>':""}</button>`;
+
+ for(let d=1;d<=days;d++){
+  let ds=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+  let v=sums[ds]||0;
+  let level=v?Math.min(5,Math.ceil(v/(max||1)*5)):0;
+
+  html+=`<button class="day" title="${ds}: ${money(v)}" onclick="heatDay('${ds}')" style="background:${palette[level]};color:${level>=4?'white':'var(--tx)'};outline:${selectedDay===ds?'2px solid var(--p)':'none'}">${d}${v?'<span style="font-size:8px"> ₹</span>':""}</button>`;
  }
+
  $("heatmap").innerHTML=html;
  $("legend").innerHTML=palette.map((c,i)=>`<span><i class="dot" style="background:${c};border:1px solid var(--line)"></i> ${["None","Very low","Low","Medium","High","Highest"][i]}</span>`).join("");
+
  if(selectedDay)heatDay(selectedDay,false);
 }
+
 function heatDay(ds,rerender=true){
- selectedDay=ds;let list=records.filter(r=>r.date===ds&&Number(r.amount)>0);
+ selectedDay=ds;
+ let list=records.filter(r=>r.date===ds&&Number(r.amount)>0);
+
  $("heatDetail").innerHTML=`<hr><h3>📅 ${esc(dateLabel(ds))} — ${money(sum(list))}</h3>${list.length?list.map(r=>`<p>${mod(r.module)[2]} <strong>${esc(r.title)}</strong> <span class="muted">${esc(modName(r.module))}</span> <span style="float:right">${money(r.amount)}</span></p>`).join(""):'<div class="muted">No expenses recorded on this date.</div>'}`;
+
  if(rerender)renderHeatmap();
 }
+
 function renderSettings(){
- $("storageStats").innerHTML=[["Records",records.length],["Storage bytes",new Blob([JSON.stringify(records)]).size.toLocaleString()],["Sections",MODULES.filter(m=>m[3]!=="nav").length]]
- .map(x=>`<div class="stat"><div class="lbl">${x[0]}</div><div class="num">${x[1]}</div></div>`).join("");
- $("themes").innerHTML=themes.map(t=>`<button class="themebtn" onclick="applyTheme('${t[0]}')"><div class="chip" style="background:linear-gradient(90deg,${t[2]} 0 33%,${t[3]} 33% 66%,${t[4]} 66%)"></div><strong>${t[1]}</strong><div class="muted">${localStorage.getItem(THEME_KEY)===t[0]?"✓ Selected":"Tap to apply"}</div></button>`).join("");
+ $("storageStats").innerHTML=[
+  ["Records",records.length],
+  ["Storage bytes",new Blob([JSON.stringify(records)]).size.toLocaleString()],
+  ["Sections",MODULES.filter(m=>m[3]!=="nav").length]
+ ].map(x=>`<div class="stat"><div class="lbl">${x[0]}</div><div class="num">${x[1]}</div></div>`).join("");
+
+ $("themes").innerHTML=themes.map(t=>`
+  <button class="themebtn" onclick="applyTheme('${t[0]}')">
+   <div class="chip" style="background:linear-gradient(90deg,${t[2]} 0 33%,${t[3]} 33% 66%,${t[4]} 66%)"></div>
+   <strong>${t[1]}</strong>
+   <div class="muted">${localStorage.getItem(THEME_KEY)===t[0]?"✓ Selected":"Tap to apply"}</div>
+  </button>`).join("");
 }
+
 function applyTheme(id,notifyUser=true){
- let t=themes.find(x=>x[0]===id)||themes[0],root=document.documentElement;
+ let t=themes.find(x=>x[0]===id)||themes[0];
+ let root=document.documentElement;
+
  ["p","d","bg","panel","soft"].forEach((k,i)=>root.style.setProperty("--"+k,t[i+2]));
+
  root.style.setProperty("--tx",id==="night"?"#e9f4eb":"#26372c");
  root.style.setProperty("--mut",id==="night"?"#aabbb0":"#718075");
  root.style.setProperty("--line",id==="night"?"#38483e":"#dce7dc");
- localStorage.setItem(THEME_KEY,id);if($("themes"))renderSettings();if(notifyUser)notify(t[1]+" applied");
+
+ localStorage.setItem(THEME_KEY,id);
+ if($("themes"))renderSettings();
+ if(notifyUser)notify(t[1]+" applied");
 }
+
 function download(name,data,type){
- let url=URL.createObjectURL(new Blob([data],{type})),a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+ let url=URL.createObjectURL(new Blob([data],{type}));
+ let a=document.createElement("a");
+ a.href=url;a.download=name;
+ document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1500);
 }
+
 const fields=["id","module","date","title","category","amount","status","person","due","notes","created","updated"];
 const cell=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
-function csv(list){return [fields.map(cell).join(","),...list.map(r=>fields.map(k=>cell(r[k])).join(","))].join("\r\n")}
-function exportCSV(){download("personal-lifesuite-"+today()+".csv","\ufeff"+csv(records),"text/csv;charset=utf-8");notify("CSV exported")}
-function exportModuleCSV(id){download(id+"-register.csv","\ufeff"+csv(records.filter(r=>r.module===id)),"text/csv;charset=utf-8")}
-function exportJSON(){download("personal-lifesuite-backup.json",JSON.stringify({app:"Personal LifeSuite",version:1,records},null,2),"application/json")}
-function exportTXT(){download("personal-lifesuite.txt",records.map(r=>`${r.date} | ${modName(r.module)} | ${r.title} | ${money(r.amount)} | ${r.status}\n${r.notes||""}`).join("\n\n")||"No records","text/plain")}
+
+function csv(list){
+ return [fields.map(cell).join(","),...list.map(r=>fields.map(k=>cell(r[k])).join(","))].join("\r\n");
+}
+
+function exportCSV(){
+ download("personal-lifesuite-"+today()+".csv","\ufeff"+csv(records),"text/csv;charset=utf-8");
+ notify("CSV exported");
+}
+
+function exportModuleCSV(id){
+ download(id+"-register.csv","\ufeff"+csv(records.filter(r=>r.module===id)),"text/csv;charset=utf-8");
+}
+
+function exportJSON(){
+ download("personal-lifesuite-backup.json",JSON.stringify({app:"Personal LifeSuite",version:1,records},null,2),"application/json");
+}
+
+function exportTXT(){
+ download("personal-lifesuite.txt",records.map(r=>`${r.date} | ${modName(r.module)} | ${r.title} | ${money(r.amount)} | ${r.status}\n${r.notes||""}`).join("\n\n")||"No records","text/plain");
+}
+
 function exportHTML(){
  let rows=records.map(r=>`<tr>${[dateLabel(r.date),modName(r.module),r.title,r.category,r.amount,r.status,r.person,r.due,r.notes].map(v=>`<td>${esc(v)}</td>`).join("")}</tr>`).join("");
+
  download("personal-lifesuite-report.html",`<!doctype html><html><meta charset="utf-8"><title>LifeSuite Report</title><style>body{font:14px Arial}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccc;padding:6px}</style><h1>Personal LifeSuite Report</h1><p>Total records: ${records.length}</p><table><tr>${["Date","Section","Title","Category","Amount","Status","Person","Due","Notes"].map(v=>`<th>${v}</th>`).join("")}</tr>${rows}</table></html>`,"text/html");
 }
-function templateCSV(){download("personal-lifesuite-template.csv",csv([]),"text/csv")}
+
+function templateCSV(){
+ download("personal-lifesuite-template.csv",csv([]),"text/csv");
+}
+
 function parseCSV(text){
- let rows=[],row=[],v="",q=false;text=text.replace(/^\uFEFF/,"");
- for(let i=0;i<text.length;i++){let c=text[i];if(q){if(c==='"'&&text[i+1]==='"'){v+='"';i++}else if(c==='"')q=false;else v+=c}
- else if(c==='"')q=true;else if(c===","){row.push(v);v=""}else if(c==="\n"){row.push(v);rows.push(row);row=[];v=""}else if(c!=="\r")v+=c}
+ let rows=[],row=[],v="",q=false;
+ text=text.replace(/^\uFEFF/,"");
+
+ for(let i=0;i<text.length;i++){
+  let c=text[i];
+  if(q){
+   if(c==='"'&&text[i+1]==='"'){v+='"';i++}
+   else if(c==='"')q=false;
+   else v+=c;
+  }else if(c==='"')q=true;
+  else if(c===","){row.push(v);v=""}
+  else if(c==="\n"){row.push(v);rows.push(row);row=[];v=""}
+  else if(c!=="\r")v+=c;
+ }
+
  if(v!==""||row.length){row.push(v);rows.push(row)}
+
  let headers=(rows.shift()||[]).map(x=>x.trim());
- return rows.filter(r=>r.some(x=>x!=="")).map(cols=>Object.fromEntries(headers.map((h,i)=>[h,cols[i]||""])));
+
+ return rows.filter(r=>r.some(x=>x!=="")).map(cols=>
+  Object.fromEntries(headers.map((h,i)=>[h,cols[i]||""]))
+ );
 }
+
 function normalize(r){
- let valid=MODULES.filter(m=>m[3]!=="nav").map(m=>m[0]),amount=Number(r.amount||0);
- return {id:String(r.id||"r_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)),module:valid.includes(r.module)?r.module:"extra",date:String(r.date||today()).slice(0,10),title:String(r.title||r.description||"Imported record"),category:String(r.category||"General"),amount:Number.isFinite(amount)&&amount>=0?amount:0,status:String(r.status||"Recorded"),person:String(r.person||""),due:String(r.due||""),notes:String(r.notes||""),created:String(r.created||new Date().toISOString()),updated:new Date().toISOString()};
+ let valid=MODULES.filter(m=>m[3]!=="nav").map(m=>m[0]);
+ let amount=Number(r.amount||0);
+
+ return {
+  id:String(r.id||"r_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)),
+  module:valid.includes(r.module)?r.module:"extra",
+  date:String(r.date||today()).slice(0,10),
+  title:String(r.title||r.description||"Imported record"),
+  category:String(r.category||"General"),
+  amount:Number.isFinite(amount)&&amount>=0?amount:0,
+  status:String(r.status||"Recorded"),
+  person:String(r.person||""),
+  due:String(r.due||""),
+  notes:String(r.notes||""),
+  created:String(r.created||new Date().toISOString()),
+  updated:new Date().toISOString()
+ };
 }
+
 async function importData(){
- let file=$("importFile").files[0];if(!file)return notify("Choose a file first");
+ let file=$("importFile").files[0];
+ if(!file)return notify("Choose a file first");
+
  try{
   let text=await file.text(),incoming;
+
   if(file.name.toLowerCase().endsWith(".json")){
-   let obj=JSON.parse(text);incoming=Array.isArray(obj)?obj:obj.records;if(!Array.isArray(incoming))throw Error("JSON needs a records array");
+   let obj=JSON.parse(text);
+   incoming=Array.isArray(obj)?obj:obj.records;
+   if(!Array.isArray(incoming))throw Error("JSON needs a records array");
    incoming=incoming.map(normalize);
-   if($("importMode").value==="replace"){if(!confirm("Replace all existing records?"))return;records=incoming}
-   else{let ids=new Set(records.map(r=>r.id));incoming.forEach(r=>{if(ids.has(r.id))r.id="r_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);ids.add(r.id);records.push(r)})}
-  }else{incoming=parseCSV(text).map(normalize);records.push(...incoming)}
-  save();renderHome();renderSummary();renderSettings();$("importFile").value="";notify("Imported "+incoming.length+" records");
- }catch(e){notify("Import failed: "+e.message)}
+
+   if($("importMode").value==="replace"){
+    if(!confirm("Replace all existing records?"))return;
+    records=incoming;
+   }else{
+    let ids=new Set(records.map(r=>r.id));
+    incoming.forEach(r=>{
+     if(ids.has(r.id))r.id="r_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
+     ids.add(r.id);
+     records.push(r);
+    });
+   }
+  }else{
+   incoming=parseCSV(text).map(normalize);
+   records.push(...incoming);
+  }
+
+  save();
+  renderHome();
+  renderSummary();
+  renderSettings();
+  $("importFile").value="";
+  notify("Imported "+incoming.length+" records");
+ }catch(e){
+  notify("Import failed: "+e.message);
+ }
 }
+
 function clearAll(){
  if(!confirm("Delete all records? Export a backup first."))return;
  if(!confirm("Confirm permanent deletion of every record?"))return;
- records=[];save();renderHome();renderSummary();renderSettings();notify("All records deleted");
+
+ records=[];
+ save();
+ renderHome();
+ renderSummary();
+ renderSettings();
+ notify("All records deleted");
 }
-load();init();
+
+load();
+init();
 </script>
 </body>
 </html>
