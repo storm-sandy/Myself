@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#176b45">
+<title>Home Repair Manager</title>
+<style>
+:root{--p:#176b45;--d:#104b32;--bg:#f1f6ef;--panel:#fff;--tx:#26372c;--mut:#718075;--line:#dce7dc;--soft:#e4f2e7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px Arial,sans-serif}
+header{background:linear-gradient(120deg,var(--p),var(--d));color:white;padding:17px;position:sticky;top:0;z-index:5}
+header h1{font-size:21px;margin:0 0 5px}
+header p{margin:0;font-size:12px}
+nav{display:flex;gap:5px;overflow:auto;background:var(--panel);padding:8px;position:sticky;top:70px;z-index:4;border-bottom:1px solid var(--line)}
+button{cursor:pointer;font:inherit}
+nav button{border:0;background:transparent;color:var(--mut);padding:11px;border-radius:9px;white-space:nowrap;font-weight:bold}
+nav button.active{background:var(--soft);color:var(--p)}
+main{max-width:1100px;margin:auto;padding:12px}
+.page{display:none}.page.active{display:block}
+.panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:13px;margin-bottom:12px}
+h2{font-size:19px;margin:5px 0 12px}h3{font-size:15px;margin:3px 0 12px}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.between{justify-content:space-between}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.metric small{color:var(--mut);display:block}.metric strong{font-size:22px;display:block;margin:7px 0}
+.btn{border:0;background:var(--p);color:white;border-radius:9px;padding:10px 13px;font-weight:bold}
+.btn.secondary{background:var(--soft);color:var(--p)}
+.btn.danger{background:#fbe7e5;color:#a52323}
+.btn.small{font-size:12px;padding:6px 8px}
+label{display:block;color:var(--mut);font-size:12px;font-weight:bold;margin-bottom:5px}
+input,select,textarea{width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--tx);font:inherit}
+textarea{min-height:65px}
+.formgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.full{grid-column:1/-1}
+.filter{max-width:210px}
+.hint{color:var(--mut);font-size:12px}
+.totalbar{background:var(--soft);padding:12px;border-radius:9px;margin-top:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.chartbox{height:240px;width:100%}
+canvas{width:100%;height:100%}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:9px}
+table{border-collapse:collapse;width:100%;min-width:650px;font-size:12px}
+th,td{text-align:left;padding:9px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--soft)}
+.empty{text-align:center;padding:20px;color:var(--mut)}
+.themegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.theme{border:2px solid var(--line);border-radius:10px;padding:10px 3px;background:var(--panel);color:var(--tx)}
+.theme.chosen{border-color:var(--p)}
+.dot{display:block;width:25px;height:25px;border-radius:50%;margin:0 auto 7px}
+@media(max-width:650px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.formgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.themegrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:380px){.formgrid{grid-template-columns:1fr}.full{grid-column:auto}.filter{max-width:none}}
+</style>
+</head>
+<body>
+<header>
+<h1 id="heading">🏠 Home Repair Manager</h1>
+<p id="subtitle">Manage home repairs, materials, labour and expenses</p>
+</header>
+
+<nav>
+<button class="active" data-tab="summary">📊 Summary</button>
+<button data-tab="materials">🧱 Materials</button>
+<button data-tab="labour">👷 Mason & Labour</button>
+<button data-tab="settings">⚙️ Settings</button>
+</nav>
+
+<main>
+<!-- TAB 1: SUMMARY -->
+<section id="summary" class="page active">
+<div class="row between">
+<div><h2 data-en="Expense Summary" data-hi="खर्च का सारांश">Expense Summary</h2>
+<div class="hint" data-en="Filter expenses by date" data-hi="तारीख के अनुसार खर्च देखें">Filter expenses by date</div></div>
+<button class="btn" id="quick">＋ Data Entry</button>
+</div>
+
+<div class="panel">
+<div class="row">
+<div class="filter"><label data-en="From date" data-hi="शुरुआती तारीख">From date</label><input type="date" id="from"></div>
+<div class="filter"><label data-en="To date" data-hi="अंतिम तारीख">To date</label><input type="date" id="to"></div>
+<button class="btn secondary" id="resetFilter">All dates</button>
+</div>
+</div>
+
+<div class="grid">
+<div class="card metric"><small data-en="Total Expense" data-hi="कुल खर्च">Total Expense</small><strong id="total">₹0</strong></div>
+<div class="card metric"><small data-en="Materials" data-hi="सामग्री">Materials</small><strong id="matTotal">₹0</strong></div>
+<div class="card metric"><small data-en="Labour" data-hi="मजदूरी">Labour</small><strong id="labTotal">₹0</strong></div>
+<div class="card metric"><small data-en="Entries" data-hi="प्रविष्टियाँ">Entries</small><strong id="count">0</strong></div>
+</div>
+
+<div class="panel">
+<div class="row between"><h3 data-en="Day-wise Expense Chart" data-hi="दिनवार खर्च चार्ट">Day-wise Expense Chart</h3>
+<select id="chartMode" style="max-width:160px">
+<option value="all">All expenses</option><option value="materials">Materials</option><option value="labour">Labour</option>
+</select></div>
+<div class="chartbox"><canvas id="chart"></canvas></div>
+<div class="hint" data-en="The chart shows the last 14 days with records." data-hi="चार्ट में रिकॉर्ड वाले पिछले 14 दिन दिखते हैं।">The chart shows the last 14 days with records.</div>
+</div>
+
+<div class="panel"><h3 data-en="Recent Material Entries" data-hi="हाल की सामग्री प्रविष्टियाँ">Recent Material Entries</h3><div id="recentMaterials"></div></div>
+<div class="panel"><h3 data-en="Recent Labour Entries" data-hi="हाल की मजदूरी प्रविष्टियाँ">Recent Labour Entries</h3><div id="recentLabour"></div></div>
+</section>
+
+<!-- TAB 2: MATERIALS -->
+<section id="materials" class="page">
+<div class="row between"><h2 data-en="Material & Repair Entry" data-hi="सामग्री और मरम्मत प्रविष्टि">Material & Repair Entry</h2><button class="btn secondary" id="clearM">Clear</button></div>
+<div class="panel">
+<form id="mf">
+<input type="hidden" id="mid">
+<div class="formgrid">
+<div><label>Date *</label><input id="md" type="date" required></div>
+<div><label data-en="Room / Area" data-hi="कमरा / स्थान">Room / Area</label><select id="ma"></select></div>
+<div><label data-en="Repair Category" data-hi="मरम्मत श्रेणी">Repair Category</label><select id="mc"></select></div>
+<div><label data-en="Material / Item" data-hi="सामग्री / वस्तु">Material / Item</label><input id="mi" required placeholder="Cement, paint, pipe..."></div>
+<div><label data-en="Quantity" data-hi="मात्रा">Quantity</label><input id="mq" type="number" min="0.01" step="any" value="1" required></div>
+<div><label data-en="Unit" data-hi="इकाई">Unit</label><select id="mu"><option>pcs</option><option>bag</option><option>kg</option><option>ton</option><option>sq ft</option><option>sq m</option><option>ft</option><option>metre</option><option>litre</option><option>box</option><option>trip</option><option>day</option><option>set</option><option>other</option></select></div>
+<div><label data-en="Rate ₹" data-hi="दर ₹">Rate ₹</label><input id="mr" type="number" min="0" step=".01" value="0" required></div>
+<div><label data-en="Amount ₹" data-hi="राशि ₹">Amount ₹</label><input id="mamount" readonly></div>
+<div><label data-en="Shop / Vendor" data-hi="दुकान / विक्रेता">Shop / Vendor</label><input id="mv"></div>
+<div class="full"><label data-en="Description / Notes" data-hi="विवरण / टिप्पणी">Description / Notes</label><textarea id="mn"></textarea></div>
+</div>
+<div class="totalbar"><span data-en="Calculated Amount" data-hi="गणना की गई राशि">Calculated Amount</span><strong id="mshow">₹0</strong></div>
+<div class="row" style="margin-top:12px"><button class="btn" type="submit" data-en="Save Entry" data-hi="सहेजें">Save Entry</button><button class="btn secondary" type="button" id="newM">＋ New Entry</button></div>
+</form>
+</div>
+<div class="panel"><div class="row between"><h3 data-en="Material Register" data-hi="सामग्री रजिस्टर">Material Register</h3><input id="ms" placeholder="Search..." style="max-width:180px"></div><div id="mtable"></div></div>
+</section>
+
+<!-- TAB 3: LABOUR -->
+<section id="labour" class="page">
+<div class="row between"><h2 data-en="Mason & Labour Register" data-hi="मिस्त्री और मजदूर रजिस्टर">Mason & Labour Register</h2><button class="btn secondary" id="clearL">Clear</button></div>
+<div class="panel">
+<form id="lf">
+<input type="hidden" id="lid">
+<div class="formgrid">
+<div><label>Date *</label><input id="ld" type="date" required></div>
+<div><label data-en="Worker Name" data-hi="कामगार का नाम">Worker Name</label><input id="ln" required></div>
+<div><label data-en="Worker Type" data-hi="कामगार का प्रकार">Worker Type</label><select id="lt"></select></div>
+<div><label data-en="Room / Area" data-hi="कमरा / स्थान">Room / Area</label><select id="la"></select></div>
+<div><label data-en="Days / Units" data-hi="दिन / इकाई">Days / Units</label><input id="ldays" type="number" min=".01" step="any" value="1" required></div>
+<div><label data-en="Rate per Day / Unit ₹" data-hi="प्रति दिन / इकाई दर ₹">Rate per Day / Unit ₹</label><input id="lr" type="number" min="0" step=".01" value="0" required></div>
+<div><label data-en="Paid Now ₹" data-hi="अभी भुगतान ₹">Paid Now ₹</label><input id="lp" type="number" min="0" step=".01" value="0"></div>
+<div><label data-en="Balance Due ₹" data-hi="बाकी राशि ₹">Balance Due ₹</label><input id="ldue" readonly></div>
+<div class="full"><label data-en="Work Description" data-hi="काम का विवरण">Work Description</label><textarea id="ldesc" required placeholder="Wall plastering, painting, tiling..."></textarea></div>
+<div class="full"><label data-en="Notes" data-hi="टिप्पणी">Notes</label><textarea id="lnotes"></textarea></div>
+</div>
+<div class="totalbar"><span>Work cost: <strong id="lcost">₹0</strong></span><span>Balance: <strong id="ldueshow">₹0</strong></span></div>
+<div class="row" style="margin-top:12px"><button class="btn" type="submit" data-en="Save Entry" data-hi="सहेजें">Save Entry</button><button class="btn secondary" type="button" id="newL">＋ New Entry</button></div>
+</form>
+</div>
+<div class="panel"><h3 data-en="Labour Summary" data-hi="मजदूरी सारांश">Labour Summary</h3>
+<div class="grid">
+<div class="card metric"><small>Total Work Cost</small><strong id="lsum">₹0</strong></div>
+<div class="card metric"><small>Total Paid</small><strong id="lpaid">₹0</strong></div>
+<div class="card metric"><small>Total Due</small><strong id="lduesum">₹0</strong></div>
+<div class="card metric"><small>Work Entries</small><strong id="lcount">0</strong></div>
+</div></div>
+<div class="panel"><div class="row between"><h3 data-en="Labour Register" data-hi="मजदूरी रजिस्टर">Labour Register</h3><input id="lsrch" placeholder="Search..." style="max-width:180px"></div><div id="ltable"></div></div>
+</section>
+
+<!-- TAB 4: SETTINGS -->
+<section id="settings" class="page">
+<h2 data-en="Settings & Backup" data-hi="सेटिंग और बैकअप">Settings & Backup</h2>
+<div class="panel"><h3 data-en="Language / भाषा" data-hi="भाषा / Language">Language / भाषा</h3><div class="row"><button class="btn" id="en">English</button><button class="btn secondary" id="hi">हिन्दी</button></div></div>
+<div class="panel"><h3 data-en="Nature Themes" data-hi="प्रकृति थीम">Nature Themes</h3><div class="themegrid" id="themes"></div></div>
+<div class="panel"><h3 data-en="Export Data" data-hi="डेटा निर्यात करें">Export Data</h3>
+<div class="row">
+<button class="btn" id="json">JSON Backup</button>
+<button class="btn secondary" id="csv">All Records CSV</button>
+<button class="btn secondary" id="mcsv">Materials CSV</button>
+<button class="btn secondary" id="lcsv">Labour CSV</button>
+<button class="btn secondary" id="excel">Excel-compatible</button>
+</div>
+<p class="hint">JSON backup stores all records and settings. Excel-compatible export opens in spreadsheet apps.</p>
+</div>
+<div class="panel"><h3 data-en="Import Data" data-hi="डेटा आयात करें">Import Data</h3>
+<input id="file" type="file" accept=".json,.csv,.xls,.html">
+<div class="row" style="margin-top:10px"><button class="btn" id="import">Import File</button><button class="btn danger" id="deleteAll">Delete All Records</button></div>
+<p class="hint">JSON restores a backup. CSV imports this app's exported records. Import adds to existing records.</p>
+</div>
+<div class="panel"><h3 data-en="Storage" data-hi="स्टोरेज">Storage</h3><p>Records are stored locally in this browser. Export backups regularly.</p><div id="storage" class="hint"></div></div>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const KEY='homeRepairManagerDataV1',SK='homeRepairManagerSettingsV1';
+const today=()=>new Date().toISOString().slice(0,10);
+let db={materials:[],labour:[]},settings={lang:'en',theme:'forest'};
+const areas=['Kitchen','Hall / Living room','Bedroom','Bathroom / Toilet','Stairs','Open Area / Terrace','Compound','Boundary Wall','Balcony','Entrance','Roof','Store Room','Whole House','Other'];
+const categories=['Cement & Concrete','Sand / Aggregate / Gravel','Bricks / Blocks','Steel / Iron','Tiles / Marble / Granite','Flooring / Skirting','Plaster / Putty','Paint / Primer / Polish','Waterproofing / Leakage','Roofing / Gutter','Plumbing / Pipes','Taps / Shower / Sanitaryware','Water Tank / Pump','Electrical Wire / Cable','Switch / Socket','Lights / Fans','Carpentry / Wood / Plywood','Doors / Windows / Grills','Glass / Aluminium','Hardware / Nails / Screws','Kitchen Platform / Cabinets','Bathroom Renovation','Civil Repair / Crack Filling','Demolition / Debris Removal','Cleaning / Pest Control','Transport / Loading','Tools / Equipment Rental','Architect / Contractor Services','Other Materials'];
+const workers=['Mason','Helper / Labourer','Painter','Plumber','Electrician','Carpenter','Tile Worker','Waterproofing Worker','Welder / Fabricator','Contractor','Cleaner','Transport Worker','Other'];
+const themes={forest:['Forest','#176b45','#104b32','#f1f6ef','#e4f2e7'],ocean:['Ocean','#176a8a','#10445b','#eff7fa','#dff1f7'],lavender:['Lavender','#7052a2','#48326f','#f5f1fa','#ebe3f8'],sunset:['Sunset','#b85d2a','#77391b','#fff5ed','#ffeadb'],rose:['Rose','#a53c68','#6e2344','#fff2f6','#f9deea'],earth:['Earth','#80613a','#4e3a21','#f7f3eb','#ede4d3'],mint:['Mint','#25856f','#155647','#eff9f5','#d9f1e8'],slate:['Slate','#536477','#303d4d','#f1f4f7','#e0e7ef']};
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function money(n){return '₹'+(Number(n)||0).toLocaleString('en-IN',{maximumFractionDigits:2})}
+function id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function persist(){localStorage.setItem(KEY,JSON.stringify(db));localStorage.setItem(SK,JSON.stringify(settings));$('storage').textContent=`${db.materials.length} material records · ${db.labour.length} labour records`}
+function fill(id,arr){$(id).innerHTML=arr.map(x=>`<option>${esc(x)}</option>`).join('')}
+fill('ma',areas);fill('la',areas);fill('mc',categories);fill('lt',workers);
+function load(){try{db=JSON.parse(localStorage.getItem(KEY))||db;settings={...settings,...JSON.parse(localStorage.getItem(SK)||'{}')}}catch(e){}}
+function theme(){let t=themes[settings.theme]||themes.forest;['--p','--d','--bg','--soft'].forEach((k,i)=>document.documentElement.style.setProperty(k,t[i+1]));$('themes').innerHTML=Object.entries(themes).map(([k,v])=>`<button class="theme ${settings.theme===k?'chosen':''}" data-theme="${k}"><span class="dot" style="background:${v[1]}"></span>${v[0]}</button>`).join('')}
+function lang(){document.documentElement.lang=settings.lang;document.querySelectorAll('[data-en]').forEach(el=>el.textContent=el.dataset[settings.lang]||el.dataset.en);$('quick').textContent=settings.lang==='hi'?'＋ नई प्रविष्टि':'＋ Data Entry';$('resetFilter').textContent=settings.lang==='hi'?'सभी तारीखें':'All dates';$('chartMode').innerHTML=settings.lang==='hi'?'<option value="all">सभी खर्च</option><option value="materials">सामग्री</option><option value="labour">मजदूरी</option>':'<option value="all">All expenses</option><option value="materials">Materials</option><option value="labour">Labour</option>';render()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button,.page').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.tab).classList.add('active');if(b.dataset.tab==='summary')chart()});
+$('quick').onclick=()=>{resetM();document.querySelector('[data-tab="materials"]').click()};
+function amount(){let n=(+$('mq').value||0)*(+$('mr').value||0);$('mamount').value=n.toFixed(2);$('mshow').textContent=money(n)}
+['mq','mr'].forEach(x=>$(x).oninput=amount);
+function labourCalc(){let cost=(+$('ldays').value||0)*(+$('lr').value||0),due=Math.max(0,cost-(+$('lp').value||0));$('lcost').textContent=money(cost);$('ldue').value=due.toFixed(2);$('ldueshow').textContent=money(due)}
+['ldays','lr','lp'].forEach(x=>$(x).oninput=labourCalc);
+function resetM(){$('mf').reset();$('mid').value='';$('md').value=today();$('mq').value=1;$('mr').value=0;amount()}
+function resetL(){$('lf').reset();$('lid').value='';$('ld').value=today();$('ldays').value=1;$('lr').value=0;$('lp').value=0;labourCalc()}
+$('clearM').onclick=$('newM').onclick=resetM;$('clearL').onclick=$('newL').onclick=resetL;
+$('mf').onsubmit=e=>{e.preventDefault();let r={id:$('mid').value||id(),date:$('md').value,area:$('ma').value,category:$('mc').value,item:$('mi').value,qty:+$('mq').value,unit:$('mu').value,rate:+$('mr').value,amount:+$('mamount').value,vendor:$('mv').value,notes:$('mn').value};let i=db.materials.findIndex(x=>x.id===r.id);i<0?db.materials.push(r):db.materials[i]=r;persist();resetM();render();alert(settings.lang==='hi'?'प्रविष्टि सहेजी गई':'Entry saved')};
+$('lf').onsubmit=e=>{e.preventDefault();let cost=(+$('ldays').value)*(+$('lr').value),paid=+$('lp').value;let r={id:$('lid').value||id(),date:$('ld').value,name:$('ln').value,type:$('lt').value,area:$('la').value,days:+$('ldays').value,rate:+$('lr').value,cost,paid,due:Math.max(0,cost-paid),description:$('ldesc').value,notes:$('lnotes').value};let i=db.labour.findIndex(x=>x.id===r.id);i<0?db.labour.push(r):db.labour[i]=r;persist();resetL();render();alert(settings.lang==='hi'?'प्रविष्टि सहेजी गई':'Entry saved')};
+function editM(id){let r=db.materials.find(x=>x.id===id);if(!r)return;document.querySelector('[data-tab="materials"]').click();Object.entries({mid:r.id,md:r.date,ma:r.area,mc:r.category,mi:r.item,mq:r.qty,mu:r.unit,mr:r.rate,mv:r.vendor,mn:r.notes}).forEach(([k,v])=>$(k).value=v??'');amount()}
+function editL(id){let r=db.labour.find(x=>x.id===id);if(!r)return;document.querySelector('[data-tab="labour"]').click();Object.entries({lid:r.id,ld:r.date,ln:r.name,lt:r.type,la:r.area,ldays:r.days,lr:r.rate,lp:r.paid,ldesc:r.description,lnotes:r.notes}).forEach(([k,v])=>$(k).value=v??'');labourCalc()}
+function del(type,id){if(confirm(settings.lang==='hi'?'यह रिकॉर्ड हटाएँ?':'Delete this record?')){db[type]=db[type].filter(x=>x.id!==id);persist();render()}}
+function table(headers,rows){return rows.length?`<div class="tablewrap"><table><thead><tr>${headers.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`:`<div class="empty">${settings.lang==='hi'?'कोई रिकॉर्ड नहीं':'No records yet'}</div>`}
+function mtable(list,limit){list=[...list].sort((a,b)=>b.date.localeCompare(a.date));if(limit)list=list.slice(0,limit);return table(['Date','Area','Category / Item','Qty','Amount','Actions'],list.map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.area)}</td><td>${esc(r.category)}<br>${esc(r.item)}<div class="hint">${esc(r.vendor)}</div></td><td>${r.qty} ${esc(r.unit)}</td><td>${money(r.amount)}</td><td><button class="btn secondary small" onclick="editM('${esc(r.id)}')">Edit</button> <button class="btn danger small" onclick="del('materials','${esc(r.id)}')">Delete</button></td></tr>`))}
+function ltable(list,limit){list=[...list].sort((a,b)=>b.date.localeCompare(a.date));if(limit)list=list.slice(0,limit);return table(['Date','Worker','Work description','Cost','Paid','Due','Actions'],list.map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.name)}<br>${esc(r.type)}<div class="hint">${esc(r.area)}</div></td><td>${esc(r.description)}<div class="hint">${r.days} × ${money(r.rate)}</div></td><td>${money(r.cost)}</td><td>${money(r.paid)}</td><td>${money(r.due)}</td><td><button class="btn secondary small" onclick="editL('${esc(r.id)}')">Edit</button> <button class="btn danger small" onclick="del('labour','${esc(r.id)}')">Delete</button></td></tr>`))}
+function filtered(){let f=$('from').value,t=$('to').value,ok=r=>(!f||r.date>=f)&&(!t||r.date<=t);return {m:db.materials.filter(ok),l:db.labour.filter(ok)}}
+function render(){let {m,l}=filtered(),ms=m.reduce((s,r)=>s+(+r.amount||0),0),ls=l.reduce((s,r)=>s+(+r.cost||0),0);$('total').textContent=money(ms+ls);$('matTotal').textContent=money(ms);$('labTotal').textContent=money(ls);$('count').textContent=m.length+l.length;$('recentMaterials').innerHTML=mtable(m,5);$('recentLabour').innerHTML=ltable(l,5);
+let q=$('ms').value.toLowerCase();$('mtable').innerHTML=mtable(db.materials.filter(r=>JSON.stringify(r).toLowerCase().includes(q)));q=$('lsrch').value.toLowerCase();$('ltable').innerHTML=ltable(db.labour.filter(r=>JSON.stringify(r).toLowerCase().includes(q)));
+$('lsum').textContent=money(db.labour.reduce((s,r)=>s+(+r.cost||0),0));$('lpaid').textContent=money(db.labour.reduce((s,r)=>s+(+r.paid||0),0));$('lduesum').textContent=money(db.labour.reduce((s,r)=>s+(+r.due||0),0));$('lcount').textContent=db.labour.length;persist();chart()}
+function chart(){let c=$('chart'),ctx=c.getContext('2d'),w=c.clientWidth||350,h=c.clientHeight||240,dpr=devicePixelRatio||1;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);let {m,l}=filtered(),data={};m.concat(l).forEach(r=>{if(!r.date)return;data[r.date]??={materials:0,labour:0};data[r.date][m.includes(r)?'materials':'labour']+=+(r.amount??r.cost)||0});let dates=Object.keys(data).sort().slice(-14),mode=$('chartMode').value;if(!dates.length){ctx.fillStyle='#718075';ctx.textAlign='center';ctx.fillText(settings.lang==='hi'?'अभी कोई डेटा नहीं':'No data yet',w/2,h/2);return}let vals=dates.map(d=>mode==='all'?data[d].materials+data[d].labour:data[d][mode]),max=Math.max(...vals,1),left=42,top=15,bottom=35,pw=w-left-8,ph=h-top-bottom;ctx.font='10px Arial';for(let j=0;j<=4;j++){let y=top+ph*j/4;ctx.strokeStyle='#dce7dc';ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(w-5,y);ctx.stroke();ctx.fillStyle='#718075';ctx.textAlign='right';ctx.fillText(Math.round(max*(1-j/4)).toLocaleString('en-IN'),left-5,y+3)}let step=pw/dates.length,bw=Math.max(4,step*.58);dates.forEach((d,i)=>{let bh=vals[i]/max*ph,x=left+i*step+(step-bw)/2;ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--p');ctx.fillRect(x,top+ph-bh,bw,bh);ctx.save();ctx.translate(x+bw/2,h-6);ctx.rotate(-.35);ctx.textAlign='right';ctx.fillStyle='#718075';ctx.fillText(d.slice(5),0,0);ctx.restore()})}
+$('from').onchange=$('to').onchange=render;$('chartMode').onchange=chart;$('resetFilter').onclick=()=>{$('from').value='';$('to').value='';render()};$('ms').oninput=render;$('lsrch').oninput=render;
+function download(name,text,type){let a=document.createElement('a'),u=URL.createObjectURL(new Blob(['\ufeff',text],{type:type||'text/plain'}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function csv(rows){if(!rows.length)return '';let keys=[...new Set(rows.flatMap(r=>Object.keys(r)))];const cell=v=>'"'+String(v??'').replace(/"/g,'""')+'"';return [keys.map(cell).join(','),...rows.map(r=>keys.map(k=>cell(r[k])).join(','))].join('\r\n')}
+$('json').onclick=()=>download('home-repair-backup.json',JSON.stringify({...db,settings,version:1},null,2),'application/json');
+$('csv').onclick=()=>download('home-repair-all.csv',csv([...db.materials.map(r=>({recordType:'material',...r})),...db.labour.map(r=>({recordType:'labour',...r}))]),'text/csv');
+$('mcsv').onclick=()=>download('materials.csv',csv(db.materials),'text/csv');$('lcsv').onclick=()=>download('labour.csv',csv(db.labour),'text/csv');
+$('excel').onclick=()=>{let html='<html><meta charset="utf-8"><h2>Materials</h2>'+htmlTable(db.materials)+'<h2>Labour</h2>'+htmlTable(db.labour);download('home-repair.xls',html,'application/vnd.ms-excel')};
+function htmlTable(rows){if(!rows.length)return '<p>No records</p>';let k=[...new Set(rows.flatMap(r=>Object.keys(r)))];return '<table border="1"><tr>'+k.map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr>'+rows.map(r=>'<tr>'+k.map(x=>'<td>'+esc(r[x])+'</td>').join('')+'</tr>').join('')+'</table>'}
+function parseCSV(s){let lines=s.trim().split(/\r?\n/);if(!lines.length)return [];let parse=line=>{let out=[],v='',q=false;for(let i=0;i<line.length;i++){let c=line[i];if(c==='"'&&q&&line[i+1]==='"'){v+='"';i++}else if(c==='"')q=!q;else if(c===','&&!q){out.push(v);v=''}else v+=c}out.push(v);return out};let heads=parse(lines.shift()).map(x=>x.replace(/^\uFEFF/,''));return lines.map(line=>{let a=parse(line),r={};heads.forEach((h,i)=>r[h]=a[i]||'');return r})}
+$('import').onclick=async()=>{let f=$('file').files[0];if(!f){alert('Choose a file first');return}try{let s=await f.text();if(f.name.toLowerCase().endsWith('.json')){let o=JSON.parse(s);if(!Array.isArray(o.materials)||!Array.isArray(o.labour))throw Error();db.materials.push(...o.materials.map(r=>({...r,id:id()})));db.labour.push(...o.labour.map(r=>({...r,id:id()})));if(o.settings)settings={...settings,...o.settings}}else{parseCSV(s).forEach(r=>{if(r.recordType==='labour'||('name'in r&&'description'in r))db.labour.push({...r,id:id(),days:+r.days||1,rate:+r.rate||0,cost:+r.cost||0,paid:+r.paid||0,due:+r.due||0});else if(r.item||r.category)db.materials.push({...r,id:id(),qty:+r.qty||1,rate:+r.rate||0,amount:+r.amount||0})})}theme();lang();persist();alert('Import completed')}catch(e){alert('Unable to import file. Please use this app’s JSON or CSV export.')}};
+$('deleteAll').onclick=()=>{if(confirm('Delete ALL material and labour records?')){db={materials:[],labour:[]};persist();render()}};
+$('en').onclick=()=>{settings.lang='en';persist();lang()};$('hi').onclick=()=>{settings.lang='hi';persist();lang()};$('themes').onclick=e=>{let b=e.target.closest('[data-theme]');if(b){settings.theme=b.dataset.theme;persist();theme()}};
+window.addEventListener('resize',chart);
+load();theme();resetM();resetL();lang();
+</script>
+</body>
+</html>
