@@ -24,7 +24,24 @@ html,body{margin:0;min-height:100%;font:var(--font) system-ui,-apple-system,Sego
 .cards.icons{grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:8px}.cards.icons .card{align-items:center;text-align:center;padding:10px}.cards.icons .cardtop{flex-direction:column}.cards.icons .info p{display:none}.cards.icons .actions{justify-content:center}
 .cards.split{grid-template-columns:repeat(2,minmax(0,1fr))}.cards.dashboard{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}.cards.horizontal{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 10px}.cards.horizontal .card{flex:0 0 245px;scroll-snap-align:start}.cards.rail{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px}.cards.rail .card{padding:8px;gap:6px}.cards.rail .appicon{width:34px;height:34px;flex-basis:34px;font-size:20px}.cards.rail .info h3{font-size:12px}.cards.rail .actions .btn{padding:5px 7px}
 .card{min-width:0;border:1px solid var(--border);border-radius:15px;background:var(--panel);padding:12px;display:flex;flex-direction:column;gap:9px;box-shadow:var(--shadow)}.cardtop{display:flex;align-items:center;gap:9px;min-width:0}.appicon{width:44px;height:44px;flex:0 0 44px;border-radius:13px;background:var(--soft);display:grid;place-items:center;font-size:24px}.info{min-width:0;flex:1}.info h3{font-size:14px;margin:0 0 5px;overflow-wrap:anywhere}.info p{font-size:11px;color:var(--muted);margin:0;overflow-wrap:anywhere}.actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:auto}.star{border:0;background:transparent;color:#c68c14;font-size:22px;padding:0}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.stat{background:var(--soft);padding:13px;border-radius:13px}.stat b{display:block;font-size:25px}.item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;border:1px solid var(--border);border-radius:12px;margin:7px 0}.itemmain{display:flex;align-items:center;gap:10px;min-width:0}.empty{padding:25px;text-align:center;border:1px dashed var(--border);border-radius:13px;color:var(--muted);grid-column:1/-1}.themes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.theme{padding:10px 5px;background:var(--panel);border:1px solid var(--border);border-radius:12px;color:var(--text)}.dot{display:block;width:22px;height:22px;border-radius:50%;margin:0 auto 5px;background:var(--sw)}footer{text-align:center;color:var(--muted);font-size:11px;padding:15px}#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--deep);color:white;padding:11px 16px;border-radius:12px;display:none;z-index:3000;max-width:90%}input[type=checkbox]{width:auto;accent-color:var(--primary)}
-#mgrList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.mgr-entry{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;padding:13px;border:1px solid var(--border);border-radius:14px;background:var(--panel);min-width:0}.mgr-content{min-width:0}.mgr-head{display:flex;gap:10px;align-items:center;min-width:0}.mgr-meta{min-width:0;overflow-wrap:anywhere}.mgr-url{font-size:11px;color:var(--muted);overflow-wrap:anywhere;margin-top:6px}.mgr-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}.path-badge{display:inline-flex;border-radius:99px;padding:3px 7px;font-size:10px;font-weight:800;border:1px solid var(--border);background:var(--soft);margin-top:4px}.path-badge.ok{background:#e0f6e8;color:#176b37}.path-badge.bad{background:#ffebeb;color:#a51d1d}.chart-wrap{width:100%;height:350px}.chart-wrap canvas{width:100%;height:100%}.chart-table{width:100%;border-collapse:collapse}.chart-table td,.chart-table th{text-align:left;padding:8px;border-bottom:1px solid var(--border);font-size:12px}
+#mgrList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.mgr-entry{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;padding:13px;border:1px solid var(--border);border-radius:14px;background:var(--panel);min-width:0}.mgr-content{min-width:0}.mgr-head{display:flex;gap:10px;align-items:center;min-width:0}.mgr-meta{min-width:0;overflow-wrap:anywhere}.mgr-url{font-size:11px;color:var(--muted);overflow-wrap:anywhere;margin-top:6px}.mgr-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}.path-badge{display:inline-flex;border-radius:99px;padding:3px 7px;font-size:10px;font-weight:800;border:1px solid var(--border);background:var(--soft);margin-top:4px}.path-badge.ok{background:#e0f6e8;color:#176b37}.path-badge.bad{background:#ffebeb;color:#a51d1d}
+
+.chart-wrap {
+  width: 100%;
+  height: 350px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chart-wrap canvas {
+  display: block;
+  max-width: none;
+  height: 100%;
+}
+
+ 
+ 
 /* Full-page app overlay and floating app windows */
 #appWindowLayer{position:fixed;inset:0;z-index:2000;pointer-events:none;overflow:hidden}
 .app-window{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(850px,calc(100vw - 24px));height:min(650px,calc(100dvh - 80px));min-width:280px;min-height:200px;display:flex;flex-direction:column;overflow:hidden;resize:both;pointer-events:auto;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:14px;box-shadow:0 12px 45px #0005}
@@ -154,7 +171,215 @@ $("pickJson").onclick=()=>$("jsonFile").click();$("jsonFile").onchange=e=>{loadJ
 const colors=["#138a4b","#087eaa","#d96a32","#8059b8","#c24f78","#629b35","#347bc4","#a57b39","#009688","#d74c24"];
 function chartData(){let m=$("chartMetric").value;if(m==="category")return {labels:state.groups,values:state.groups.map(g=>state.apps.filter(a=>a.category===g).length),title:"Apps by category"};if(m==="status")return {labels:["Enabled","Disabled"],values:[state.apps.filter(a=>a.enabled).length,state.apps.filter(a=>!a.enabled).length],title:"Enabled vs disabled"};if(m==="favorites")return {labels:["Favourites","Other apps"],values:[state.apps.filter(a=>a.favorite).length,state.apps.filter(a=>!a.favorite).length],title:"Favourites"};let a=[...state.apps].sort((x,y)=>(y.openCount||0)-(x.openCount||0)).slice(0,10);return {labels:a.map(x=>x.name),values:a.map(x=>Number(x.openCount)||0),title:"Most opened apps"}}
 function renderCharts(){if(!$("chartStats"))return;let n=state.apps.length,en=state.apps.filter(a=>a.enabled).length,f=state.apps.filter(a=>a.favorite).length,opens=state.apps.reduce((s,a)=>s+(Number(a.openCount)||0),0);$("chartStats").innerHTML=[["Total apps",n],["Enabled",en],["Categories",state.groups.length],["Total opens",opens],["Favourites",f],["Disabled",n-en]].map(([k,v])=>`<div class="stat"><span class="small">${k}</span><b>${v}</b></div>`).join("");$("chartTable").innerHTML=`<table class="chart-table"><tr><th>Category</th><th>Apps</th><th>Enabled</th><th>Favourites</th></tr>${state.groups.map(g=>`<tr><td>${esc(g)}</td><td>${state.apps.filter(a=>a.category===g).length}</td><td>${state.apps.filter(a=>a.category===g&&a.enabled).length}</td><td>${state.apps.filter(a=>a.category===g&&a.favorite).length}</td></tr>`).join("")}</table>`;drawChart(chartData(),$("chartType").value)}
-function drawChart(d,type){let c=$("statsCanvas"),ctx=c.getContext("2d"),box=c.getBoundingClientRect(),w=Math.max(300,box.width||800),h=Math.max(260,box.height||350),ratio=devicePixelRatio||1;c.width=w*ratio;c.height=h*ratio;ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,w,h);let labels=d.labels.length?d.labels:["No data"],v=d.values.length?d.values:[0],max=Math.max(1,...v),p={l:40,r:15,t:20,b:55},pw=w-p.l-p.r,ph=h-p.t-p.b;ctx.font="12px system-ui";ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--text");ctx.fillText(d.title,10,14);if(["pie","doughnut"].includes(type)){let sum=v.reduce((a,b)=>a+b,0)||1,a=-Math.PI/2,cx=w/2,cy=h/2,r=Math.min(w*.3,h*.36);v.forEach((n,i)=>{ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a,a+2*Math.PI*n/sum);ctx.closePath();ctx.fillStyle=colors[i%colors.length];ctx.fill();a+=2*Math.PI*n/sum});if(type==="doughnut"){ctx.beginPath();ctx.arc(cx,cy,r*.5,0,7);ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--panel");ctx.fill()}return}for(let j=0;j<=4;j++){let y=p.t+ph*j/4;ctx.strokeStyle="#aabbaa66";ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(w-p.r,y);ctx.stroke()}let slot=pw/labels.length,pts=[];v.forEach((n,i)=>{let x=p.l+slot*(i+.5),y=p.t+ph-ph*n/max;pts.push([x,y]);ctx.fillStyle=colors[i%colors.length];if(type==="bar")ctx.fillRect(x-slot*.28,y,slot*.56,ph*n/max);if(type==="horizontal")ctx.fillRect(p.l,p.t+i*ph/labels.length,pw*n/max,Math.max(3,ph/labels.length*.6));ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--text");ctx.textAlign="center";ctx.fillText(String(labels[i]).slice(0,12),x,h-25);ctx.fillText(String(n),x,y-5)});if(type==="line"){ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.strokeStyle=colors[0];ctx.lineWidth=2;ctx.stroke()}}
+
+
+function drawChart(d, type) {
+  const c = $("statsCanvas");
+  const ctx = c.getContext("2d");
+  const box = c.getBoundingClientRect();
+
+  const labels = d.labels.length ? d.labels : ["No data"];
+  const values = d.values.length ? d.values : [0];
+
+  const isPie = ["pie", "doughnut"].includes(type);
+  const isHorizontal = type === "horizontal";
+  const isLine = type === "line";
+
+  // Give each category enough space for its label.
+  const slotWidth = isHorizontal ? 0 : Math.max(
+    75,
+    Math.min(130, (box.width || 800) / Math.max(labels.length, 1))
+  );
+
+  const logicalWidth = isHorizontal
+    ? Math.max(320, box.width || 800)
+    : Math.max(box.width || 800, labels.length * slotWidth + 70);
+
+  const logicalHeight = isHorizontal
+    ? Math.max(280, labels.length * 38 + 75)
+    : Math.max(280, box.height || 350);
+
+  const ratio = window.devicePixelRatio || 1;
+
+  c.width = logicalWidth * ratio;
+  c.height = logicalHeight * ratio;
+  c.style.width = logicalWidth + "px";
+  c.style.height = logicalHeight + "px";
+
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  ctx.clearRect(0, 0, logicalWidth, logicalHeight);
+
+  const textColor = getComputedStyle(document.body)
+    .getPropertyValue("--text").trim() || "#183b2a";
+
+  const panelColor = getComputedStyle(document.body)
+    .getPropertyValue("--panel").trim() || "#fff";
+
+  ctx.font = "12px system-ui";
+  ctx.fillStyle = textColor;
+  ctx.textAlign = "left";
+  ctx.fillText(d.title, 12, 18);
+
+  const max = Math.max(1, ...values);
+
+  // Pie and doughnut charts
+  if (isPie) {
+    const sum = values.reduce((a, b) => a + b, 0) || 1;
+    const cx = logicalWidth / 2;
+    const cy = logicalHeight / 2 + 8;
+    const radius = Math.min(logicalWidth * 0.24, logicalHeight * 0.32);
+
+    let angle = -Math.PI / 2;
+
+    values.forEach((value, i) => {
+      const next = angle + (2 * Math.PI * value / sum);
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, radius, angle, next);
+      ctx.closePath();
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.fill();
+
+      angle = next;
+    });
+
+    if (type === "doughnut") {
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * 0.52, 0, Math.PI * 2);
+      ctx.fillStyle = panelColor;
+      ctx.fill();
+    }
+
+    // Legend below the chart
+    let y = logicalHeight - Math.min(labels.length, 6) * 19 - 5;
+
+    labels.slice(0, 6).forEach((label, i) => {
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.fillRect(12, y + i * 19, 10, 10);
+      ctx.fillStyle = textColor;
+      ctx.textAlign = "left";
+      ctx.fillText(
+        String(label).slice(0, 28) + ": " + values[i],
+        28,
+        y + i * 19 + 9
+      );
+    });
+
+    return;
+  }
+
+  // Horizontal bar chart: category names get their own rows.
+  if (isHorizontal) {
+    const left = Math.min(
+      180,
+      Math.max(100, logicalWidth * 0.32)
+    );
+    const right = 45;
+    const top = 35;
+    const rowHeight = 38;
+    const plotWidth = logicalWidth - left - right;
+
+    values.forEach((value, i) => {
+      const y = top + i * rowHeight;
+      const barWidth = plotWidth * value / max;
+
+      ctx.textAlign = "right";
+      ctx.fillStyle = textColor;
+      ctx.fillText(String(labels[i]).slice(0, 24), left - 10, y + 16);
+
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.fillRect(left, y, Math.max(0, barWidth), 20);
+
+      ctx.textAlign = "left";
+      ctx.fillStyle = textColor;
+      ctx.fillText(String(value), left + barWidth + 5, y + 15);
+    });
+
+    return;
+  }
+
+  // Vertical bar and line charts
+  const left = 38;
+  const right = 20;
+  const top = 35;
+  const bottom = 95;
+  const plotWidth = logicalWidth - left - right;
+  const plotHeight = logicalHeight - top - bottom;
+  const slot = plotWidth / labels.length;
+  const points = [];
+
+  // Horizontal grid lines
+  for (let i = 0; i <= 4; i++) {
+    const y = top + plotHeight * i / 4;
+
+    ctx.strokeStyle = "#aabbaa66";
+    ctx.beginPath();
+    ctx.moveTo(left, y);
+    ctx.lineTo(logicalWidth - right, y);
+    ctx.stroke();
+
+    ctx.fillStyle = textColor;
+    ctx.textAlign = "right";
+    ctx.fillText(
+      String(Math.round(max * (4 - i) / 4)),
+      left - 6,
+      y + 4
+    );
+  }
+
+  values.forEach((value, i) => {
+    const x = left + slot * (i + 0.5);
+    const y = top + plotHeight - value / max * plotHeight;
+
+    points.push([x, y]);
+
+    if (type === "bar") {
+      const barWidth = Math.min(36, slot * 0.55);
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.fillRect(
+        x - barWidth / 2,
+        y,
+        barWidth,
+        Math.max(0, top + plotHeight - y)
+      );
+    }
+
+    ctx.fillStyle = textColor;
+    ctx.textAlign = "center";
+    ctx.fillText(String(value), x, Math.max(top + 12, y - 6));
+
+    // Rotate category names to prevent overlap.
+    ctx.save();
+    ctx.translate(x, top + plotHeight + 12);
+    ctx.rotate(-Math.PI / 4);
+    ctx.textAlign = "right";
+    ctx.fillStyle = textColor;
+    ctx.fillText(String(labels[i]).slice(0, 30), 0, 0);
+    ctx.restore();
+  });
+
+  if (isLine && points.length) {
+    ctx.beginPath();
+    points.forEach((point, i) => {
+      if (i === 0) ctx.moveTo(point[0], point[1]);
+      else ctx.lineTo(point[0], point[1]);
+    });
+
+    ctx.strokeStyle = colors[0];
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    points.forEach(([x, y]) => {
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = colors[0];
+      ctx.fill();
+    });
+  }
+}
+
+
 $("chartType").onchange=renderCharts;$("chartMetric").onchange=renderCharts;$("refreshCharts").onclick=renderCharts;window.addEventListener("resize",()=>{if($("page-charts").classList.contains("active"))renderCharts()});
 function renderThemes(){$("themes").innerHTML=THEMES.map(t=>`<button class="theme" data-theme="${t[0]}" style="outline:${state.theme===t[0]?"2px solid var(--primary)":"none"}"><span class="dot" style="--sw:${t[2]}"></span>${t[1]}${state.theme===t[0]?" ✓":""}</button>`).join("")}
 $("randomLayout").onclick=()=>{let choices=LAYOUTS.filter(x=>x.id!==state.layout);let chosen=choices[Math.floor(Math.random()*choices.length)]||LAYOUTS[0];state.layout=chosen.id;save();applyCardLayout();toast("Layout changed to "+chosen.name+".")};
