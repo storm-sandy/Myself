@@ -1,0 +1,701 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#176b45">
+<title>Home Repair Manager</title>
+<style>
+:root{--p:#176b45;--d:#104b32;--bg:#f1f6ef;--panel:#fff;--tx:#26372c;--mut:#718075;--line:#dce7dc;--soft:#e4f2e7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px Arial,sans-serif}
+header{background:linear-gradient(120deg,var(--p),var(--d));color:#fff;padding:17px;position:sticky;top:0;z-index:5}
+header h1{font-size:21px;margin:0 0 5px}header p{margin:0;font-size:12px}
+nav{display:flex;gap:5px;overflow:auto;background:var(--panel);padding:7px;position:sticky;top:69px;z-index:4;border-bottom:1px solid var(--line)}
+nav button{border:0;background:transparent;color:var(--mut);padding:10px;border-radius:9px;white-space:nowrap;font-weight:bold;cursor:pointer}
+nav button.active{background:var(--soft);color:var(--p)}
+main{max-width:1150px;margin:auto;padding:12px}.page{display:none}.page.active{display:block}
+.panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:13px;margin-bottom:12px}
+h2{font-size:19px;margin:5px 0 12px}h3{font-size:15px;margin:3px 0 12px}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.metric small{color:var(--mut);display:block}.metric strong{font-size:22px;display:block;margin:7px 0;overflow-wrap:anywhere}
+.btn{cursor:pointer;border:0;background:var(--p);color:#fff;border-radius:9px;padding:10px 13px;font-weight:bold}
+.btn.secondary{background:var(--soft);color:var(--p)}.btn.danger{background:#fbe7e5;color:#a52323}.btn.small{font-size:12px;padding:6px 8px}
+label{display:block;color:var(--mut);font-size:12px;font-weight:bold;margin-bottom:5px}
+input,select,textarea{width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--tx);font:inherit}
+textarea{min-height:65px;resize:vertical}
+.formgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.full{grid-column:1/-1}
+.hint{color:var(--mut);font-size:12px}.filter{max-width:210px}
+.totalbar{background:var(--soft);padding:12px;border-radius:9px;margin-top:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.chartbox{height:235px}.chartbox canvas{width:100%;height:100%}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:9px}
+table{border-collapse:collapse;width:100%;min-width:650px;font-size:12px}
+th,td{text-align:left;padding:9px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--soft)}.empty{text-align:center;padding:20px;color:var(--mut)}
+/* Home navigation is always three icons per row */
+.homegrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.homebtn{padding:16px 5px;text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;color:var(--tx);font-weight:bold;min-height:100px;min-width:0;overflow-wrap:anywhere}
+.homebtn span{display:block;font-size:26px;margin-bottom:8px}
+.themegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.theme{border:2px solid var(--line);border-radius:10px;padding:10px 3px;background:var(--panel);color:var(--tx);cursor:pointer}
+.theme.chosen{border-color:var(--p)}.dot{display:block;width:25px;height:25px;border-radius:50%;margin:0 auto 7px}
+.notice{padding:11px;background:var(--soft);border-radius:9px;margin:8px 0;color:var(--d);font-size:12px}
+@media(max-width:650px){
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .formgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .themegrid{grid-template-columns:repeat(2,1fr)}
+ nav{top:69px}
+}
+@media(max-width:380px){
+ main{padding:8px}
+ .formgrid{grid-template-columns:1fr}.full{grid-column:auto}
+ .homegrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+ .homebtn{padding:12px 3px;min-height:88px;font-size:11px}
+ .homebtn span{font-size:22px}
+ .filter{max-width:none}
+ .metric strong{font-size:18px}
+}
+</style>
+</head>
+<body>
+<header>
+ <h1 id="heading">🏠 Home Repair Manager</h1>
+ <p id="subtitle">Repairs · Materials · Labour · Stay expenses</p>
+</header>
+
+<nav id="nav">
+ <button class="active" data-tab="home">🏠 Home</button>
+ <button data-tab="summary">📊 Summary</button>
+ <button data-tab="materialEntry">🧱 Material Entry</button>
+ <button data-tab="materialRegister">📋 Material Register</button>
+ <button data-tab="labourEntry">👷 Labour Entry</button>
+ <button data-tab="labourRegister">📋 Labour Register</button>
+ <button data-tab="stay">🛏️ Stay Entry</button>
+ <button data-tab="stayRegister">🧾 Stay Register</button>
+ <button data-tab="settings">⚙️ Settings</button>
+</nav>
+
+<main>
+<!-- HOME -->
+<section id="home" class="page active">
+ <h2 data-en="Home — Navigation" data-hi="होम — नेविगेशन">Home — Navigation</h2>
+ <p class="hint" data-en="Choose a section to continue." data-hi="आगे बढ़ने के लिए अनुभाग चुनें।">Choose a section to continue.</p>
+ <div class="homegrid">
+  <button class="homebtn" data-go="summary"><span>📊</span>Summary / सारांश</button>
+  <button class="homebtn" data-go="materialEntry"><span>🧱</span>Material Entry</button>
+  <button class="homebtn" data-go="materialRegister"><span>📋</span>Material Register</button>
+  <button class="homebtn" data-go="labourEntry"><span>👷</span>Labour Entry</button>
+  <button class="homebtn" data-go="labourRegister"><span>🧾</span>Labour Register</button>
+  <button class="homebtn" data-go="stay"><span>🛏️</span>Stay Entry</button>
+  <button class="homebtn" data-go="stayRegister"><span>📒</span>Stay Register</button>
+  <button class="homebtn" data-go="settings"><span>⚙️</span>Settings & Backup</button>
+ </div>
+ <div class="grid" style="margin-top:12px">
+  <div class="card metric"><small>Total Expense</small><strong id="homeTotal">₹0</strong></div>
+  <div class="card metric"><small>Materials</small><strong id="homeMaterial">₹0</strong></div>
+  <div class="card metric"><small>Labour</small><strong id="homeLabour">₹0</strong></div>
+  <div class="card metric"><small>Stay Expenses</small><strong id="homeStay">₹0</strong></div>
+ </div>
+</section>
+
+<!-- SUMMARY -->
+<section id="summary" class="page">
+ <div class="row between">
+  <div><h2>📊 Expense Summary</h2><div class="hint">Filter expense totals and charts by date.</div></div>
+  <button class="btn" data-go="materialEntry">＋ Data Entry</button>
+ </div>
+ <div class="panel">
+  <div class="row">
+   <div class="filter"><label>From date</label><input id="from" type="date"></div>
+   <div class="filter"><label>To date</label><input id="to" type="date"></div>
+   <button class="btn secondary" id="resetFilter">All dates</button>
+  </div>
+ </div>
+ <div class="grid">
+  <div class="card metric"><small>Total Expense</small><strong id="total">₹0</strong></div>
+  <div class="card metric"><small>Material Expense</small><strong id="matTotal">₹0</strong></div>
+  <div class="card metric"><small>Labour Expense</small><strong id="labTotal">₹0</strong></div>
+  <div class="card metric"><small>Stay Expense</small><strong id="stayTotal">₹0</strong></div>
+ </div>
+ <div class="panel">
+  <div class="row between"><h3>Day-wise Expense Chart</h3>
+   <select id="chartMode" style="max-width:180px">
+    <option value="all">All expenses</option><option value="materials">Materials</option><option value="labour">Labour</option><option value="stay">Stay expenses</option>
+   </select>
+  </div>
+  <div class="chartbox"><canvas id="chart"></canvas></div>
+ </div>
+ <div class="panel"><h3>Day-wise Summary</h3><div id="daySummary"></div></div>
+</section>
+
+<!-- MATERIAL ENTRY -->
+<section id="materialEntry" class="page">
+ <div class="row between"><h2>🧱 Material & Repair Entry</h2><button class="btn secondary" id="clearM">Clear Form</button></div>
+ <div class="panel">
+  <form id="mf">
+   <input type="hidden" id="mid">
+   <div class="formgrid">
+    <div><label>Date *</label><input id="md" type="date" required></div>
+    <div><label>Room / Area</label><select id="ma"></select></div>
+    <div><label>Repair Category</label><select id="mc"></select></div>
+    <div><label>Material / Item *</label><input id="mi" required placeholder="Cement, paint, pipe..."></div>
+    <div><label>Quantity</label><input id="mq" type="number" min=".01" step="any" value="1" required></div>
+    <div><label>Unit</label><select id="mu"><option>pcs</option><option>bag</option><option>kg</option><option>ton</option><option>sq ft</option><option>sq m</option><option>ft</option><option>metre</option><option>litre</option><option>box</option><option>trip</option><option>day</option><option>set</option><option>other</option></select></div>
+    <div><label>Rate ₹</label><input id="mr" type="number" min="0" step=".01" value="0" required></div>
+    <div><label>Amount ₹</label><input id="mamount" readonly></div>
+    <div><label>Shop / Vendor</label><input id="mv"></div>
+    <div class="full"><label>Description / Notes</label><textarea id="mn"></textarea></div>
+   </div>
+   <div class="totalbar"><span>Calculated Amount</span><strong id="mshow">₹0</strong></div>
+   <div class="row" style="margin-top:12px"><button class="btn" type="submit">Save Material</button><button class="btn secondary" type="button" id="newM">＋ New Entry</button></div>
+  </form>
+ </div>
+ <div class="panel">
+  <h3>Material Summary</h3>
+  <div class="grid">
+   <div class="card metric"><small>Total Material Cost</small><strong id="mSum">₹0</strong></div>
+   <div class="card metric"><small>Material Entries</small><strong id="mCount">0</strong></div>
+   <div class="card metric"><small>Quantity Total</small><strong id="mQtySum">0</strong></div>
+   <div class="card metric"><small>Latest Date</small><strong id="mLatest">—</strong></div>
+  </div>
+  <div id="mSummaryTable"></div>
+ </div>
+</section>
+
+<!-- MATERIAL REGISTER -->
+<section id="materialRegister" class="page">
+ <div class="row between"><h2>📋 Material Register</h2><input id="ms" placeholder="Search materials..." style="max-width:220px"></div>
+ <div class="panel"><div id="mtable"></div></div>
+</section>
+
+<!-- LABOUR ENTRY -->
+<section id="labourEntry" class="page">
+ <div class="row between"><h2>👷 Mason & Labour Entry</h2><button class="btn secondary" id="clearL">Clear Form</button></div>
+ <div class="panel">
+  <form id="lf">
+   <input type="hidden" id="lid">
+   <div class="formgrid">
+    <div><label>Date *</label><input id="ld" type="date" required></div>
+    <div><label>Worker Name *</label><input id="ln" required></div>
+    <div><label>Worker Type</label><select id="lt"></select></div>
+    <div><label>Room / Area</label><select id="la"></select></div>
+    <div><label>Days / Units</label><input id="ldays" type="number" min=".01" step="any" value="1" required></div>
+    <div><label>Rate per Day / Unit ₹</label><input id="lr" type="number" min="0" step=".01" value="0" required></div>
+    <div><label>Paid Now ₹</label><input id="lp" type="number" min="0" step=".01" value="0"></div>
+    <div><label>Balance Due ₹</label><input id="ldue" readonly></div>
+    <div class="full"><label>Work Description *</label><textarea id="ldesc" required placeholder="Plastering, painting, tiling..."></textarea></div>
+    <div class="full"><label>Notes</label><textarea id="lnotes"></textarea></div>
+   </div>
+   <div class="totalbar"><span>Work cost: <strong id="lcost">₹0</strong></span><span>Balance: <strong id="ldueshow">₹0</strong></span></div>
+   <div class="row" style="margin-top:12px"><button class="btn" type="submit">Save Labour</button><button class="btn secondary" type="button" id="newL">＋ New Entry</button></div>
+  </form>
+ </div>
+ <div class="panel">
+  <h3>Labour Summary</h3>
+  <div class="grid">
+   <div class="card metric"><small>Total Work Cost</small><strong id="lsum">₹0</strong></div>
+   <div class="card metric"><small>Total Paid</small><strong id="lpaid">₹0</strong></div>
+   <div class="card metric"><small>Total Due</small><strong id="lduesum">₹0</strong></div>
+   <div class="card metric"><small>Work Entries</small><strong id="lcount">0</strong></div>
+  </div>
+  <div id="lSummaryTable"></div>
+ </div>
+</section>
+
+<!-- LABOUR REGISTER -->
+<section id="labourRegister" class="page">
+ <div class="row between"><h2>📋 Labour Register</h2><input id="lsrch" placeholder="Search labour..." style="max-width:220px"></div>
+ <div class="panel"><div id="ltable"></div></div>
+</section>
+
+<!-- STAY EXPENSE ENTRY -->
+<section id="stay" class="page">
+ <div class="row between"><h2>🛏️ Stay Expense Entry</h2><button class="btn secondary" id="clearS">Clear Form</button></div>
+ <div class="notice">Enter an expense name, category, amount, date, and description. Use the Stay Register to review, edit, or delete saved expenses.</div>
+ <div class="panel">
+  <form id="sf">
+   <input type="hidden" id="sid">
+   <div class="formgrid">
+    <div><label>Date *</label><input id="sd" type="date" required></div>
+    <div><label>Expense Name *</label><input id="sname" required placeholder="e.g. Breakfast, taxi, cement"></div>
+    <div><label>Category *</label>
+     <select id="sc" required><option>Food</option><option>Transport</option><option>Material</option></select>
+    </div>
+    <div><label>Amount ₹ *</label><input id="sa" type="number" min=".01" step=".01" required placeholder="0.00"></div>
+    <div class="full"><label>Description / Notes</label><textarea id="snote" placeholder="Purpose, details, quantity, or other notes"></textarea></div>
+   </div>
+   <div class="row" style="margin-top:12px">
+    <button class="btn" type="submit" id="saveS">Add Expense</button>
+    <button class="btn secondary" type="button" id="newS">＋ New Entry</button>
+    <button class="btn secondary" type="button" data-go="stayRegister">Open Stay Register →</button>
+   </div>
+  </form>
+ </div>
+ <div class="panel">
+  <h3>Stay Expense Summary</h3>
+  <div class="grid">
+   <div class="card metric"><small>Total Stay Expenses</small><strong id="sSum">₹0</strong></div>
+   <div class="card metric"><small>Food</small><strong id="sFood">₹0</strong></div>
+   <div class="card metric"><small>Transport</small><strong id="sTransport">₹0</strong></div>
+   <div class="card metric"><small>Material</small><strong id="sOther">₹0</strong></div>
+  </div>
+  <div id="sSummaryTable"></div>
+ </div>
+</section>
+
+<!-- STAY REGISTER -->
+<section id="stayRegister" class="page">
+ <div class="row between"><h2>🧾 Stay Expense Register</h2><button class="btn secondary" data-go="stay">＋ Add Expense</button></div>
+ <div class="panel">
+  <div class="formgrid">
+   <div><label>Search expense name or description</label><input id="ssrch" placeholder="Search stay expenses..."></div>
+   <div><label>Filter Category</label><select id="sfilter"><option value="">All Categories</option><option>Food</option><option>Transport</option><option>Material</option></select></div>
+   <div><label>Filter Date</label><input id="sdatefilter" type="date"></div>
+  </div>
+  <div class="row" style="margin:10px 0"><button class="btn secondary" id="clearStayFilter">Clear Filters</button><button class="btn secondary" id="stayCSV">Export Stay CSV</button></div>
+  <div class="grid">
+   <div class="card metric"><small>Filtered Entries</small><strong id="sFilteredCount">0</strong></div>
+   <div class="card metric"><small>Filtered Total</small><strong id="sFilteredTotal">₹0</strong></div>
+  </div>
+  <div id="stable"></div>
+ </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="page">
+ <h2>⚙️ Settings & Backup</h2>
+ <div class="panel">
+  <h3>Language / भाषा</h3>
+  <div class="row"><button class="btn" id="en">English</button><button class="btn secondary" id="hi">हिन्दी</button></div>
+ </div>
+ <div class="panel"><h3>Nature Themes</h3><div class="themegrid" id="themes"></div></div>
+ <div class="panel">
+  <h3>Sample Data</h3>
+  <p class="hint">Add example material, labour, and stay expenses for testing. Sample records are marked automatically. The delete-sample button removes only sample records and preserves your own entries.</p>
+  <div class="row">
+   <button class="btn" id="addSamples">＋ Add Sample Data</button>
+   <button class="btn danger" id="deleteSamples">Delete All Sample Data</button>
+  </div>
+  <div id="sampleInfo" class="notice"></div>
+ </div>
+ <div class="panel">
+  <h3>Export Data</h3>
+  <div class="row">
+   <button class="btn" id="json">JSON Backup</button>
+   <button class="btn secondary" id="csv">All Records CSV</button>
+   <button class="btn secondary" id="mcsv">Materials CSV</button>
+   <button class="btn secondary" id="lcsv">Labour CSV</button>
+   <button class="btn secondary" id="scsv">Stay CSV</button>
+   <button class="btn secondary" id="excel">Excel-compatible</button>
+  </div>
+ </div>
+ <div class="panel">
+  <h3>Import Data</h3>
+  <input id="file" type="file" accept=".json,.csv,.xls,.html">
+  <div class="row" style="margin-top:10px">
+   <button class="btn" id="import">Import File</button>
+   <button class="btn danger" id="deleteAll">Delete All Data</button>
+  </div>
+  <p class="hint">JSON restores a backup. CSV imports records. Importing adds records; it does not erase existing records. The Excel-compatible export is a spreadsheet-readable HTML file with an .xls extension.</p>
+ </div>
+ <div class="panel"><h3>Storage</h3><p>Data is stored locally in this browser. Export JSON backups regularly.</p><div id="storage" class="hint"></div></div>
+</section>
+</main>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id),KEY='homeRepairManagerV2';
+const today=()=>new Date().toISOString().slice(0,10);
+let db={materials:[],labour:[],stay:[]},settings={lang:'en',theme:'forest'};
+
+const areas=['Kitchen','Hall / Living Room','Bedroom','Bathroom / Toilet','Stairs','Open Area / Terrace','Compound','Boundary Wall','Balcony','Entrance','Roof','Store Room','Whole House','Other'];
+const cats=['Cement & Concrete','Sand / Aggregate / Gravel','Bricks / Blocks','Steel / Iron','Tiles / Marble / Granite','Flooring / Skirting','Plaster / Putty','Paint / Primer / Polish','Waterproofing / Leakage','Roofing / Gutter','Plumbing / Pipes','Taps / Shower / Sanitaryware','Water Tank / Pump','Electrical Wire / Cable','Switch / Socket','Lights / Fans','Carpentry / Wood / Plywood','Doors / Windows / Grills','Glass / Aluminium','Hardware / Nails / Screws','Kitchen Platform / Cabinets','Bathroom Renovation','Civil Repair / Crack Filling','Demolition / Debris Removal','Cleaning / Pest Control','Transport / Loading','Tools / Equipment Rental','Contractor Services','Other Materials'];
+const workers=['Mason','Helper / Labourer','Painter','Plumber','Electrician','Carpenter','Tile Worker','Waterproofing Worker','Welder / Fabricator','Contractor','Cleaner','Transport Worker','Other'];
+const themes={
+ forest:['Forest','#176b45','#104b32','#f1f6ef','#e4f2e7'],
+ ocean:['Ocean','#176a8a','#10445b','#eff7fa','#dff1f7'],
+ lavender:['Lavender','#7052a2','#48326f','#f5f1fa','#ebe3f8'],
+ sunset:['Sunset','#b85d2a','#77391b','#fff5ed','#ffeadb'],
+ rose:['Rose','#a53c68','#6e2344','#fff2f6','#f9deea'],
+ earth:['Earth','#80613a','#4e3a21','#f7f3eb','#ede4d3'],
+ mint:['Mint','#25856f','#155647','#eff9f5','#d9f1e8'],
+ slate:['Slate','#536477','#303d4d','#f1f4f7','#e0e7ef']
+};
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function money(n){return '₹'+(Number(n)||0).toLocaleString('en-IN',{maximumFractionDigits:2})}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function total(rows,key='amount'){return rows.reduce((a,r)=>a+(Number(r[key])||0),0)}
+function persist(){
+ try{localStorage.setItem(KEY,JSON.stringify({db,settings}))}
+ catch(e){alert('Could not save data. Export a backup and check browser storage.')}
+ updateStorage();
+}
+function load(){
+ try{
+  const x=JSON.parse(localStorage.getItem(KEY)||'null');
+  if(x){
+   if(x.db){db={...db,...x.db};settings={...settings,...(x.settings||{})}}
+   else db={...db,...x};
+  }
+ }catch(e){console.warn('Stored data could not be read',e)}
+ ['materials','labour','stay'].forEach(k=>{if(!Array.isArray(db[k]))db[k]=[]});
+ // Keep older stay records usable in the revised register.
+ db.stay=db.stay.map(r=>({
+  ...r,
+  name:r.name||r.expenseName||r.vendor||r.item||'Previous stay expense',
+  category:['Food','Transport','Material'].includes(r.category)?r.category:(r.category==='Other Materials'?'Material':r.category||'Material'),
+  desc:r.desc||r.description||r.notes||'',
+  amount:Number(r.amount)||0,
+  id:r.id||uid()
+ }));
+}
+function updateStorage(){
+ const el=$('storage');if(el)el.textContent=`${db.materials.length} material records · ${db.labour.length} labour records · ${db.stay.length} stay expenses`;
+ const sm=$('sampleInfo');
+ if(sm)sm.textContent='Sample records currently saved: '+['materials','labour','stay'].reduce((n,k)=>n+db[k].filter(r=>r.sample===true).length,0);
+}
+function fill(id,values){$(id).innerHTML=values.map(x=>`<option>${esc(x)}</option>`).join('')}
+fill('ma',areas);fill('la',areas);fill('mc',cats);fill('lt',workers);
+
+function applyTheme(){
+ const t=themes[settings.theme]||themes.forest;
+ ['--p','--d','--bg','--soft'].forEach((k,i)=>document.documentElement.style.setProperty(k,t[i+1]));
+ $('themes').innerHTML=Object.entries(themes).map(([k,v])=>`<button class="theme ${settings.theme===k?'chosen':''}" data-theme="${k}"><span class="dot" style="background:${v[1]}"></span>${v[0]}</button>`).join('');
+}
+const hiLabels={
+ 'Home — Navigation':'होम — नेविगेशन','📊 Expense Summary':'📊 खर्च का सारांश',
+ '🧱 Material & Repair Entry':'🧱 सामग्री और मरम्मत प्रविष्टि',
+ '📋 Material Register':'📋 सामग्री रजिस्टर','👷 Mason & Labour Entry':'👷 मिस्त्री और मजदूरी प्रविष्टि',
+ '📋 Labour Register':'📋 मजदूरी रजिस्टर','🛏️ Stay Expense Entry':'🛏️ रहने के खर्च की प्रविष्टि',
+ '🧾 Stay Expense Register':'🧾 रहने के खर्च का रजिस्टर','⚙️ Settings & Backup':'⚙️ सेटिंग और बैकअप',
+ 'Day-wise Expense Chart':'दिनवार खर्च चार्ट','Material Summary':'सामग्री सारांश',
+ 'Labour Summary':'मजदूरी सारांश','Stay Expense Summary':'रहने के खर्च का सारांश'
+};
+let originalHeadings={};
+function setLang(lang){
+ settings.lang=lang||settings.lang;
+ document.documentElement.lang=settings.lang;
+ document.querySelectorAll('[data-en]').forEach(e=>e.textContent=settings.lang==='hi'?(e.dataset.hi||e.dataset.en):e.dataset.en);
+ document.querySelectorAll('h2').forEach(e=>{
+  if(!originalHeadings[e.id])originalHeadings[e.id]=e.textContent;
+  const base=originalHeadings[e.id];
+  e.textContent=settings.lang==='hi'?(hiLabels[base]||base):base;
+ });
+ persist();
+}
+function go(id){
+ document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===id));
+ document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));
+ render();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.tab));
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+
+function mcalc(){
+ const n=(Number($('mq').value)||0)*(Number($('mr').value)||0);
+ $('mamount').value=n.toFixed(2);$('mshow').textContent=money(n);
+}
+['mq','mr'].forEach(x=>$(x).addEventListener('input',mcalc));
+function lcalc(){
+ const c=(Number($('ldays').value)||0)*(Number($('lr').value)||0);
+ const p=Number($('lp').value)||0,d=Math.max(0,c-p);
+ $('lcost').textContent=money(c);$('ldue').value=d.toFixed(2);$('ldueshow').textContent=money(d);
+}
+['ldays','lr','lp'].forEach(x=>$(x).addEventListener('input',lcalc));
+
+function resetM(){
+ $('mf').reset();$('mid').value='';$('md').value=today();$('mq').value=1;$('mr').value=0;mcalc();
+}
+function resetL(){
+ $('lf').reset();$('lid').value='';$('ld').value=today();$('ldays').value=1;$('lr').value=0;$('lp').value=0;lcalc();
+}
+function resetS(){
+ $('sf').reset();$('sid').value='';$('sd').value=today();$('sc').value='Food';$('saveS').textContent='Add Expense';
+}
+$('clearM').onclick=$('newM').onclick=resetM;
+$('clearL').onclick=$('newL').onclick=resetL;
+$('clearS').onclick=$('newS').onclick=resetS;
+
+$('mf').onsubmit=e=>{
+ e.preventDefault();
+ const id=$('mid').value||uid();
+ const r={id,date:$('md').value,area:$('ma').value,category:$('mc').value,item:$('mi').value,qty:Number($('mq').value),unit:$('mu').value,rate:Number($('mr').value),amount:Number($('mamount').value),vendor:$('mv').value,notes:$('mn').value};
+ const i=db.materials.findIndex(x=>x.id===id);
+ if(i<0)db.materials.push(r);else{r.sample=db.materials[i].sample===true;db.materials[i]=r}
+ persist();resetM();render();alert('Material entry saved.');
+};
+$('lf').onsubmit=e=>{
+ e.preventDefault();
+ const id=$('lid').value||uid(),cost=(Number($('ldays').value)||0)*(Number($('lr').value)||0),paid=Number($('lp').value)||0;
+ const r={id,date:$('ld').value,name:$('ln').value,type:$('lt').value,area:$('la').value,days:Number($('ldays').value),rate:Number($('lr').value),cost,paid,due:Math.max(0,cost-paid),description:$('ldesc').value,notes:$('lnotes').value};
+ const i=db.labour.findIndex(x=>x.id===id);
+ if(i<0)db.labour.push(r);else{r.sample=db.labour[i].sample===true;db.labour[i]=r}
+ persist();resetL();render();alert('Labour entry saved.');
+};
+$('sf').onsubmit=e=>{
+ e.preventDefault();
+ const id=$('sid').value||uid();
+ const r={id,date:$('sd').value,name:$('sname').value.trim(),category:$('sc').value,amount:Number($('sa').value),desc:$('snote').value};
+ if(!r.name)return alert('Please enter an expense name.');
+ const i=db.stay.findIndex(x=>x.id===id);
+ if(i<0)db.stay.push(r);else{r.sample=db.stay[i].sample===true;db.stay[i]=r}
+ persist();resetS();render();alert('Stay expense saved.');
+};
+
+function editM(id){
+ const r=db.materials.find(x=>x.id===id);if(!r)return;
+ go('materialEntry');
+ Object.entries({mid:r.id,md:r.date,ma:r.area,mc:r.category,mi:r.item,mq:r.qty,mu:r.unit,mr:r.rate,mv:r.vendor,mn:r.notes}).forEach(([k,v])=>$(k).value=v??'');
+ mcalc();
+}
+function editL(id){
+ const r=db.labour.find(x=>x.id===id);if(!r)return;
+ go('labourEntry');
+ Object.entries({lid:r.id,ld:r.date,ln:r.name,lt:r.type,la:r.area,ldays:r.days,lr:r.rate,lp:r.paid,ldesc:r.description,lnotes:r.notes}).forEach(([k,v])=>$(k).value=v??'');
+ lcalc();
+}
+function editS(id){
+ const r=db.stay.find(x=>x.id===id);if(!r)return;
+ go('stay');
+ Object.entries({sid:r.id,sd:r.date,sname:r.name,sc:r.category,sa:r.amount,snote:r.desc}).forEach(([k,v])=>$(k).value=v??'');
+ $('saveS').textContent='Update Expense';
+}
+function del(type,id){
+ if(!confirm('Delete this record?'))return;
+ db[type]=db[type].filter(x=>x.id!==id);persist();render();
+}
+function table(head,rows){
+ return rows.length?`<div class="tablewrap"><table><thead><tr>${head.map(x=>`<th>${esc(x)}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`:'<div class="empty">No records yet.</div>';
+}
+function mtable(list,limit){
+ list=[...list].sort((a,b)=>(b.date||'').localeCompare(a.date||''));if(limit)list=list.slice(0,limit);
+ return table(['Date','Area','Category / Item','Qty','Amount','Actions'],list.map(r=>`<tr>
+ <td>${esc(r.date)}</td><td>${esc(r.area)}</td><td>${esc(r.category)}<br>${esc(r.item)}<div class="hint">${esc(r.vendor)}</div></td>
+ <td>${esc(r.qty)} ${esc(r.unit)}</td><td>${money(r.amount)}</td>
+ <td><button class="btn secondary small" onclick="editM('${esc(r.id)}')">Edit</button> <button class="btn danger small" onclick="del('materials','${esc(r.id)}')">Delete</button></td></tr>`));
+}
+function ltable(list,limit){
+ list=[...list].sort((a,b)=>(b.date||'').localeCompare(a.date||''));if(limit)list=list.slice(0,limit);
+ return table(['Date','Worker','Work','Cost','Paid','Due','Actions'],list.map(r=>`<tr>
+ <td>${esc(r.date)}</td><td>${esc(r.name)}<br>${esc(r.type)}<div class="hint">${esc(r.area)}</div></td>
+ <td>${esc(r.description)}<div class="hint">${esc(r.days)} × ${money(r.rate)}</div></td>
+ <td>${money(r.cost)}</td><td>${money(r.paid)}</td><td>${money(r.due)}</td>
+ <td><button class="btn secondary small" onclick="editL('${esc(r.id)}')">Edit</button> <button class="btn danger small" onclick="del('labour','${esc(r.id)}')">Delete</button></td></tr>`));
+}
+function stable(list){
+ return table(['Date','Expense Name','Category','Description','Amount','Actions'],[...list].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(r=>`<tr>
+ <td>${esc(r.date)}</td><td>${esc(r.name)}</td><td>${esc(r.category)}</td><td>${esc(r.desc)}</td><td>${money(r.amount)}</td>
+ <td><button class="btn secondary small" onclick="editS('${esc(r.id)}')">Edit</button> <button class="btn danger small" onclick="del('stay','${esc(r.id)}')">Delete</button></td></tr>`));
+}
+function filtered(){
+ const f=$('from').value,t=$('to').value,ok=r=>(!f||r.date>=f)&&(!t||r.date<=t);
+ return {m:db.materials.filter(ok),l:db.labour.filter(ok),s:db.stay.filter(ok)};
+}
+function render(){
+ const {m,l,s}=filtered(),ms=total(m),ls=total(l,'cost'),ss=total(s);
+ $('total').textContent=money(ms+ls+ss);$('matTotal').textContent=money(ms);$('labTotal').textContent=money(ls);$('stayTotal').textContent=money(ss);
+ $('homeTotal').textContent=money(ms+ls+ss);$('homeMaterial').textContent=money(ms);$('homeLabour').textContent=money(ls);$('homeStay').textContent=money(ss);
+
+ $('mSum').textContent=money(total(db.materials));$('mCount').textContent=db.materials.length;
+ $('mQtySum').textContent=db.materials.reduce((a,r)=>a+(Number(r.qty)||0),0);
+ $('mLatest').textContent=db.materials.length?[...db.materials].sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0].date:'—';
+
+ $('lsum').textContent=money(total(db.labour,'cost'));$('lpaid').textContent=money(total(db.labour,'paid'));
+ $('lduesum').textContent=money(total(db.labour,'due'));$('lcount').textContent=db.labour.length;
+
+ $('sSum').textContent=money(total(db.stay));
+ $('sFood').textContent=money(total(db.stay.filter(r=>r.category==='Food')));
+ $('sTransport').textContent=money(total(db.stay.filter(r=>r.category==='Transport')));
+ $('sOther').textContent=money(total(db.stay.filter(r=>r.category==='Material')));
+
+ const mq=$('ms').value.toLowerCase(),lq=$('lsrch').value.toLowerCase();
+ $('mtable').innerHTML=mtable(db.materials.filter(r=>JSON.stringify(r).toLowerCase().includes(mq)));
+ $('ltable').innerHTML=ltable(db.labour.filter(r=>JSON.stringify(r).toLowerCase().includes(lq)));
+ $('mSummaryTable').innerHTML=mtable(db.materials,5);
+ $('lSummaryTable').innerHTML=ltable(db.labour,5);
+ $('sSummaryTable').innerHTML=stable(db.stay);
+
+ const sq=$('ssrch').value.toLowerCase(),sf=$('sfilter').value,sd=$('sdatefilter').value;
+ const filteredStay=db.stay.filter(r=>
+  JSON.stringify(r).toLowerCase().includes(sq)&&(!sf||r.category===sf)&&(!sd||r.date===sd)
+ );
+ $('stable').innerHTML=stable(filteredStay);
+ $('sFilteredCount').textContent=filteredStay.length;
+ $('sFilteredTotal').textContent=money(total(filteredStay));
+
+ const grouped={};
+ [...m.map(r=>({date:r.date,amount:Number(r.amount)||0})),
+  ...l.map(r=>({date:r.date,amount:Number(r.cost)||0})),
+  ...s.map(r=>({date:r.date,amount:Number(r.amount)||0}))
+ ].forEach(r=>{grouped[r.date||'No date']=(grouped[r.date||'No date']||0)+r.amount});
+ $('daySummary').innerHTML=table(['Date','Total Expense'],Object.keys(grouped).sort((a,b)=>b.localeCompare(a)).map(d=>`<tr><td>${esc(d)}</td><td>${money(grouped[d])}</td></tr>`));
+ updateStorage();
+ drawChart();
+}
+
+function drawChart(){
+ const c=$('chart');if(!c)return;
+ const ctx=c.getContext('2d'),w=c.clientWidth||350,h=c.clientHeight||235,dpr=window.devicePixelRatio||1;
+ c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+ const {m,l,s}=filtered(),data={};
+ function add(rows,key,val){rows.forEach(r=>{if(!r.date)return;data[r.date]??={materials:0,labour:0,stay:0};data[r.date][key]+=Number(r[val])||0})}
+ add(m,'materials','amount');add(l,'labour','cost');add(s,'stay','amount');
+ const ds=Object.keys(data).sort().slice(-14),mode=$('chartMode').value;
+ if(!ds.length){ctx.fillStyle='#718075';ctx.textAlign='center';ctx.fillText('No data yet',w/2,h/2);return}
+ const vs=ds.map(d=>mode==='all'?data[d].materials+data[d].labour+data[d].stay:data[d][mode]);
+ const max=Math.max(...vs,1),left=42,top=14,bottom=35,ph=h-top-bottom,pw=w-left-7,step=pw/ds.length,bw=Math.max(4,step*.58);
+ ctx.font='10px Arial';
+ for(let j=0;j<=4;j++){
+  const y=top+ph*j/4;ctx.strokeStyle='#dce7dc';ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(w-5,y);ctx.stroke();
+  ctx.fillStyle='#718075';ctx.textAlign='right';ctx.fillText(Math.round(max*(1-j/4)),left-5,y+3);
+ }
+ ds.forEach((d,i)=>{
+  const bh=vs[i]/max*ph,x=left+i*step+(step-bw)/2;
+  ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--p');
+  ctx.fillRect(x,top+ph-bh,bw,bh);
+  ctx.save();ctx.translate(x+bw/2,h-6);ctx.rotate(-.35);ctx.textAlign='right';ctx.fillStyle='#718075';ctx.fillText(d.slice(5),0,0);ctx.restore();
+ });
+}
+$('from').onchange=$('to').onchange=render;
+$('resetFilter').onclick=()=>{$('from').value='';$('to').value='';render()};
+$('chartMode').onchange=drawChart;
+$('ms').oninput=$('lsrch').oninput=$('ssrch').oninput=render;
+$('sfilter').onchange=$('sdatefilter').onchange=render;
+$('clearStayFilter').onclick=()=>{$('ssrch').value='';$('sfilter').value='';$('sdatefilter').value='';render()};
+
+function download(name,text,type='text/plain'){
+ const a=document.createElement('a'),u=URL.createObjectURL(new Blob(['\ufeff',text],{type}));
+ a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);
+}
+function csv(rows){
+ if(!rows.length)return '';
+ const keys=[...new Set(rows.flatMap(r=>Object.keys(r)))],cell=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+ return [keys.map(cell).join(','),...rows.map(r=>keys.map(k=>cell(r[k])).join(','))].join('\r\n');
+}
+function exportCSV(type){
+ const rows=type==='all'?
+  [...db.materials.map(r=>({recordType:'material',...r})),...db.labour.map(r=>({recordType:'labour',...r})),...db.stay.map(r=>({recordType:'stay',...r}))]:db[type]||[];
+ if(!rows.length){alert('No records to export.');return}
+ download(type+'-'+today()+'.csv',csv(rows),'text/csv;charset=utf-8;');
+}
+$('json').onclick=()=>download('home-repair-backup.json',JSON.stringify({app:'Home Repair Manager',version:3,db,settings},null,2),'application/json');
+$('csv').onclick=()=>exportCSV('all');
+$('mcsv').onclick=()=>exportCSV('materials');
+$('lcsv').onclick=()=>exportCSV('labour');
+$('scsv').onclick=$('stayCSV').onclick=()=>exportCSV('stay');
+
+function htmlTable(rows){
+ if(!rows.length)return '<p>No records</p>';
+ const k=[...new Set(rows.flatMap(r=>Object.keys(r)))];
+ return '<table border="1"><tr>'+k.map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr>'+
+ rows.map(r=>'<tr>'+k.map(x=>'<td>'+esc(r[x])+'</td>').join('')+'</tr>').join('')+'</table>';
+}
+$('excel').onclick=()=>{
+ const h='<html><meta charset="utf-8"><h2>Materials</h2>'+htmlTable(db.materials)+
+ '<h2>Labour</h2>'+htmlTable(db.labour)+'<h2>Stay Expenses</h2>'+htmlTable(db.stay);
+ download('home-repair.xls',h,'application/vnd.ms-excel');
+};
+
+function parseCSV(text){
+ const lines=text.trim().split(/\r?\n/);if(!lines.length||!lines[0])return [];
+ function parse(line){
+  const out=[];let v='',q=false;
+  for(let i=0;i<line.length;i++){
+   const c=line[i];
+   if(c==='"'&&q&&line[i+1]==='"'){v+='"';i++}
+   else if(c==='"')q=!q;
+   else if(c===','&&!q){out.push(v);v=''}
+   else v+=c;
+  }
+  out.push(v);return out;
+ }
+ const heads=parse(lines.shift()).map(x=>x.replace(/^\uFEFF/,''));
+ return lines.filter(line=>line.trim()).map(line=>{
+  const a=parse(line),r={};heads.forEach((h,i)=>r[h]=a[i]||'');return r;
+ });
+}
+function importRows(rows){
+ rows.forEach(r=>{
+  const kind=(r.recordType||'').toLowerCase();
+  const id=uid();
+  if(kind==='labour'||(r.name&&('description'in r||'cost'in r||'paid'in r))){
+   db.labour.push({...r,id,date:r.date||today(),days:Number(r.days)||1,rate:Number(r.rate)||0,cost:Number(r.cost)||0,paid:Number(r.paid)||0,due:Number(r.due)||0});
+  }else if(kind==='stay'||r.expenseName||['Food','Transport','Material','Other Materials'].includes(r.category)){
+   db.stay.push({...r,id,date:r.date||today(),name:r.name||r.expenseName||r.vendor||'Imported expense',category:r.category==='Other Materials'?'Material':r.category||'Material',desc:r.desc||r.description||r.notes||'',amount:Number(r.amount)||0});
+  }else if(r.item||kind==='material'||r.category){
+   db.materials.push({...r,id,date:r.date||today(),qty:Number(r.qty)||1,rate:Number(r.rate)||0,amount:Number(r.amount)||0});
+  }
+ }
+ );
+}
+$('import').onclick=async()=>{
+ const f=$('file').files[0];if(!f){alert('Choose a file first.');return}
+ try{
+  const text=await f.text();
+  if(f.name.toLowerCase().endsWith('.json')){
+   const o=JSON.parse(text),source=o.db||o;
+   if(!Array.isArray(source.materials)||!Array.isArray(source.labour)||!Array.isArray(source.stay))throw Error('Invalid backup');
+   if(!confirm('Add records from this backup to the existing records?'))return;
+   ['materials','labour','stay'].forEach(k=>db[k].push(...source[k].map(r=>({...r,id:uid()}))));
+   if(o.settings)settings={...settings,...o.settings};
+  }else{
+   if(!confirm('Import rows from this CSV? Existing records will be kept.'))return;
+   importRows(parseCSV(text));
+  }
+  persist();applyTheme();render();alert('Import completed.');
+ }catch(e){alert('Unable to import this file. Use a valid Home Repair Manager JSON backup or CSV export.')}
+};
+
+function addSampleData(){
+ const samples=[
+  ['materials',{date:today(),area:'Kitchen',category:'Cement & Concrete',item:'SAMPLE - Cement bags',qty:2,unit:'bag',rate:350,amount:700,vendor:'Sample shop',notes:'Sample test record'}],
+  ['materials',{date:today(),area:'Hall / Living Room',category:'Paint / Primer / Polish',item:'SAMPLE - Wall paint',qty:1,unit:'litre',rate:850,amount:850,vendor:'Sample shop',notes:'Sample test record'}],
+  ['labour',{date:today(),name:'SAMPLE - Mason',type:'Mason',area:'Kitchen',days:1,rate:900,cost:900,paid:500,due:400,description:'Sample plaster repair',notes:'Sample test record'}],
+  ['labour',{date:today(),name:'SAMPLE - Helper',type:'Helper / Labourer',area:'Hall / Living Room',days:1,rate:600,cost:600,paid:600,due:0,description:'Sample cleaning and assistance',notes:'Sample test record'}],
+  ['stay',{date:today(),name:'SAMPLE - Breakfast',category:'Food',amount:150,desc:'Sample meal expense'}],
+  ['stay',{date:today(),name:'SAMPLE - Local Transport',category:'Transport',amount:120,desc:'Sample travel expense'}],
+  ['stay',{date:today(),name:'SAMPLE - Small Materials',category:'Material',amount:250,desc:'Sample material purchase'}]
+ ];
+ let added=0;
+ samples.forEach(([type,r])=>{
+  if(!db[type].some(x=>x.sample===true&&x.name===r.name&&x.item===r.item)){
+   db[type].push({...r,id:uid(),sample:true});added++;
+  }
+ });
+ persist();render();
+ alert(added?'Added '+added+' sample records.':'Sample data already exists.');
+}
+$('addSamples').onclick=addSampleData;
+$('deleteSamples').onclick=()=>{
+ const count=['materials','labour','stay'].reduce((n,k)=>n+db[k].filter(r=>r.sample===true).length,0);
+ if(!count){alert('There are no sample records to delete.');return}
+ if(!confirm('Delete all '+count+' sample records? Your own records will be kept.'))return;
+ ['materials','labour','stay'].forEach(k=>db[k]=db[k].filter(r=>r.sample!==true));
+ persist();render();alert('All sample records have been deleted.');
+};
+$('deleteAll').onclick=()=>{
+ if(!confirm('Delete ALL material, labour, and stay records?'))return;
+ if(!confirm('Confirm permanent deletion of all records.'))return;
+ db={materials:[],labour:[],stay:[]};persist();resetM();resetL();resetS();render();alert('All records deleted.');
+};
+
+$('en').onclick=()=>{settings.lang='en';persist();setLang('en')};
+$('hi').onclick=()=>{settings.lang='hi';persist();setLang('hi')};
+$('themes').onclick=e=>{
+ const b=e.target.closest('[data-theme]');if(!b)return;
+ settings.theme=b.dataset.theme;applyTheme();persist();
+};
+window.addEventListener('resize',drawChart);
+
+load();
+applyTheme();
+resetM();resetL();resetS();
+setLang(settings.lang);
+render();
+</script>
+</body>
+</html>
