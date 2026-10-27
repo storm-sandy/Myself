@@ -7,10 +7,7 @@
 <meta name="theme-color" content="#18212b">
 <title>Lumina Vault Pro</title>
 <style>
-:root{
- --bg:#101720;--panel:#18222e;--panel2:#253343;--text:#edf4fb;
- --muted:#a2b1c1;--border:#334253;--accent:#4fd1a1;--danger:#ff6b75;
-}
+:root{--bg:#101720;--panel:#18222e;--panel2:#253343;--text:#edf4fb;--muted:#a2b1c1;--border:#334253;--accent:#4fd1a1;--danger:#ff6b75}
 html[data-theme=light]{--bg:#f1f5f9;--panel:#fff;--panel2:#e7edf4;--text:#192636;--muted:#617184;--border:#d3dce7;--accent:#087e61;--danger:#c93647}
 html[data-theme=cyberpunk]{--bg:#100a20;--panel:#1d1234;--panel2:#30204b;--text:#f7eaff;--muted:#c2a8e5;--border:#593d78;--accent:#f0ed5a;--danger:#ff668b}
 html[data-theme=nord]{--bg:#242933;--panel:#303846;--panel2:#3b4657;--text:#eceff4;--muted:#b7c4d7;--border:#4c5b70;--accent:#88c0d0;--danger:#bf616a}
@@ -18,194 +15,133 @@ html[data-theme=sunset]{--bg:#251721;--panel:#38212e;--panel2:#4c2c3a;--text:#ff
 html[data-theme=oled]{--bg:#000;--panel:#080808;--panel2:#151515;--text:#fff;--muted:#aaa;--border:#333;--accent:#45e6a8;--danger:#ff5964}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
-button,input,select{font:inherit}
-button,select,input[type=search],input[type=text]{
- padding:9px 11px;border:1px solid var(--border);border-radius:9px;
- background:var(--panel2);color:var(--text);max-width:100%
-}
-button{cursor:pointer}
-button:hover{filter:brightness(1.12)}
-button:disabled{opacity:.5;cursor:not-allowed}
-.primary{background:var(--accent)!important;color:#09271c!important;font-weight:700}
-.danger{color:var(--danger)}
-.small{padding:5px 8px}
-.topbar{position:sticky;top:0;z-index:10;background:var(--panel);border-bottom:1px solid var(--border);padding:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.brand{font-size:18px;font-weight:800;margin-right:auto}
-.brand small{display:block;font-size:11px;color:var(--muted);font-weight:400}
+button,input,select{font:inherit;max-width:100%;color:var(--text);background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:9px 11px}
+button{cursor:pointer}button:hover{filter:brightness(1.1)}button:disabled{opacity:.45;cursor:not-allowed}
+.primary{background:var(--accent)!important;color:#09271c!important;font-weight:700}.danger{color:var(--danger)}.small{padding:5px 8px}
+.topbar{position:sticky;top:0;z-index:10;background:var(--panel);border-bottom:1px solid var(--border);padding:11px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.brand{font-size:18px;font-weight:800;margin-right:auto}.brand small{display:block;font-size:11px;color:var(--muted);font-weight:400}
 .toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.app{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:calc(100vh - 60px)}
-.sidebar{background:var(--panel);border-right:1px solid var(--border);padding:12px;min-width:0}
-.main{padding:15px;min-width:0}
+.app{display:grid;grid-template-columns:225px minmax(0,1fr);min-height:calc(100vh - 65px)}
+.sidebar{background:var(--panel);border-right:1px solid var(--border);padding:12px;min-width:0}.main{padding:14px;min-width:0}
 .side-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:15px 0 8px}
 .nav{width:100%;text-align:left;display:flex;align-items:center;gap:8px;margin:3px 0;background:transparent;border-color:transparent}
-.nav.active{background:var(--panel2);border-color:var(--border);color:var(--accent)}
-.count{margin-left:auto;color:var(--muted)}
-.album-row{display:flex;gap:4px;align-items:center;margin:4px 0}
-.album-row .nav{flex:1;min-width:0;margin:0}
-.album-row .nav span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.album-row .nav span:last-child{margin-left:auto}
-.album-actions{display:flex;gap:3px}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:14px}
-.stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px;min-width:0}
-.stat b{display:block;font-size:21px;overflow-wrap:anywhere}
-.stat span{font-size:12px;color:var(--muted)}
-.heading{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-.heading h2{font-size:20px;margin:0 auto 0 0}
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.filters input{flex:1;min-width:130px}
-.bulkbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:12px}
-.bulkbar select{flex:1;min-width:155px}
-.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px}
+.nav.active{background:var(--panel2);border-color:var(--border);color:var(--accent)}.count{margin-left:auto;color:var(--muted)}
+.album-row{display:flex;gap:3px;align-items:center;margin:4px 0}.album-row .nav{flex:1;min-width:0;margin:0}.album-row .nav span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.album-row .nav span:last-child{margin-left:auto}.album-actions{display:flex;gap:3px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:13px}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:11px;min-width:0}
+.stat b{display:block;font-size:21px;overflow-wrap:anywhere}.stat span{font-size:12px;color:var(--muted)}
+.heading{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}.heading h2{font-size:20px;margin:0 auto 0 0}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.filters input{flex:1;min-width:130px}
+.bulkbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:12px}.bulkbar select{flex:1;min-width:150px}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
 .image-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;min-width:0}
 .thumb{position:relative;aspect-ratio:1;background:#080d13;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer}
-.thumb img{width:100%;height:100%;object-fit:cover}
-.thumb .broken{padding:10px;color:#bac8d8;text-align:center;font-size:12px}
-.image-check{position:absolute;left:8px;top:8px;width:21px;height:21px;accent-color:var(--accent)}
-.image-info{padding:9px}
-.image-name{font-size:12px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.image-meta{font-size:11px;color:var(--muted);margin-top:4px}
-.card-buttons{display:flex;gap:5px;margin-top:8px}
-.card-buttons button{flex:1;padding:6px 3px;font-size:11px}
+.thumb img{width:100%;height:100%;object-fit:cover}.image-check{position:absolute;left:8px;top:8px;width:21px;height:21px;accent-color:var(--accent)}
+.image-info{padding:9px}.image-name{font-size:12px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.image-meta{font-size:11px;color:var(--muted);margin-top:4px}
+.card-buttons{display:flex;gap:5px;margin-top:8px}.card-buttons button{flex:1;padding:6px 3px;font-size:11px}
 .notice{padding:10px 12px;background:var(--panel);border:1px solid var(--border);border-radius:10px;color:var(--muted);margin-bottom:12px}
 .progress-box{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:14px}
-.progress-head{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap}
-progress{width:100%;height:10px;accent-color:var(--accent);margin-top:8px}
+.progress-head{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap}progress{width:100%;height:10px;accent-color:var(--accent);margin-top:8px}
 #scanFilename{font-size:12px;color:var(--muted);overflow-wrap:anywhere;margin-top:6px}
-.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:35px 12px;border:1px dashed var(--border);border-radius:12px}
-.hidden{display:none!important}
-#toast{position:fixed;z-index:100;bottom:18px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:12px 16px;max-width:92vw;display:none;box-shadow:0 8px 25px #0005}
-#toast.show{display:block}
-.viewer{position:fixed;inset:0;z-index:50;background:#05080df7;display:flex;flex-direction:column;color:#fff}
-.viewer-top{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:9px;background:#111923;border-bottom:1px solid #ffffff24}
-.viewer-top button,.viewer select{background:#263240;color:white;border-color:#465568}
-.viewer-top .primary{background:var(--accent);color:#09271c}
-.file-title{flex:1;min-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-/* Touch zoom: disable browser gestures only inside the image viewer */
-.viewer-body{
- position:relative;
- flex:1;
- min-height:0;
- display:flex;
- justify-content:center;
- align-items:center;
- overflow:hidden;
- touch-action:none;
- overscroll-behavior:contain;
-}
-.viewer-body img{
- max-width:100%;
- max-height:100%;
- object-fit:contain;
- transform-origin:center center;
- user-select:none;
- -webkit-user-select:none;
- -webkit-user-drag:none;
-}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:32px 12px;border:1px dashed var(--border);border-radius:12px}
+.hidden{display:none!important}#toast{position:fixed;z-index:100;bottom:18px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:12px 16px;max-width:92vw;display:none;box-shadow:0 8px 25px #0005}#toast.show{display:block}
+.history-list{display:grid;gap:10px}.folder-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:13px;min-width:0}
+.folder-head{display:flex;gap:10px;align-items:flex-start}.folder-icon{font-size:26px}.folder-info{flex:1;min-width:0}.folder-name{font-weight:750;overflow-wrap:anywhere}
+.folder-path{font-size:12px;color:var(--muted);overflow-wrap:anywhere;word-break:break-word;margin-top:4px}.folder-status{font-size:12px;color:var(--muted);margin-top:6px}
+.folder-buttons{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.folder-buttons button{padding:7px 9px}
+.viewer{position:fixed;inset:0;z-index:50;background:#05080df7;display:flex;flex-direction:column;color:white}
+.viewer-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:9px;background:#111923;border-bottom:1px solid #ffffff24}
+.viewer-top button{background:#263240;color:white;border-color:#465568}.viewer-top .primary{background:var(--accent);color:#09271c}
+.file-title{flex:1;min-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.viewer-body{position:relative;flex:1;min-height:0;display:flex;justify-content:center;align-items:center;overflow:hidden;touch-action:none;overscroll-behavior:contain}
+.viewer-body img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center center;user-select:none;-webkit-user-select:none;-webkit-user-drag:none;pointer-events:none}
 .viewer-footer{background:#111923;padding:9px 12px;display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;font-size:12px;color:#d0dbe6}
 .edit-panel{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:12px;background:#17212c;border-top:1px solid #ffffff20;max-height:30vh;overflow:auto}
-.edit-panel label{font-size:12px;color:#e4edf5}
-.edit-panel label span{display:flex;justify-content:space-between}
-.edit-panel input{width:100%;accent-color:var(--accent)}
-@media(max-width:760px){
- .app{grid-template-columns:1fr}
- .sidebar{border-right:0;border-bottom:1px solid var(--border)}
- .sidebar-content{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
- .side-title{margin-top:10px}
- .main{padding:10px}
- .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
- .gallery{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
- .edit-panel{grid-template-columns:repeat(2,minmax(0,1fr))}
- .topbar{padding:9px}
- .viewer-top{gap:5px;padding:7px}
- .viewer-top button{padding:8px}
- .file-title{min-width:70px}
-}
+.edit-panel label{font-size:12px;color:#e4edf5}.edit-panel label span{display:flex;justify-content:space-between}.edit-panel input{width:100%;accent-color:var(--accent)}
+@media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{border-right:0;border-bottom:1px solid var(--border)}.sidebar-content{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.side-title{margin-top:10px}.main{padding:9px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.gallery{grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:8px}.edit-panel{grid-template-columns:repeat(2,minmax(0,1fr))}.topbar{padding:9px}.viewer-top{gap:4px;padding:7px}.viewer-top button{padding:7px}.file-title{min-width:60px}}
 </style>
 </head>
 <body>
-
 <header class="topbar">
- <div class="brand">🖼️ Lumina Vault Pro<small>Persistent Image Library</small></div>
+ <div class="brand">🖼️ Lumina Vault Pro<small>Background scanning · Folder history · Worker thumbnails</small></div>
  <div class="toolbar">
   <button class="primary" id="browseBtn">📂 Browse Folder</button>
-  <button id="scanBtn">↻ Scan</button>
+  <button id="scanBtn">↻ Rescan</button>
   <button id="addBtn">＋ Add Images</button>
   <button id="newAlbumBtn">＋ Album</button>
   <select id="themeSelect" aria-label="Theme">
-   <option value="dark-slate">Dark Slate</option><option value="light">Light</option>
-   <option value="cyberpunk">Cyberpunk</option><option value="nord">Nord</option>
-   <option value="sunset">Sunset</option><option value="oled">OLED</option>
+   <option value="dark-slate">Dark Slate</option><option value="light">Light</option><option value="cyberpunk">Cyberpunk</option><option value="nord">Nord</option><option value="sunset">Sunset</option><option value="oled">OLED</option>
   </select>
  </div>
 </header>
 
 <div class="app">
- <aside class="sidebar">
-  <div class="side-title">Library</div>
-  <div class="sidebar-content">
-   <button class="nav active" data-view="all">🖼️ <span>All Images</span><span class="count" id="allCount">0</span></button>
-   <button class="nav" data-view="recent">🕘 <span>Recently Added</span></button>
-  </div>
-  <div class="side-title">My Albums <button class="small" id="sideNewAlbum">＋</button></div>
-  <div id="albumNav"></div>
-  <div class="side-title">Tools</div>
-  <button class="nav" id="summaryBtn">📊 <span>Library Summary</span></button>
-  <button class="nav" id="exportBtn">⬇️ <span>Export Library CSV</span></button>
-  <button class="nav" id="clearSelectionBtn">☑️ <span>Clear Selection</span></button>
-  <div class="notice" style="font-size:12px;margin-top:14px">
-   Images are stored in this browser. You can reopen the app and view saved images without browsing the folder again.
-  </div>
- </aside>
+<aside class="sidebar">
+ <div class="side-title">Library</div>
+ <div class="sidebar-content">
+  <button class="nav active" data-view="all">🖼️ <span>All Images</span><span class="count" id="allCount">0</span></button>
+  <button class="nav" data-view="recent">🕘 <span>Recently Added</span></button>
+  <button class="nav" id="historyNav">📚 <span>Folder History</span><span class="count" id="folderCount">0</span></button>
+ </div>
+ <div class="side-title">My Albums <button class="small" id="sideNewAlbum">＋</button></div>
+ <div id="albumNav"></div>
+ <div class="side-title">Tools</div>
+ <button class="nav" id="summaryBtn">📊 <span>Library Summary</span></button>
+ <button class="nav" id="exportBtn">⬇️ <span>Export Library CSV</span></button>
+ <button class="nav" id="clearSelectionBtn">☑️ <span>Clear Selection</span></button>
+ <div class="side-title">Storage</div>
+ <button class="nav danger" id="resetAppBtn">🗑️ <span>Reset App</span></button>
+ <div class="notice" style="font-size:12px;margin-top:12px">Reset App clears saved records, thumbnails, albums, and folder history. Original files on your device are not deleted.</div>
+</aside>
 
- <main class="main">
+<main class="main">
+ <div class="stats">
+  <div class="stat"><b id="totalStat">0</b><span>Saved images</span></div>
+  <div class="stat"><b id="albumStat">0</b><span>Albums</span></div>
+  <div class="stat"><b id="sizeStat">0 B</b><span>Original file size</span></div>
+  <div class="stat"><b id="selectedStat">0</b><span>Selected</span></div>
+ </div>
+ <div class="progress-box">
+  <div class="progress-head"><b id="scanStatus">Opening saved library…</b><span id="progressCount"></span></div>
+  <progress id="scanProgress" value="0" max="100"></progress>
+  <div id="scanFilename">Loading saved thumbnails…</div>
+ </div>
+
+ <section id="summaryPanel" class="hidden">
+  <div class="heading"><h2>Library Summary</h2><button id="backBtn">← Gallery</button></div>
   <div class="stats">
-   <div class="stat"><b id="totalStat">0</b><span>Saved images</span></div>
-   <div class="stat"><b id="albumStat">0</b><span>Albums</span></div>
-   <div class="stat"><b id="sizeStat">0 B</b><span>Total image size</span></div>
-   <div class="stat"><b id="selectedStat">0</b><span>Selected</span></div>
+   <div class="stat"><b id="formatCount">0</b><span>Image formats</span></div>
+   <div class="stat"><b id="membershipCount">0</b><span>Album memberships</span></div>
+   <div class="stat"><b id="storedCount">0</b><span>Saved records</span></div>
+   <div class="stat"><b id="summarySize">0 B</b><span>Original file size</span></div>
   </div>
+ </section>
 
-  <div class="progress-box">
-   <div class="progress-head"><b id="scanStatus">Opening saved library…</b><span id="progressCount">Please wait</span></div>
-   <progress id="scanProgress" value="0" max="100"></progress>
-   <div id="scanFilename">Loading browser storage…</div>
+ <section id="galleryPanel">
+  <div class="heading"><h2 id="viewTitle">All Images</h2><span id="viewCount" style="color:var(--muted)">0 images</span></div>
+  <div class="filters">
+   <input type="search" id="searchInput" placeholder="Search name or folder…">
+   <select id="sortSelect"><option value="newest">Newest added</option><option value="name">Name A–Z</option><option value="nameDesc">Name Z–A</option><option value="size">Largest file</option><option value="sizeAsc">Smallest file</option></select>
+   <select id="pageSize"><option value="60">60 images</option><option value="120">120 images</option><option value="240">240 images</option><option value="all">All images</option></select>
   </div>
+  <div class="bulkbar">
+   <label><input type="checkbox" id="selectAll"> Select visible</label><span id="bulkCount">0 selected</span>
+   <select id="destinationAlbum"><option value="">Choose destination album…</option></select>
+   <button class="primary" id="moveBtn">Move selected</button><button id="addToAlbumBtn">Add selected</button><button class="danger" id="removeBtn">Remove from album</button>
+  </div>
+  <div class="notice" id="albumHint">Select images, choose an album, then move or add them.</div>
+  <div class="gallery" id="gallery"></div>
+  <div style="text-align:center;margin-top:14px"><button id="loadMoreBtn" class="hidden">Load more</button></div>
+ </section>
 
-  <section id="summaryPanel" class="hidden">
-   <div class="heading"><h2>Library Summary</h2><button id="backBtn">← Gallery</button></div>
-   <div class="stats">
-    <div class="stat"><b id="formatCount">0</b><span>Image formats</span></div>
-    <div class="stat"><b id="membershipCount">0</b><span>Album memberships</span></div>
-    <div class="stat"><b id="storedCount">0</b><span>Saved records</span></div>
-    <div class="stat"><b id="summarySize">0 B</b><span>Storage size</span></div>
-   </div>
-  </section>
-
-  <section id="galleryPanel">
-   <div class="heading"><h2 id="viewTitle">All Images</h2><span id="viewCount" style="color:var(--muted)">0 images</span></div>
-   <div class="filters">
-    <input type="search" id="searchInput" placeholder="Search name or folder…">
-    <select id="sortSelect">
-     <option value="newest">Newest added</option><option value="name">Name A–Z</option>
-     <option value="nameDesc">Name Z–A</option><option value="size">Largest file</option>
-     <option value="sizeAsc">Smallest file</option>
-    </select>
-    <select id="pageSize"><option value="60">60 images</option><option value="120">120 images</option><option value="240">240 images</option><option value="all">All images</option></select>
-   </div>
-   <div class="bulkbar">
-    <label><input type="checkbox" id="selectAll"> Select visible</label>
-    <span id="bulkCount">0 selected</span>
-    <select id="destinationAlbum"><option value="">Choose destination album…</option></select>
-    <button class="primary" id="moveBtn">Move selected</button>
-    <button id="addToAlbumBtn">Add selected</button>
-    <button class="danger" id="removeBtn">Remove from album</button>
-   </div>
-   <div class="notice" id="albumHint">Select images, choose an album, then move or add them. Moving images only changes album membership.</div>
-   <div class="gallery" id="gallery"></div>
-   <div style="text-align:center;margin-top:14px"><button id="loadMoreBtn" class="hidden">Load more</button></div>
-  </section>
- </main>
+ <section id="historyPanel" class="hidden">
+  <div class="heading"><h2>📚 Folder History</h2></div>
+  <div class="notice">Saved folders are checked when the app opens. Rescanning requires browser permission. Removing a folder from history does not delete its images or files.</div>
+  <div class="bulkbar"><button class="primary" id="historyAddBtn">＋ Add Folder</button><button id="rescanAllBtn">↻ Rescan All</button><button id="refreshHistoryBtn">Refresh History</button></div>
+  <div id="historyList" class="history-list"></div>
+ </section>
+</main>
 </div>
 
 <input id="folderInput" type="file" webkitdirectory directory multiple hidden>
@@ -215,9 +151,8 @@ progress{width:100%;height:10px;accent-color:var(--accent);margin-top:8px}
  <div class="viewer-top">
   <button id="closeViewer">✕</button><button id="prevBtn">‹</button><button id="nextBtn">›</button>
   <span class="file-title" id="viewerTitle">Image</span>
-  <button id="zoomOut">−</button><button id="zoomReset">Fit</button><button id="zoomIn">＋</button>
-  <span id="zoomLabel">100%</span><button id="rotateBtn">↻ Rotate</button>
-  <button id="editBtn">✎ Edit</button><button id="downloadBtn" class="primary">Download</button>
+  <button id="zoomOut">−</button><button id="zoomReset">Fit</button><button id="zoomIn">＋</button><span id="zoomLabel">100%</span>
+  <button id="rotateBtn">↻ Rotate</button><button id="editBtn">✎ Edit</button><button id="downloadBtn" class="primary">Download</button>
  </div>
  <div class="viewer-body" id="viewerBody"><img id="viewerImage" alt="Selected image" draggable="false"></div>
  <div class="edit-panel hidden" id="editPanel">
@@ -228,840 +163,368 @@ progress{width:100%;height:10px;accent-color:var(--accent);margin-top:8px}
   <label><span>Sepia <b id="sepiaVal">0%</b></span><input id="sepia" type="range" min="0" max="100" value="0"></label>
   <button id="resetEditBtn">Reset edits</button>
  </div>
- <div class="viewer-footer"><span id="viewerDetails"></span><span id="viewerPosition"></span></div>
+ <div class="viewer-footer"><span id="viewerDetails"></span><span id="viewerPosition"></span><span>Pinch to zoom · Drag to pan</span></div>
 </div>
 <div id="toast" role="status"></div>
 
 <script>
 "use strict";
+const DB_NAME="LuminaVaultPro_Android_v5",DB_VERSION=1;
+const IMAGES_STORE="images",ALBUMS_STORE="albums",META_STORE="meta";
+const IMAGE_EXT=/\.(jpe?g|png|gif|webp|bmp|avif|tiff?|heic|heif|svg|jfif)$/i;
+const $=id=>document.getElementById(id);
+const app={db:null,images:[],albums:[],folders:[],view:"all",selected:new Set(),folderHandle:null,busy:false,viewerIds:[],viewerIndex:0,zoom:1,rotation:0,renderLimit:60,panX:0,panY:0,worker:null,workerReady:false,workerJobs:new Map(),jobSeq:0};
 
-const DB_NAME = "LuminaVaultPro_Android_v5";
-const DB_VERSION = 1;
-const IMAGES_STORE = "images";
-const ALBUMS_STORE = "albums";
-const META_STORE = "meta";
-const IMAGE_EXT = /\.(jpe?g|png|gif|webp|bmp|avif|tiff?|heic|heif|svg|jfif)$/i;
+function uid(){return crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+"-"+Math.random().toString(36).slice(2)}
+function isImage(f){return !!f&&((f.type||"").toLowerCase().startsWith("image/")||IMAGE_EXT.test(f.name||""))}
+function formatSize(n){n=Number(n)||0;if(n<1024)return n+" B";if(n<1048576)return(n/1024).toFixed(1)+" KB";if(n<1073741824)return(n/1048576).toFixed(2)+" MB";return(n/1073741824).toFixed(2)+" GB"}
+function typeOf(i){return(i.type||(i.name||"").split(".").pop()||"image").toLowerCase()}
+function toast(msg){const el=$("toast");el.textContent=msg;el.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),3500)}
+function progress(status,current=0,total=0,detail=""){$("scanStatus").textContent=status;$("progressCount").textContent=total?`${current} / ${total}`:"";$("scanProgress").max=total||100;$("scanProgress").value=total?current:0;$("scanFilename").textContent=detail}
+function pauseUI(){return new Promise(r=>setTimeout(r,0))}
+function openDB(){return new Promise((resolve,reject)=>{const r=indexedDB.open(DB_NAME,DB_VERSION);r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains(IMAGES_STORE))db.createObjectStore(IMAGES_STORE,{keyPath:"id"});if(!db.objectStoreNames.contains(ALBUMS_STORE))db.createObjectStore(ALBUMS_STORE,{keyPath:"id"});if(!db.objectStoreNames.contains(META_STORE))db.createObjectStore(META_STORE,{keyPath:"key"})};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
+function dbAll(store){return new Promise((resolve,reject)=>{const r=app.db.transaction(store,"readonly").objectStore(store).getAll();r.onsuccess=()=>resolve(r.result||[]);r.onerror=()=>reject(r.error)})}
+function dbGet(store,key){return new Promise((resolve,reject)=>{const r=app.db.transaction(store,"readonly").objectStore(store).get(key);r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error)})}
+function dbPut(store,obj){return new Promise((resolve,reject)=>{const tx=app.db.transaction(store,"readwrite");tx.objectStore(store).put(obj);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error)})}
+function dbDelete(store,key){return new Promise((resolve,reject)=>{const tx=app.db.transaction(store,"readwrite");tx.objectStore(store).delete(key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)})}
+function dbClear(store){return new Promise((resolve,reject)=>{const tx=app.db.transaction(store,"readwrite");tx.objectStore(store).clear();tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)})}
+async function saveMeta(key,value){return dbPut(META_STORE,{key,value})}
+async function readMeta(key){const r=await dbGet(META_STORE,key);return r?r.value:null}
+function releaseImageURL(i){if(i?.url&&i.url.startsWith("blob:"))try{URL.revokeObjectURL(i.url)}catch(_){}}
+function makeLive(r){const c={...r};c.albumIds=Array.isArray(c.albumIds)?c.albumIds:[];const blob=c.thumbnail instanceof Blob?c.thumbnail:(c.blob instanceof Blob?c.blob:null);c.url=blob?URL.createObjectURL(blob):"";return c}
+function serial(i){const c={...i};delete c.url;delete c.file;delete c.blob;return c}
+function hasImage(a,i){return !!a&&((a.itemIds||[]).includes(i.id)||(!!i.path&&(a.itemPaths||[]).includes(i.path)))}
+function albumById(id){return app.albums.find(a=>a.id===id)}
+function normalizeFolder(f){return{id:f.id||uid(),name:f.name||"Folder",path:f.path||f.name||"Folder",handle:f.handle||null,addedAt:f.addedAt||Date.now(),lastScanned:f.lastScanned||0,lastStatus:f.lastStatus||"Not scanned yet"}}
 
-const $ = id => document.getElementById(id);
-const app = {
- db:null, images:[], albums:[], view:"all", selected:new Set(),
- folderHandle:null, busy:false, viewerIds:[], viewerIndex:0,
- zoom:1, rotation:0, editOpen:false, renderLimit:60, panX:0, panY:0
-};
-
-function uid(){
- return crypto.randomUUID ? crypto.randomUUID() :
-  Date.now().toString(36)+"-"+Math.random().toString(36).slice(2);
+/* Optional thumbnail worker. It processes images independently in parallel.
+   Directory/File System Access remains on the main thread. */
+function startWorker(){
+ if(!window.Worker||!window.Blob||!window.URL.createObjectURL)return;
+ const code=`
+ self.onmessage=async e=>{
+  const {id,file,max}=e.data;
+  try{
+   if(!self.createImageBitmap||!self.OffscreenCanvas)throw Error("Worker canvas unsupported");
+   const bitmap=await createImageBitmap(file);
+   const scale=Math.min(1,max/Math.max(bitmap.width,bitmap.height));
+   const canvas=new OffscreenCanvas(Math.max(1,Math.round(bitmap.width*scale)),Math.max(1,Math.round(bitmap.height*scale)));
+   const ctx=canvas.getContext("2d");ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();
+   const blob=await canvas.convertToBlob({type:"image/jpeg",quality:.78});
+   self.postMessage({id,blob});
+  }catch(error){self.postMessage({id,error:String(error&&error.message||error)})}
+ };`;
+ try{const url=URL.createObjectURL(new Blob([code],{type:"text/javascript"}));const w=new Worker(url);URL.revokeObjectURL(url);w.onmessage=e=>{const job=app.workerJobs.get(e.data.id);if(!job)return;app.workerJobs.delete(e.data.id);e.data.error?job.reject(Error(e.data.error)):job.resolve(e.data.blob||null)};w.onerror=()=>{app.workerReady=false;try{w.terminate()}catch(_){}app.worker=null;for(const j of app.workerJobs.values())j.reject(Error("Worker failed"));app.workerJobs.clear()};app.worker=w;app.workerReady=true}catch(e){app.worker=null;app.workerReady=false}
 }
-function isImage(file){
- return !!file && (
-  (typeof file.type==="string" && file.type.toLowerCase().startsWith("image/")) ||
-  IMAGE_EXT.test(file.name || "")
- );
-}
-function formatSize(bytes){
- bytes=Number(bytes)||0;
- if(bytes<1024)return bytes+" B";
- if(bytes<1048576)return (bytes/1024).toFixed(1)+" KB";
- if(bytes<1073741824)return (bytes/1048576).toFixed(2)+" MB";
- return (bytes/1073741824).toFixed(2)+" GB";
-}
-function typeOf(image){
- return (image.type || (image.name||"").split(".").pop() || "image").toLowerCase();
-}
-function toast(message){
- const el=$("toast");
- el.textContent=message;
- el.classList.add("show");
- clearTimeout(toast.timer);
- toast.timer=setTimeout(()=>el.classList.remove("show"),3200);
-}
-function progress(status,current=0,total=0,filename=""){
- $("scanStatus").textContent=status;
- $("progressCount").textContent=total ? `${current} / ${total}` : "";
- $("scanProgress").max=total || 100;
- $("scanProgress").value=total ? current : 0;
- $("scanFilename").textContent=filename || "";
-}
-function pauseUI(){
- return new Promise(resolve=>setTimeout(resolve,0));
-}
-
-/* IndexedDB */
-function openDatabase(){
- return new Promise((resolve,reject)=>{
-  const request=indexedDB.open(DB_NAME,DB_VERSION);
-  request.onupgradeneeded=()=>{
-   const db=request.result;
-   if(!db.objectStoreNames.contains(IMAGES_STORE)){
-    const store=db.createObjectStore(IMAGES_STORE,{keyPath:"id"});
-    store.createIndex("path","path",{unique:false});
-   }
-   if(!db.objectStoreNames.contains(ALBUMS_STORE)){
-    db.createObjectStore(ALBUMS_STORE,{keyPath:"id"});
-   }
-   if(!db.objectStoreNames.contains(META_STORE)){
-    db.createObjectStore(META_STORE,{keyPath:"key"});
-   }
-  };
-  request.onsuccess=()=>resolve(request.result);
-  request.onerror=()=>reject(request.error || new Error("IndexedDB could not open"));
-  request.onblocked=()=>console.warn("Database upgrade blocked");
- });
-}
-function dbAll(storeName){
- return new Promise((resolve,reject)=>{
-  const request=app.db.transaction(storeName,"readonly").objectStore(storeName).getAll();
-  request.onsuccess=()=>resolve(request.result||[]);
-  request.onerror=()=>reject(request.error);
- });
-}
-function dbGet(storeName,key){
- return new Promise((resolve,reject)=>{
-  const request=app.db.transaction(storeName,"readonly").objectStore(storeName).get(key);
-  request.onsuccess=()=>resolve(request.result||null);
-  request.onerror=()=>reject(request.error);
- });
-}
-function dbPut(storeName,record){
- return new Promise((resolve,reject)=>{
-  const tx=app.db.transaction(storeName,"readwrite");
-  tx.objectStore(storeName).put(record);
-  tx.oncomplete=()=>resolve();
-  tx.onerror=()=>reject(tx.error || new Error("Save failed"));
-  tx.onabort=()=>reject(tx.error || new Error("Save aborted"));
- });
-}
-function dbDelete(storeName,key){
- return new Promise((resolve,reject)=>{
-  const tx=app.db.transaction(storeName,"readwrite");
-  tx.objectStore(storeName).delete(key);
-  tx.oncomplete=()=>resolve();
-  tx.onerror=()=>reject(tx.error);
- });
-}
-async function saveMeta(key,value){
- await dbPut(META_STORE,{key,value});
-}
-async function readMeta(key){
- const row=await dbGet(META_STORE,key);
- return row ? row.value : null;
-}
-
-/* Saved blobs and preview URLs */
-function clearObjectURLs(){
- for(const image of app.images){
-  if(image.url && image.url.startsWith("blob:")){
-   try{URL.revokeObjectURL(image.url)}catch(_){}
-  }
+async function makeThumbnail(file){
+ if(app.workerReady&&app.worker){
+  try{const id=++app.jobSeq;const p=new Promise((resolve,reject)=>app.workerJobs.set(id,{resolve,reject}));app.worker.postMessage({id,file,max:320});const result=await p;if(result)return result}catch(e){console.warn("Worker thumbnail fallback",e)}
  }
+ try{
+  if("createImageBitmap"in window){const bmp=await createImageBitmap(file);const scale=Math.min(1,320/Math.max(bmp.width,bmp.height));const c=document.createElement("canvas");c.width=Math.max(1,Math.round(bmp.width*scale));c.height=Math.max(1,Math.round(bmp.height*scale));c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);bmp.close();return await new Promise(resolve=>c.toBlob(resolve,"image/jpeg",.78))}
+ }catch(e){console.warn("Canvas thumbnail failed",e)}
+ return null
 }
-function makeLiveRecord(record){
- const copy={...record};
- copy.albumIds=Array.isArray(copy.albumIds)?copy.albumIds:[];
- copy.url=copy.blob instanceof Blob ? URL.createObjectURL(copy.blob) : "";
- return copy;
-}
-async function loadSavedLibrary(){
- progress("Opening saved image library…");
- const [records,albums]=await Promise.all([dbAll(IMAGES_STORE),dbAll(ALBUMS_STORE)]);
- clearObjectURLs();
- app.images=records.map(makeLiveRecord);
- app.albums=albums.map(album=>({
-  id:album.id || uid(),name:album.name || "Untitled Album",
-  createdAt:album.createdAt || Date.now(),
-  itemIds:Array.isArray(album.itemIds)?album.itemIds:[],
-  itemPaths:Array.isArray(album.itemPaths)?album.itemPaths:[]
- }));
+async function loadLibrary(){
+ const [records,albums,meta]=await Promise.all([dbAll(IMAGES_STORE),dbAll(ALBUMS_STORE),dbAll(META_STORE)]);
+ app.images.forEach(releaseImageURL);
+ app.images=records.map(makeLive);
+ app.albums=albums.map(a=>({id:a.id||uid(),name:a.name||"Untitled Album",createdAt:a.createdAt||Date.now(),itemIds:Array.isArray(a.itemIds)?a.itemIds:[],itemPaths:Array.isArray(a.itemPaths)?a.itemPaths:[]}));
+ const history=meta.find(m=>m.key==="folderHistory");app.folders=Array.isArray(history?.value)?history.value.map(normalizeFolder):[];
  app.folderHandle=await readMeta("lastFolderHandle").catch(()=>null);
- for(const image of app.images){
-  const ids=app.albums.filter(a=>hasImage(a,image)).map(a=>a.id);
-  image.albumIds=[...new Set([...(image.albumIds||[]),...ids])];
- }
- renderAll();
- progress("Saved library ready",app.images.length,app.images.length,
-  `${app.images.length} image(s) loaded from browser storage.`);
+ renderAll();progress("Saved gallery ready",app.images.length,app.images.length,`${app.images.length} saved image record(s). Background folder checks will start shortly.`);
 }
 
-/* Albums */
-function albumById(id){return app.albums.find(album=>album.id===id);}
-function hasImage(album,image){
- return !!album && (
-  (album.itemIds||[]).includes(image.id) ||
-  (!!image.path && (album.itemPaths||[]).includes(image.path))
- );
+/* Folder history */
+async function saveFolderHistory(){await saveMeta("folderHistory",app.folders.map(f=>({...f})));renderHistory()}
+async function rememberFolder(handle){
+ let folder=app.folders.find(f=>f.handle&&f.handle.name===handle.name);
+ if(folder){folder.handle=handle;folder.name=handle.name;folder.path=handle.name;folder.lastStatus="Folder selected"}
+ else{folder={id:uid(),name:handle.name||"Folder",path:handle.name||"Folder",handle,addedAt:Date.now(),lastScanned:0,lastStatus:"Folder selected"};app.folders.unshift(folder)}
+ app.folderHandle=handle;
+ try{await saveMeta("lastFolderHandle",handle)}catch(e){console.warn("Could not persist folder handle",e)}
+ await saveFolderHistory();return folder
 }
-async function createAlbum(){
- const input=prompt("Name your new album:");
- if(input===null)return;
- const name=input.trim();
- if(!name){toast("Please enter an album name.");return;}
- if(app.albums.some(a=>a.name.toLowerCase()===name.toLowerCase())){
-  toast("An album with that name already exists.");return;
- }
- const album={id:uid(),name,createdAt:Date.now(),itemIds:[],itemPaths:[]};
- try{
-  await dbPut(ALBUMS_STORE,album);
-  app.albums.push(album);app.view=album.id;app.selected.clear();
-  renderAll();toast("Album created.");
- }catch(error){toast("Could not save album: "+error.message);}
-}
-async function renameAlbum(id){
- const album=albumById(id);if(!album)return;
- const input=prompt("Rename album:",album.name);
- if(input===null)return;
- const name=input.trim();
- if(!name){toast("Album name cannot be empty.");return;}
- if(app.albums.some(a=>a.id!==id && a.name.toLowerCase()===name.toLowerCase())){
-  toast("That album name is already in use.");return;
- }
- album.name=name;await dbPut(ALBUMS_STORE,album);renderAll();toast("Album renamed.");
-}
-async function deleteAlbum(id){
- const album=albumById(id);if(!album)return;
- if(!confirm(`Delete album "${album.name}"? Images in your library will not be deleted.`))return;
- try{
-  await dbDelete(ALBUMS_STORE,id);
-  app.albums=app.albums.filter(a=>a.id!==id);
-  for(const image of app.images)image.albumIds=(image.albumIds||[]).filter(albumId=>albumId!==id);
-  if(app.view===id)app.view="all";
-  renderAll();toast("Album deleted. Images remain saved.");
- }catch(error){toast("Could not delete album: "+error.message);}
-}
-function serialRecord(image){
- const copy={...image};delete copy.url;return copy;
-}
-async function addMembership(image,album){
- if(!image||!album||hasImage(album,image))return false;
- if(!album.itemIds.includes(image.id))album.itemIds.push(image.id);
- if(image.path&&!album.itemPaths.includes(image.path))album.itemPaths.push(image.path);
- image.albumIds=[...new Set([...(image.albumIds||[]),album.id])];
- await Promise.all([dbPut(ALBUMS_STORE,album),dbPut(IMAGES_STORE,serialRecord(image))]);
- return true;
-}
-async function removeMembership(image,album){
- if(!image||!album)return;
- album.itemIds=album.itemIds.filter(id=>id!==image.id);
- album.itemPaths=album.itemPaths.filter(path=>path!==image.path);
- image.albumIds=(image.albumIds||[]).filter(id=>id!==album.id);
- await Promise.all([dbPut(ALBUMS_STORE,album),dbPut(IMAGES_STORE,serialRecord(image))]);
-}
-async function moveSelected(mode){
- const ids=[...app.selected];
- const destination=albumById($("destinationAlbum").value);
- if(!ids.length){toast("Select images first.");return;}
- if(!destination){toast("Choose a destination album from the dropdown.");return;}
- const source=albumById(app.view);
- let added=0,removed=0,already=0;
- try{
-  for(const id of ids){
-   const image=app.images.find(item=>item.id===id);if(!image)continue;
-   if(await addMembership(image,destination))added++;else already++;
-   if(mode==="move"&&source&&source.id!==destination.id&&hasImage(source,image)){
-    await removeMembership(image,source);removed++;
-   }
-  }
-  app.selected.clear();renderAll();
-  toast(mode==="move"
-   ?`Moved: ${removed} removed from source; ${added} added to destination.`
-   :`Added ${added} image(s); ${already} were already in that album.`);
- }catch(error){toast("Album update failed: "+error.message);}
-}
-async function removeSelectedFromAlbum(){
- const album=albumById(app.view);
- if(!album){toast("Open a custom album first.");return;}
- const ids=[...app.selected];
- if(!ids.length){toast("Select images first.");return;}
- try{
-  for(const id of ids){
-   const image=app.images.find(item=>item.id===id);
-   if(image)await removeMembership(image,album);
-  }
-  app.selected.clear();renderAll();
-  toast("Removed from album. Original images are still saved.");
- }catch(error){toast("Could not update album: "+error.message);}
-}
-
-/* Import and scan */
-function findRecord(path,file){
- return app.images.find(image=>
-  image.path===path&&Number(image.size)===Number(file.size)&&
-  Number(image.lastModified||0)===Number(file.lastModified||0)
- );
-}
-async function importFiles(entries,rootName){
- if(app.busy){toast("Please wait for the current scan to finish.");return;}
- app.busy=true;$("scanBtn").disabled=true;$("browseBtn").disabled=true;
- let added=0,updated=0,existing=0,failed=0;
- const total=entries.length;
- try{
-  progress("Preparing images…",0,total,"Starting scan");
-  for(let index=0;index<total;index++){
-   const entry=entries[index];
-   try{
-    const file=entry.file||await entry.handle.getFile();
-    if(!isImage(file)){existing++;continue;}
-    const relative=String(entry.path||file.name).replace(/^\/+/,"");
-    const path=rootName+"/"+relative;
-    progress("Reading image…",index+1,total,file.name);
-    const same=findRecord(path,file);
-    if(same){
-     existing++;
-    }else{
-     const prior=app.images.find(image=>image.path===path);
-     const blob=file.slice(0,file.size,file.type||"application/octet-stream");
-     const record={
-      id:prior?prior.id:uid(),name:file.name,path,size:file.size,
-      type:file.type||"",lastModified:file.lastModified||0,
-      addedAt:prior?prior.addedAt:Date.now(),blob,
-      albumIds:prior?[...(prior.albumIds||[])]:[],sourceFolder:rootName
-     };
-     await dbPut(IMAGES_STORE,record);
-     const live=makeLiveRecord(record);
-     if(prior){
-      const at=app.images.findIndex(image=>image.id===prior.id);
-      if(at>=0){
-       if(app.images[at].url)URL.revokeObjectURL(app.images[at].url);
-       app.images[at]=live;
-      }else app.images.push(live);
-      updated++;
-     }else{app.images.push(live);added++;}
-     for(const album of app.albums){
-      if(album.itemPaths.includes(path)&&!album.itemIds.includes(record.id)){
-       album.itemIds.push(record.id);
-       if(!live.albumIds.includes(album.id))live.albumIds.push(album.id);
-       await dbPut(ALBUMS_STORE,album);
-      }
-     }
-    }
-   }catch(error){console.error("Image import failed:",entry.path,error);failed++;}
-   if(index%5===0||index===total-1){
-    renderStats();renderGallery();await pauseUI();
-   }
-  }
-  renderAll();
-  progress("Scan complete",total,total,
-   `New: ${added} · Updated: ${updated} · Already saved: ${existing} · Failed: ${failed}`);
-  toast(`Scan complete: ${added} new, ${updated} updated, ${existing} already saved.`);
- }catch(error){
-  console.error(error);progress("Scan stopped",0,total,error.message);
-  toast("Scan error: "+error.message);
- }finally{
-  app.busy=false;$("scanBtn").disabled=false;$("browseBtn").disabled=false;
- }
-}
+async function updateFolder(id,status,scanned=false){const f=app.folders.find(x=>x.id===id);if(!f)return;f.lastStatus=status;if(scanned)f.lastScanned=Date.now();await saveFolderHistory()}
 async function browseFolder(){
  if(app.busy)return;
  if(typeof window.showDirectoryPicker==="function"){
-  try{
-   const handle=await window.showDirectoryPicker({mode:"read"});
-   app.folderHandle=handle;
-   try{await saveMeta("lastFolderHandle",handle);}catch(e){console.warn("Folder handle could not be saved",e);}
-   await scanHandle(handle);return;
-  }catch(error){
-   if(error&&error.name==="AbortError")return;
-   console.warn("Directory picker unavailable; using file input",error);
-  }
+  try{const handle=await window.showDirectoryPicker({mode:"read"});const f=await rememberFolder(handle);toast("Saved folder: "+f.name);await scanHandle(handle,true,f.id);return}
+  catch(e){if(e.name==="AbortError")return;console.warn("Directory picker unavailable",e)}
  }
- $("folderInput").click();
+ $("folderInput").click()
 }
-async function scanHandle(handle){
- if(app.busy)return;
+async function rescanFolder(id){
+ const f=app.folders.find(x=>x.id===id);if(!f)return;
+ if(!f.handle){toast("Choose this folder again using Add Folder to restore access.");return}
+ app.folderHandle=f.handle;await scanHandle(f.handle,true,f.id)
+}
+async function removeFolder(id){
+ const f=app.folders.find(x=>x.id===id);if(!f)return;
+ if(!confirm(`Remove "${f.name}" from folder history?\n\nSaved images and original files will not be deleted.`))return;
+ app.folders=app.folders.filter(x=>x.id!==id);
+ if(app.folderHandle&&app.folderHandle.name===f.name){app.folderHandle=null;await dbDelete(META_STORE,"lastFolderHandle").catch(()=>{})}
+ await saveFolderHistory();toast("Folder removed from history.")
+}
+async function rescanAll(){
+ if(app.busy){toast("A scan is already running.");return}
+ if(!app.folders.length){toast("No saved folders.");return}
+ for(const f of app.folders){if(f.handle)await scanHandle(f.handle,false,f.id);else await updateFolder(f.id,"Select folder again to restore access")}
+ toast("Rescan All finished.")
+}
+async function scanHandle(handle,askPermission=false,folderId=null){
+ if(app.busy||!handle)return;
  try{
   if(handle.queryPermission){
-   let permission=await handle.queryPermission({mode:"read"});
-   if(permission!=="granted"&&handle.requestPermission)permission=await handle.requestPermission({mode:"read"});
-   if(permission!=="granted"){toast("Folder permission was not granted. Please browse the folder again.");return;}
+   let p=await handle.queryPermission({mode:"read"});
+   if(p!=="granted"&&askPermission&&handle.requestPermission)p=await handle.requestPermission({mode:"read"});
+   if(p!=="granted"){if(folderId)await updateFolder(folderId,"Permission required — select folder again");progress("Folder permission needed",0,0,"Saved gallery remains available. Select the folder again to refresh.");return}
   }
-  progress("Finding images in folder…");
   const entries=[];
+  progress("Finding images…",0,0,handle.name);
   async function walk(dir,prefix=""){
-   for await(const entry of dir.values()){
-    if(entry.name.startsWith("."))continue;
-    const rel=prefix?prefix+"/"+entry.name:entry.name;
-    if(entry.kind==="file"&&IMAGE_EXT.test(entry.name))entries.push({handle:entry,path:rel});
-    else if(entry.kind==="directory")await walk(entry,rel);
+   for await(const ent of dir.values()){
+    if(ent.name.startsWith("."))continue;
+    const rel=prefix?prefix+"/"+ent.name:ent.name;
+    if(ent.kind==="file"&&IMAGE_EXT.test(ent.name))entries.push({handle:ent,path:rel,folderName:handle.name});
+    else if(ent.kind==="directory")await walk(ent,rel)
    }
   }
   await walk(handle);
-  await importFiles(entries,handle.name||"Folder");
- }catch(error){
-  console.error(error);toast("Folder scan failed: "+error.message);
-  progress("Folder scan failed",0,0,"Try Browse Folder again.");
- }
-}
-async function scanAgain(){
- if(app.folderHandle)await scanHandle(app.folderHandle);
- else{toast("Choose your folder. The app will remember saved images and add only new files.");$("folderInput").click();}
+  await importEntries(entries,handle.name||"Folder",folderId,handle)
+ }catch(e){console.error(e);if(folderId)await updateFolder(folderId,"Scan failed: "+e.message);progress("Scan failed",0,0,e.message);toast("Folder scan failed: "+e.message)}
 }
 async function handleFolderInput(fileList){
- const files=Array.from(fileList||[]).filter(isImage);
- if(!files.length){toast("No supported images found. Choose a folder containing image files.");return;}
- const firstPath=files[0].webkitRelativePath||files[0].name;
- const rootName=firstPath.includes("/")?firstPath.split("/")[0]:"Imported Folder";
- const entries=files.map(file=>{
-  const full=file.webkitRelativePath||file.name,parts=full.split("/");
-  return{file,path:parts.length>1?parts.slice(1).join("/"):file.name};
- });
- await importFiles(entries,rootName);
+ const files=Array.from(fileList||[]).filter(isImage);if(!files.length){toast("No images found.");return}
+ const first=files[0].webkitRelativePath||files[0].name,root=first.includes("/")?first.split("/")[0]:"Selected Folder";
+ let f=app.folders.find(x=>x.name===root&&!x.handle);
+ if(!f){f={id:uid(),name:root,path:root,handle:null,addedAt:Date.now(),lastScanned:0,lastStatus:"Selected with file picker; reselect to rescan"};app.folders.unshift(f)}
+ f.lastStatus="Scanning selected folder";await saveFolderHistory();
+ const entries=files.map(file=>{const p=(file.webkitRelativePath||file.name).split("/");return{file,path:p.length>1?p.slice(1).join("/"):file.name,folderName:root}});
+ await importEntries(entries,root,f.id,null)
 }
-async function handleFileInput(fileList){
- const files=Array.from(fileList||[]).filter(isImage);
- if(!files.length){toast("No supported image files selected.");return;}
- await importFiles(files.map(file=>({file,path:file.name})),"Manual Imports");
+async function handleFiles(fileList){
+ const files=Array.from(fileList||[]).filter(isImage);if(!files.length){toast("No image files selected.");return}
+ await importEntries(files.map(file=>({file,path:file.name,folderName:"Manual Imports"})),"Manual Imports",null,null)
 }
+async function importEntries(entries,root,folderId,rootHandle){
+ if(app.busy)return;
+ app.busy=true;$("scanBtn").disabled=$("browseBtn").disabled=true;
+ let added=0,updated=0,unchanged=0,failed=0;const total=entries.length;
+ try{
+  progress("Background scan running",0,total,root);
+  for(let n=0;n<total;n++){
+   const ent=entries[n];
+   try{
+    const file=ent.file||await ent.handle.getFile();if(!isImage(file)){unchanged++;continue}
+    const relative=String(ent.path||file.name).replace(/^\/+/,"");
+    const path=root+"/"+relative;
+    let prior=app.images.find(i=>i.path===path);
+    if(prior&&Number(prior.size)===Number(file.size)&&Number(prior.lastModified||0)===Number(file.lastModified||0)&&prior.thumbnail instanceof Blob){
+     prior.runtimeFolderHandle=rootHandle||prior.runtimeFolderHandle;unchanged++;
+    }else{
+     const thumbnail=await makeThumbnail(file);
+     const record={id:prior?prior.id:uid(),name:file.name,path,relativePath:relative,size:file.size,type:file.type||"",lastModified:file.lastModified||0,addedAt:prior?prior.addedAt:Date.now(),thumbnail,albumIds:prior?[...(prior.albumIds||[])]:[],sourceFolder:root,folderHistoryId:folderId||null};
+     await dbPut(IMAGES_STORE,record);
+     const live=makeLive(record);live.runtimeFolderHandle=rootHandle||null;
+     if(prior){const idx=app.images.findIndex(i=>i.id===prior.id);releaseImageURL(prior);if(idx>=0)app.images[idx]=live;else app.images.push(live);updated++}
+     else{app.images.push(live);added++}
+     for(const album of app.albums){if((album.itemPaths||[]).includes(path)&&!album.itemIds.includes(record.id)){album.itemIds.push(record.id);await dbPut(ALBUMS_STORE,album)}}
+    }
+   }catch(e){console.warn("Could not scan image",ent.path,e);failed++}
+   progress("Background scan running",n+1,total,ent.path||ent.file?.name||"Reading image");
+   if(n%3===0||n===total-1){renderAll();await pauseUI()}
+  }
+  renderAll();
+  const message=`${new Date().toLocaleString()} · New ${added} · Updated ${updated} · Unchanged ${unchanged} · Failed ${failed}`;
+  progress("Scan complete",total,total,message);
+  if(folderId)await updateFolder(folderId,`Scanned: ${added} new, ${updated} updated, ${unchanged} unchanged`,true);
+  toast(`Scan complete: ${added} new, ${updated} updated.`);
+ }catch(e){console.error(e);toast("Scan failed: "+e.message);progress("Scan stopped",0,total,e.message)}
+ finally{app.busy=false;$("scanBtn").disabled=$("browseBtn").disabled=false;renderHistory()}
+}
+async function scanAgain(){if(app.folderHandle){const f=app.folders.find(x=>x.handle&&x.handle.name===app.folderHandle.name);await scanHandle(app.folderHandle,true,f?.id||null)}else{showHistory();toast("Choose a saved folder or tap Add Folder.")}}
+function showHistory(){$("galleryPanel").classList.add("hidden");$("summaryPanel").classList.add("hidden");$("historyPanel").classList.remove("hidden");document.querySelectorAll("[data-view]").forEach(b=>b.classList.remove("active"));$("historyNav").classList.add("active");renderHistory()}
+function showGallery(){$("historyPanel").classList.add("hidden");$("summaryPanel").classList.add("hidden");$("galleryPanel").classList.remove("hidden");$("historyNav").classList.remove("active");renderAll()}
+
+/* Resolve a file from the correct folder handle, not just the most recently selected folder. */
+async function originalFile(image){
+ let handle=image.runtimeFolderHandle||null;
+ if(!handle&&image.folderHistoryId)handle=app.folders.find(f=>f.id===image.folderHistoryId)?.handle||null;
+ if(!handle&&app.folderHandle&&image.sourceFolder===app.folderHandle.name)handle=app.folderHandle;
+ if(!handle||!image.relativePath)return null;
+ try{
+  if(handle.queryPermission&&await handle.queryPermission({mode:"read"})!=="granted")return null;
+  const parts=image.relativePath.split("/").filter(Boolean);let dir=handle;
+  for(let n=0;n<parts.length-1;n++)dir=await dir.getDirectoryHandle(parts[n]);
+  const fh=await dir.getFileHandle(parts[parts.length-1]),file=await fh.getFile();
+  return Number(file.size)===Number(image.size)?file:null;
+ }catch(_){return null}
+}
+async function imageSourceBlob(image){const file=await originalFile(image);if(file)return file;if(image.blob instanceof Blob)return image.blob;if(image.thumbnail instanceof Blob)return image.thumbnail;return null}
+
+/* Albums */
+async function createAlbum(){
+ const input=prompt("Name your new album:");if(input===null)return;const name=input.trim();
+ if(!name){toast("Enter an album name.");return}
+ if(app.albums.some(a=>a.name.toLowerCase()===name.toLowerCase())){toast("Album already exists.");return}
+ const a={id:uid(),name,createdAt:Date.now(),itemIds:[],itemPaths:[]};await dbPut(ALBUMS_STORE,a);app.albums.push(a);app.view=a.id;app.selected.clear();renderAll();toast("Album created.")
+}
+async function renameAlbum(id){const a=albumById(id);if(!a)return;const n=prompt("Rename album:",a.name);if(n===null)return;if(!n.trim())return;if(app.albums.some(x=>x.id!==id&&x.name.toLowerCase()===n.trim().toLowerCase())){toast("That album already exists.");return}a.name=n.trim();await dbPut(ALBUMS_STORE,a);renderAll()}
+async function deleteAlbum(id){const a=albumById(id);if(!a||!confirm(`Delete album "${a.name}"? Images will remain saved.`))return;await dbDelete(ALBUMS_STORE,id);app.albums=app.albums.filter(x=>x.id!==id);app.images.forEach(i=>i.albumIds=(i.albumIds||[]).filter(x=>x!==id));if(app.view===id)app.view="all";renderAll()}
+async function addMembership(i,a){if(!i||!a||hasImage(a,i))return false;a.itemIds.push(i.id);if(i.path&&!a.itemPaths.includes(i.path))a.itemPaths.push(i.path);i.albumIds=[...new Set([...(i.albumIds||[]),a.id])];await Promise.all([dbPut(ALBUMS_STORE,a),dbPut(IMAGES_STORE,serial(i))]);return true}
+async function removeMembership(i,a){a.itemIds=a.itemIds.filter(x=>x!==i.id);a.itemPaths=a.itemPaths.filter(x=>x!==i.path);i.albumIds=(i.albumIds||[]).filter(x=>x!==a.id);await Promise.all([dbPut(ALBUMS_STORE,a),dbPut(IMAGES_STORE,serial(i))])}
+async function moveSelected(mode){
+ const ids=[...app.selected],dest=albumById($("destinationAlbum").value),source=albumById(app.view);
+ if(!ids.length){toast("Select images first.");return}if(!dest){toast("Choose a destination album.");return}
+ let added=0,removed=0;for(const id of ids){const i=app.images.find(x=>x.id===id);if(!i)continue;if(await addMembership(i,dest))added++;if(mode==="move"&&source&&source.id!==dest.id&&hasImage(source,i)){await removeMembership(i,source);removed++}}
+ app.selected.clear();renderAll();toast(`Updated albums: ${added} added, ${removed} removed from source.`)
+}
+async function removeSelectedFromAlbum(){const a=albumById(app.view);if(!a){toast("Open an album first.");return}const ids=[...app.selected];for(const id of ids){const i=app.images.find(x=>x.id===id);if(i)await removeMembership(i,a)}app.selected.clear();renderAll();toast("Removed from album; image records remain saved.")}
 
 /* Gallery */
 function currentImages(){
- let list=app.images.slice();
- if(app.view==="recent")list.sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
- else if(app.view!=="all"){
-  const album=albumById(app.view);list=album?list.filter(image=>hasImage(album,image)):[];
- }
- const query=$("searchInput").value.trim().toLowerCase();
- if(query)list=list.filter(image=>
-  (image.name||"").toLowerCase().includes(query)||
-  (image.path||"").toLowerCase().includes(query)||
-  (image.sourceFolder||"").toLowerCase().includes(query)
- );
- const sort=$("sortSelect").value;
- if(sort==="newest")list.sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
- if(sort==="name")list.sort((a,b)=>a.name.localeCompare(b.name));
- if(sort==="nameDesc")list.sort((a,b)=>b.name.localeCompare(a.name));
- if(sort==="size")list.sort((a,b)=>b.size-a.size);
- if(sort==="sizeAsc")list.sort((a,b)=>a.size-b.size);
- return list;
+ let list=app.images.slice();if(app.view==="recent")list.sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));else if(app.view!=="all"){const a=albumById(app.view);list=a?list.filter(i=>hasImage(a,i)):[]}
+ const q=$("searchInput").value.trim().toLowerCase();if(q)list=list.filter(i=>(i.name||"").toLowerCase().includes(q)||(i.path||"").toLowerCase().includes(q));
+ const s=$("sortSelect").value;if(s==="newest")list.sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));if(s==="name")list.sort((a,b)=>a.name.localeCompare(b.name));if(s==="nameDesc")list.sort((a,b)=>b.name.localeCompare(a.name));if(s==="size")list.sort((a,b)=>b.size-a.size);if(s==="sizeAsc")list.sort((a,b)=>a.size-b.size);return list
 }
-function setView(id){
- app.view=id;app.selected.clear();$("searchInput").value="";
- $("summaryPanel").classList.add("hidden");$("galleryPanel").classList.remove("hidden");renderAll();
-}
+function setView(id){app.view=id;app.selected.clear();$("searchInput").value="";showGallery()}
 function renderSidebar(){
- document.querySelectorAll("[data-view]").forEach(button=>button.classList.toggle("active",button.dataset.view===app.view));
- $("albumNav").innerHTML="";
- for(const album of app.albums){
-  const row=document.createElement("div");row.className="album-row";
-  const open=document.createElement("button");open.className="nav"+(app.view===album.id?" active":"");
-  const icon=document.createElement("span");icon.textContent="📁";
-  const name=document.createElement("span");name.textContent=album.name;
-  const count=document.createElement("span");count.className="count";
-  count.textContent=app.images.filter(image=>hasImage(album,image)).length;
-  open.append(icon,name,count);open.addEventListener("click",()=>setView(album.id));
-  const actions=document.createElement("div");actions.className="album-actions";
-  const rename=document.createElement("button");rename.className="small";rename.textContent="✎";rename.title="Rename";
-  rename.addEventListener("click",()=>renameAlbum(album.id));
-  const del=document.createElement("button");del.className="small danger";del.textContent="×";del.title="Delete album";
-  del.addEventListener("click",()=>deleteAlbum(album.id));
-  actions.append(rename,del);row.append(open,actions);$("albumNav").append(row);
+ document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===app.view&&!$("historyPanel").classList.contains("hidden")));
+ const nav=$("albumNav");nav.innerHTML="";
+ for(const a of app.albums){
+  const row=document.createElement("div");row.className="album-row";const open=document.createElement("button");open.className="nav"+(app.view===a.id?" active":"");
+  const icon=document.createElement("span");icon.textContent="📁";const name=document.createElement("span");name.textContent=a.name;const count=document.createElement("span");count.className="count";count.textContent=app.images.filter(i=>hasImage(a,i)).length;open.append(icon,name,count);open.onclick=()=>setView(a.id);
+  const actions=document.createElement("div");actions.className="album-actions";const rename=document.createElement("button");rename.className="small";rename.textContent="✎";rename.title="Rename";rename.onclick=()=>renameAlbum(a.id);const del=document.createElement("button");del.className="small danger";del.textContent="×";del.title="Delete album";del.onclick=()=>deleteAlbum(a.id);actions.append(rename,del);row.append(open,actions);nav.append(row)
  }
- const destination=$("destinationAlbum"),previous=destination.value;
- destination.innerHTML='<option value="">Choose destination album…</option>';
- for(const album of app.albums){
-  const option=document.createElement("option");option.value=album.id;option.textContent=album.name;destination.append(option);
- }
- if(albumById(previous))destination.value=previous;
- else if(albumById(app.view))destination.value=app.view;
+ const dest=$("destinationAlbum"),old=dest.value;dest.innerHTML='<option value="">Choose destination album…</option>';for(const a of app.albums){const o=document.createElement("option");o.value=a.id;o.textContent=a.name;dest.append(o)}if(albumById(old))dest.value=old;else if(albumById(app.view))dest.value=app.view
 }
-function renderStats(){
- $("totalStat").textContent=app.images.length;
- $("allCount").textContent=app.images.length;
- $("albumStat").textContent=app.albums.length;
- $("selectedStat").textContent=app.selected.size;
- $("sizeStat").textContent=formatSize(app.images.reduce((sum,i)=>sum+(i.size||0),0));
- $("bulkCount").textContent=app.selected.size+" selected";
-}
+function renderStats(){$("totalStat").textContent=app.images.length;$("allCount").textContent=app.images.length;$("albumStat").textContent=app.albums.length;$("selectedStat").textContent=app.selected.size;$("sizeStat").textContent=formatSize(app.images.reduce((n,i)=>n+(i.size||0),0));$("bulkCount").textContent=app.selected.size+" selected";$("folderCount").textContent=app.folders.length}
 function renderGallery(){
- const list=currentImages();
- const limit=$("pageSize").value==="all"?list.length:Number($("pageSize").value);
- app.renderLimit=limit;
- const visible=list.slice(0,limit),album=albumById(app.view);
- $("viewTitle").textContent=app.view==="all"?"All Images":app.view==="recent"?"Recently Added":album?album.name:"All Images";
- $("viewCount").textContent=list.length+" image(s)";
- $("removeBtn").disabled=!album;
- $("albumHint").textContent=album
-  ?`Current album: ${album.name}. Move selected removes the images from this album and adds them to the chosen destination.`
-  :"Select images, choose a destination album, then click Move selected or Add selected.";
- $("gallery").innerHTML="";
- if(!visible.length){
-  const empty=document.createElement("div");empty.className="empty";
-  empty.innerHTML="<div style='font-size:28px'>🖼️</div><b>No images to display</b><p>Use Browse Folder or Add Images. Your saved library will load here next time.</p>";
-  $("gallery").append(empty);
+ const list=currentImages(),limit=$("pageSize").value==="all"?list.length:Number($("pageSize").value);app.renderLimit=limit;const visible=list.slice(0,limit),a=albumById(app.view);
+ $("viewTitle").textContent=app.view==="all"?"All Images":app.view==="recent"?"Recently Added":a?a.name:"All Images";$("viewCount").textContent=list.length+" image(s)";$("removeBtn").disabled=!a;
+ $("albumHint").textContent=a?`Album: ${a.name}. Move removes selected images from this album and adds them to the destination.`:"Select images and choose a destination album.";
+ const gallery=$("gallery");gallery.innerHTML="";
+ if(!visible.length){const e=document.createElement("div");e.className="empty";e.innerHTML="<div style='font-size:28px'>🖼️</div><b>No images to display</b><p>Use Browse Folder or Add Images. Saved thumbnails appear here.</p>";gallery.append(e)}
+ for(const i of visible){
+  const card=document.createElement("article");card.className="image-card";const thumb=document.createElement("div");thumb.className="thumb";
+  if(i.url){const img=document.createElement("img");img.loading="lazy";img.alt=i.name;img.src=i.url;thumb.append(img)}else{const msg=document.createElement("span");msg.textContent="No thumbnail";msg.style.color="#bac8d8";thumb.append(msg)}
+  thumb.onclick=()=>openViewer(i.id,list);const check=document.createElement("input");check.type="checkbox";check.className="image-check";check.checked=app.selected.has(i.id);check.onclick=e=>e.stopPropagation();check.onchange=()=>{check.checked?app.selected.add(i.id):app.selected.delete(i.id);renderStats()};thumb.append(check);
+  const info=document.createElement("div");info.className="image-info";const name=document.createElement("div");name.className="image-name";name.textContent=i.name;name.title=i.name;const meta=document.createElement("div");meta.className="image-meta";meta.textContent=formatSize(i.size)+" · "+typeOf(i).toUpperCase();
+  const btns=document.createElement("div");btns.className="card-buttons";const view=document.createElement("button");view.textContent="View";view.onclick=()=>openViewer(i.id,list);const add=document.createElement("button");add.textContent="＋ Album";add.onclick=async()=>{const dest=albumById($("destinationAlbum").value);if(!dest){toast("Choose an album.");return}if(await addMembership(i,dest))toast("Added to "+dest.name);else toast("Already in that album");renderAll()};btns.append(view,add);info.append(name,meta,btns);card.append(thumb,info);gallery.append(card)
  }
- for(const image of visible){
-  const card=document.createElement("article");card.className="image-card";
-  const thumb=document.createElement("div");thumb.className="thumb";
-  const preview=document.createElement("img");preview.loading="lazy";preview.alt=image.name;
-  if(image.url)preview.src=image.url;else preview.alt="No stored preview";
-  preview.onerror=()=>{
-   thumb.innerHTML="";
-   const broken=document.createElement("div");broken.className="broken";
-   broken.textContent="Preview unavailable";thumb.append(broken);
-  };
-  thumb.append(preview);thumb.addEventListener("click",()=>openViewer(image.id,list));
-  const check=document.createElement("input");check.type="checkbox";check.className="image-check";
-  check.checked=app.selected.has(image.id);check.setAttribute("aria-label","Select "+image.name);
-  check.addEventListener("click",event=>event.stopPropagation());
-  check.addEventListener("change",()=>{
-   if(check.checked)app.selected.add(image.id);else app.selected.delete(image.id);
-   renderStats();$("bulkCount").textContent=app.selected.size+" selected";
-  });
-  thumb.append(check);
-  const info=document.createElement("div");info.className="image-info";
-  const name=document.createElement("div");name.className="image-name";name.textContent=image.name;name.title=image.name;
-  const meta=document.createElement("div");meta.className="image-meta";meta.textContent=formatSize(image.size)+" · "+typeOf(image).toUpperCase();
-  const buttons=document.createElement("div");buttons.className="card-buttons";
-  const view=document.createElement("button");view.textContent="View";view.addEventListener("click",()=>openViewer(image.id,list));
-  const add=document.createElement("button");add.textContent="＋ Album";
-  add.addEventListener("click",async()=>{
-   const dest=albumById($("destinationAlbum").value);
-   if(!dest){toast("Choose a destination album from the dropdown.");return;}
-   try{
-    const success=await addMembership(image,dest);renderAll();
-    toast(success?"Image added to "+dest.name:"Image is already in that album.");
-   }catch(error){toast("Album update failed: "+error.message);}
-  });
-  buttons.append(view,add);info.append(name,meta,buttons);card.append(thumb,info);$("gallery").append(card);
- }
- $("loadMoreBtn").classList.toggle("hidden",list.length<=visible.length);
- $("loadMoreBtn").textContent="Load more ("+(list.length-visible.length)+" remaining)";
- $("selectAll").checked=visible.length>0&&visible.every(image=>app.selected.has(image.id));
+ $("loadMoreBtn").classList.toggle("hidden",list.length<=visible.length);$("loadMoreBtn").textContent="Load more ("+(list.length-visible.length)+" remaining)";$("selectAll").checked=visible.length>0&&visible.every(i=>app.selected.has(i.id))
 }
-function renderAll(){renderSidebar();renderStats();renderGallery();}
+function renderHistory(){
+ $("folderCount").textContent=app.folders.length;const list=$("historyList");list.innerHTML="";
+ if(!app.folders.length){const e=document.createElement("div");e.className="empty";e.innerHTML="<div style='font-size:28px'>📂</div><b>No folder history</b><p>Tap Add Folder to save a folder.</p>";list.append(e);return}
+ for(const f of app.folders){
+  const card=document.createElement("article");card.className="folder-card";const head=document.createElement("div");head.className="folder-head";const icon=document.createElement("div");icon.className="folder-icon";icon.textContent="📁";const info=document.createElement("div");info.className="folder-info";
+  const name=document.createElement("div");name.className="folder-name";name.textContent=f.name;const path=document.createElement("div");path.className="folder-path";path.textContent=f.path||f.name;const status=document.createElement("div");status.className="folder-status";
+  status.textContent=(f.handle?"Saved folder handle":"Folder must be selected again")+" · "+(f.lastStatus||"Not scanned yet")+(f.lastScanned?" · Last scan: "+new Date(f.lastScanned).toLocaleString():"");info.append(name,path,status);head.append(icon,info);
+  const btns=document.createElement("div");btns.className="folder-buttons";const scan=document.createElement("button");scan.className="primary";scan.textContent="↻ Rescan";scan.disabled=app.busy||!f.handle;scan.onclick=()=>rescanFolder(f.id);
+  const choose=document.createElement("button");choose.textContent="📂 Select/Add Folder";choose.onclick=browseFolder;const remove=document.createElement("button");remove.className="danger";remove.textContent="Remove";remove.onclick=()=>removeFolder(f.id);btns.append(scan,choose,remove);card.append(head,btns);list.append(card)
+ }
+}
+function renderAll(){renderSidebar();renderStats();renderGallery();renderHistory()}
 
-/* Fullscreen viewer */
-function openViewer(id,list){
- app.viewerIds=list.map(image=>image.id);
- app.viewerIndex=Math.max(0,app.viewerIds.indexOf(id));
- app.zoom=1;app.rotation=0;app.panX=0;app.panY=0;
- resetTouchPointers();
- resetEdits();
- $("viewer").classList.remove("hidden");
- showViewerImage();
+/* Image viewer, zoom, rotate and editing */
+function openViewer(id,list){app.viewerIds=list.map(i=>i.id);app.viewerIndex=Math.max(0,app.viewerIds.indexOf(id));app.zoom=1;app.rotation=0;app.panX=0;app.panY=0;resetEdits();$("viewer").classList.remove("hidden");$("editPanel").classList.add("hidden");showViewerImage()}
+function viewerRecord(){return app.images.find(i=>i.id===app.viewerIds[app.viewerIndex])}
+async function showViewerImage(){
+ const i=viewerRecord();if(!i){closeViewer();return}app.zoom=1;app.rotation=0;app.panX=0;app.panY=0;
+ const img=$("viewerImage");if(img.dataset.tempUrl){URL.revokeObjectURL(img.dataset.tempUrl);delete img.dataset.tempUrl}img.src="";$("viewerTitle").textContent=i.name;$("viewerDetails").textContent=i.path+" · "+formatSize(i.size);$("viewerPosition").textContent=(app.viewerIndex+1)+" / "+app.viewerIds.length;updateViewer();
+ const file=await originalFile(i);if(viewerRecord()?.id!==i.id)return;
+ if(file){const url=URL.createObjectURL(file);img.dataset.tempUrl=url;img.src=url}
+ else if(i.url){img.src=i.url;toast("Showing saved thumbnail. Rescan the source folder for full resolution.")}
+ else toast("Image unavailable. Select its source folder again.")
 }
-function viewerRecord(){return app.images.find(image=>image.id===app.viewerIds[app.viewerIndex]);}
-function showViewerImage(){
- const image=viewerRecord();
- if(!image){closeViewer();return;}
- resetTouchPointers();
- app.zoom=1;app.rotation=0;app.panX=0;app.panY=0;
- $("viewerImage").src=image.url||"";
- $("viewerTitle").textContent=image.name;
- $("viewerDetails").textContent=image.path+" · "+formatSize(image.size);
- $("viewerPosition").textContent=(app.viewerIndex+1)+" / "+app.viewerIds.length;
- updateViewer();
-}
-function closeViewer(){
- resetTouchPointers();
- $("viewer").classList.add("hidden");
- $("viewerImage").src="";
-}
-function navigateViewer(direction){
- if(!app.viewerIds.length)return;
- app.viewerIndex=(app.viewerIndex+direction+app.viewerIds.length)%app.viewerIds.length;
- app.zoom=1;app.rotation=0;app.panX=0;app.panY=0;resetEdits();showViewerImage();
-}
-function updateViewer(){
- $("viewerImage").style.transform=
-  `translate(${app.panX}px,${app.panY}px) scale(${app.zoom}) rotate(${app.rotation}deg)`;
- $("viewerImage").style.filter=filterString();
- $("zoomLabel").textContent=Math.round(app.zoom*100)+"%";
-}
-function filterString(){
- return `brightness(${$("brightness").value}%) contrast(${$("contrast").value}%) saturate(${$("saturation").value}%) grayscale(${$("grayscale").value}%) sepia(${$("sepia").value}%)`;
-}
-function resetEdits(){
- for(const [id,value] of Object.entries({brightness:100,contrast:100,saturation:100,grayscale:0,sepia:0}))$(id).value=value;
- updateEditLabels();
-}
-function updateEditLabels(){
- for(const id of ["brightness","contrast","saturation","grayscale","sepia"])$(id+"Val").textContent=$(id).value+"%";
- updateViewer();
-}
+function closeViewer(){const img=$("viewerImage");if(img.dataset.tempUrl){URL.revokeObjectURL(img.dataset.tempUrl);delete img.dataset.tempUrl}img.src="";$("viewer").classList.add("hidden")}
+function navigateViewer(d){if(!app.viewerIds.length)return;app.viewerIndex=(app.viewerIndex+d+app.viewerIds.length)%app.viewerIds.length;resetEdits();showViewerImage()}
+function filterString(){return`brightness(${$("brightness").value}%) contrast(${$("contrast").value}%) saturate($("saturation").value}%) grayscale(${$("grayscale").value}%) sepia(${$("sepia").value}%)`}
+function updateViewer(){$("viewerImage").style.transform=`translate(${app.panX}px,${app.panY}px) scale(${app.zoom}) rotate(${app.rotation}deg)`;$("viewerImage").style.filter=`brightness(${$("brightness").value}%) contrast(${$("contrast").value}%) saturate(${$("saturation").value}%) grayscale(${$("grayscale").value}%) sepia(${$("sepia").value}%)`;$("zoomLabel").textContent=Math.round(app.zoom*100)+"%"}
+function resetEdits(){for(const [id,v] of Object.entries({brightness:100,contrast:100,saturation:100,grayscale:0,sepia:0}))$(id).value=v;for(const id of ["brightness","contrast","saturation","grayscale","sepia"])$(id+"Val").textContent=$(id).value+"%";updateViewer()}
 async function downloadEdited(){
- const image=viewerRecord();
- if(!image||!(image.blob instanceof Blob)){toast("The saved image data is unavailable. Import the image again.");return;}
- const source=new Image(),url=URL.createObjectURL(image.blob);
- source.onload=()=>{
-  try{
-   const angle=((app.rotation%360)+360)%360,swap=angle===90||angle===270;
-   const canvas=document.createElement("canvas");
-   canvas.width=swap?source.naturalHeight:source.naturalWidth;
-   canvas.height=swap?source.naturalWidth:source.naturalHeight;
-   const ctx=canvas.getContext("2d");ctx.filter=filterString();
-   ctx.translate(canvas.width/2,canvas.height/2);ctx.rotate(angle*Math.PI/180);
-   ctx.drawImage(source,-source.naturalWidth/2,-source.naturalHeight/2);
-   canvas.toBlob(blob=>{
-    URL.revokeObjectURL(url);
-    if(!blob){toast("Could not export edited image.");return;}
-    const outURL=URL.createObjectURL(blob),link=document.createElement("a");
-    link.href=outURL;link.download=image.name.replace(/\.[^.]+$/,"")+"-edited.png";
-    document.body.append(link);link.click();link.remove();
-    setTimeout(()=>URL.revokeObjectURL(outURL),5000);
-    toast("Edited copy downloaded; original unchanged.");
-   },"image/png");
-  }catch(error){URL.revokeObjectURL(url);toast("Editing export failed: "+error.message);}
- };
- source.onerror=()=>{URL.revokeObjectURL(url);toast("Cannot load this image for editing.");};
- source.src=url;
+ const i=viewerRecord();if(!i)return;const blob=await imageSourceBlob(i);if(!blob){toast("Original unavailable. Select the source folder again.");return}
+ const src=new Image(),url=URL.createObjectURL(blob);src.onload=()=>{try{const a=((app.rotation%360)+360)%360,swap=a===90||a===270,c=document.createElement("canvas");c.width=swap?src.naturalHeight:src.naturalWidth;c.height=swap?src.naturalWidth:src.naturalHeight;const ctx=c.getContext("2d");ctx.filter=$("viewerImage").style.filter;ctx.translate(c.width/2,c.height/2);ctx.rotate(a*Math.PI/180);ctx.drawImage(src,-src.naturalWidth/2,-src.naturalHeight/2);c.toBlob(out=>{URL.revokeObjectURL(url);if(!out){toast("Export failed.");return}const u=URL.createObjectURL(out),link=document.createElement("a");link.href=u;link.download=i.name.replace(/\.[^.]+$/,"")+"-edited.png";link.click();setTimeout(()=>URL.revokeObjectURL(u),4000);toast("Edited copy downloaded.")},"image/png")}catch(e){URL.revokeObjectURL(url);toast(e.message)}};src.onerror=()=>{URL.revokeObjectURL(url);toast("Could not load image.")};src.src=url
+}
+const stage=$("viewerBody");let pointers=new Map(),pinchDistance=0,pinchZoom=1,dragX=0,dragY=0,dragPanX=0,dragPanY=0;
+stage.addEventListener("pointerdown",e=>{if(!["touch","pen"].includes(e.pointerType))return;e.preventDefault();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});try{stage.setPointerCapture(e.pointerId)}catch(_){}if(pointers.size===1){dragX=e.clientX;dragY=e.clientY;dragPanX=app.panX;dragPanY=app.panY}if(pointers.size===2){const p=[...pointers.values()];pinchDistance=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);pinchZoom=app.zoom}},{passive:false});
+stage.addEventListener("pointermove",e=>{if(!pointers.has(e.pointerId)||!["touch","pen"].includes(e.pointerType))return;e.preventDefault();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===2){const p=[...pointers.values()],d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);if(pinchDistance)app.zoom=Math.min(6,Math.max(1,pinchZoom*d/pinchDistance));if(app.zoom===1)app.panX=app.panY=0;updateViewer()}else if(pointers.size===1&&app.zoom>1){app.panX=dragPanX+e.clientX-dragX;app.panY=dragPanY+e.clientY-dragY;updateViewer()}},{passive:false});
+function pointerEnd(e){pointers.delete(e.pointerId);pinchDistance=0}stage.addEventListener("pointerup",pointerEnd);stage.addEventListener("pointercancel",pointerEnd);
+stage.addEventListener("wheel",e=>{e.preventDefault();app.zoom=Math.min(6,Math.max(1,app.zoom+(e.deltaY<0?.15:-.15)));if(app.zoom===1)app.panX=app.panY=0;updateViewer()},{passive:false});
+
+/* Full app reset: clears application data, never device originals. */
+async function resetApp(){
+ if(!confirm("RESET LUMINA VAULT PRO?\n\nThis permanently clears saved image records, thumbnails, albums, folder history, and saved folder handles from this app. Original files on your device will NOT be deleted.\n\nContinue?"))return;
+ if(!app.db)return;
+ try{
+  app.busy=true;closeViewer();app.worker?.terminate();app.worker=null;app.workerReady=false;
+  for(const j of app.workerJobs.values())j.reject(Error("App reset"));app.workerJobs.clear();
+  app.images.forEach(releaseImageURL);app.images=[];app.albums=[];app.folders=[];app.selected.clear();app.folderHandle=null;app.view="all";
+  await Promise.all([dbClear(IMAGES_STORE),dbClear(ALBUMS_STORE),dbClear(META_STORE)]);
+  app.busy=false;$("searchInput").value="";renderAll();showGallery();progress("App reset complete",0,0,"Saved library, thumbnails, albums and folder history cleared.");
+  toast("App data cleared. Original device files remain untouched.");
+ }catch(e){app.busy=false;toast("Reset failed: "+e.message)}
+}
+function exportCSV(){
+ const rows=[["Name","Path","Type","Size","Albums","Last Modified"]];
+ for(const i of app.images)rows.push([i.name,i.path,typeOf(i),i.size,(i.albumIds||[]).map(id=>albumById(id)?.name).filter(Boolean).join("; "),i.lastModified||""]);
+ const csv=rows.map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
+ const u=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})),a=document.createElement("a");a.href=u;a.download="lumina-library.csv";a.click();setTimeout(()=>URL.revokeObjectURL(u),3000)
 }
 
-/* =====================================================
-   TOUCH ZOOM ADD-ON
-   Pinch to zoom, drag to pan, double-tap to zoom/reset.
-   ===================================================== */
-const touchPointers=new Map();
-let pinchStartDistance=0;
-let pinchStartZoom=1;
-let pinchStartPanX=0;
-let pinchStartPanY=0;
-let pinchStartMidX=0;
-let pinchStartMidY=0;
-let dragStartX=0;
-let dragStartY=0;
-let dragStartPanX=0;
-let dragStartPanY=0;
-let lastTouchTap=0;
-const touchStage=$("viewerBody");
+/* UI events */
+$("browseBtn").onclick=browseFolder;$("scanBtn").onclick=scanAgain;$("addBtn").onclick=()=>$("filesInput").click();$("newAlbumBtn").onclick=createAlbum;$("sideNewAlbum").onclick=createAlbum;
+$("historyNav").onclick=showHistory;$("historyAddBtn").onclick=browseFolder;$("refreshHistoryBtn").onclick=renderHistory;$("rescanAllBtn").onclick=rescanAll;
+$("folderInput").onchange=async e=>{await handleFolderInput(e.target.files);e.target.value=""};$("filesInput").onchange=async e=>{await handleFiles(e.target.files);e.target.value=""};
+document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>setView(b.dataset.view));
+$("searchInput").oninput=renderGallery;$("sortSelect").onchange=renderGallery;$("pageSize").onchange=renderGallery;
+$("moveBtn").onclick=()=>moveSelected("move");$("addToAlbumBtn").onclick=()=>moveSelected("add");$("removeBtn").onclick=removeSelectedFromAlbum;
+$("clearSelectionBtn").onclick=()=>{app.selected.clear();renderAll();toast("Selection cleared.")};
+$("selectAll").onchange=()=>{const list=currentImages().slice(0,app.renderLimit);list.forEach(i=>$("selectAll").checked?app.selected.add(i.id):app.selected.delete(i.id));renderAll()};
+$("loadMoreBtn").onclick=()=>{const n=$("pageSize").value==="all"?999999:Number($("pageSize").value);$("pageSize").value=n>=240?"all":String(n+60);renderGallery()};
+$("summaryBtn").onclick=()=>{$("galleryPanel").classList.add("hidden");$("historyPanel").classList.add("hidden");$("summaryPanel").classList.remove("hidden");$("formatCount").textContent=new Set(app.images.map(typeOf)).size;$("membershipCount").textContent=app.albums.reduce((n,a)=>n+a.itemIds.length,0);$("storedCount").textContent=app.images.length;$("summarySize").textContent=formatSize(app.images.reduce((n,i)=>n+(i.size||0),0))};
+$("backBtn").onclick=showGallery;$("exportBtn").onclick=exportCSV;$("resetAppBtn").onclick=resetApp;
+$("themeSelect").onchange=()=>{document.documentElement.dataset.theme=$("themeSelect").value;try{localStorage.setItem("LuminaVaultPro_theme",$("themeSelect").value)}catch(_){}};
+$("closeViewer").onclick=closeViewer;$("prevBtn").onclick=()=>navigateViewer(-1);$("nextBtn").onclick=()=>navigateViewer(1);
+$("zoomIn").onclick=()=>{app.zoom=Math.min(6,app.zoom+.25);updateViewer()};$("zoomOut").onclick=()=>{app.zoom=Math.max(1,app.zoom-.25);if(app.zoom===1)app.panX=app.panY=0;updateViewer()};
+$("zoomReset").onclick=()=>{app.zoom=1;app.panX=app.panY=0;updateViewer()};$("rotateBtn").onclick=()=>{app.rotation=(app.rotation+90)%360;updateViewer()};
+$("editBtn").onclick=()=>{$("editPanel").classList.toggle("hidden");$("editBtn").textContent=$("editPanel").classList.contains("hidden")?"✎ Edit":"Hide Edit"};
+$("downloadBtn").onclick=downloadEdited;$("resetEditBtn").onclick=resetEdits;
+["brightness","contrast","saturation","grayscale","sepia"].forEach(id=>$(id).oninput=()=>{$(id+"Val").textContent=$(id).value+"%";updateViewer()});
+document.addEventListener("keydown",e=>{if($("viewer").classList.contains("hidden"))return;if(e.key==="Escape")closeViewer();if(e.key==="ArrowLeft")navigateViewer(-1);if(e.key==="ArrowRight")navigateViewer(1);if(e.key==="+"){app.zoom=Math.min(6,app.zoom+.25);updateViewer()}if(e.key==="-"){app.zoom=Math.max(1,app.zoom-.25);updateViewer()}});
 
-function touchDistance(a,b){
- return Math.hypot(a.x-b.x,a.y-b.y);
-}
-function touchMidpoint(a,b){
- return{x:(a.x+b.x)/2,y:(a.y+b.y)/2};
-}
-function resetTouchPointers(){
- touchPointers.clear();
- pinchStartDistance=0;
-}
-
-/* Pointer start */
-touchStage.addEventListener("pointerdown",event=>{
- if(event.pointerType!=="touch"&&event.pointerType!=="pen")return;
- event.preventDefault();
-
- touchPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
- try{touchStage.setPointerCapture(event.pointerId)}catch(_){}
-
- if(touchPointers.size===1){
-  dragStartX=event.clientX;
-  dragStartY=event.clientY;
-  dragStartPanX=app.panX;
-  dragStartPanY=app.panY;
-
-  const now=Date.now();
-  if(now-lastTouchTap<320){
-   if(app.zoom>1.05){
-    app.zoom=1;app.panX=0;app.panY=0;
-   }else{
-    app.zoom=2;app.panX=0;app.panY=0;
-   }
-   updateViewer();
-   lastTouchTap=0;
-  }else{
-   lastTouchTap=now;
-  }
- }
-
- if(touchPointers.size===2){
-  const points=[...touchPointers.values()];
-  const middle=touchMidpoint(points[0],points[1]);
-  const rect=touchStage.getBoundingClientRect();
-
-  pinchStartDistance=touchDistance(points[0],points[1]);
-  pinchStartZoom=app.zoom;
-  pinchStartPanX=app.panX;
-  pinchStartPanY=app.panY;
-  pinchStartMidX=middle.x-(rect.left+rect.width/2);
-  pinchStartMidY=middle.y-(rect.top+rect.height/2);
- }
-},{passive:false});
-
-/* Pointer movement */
-touchStage.addEventListener("pointermove",event=>{
- if(!touchPointers.has(event.pointerId))return;
- if(event.pointerType!=="touch"&&event.pointerType!=="pen")return;
- event.preventDefault();
-
- touchPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
-
- if(touchPointers.size===2){
-  const points=[...touchPointers.values()];
-  const distance=touchDistance(points[0],points[1]);
-  const middle=touchMidpoint(points[0],points[1]);
-  const rect=touchStage.getBoundingClientRect();
-
-  if(pinchStartDistance>0){
-   const newZoom=Math.max(1,Math.min(6,pinchStartZoom*distance/pinchStartDistance));
-   const midX=middle.x-(rect.left+rect.width/2);
-   const midY=middle.y-(rect.top+rect.height/2);
-
-   app.zoom=newZoom;
-
-   // Follow the fingers while zooming, including midpoint movement.
-   app.panX=midX-(pinchStartMidX-pinchStartPanX)*(newZoom/pinchStartZoom);
-   app.panY=midY-(pinchStartMidY-pinchStartPanY)*(newZoom/pinchStartZoom);
-
-   if(newZoom<=1.001){
-    app.zoom=1;app.panX=0;app.panY=0;
-   }
-   updateViewer();
-  }
- }else if(touchPointers.size===1&&app.zoom>1){
-  app.panX=dragStartPanX+event.clientX-dragStartX;
-  app.panY=dragStartPanY+event.clientY-dragStartY;
-  updateViewer();
- }
-},{passive:false});
-
-/* Pointer end */
-function finishTouchPointer(event){
- touchPointers.delete(event.pointerId);
- if(touchPointers.size<2)pinchStartDistance=0;
-
- // Continue one-finger panning after lifting one finger from a pinch.
- if(touchPointers.size===1){
-  const point=[...touchPointers.values()][0];
-  dragStartX=point.x;
-  dragStartY=point.y;
-  dragStartPanX=app.panX;
-  dragStartPanY=app.panY;
- }
-}
-touchStage.addEventListener("pointerup",finishTouchPointer);
-touchStage.addEventListener("pointercancel",finishTouchPointer);
-touchStage.addEventListener("lostpointercapture",event=>{
- if(touchPointers.has(event.pointerId)){
-  touchPointers.delete(event.pointerId);
-  pinchStartDistance=0;
- }
-});
-
-/* Events */
-$("browseBtn").addEventListener("click",browseFolder);
-$("scanBtn").addEventListener("click",scanAgain);
-$("addBtn").addEventListener("click",()=>$("filesInput").click());
-$("newAlbumBtn").addEventListener("click",createAlbum);
-$("sideNewAlbum").addEventListener("click",createAlbum);
-$("folderInput").addEventListener("change",async event=>{
- const files=event.target.files;await handleFolderInput(files);event.target.value="";
-});
-$("filesInput").addEventListener("change",async event=>{
- const files=event.target.files;await handleFileInput(files);event.target.value="";
-});
-document.querySelectorAll("[data-view]").forEach(button=>
- button.addEventListener("click",()=>setView(button.dataset.view))
-);
-$("searchInput").addEventListener("input",renderGallery);
-$("sortSelect").addEventListener("change",renderGallery);
-$("pageSize").addEventListener("change",renderGallery);
-$("moveBtn").addEventListener("click",()=>moveSelected("move"));
-$("addToAlbumBtn").addEventListener("click",()=>moveSelected("add"));
-$("removeBtn").addEventListener("click",removeSelectedFromAlbum);
-$("clearSelectionBtn").addEventListener("click",()=>{
- app.selected.clear();renderAll();toast("Selection cleared.");
-});
-$("selectAll").addEventListener("change",()=>{
- const visible=currentImages().slice(0,app.renderLimit);
- if($("selectAll").checked)visible.forEach(image=>app.selected.add(image.id));
- else visible.forEach(image=>app.selected.delete(image.id));
- renderAll();
-});
-$("loadMoreBtn").addEventListener("click",()=>{
- const current=Number($("pageSize").value);
- $("pageSize").value=current>=240?"all":String(current+60);
- renderGallery();
-});
-$("summaryBtn").addEventListener("click",()=>{
- $("galleryPanel").classList.add("hidden");
- $("summaryPanel").classList.remove("hidden");
- $("formatCount").textContent=new Set(app.images.map(typeOf)).size;
- $("membershipCount").textContent=app.albums.reduce((n,a)=>n+a.itemIds.length,0);
- $("storedCount").textContent=app.images.length;
- $("summarySize").textContent=formatSize(app.images.reduce((n,i)=>n+(i.size||0),0));
-});
-$("backBtn").addEventListener("click",()=>{
- $("summaryPanel").classList.add("hidden");$("galleryPanel").classList.remove("hidden");
-});
-$("themeSelect").addEventListener("change",()=>{
- document.documentElement.dataset.theme=$("themeSelect").value;
- try{localStorage.setItem("LuminaVaultPro_theme",$("themeSelect").value)}catch(_){}
-});
-$("exportBtn").addEventListener("click",()=>{
- const rows=[["Name","Path","Type","Size","Albums"]];
- for(const image of app.images){
-  const albumNames=(image.albumIds||[]).map(id=>albumById(id)?.name).filter(Boolean).join("; ");
-  rows.push([image.name,image.path,typeOf(image),image.size,albumNames]);
- }
- const csv=rows.map(row=>row.map(value=>'"'+String(value??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
- const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
- const link=document.createElement("a");link.href=url;link.download="lumina-library.csv";link.click();
- setTimeout(()=>URL.revokeObjectURL(url),3000);
-});
-
-$("closeViewer").addEventListener("click",closeViewer);
-$("prevBtn").addEventListener("click",()=>navigateViewer(-1));
-$("nextBtn").addEventListener("click",()=>navigateViewer(1));
-$("zoomIn").addEventListener("click",()=>{
- app.zoom=Math.min(6,app.zoom+.25);updateViewer();
-});
-$("zoomOut").addEventListener("click",()=>{
- app.zoom=Math.max(1,app.zoom-.25);
- if(app.zoom===1){app.panX=0;app.panY=0;}
- updateViewer();
-});
-$("zoomReset").addEventListener("click",()=>{
- app.zoom=1;app.panX=0;app.panY=0;updateViewer();
-});
-$("rotateBtn").addEventListener("click",()=>{
- app.rotation=(app.rotation+90)%360;updateViewer();
-});
-$("editBtn").addEventListener("click",()=>{
- app.editOpen=!app.editOpen;
- $("editPanel").classList.toggle("hidden",!app.editOpen);
- $("editBtn").textContent=app.editOpen?"Hide Edit":"✎ Edit";
-});
-$("downloadBtn").addEventListener("click",downloadEdited);
-$("resetEditBtn").addEventListener("click",resetEdits);
-["brightness","contrast","saturation","grayscale","sepia"].forEach(id=>
- $(id).addEventListener("input",updateEditLabels)
-);
-$("viewerBody").addEventListener("wheel",event=>{
- event.preventDefault();
- app.zoom=Math.min(6,Math.max(1,app.zoom+(event.deltaY<0?.15:-.15)));
- if(app.zoom===1){app.panX=0;app.panY=0;}
- updateViewer();
-},{passive:false});
-document.addEventListener("keydown",event=>{
- if($("viewer").classList.contains("hidden"))return;
- if(event.key==="Escape")closeViewer();
- if(event.key==="ArrowLeft")navigateViewer(-1);
- if(event.key==="ArrowRight")navigateViewer(1);
- if(event.key==="+"){app.zoom=Math.min(6,app.zoom+.25);updateViewer();}
- if(event.key==="-"){
-  app.zoom=Math.max(1,app.zoom-.25);
-  if(app.zoom===1){app.panX=0;app.panY=0;}
-  updateViewer();
- }
- if(event.key==="0")$("zoomReset").click();
-});
-
-/* Start */
+/* Startup: paint saved thumbnails first, then scan every permitted history folder. */
 (async function init(){
  try{
   const theme=localStorage.getItem("LuminaVaultPro_theme");
-  if(theme&&["dark-slate","light","cyberpunk","nord","sunset","oled"].includes(theme)){
-   document.documentElement.dataset.theme=theme;
-   $("themeSelect").value=theme;
-  }
-  if(!("indexedDB" in window))throw new Error("This browser does not support IndexedDB.");
-  app.db=await openDatabase();
-  await loadSavedLibrary();
- }catch(error){
-  console.error("Lumina startup error:",error);
-  progress("Could not open saved library",0,0,error.message);
-  toast("Storage error: "+error.message);
- }
+  if(theme&&["dark-slate","light","cyberpunk","nord","sunset","oled"].includes(theme)){document.documentElement.dataset.theme=theme;$("themeSelect").value=theme}
+  startWorker();
+  app.db=await openDB();
+  await loadLibrary();
+  setTimeout(()=>backgroundScanAll(),150);
+ }catch(e){console.error(e);progress("Could not open library",0,0,e.message);toast("Storage error: "+e.message)}
 })();
+async function backgroundScanAll(){
+ const folders=app.folders.slice();
+ if(!folders.length){
+  if(app.folderHandle){const p=app.folderHandle.queryPermission?await app.folderHandle.queryPermission({mode:"read"}):"granted";if(p==="granted")await scanHandle(app.folderHandle,false,null)}
+  else progress("Saved gallery ready",app.images.length,app.images.length,"No saved folder history yet. Tap Browse Folder to select one.");
+  return
+ }
+ progress("Checking saved folders in background",0,folders.length,"The gallery is already available while scanning runs.");
+ for(let n=0;n<folders.length;n++){
+  const f=folders[n];
+  if(!f.handle){await updateFolder(f.id,"Select folder again to restore access");continue}
+  try{
+   const p=f.handle.queryPermission?await f.handle.queryPermission({mode:"read"}):"granted";
+   if(p==="granted")await scanHandle(f.handle,false,f.id);
+   else await updateFolder(f.id,"Permission required — select folder to rescan");
+  }catch(e){console.warn("Background scan",f.name,e);await updateFolder(f.id,"Background scan failed")}
+ }
+ if(!app.busy)progress("Background scan checks finished",folders.length,folders.length,"Review Folder History for any folders that need permission.")
+}
 </script>
 </body>
 </html>
