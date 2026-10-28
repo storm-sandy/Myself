@@ -1,868 +1,543 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="forest">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#176b45">
-<title>World Festival Explorer</title>
+<title>Indian Festival Explorer</title>
 <style>
-:root{
- --p:#176b45;--d:#104b32;--bg:#f1f6ef;--panel:#fff;
- --tx:#26372c;--mut:#69786d;--bd:#dce7dc;--soft:#e5f1e5;
- --head:#176b45;--head2:#104b32;--bar:#176b45;
-}
+:root{--primary:#176b45;--deep:#104b32;--bg:#f0f6ef;--panel:#fff;--text:#193629;--muted:#718078;--border:#dce8dd;--shadow:0 5px 20px #163b2512}
+[data-theme="ocean"]{--primary:#087f8c;--deep:#075966;--bg:#edf7fa;--panel:#fff;--text:#153c46;--border:#cfe5e9}
+[data-theme="sunset"]{--primary:#c35b35;--deep:#853a25;--bg:#fff3e9;--panel:#fff;--text:#4d2b21;--border:#f1d8c9}
+[data-theme="lotus"]{--primary:#a23d78;--deep:#762657;--bg:#fff0f7;--panel:#fff;--text:#49263c;--border:#efd5e5}
+[data-theme="dark"]{--primary:#6bcf98;--deep:#3fa875;--bg:#111a16;--panel:#1d2922;--text:#edf8f0;--muted:#b0c1b5;--border:#35483b;--shadow:0 5px 20px #0004}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:14px system-ui,Arial,sans-serif;transition:background .2s,color .2s}
-header{background:linear-gradient(120deg,var(--head2),var(--head));color:white;padding:18px}
-header h1{margin:0 0 5px;font-size:23px}
-header p{margin:0;color:#edf7ed}
-main{max-width:1350px;margin:auto;padding:12px}
-.tabs{display:flex;gap:6px;overflow-x:auto;position:sticky;top:0;background:var(--bg);padding:7px 0;z-index:5}
-button{cursor:pointer;border:0;border-radius:8px;padding:10px 12px;background:var(--p);color:white;font-weight:650;font:inherit}
-button.secondary{background:var(--soft);color:var(--d)}
-button.danger{background:#b82f37;color:white}
-button:disabled{opacity:.4;cursor:not-allowed}
-.tab{white-space:nowrap;background:var(--panel);color:var(--tx);border:1px solid var(--bd)}
-.tab.active{background:var(--p);color:white}
-.panel{display:none}.panel.active{display:block}
-.box,.chart,.stat,.fcard,.monthbox,.theme-card{background:var(--panel);border:1px solid var(--bd);border-radius:12px}
-.box{padding:14px;margin-bottom:12px}
-h2{font-size:19px;margin:0 0 12px}h3{font-size:15px;margin:0 0 8px}
-p{line-height:1.5}
-.muted{color:var(--mut)}.small{font-size:12px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px}
-.stat{padding:13px}.num{font-size:26px;font-weight:800;color:var(--p)}
-.filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;margin-bottom:12px}
-input,select,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--panel);color:var(--tx);font:inherit}
-textarea{min-height:75px}label{display:block;font-weight:650;font-size:12px;color:var(--mut);margin-bottom:4px}
-.field{margin-bottom:12px}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.fcard{padding:13px;min-width:0;overflow-wrap:anywhere}
-.fcard h3{font-size:16px;margin:8px 0}
-.tag{display:inline-block;padding:4px 7px;background:var(--soft);color:var(--d);border-radius:5px;font-size:11px}
-.meta{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
-.meta span{background:var(--bg);border-radius:5px;padding:5px;font-size:11px}
-.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.chart{padding:12px;min-width:0}
-canvas{width:100%;height:220px;display:block}
-.barrow{display:grid;grid-template-columns:95px 1fr 25px;gap:7px;align-items:center;margin:8px 0}
-.bar{height:10px;background:var(--bg);border-radius:8px;overflow:hidden}
-.bar div{height:100%;background:var(--bar)}
-.tablewrap{overflow:auto;background:var(--panel);border:1px solid var(--bd);border-radius:9px}
-table{width:100%;border-collapse:collapse;min-width:760px}
-td,th{padding:10px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top}
-th{background:var(--soft)}
-th button{padding:3px;background:transparent;color:var(--d)}
-.monthgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.monthbox{padding:12px}.monthbox strong{display:block;color:var(--p);margin-bottom:6px}
-.note{background:var(--soft);padding:10px;border-radius:8px;margin-bottom:12px}
-.theme-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.theme-card{padding:10px;cursor:pointer;text-align:left;color:var(--tx);min-width:0}
-.theme-card.selected{outline:3px solid var(--p);outline-offset:1px}
-.swatches{display:flex;height:38px;border-radius:7px;overflow:hidden;margin-bottom:9px}
-.swatches span{flex:1}
-.theme-card strong{display:block;margin-bottom:3px}
-.theme-card small{color:var(--mut)}
-.badge-selected{font-size:11px;color:var(--p);font-weight:800}
-footer{text-align:center;color:var(--mut);padding:18px}
-#msg{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:var(--d);color:white;padding:12px 16px;border-radius:9px;display:none;z-index:10;max-width:90vw}
-@media(max-width:760px){
- .stats{grid-template-columns:repeat(2,1fr)}
- .filters{grid-template-columns:1fr 1fr}
- .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
- .charts{grid-template-columns:1fr}
- .monthgrid{grid-template-columns:repeat(3,1fr)}
- .theme-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+header{background:linear-gradient(125deg,var(--deep),var(--primary));color:white;padding:19px 16px 16px}
+.head{max-width:1250px;margin:auto;display:flex;align-items:center;gap:12px}
+.logo{width:52px;height:52px;border-radius:16px;background:#ffffff20;display:grid;place-items:center;font-size:29px;flex-shrink:0}
+h1{font-size:clamp(21px,4vw,30px);margin:0}
+header p{margin:4px 0 0;font-size:13px;opacity:.88}
+.header-tools{margin-left:auto;display:flex;gap:8px;align-items:center}
+select,.tool-btn{border:1px solid var(--border);border-radius:10px;padding:9px 11px;background:var(--panel);color:var(--text)}
+nav{display:flex;gap:8px;max-width:1250px;margin:14px auto 0;overflow-x:auto;padding-bottom:2px}
+.navbtn{white-space:nowrap;border:1px solid #ffffff40;background:#ffffff16;color:white;padding:10px 16px;border-radius:12px}
+.navbtn.active{background:white;color:var(--deep);font-weight:750}
+main{max-width:1250px;margin:auto;padding:18px 14px 40px}
+.page{display:none}.page.active{display:block}
+.intro{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:15px}
+h2{font-size:21px;margin:0 0 5px}
+h3{margin-top:0}
+.sub{font-size:13px;color:var(--muted);line-height:1.5}
+.filters{display:grid;grid-template-columns:minmax(180px,1fr) minmax(145px,220px);gap:9px;margin:14px 0}
+.search,.field{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel);color:var(--text);outline:none;min-width:0}
+.search:focus,.field:focus{border-color:var(--primary)}
+textarea.field{min-height:80px;resize:vertical}
+.chips{display:flex;gap:7px;overflow-x:auto;padding:2px 0 12px}
+.chip{border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:30px;padding:8px 13px;white-space:nowrap;font-size:12px}
+.chip.active{background:var(--primary);border-color:var(--primary);color:white}
+.count{font-size:12px;color:var(--muted);margin:2px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:12px}
+.festival-card{min-width:0;text-align:center;padding:15px 8px 13px;background:var(--panel);border:1px solid var(--border);border-radius:16px;color:var(--text);box-shadow:var(--shadow);transition:transform .15s,border-color .15s;position:relative}
+.festival-card:active{transform:scale(.97)}
+.festival-card:hover{border-color:var(--primary);transform:translateY(-2px)}
+.festival-icon{height:65px;display:grid;place-items:center;font-size:43px;line-height:1}
+.festival-card h3{font-size:14px;line-height:1.35;margin:9px 0 5px;overflow-wrap:anywhere}
+.card-date{font-size:11px;color:var(--muted);line-height:1.5}
+.card-tag{display:inline-block;background:var(--bg);color:var(--primary);padding:4px 7px;border-radius:7px;font-size:10px;margin-top:8px}
+.empty{grid-column:1/-1;text-align:center;padding:45px 15px;color:var(--muted);background:var(--panel);border-radius:16px}
+.section-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px;margin:12px 0}
+.category-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px}
+.category-card{padding:18px 10px;border:1px solid var(--border);border-radius:14px;background:var(--panel);color:var(--text);text-align:center}
+.category-card .big{font-size:32px;display:block;margin-bottom:8px}
+.category-card b{font-size:13px}
+.category-card small{display:block;margin-top:5px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:18px 0}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:15px}
+.stat strong{font-size:25px;color:var(--primary);display:block}
+.stat span{font-size:12px;color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:24px 12px}
+.btn{border:0;border-radius:10px;padding:10px 13px;background:var(--primary);color:white;font-weight:650}
+.btn.secondary{background:var(--bg);color:var(--text);border:1px solid var(--border)}
+.btn.danger{background:#b83232;color:white}
+.btn.small{padding:6px 9px;font-size:12px}
+.btn-row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.form-group{min-width:0}
+.form-group label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}
+.form-group.full{grid-column:1/-1}
+.form-note{font-size:12px;color:var(--muted);line-height:1.5}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--panel);margin-top:12px}
+table{border-collapse:collapse;width:100%;min-width:850px;font-size:13px}
+th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+th{background:var(--bg);color:var(--text);position:sticky;top:0;white-space:nowrap}
+td{overflow-wrap:anywhere}
+tr:last-child td{border-bottom:0}
+.row-actions{display:flex;gap:5px;flex-wrap:wrap}
+.badge{display:inline-block;border-radius:20px;padding:4px 8px;background:var(--bg);color:var(--primary);font-size:11px}
+.overlay{display:none;position:fixed;inset:0;z-index:100;background:#07140ed1;align-items:center;justify-content:center;padding:12px}
+.overlay.open{display:flex}
+.modal{background:var(--panel);color:var(--text);width:min(650px,100%);max-height:92dvh;overflow-y:auto;border-radius:21px;box-shadow:0 20px 70px #0006;position:relative}
+.modal-top{position:sticky;top:0;z-index:2;display:flex;justify-content:flex-end;gap:8px;padding:10px;background:var(--panel);border-bottom:1px solid var(--border)}
+.close{width:40px;height:40px;border:0;border-radius:50%;background:var(--bg);color:var(--text);font-size:24px;display:grid;place-items:center}
+.modal-content{padding:5px 22px 24px}
+.hero{text-align:center;padding:8px 8px 20px}
+.hero-icon{font-size:70px;line-height:1.3}
+.hero h2{font-size:26px;margin:6px 0}
+.detail-section{border-top:1px solid var(--border);padding:15px 0}
+.detail-section h3{font-size:15px;margin:0 0 7px;color:var(--primary)}
+.detail-section p{font-size:14px;line-height:1.8;margin:0;white-space:pre-line}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.pill{font-size:11px;background:var(--bg);padding:6px 9px;border-radius:30px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--deep);color:white;padding:11px 16px;border-radius:12px;z-index:200;font-size:13px;display:none;max-width:90%;text-align:center}
+@media(max-width:600px){
+ header{padding:14px 12px}.head{align-items:flex-start}.logo{width:44px;height:44px;font-size:25px}
+ .header-tools select{max-width:100px;padding:8px 5px}main{padding:14px 10px 30px}
+ .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .festival-card{padding:11px 4px;border-radius:13px}.festival-icon{height:48px;font-size:34px}
+ .festival-card h3{font-size:12px;margin-top:7px}.card-date{font-size:10px}
+ .card-tag{font-size:9px;padding:3px 5px}.modal-content{padding:5px 16px 20px}
+ .hero-icon{font-size:60px}.filters,.form-grid{grid-template-columns:1fr}
+ .form-group.full{grid-column:auto}
 }
-@media(max-width:460px){
- .grid{grid-template-columns:1fr}.monthgrid{grid-template-columns:repeat(2,1fr)}
- header h1{font-size:20px}.filters{grid-template-columns:1fr}
-}
+@media(min-width:700px){.grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}}
 </style>
 </head>
 <body>
 <header>
-<h1>🌍 World Festival Explorer</h1>
-<p>Country-wise festivals, traditions, dates, duration and nature themes</p>
+ <div class="head">
+  <div class="logo">🇮🇳</div>
+  <div><h1>Indian Festival Explorer</h1><p>Discover India's celebrations, culture and traditions</p></div>
+  <div class="header-tools">
+   <select id="themeSelect" aria-label="Choose theme">
+    <option value="forest">🌿 Forest</option><option value="ocean">🌊 Ocean</option>
+    <option value="sunset">🌅 Sunset</option><option value="lotus">🪷 Lotus</option>
+    <option value="dark">🌙 Dark</option>
+   </select>
+  </div>
+ </div>
+ <nav>
+  <button class="navbtn active" data-page="festivals">🎉 Festivals</button>
+  <button class="navbtn" data-page="categories">🗂️ Categories</button>
+  <button class="navbtn" data-page="localFestivals">📍 Local Festivals & Melas</button>
+  <button class="navbtn" data-page="visits">🗓️ Visit Register</button>
+  <button class="navbtn" data-page="about">🇮🇳 About India</button>
+ </nav>
 </header>
+
 <main>
-<nav class="tabs">
-<button class="tab active" data-tab="summary">📊 Summary</button>
-<button class="tab" data-tab="register">🌎 Festival Register</button>
-<button class="tab" data-tab="countries">🗺 Countries</button>
-<button class="tab" data-tab="months">📅 Months</button>
-<button class="tab" data-tab="editor">✏ Data Entry</button>
-<button class="tab" data-tab="themes">🎨 Themes</button>
-<button class="tab" data-tab="backup">💾 Backup</button>
-</nav>
-
-<section id="summary" class="panel active">
-<div class="stats">
-<div class="stat"><div class="num" id="total">0</div>Total festivals</div>
-<div class="stat"><div class="num" id="ncountries">0</div>Countries / regions</div>
-<div class="stat"><div class="num" id="ncategories">0</div>Categories</div>
-<div class="stat"><div class="num" id="nmonths">0</div>Months</div>
-</div>
-<div class="box">
-<h2>Festival Summary</h2>
-<div class="filters">
-<input id="sq" placeholder="Search festivals...">
-<select id="sc"><option value="">All countries</option></select>
-<select id="sk"><option value="">All categories</option></select>
-<select id="sm"><option value="">All months</option></select>
-</div>
-<p class="small muted">Charts and featured festivals update when you change a filter.</p>
-</div>
-<div class="charts">
-<div class="chart"><h3>Festivals by Category</h3><canvas id="catChart"></canvas><div id="catBars"></div></div>
-<div class="chart"><h3>Festivals by Country / Region</h3><canvas id="countryChart"></canvas><div id="countryBars"></div></div>
-<div class="chart"><h3>Festivals by Month</h3><canvas id="monthChart"></canvas><div id="monthBars"></div></div>
-<div class="chart"><h3>Category Distribution</h3><canvas id="pieChart"></canvas><div id="legend"></div></div>
-</div>
-<div class="box" style="margin-top:12px"><h2>Featured Festivals</h2><div id="featured" class="grid"></div></div>
+<section class="page active" id="festivals">
+ <div class="intro"><div><h2>Explore Indian Festivals</h2><div class="sub">Tap any festival icon to open its details. Your local festival entries also appear here.</div></div></div>
+ <div class="filters">
+  <input class="search" id="searchInput" placeholder="🔎 Search festival, state, food..." autocomplete="off">
+  <select id="traditionFilter">
+   <option value="All">All traditions</option><option>Hindu</option><option>Muslim</option><option>Sikh</option><option>Christian</option><option>Buddhist</option><option>Jain</option><option>Regional</option><option>National</option><option>Tribal</option><option>Local</option>
+  </select>
+ </div>
+ <div class="chips" id="monthChips">
+  <button class="chip active" data-month="All">🌈 All festivals</button>
+  <button class="chip" data-month="Spring">🌸 Spring</button><button class="chip" data-month="Summer">☀️ Summer</button>
+  <button class="chip" data-month="Monsoon">🌧️ Monsoon</button><button class="chip" data-month="Autumn">🍂 Autumn</button>
+  <button class="chip" data-month="Winter">❄️ Winter</button><button class="chip" data-month="Harvest">🌾 Harvest</button>
+ </div>
+ <div class="count" id="resultCount" aria-live="polite"></div><div class="grid" id="festivalGrid"></div>
 </section>
 
-<section id="register" class="panel">
-<div class="box">
-<h2>Festival Register</h2>
-<div class="filters">
-<input id="q" placeholder="Search name, description, country...">
-<select id="fc"><option value="">All countries</option></select>
-<select id="fk"><option value="">All categories</option></select>
-<select id="fm"><option value="">All months</option></select>
-</div>
-<div class="actions">
-<button class="secondary" id="cardsBtn">Card View</button>
-<button class="secondary" id="tableBtn">Table View</button>
-<button class="secondary" id="clear">Clear Filters</button>
-<button class="secondary" id="toggleEdit">🔒 Enable Editing</button>
-<span id="editStatus" class="tag">Read-only</span>
-</div>
-<div id="registerCards" class="grid" style="margin-top:12px"></div>
-<div id="tableBox" class="tablewrap" style="display:none;margin-top:12px">
-<table><thead><tr>
-<th><button data-sort="name">Festival ↕</button></th>
-<th><button data-sort="country">Country ↕</button></th>
-<th><button data-sort="category">Category ↕</button></th>
-<th><button data-sort="month">Month ↕</button></th>
-<th>Duration</th><th>Actions</th>
-</tr></thead><tbody id="tbody"></tbody></table>
-</div>
-<p id="count" class="muted small"></p>
-</div>
+<section class="page" id="categories">
+ <h2>Festival Categories</h2><p class="sub">Choose a category to explore related celebrations.</p>
+ <div class="category-grid" id="categoryGrid"></div>
+ <div class="section-card"><h3>🎨 India's cultural diversity</h3><p class="sub">Indian celebrations reflect different religions, regional customs, seasonal changes, harvests, historical events and community traditions.</p></div>
 </section>
 
-<section id="countries" class="panel">
-<div class="box"><h2>Countries and Regions</h2>
-<input id="countrySearch" placeholder="Search countries or festivals...">
-<div id="countryList" class="grid" style="margin-top:12px"></div>
-</div>
+<section class="page" id="localFestivals">
+ <div class="intro"><div><h2>📍 Local Festivals & Melas</h2><div class="sub">Add local fairs, village festivals, temple festivals, jatra, utsav, community events or regional celebrations.</div></div></div>
+ <div class="section-card">
+  <h3 id="localFormTitle">➕ Add a local festival or mela</h3>
+  <form id="localForm">
+   <input type="hidden" id="localId">
+   <div class="form-grid">
+    <div class="form-group"><label for="lfName">Festival / mela name *</label><input class="field" id="lfName" required maxlength="120" placeholder="e.g. Village Jatra"></div>
+    <div class="form-group"><label for="lfIcon">Icon / emoji</label><input class="field" id="lfIcon" maxlength="8" value="🎪" placeholder="🎪"></div>
+    <div class="form-group"><label for="lfState">State *</label><input class="field" id="lfState" required placeholder="e.g. Maharashtra"></div>
+    <div class="form-group"><label for="lfDistrict">District</label><input class="field" id="lfDistrict" placeholder="District name"></div>
+    <div class="form-group"><label for="lfPlace">City / village / exact place *</label><input class="field" id="lfPlace" required placeholder="Town, village or venue"></div>
+    <div class="form-group"><label for="lfTradition">Tradition / type</label><select class="field" id="lfTradition"><option>Local</option><option>Hindu</option><option>Muslim</option><option>Sikh</option><option>Christian</option><option>Buddhist</option><option>Jain</option><option>Tribal</option><option>Regional</option><option>National</option></select></div>
+    <div class="form-group"><label for="lfSeason">Season</label><select class="field" id="lfSeason"><option>All</option><option>Spring</option><option>Summer</option><option>Monsoon</option><option>Autumn</option><option>Winter</option><option>Harvest</option></select></div>
+    <div class="form-group"><label for="lfPeriod">Usual date / period</label><input class="field" id="lfPeriod" placeholder="e.g. Every February"></div>
+    <div class="form-group full"><label for="lfDescription">Description</label><textarea class="field" id="lfDescription" placeholder="Describe this festival or mela"></textarea></div>
+    <div class="form-group full"><label for="lfSignificance">Significance / traditions</label><textarea class="field" id="lfSignificance" placeholder="Rituals, history, local traditions, food, etc."></textarea></div>
+   </div>
+   <div class="btn-row"><button class="btn" type="submit" id="saveLocalBtn">💾 Save local festival</button><button class="btn secondary" type="button" id="cancelLocalEdit">Clear / Cancel edit</button></div>
+   <p class="form-note">Entries are saved on this device/browser. Export a JSON backup regularly, especially before clearing browser data.</p>
+  </form>
+ </div>
+ <div class="section-card">
+  <div class="intro"><div><h3>Saved local festivals</h3><div class="sub" id="localCount">0 entries</div></div><input class="search" id="localSearch" style="max-width:300px" placeholder="Search local entries..."></div>
+  <div class="btn-row"><button class="btn secondary" id="exportLocal">⬇ Export local JSON</button><button class="btn secondary" id="importLocalBtn">⬆ Import JSON backup</button><input type="file" id="importLocalFile" accept=".json,application/json" hidden></div>
+  <div id="localList" class="grid"></div>
+ </div>
 </section>
 
-<section id="months" class="panel">
-<div class="box"><h2>Month Explorer</h2>
-<select id="monthPick"><option value="">All months</option></select>
-<div id="monthList" class="monthgrid" style="margin-top:12px"></div>
-<div id="monthResults" style="margin-top:14px"></div>
-</div>
+<section class="page" id="visits">
+ <div class="intro"><div><h2>🗓️ Festival / Mela Visit Register</h2><div class="sub">Keep a table of when and where you last visited each festival, fair or event.</div></div></div>
+ <div class="stats">
+  <div class="stat"><strong id="visitTotal">0</strong><span>Total visit records</span></div>
+  <div class="stat"><strong id="visitPlaces">0</strong><span>Places recorded</span></div>
+  <div class="stat"><strong id="visitSpend">₹0</strong><span>Total recorded expense</span></div>
+ </div>
+ <div class="section-card">
+  <h3 id="visitFormTitle">➕ Add a visit record</h3>
+  <form id="visitForm">
+   <input type="hidden" id="visitId">
+   <div class="form-grid">
+    <div class="form-group"><label for="vName">Festival / mela name *</label><input class="field" id="vName" required placeholder="Festival or fair name"></div>
+    <div class="form-group"><label for="vPlace">Place / venue *</label><input class="field" id="vPlace" required placeholder="Town, venue or temple"></div>
+    <div class="form-group"><label for="vState">State / district</label><input class="field" id="vState" placeholder="State and district"></div>
+    <div class="form-group"><label for="vDate">Visit date *</label><input class="field" id="vDate" type="date" required></div>
+    <div class="form-group"><label for="vArrival">Arrival time</label><input class="field" id="vArrival" type="time"></div>
+    <div class="form-group"><label for="vDeparture">Departure time</label><input class="field" id="vDeparture" type="time"></div>
+    <div class="form-group"><label for="vPeople">Visited with</label><input class="field" id="vPeople" placeholder="Family / friends / alone"></div>
+    <div class="form-group"><label for="vExpense">Total expense (₹)</label><input class="field" id="vExpense" type="number" min="0" step="0.01" value="0"></div>
+    <div class="form-group full"><label for="vNotes">Notes / experience / next visit reminder</label><textarea class="field" id="vNotes" placeholder="Memories, food, travel details, next visit plans..."></textarea></div>
+   </div>
+   <div class="btn-row"><button class="btn" type="submit" id="saveVisitBtn">💾 Save visit</button><button class="btn secondary" type="button" id="cancelVisitEdit">Clear / Cancel edit</button></div>
+  </form>
+ </div>
+ <div class="section-card">
+  <div class="intro"><div><h3>Visit history table</h3><div class="sub">Most recent visit dates are shown first. Use Edit to update an existing visit.</div></div><input class="search" id="visitSearch" style="max-width:300px" placeholder="Search name, place, notes..."></div>
+  <div class="btn-row">
+   <button class="btn secondary" id="exportVisitsCSV">⬇ Export CSV</button>
+   <button class="btn secondary" id="exportBackup">⬇ Full JSON backup</button>
+   <button class="btn secondary" id="importBackupBtn">⬆ Restore JSON</button>
+   <input type="file" id="importBackupFile" accept=".json,application/json" hidden>
+  </div>
+  <div class="table-wrap"><table><thead><tr>
+   <th>#</th><th>Festival / mela</th><th>Place</th><th>State / district</th><th>Visit date</th><th>Arrival</th><th>Departure</th><th>Visited with</th><th>Expense ₹</th><th>Notes</th><th>Actions</th>
+  </tr></thead><tbody id="visitTableBody"></tbody></table></div>
+  <p class="form-note" id="visitTableCount"></p>
+ </div>
 </section>
 
-<section id="editor" class="panel">
-<div class="box"><h2>Add / Edit Festival</h2>
-<div class="note">You can add new records at any time. To edit or delete an existing record, enable editing in the Festival Register.</div>
-<form id="form">
-<input id="id" type="hidden">
-<div class="filters">
-<div><label>Festival name *</label><input id="name" required></div>
-<div><label>Country / region *</label><input id="country" required list="countriesData"><datalist id="countriesData"></datalist></div>
-<div><label>Category *</label><input id="category" list="cats" required><datalist id="cats"></datalist></div>
-<div><label>Typical month *</label><select id="month" required></select></div>
-</div>
-<div class="filters">
-<div><label>Typical date / time</label><input id="timing" placeholder="Full moon, 25 December..."></div>
-<div><label>Duration</label><input id="duration" placeholder="1 day, 5 days..."></div>
-<div><label>Location</label><input id="location"></div>
-<div><label>Calendar</label><input id="calendar" placeholder="Lunar, solar, annual..."></div>
-</div>
-<div class="field"><label>Description *</label><textarea id="description" required></textarea></div>
-<div class="field"><label>Activities and traditions</label><textarea id="activities"></textarea></div>
-<div class="field"><label>Date variations and notes</label><textarea id="notes"></textarea></div>
-<div class="actions"><button id="saveBtn">Add Festival</button><button type="button" class="secondary" id="reset">Clear</button></div>
-</form></div>
+<section class="page" id="about">
+ <h2>🇮🇳 About Indian Festivals</h2><p class="sub">A journey through the traditions and celebrations of India.</p>
+ <div class="stats">
+  <div class="stat"><strong id="totalStat">0</strong><span>Festivals listed</span></div>
+  <div class="stat"><strong>9</strong><span>Tradition filters</span></div>
+  <div class="stat"><strong>28+</strong><span>States and cultural regions</span></div>
+ </div>
+ <div class="section-card"><h3>🪔 What makes Indian festivals special?</h3><p class="sub">Festivals bring families and communities together through prayers, music, dance, food, colourful clothing, decorations, charity and traditional rituals.</p></div>
+ <div class="section-card"><h3>📅 Festival dates</h3><p class="sub">Many Indian festivals follow lunar or lunisolar calendars. Their Gregorian dates change from year to year. This app gives general seasonal information rather than a verified live calendar.</p></div>
+ <div class="section-card"><h3>📱 About this app</h3><p class="sub">Browse the festival guide offline, add local festivals and maintain your own visit history. Keep backups because browser storage can be cleared by the device or browser.</p></div>
 </section>
-
-<section id="themes" class="panel">
-<div class="box">
-<h2>🎨 Nature Theme Gallery</h2>
-<p class="muted">Choose any theme below. The header, background, cards, buttons, charts and controls update immediately. Your selected theme is saved in this browser.</p>
-<p>Current theme: <strong id="currentTheme">Forest Green</strong></p>
-<div class="actions">
-<button class="secondary" id="randomTheme">🎲 Random Theme</button>
-<button class="secondary" id="defaultTheme">↩ Default Theme</button>
-</div>
-<div id="themeGrid" class="theme-grid" style="margin-top:14px"></div>
-</div>
-</section>
-
-<section id="backup" class="panel">
-<div class="box"><h2>Backup & Data</h2>
-<p id="storageInfo"></p>
-<div class="actions">
-<button id="jsonOut">Export JSON</button>
-<button id="csvOut">Export CSV</button>
-<button class="secondary" id="importBtn">Import JSON / CSV</button>
-<input id="file" type="file" accept=".json,.csv" hidden>
-</div>
-<div class="field" style="margin-top:14px"><label>Import mode</label>
-<select id="mode"><option value="merge">Merge records</option><option value="replace">Replace database</option></select></div>
-<div class="note">Export a backup before importing or restoring. Records and themes are saved locally in this browser. Dates of many religious and cultural festivals vary each year.</div>
-<button class="danger" id="restore">Restore Starter Data</button>
-</div>
-</section>
+<footer>🇮🇳 Indian Festival Explorer · Made for learning and discovery</footer>
 </main>
-<footer>World Festival Explorer · Nature themes · Local database · No external libraries</footer>
-<div id="msg"></div>
+
+<div class="overlay" id="detailOverlay" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+ <div class="modal"><div class="modal-top"><button class="close" id="closeDetail" aria-label="Close festival details">×</button></div><div class="modal-content" id="detailContent"></div></div>
+</div>
+<div class="toast" id="toast" role="status"></div>
 
 <script>
 "use strict";
-const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
-const KEY="festival_explorer_fast_v2";
-const THEMEKEY="festival_explorer_nature_theme_v1";
-const $=id=>document.getElementById(id);
 
-/* 20 nature-inspired themes */
-const THEMES=[
-{name:"Forest Green",p:"#176b45",d:"#104b32",bg:"#f1f6ef",panel:"#ffffff",tx:"#26372c",mut:"#69786d",bd:"#dce7dc",soft:"#e5f1e5",head:"#176b45",head2:"#104b32"},
-{name:"Ocean Blue",p:"#087eaa",d:"#07506c",bg:"#eaf6fa",panel:"#ffffff",tx:"#193744",mut:"#607b86",bd:"#cde5ec",soft:"#d9f0f7",head:"#087eaa",head2:"#07506c"},
-{name:"Sunset Orange",p:"#d76b25",d:"#873b17",bg:"#fff4e9",panel:"#fffdf9",tx:"#493021",mut:"#8a7565",bd:"#f0d8c4",soft:"#ffead5",head:"#d76b25",head2:"#873b17"},
-{name:"Lavender Bloom",p:"#8055b4",d:"#4d3376",bg:"#f5f0fb",panel:"#ffffff",tx:"#352a45",mut:"#796d89",bd:"#e3d7f2",soft:"#eee3fa",head:"#8055b4",head2:"#4d3376"},
-{name:"Rose Garden",p:"#c44870",d:"#7d2848",bg:"#fff0f4",panel:"#ffffff",tx:"#482733",mut:"#8c6a76",bd:"#f0d4df",soft:"#fce1ea",head:"#c44870",head2:"#7d2848"},
-{name:"Desert Sand",p:"#a56b29",d:"#68401a",bg:"#faf3e5",panel:"#fffdf7",tx:"#423628",mut:"#847663",bd:"#e9ddc7",soft:"#f5e8cb",head:"#a56b29",head2:"#68401a"},
-{name:"Mountain Mist",p:"#547b8c",d:"#304c5c",bg:"#edf3f5",panel:"#ffffff",tx:"#263941",mut:"#6d8188",bd:"#d5e1e5",soft:"#dce9ed",head:"#547b8c",head2:"#304c5c"},
-{name:"Autumn Leaves",p:"#b24e28",d:"#702c19",bg:"#fff1e8",panel:"#fffaf6",tx:"#442b20",mut:"#866c5e",bd:"#ecd5c8",soft:"#f9dfd0",head:"#b24e28",head2:"#702c19"},
-{name:"Pine Forest",p:"#426b43",d:"#233f2a",bg:"#edf4eb",panel:"#ffffff",tx:"#27372a",mut:"#6b7c6c",bd:"#d6e3d4",soft:"#dcebd9",head:"#426b43",head2:"#233f2a"},
-{name:"Glacier Ice",p:"#327d9c",d:"#194d68",bg:"#edf8fc",panel:"#ffffff",tx:"#203a48",mut:"#65818d",bd:"#d2e8f0",soft:"#dff3fa",head:"#327d9c",head2:"#194d68"},
-{name:"Coral Reef",p:"#d64f54",d:"#8d2e38",bg:"#fff0ee",panel:"#ffffff",tx:"#472b2d",mut:"#8a6c6d",bd:"#f0d5d1",soft:"#ffe0db",head:"#d64f54",head2:"#8d2e38"},
-{name:"Tropical Rainforest",p:"#16866a",d:"#075641",bg:"#eaf8f0",panel:"#ffffff",tx:"#203b30",mut:"#668176",bd:"#cfe9da",soft:"#d7f1e2",head:"#16866a",head2:"#075641"},
-{name:"Sakura Spring",p:"#c05d89",d:"#7b365a",bg:"#fff2f7",panel:"#fffdfd",tx:"#472d3a",mut:"#8c6c7d",bd:"#f1d9e5",soft:"#fce4ef",head:"#c05d89",head2:"#7b365a"},
-{name:"Golden Sunflower",p:"#b48708",d:"#705405",bg:"#fff9df",panel:"#fffef7",tx:"#463c1d",mut:"#887b50",bd:"#eee2b7",soft:"#f8edc3",head:"#b48708",head2:"#705405"},
-{name:"Moonlight",p:"#6475b9",d:"#35416f",bg:"#f0f2fc",panel:"#ffffff",tx:"#29314b",mut:"#707b99",bd:"#dbe0f4",soft:"#e5e9fc",head:"#6475b9",head2:"#35416f"},
-{name:"Volcanic Earth",p:"#a94135",d:"#64231f",bg:"#f8eeeb",panel:"#fffaf8",tx:"#402b28",mut:"#806c67",bd:"#ead4ce",soft:"#f4ddd5",head:"#a94135",head2:"#64231f"},
-{name:"Meadow Mint",p:"#3a9479",d:"#205b4a",bg:"#edf8f3",panel:"#ffffff",tx:"#263c34",mut:"#6b8178",bd:"#d2e9df",soft:"#d9f1e6",head:"#3a9479",head2:"#205b4a"},
-{name:"River Pebble",p:"#687b85",d:"#3c5059",bg:"#f0f3f4",panel:"#ffffff",tx:"#29363b",mut:"#6f7e83",bd:"#dbe2e4",soft:"#e2e9eb",head:"#687b85",head2:"#3c5059"},
-{name:"Berry Forest",p:"#8b3f71",d:"#542447",bg:"#f8eff6",panel:"#ffffff",tx:"#3f2b3b",mut:"#826c7b",bd:"#e8d7e4",soft:"#f0e0ec",head:"#8b3f71",head2:"#542447"},
-{name:"Lagoon Teal",p:"#087f83",d:"#075153",bg:"#e9f7f6",panel:"#ffffff",tx:"#1d3939",mut:"#648080",bd:"#cce7e5",soft:"#d7efed",head:"#087f83",head2:"#075153"}
+/* Built-in festival data. Add your own items in the Local Festivals tab. */
+const festivals = [
+{id:"diwali",name:"Diwali",icon:"🪔",tradition:"Hindu",region:"Across India",season:"Autumn",period:"Usually October–November",short:"Festival of lights",description:"Diwali, also called Deepavali, is celebrated with lamps, decorations, sweets and family gatherings.",significance:"Its meanings vary by region and tradition. It is widely associated with renewal and the triumph of light over darkness.",traditions:"Lighting diyas, rangoli, prayers, family gatherings and exchanging gifts.",food:"Laddoo, barfi, chakli and regional sweets.",keywords:"lights lakshmi rangoli deepavali"},
+{id:"holi",name:"Holi",icon:"🎨",tradition:"Hindu",region:"North and across India",season:"Spring",period:"Usually February–March",short:"Festival of colours",description:"Holi welcomes spring with colours, music and joyful gatherings.",significance:"Many communities connect it with Prahlada and Holika and the victory of devotion over evil.",traditions:"Holika Dahan, colours, music and visiting friends.",food:"Gujiya, thandai, malpua and snacks.",keywords:"gulal colours krishna spring"},
+{id:"navratri",name:"Navratri",icon:"🌺",tradition:"Hindu",region:"Across India",season:"Autumn",period:"Usually September–October",short:"Nine nights of devotion",description:"A nine-night festival dedicated in many traditions to the Divine Feminine.",significance:"Honours forms of Goddess Durga; regional customs differ.",traditions:"Fasting, devotional music, garba, dandiya and temple visits.",food:"Sabudana khichdi, fruits and regional festive meals.",keywords:"durga garba dandiya goddess"},
+{id:"dussehra",name:"Dussehra / Vijayadashami",icon:"🏹",tradition:"Hindu",region:"Across India",season:"Autumn",period:"Usually September–October",short:"Victory of good over evil",description:"Dussehra marks a victory of righteousness over wrongdoing.",significance:"Associated with Rama's victory over Ravana in many northern traditions and Durga Puja in parts of eastern India.",traditions:"Ramlila, processions, temple visits and regional ceremonies.",food:"Regional sweets and festive meals.",keywords:"vijayadashami rama ravana"},
+{id:"ganesh",name:"Ganesh Chaturthi",icon:"🐘",tradition:"Hindu",region:"Maharashtra and across India",season:"Monsoon",period:"Usually August–September",short:"Celebration of Lord Ganesha",description:"Celebrates Ganesha, associated with wisdom and new beginnings.",significance:"Especially prominent in Maharashtra, with household and public celebrations.",traditions:"Idols, prayers, decorations, songs and immersion ceremonies where practised.",food:"Modak and ladoo.",keywords:"ganpati ganapati mumbai maharashtra"},
+{id:"janmashtami",name:"Krishna Janmashtami",icon:"🦚",tradition:"Hindu",region:"Across India",season:"Monsoon",period:"Usually August–September",short:"Birth of Lord Krishna",description:"Commemorates the birth of Krishna.",significance:"Recalls stories of Krishna's childhood, teachings and devotion.",traditions:"Midnight prayers, bhajans, devotional performances and dahi handi in some regions.",food:"Makhan, mishri, panjiri and offerings.",keywords:"krishna gokul mathura dahi handi"},
+{id:"ramnavami",name:"Ram Navami",icon:"🏹",tradition:"Hindu",region:"Across India",season:"Spring",period:"Usually March–April",short:"Birth of Lord Rama",description:"Celebrates the birth of Rama, a central figure in the Ramayana.",significance:"Honours ideals of duty, courage, compassion and righteousness.",traditions:"Ramayana readings, devotional songs and temple processions.",food:"Panakam, fruits and offerings.",keywords:"rama ramayana ayodhya"},
+{id:"mahashivratri",name:"Maha Shivratri",icon:"🔱",tradition:"Hindu",region:"Across India",season:"Winter",period:"Usually February–March",short:"Night dedicated to Shiva",description:"A sacred night devoted to Lord Shiva.",significance:"Associated with spiritual reflection and devotion.",traditions:"Fasting, night vigils, meditation and temple worship.",food:"Fruit, milk and foods permitted during fasts.",keywords:"shiva shankar meditation"},
+{id:"makarsankranti",name:"Makar Sankranti",icon:"🪁",tradition:"Hindu",region:"Across India",season:"Harvest",period:"Around 14 January",short:"Seasonal transition and harvest",description:"A widely celebrated seasonal and harvest festival.",significance:"Connected with seasonal change, gratitude and new harvests.",traditions:"Kite flying, community gatherings and charitable giving.",food:"Til-gud sweets, chikki and khichdi.",keywords:"kite til gud harvest"},
+{id:"pongal",name:"Pongal",icon:"🌾",tradition:"Hindu",region:"Tamil Nadu",season:"Harvest",period:"Usually 14–17 January",short:"Tamil harvest celebration",description:"A major Tamil harvest festival giving thanks for agricultural abundance.",significance:"Celebrates the harvest, sunlight, cattle and land.",traditions:"Cooking new rice, kolam decorations and Mattu Pongal.",food:"Sakkarai pongal and ven pongal.",keywords:"tamil thai surya mattu"},
+{id:"baisakhi",name:"Baisakhi / Vaisakhi",icon:"🌾",tradition:"Sikh",region:"Punjab and northern India",season:"Harvest",period:"Usually 13–14 April",short:"Harvest and Sikh heritage",description:"An important harvest festival and Sikh religious occasion.",significance:"Commemorates the formation of the Khalsa in 1699.",traditions:"Gurdwara visits, kirtan, community meals and folk dance.",food:"Kada prasad and Punjabi festive meals.",keywords:"khalsa punjab bhangra"},
+{id:"lohri",name:"Lohri",icon:"🔥",tradition:"Regional",region:"Punjab and northern India",season:"Winter",period:"Usually 13 January",short:"Winter and harvest festival",description:"Celebrated particularly in Punjab during winter.",significance:"Linked with the winter harvest and seasonal change.",traditions:"Bonfires, folk songs and community gatherings.",food:"Rewri, gajak, peanuts and sesame sweets.",keywords:"bonfire punjabi winter"},
+{id:"onam",name:"Onam",icon:"🌼",tradition:"Regional",region:"Kerala",season:"Monsoon",period:"Usually August–September",short:"Kerala harvest celebration",description:"A major cultural festival in Kerala.",significance:"Associated with King Mahabali, prosperity and hospitality.",traditions:"Pookalam, sadya, boat races and traditional performances.",food:"Onam sadya.",keywords:"kerala mah abali pookalam"},
+{id:"ugadi",name:"Ugadi",icon:"🌿",tradition:"Hindu",region:"Andhra Pradesh, Telangana and Karnataka",season:"Spring",period:"Usually March–April",short:"New year in the Deccan",description:"Marks the traditional new year in parts of southern India.",significance:"Represents a new beginning and reflection.",traditions:"Mango-leaf decorations, family prayers and special dishes.",food:"Ugadi pachadi.",keywords:"yugadi telugu kannada new year"},
+{id:"gudipadwa",name:"Gudi Padwa",icon:"🚩",tradition:"Hindu",region:"Maharashtra",season:"Spring",period:"Usually March–April",short:"Marathi new year",description:"Marks the traditional new year for many Marathi-speaking communities.",significance:"Symbolises renewal, prosperity and auspicious beginnings.",traditions:"Raising a decorated gudi and creating rangoli.",food:"Puran poli, shrikhand and neem-jaggery preparations.",keywords:"marathi new year gudi"},
+{id:"vishu",name:"Vishu",icon:"🌞",tradition:"Hindu",region:"Kerala",season:"Spring",period:"Usually 14–15 April",short:"Seasonal celebration",description:"An important seasonal and new-year observance in Kerala.",significance:"Associated with prosperity and hope.",traditions:"Vishukkani, Vishukkaineettam and a family meal.",food:"Vishu sadya and regional dishes.",keywords:"vishukkani malayalam"},
+{id:"bihu",name:"Rongali Bihu",icon:"💃",tradition:"Regional",region:"Assam",season:"Harvest",period:"Usually mid-April",short:"Assamese new year",description:"Celebrates the Assamese new year and arrival of spring.",significance:"Celebrates agricultural life and renewal.",traditions:"Bihu dance, folk music and family visits.",food:"Pitha and laru.",keywords:"assam bihu bohag"},
+{id:"durga",name:"Durga Puja",icon:"🪷",tradition:"Hindu",region:"West Bengal and eastern India",season:"Autumn",period:"Usually September–October",short:"Worship of Goddess Durga",description:"A major festival honouring Goddess Durga.",significance:"Celebrates the goddess's victory over Mahishasura.",traditions:"Pandals, idol worship, performances and community gatherings.",food:"Bhog, khichuri and regional sweets.",keywords:"kolkata bengal mahishasura"},
+{id:"raksha",name:"Raksha Bandhan",icon:"🧵",tradition:"Hindu",region:"Across India",season:"Monsoon",period:"Usually August",short:"Bond of siblings",description:"Celebrates affection and the bond between siblings and loved ones.",significance:"The rakhi thread symbolises care and mutual support.",traditions:"Tying rakhis, gifts and family meals.",food:"Laddoo, barfi and homemade sweets.",keywords:"rakhi brother sister"},
+{id:"chhath",name:"Chhath Puja",icon:"🌅",tradition:"Hindu",region:"Bihar, Jharkhand and eastern Uttar Pradesh",season:"Autumn",period:"Usually October–November",short:"Sun worship",description:"A major observance dedicated to the Sun.",significance:"Devotees express gratitude for life and well-being.",traditions:"Prayers near water at sunset and sunrise.",food:"Thekua, fruits and traditional offerings.",keywords:"sunrise surya bihar"},
+{id:"jagannath",name:"Rath Yatra",icon:"🛕",tradition:"Hindu",region:"Puri, Odisha and elsewhere",season:"Summer",period:"Usually June–July",short:"Festival of temple chariots",description:"A major procession associated with Lord Jagannath.",significance:"The deities are taken in grand chariots for public darshan.",traditions:"Decorated chariots, devotional singing and ceremonies.",food:"Mahaprasad and regional Odia dishes.",keywords:"puri jagannath odisha chariot"},
+{id:"eid-ul-fitr",name:"Eid-ul-Fitr",icon:"🌙",tradition:"Muslim",region:"Across India",season:"All",period:"Islamic lunar calendar",short:"Festival marking Ramadan's end",description:"Marks the conclusion of Ramadan.",significance:"Emphasises gratitude, prayer, generosity and charity.",traditions:"Eid prayers, family visits and shared meals.",food:"Sheer khurma, seviyan and regional dishes.",keywords:"eid ramadan muslim moon"},
+{id:"eid-adha",name:"Eid-ul-Adha",icon:"🕌",tradition:"Muslim",region:"Across India",season:"All",period:"Islamic lunar calendar",short:"Festival of sacrifice",description:"An important Muslim festival commemorating Ibrahim's devotion.",significance:"Highlights faith, generosity and sharing.",traditions:"Special prayers, family gatherings and charity.",food:"Regional family meals.",keywords:"bakrid sacrifice charity"},
+{id:"buddha",name:"Buddha Purnima",icon:"☸️",tradition:"Buddhist",region:"Across India",season:"Spring",period:"Usually April–May",short:"Life of Gautama Buddha",description:"Commemorates important events in the life of Gautama Buddha.",significance:"Celebrates compassion, wisdom and non-violence.",traditions:"Meditation, temple visits, chanting and charitable acts.",food:"Vegetarian meals and community food.",keywords:"buddha buddhism bodh gaya"},
+{id:"mahavir",name:"Mahavir Jayanti",icon:"🙏",tradition:"Jain",region:"Across India",season:"Spring",period:"Usually March–April",short:"Birth of Mahavira",description:"Commemorates Mahavira, the twenty-fourth Tirthankara in Jain tradition.",significance:"Highlights non-violence, self-discipline and compassion.",traditions:"Temple visits, prayers and charitable activities.",food:"Jain vegetarian meals and sweets.",keywords:"jain ahimsa tirthankara"},
+{id:"christmas",name:"Christmas",icon:"🎄",tradition:"Christian",region:"Across India",season:"Winter",period:"25 December",short:"Celebration of Jesus Christ's birth",description:"Celebrates the birth of Jesus Christ.",significance:"Emphasises hope, love, peace and generosity.",traditions:"Church services, carols, nativity displays and family gatherings.",food:"Plum cake and regional festive meals.",keywords:"jesus church carols santa"},
+{id:"easter",name:"Easter",icon:"🐣",tradition:"Christian",region:"Across India",season:"Spring",period:"Date varies",short:"Celebration of the resurrection",description:"Celebrates the resurrection of Jesus Christ.",significance:"Represents hope, renewal and new life.",traditions:"Church services, hymns and family gatherings.",food:"Cakes and regional celebratory foods.",keywords:"resurrection easter sunday"},
+{id:"newyear",name:"New Year's Day",icon:"🎆",tradition:"National",region:"Across India",season:"Winter",period:"1 January",short:"Calendar new year",description:"People across India welcome the Gregorian new year in diverse ways.",significance:"An opportunity for reflection and fresh goals.",traditions:"Gatherings, events and resolutions.",food:"Family favourites and festive meals.",keywords:"january first celebration"},
+{id:"independence",name:"Independence Day",icon:"🇮🇳",tradition:"National",region:"Across India",season:"Monsoon",period:"15 August",short:"India's independence",description:"Commemorates India's independence in 1947.",significance:"Honours the freedom struggle.",traditions:"Flag hoisting, speeches, patriotic songs and school events.",food:"Regional sweets and community meals.",keywords:"freedom flag patriotism"},
+{id:"republic",name:"Republic Day",icon:"🇮🇳",tradition:"National",region:"Across India",season:"Winter",period:"26 January",short:"Constitution of India",description:"Marks the day India's Constitution came into effect in 1950.",significance:"Celebrates India's democratic republic and constitutional values.",traditions:"Flag hoisting, parades and cultural displays.",food:"Regional foods.",keywords:"constitution parade democracy"},
+{id:"guru-nanak",name:"Guru Nanak Jayanti",icon:"☬",tradition:"Sikh",region:"Across India",season:"Autumn",period:"Usually October–November",short:"Birth of Guru Nanak",description:"Celebrates Guru Nanak Dev Ji, founder of Sikhism.",significance:"Emphasises devotion, equality, honest living and service.",traditions:"Gurdwara visits, kirtan, processions and langar.",food:"Langar meals and kada prasad.",keywords:"gurpurab sikh guru nanak"},
+{id:"hornbill",name:"Hornbill Festival",icon:"🪶",tradition:"Tribal",region:"Nagaland",season:"Winter",period:"Usually 1–10 December",short:"Festival of Naga heritage",description:"A major cultural gathering showcasing Naga heritage.",significance:"Promotes cultural knowledge, crafts, music and community identity.",traditions:"Traditional performances, crafts, games and music.",food:"Naga regional cuisine.",keywords:"nagaland naga tribal heritage"},
+{id:"wangala",name:"Wangala Festival",icon:"🥁",tradition:"Tribal",region:"Meghalaya and Garo communities",season:"Harvest",period:"Usually October–November",short:"Garo harvest celebration",description:"A harvest festival of the Garo people.",significance:"Gives thanks for the harvest.",traditions:"Drum performances, dances and community celebrations.",food:"Traditional Garo dishes.",keywords:"garo meghalaya drums"},
+{id:"chapchar",name:"Chapchar Kut",icon:"🌱",tradition:"Tribal",region:"Mizoram",season:"Spring",period:"Usually March",short:"Mizo spring festival",description:"A major cultural festival of the Mizo people.",significance:"Historically linked with the agricultural cycle.",traditions:"Bamboo dance, music and traditional attire.",food:"Traditional Mizo dishes.",keywords:"mizoram bamboo dance cheraw"},
+{id:"gangaur",name:"Gangaur",icon:"👑",tradition:"Hindu",region:"Rajasthan",season:"Spring",period:"Usually March–April",short:"Rajasthani spring festival",description:"A major festival in Rajasthan associated with Goddess Gauri.",significance:"Associated with devotion and spring.",traditions:"Decorated images, processions and folk music.",food:"Ghewar and regional sweets.",keywords:"rajasthan gauri udaipur"},
+{id:"teej",name:"Teej",icon:"🌧️",tradition:"Hindu",region:"Rajasthan, Haryana and northern India",season:"Monsoon",period:"Various monsoon dates",short:"Monsoon celebration",description:"A group of festivals observed during the monsoon.",significance:"Many traditions honour Goddess Parvati and seasonal renewal.",traditions:"Swings, folk songs, mehendi and festive clothing.",food:"Ghewar, malpua and regional sweets.",keywords:"hariyali teej kajari teej"},
+{id:"bastar",name:"Bastar Dussehra",icon:"🌳",tradition:"Tribal",region:"Chhattisgarh",season:"Autumn",period:"Usually August–October",short:"Distinctive tribal-region festival",description:"A distinctive long-running festival with customs different from Ravana-burning observances.",significance:"Associated with local deities and Bastar's cultural heritage.",traditions:"Rituals, processions and traditional ceremonies.",food:"Local Chhattisgarhi dishes.",keywords:"bastar jagdalpur chhattisgarh"},
+{id:"ambubachi",name:"Ambubachi Mela",icon:"🌺",tradition:"Hindu",region:"Guwahati, Assam",season:"Monsoon",period:"Usually June",short:"Shakti pilgrimage",description:"A major annual gathering at Kamakhya Temple in Assam.",significance:"Linked with traditions surrounding Goddess Kamakhya.",traditions:"Pilgrimage, religious observances and temple gatherings.",food:"Regional Assamese cuisine.",keywords:"kamakhya guwahati shakti"},
+{id:"hemis",name:"Hemis Festival",icon:"🎭",tradition:"Buddhist",region:"Ladakh",season:"Summer",period:"Usually June–July",short:"Ladakh monastery festival",description:"A major cultural and religious celebration at Hemis Monastery.",significance:"Honours Guru Padmasambhava in the monastery's tradition.",traditions:"Masked dances, traditional music and monastery gatherings.",food:"Ladakhi regional foods and tea.",keywords:"ladakh monastery masked dance"},
+{id:"losar",name:"Losar",icon:"🏔️",tradition:"Buddhist",region:"Ladakh and Himalayan regions",season:"Winter",period:"Date varies by tradition",short:"Himalayan new year",description:"A new-year celebration observed by Tibetan and Himalayan communities.",significance:"Represents renewal and auspicious beginnings.",traditions:"Household cleaning, prayers and family visits.",food:"Khapse and regional festive dishes.",keywords:"tibetan himalayan new year"},
+{id:"nuakhai",name:"Nuakhai",icon:"🌾",tradition:"Regional",region:"Western Odisha",season:"Harvest",period:"Usually August–September",short:"New rice harvest festival",description:"A major harvest festival in western Odisha.",significance:"Families give thanks for the new crop.",traditions:"Offering new rice, family gatherings and folk performances.",food:"New rice and regional Odia dishes.",keywords:"odisha sambalpuri new rice"},
+{id:"sarhul",name:"Sarhul",icon:"🌳",tradition:"Tribal",region:"Jharkhand",season:"Spring",period:"Usually March–April",short:"Nature and spring festival",description:"An important spring festival among Adivasi communities.",significance:"Celebrates nature, community ties and seasonal renewal.",traditions:"Sacred-grove ceremonies, dance, music and gatherings.",food:"Traditional regional dishes.",keywords:"adivasi sal tree jharkhand"},
+{id:"karma",name:"Karma Festival",icon:"🌿",tradition:"Tribal",region:"Central and eastern India",season:"Monsoon",period:"Usually August–September",short:"Nature and community festival",description:"Observed by several Adivasi communities with local variations.",significance:"Connected with nature, agricultural well-being and community bonds.",traditions:"Tree worship in some traditions, dancing and singing.",food:"Traditional regional dishes.",keywords:"adivasi karma tree"},
+{id:"mimkut",name:"Mim Kut",icon:"🌽",tradition:"Tribal",region:"Mizoram",season:"Harvest",period:"Usually August–September",short:"Mizo harvest observance",description:"A traditional Mizo observance connected with maize harvest and ancestral remembrance.",significance:"Reflects agricultural traditions and ancestral remembrance.",traditions:"Traditional gatherings and community customs.",food:"Maize-based and regional dishes.",keywords:"mizo maize harvest"}
 ];
 
-/* Format:
-name|country|category|month|typical date|duration|description|activities|location|calendar */
-const RAW=`
-Diwali|India|Religious|October|October or November, new moon|5 days|Festival of lights celebrating the triumph of light over darkness.|Diyas, rangoli, sweets and family gatherings.
-Holi|India|Cultural|March|February or March, full moon|1–2 days|Spring festival associated with colours, renewal and stories of devotion.|Coloured powders, music and sweets.
-Durga Puja|India|Religious|October|September or October|5 main days|Honours Goddess Durga through worship, art and community celebrations.|Puja, pandals and performances.
-Ganesh Chaturthi|India|Religious|August|August or September|1–11 days|Celebrates Lord Ganesha with home and public installations.|Aarti, decorations and processions.
-Navratri|India|Religious|October|September or October|9 nights|Celebrates the Divine Feminine through prayer, fasting and dance.|Garba, dandiya and devotional events.
-Onam|India|Harvest|August|August or September|About 10 days|Kerala harvest celebration associated with King Mahabali.|Onasadya, pookalam and boat races.
-Pongal|India|Harvest|January|Usually 14–17 January|4 days|Tamil harvest thanksgiving to the Sun, nature and cattle.|Pongal cooking and kolam.
-Baisakhi|India|Harvest|April|13 or 14 April|1 day|Punjabi harvest festival and important Sikh observance.|Gurdwara visits, fairs and bhangra.
-Eid al-Fitr|India|Religious|March|Moves annually|1–3 days|Marks the end of Ramadan through prayer and generosity.|Eid prayers, charity and festive meals.
-Eid al-Adha|Saudi Arabia|Religious|May|Moves annually|Several days|Festival of Sacrifice emphasising devotion and sharing.|Prayers and charitable sharing.
-Christmas|Worldwide|Religious|December|25 December|1 day plus seasonal events|Celebrates the birth of Jesus Christ.|Carols, gifts and festive meals.
-Buddha Purnima|India|Religious|May|April or May, full moon|1 day|Commemorates key events in the life of Gautama Buddha.|Meditation and temple visits.
-Raksha Bandhan|India|Cultural|August|July or August, full moon|1 day|Celebrates affection and bonds between siblings.|Rakhi threads and family meals.
-Makar Sankranti|India|Harvest|January|Usually 14 January|1–2 days|Marks a seasonal solar transition and harvest.|Kite flying and sesame sweets.
-Republic Day|India|National|January|26 January|1 day|Commemorates India's Constitution coming into effect in 1950.|Parades and flag ceremonies.
-Independence Day|India|National|August|15 August|1 day|Marks India's independence in 1947.|Flag hoisting and cultural programmes.
-Lunar New Year|China|Lunar New Year|January|January or February|About 15 days|Welcomes a new year with reunion and wishes for good fortune.|Red decorations and reunion dinners.
-Mid-Autumn Festival|China|Harvest|September|September or October, full moon|1 day|Celebrates harvest and reunion under the autumn moon.|Mooncakes and lanterns.
-Qingming|China|Memorial|April|Usually 4–6 April|1 day|Honours ancestors and includes family grave visits.|Offerings and grave sweeping.
-Dragon Boat Festival|China|Cultural|June|May or June|1 day|Traditional festival associated with dragon boat racing.|Boat races and zongzi.
-Gion Matsuri|Japan|Cultural|July|July|Throughout July|Historic Kyoto festival featuring elaborate floats.|Processions and street stalls.
-Hanami|Japan|Seasonal|March|March or April|Several weeks regionally|Seasonal cherry blossom viewing celebrating spring.|Picnics and blossom viewing.
-Obon|Japan|Memorial|August|July or August|About 3 days|Honours ancestral spirits through family traditions.|Bon dances and lanterns.
-Seollal|South Korea|Lunar New Year|January|January or February|Usually 3 days|Korean Lunar New Year focusing on family and respect for elders.|Traditional food and family greetings.
-Chuseok|South Korea|Harvest|September|September or October|Usually 3 days|Harvest and family reunion holiday.|Songpyeon and family visits.
-Songkran|Thailand|Cultural|April|13–15 April|3 days|Thai New Year celebration of renewal and cleansing.|Water celebrations and temple visits.
-Nyepi|Indonesia|Religious|March|March; date varies|About 24 hours|Balinese Day of Silence devoted to reflection.|Quiet observance and preparations.
-Nowruz|Iran|Seasonal|March|Around 20–21 March|About 13 days|Persian New Year celebrates spring and renewal.|Haft-sin table and family visits.
-Yalda Night|Iran|Seasonal|December|Around 20–21 December|One night|Celebrates winter solstice through family gathering and storytelling.|Poetry, fruit and nuts.
-Carnival|Brazil|Cultural|February|February or early March|Several days|Celebration of music, dance and costumes.|Samba parades and street parties.
-Festa Junina|Brazil|Harvest|June|Throughout June|Local events over several weeks|Popular winter-season festivals with folk music and food.|Quadrilha and corn dishes.
-Inti Raymi|Peru|Cultural|June|24 June|Main ceremony 1 day|Andean celebration honouring the Sun and cultural heritage.|Processions and traditional performances.
-Día de los Muertos|Mexico|Memorial|November|1–2 November|2 main days|Honours deceased loved ones through altars and family remembrance.|Ofrendas, marigolds and cemetery visits.
-Guelaguetza|Mexico|Cultural|July|July|Several days|Celebrates Oaxacan Indigenous cultures through dance and music.|Folk dance and regional food.
-Independence Day|United States|National|July|4 July|1 day|Commemorates the Declaration of Independence in 1776.|Parades and fireworks.
-Thanksgiving|United States|Cultural|November|Fourth Thursday|1 day|Holiday centred on gratitude and shared meals.|Family dinners and community service.
-Halloween|United States|Cultural|October|31 October|One evening|Autumn observance with costumes and community activities.|Trick-or-treating and pumpkin carving.
-St Patrick's Day|Ireland|Cultural|March|17 March|1 day|Celebrates Irish heritage and the country's patron saint.|Parades, music and dance.
-Edinburgh Fringe|United Kingdom|Arts|August|August|About 3 weeks|International performing arts festival.|Theatre, comedy and street performances.
-Bonfire Night|United Kingdom|Historical|November|5 November|One evening|Commemorates the Gunpowder Plot of 1605.|Organised bonfires and fireworks.
-Oktoberfest|Germany|Food|September|September to early October|About 16–18 days|Bavarian folk festival with music, food and fairground attractions.|Traditional music and regional dishes.
-La Tomatina|Spain|Cultural|August|Usually last Wednesday of August|Main event about 1 hour|Organised tomato-throwing celebration in Buñol.|Tomato event and local festivities.
-Las Fallas|Spain|Arts|March|Culminates around 19 March|Several days|Valencia festival of artistic figures and fireworks.|Sculptures, parades and fireworks.
-Bastille Day|France|National|July|14 July|1 day|French national day commemorating the Revolution.|Parades and public celebrations.
-Fête de la Musique|France|Music|June|21 June|1 day|Public music celebration encouraging performances everywhere.|Concerts and local music.
-King's Day|Netherlands|National|April|27 April, with calendar exception|1 day|Celebrates the Dutch monarch's birthday.|Street markets and orange clothing.
-Midsummer|Sweden|Seasonal|June|Friday between 19 and 25 June|1–2 days|Summer solstice celebration of light, nature and community.|Maypole dancing and flowers.
-Canada Day|Canada|National|July|1 July|1 day|Marks Canadian Confederation in 1867.|Concerts and public events.
-Matariki|New Zealand|Cultural|June|June or July|Public holiday and related events|Māori New Year connected with remembrance and renewal.|Storytelling and shared food.
-ANZAC Day|Australia|Memorial|April|25 April|1 day|Commemorates military service and remembrance.|Dawn services and marches.
-Vivid Sydney|Australia|Arts|May|May or June|Several weeks|City festival combining light installations, music and creative ideas.|Light displays and concerts.
-Pohela Boishakh|Bangladesh|Cultural|April|Usually 14 April|1 day|Bengali New Year celebrated with music and traditional food.|Fairs and processions.
-Tihar|Nepal|Religious|October|October or November|5 days|Festival of lights honouring animals, family bonds and prosperity.|Oil lamps and Bhai Tika.
-Dashain|Nepal|Religious|October|September or October|About 15 days|Major Nepalese festival celebrating good over evil.|Family reunions and blessings.
-Timkat|Ethiopia|Religious|January|Usually 19 January|About 3 days|Ethiopian Orthodox celebration of Epiphany.|Processions and prayer.
-Meskel|Ethiopia|Religious|September|Usually 27 September|1–2 days|Commemorates the finding of the True Cross in Ethiopian Orthodox tradition.|Bonfire and prayers.
-Fête du Vodoun|Benin|Religious|January|10 January|1 day|Celebrates Vodun traditions and cultural heritage.|Ceremonies, music and dance.
-National Day|United Arab Emirates|National|December|2 December|1–2 days|Celebrates the formation of the UAE in 1971.|Cultural events and public displays.
-Singapore National Day|Singapore|National|August|9 August|1 day|Marks Singapore's independence in 1965.|Parade and performances.
-Pohela Falgun|Bangladesh|Cultural|February|Usually 13 February|1 day|Welcomes spring in Bengali culture.|Yellow dress, music and gatherings.
-Vesak|Sri Lanka|Religious|May|May, full moon|1–2 days|Honours the Buddha's birth, enlightenment and passing.|Lanterns and temple visits.
-Thingyan|Myanmar|Cultural|April|Mid-April|Several days|Myanmar New Year water festival associated with renewal.|Water celebrations and charitable acts.
-Pchum Ben|Cambodia|Religious|September|September or October|15-day observance|Honours deceased relatives in Cambodian Buddhist tradition.|Pagoda visits and food offerings.
-Hanukkah|Israel|Religious|December|November or December|8 nights|Jewish Festival of Lights commemorating the rededication of the Second Temple.|Menorah lighting and family meals.
-Passover|Israel|Religious|April|March or April|7 days in Israel|Commemorates the Exodus from Egypt in Jewish tradition.|Seder meals and matzah.
-Easter|Worldwide|Religious|April|March or April|Holy Week and Easter Sunday|Christian celebration of the resurrection of Jesus Christ.|Church services and family meals.
-International Women's Day|Worldwide|Community|March|8 March|1 day|Recognises women's achievements and highlights gender equality.|Talks, campaigns and events.
-Earth Day|Worldwide|Environment|April|22 April|1 day|Promotes environmental awareness and conservation.|Cleanups, planting and education.
-New Year's Eve|Worldwide|Cultural|December|31 December|One evening|Marks the end of the Gregorian year.|Countdowns, gatherings and music.
-International Day of Yoga|Worldwide|Community|June|21 June|1 day|Promotes awareness of yoga and its traditions.|Yoga sessions and workshops.
-World Music Day|Worldwide|Music|June|21 June|1 day|Celebrates music through public and community performances.|Street music and concerts.
-Lohri|India|Harvest|January|Usually 13 January|1 evening|Punjabi winter harvest celebration.|Bonfires, folk songs and peanuts.
-Chhath Puja|India|Religious|November|October or November|4 days|Sun worship festival observed especially in Bihar and eastern India.|Riverbank offerings at sunrise and sunset.
-Bihu|India|Harvest|April|Around 14 April|Several days|Assamese spring and harvest festival.|Bihu dance, music and feasts.
-Vishu|India|Cultural|April|Usually 14 or 15 April|1 day|Malayali New Year observance welcoming prosperity.|Vishukkani and family meals.
-Ugadi|India|Cultural|March|March or April|1 day|New year festival in parts of southern India.|Rituals and traditional foods.
-Gudi Padwa|India|Cultural|March|March or April|1 day|Maharashtrian New Year marking a new beginning.|Gudi decorations and festive meals.
-Mahashivratri|India|Religious|February|February or March|1 night|Night of devotion to Lord Shiva.|Fasting, prayers and temple visits.
-Janmashtami|India|Religious|August|August or September|1–2 days|Celebrates the birth of Krishna.|Bhajans, decorations and dahi handi.
-Ram Navami|India|Religious|March|March or April|1 day|Celebrates the birth of Lord Rama.|Prayers and devotional gatherings.
-Raksha Bandhan|Nepal|Cultural|August|August; date varies|1 day|Celebrates sibling bonds in many communities.|Rakhi and family gatherings.
-Pushkar Camel Fair|India|Cultural|November|October or November|About 5–7 days|Rajasthan fair combining livestock trading, culture and tourism.|Camel displays, markets and performances.
-Kumbh Mela|India|Religious|Variable|Dates depend on location and astrological cycle|Weeks to months|Large Hindu pilgrimage gathering held at designated sites.|Pilgrimage, bathing and religious gatherings.
-Hornbill Festival|India|Cultural|December|Usually 1–10 December|10 days|Nagaland festival showcasing Naga cultures.|Music, dance, crafts and traditional sports.
-Hemis Festival|India|Religious|June|June or July|2 days|Ladakh monastery festival honouring Guru Padmasambhava.|Masked dances and monastery ceremonies.
-Lai Haraoba|India|Cultural|May|Dates vary by community|Several days|Meitei ritual festival celebrating traditional deities and creation stories.|Ritual dance and music.
-Losar|Tibet|Lunar New Year|February|February or March|Several days|Tibetan New Year with religious and family customs.|Prayers, food and traditional dance.
-Nowruz|Azerbaijan|Seasonal|March|Around 20–21 March|Several days|Spring New Year celebrated with ancient regional customs.|Bonfires, sweets and family visits.
-Aluth Avurudda|Sri Lanka|Cultural|April|Around 13–14 April|Several days|Sinhala and Tamil New Year linked with the solar transition.|Traditional games and meals.
-Tet|Vietnam|Lunar New Year|January|January or February|Several days|Vietnamese Lunar New Year focused on family and renewal.|Ancestor altars, flowers and special foods.
-Mid-Autumn Festival|Vietnam|Cultural|September|September or October, full moon|1 day|Harvest and children's festival.|Lanterns, lion dances and mooncakes.
-Thaipusam|Malaysia|Religious|January|January or February|1 day|Tamil Hindu festival honouring Lord Murugan.|Pilgrimage and devotional offerings.
-Wesak|Malaysia|Religious|May|May, full moon|1 day|Buddhist commemoration of the Buddha.|Temple visits and charitable acts.
-Ati-Atihan|Philippines|Cultural|January|Third Sunday of January season|Several days|Festival honouring Santo Niño with lively street celebrations.|Drumming, dance and costumes.
-Sinulog|Philippines|Religious|January|Third Sunday of January|Several days|Cebu festival honouring Santo Niño.|Street dancing and processions.
-Panagbenga|Philippines|Seasonal|February|February into March|Several weeks|Baguio flower festival celebrating flowers and community recovery.|Flower floats and street dancing.
-Pahiyas|Philippines|Harvest|May|15 May|1 day|Harvest thanksgiving and colourful house decorations.|Rice decorations and local food.
-Boryeong Mud Festival|South Korea|Cultural|July|July|Several days|Summer festival centred on mineral-rich mud.|Mud activities and performances.
-Pingxi Sky Lantern Festival|Taiwan|Cultural|February|Lunar New Year period|One evening|Lantern event associated with hopes and wishes.|Sky lanterns and local festivities.
-Songkran|Laos|Cultural|April|Mid-April|Several days|Lao New Year celebration.|Water festivities and temple visits.
-Water Festival|Cambodia|Cultural|November|Usually November|Several days|Marks seasonal river flow changes and features boat races.|Boat racing and public celebrations.
-Boun Pi Mai|Laos|Cultural|April|Mid-April|Several days|Lao New Year celebration of cleansing and renewal.|Water rituals and family visits.
-Thingyan|Myanmar|Cultural|April|Mid-April|Several days|Traditional New Year water celebration.|Water play, prayer and charity.
-Tazaungdaing|Myanmar|Religious|November|November, full moon|Several days|Festival of lights at the end of Buddhist Lent.|Lanterns and robe offerings.
-Gawai Dayak|Malaysia|Harvest|June|1–2 June|Several days|Harvest festival of Dayak communities in Sarawak.|Traditional music, dance and feasting.
-Kaamatan|Malaysia|Harvest|May|30–31 May|Several days|Kadazan-Dusun harvest celebration in Sabah.|Traditional dance and harvest rituals.
-Nyepi|Indonesia|Religious|March|Balinese Saka calendar|24 hours|Day of silence and reflection in Bali.|Silence, fasting and contemplation.
-Galungan|Indonesia|Religious|Variable|Balinese calendar, dates vary|10 days|Balinese Hindu celebration of the triumph of dharma.|Penjor decorations and temple visits.
-Waisak|Indonesia|Religious|May|May, full moon|1 day|Buddhist holy day celebrated at temples including Borobudur.|Prayer and lantern ceremonies.
-Pasola|Indonesia|Cultural|February|February or March, dates vary|Several days|Traditional Sumba ritual festival associated with the harvest season.|Ceremonial horseback games.
-Bali Arts Festival|Indonesia|Arts|June|June to July|About one month|Showcases Balinese arts and cultural heritage.|Dance, music, crafts and exhibitions.
-Holi Festival|Nepal|Cultural|March|February or March|1–2 days|Festival of colours celebrated across Nepal.|Colour play, music and gatherings.
-Indra Jatra|Nepal|Religious|September|August or September|About 8 days|Kathmandu festival honouring Indra and local traditions.|Chariot processions and masked dances.
-Bisket Jatra|Nepal|Cultural|April|April|Several days|Traditional New Year festival in Bhaktapur.|Chariot pulling and community events.
-Tshechu|Bhutan|Religious|Variable|Dates vary by district and lunar calendar|Several days|Buddhist festival honouring Guru Rinpoche.|Masked dances and blessings.
-Paro Tshechu|Bhutan|Religious|March|March or April|Several days|Major Bhutanese religious festival.|Masked dances and sacred displays.
-Thimphu Tshechu|Bhutan|Religious|September|September or October|Several days|Annual religious festival in Bhutan's capital.|Traditional dances and ceremonies.
-Nowruz|Kazakhstan|Seasonal|March|Around 21–23 March|Several days|Spring and New Year celebration.|Public events and traditional food.
-Mongolian Naadam|Mongolia|Sports|July|Usually 11–13 July|3 days|National festival centred on traditional sports.|Wrestling, horse racing and archery.
-Tsagaan Sar|Mongolia|Lunar New Year|February|January or February|Several days|Mongolian Lunar New Year and family holiday.|Greetings, traditional food and visits.
-Eid al-Fitr|Indonesia|Religious|Variable|Islamic lunar calendar|Several days|Celebrates the end of Ramadan.|Prayer, charity and family reunions.
-Eid al-Fitr|Pakistan|Religious|Variable|Islamic lunar calendar|Several days|Marks the end of Ramadan.|Eid prayer, gifts and family meals.
-Eid al-Fitr|Bangladesh|Religious|Variable|Islamic lunar calendar|Several days|Celebrates the end of Ramadan.|Prayer, charity and festive food.
-Eid al-Fitr|Malaysia|Religious|Variable|Islamic lunar calendar|Several days|Celebration marking the end of Ramadan.|Open houses and family gatherings.
-Eid al-Fitr|Egypt|Religious|Variable|Islamic lunar calendar|Several days|Celebrates the end of Ramadan.|Prayers, sweets and family visits.
-Eid al-Fitr|Morocco|Religious|Variable|Islamic lunar calendar|Several days|Celebrates the end of Ramadan.|Prayer, traditional meals and visits.
-Eid al-Adha|Turkey|Religious|Variable|Islamic lunar calendar|Several days|Festival of sacrifice and charity.|Prayer and sharing with others.
-Ramadan|Worldwide|Religious|Variable|Islamic lunar calendar|One lunar month|Holy month of fasting, reflection and charity for Muslims.|Fasting, prayer and community meals.
-Mawlid|Morocco|Religious|Variable|Islamic lunar calendar|Varies|Observance of the birth of Prophet Muhammad in some communities.|Gatherings, recitations and charity.
-Timkat|Eritrea|Religious|January|Usually January|Several days|Eritrean Orthodox Epiphany celebration.|Processions and religious ceremonies.
-Meskel|Ethiopia|Religious|September|Usually 27 September|1–2 days|Ethiopian Orthodox festival commemorating the True Cross.|Bonfires and prayers.
-Enkutatash|Ethiopia|Cultural|September|Usually 11 September|1 day|Ethiopian New Year.|Flowers, songs and family visits.
-Ashenda|Ethiopia|Cultural|August|August, dates vary|Several days|Northern Ethiopian girls' and women's cultural festival.|Songs, dance and community gatherings.
-FESPACO|Burkina Faso|Arts|February|Usually biennial in February or March|About one week|Pan-African film and television festival.|Film screenings and cultural events.
-Festival au Désert|Mali|Music|January|Dates and location vary|Several days|Saharan music and cultural gathering, with changing arrangements.|Music and cultural exchange.
-Timkat|Ethiopia|Religious|January|January|Several days|Celebration of Epiphany in Ethiopian Orthodox tradition.|Processions and prayer.
-Cape Town Minstrel Carnival|South Africa|Cultural|January|Around New Year and January|Several days|Cape cultural parade tradition with music and costumes.|Bands, costumes and parades.
-National Arts Festival|South Africa|Arts|June|June or July|About 10 days|Major performing and visual arts festival.|Theatre, dance, music and exhibitions.
-Reed Dance|Eswatini|Cultural|August|August or September|Several days|Cultural gathering and ceremony for young women.|Dance and traditional dress.
-Umhlanga|Zambia|Cultural|August|August|Several days|Traditional cultural ceremony and dance gathering.|Dance, music and ceremony.
-Lake of Stars|Malawi|Music|September|Dates vary|Several days|Music and arts festival near Lake Malawi.|Live music and cultural performances.
-Festival of the Sahara|Tunisia|Cultural|December|December, dates vary|Several days|Celebrates desert heritage and nomadic traditions.|Music, camel events and crafts.
-Gnaoua World Music Festival|Morocco|Music|June|June|Several days|Essaouira festival of Gnaoua and world music.|Concerts and cultural performances.
-Mawazine|Morocco|Music|May|May or June|Several days|Large music festival in Rabat.|Concerts and international artists.
-Carthage International Festival|Tunisia|Arts|July|July or August|Several weeks|Summer arts festival in the historic Carthage setting.|Music, theatre and performances.
-Yennayer|Algeria|Cultural|January|12 or 14 January depending on tradition|1 day or longer|Amazigh New Year marking cultural heritage.|Traditional foods and family gatherings.
-Mouloud|Algeria|Religious|Variable|Islamic lunar calendar|Varies|Observance of the Prophet Muhammad's birth in some communities.|Prayer and gatherings.
-Cairo International Film Festival|Egypt|Arts|November|Usually November|About 10 days|International film festival in Cairo.|Film screenings and discussions.
-Abu Simbel Sun Festival|Egypt|Cultural|February|Around 22 February|1 day|Sunlight alignment event at Abu Simbel temples.|Temple visits and cultural activities.
-Sham el-Nessim|Egypt|Seasonal|April|Monday after Coptic Easter|1 day|Ancient spring holiday shared by many Egyptians.|Outdoor picnics and seasonal foods.
-Nowruz|Iraq|Seasonal|March|Around 21 March|Several days|Spring New Year observed by Kurdish and other communities.|Outdoor celebrations and traditional dress.
-Jerusalem Day|Israel|National|May|Hebrew calendar date|1 day|Israeli observance associated with Jerusalem.|Ceremonies and public events.
-Purim|Israel|Religious|March|February or March, Hebrew calendar|1–2 days|Jewish festival recalling the story of Esther.|Costumes, gifts and readings.
-Sukkot|Israel|Religious|October|September or October, Hebrew calendar|7 days in Israel|Jewish harvest festival and pilgrimage holiday.|Temporary booths and meals.
-Loy Krathong|Thailand|Cultural|November|November, full moon|1 evening|Festival of lights and water offerings.|Floating decorated baskets and lanterns.
-Yi Peng|Thailand|Cultural|November|November, dates vary|1–2 days|Northern Thai lantern festival often near Loy Krathong.|Lanterns and cultural ceremonies.
-Vegetarian Festival|Thailand|Religious|October|September or October|About 9 days|Taoist festival associated with purification and vegetarian observance.|Processions and vegetarian foods.
-Boun Bang Fai|Laos|Harvest|May|May, dates vary|Several days|Rocket festival associated with rain and agriculture.|Rocket launches, music and dance.
-Baliem Valley Festival|Indonesia|Cultural|August|August|Several days|Cultural festival in Papua showcasing local traditions.|Performances and traditional displays.
-Hinamatsuri|Japan|Cultural|March|3 March|1 day|Japanese Doll Festival wishing girls health and happiness.|Doll displays and seasonal foods.
-Tanabata|Japan|Cultural|July|7 July or regional dates|1 day|Star festival based on a story of two celestial lovers.|Wish papers and decorations.
-Awa Odori|Japan|Dance|August|August|Several days|Traditional dance festival in Tokushima.|Street dancing and music.
-Sapporo Snow Festival|Japan|Seasonal|February|February|About one week|Winter festival featuring snow and ice sculptures.|Snow sculptures and winter activities.
-Kanda Matsuri|Japan|Cultural|May|May, major festival years vary|Several days|Historic Tokyo Shinto festival.|Portable shrines and processions.
-Setsubun|Japan|Seasonal|February|Usually 3 February|1 day|Seasonal observance welcoming spring in the traditional calendar.|Bean throwing and shrine events.
-White Day|Japan|Cultural|March|14 March|1 day|Gift-giving day following Valentine's Day in Japan and nearby regions.|Gifts and social gatherings.
-Seollal|South Korea|Lunar New Year|January|January or February|3 days|Korean Lunar New Year.|Family greetings, food and ancestral rites.
-Boryeong Mud Festival|South Korea|Cultural|July|July|Several days|Summer festival centred on mud.|Outdoor games and performances.
-Jeju Fire Festival|South Korea|Seasonal|March|March, dates vary|Several days|Festival associated with rural traditions and wishes for prosperity.|Bonfires and cultural events.
-Naadam|Mongolia|Sports|July|11–13 July|3 days|Mongolian festival celebrating traditional sports.|Wrestling, archery and horse racing.
-Chingay Parade|Singapore|Cultural|February|January or February|1–2 days|Multicultural street parade.|Floats, dance and performances.
-Thaipusam|Singapore|Religious|January|January or February|1 day|Tamil Hindu festival honouring Lord Murugan.|Devotional processions.
-Hungry Ghost Festival|Singapore|Religious|August|Seventh lunar month|Several weeks|Chinese folk observance honouring spirits and ancestors.|Offerings and performances.
-Hari Raya Aidilfitri|Singapore|Religious|Variable|Islamic lunar calendar|Several days|Celebration marking the end of Ramadan.|Prayers, visits and festive meals.
-Vesak|Singapore|Religious|May|May, full moon|1 day|Buddhist day marking major events in Buddha's life.|Temple visits and charity.
-Pahiyas|Philippines|Harvest|May|15 May|1 day|Harvest thanksgiving in Lucban.|Colourful rice decorations and food.
-MassKara Festival|Philippines|Cultural|October|October|Several days|Bacolod festival associated with colourful smiling masks.|Street dance and music.
-Kadayawan|Philippines|Harvest|August|August|Several days|Davao festival celebrating harvest and Indigenous cultures.|Floral floats and cultural performances.
-Ati-Atihan|Philippines|Cultural|January|January|Several days|Festival honouring Santo Niño.|Drumming and street dancing.
-Obando Fertility Rites|Philippines|Religious|May|17–19 May traditionally|3 days|Pilgrimage and dance tradition in Obando.|Processions and folk dance.
-Feria de las Flores|Colombia|Cultural|August|August|About 10 days|Medellín flower festival celebrating regional culture.|Flower parade and music.
-Carnaval de Barranquilla|Colombia|Cultural|February|Before Ash Wednesday|Several days|Major Colombian carnival of dance and music.|Parades, costumes and music.
-Inti Raymi|Ecuador|Cultural|June|June, dates vary|Several days|Andean solstice festival connected to the Sun and harvest.|Traditional dance and ceremonies.
-Fiesta de la Mama Negra|Ecuador|Cultural|September|September and November celebrations|Several days|Festival blending Indigenous, African and Spanish traditions.|Parades, costumes and music.
-Día de la Independencia|Argentina|National|July|9 July|1 day|Argentine Independence Day.|Civic ceremonies and traditional food.
-Vendimia|Argentina|Harvest|March|March, dates vary|Several days|Mendoza grape harvest festival.|Parades, performances and wine-region celebrations.
-Inti Raymi|Bolivia|Cultural|June|Around 21 June|1 day or related events|Andean winter solstice and New Year observance.|Traditional ceremonies and dance.
-Carnaval de Oruro|Bolivia|Cultural|February|Before Ash Wednesday|Several days|Major Bolivian carnival recognised for its cultural traditions.|Costumes, dance and music.
-Fiestas Patrias|Chile|National|September|18–19 September|Several days|Chilean national celebrations.|Cueca dancing, food and gatherings.
-Tapati Rapa Nui|Chile|Cultural|February|February|About 2 weeks|Cultural festival on Rapa Nui (Easter Island).|Traditional sports, music and body painting.
-Inti Raymi|Peru|Cultural|June|24 June|1 day|Inca-inspired ceremony honouring the Sun in Cusco.|Processions and performances.
-Fiesta de la Candelaria|Peru|Religious|February|Early February|Several days|Festival in Puno combining Catholic and Andean traditions.|Dance, music and processions.
-Semana Santa|Guatemala|Religious|March|March or April|Holy Week|Holy Week observances with elaborate processions.|Carpets, processions and worship.
-Festival de Barriletes Gigantes|Guatemala|Cultural|November|1 November|1 day|Giant kite festival associated with remembrance of the dead.|Kite displays and community gatherings.
-Fiestas de Octubre|Mexico|Arts|October|October|Several weeks|Cultural fair in Guadalajara.|Music, exhibitions and local food.
-Guelaguetza|Mexico|Cultural|July|July|Several days|Oaxaca celebration of regional Indigenous cultures.|Dance and traditional dress.
-Semana Santa|Mexico|Religious|March|March or April|Holy Week|Christian Holy Week observances across Mexico.|Processions and religious events.
-Inti Raymi|United States|Cultural|June|June, date varies|1 day or more|Andean cultural celebration held by some communities.|Traditional music and dance.
-Mardi Gras|United States|Cultural|February|Before Ash Wednesday|Several weeks of events|New Orleans carnival season.|Parades, music and costumes.
-Juneteenth|United States|National|June|19 June|1 day|Commemorates the emancipation of enslaved African Americans in Texas.|Community events and education.
-Powwow|United States|Cultural|Variable|Dates vary by community|One or several days|Gathering celebrating Native American cultures.|Dance, drumming and crafts.
-Burning Man|United States|Arts|August|Late August to early September|About one week|Temporary arts gathering in Nevada's Black Rock Desert.|Art installations and community participation.
-Mardi Gras|Canada|Cultural|February|Before Ash Wednesday|Several days|Carnival season celebrated in parts of Canada.|Parades and winter events.
-Winterlude|Canada|Seasonal|February|February|Several weeks|Winter festival in Ottawa and Gatineau.|Ice sculptures and winter activities.
-Calgary Stampede|Canada|Cultural|July|July|10 days|Western heritage festival and rodeo.|Rodeo, exhibitions and concerts.
-Caribana / Toronto Caribbean Carnival|Canada|Cultural|July|July or August|Several weeks of events|Celebrates Caribbean culture in Toronto.|Costumes, music and parade.
-Matariki|New Zealand|Cultural|June|June or July|Seasonal public holiday|Māori New Year connected with stars, remembrance and renewal.|Storytelling and gathering.
-Pasifika Festival|New Zealand|Cultural|March|March|Several days|Celebrates Pacific Island cultures.|Music, dance and food.
-Waitangi Day|New Zealand|National|February|6 February|1 day|Commemorates the signing of the Treaty of Waitangi.|Ceremonies and cultural performances.
-Te Matatini|New Zealand|Arts|Variable|Biennial, dates vary|Several days|National Māori performing arts festival.|Kapa haka performances.
-Sydney Mardi Gras|Australia|Cultural|February|February or March|Several weeks of events|Large festival and parade celebrating LGBTQ+ communities.|Parade, parties and arts events.
-Vivid Sydney|Australia|Arts|May|May or June|Several weeks|Festival of light, music and ideas.|Light installations and concerts.
-Woodford Folk Festival|Australia|Music|December|Late December to early January|About 6 days|Large folk and cultural arts festival in Queensland.|Music, dance and workshops.
-Garma Festival|Australia|Cultural|August|August|Several days|Celebrates Yolŋu culture and Indigenous knowledge.|Ceremonies, music and discussion.
-NAIDOC Week|Australia|Community|July|July|One week|Celebrates Aboriginal and Torres Strait Islander peoples and cultures.|Community events and cultural education.
-Holi|Fiji|Cultural|March|February or March|1 day|Festival of colours observed by Hindu communities.|Colour play, music and prayer.
-Hibiscus Festival|Fiji|Cultural|August|August or September|Several days|Community festival in Suva.|Performances, stalls and pageants.
-Heiva i Tahiti|French Polynesia|Cultural|July|July|Several weeks|Celebrates Polynesian dance, music and sport.|Dance competitions and traditional sports.
-Te Maeva Nui|Cook Islands|Cultural|August|Around 4 August|Several days|Celebrates Cook Islands self-government and culture.|Dance, music and parades.
-Pasifika Festival|Samoa|Cultural|Variable|Dates vary|Several days|Community events celebrating Samoan and Pacific culture.|Dance, food and music.
-Hogmanay|Scotland|Cultural|December|31 December to 1 January|1–2 days|Scottish New Year celebrations.|Street parties, music and traditions.
-Up Helly Aa|Scotland|Cultural|January|Last Tuesday of January in Lerwick|1 day|Shetland fire festival celebrating Norse heritage.|Torchlight procession and galley burning.
-Burns Night|Scotland|Cultural|January|25 January|1 evening|Celebrates poet Robert Burns and Scottish culture.|Poetry, music and traditional supper.
-Notting Hill Carnival|United Kingdom|Cultural|August|August bank holiday weekend|2 days|London carnival celebrating Caribbean heritage.|Costumes, steel bands and parade.
-Glastonbury Festival|United Kingdom|Music|June|June, dates vary|About 5 days|Large music and performing arts festival.|Concerts and arts.
-St David's Day|Wales|National|March|1 March|1 day|Celebrates Welsh patron saint and national culture.|Parades, music and Welsh dress.
-St Andrew's Day|Scotland|National|November|30 November|1 day|Celebrates Scottish patron saint and heritage.|Music, dance and gatherings.
-St George's Day|England|National|April|23 April|1 day|Celebrates England's patron saint.|Community events and historical displays.
-Walpurgis Night|Germany|Seasonal|April|30 April|One night|Spring festival with regional folklore traditions.|Bonfires and gatherings.
-Krampusnacht|Austria|Cultural|December|5 December|One evening|Alpine folklore event featuring Krampus figures.|Costumes and parades.
-Fête des Lumières|France|Arts|December|Early December|Several evenings|Lyon festival of light installations.|Light displays and artistic installations.
-King's Day|Netherlands|National|April|27 April|1 day|Celebrates the Dutch monarch's birthday.|Markets, music and orange clothing.
-Sinterklaas|Netherlands|Cultural|December|5 December eve in Netherlands|Seasonal observance|Traditional holiday around Saint Nicholas.|Gifts, songs and family traditions.
-Carnival of Venice|Italy|Cultural|February|Before Lent, dates vary|Several weeks of events|Historic carnival known for masks and costumes.|Masks, parades and performances.
-Palio di Siena|Italy|Cultural|July|2 July and 16 August|Race day plus events|Historic horse race and city tradition.|Horse race, processions and neighbourhood festivities.
-Festa della Repubblica|Italy|National|June|2 June|1 day|Italian Republic Day.|Parades and ceremonies.
-La Mercè|Spain|Cultural|September|Around 24 September|Several days|Barcelona city festival.|Human towers, concerts and parades.
-San Fermín|Spain|Cultural|July|6–14 July|9 days|Pamplona festival with historic traditions and events.|Processions, music and bull-running events.
-Feria de Abril|Spain|Cultural|April|April or May|About one week|Seville spring fair.|Flamenco, horses and local food.
-St John's Eve|Portugal|Cultural|June|23–24 June|One night|São João celebration, especially in Porto.|Street parties, music and grilled foods.
-Festa de São João|Brazil|Cultural|June|Throughout June|Several weeks of events|Brazilian winter festivals honouring popular saints.|Folk dances and regional foods.
-Oruro Carnival|Bolivia|Cultural|February|Before Ash Wednesday|Several days|Bolivian carnival with dance and religious traditions.|Parades, music and costumes.
-Inti Raymi|Ecuador|Cultural|June|June, dates vary|Several days|Andean solstice and harvest celebration.|Traditional dance and ceremonies.
-Día de la Independencia|Uruguay|National|August|25 August|1 day|Uruguay's Independence Day.|Civic events and cultural activities.
-Fiestas Patrias|Peru|National|July|28–29 July|2 days|Peruvian national celebrations.|Parades, food and music.
-Carnaval|Trinidad and Tobago|Cultural|February|Monday and Tuesday before Ash Wednesday|Several days|Major Caribbean carnival with music and elaborate costumes.|Calypso, soca and masquerade.
-Crop Over|Barbados|Harvest|August|June to early August season|Several weeks|Barbadian harvest festival.|Music, markets and Grand Kadooment parade.
-Junkanoo|Bahamas|Cultural|December|26 December and 1 January|Parade events|Bahamian street parade tradition.|Costumes, drums and dance.
-Carnival|Jamaica|Cultural|April|Usually around Easter season|Several days|Caribbean carnival with music and colourful costumes.|Street parade and soca music.
-Emancipation Day|Jamaica|National|August|1 August|1 day|Commemorates emancipation from slavery.|Ceremonies and cultural events.
-Garifuna Settlement Day|Belize|Cultural|November|19 November|1 day|Celebrates Garifuna heritage and settlement.|Drumming, dance and reenactments.
-Fiesta de Santiago|Guatemala|Cultural|July|July, local dates vary|Several days|Town patron-saint celebrations across Guatemala.|Processions, music and local fairs.
-Semana Santa|Guatemala|Religious|March|March or April|Holy Week|Holy Week processions and religious observances.|Processions and decorated streets.
-Día de la Independencia|Costa Rica|National|September|15 September|1 day|Costa Rican Independence Day.|Lantern parades and civic events.
-Carnaval de Limón|Costa Rica|Cultural|October|October|Several days|Caribbean cultural celebration in Limón.|Music, dance and parade.
-Fiestas de Palmares|Costa Rica|Cultural|January|January|About two weeks|Popular Costa Rican town festival.|Concerts, fairs and cultural events.
-Festival de la Luz|Costa Rica|Arts|December|December|Several days|Holiday lights and parade event in San José.|Floats, music and lights.
-Día de los Muertos|Guatemala|Memorial|November|1 November|1 day|Day of the Dead remembrance traditions.|Giant kites, cemetery visits and food.
-Festival of the Virgin of Candelaria|Bolivia|Religious|February|February|Several days|Andean Catholic and Indigenous festival.|Dance, music and processions.
-Feria de las Flores|Colombia|Cultural|August|August|About 10 days|Medellín flower festival.|Flower parade, music and cultural displays.
-Carnaval de Negros y Blancos|Colombia|Cultural|January|2–7 January|Several days|Pastos and Andean carnival celebrating cultural diversity.|Paint, costumes and parades.
-Festival de la Leyenda Vallenata|Colombia|Music|April|April or May|Several days|Celebrates vallenato music and regional traditions.|Music competitions and concerts.
-Inti Raymi|Peru|Cultural|June|24 June|1 day|Cusco ceremony inspired by Inca Sun worship.|Processions and performances.
-Vendimia|Chile|Harvest|March|March, dates vary|Several days|Grape harvest festivals in Chilean wine regions.|Harvest celebrations and local food.
-Fiesta de la Tirana|Chile|Religious|July|Around 16 July|Several days|Religious festival in northern Chile.|Dance, costumes and processions.
-Guelaguetza|Mexico|Cultural|July|July|Several days|Celebrates regional cultures of Oaxaca.|Folk dance and traditional dress.
-Cinco de Mayo|Mexico|Historical|May|5 May|1 day|Commemorates the Battle of Puebla.|Parades and cultural events.
-Las Posadas|Mexico|Religious|December|16–24 December|9 evenings|Reenacts Mary and Joseph's search for shelter.|Songs, processions and gatherings.
-Día de la Candelaria|Mexico|Religious|February|2 February|1 day|Christian observance with regional traditions.|Church events and shared meals.
-Semana Santa|Mexico|Religious|March|March or April|Holy Week|Holy Week observances across Mexico.|Processions and worship.
-National Cherry Blossom Festival|United States|Seasonal|March|March or April|Several weeks|Celebrates cherry blossoms in Washington, DC.|Flower viewing and cultural events.
-Mardi Gras|United States|Cultural|February|Before Ash Wednesday|Carnival season|New Orleans carnival with parades and music.|Floats, costumes and street music.
-Burning Man|United States|Arts|August|Late August to early September|About one week|Art and community gathering in Nevada's desert.|Art installations and community participation.
-Juneteenth|United States|National|June|19 June|1 day|Commemorates emancipation in the United States.|Education, community events and celebration.
-Powwow|Canada|Cultural|Variable|Dates vary by Indigenous community|One or several days|Gathering celebrating Indigenous culture and community.|Drumming, dance and crafts.
-Winterlude|Canada|Seasonal|February|February|Several weeks|Ottawa winter celebration.|Ice sculptures and winter activities.
-Calgary Stampede|Canada|Cultural|July|July|10 days|Western heritage and rodeo festival.|Rodeo, concerts and exhibitions.
-Caribana|Canada|Cultural|August|July or August|Several weeks of events|Toronto celebration of Caribbean culture.|Music, costumes and parade.
-Canada Day|Canada|National|July|1 July|1 day|Marks Canadian Confederation.|Concerts and public events.
-Matariki|New Zealand|Cultural|June|June or July|Seasonal public holiday|Māori New Year linked with stars and renewal.|Storytelling and shared food.
-Waitangi Day|New Zealand|National|February|6 February|1 day|Commemorates the Treaty of Waitangi.|Ceremonies and cultural performances.
-Pasifika Festival|New Zealand|Cultural|March|March|Several days|Celebrates Pacific Island cultures.|Music, dance and food.
-Sydney Mardi Gras|Australia|Cultural|February|February or March|Several weeks of events|Large parade and arts festival.|Parade, parties and performances.
-Woodford Folk Festival|Australia|Music|December|Late December to early January|About 6 days|Folk and cultural arts festival.|Music, dance and workshops.
-NAIDOC Week|Australia|Community|July|July|One week|Celebrates Aboriginal and Torres Strait Islander cultures.|Community events and education.
-Heiva i Tahiti|French Polynesia|Cultural|July|July|Several weeks|Celebrates Polynesian dance, music and sport.|Dance and traditional sports.
-Te Maeva Nui|Cook Islands|Cultural|August|Around 4 August|Several days|Celebrates Cook Islands self-government and culture.|Dance, music and parades.
-Hogmanay|Scotland|Cultural|December|31 December to 1 January|1–2 days|Scottish New Year celebrations.|Street parties and music.
-Up Helly Aa|Scotland|Cultural|January|Last Tuesday of January in Lerwick|1 day|Shetland fire festival with Norse heritage.|Torchlight procession and galley burning.
-Burns Night|Scotland|Cultural|January|25 January|One evening|Celebrates Scottish poet Robert Burns.|Poetry and traditional supper.
-Notting Hill Carnival|United Kingdom|Cultural|August|August bank holiday weekend|2 days|Celebrates Caribbean heritage in London.|Costumes, steel bands and parade.
-Glastonbury Festival|United Kingdom|Music|June|June, dates vary|About 5 days|Music and performing arts festival.|Concerts and arts.
-Fête des Lumières|France|Arts|December|Early December|Several evenings|Lyon festival of light.|Light displays and installations.
-Carnival of Venice|Italy|Cultural|February|Before Lent|Several weeks of events|Historic carnival known for masks and costumes.|Masks and performances.
-La Mercè|Spain|Cultural|September|Around 24 September|Several days|Barcelona city festival.|Human towers and concerts.
-San Fermín|Spain|Cultural|July|6–14 July|9 days|Pamplona festival with historic traditions.|Processions, music and local events.
-Oktoberfest|Germany|Food|September|September to early October|About 16–18 days|Bavarian folk festival.|Music, regional dishes and fairground rides.
-Bastille Day|France|National|July|14 July|1 day|French national day commemorating the Revolution.|Parades and public celebrations.
-Midsummer|Sweden|Seasonal|June|Friday between 19 and 25 June|1–2 days|Summer solstice celebration.|Maypole dancing and flowers.
-`.trim();
+const categoryInfo=[
+{name:"Hindu",icon:"🪔",desc:"Religious and seasonal observances"},
+{name:"Muslim",icon:"🌙",desc:"Islamic festivals and remembrance"},
+{name:"Sikh",icon:"☬",desc:"Gurpurabs and Sikh heritage"},
+{name:"Christian",icon:"✝️",desc:"Christian celebrations"},
+{name:"Buddhist",icon:"☸️",desc:"Buddhist sacred occasions"},
+{name:"Jain",icon:"🙏",desc:"Non-violence and spiritual reflection"},
+{name:"Regional",icon:"🎭",desc:"State and regional traditions"},
+{name:"National",icon:"🇮🇳",desc:"National days of India"},
+{name:"Tribal",icon:"🪶",desc:"Indigenous community celebrations"},
+{name:"Local",icon:"📍",desc:"Your locally added festivals and melas"}
+];
 
-const SEED=RAW.split(/\n/).map(line=>line.split("|")).filter(a=>a.length>=7);
-let data=[],editing=false,mode="cards",sortKey="name",sortDir=1,activeMonth="";
-let selectedTheme="Forest Green";
+const $=id=>document.getElementById(id);
+const LOCAL_KEY="ife-local-festivals-v2";
+const VISIT_KEY="ife-visit-register-v2";
+const BACKUP_VERSION=1;
+let localFestivals=loadArray(LOCAL_KEY);
+let visits=loadArray(VISIT_KEY);
+let activeSeason="All",currentFestival=null,previousFocus=null,toastTimer=null;
+const grid=$("festivalGrid"),searchInput=$("searchInput"),traditionFilter=$("traditionFilter"),resultCount=$("resultCount"),overlay=$("detailOverlay"),detailContent=$("detailContent"),themeSelect=$("themeSelect");
 
-function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
-function normal(f){
- const m=MONTHS.includes(f.month)?f.month:"January";
- return {
- id:String(f.id||uid()),name:String(f.name||f.festival||"").trim(),
- country:String(f.country||"").trim(),category:String(f.category||"Cultural").trim(),
- month:m,timing:String(f.timing||f.time||"Dates vary"),
- duration:String(f.duration||"Varies"),description:String(f.description||""),
- activities:String(f.activities||""),location:String(f.location||""),
- calendar:String(f.calendar||""),notes:String(f.notes||"")
- };
+function loadArray(key){
+ try{const v=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(v)?v:[]}
+ catch(e){return []}
 }
-function starter(){
- return SEED.map((a,i)=>normal({
- id:"starter"+i,name:a[0],country:a[1],category:a[2],month:a[3],
- timing:a[4],duration:a[5],description:a[6],activities:a[7]||"",
- location:a[8]||"",calendar:a[9]||"Annual or regional calendar",
- notes:"Dates, duration and customs may vary by region and year."
- }));
+function persist(key,data){
+ try{localStorage.setItem(key,JSON.stringify(data));return true}
+ catch(e){showToast("Storage failed. Export a backup or remove older records.");return false}
 }
-function save(){
- try{localStorage.setItem(KEY,JSON.stringify(data))}
- catch(e){notify("Storage full. Export a backup and remove some records.")}
- storageInfo();
-}
-function load(){
- try{
- const raw=localStorage.getItem(KEY),parsed=raw?JSON.parse(raw):null;
- if(Array.isArray(parsed)&&parsed.length&&parsed.every(x=>x&&typeof x==="object"&&(x.name||x.festival)))data=parsed.map(normal);
- else{data=starter();save()}
- }catch(e){data=starter();save()}
-}
-function notify(s){
- $("msg").textContent=s;$("msg").style.display="block";
- clearTimeout(notify.t);notify.t=setTimeout(()=>$("msg").style.display="none",2600);
-}
-function esc(s){
- return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function unique(k){return [...new Set(data.map(f=>f[k]).filter(Boolean))].sort((a,b)=>a.localeCompare(b))}
-function fill(id,items,label){
- const el=$(id),old=el.value;
- el.innerHTML=`<option value="">${esc(label)}</option>`+items.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
- if(items.includes(old))el.value=old;
-}
-function setup(){
- ["sc","fc"].forEach(id=>fill(id,unique("country"),"All countries"));
- ["sk","fk"].forEach(id=>fill(id,unique("category"),"All categories"));
- ["sm","fm","monthPick"].forEach(id=>fill(id,MONTHS,"All months"));
- $("month").innerHTML=MONTHS.map(x=>`<option>${x}</option>`).join("");
- $("cats").innerHTML=unique("category").map(x=>`<option value="${esc(x)}">`).join("");
- $("countriesData").innerHTML=unique("country").map(x=>`<option value="${esc(x)}">`).join("");
-}
-function filtered(summary=false){
- const q=$((summary?"sq":"q")).value.trim().toLowerCase();
- const country=$(summary?"sc":"fc").value,cat=$(summary?"sk":"fk").value,month=$(summary?"sm":"fm").value;
- return data.filter(f=>(!q||Object.values(f).join(" ").toLowerCase().includes(q))&&(!country||f.country===country)&&(!cat||f.category===cat)&&(!month||f.month===month));
-}
-function card(f){
- return `<article class="fcard"><span class="tag">${esc(f.category)}</span><h3>${esc(f.name)}</h3>
- <div class="muted">${esc(f.country)}${f.location?" · "+esc(f.location):""}</div>
- <div class="meta"><span>📅 ${esc(f.month)}</span><span>⏱ ${esc(f.duration||"Varies")}</span></div>
- <p>${esc(f.description)}</p><p class="small"><b>Typical timing:</b> ${esc(f.timing||"Varies")}</p>
- ${f.activities?`<p class="small"><b>Activities:</b> ${esc(f.activities)}</p>`:""}
- ${f.calendar?`<p class="small"><b>Calendar:</b> ${esc(f.calendar)}</p>`:""}
- ${f.notes?`<p class="small muted">${esc(f.notes)}</p>`:""}
- <div class="actions"><button class="secondary" data-view="${esc(f.id)}">Details</button>
- <button class="secondary" data-edit="${esc(f.id)}" ${editing?"":"disabled"}>Edit</button>
- <button class="danger" data-del="${esc(f.id)}" ${editing?"":"disabled"}>Delete</button></div></article>`;
-}
-function bind(root){
- root.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{
- const f=data.find(x=>x.id===b.dataset.view);
- if(f)alert(`${f.name}\nCountry: ${f.country}\nCategory: ${f.category}\nTypical timing: ${f.timing}\nDuration: ${f.duration}\nLocation: ${f.location}\nCalendar: ${f.calendar}\n\n${f.description}\n\nActivities: ${f.activities}\n\nNotes: ${f.notes}`);
+function safeText(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function uid(prefix){return prefix+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)}
+function allFestivals(){return festivals.concat(localFestivals.map(f=>({...f,custom:true})))}
+function getSearchText(f){return [f.name,f.short,f.description,f.significance,f.tradition,f.region,f.season,f.period,f.food,f.traditions,f.keywords].join(" ").toLowerCase()}
+
+function filteredFestivals(){
+ const q=searchInput.value.trim().toLowerCase(),t=traditionFilter.value;
+ return allFestivals().filter(f=>{
+  const ms=!q||getSearchText(f).includes(q);
+  const mt=t==="All"||f.tradition===t;
+  const season=f.season||"All";
+  const mseason=activeSeason==="All"||season===activeSeason||season==="All";
+  return ms&&mt&&mseason;
  });
- root.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>{
- if(editing){const f=data.find(x=>x.id===b.dataset.edit);if(f)editRecord(f)}
- });
- root.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{
- if(editing&&confirm("Delete this festival?")){
- data=data.filter(x=>x.id!==b.dataset.del);save();refresh();
+}
+function renderFestivals(){
+ const list=filteredFestivals();
+ resultCount.textContent=`Showing ${list.length} of ${allFestivals().length} festivals`;
+ if(!list.length){
+  grid.innerHTML='<div class="empty"><div style="font-size:35px">🔎</div><h3>No festivals found</h3><p>Try another search or remove a filter.</p><button class="btn" id="clearFilters">Clear filters</button></div>';
+  $("clearFilters").onclick=()=>{searchInput.value="";traditionFilter.value="All";activeSeason="All";document.querySelectorAll("[data-month]").forEach(c=>c.classList.toggle("active",c.dataset.month==="All"));renderFestivals()};
+  return;
  }
- });
-}
-function register(){
- let a=filtered().sort((x,y)=>String(x[sortKey]||"").localeCompare(String(y[sortKey]||""))*sortDir);
- $("registerCards").style.display=mode==="cards"?"grid":"none";
- $("tableBox").style.display=mode==="table"?"block":"none";
- $("registerCards").innerHTML=mode==="cards"?(a.map(card).join("")||"No festivals found."):"";
- $("tbody").innerHTML=a.map(f=>`<tr><td>${esc(f.name)}<br><small>${esc(f.timing)}</small></td>
- <td>${esc(f.country)}</td><td>${esc(f.category)}</td><td>${esc(f.month)}</td><td>${esc(f.duration)}</td>
- <td><button data-view="${esc(f.id)}">View</button> <button data-edit="${esc(f.id)}" ${editing?"":"disabled"}>Edit</button> <button class="danger" data-del="${esc(f.id)}" ${editing?"":"disabled"}>Delete</button></td></tr>`).join("");
- bind($("registerCards"));bind($("tbody"));
- $("count").textContent=`Showing ${a.length} of ${data.length} records`;
-}
-function countBy(arr,key){
- const o={};arr.forEach(f=>o[f[key]]=(o[f[key]]||0)+1);
- return Object.entries(o).map(([name,value])=>({name,value})).sort((a,b)=>b.value-a.value);
-}
-function chart(id,items,barId){
- const c=$(id),w=Math.max(230,c.parentElement.clientWidth-25),h=220,dpr=window.devicePixelRatio||1;
- c.width=w*dpr;c.height=h*dpr;
- const x=c.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,w,h);
- const style=getComputedStyle(document.body),max=Math.max(1,...items.map(o=>o.value));
- const step=(w-16)/Math.max(1,items.length),bw=Math.max(3,Math.min(24,step*.6));
- items.forEach((o,i)=>{
- const bh=o.value/max*155,xx=8+i*step+(step-bw)/2,yy=175-bh;
- x.fillStyle=style.getPropertyValue("--bar").trim();x.fillRect(xx,yy,bw,bh);
- x.fillStyle=style.getPropertyValue("--tx").trim();x.font="10px system-ui";x.textAlign="center";
- x.fillText(o.value,xx+bw/2,Math.max(10,yy-3));
- x.save();x.translate(xx+bw/2,207);if(items.length>8)x.rotate(-.6);
- x.fillText(o.name.length>11?o.name.slice(0,10)+"…":o.name,0,0);x.restore();
- });
- $(barId).innerHTML=items.slice(0,12).map(o=>`<div class="barrow"><span class="small">${esc(o.name)}</span><div class="bar"><div style="width:${o.value/max*100}%"></div></div><b>${o.value}</b></div>`).join("");
-}
-function pie(id,items){
- const c=$(id),w=Math.max(230,c.parentElement.clientWidth-25),h=220,dpr=window.devicePixelRatio||1;
- c.width=w*dpr;c.height=h*dpr;
- const x=c.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);
- const sum=items.reduce((a,b)=>a+b.value,0)||1;
- const colors=THEMES.map(t=>t.p);let start=-Math.PI/2;
- items.forEach((o,i)=>{
- const end=start+o.value/sum*Math.PI*2;
- x.beginPath();x.moveTo(w/2,h/2);x.arc(w/2,h/2,Math.min(w*.34,85),start,end);
- x.closePath();x.fillStyle=colors[i%colors.length];x.fill();start=end;
- });
- $("legend").innerHTML=items.map((o,i)=>`<span style="display:inline-block;margin:4px"><span style="color:${colors[i%colors.length]}">●</span> ${esc(o.name)} ${o.value}</span>`).join("");
-}
-function summary(){
- const a=filtered(true);
- $("total").textContent=a.length;
- $("ncountries").textContent=new Set(a.map(f=>f.country)).size;
- $("ncategories").textContent=new Set(a.map(f=>f.category)).size;
- $("nmonths").textContent=new Set(a.map(f=>f.month)).size;
- const cats=countBy(a,"category"),countries=countBy(a,"country").slice(0,12);
- const months=MONTHS.map(name=>({name,value:a.filter(f=>f.month===name).length}));
- chart("catChart",cats,"catBars");chart("countryChart",countries,"countryBars");
- chart("monthChart",months,"monthBars");pie("pieChart",cats);
- $("featured").innerHTML=a.slice(0,6).map(card).join("")||"No matching festivals";
- bind($("featured"));
-}
-function countries(){
- const q=$("countrySearch").value.toLowerCase(),groups={};
- data.forEach(f=>(groups[f.country]??=[]).push(f));
- const names=Object.keys(groups).filter(c=>(c+" "+groups[c].map(f=>f.name+" "+f.category).join(" ")).toLowerCase().includes(q)).sort();
- $("countryList").innerHTML=names.map(c=>`<article class="fcard"><h3>🌐 ${esc(c)}</h3><p>${groups[c].length} festivals</p>
- <p class="small">${groups[c].slice(0,6).map(f=>esc(f.name)).join(" · ")}</p>
- <button data-country="${esc(c)}">Browse</button></article>`).join("")||"No countries found";
- $("countryList").querySelectorAll("[data-country]").forEach(b=>b.onclick=()=>{
- $("fc").value=b.dataset.country;$("q").value="";$("fk").value="";$("fm").value="";
- go("register");register();
- });
-}
-function months(){
- const selected=$("monthPick").value;
- $("monthList").innerHTML=MONTHS.filter(m=>!selected||m===selected).map(m=>`<div class="monthbox"><strong>${m}</strong>
- ${data.filter(f=>f.month===m).length} festivals<br><button class="secondary" data-m="${m}" style="margin-top:8px">View</button></div>`).join("");
- $("monthList").querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{$("monthPick").value=b.dataset.m;months()});
- const m=selected||activeMonth;
- $("monthResults").innerHTML=m?`<h3>${esc(m)} festivals</h3><div class="grid">${data.filter(f=>f.month===m).map(card).join("")||"No records"}</div>`:"Select a month to browse its festivals";
- bind($("monthResults"));
-}
-function go(id){
- document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));
- document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id===id));
- if(id==="summary")summary();if(id==="register")register();if(id==="countries")countries();
- if(id==="months")months();if(id==="backup")storageInfo();if(id==="themes")renderThemes();
-}
-function refresh(){
- setup();
- if($("summary").classList.contains("active"))summary();
- if($("register").classList.contains("active"))register();
- if($("countries").classList.contains("active"))countries();
- if($("months").classList.contains("active"))months();
- storageInfo();
-}
-function clearForm(){$("form").reset();$("id").value="";$("saveBtn").textContent="Add Festival"}
-function editRecord(f){
- Object.keys(f).forEach(k=>{if($(k))$(k).value=f[k]||""});
- $("saveBtn").textContent="Save Changes";go("editor");
-}
-$("form").onsubmit=e=>{
- e.preventDefault();const id=$("id").value;
- if(id&&!editing)return notify("Enable editing first");
- const f=normal({
- id:id||uid(),name:$("name").value,country:$("country").value,category:$("category").value,
- month:$("month").value,timing:$("timing").value,duration:$("duration").value,
- location:$("location").value,calendar:$("calendar").value,description:$("description").value,
- activities:$("activities").value,notes:$("notes").value
- });
- if(!f.name||!f.country||!f.description)return notify("Complete the required fields");
- if(id)data=data.map(old=>old.id===id?f:old);else data.unshift(f);
- save();clearForm();refresh();go("register");notify("Festival saved");
-};
-$("reset").onclick=clearForm;
-$("toggleEdit").onclick=()=>{
- editing=!editing;$("toggleEdit").textContent=editing?"🔓 Disable Editing":"🔒 Enable Editing";
- $("editStatus").textContent=editing?"Editing enabled":"Read-only";register();
-};
-$("cardsBtn").onclick=()=>{mode="cards";register()};
-$("tableBtn").onclick=()=>{mode="table";register()};
-$("clear").onclick=()=>{["q","fc","fk","fm"].forEach(id=>$(id).value="");register()};
-document.querySelectorAll("[data-sort]").forEach(b=>b.onclick=()=>{
- sortDir=sortKey===b.dataset.sort?-sortDir:1;sortKey=b.dataset.sort;register();
-});
-document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>go(b.dataset.tab));
-["q","fc","fk","fm"].forEach(id=>$(id).addEventListener(id==="q"?"input":"change",register));
-["sq","sc","sk","sm"].forEach(id=>$(id).addEventListener(id==="sq"?"input":"change",()=>{if($("summary").classList.contains("active"))summary()}));
-$("countrySearch").oninput=countries;$("monthPick").onchange=months;
-
-function applyTheme(name,saveChoice=true){
- const t=THEMES.find(x=>x.name===name)||THEMES[0];
- selectedTheme=t.name;
- const root=document.documentElement;
- root.style.setProperty("--p",t.p);root.style.setProperty("--d",t.d);
- root.style.setProperty("--bg",t.bg);root.style.setProperty("--panel",t.panel);
- root.style.setProperty("--tx",t.tx);root.style.setProperty("--mut",t.mut);
- root.style.setProperty("--bd",t.bd);root.style.setProperty("--soft",t.soft);
- root.style.setProperty("--head",t.head);root.style.setProperty("--head2",t.head2);
- root.style.setProperty("--bar",t.p);
- $("currentTheme").textContent=t.name;
- document.querySelector('meta[name="theme-color"]').content=t.d;
- if(saveChoice){try{localStorage.setItem(THEMEKEY,t.name)}catch(e){}}
- renderThemes();
- if($("summary").classList.contains("active"))summary();
-}
-function renderThemes(){
- const holder=$("themeGrid");if(!holder)return;
- holder.innerHTML=THEMES.map(t=>`<button class="theme-card ${selectedTheme===t.name?"selected":""}" data-theme="${esc(t.name)}">
- <div class="swatches"><span style="background:${t.bg}"></span><span style="background:${t.panel}"></span><span style="background:${t.p}"></span><span style="background:${t.d}"></span></div>
- <strong>${esc(t.name)}</strong><small>${esc(t.p)} · ${esc(t.d)}</small>
- ${selectedTheme===t.name?'<div class="badge-selected">✓ Currently selected</div>':""}
+ grid.innerHTML=list.map(f=>`<button class="festival-card" data-id="${safeText(f.id)}" aria-label="Open details for ${safeText(f.name)}">
+ <div class="festival-icon" aria-hidden="true">${safeText(f.icon||"🎉")}</div><h3>${safeText(f.name)}</h3>
+ <div class="card-date">${safeText(f.period||"Local observance")}</div><span class="card-tag">${safeText(f.tradition||"Local")}</span>
  </button>`).join("");
- holder.querySelectorAll("[data-theme]").forEach(b=>b.onclick=()=>{applyTheme(b.dataset.theme);notify(b.dataset.theme+" theme applied")});
 }
-$("randomTheme").onclick=()=>{
- const choices=THEMES.filter(t=>t.name!==selectedTheme);
- applyTheme(choices[Math.floor(Math.random()*choices.length)].name);
- notify("Nature theme changed");
-};
-$("defaultTheme").onclick=()=>{applyTheme("Forest Green");notify("Default theme restored")};
+function renderCategories(){
+ const c=$("categoryGrid");
+ c.innerHTML=categoryInfo.map(x=>`<button class="category-card" data-category="${safeText(x.name)}"><span class="big">${x.icon}</span><b>${safeText(x.name)}</b><small>${allFestivals().filter(f=>f.tradition===x.name).length} festivals</small><small>${safeText(x.desc)}</small></button>`).join("");
+ c.querySelectorAll("[data-category]").forEach(b=>b.onclick=()=>{showPage("festivals");traditionFilter.value=b.dataset.category;searchInput.value="";activeSeason="All";document.querySelectorAll("[data-month]").forEach(c=>c.classList.toggle("active",c.dataset.month==="All"));renderFestivals();window.scrollTo({top:0,behavior:"smooth"})});
+}
+function showDetail(id){
+ const f=allFestivals().find(x=>x.id===id);if(!f)return;
+ currentFestival=f;previousFocus=document.activeElement;
+ detailContent.innerHTML=`<div class="hero"><div class="hero-icon">${safeText(f.icon||"🎉")}</div><h2 id="detailTitle">${safeText(f.name)}</h2><div class="sub">${safeText(f.short||"Local festival or mela")}</div><div class="pills"><span class="pill">📍 ${safeText(f.region||"")}</span><span class="pill">🗓️ ${safeText(f.period||"Date varies")}</span><span class="pill">🏷️ ${safeText(f.tradition||"Local")}</span></div></div>
+ <section class="detail-section"><h3>📖 About the festival</h3><p>${safeText(f.description||"No description added yet.")}</p></section>
+ <section class="detail-section"><h3>🙏 Significance / traditions</h3><p>${safeText(f.significance||f.traditions||"Not specified.")}</p></section>
+ <section class="detail-section"><h3>🍲 Traditional food</h3><p>${safeText(f.food||"Not specified.")}</p></section>
+ <section class="detail-section"><h3>📅 When is it celebrated?</h3><p>${safeText(f.period||"Date varies by local calendar.")}</p></section>
+ <div class="modal-actions"><button class="btn" id="shareFestival">↗ Share festival</button><button class="btn secondary" id="copyFestival">📋 Copy details</button></div>`;
+ overlay.classList.add("open");document.body.style.overflow="hidden";$("closeDetail").focus();
+ $("shareFestival").onclick=()=>shareFestival(f);$("copyFestival").onclick=()=>copyFestival(f);
+}
+function closeDetail(){overlay.classList.remove("open");document.body.style.overflow="";if(previousFocus&&previousFocus.focus)previousFocus.focus()}
+function festivalText(f){return `${f.icon||"🎉"} ${f.name}\n${f.short||""}\n\nRegion: ${f.region||""}\nTradition: ${f.tradition||""}\nWhen: ${f.period||""}\n\nAbout:\n${f.description||""}\n\nSignificance / traditions:\n${f.significance||f.traditions||""}\n\nFood:\n${f.food||""}`}
+function showToast(msg){const el=$("toast");el.textContent=msg;el.style.display="block";clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.style.display="none",2600)}
+async function copyFestival(f){
+ const txt=festivalText(f);
+ try{if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(txt);else{const a=document.createElement("textarea");a.value=txt;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.select();const ok=document.execCommand("copy");a.remove();if(!ok)throw Error("copy")};showToast("Details copied")}
+ catch(e){showToast("Copy unavailable in this browser")}
+}
+async function shareFestival(f){try{if(navigator.share)await navigator.share({title:f.name,text:festivalText(f)});else await copyFestival(f)}catch(e){if(e.name!=="AbortError")showToast("Sharing unavailable")}}
+function showPage(id){
+ document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));
+ document.querySelectorAll(".navbtn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));
+ if(id==="localFestivals")renderLocal();
+ if(id==="visits")renderVisits();
+}
 
-function download(name,content,type){
- const a=document.createElement("a"),u=URL.createObjectURL(new Blob([content],{type}));
- a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
-}
-$("jsonOut").onclick=()=>download("festivals.json",JSON.stringify(data,null,2),"application/json");
-function csvCell(v){return '"'+String(v??"").replace(/"/g,'""')+'"'}
-const fields=["id","name","country","category","month","timing","duration","description","activities","location","calendar","notes"];
-$("csvOut").onclick=()=>download("festivals.csv",[fields.join(","),...data.map(f=>fields.map(k=>csvCell(f[k])).join(","))].join("\r\n"),"text/csv;charset=utf-8");
-$("importBtn").onclick=()=>$("file").click();
-function parseCSV(s){
- const rows=[];let row=[],v="",quote=false;
- for(let i=0;i<s.length;i++){
- const c=s[i],n=s[i+1];
- if(c==='"'&&quote&&n==='"'){v+='"';i++}
- else if(c==='"')quote=!quote;
- else if(c===","&&!quote){row.push(v);v=""}
- else if((c==="\n"||c==="\r")&&!quote){
- if(c==="\r"&&n==="\n")i++;
- row.push(v);if(row.some(x=>x!==""))rows.push(row);row=[];v="";
- }else v+=c;
+grid.addEventListener("click",e=>{const c=e.target.closest("[data-id]");if(c)showDetail(c.dataset.id)});
+document.querySelectorAll(".navbtn").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
+$("closeDetail").addEventListener("click",closeDetail);
+overlay.addEventListener("click",e=>{if(e.target===overlay)closeDetail()});
+document.addEventListener("keydown",e=>{
+ if(e.key==="Escape"&&overlay.classList.contains("open"))closeDetail();
+ if((e.key==="ArrowRight"||e.key==="ArrowLeft")&&overlay.classList.contains("open")&&currentFestival){
+  const list=allFestivals(),i=list.findIndex(f=>f.id===currentFestival.id),d=e.key==="ArrowRight"?1:-1;
+  showDetail(list[(i+d+list.length)%list.length].id);
  }
- if(v||row.length){row.push(v);rows.push(row)}
- const h=(rows.shift()||[]).map(x=>x.trim().toLowerCase());
- return rows.map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]||""])));
+});
+searchInput.addEventListener("input",renderFestivals);
+traditionFilter.addEventListener("change",renderFestivals);
+$("monthChips").addEventListener("click",e=>{const b=e.target.closest("[data-month]");if(!b)return;activeSeason=b.dataset.month;document.querySelectorAll("[data-month]").forEach(c=>c.classList.toggle("active",c===b));renderFestivals()});
+themeSelect.addEventListener("change",()=>{document.documentElement.dataset.theme=themeSelect.value;try{localStorage.setItem("ife-theme",themeSelect.value)}catch(e){}});
+try{const t=localStorage.getItem("ife-theme");if(t&&["forest","ocean","sunset","lotus","dark"].includes(t)){themeSelect.value=t;document.documentElement.dataset.theme=t}}catch(e){}
+
+/* LOCAL FESTIVAL MANAGER */
+function readLocalForm(){
+ const name=$("lfName").value.trim(),state=$("lfState").value.trim(),place=$("lfPlace").value.trim();
+ return {name,icon:$("lfIcon").value.trim()||"🎪",tradition:$("lfTradition").value,region:[place,$("lfDistrict").value.trim(),state].filter(Boolean).join(", "),place,district:$("lfDistrict").value.trim(),state,season:$("lfSeason").value,period:$("lfPeriod").value.trim()||"Date varies by local calendar",short:"Local festival or mela",description:$("lfDescription").value.trim(),significance:$("lfSignificance").value.trim(),food:"",keywords:[place,state,$("lfDistrict").value].join(" ").toLowerCase()};
 }
-$("file").onchange=async e=>{
+function clearLocalForm(){
+ $("localForm").reset();$("localId").value="";$("lfIcon").value="🎪";$("lfTradition").value="Local";$("lfSeason").value="All";
+ $("localFormTitle").textContent="➕ Add a local festival or mela";$("saveLocalBtn").textContent="💾 Save local festival";
+}
+$("localForm").addEventListener("submit",e=>{
+ e.preventDefault();const data=readLocalForm(),id=$("localId").value;
+ if(!data.name||!data.state||!data.place){showToast("Complete the required fields");return}
+ if(id){
+  const i=localFestivals.findIndex(f=>f.id===id);if(i<0){showToast("Record not found");return}
+  localFestivals[i]={...localFestivals[i],...data,id};
+ }else{data.id=uid("local");data.custom=true;localFestivals.push(data)}
+ if(!persist(LOCAL_KEY,localFestivals)){return}
+ clearLocalForm();renderLocal();renderFestivals();renderCategories();$("totalStat").textContent=allFestivals().length;showToast(id?"Local festival updated":"Local festival saved");
+});
+$("cancelLocalEdit").onclick=clearLocalForm;
+$("localSearch").addEventListener("input",renderLocal);
+function renderLocal(){
+ const q=$("localSearch").value.trim().toLowerCase(),list=localFestivals.filter(f=>[f.name,f.region,f.place,f.state,f.district,f.description].join(" ").toLowerCase().includes(q));
+ $("localCount").textContent=`${localFestivals.length} saved entries · ${list.length} shown`;
+ $("localList").innerHTML=list.length?list.map(f=>`<article class="festival-card"><div class="festival-icon">${safeText(f.icon||"🎪")}</div><h3>${safeText(f.name)}</h3><div class="card-date">📍 ${safeText(f.region||"Place not specified")}</div><span class="card-tag">${safeText(f.tradition||"Local")}</span><div class="btn-row" style="justify-content:center"><button class="btn small" data-local-detail="${safeText(f.id)}">Details</button><button class="btn secondary small" data-local-edit="${safeText(f.id)}">Edit</button><button class="btn danger small" data-local-delete="${safeText(f.id)}">Delete</button></div></article>`).join(""):'<div class="empty"><h3>No local festivals yet</h3><p>Add your first festival or mela using the form above.</p></div>';
+ $("localList").querySelectorAll("[data-local-detail]").forEach(b=>b.onclick=()=>showDetail(b.dataset.localDetail));
+ $("localList").querySelectorAll("[data-local-edit]").forEach(b=>b.onclick=()=>editLocal(b.dataset.localEdit));
+ $("localList").querySelectorAll("[data-local-delete]").forEach(b=>b.onclick=()=>deleteLocal(b.dataset.localDelete));
+}
+function editLocal(id){
+ const f=localFestivals.find(x=>x.id===id);if(!f)return;
+ $("localId").value=f.id;$("lfName").value=f.name||"";$("lfIcon").value=f.icon||"🎪";$("lfState").value=f.state||"";
+ $("lfDistrict").value=f.district||"";$("lfPlace").value=f.place||"";$("lfTradition").value=f.tradition||"Local";
+ $("lfSeason").value=f.season||"All";$("lfPeriod").value=f.period||"";$("lfDescription").value=f.description||"";$("lfSignificance").value=f.significance||"";
+ $("localFormTitle").textContent="✏️ Edit local festival";$("saveLocalBtn").textContent="💾 Update festival";
+ $("localForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function deleteLocal(id){
+ const f=localFestivals.find(x=>x.id===id);if(!f)return;
+ if(!confirm(`Delete "${f.name}"?`))return;
+ localFestivals=localFestivals.filter(x=>x.id!==id);
+ if(!persist(LOCAL_KEY,localFestivals))return;
+ renderLocal();renderFestivals();renderCategories();$("totalStat").textContent=allFestivals().length;showToast("Local festival deleted");
+}
+function downloadBlob(name,content,type){
+ const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+$("exportLocal").onclick=()=>downloadBlob("local-festivals.json",JSON.stringify(localFestivals,null,2),"application/json");
+$("importLocalBtn").onclick=()=>$("importLocalFile").click();
+$("importLocalFile").addEventListener("change",async e=>{
  const file=e.target.files[0];if(!file)return;
  try{
- let arr=file.name.toLowerCase().endsWith(".csv")?parseCSV(await file.text()):JSON.parse(await file.text());
- if(!Array.isArray(arr))throw Error("File must contain a JSON array or CSV rows");
- arr=arr.filter(f=>f&&(f.name||f.festival)&&f.country).map(normal);
- if(!arr.length)throw Error("No valid festival records found");
- if($("mode").value==="replace"){
- if(!confirm("Replace the current database?"))return;data=arr;
- }else{
- const map=new Map(data.map(f=>[f.id,f]));arr.forEach(f=>map.set(f.id,f));data=[...map.values()];
- }
- save();refresh();notify("Imported "+arr.length+" records");
- }catch(err){alert("Import failed: "+err.message)}
- finally{e.target.value=""}
-};
-$("restore").onclick=()=>{
- if(confirm("Restore starter database? Current changes will be replaced.")){
- data=starter();save();clearForm();refresh();notify("Starter database restored");
- }
-};
-function storageInfo(){
- $("storageInfo").textContent=`${data.length} festivals · ${new Set(data.map(f=>f.country)).size} countries / regions · Theme: ${selectedTheme} · Saved locally in this browser.`;
-}
-let resized;
-window.addEventListener("resize",()=>{
- clearTimeout(resized);resized=setTimeout(()=>{if($("summary").classList.contains("active"))summary()},180);
+  const parsed=JSON.parse(await file.text());if(!Array.isArray(parsed))throw Error("Expected an array");
+  const incoming=parsed.filter(f=>f&&f.name).map(f=>({...f,id:String(f.id||uid("local")),custom:true,tradition:f.tradition||"Local"}));
+  const map=new Map(localFestivals.map(f=>[f.id,f]));incoming.forEach(f=>map.set(f.id,f));localFestivals=[...map.values()];
+  if(!persist(LOCAL_KEY,localFestivals))return;
+  renderLocal();renderFestivals();renderCategories();$("totalStat").textContent=allFestivals().length;showToast(`${incoming.length} local records imported`);
+ }catch(err){showToast("Invalid JSON backup file")}
+ e.target.value="";
 });
-load();
-try{selectedTheme=localStorage.getItem(THEMEKEY)||"Forest Green"}catch(e){selectedTheme="Forest Green"}
-applyTheme(selectedTheme,false);
-setup();storageInfo();summary();
+
+/* VISIT REGISTER */
+function readVisitForm(){
+ return {name:$("vName").value.trim(),place:$("vPlace").value.trim(),state:$("vState").value.trim(),date:$("vDate").value,arrival:$("vArrival").value,departure:$("vDeparture").value,people:$("vPeople").value.trim(),expense:Math.max(0,Number($("vExpense").value)||0),notes:$("vNotes").value.trim()};
+}
+function clearVisitForm(){
+ $("visitForm").reset();$("visitId").value="";$("vExpense").value="0";
+ $("visitFormTitle").textContent="➕ Add a visit record";$("saveVisitBtn").textContent="💾 Save visit";
+}
+$("visitForm").addEventListener("submit",e=>{
+ e.preventDefault();const d=readVisitForm(),id=$("visitId").value;
+ if(!d.name||!d.place||!d.date){showToast("Enter festival, place and visit date");return}
+ if(d.arrival&&d.departure&&d.departure<d.arrival){if(!confirm("Departure time is earlier than arrival. Is this an overnight visit?"))return}
+ if(id){
+  const i=visits.findIndex(v=>v.id===id);if(i<0){showToast("Visit record not found");return}
+  visits[i]={...visits[i],...d,id,updatedAt:new Date().toISOString()};
+ }else{visits.push({...d,id:uid("visit"),createdAt:new Date().toISOString()})}
+ if(!persist(VISIT_KEY,visits))return;
+ clearVisitForm();renderVisits();showToast(id?"Visit updated":"Visit saved");
+});
+$("cancelVisitEdit").onclick=clearVisitForm;
+$("visitSearch").addEventListener("input",renderVisits);
+function renderVisits(){
+ const q=$("visitSearch").value.trim().toLowerCase();
+ const list=visits.filter(v=>[v.name,v.place,v.state,v.date,v.arrival,v.departure,v.people,v.notes].join(" ").toLowerCase().includes(q)).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+ $("visitTotal").textContent=visits.length;
+ $("visitPlaces").textContent=new Set(visits.map(v=>(v.place||"").trim().toLowerCase()).filter(Boolean)).size;
+ $("visitSpend").textContent="₹"+visits.reduce((s,v)=>s+(Number(v.expense)||0),0).toLocaleString("en-IN",{maximumFractionDigits:2});
+ $("visitTableCount").textContent=`Showing ${list.length} of ${visits.length} records`;
+ $("visitTableBody").innerHTML=list.length?list.map((v,i)=>`<tr>
+ <td>${i+1}</td><td><strong>${safeText(v.name)}</strong></td><td>${safeText(v.place)}</td><td>${safeText(v.state||"—")}</td><td>${safeText(v.date)}</td><td>${safeText(v.arrival||"—")}</td><td>${safeText(v.departure||"—")}</td><td>${safeText(v.people||"—")}</td><td>${(Number(v.expense)||0).toLocaleString("en-IN",{maximumFractionDigits:2})}</td><td>${safeText(v.notes||"—")}</td><td><div class="row-actions"><button class="btn small" data-visit-edit="${safeText(v.id)}">Edit</button><button class="btn danger small" data-visit-delete="${safeText(v.id)}">Delete</button></div></td></tr>`).join(""):'<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted)">No visit records yet. Add a visit using the form above.</td></tr>';
+ $("visitTableBody").querySelectorAll("[data-visit-edit]").forEach(b=>b.onclick=()=>editVisit(b.dataset.visitEdit));
+ $("visitTableBody").querySelectorAll("[data-visit-delete]").forEach(b=>b.onclick=()=>deleteVisit(b.dataset.visitDelete));
+}
+function editVisit(id){
+ const v=visits.find(x=>x.id===id);if(!v)return;
+ $("visitId").value=v.id;$("vName").value=v.name||"";$("vPlace").value=v.place||"";$("vState").value=v.state||"";
+ $("vDate").value=v.date||"";$("vArrival").value=v.arrival||"";$("vDeparture").value=v.departure||"";
+ $("vPeople").value=v.people||"";$("vExpense").value=Number(v.expense)||0;$("vNotes").value=v.notes||"";
+ $("visitFormTitle").textContent="✏️ Edit visit record";$("saveVisitBtn").textContent="💾 Update visit";
+ $("visitForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function deleteVisit(id){
+ const v=visits.find(x=>x.id===id);if(!v)return;
+ if(!confirm(`Delete visit record for "${v.name}"?`))return;
+ visits=visits.filter(x=>x.id!==id);if(!persist(VISIT_KEY,visits))return;
+ renderVisits();showToast("Visit record deleted");
+}
+function csvEscape(v){return '"'+String(v??"").replace(/"/g,'""')+'"'}
+$("exportVisitsCSV").onclick=()=>{
+ const headers=["Festival / mela","Place","State / district","Visit date","Arrival","Departure","Visited with","Expense INR","Notes"];
+ const rows=visits.map(v=>[v.name,v.place,v.state,v.date,v.arrival,v.departure,v.people,v.expense,v.notes]);
+ const csv="\uFEFF"+[headers,...rows].map(r=>r.map(csvEscape).join(",")).join("\r\n");
+ downloadBlob("festival-visit-register.csv",csv,"text/csv;charset=utf-8");
+};
+$("exportBackup").onclick=()=>downloadBlob("indian-festival-explorer-backup.json",JSON.stringify({version:BACKUP_VERSION,exportedAt:new Date().toISOString(),localFestivals,visits},null,2),"application/json");
+$("importBackupBtn").onclick=()=>$("importBackupFile").click();
+$("importBackupFile").addEventListener("change",async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  const data=JSON.parse(await file.text());
+  if(!data||!Array.isArray(data.localFestivals)||!Array.isArray(data.visits))throw Error("Invalid backup");
+  if(!confirm("Restore this backup? Matching IDs will be replaced; other existing records will be retained.")){e.target.value="";return}
+  const lm=new Map(localFestivals.map(x=>[x.id,x]));
+  data.localFestivals.forEach(x=>{if(x&&x.name)lm.set(String(x.id||uid("local")),{...x,id:String(x.id||uid("local")),custom:true})});
+  localFestivals=[...lm.values()];
+  const vm=new Map(visits.map(x=>[x.id,x]));
+  data.visits.forEach(x=>{if(x&&x.name)vm.set(String(x.id||uid("visit")),{...x,id:String(x.id||uid("visit"))})});
+  visits=[...vm.values()];
+  if(!persist(LOCAL_KEY,localFestivals)||!persist(VISIT_KEY,visits))return;
+  renderLocal();renderVisits();renderFestivals();renderCategories();$("totalStat").textContent=allFestivals().length;
+  showToast("Backup restored successfully");
+ }catch(err){showToast("Invalid or incompatible backup file")}
+ e.target.value="";
+});
+
+$("totalStat").textContent=allFestivals().length;
+renderCategories();renderFestivals();renderLocal();renderVisits();
 </script>
 </body>
 </html>
