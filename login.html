@@ -1,0 +1,947 @@
+
+<!DOCTYPE html>
+<html lang="en" data-theme="forest">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#176b45">
+<title>Swayam Secure Login</title>
+<style>
+:root{
+ --p:#176b45;--d:#104b32;--bg:#edf5ee;--panel:#fff;
+ --text:#183629;--muted:#687d70;--border:#d7e5da;
+ --danger:#b42318;--success:#18794e;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;min-height:100vh;
+ font-family:Arial,sans-serif;background:var(--bg);
+ color:var(--text);display:flex;justify-content:center;
+ align-items:center;padding:18px;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{width:100%;max-width:460px}
+.brand{text-align:center;margin-bottom:20px}
+.logo{
+ width:62px;height:62px;margin:auto auto 10px;
+ border-radius:20px;background:var(--p);color:white;
+ display:grid;place-items:center;font-size:29px;font-weight:bold;
+}
+.brand h1{font-size:25px;margin:5px}
+.brand p{color:var(--muted);margin:7px 0}
+.card{
+ background:var(--panel);border:1px solid var(--border);
+ border-radius:20px;padding:23px;
+ box-shadow:0 12px 35px #18362912;
+}
+h2{font-size:21px;margin:0 0 8px}
+.desc{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:20px}
+label{display:block;font-size:13px;font-weight:bold;margin:13px 0 6px}
+input,select{
+ width:100%;padding:12px;border:1px solid var(--border);
+ border-radius:10px;background:var(--panel);color:var(--text);
+ outline:none;min-width:0;
+}
+input:focus,select:focus{
+ border-color:var(--p);box-shadow:0 0 0 2px #176b4518
+}
+.pin{
+ text-align:center;font-size:27px;letter-spacing:12px;font-weight:bold;
+ padding-left:20px;max-width:240px;margin:0 auto;display:block;
+}
+.pin-label{text-align:center}
+.btn{
+ width:100%;padding:12px;border:0;border-radius:10px;
+ background:var(--p);color:white;font-weight:bold;margin-top:12px;
+}
+.btn:hover{background:var(--d)}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn.secondary{
+ background:#e6f0e8;color:var(--d);border:1px solid var(--border)
+}
+.btn.danger{background:#fff0ee;color:var(--danger);border:1px solid #f3d0cc}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:9px}
+.actions .btn{margin-top:0}
+.message{font-size:13px;line-height:1.5;margin-top:13px;white-space:pre-wrap}
+.message.error{color:var(--danger)}
+.message.ok{color:var(--success)}
+.hidden{display:none!important}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.full{grid-column:1/-1}
+.section-title{
+ font-size:13px;font-weight:bold;color:var(--p);
+ margin-top:20px;padding-bottom:7px;border-bottom:1px solid var(--border)
+}
+.footer{text-align:center;font-size:11px;color:var(--muted);margin:16px 0}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.small-btn{
+ border:1px solid var(--border);background:var(--panel);
+ color:var(--text);padding:8px 10px;border-radius:9px
+}
+.stat{background:#edf5ee;padding:13px;border-radius:12px;margin-top:10px}
+.stat strong{display:block;font-size:19px;color:var(--p);margin-top:5px}
+ul{padding-left:20px;line-height:1.7}
+.note{font-size:12px;color:var(--muted);line-height:1.5}
+.security-box{
+ background:#f4f8f4;border:1px solid var(--border);
+ border-radius:12px;padding:12px;margin-top:12px
+}
+@media(max-width:360px){
+ .card{padding:17px}
+ .grid{grid-template-columns:1fr}
+ .full{grid-column:auto}
+ .brand h1{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="brand">
+    <div class="logo">S</div>
+    <h1>Swayam Secure Login</h1>
+    <p>Personal LifeSuite · Local account access</p>
+  </div>
+
+  <!-- LOGIN -->
+  <section id="loginView" class="card">
+    <h2>Welcome back</h2>
+    <p class="desc">Enter your registered 4-digit PIN to continue.</p>
+
+    <label class="pin-label" for="loginPin">4-digit PIN</label>
+    <input id="loginPin" class="pin" type="password"
+      inputmode="numeric" maxlength="4" pattern="[0-9]{4}"
+      autocomplete="off" placeholder="••••"
+      aria-label="Four digit PIN">
+
+    <button class="btn" id="loginBtn">Login</button>
+
+    <div class="actions">
+      <button class="btn secondary" id="newBtn">New User</button>
+      <button class="btn secondary" id="forgotBtn">Forget PIN</button>
+    </div>
+
+    <div id="loginMsg" class="message" role="status"></div>
+    <p class="note">Your account is stored in this browser on this device.</p>
+  </section>
+
+  <!-- REGISTRATION -->
+  <section id="registerView" class="card hidden">
+    <div class="topline">
+      <h2>New User Registration</h2>
+      <button class="small-btn" data-back>Back</button>
+    </div>
+
+    <p class="desc">Complete your details and set three recovery questions.</p>
+
+    <form id="registerForm">
+      <div class="grid">
+        <div>
+          <label for="his">HIS / User ID</label>
+          <input id="his" maxlength="60" required placeholder="Your ID">
+        </div>
+
+        <div>
+          <label for="doj">DOJ</label>
+          <input id="doj" type="date" required>
+        </div>
+
+        <div class="full">
+          <label for="regName">Full name</label>
+          <input id="regName" maxlength="100" required autocomplete="name">
+        </div>
+
+        <div>
+          <label for="age">Age</label>
+          <input id="age" type="number" min="1" max="120" required>
+        </div>
+
+        <div>
+          <label for="gender">Gender</label>
+          <select id="gender" required>
+            <option value="">Select</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+            <option>Prefer not to say</option>
+          </select>
+        </div>
+
+        <div class="full">
+          <label for="birthday">Birthday</label>
+          <input id="birthday" type="date" required>
+        </div>
+
+        <div class="full">
+          <label for="regPin">Create 4-digit PIN</label>
+          <input id="regPin" type="password" inputmode="numeric"
+            maxlength="4" pattern="[0-9]{4}" required autocomplete="new-password">
+        </div>
+
+        <div class="full">
+          <label for="regPin2">Confirm PIN</label>
+          <input id="regPin2" type="password" inputmode="numeric"
+            maxlength="4" pattern="[0-9]{4}" required autocomplete="new-password">
+        </div>
+      </div>
+
+      <div class="section-title">Security Questions</div>
+      <p class="note">Choose three different questions and provide answers you can remember.</p>
+      <div id="questionFields"></div>
+
+      <button class="btn" type="submit">Register Account</button>
+      <button class="btn secondary" type="button" data-back>Cancel</button>
+      <div id="registerMsg" class="message" role="status"></div>
+    </form>
+  </section>
+
+  <!-- FORGET PIN / RECOVERY -->
+  <section id="recoveryView" class="card hidden">
+    <div class="topline">
+      <h2>Recover PIN</h2>
+      <button class="small-btn" data-back>Back</button>
+    </div>
+
+    <p class="desc">
+      For your security, you must verify BOTH your registered birthday
+      AND the answer to one of your security questions.
+    </p>
+
+    <label for="recoveryId">HIS / User ID</label>
+    <input id="recoveryId" maxlength="60" placeholder="Enter registered ID"
+      autocomplete="off">
+
+    <button class="btn" id="findAccountBtn">Find Account</button>
+
+    <div id="recoveryChoices" class="hidden">
+      <div class="section-title">Step 1 — Verify birthday</div>
+
+      <label for="verifyBirthday">Your registered birthday</label>
+      <input id="verifyBirthday" type="date" autocomplete="off">
+
+      <div class="section-title">Step 2 — Verify security answer</div>
+
+      <label for="recoveryQuestion">Choose one security question</label>
+      <select id="recoveryQuestion">
+        <option value="">Select a question</option>
+      </select>
+
+      <label for="recoveryAnswer">Your answer</label>
+      <input id="recoveryAnswer" maxlength="200"
+        autocomplete="off" placeholder="Enter your registered answer">
+
+      <div class="security-box">
+        <p class="note">
+          Both answers must match the details saved during registration.
+          Knowing only the birthday or only the security answer is not enough.
+        </p>
+      </div>
+
+      <button class="btn" id="verifyBtn">Verify Both Details</button>
+    </div>
+
+    <div id="resetArea" class="hidden">
+      <div class="section-title">Identity verified</div>
+      <p class="message ok">
+        Both verification checks passed. You can now create a new 4-digit PIN.
+      </p>
+
+      <label for="newPin">New PIN</label>
+      <input id="newPin" type="password" inputmode="numeric"
+        maxlength="4" pattern="[0-9]{4}" autocomplete="new-password">
+
+      <label for="newPin2">Confirm new PIN</label>
+      <input id="newPin2" type="password" inputmode="numeric"
+        maxlength="4" pattern="[0-9]{4}" autocomplete="new-password">
+
+      <button class="btn" id="resetBtn">Save New PIN</button>
+    </div>
+
+    <div id="recoveryMsg" class="message" role="status"></div>
+  </section>
+
+  <!-- DEMO DESTINATION -->
+  <section id="indexView" class="card hidden">
+    <div class="topline">
+      <div>
+        <h2>My Index Page</h2>
+        <p class="desc" style="margin:5px 0">Swayam LifeSuite</p>
+      </div>
+      <button class="small-btn" id="logoutBtn">Logout</button>
+    </div>
+
+    <div class="stat">Welcome, <strong id="welcomeName">User</strong></div>
+    <div class="stat">User ID<strong id="welcomeId">—</strong></div>
+    <div class="stat">Login status<strong>Authenticated</strong></div>
+
+    <h3>Dashboard</h3>
+    <p>This is the index page displayed after successful PIN verification.</p>
+    <ul>
+      <li>Personal LifeSuite</li>
+      <li>Personal records</li>
+      <li>Tools and utilities</li>
+    </ul>
+    <p class="note">Replace this demo dashboard with your existing application index page.</p>
+  </section>
+
+  <div class="footer">IndexedDB · Local browser storage · No server required</div>
+</div>
+
+<script>
+"use strict";
+
+/* DATABASE */
+const DB_NAME = "SwayamLoginDB";
+const DB_VERSION = 1;
+const STORE = "users";
+
+let db = null;
+let recoveryUserId = null;
+let authenticatedUserId = null;
+let identityVerified = false;
+let recoveryAttemptToken = 0;
+
+const $ = id => document.getElementById(id);
+
+const questions = [
+  "What was the name of your first school?",
+  "What is the name of your hometown?",
+  "What was your childhood nickname?",
+  "What is the name of your favourite teacher?",
+  "What is the name of your favourite book?",
+  "What was your first job?",
+  "What is the name of your favourite childhood friend?",
+  "What is your favourite childhood memory?"
+];
+
+function openDatabase() {
+  return new Promise((resolve, reject) => {
+    if (!("indexedDB" in window)) {
+      reject(new Error("IndexedDB is not supported in this browser."));
+      return;
+    }
+
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onupgradeneeded = event => {
+      const database = event.target.result;
+      if (!database.objectStoreNames.contains(STORE)) {
+        database.createObjectStore(STORE, {keyPath: "id"});
+      }
+    };
+
+    request.onsuccess = () => {
+      db = request.result;
+      db.onversionchange = () => db.close();
+      resolve(db);
+    };
+
+    request.onerror = () => reject(
+      request.error || new Error("Could not open IndexedDB.")
+    );
+  });
+}
+
+function getUser(id) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readonly");
+    const req = tx.objectStore(STORE).get(id);
+
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error || new Error("Could not read account."));
+  });
+}
+
+function getAllUsers() {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readonly");
+    const req = tx.objectStore(STORE).getAll();
+
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error || new Error("Could not read accounts."));
+  });
+}
+
+function saveUser(user) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readwrite");
+    tx.objectStore(STORE).put(user);
+
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error || new Error("Database write failed."));
+    tx.onabort = () => reject(tx.error || new Error("Database transaction aborted."));
+  });
+}
+
+function normalize(value) {
+  return String(value ?? "").trim().toLocaleLowerCase();
+}
+
+function cleanId(value) {
+  return String(value ?? "").trim().toLocaleLowerCase();
+}
+
+/*
+ SHA-256 hashing is used when Web Crypto is available.
+ The fallback is for local demonstrations only and is not secure.
+*/
+async function hashText(value) {
+  const text = String(value);
+
+  if (window.crypto && window.crypto.subtle) {
+    const bytes = new TextEncoder().encode(text);
+    const digest = await window.crypto.subtle.digest("SHA-256", bytes);
+
+    return "sha256:" + Array.from(new Uint8Array(digest))
+      .map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  let h1 = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    h1 ^= text.charCodeAt(i);
+    h1 = Math.imul(h1, 0x01000193);
+  }
+
+  return "demo:" + (h1 >>> 0).toString(16);
+}
+
+function setMessage(id, text, type = "") {
+  const el = $(id);
+  el.textContent = text;
+  el.className = "message" + (type ? " " + type : "");
+}
+
+function showView(viewId) {
+  ["loginView", "registerView", "recoveryView", "indexView"]
+    .forEach(id => $(id).classList.toggle("hidden", id !== viewId));
+
+  setMessage("loginMsg", "");
+  if (viewId !== "registerView") setMessage("registerMsg", "");
+}
+
+function validPin(pin) {
+  return /^[0-9]{4}$/.test(pin);
+}
+
+function clearRecoveryState() {
+  recoveryAttemptToken++;
+  recoveryUserId = null;
+  identityVerified = false;
+
+  $("recoveryId").value = "";
+  $("verifyBirthday").value = "";
+  $("recoveryAnswer").value = "";
+  $("recoveryQuestion").innerHTML =
+    '<option value="">Select a question</option>';
+
+  $("newPin").value = "";
+  $("newPin2").value = "";
+
+  $("recoveryChoices").classList.add("hidden");
+  $("resetArea").classList.add("hidden");
+  setMessage("recoveryMsg", "");
+}
+
+/* BUILD REGISTRATION SECURITY QUESTIONS */
+function buildQuestionFields() {
+  const root = $("questionFields");
+  root.innerHTML = "";
+
+  for (let i = 0; i < 3; i++) {
+    const wrap = document.createElement("div");
+    wrap.className = "question-block";
+
+    const title = document.createElement("div");
+    title.className = "section-title";
+    title.textContent = "Question " + (i + 1);
+
+    const labelQ = document.createElement("label");
+    labelQ.textContent = "Security question";
+    labelQ.htmlFor = "q" + i;
+
+    const select = document.createElement("select");
+    select.id = "q" + i;
+    select.required = true;
+
+    const initial = document.createElement("option");
+    initial.value = "";
+    initial.textContent = "Choose a question";
+    select.appendChild(initial);
+
+    questions.forEach((question, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = question;
+      select.appendChild(option);
+    });
+
+    const labelA = document.createElement("label");
+    labelA.textContent = "Your answer";
+    labelA.htmlFor = "a" + i;
+
+    const answer = document.createElement("input");
+    answer.id = "a" + i;
+    answer.required = true;
+    answer.maxLength = 200;
+    answer.autocomplete = "off";
+    answer.placeholder = "Enter your answer";
+
+    wrap.append(title, labelQ, select, labelA, answer);
+    root.appendChild(wrap);
+  }
+
+  root.addEventListener("change", event => {
+    if (!/^q[0-2]$/.test(event.target.id)) return;
+
+    const selected = [0,1,2]
+      .map(i => $("q" + i).value)
+      .filter(Boolean);
+
+    if (new Set(selected).size !== selected.length) {
+      setMessage("registerMsg", "Please choose three different questions.", "error");
+    } else {
+      setMessage("registerMsg", "");
+    }
+  });
+}
+
+/* REGISTRATION */
+$("newBtn").addEventListener("click", () => {
+  $("registerForm").reset();
+  setMessage("registerMsg", "");
+  showView("registerView");
+});
+
+$("registerForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  setMessage("registerMsg", "Registering account...");
+
+  try {
+    const id = cleanId($("his").value);
+    const name = $("regName").value.trim();
+    const doj = $("doj").value;
+    const age = Number($("age").value);
+    const birthday = $("birthday").value;
+    const gender = $("gender").value;
+    const pin = $("regPin").value;
+    const pin2 = $("regPin2").value;
+
+    if (!id || !name || !doj || !birthday || !gender) {
+      throw new Error("Please complete all required fields.");
+    }
+
+    if (!Number.isInteger(age) || age < 1 || age > 120) {
+      throw new Error("Please enter a valid age.");
+    }
+
+    if (!validPin(pin)) {
+      throw new Error("PIN must contain exactly four digits.");
+    }
+
+    if (pin !== pin2) {
+      throw new Error("PIN and confirmation do not match.");
+    }
+
+    const dob = new Date(birthday + "T00:00:00");
+    const today = new Date();
+
+    if (Number.isNaN(dob.getTime()) || dob > today) {
+      throw new Error("Enter a valid birthday that is not in the future.");
+    }
+
+    const birthAge = today.getFullYear() - dob.getFullYear() -
+      ((today.getMonth() < dob.getMonth() ||
+        (today.getMonth() === dob.getMonth() &&
+         today.getDate() < dob.getDate())) ? 1 : 0);
+
+    if (birthAge !== age) {
+      throw new Error("Age does not match the birthday entered.");
+    }
+
+    const chosen = [0,1,2].map(i => ({
+      question: $("q" + i).value,
+      answer: $("a" + i).value.trim()
+    }));
+
+    if (chosen.some(q => q.question === "" || !q.answer)) {
+      throw new Error("Choose three security questions and answer all of them.");
+    }
+
+    if (new Set(chosen.map(q => q.question)).size !== 3) {
+      throw new Error("Each security question must be different.");
+    }
+
+    const existing = await getUser(id);
+    if (existing) {
+      throw new Error("This HIS / User ID is already registered.");
+    }
+
+    const hashedQuestions = [];
+
+    for (const q of chosen) {
+      hashedQuestions.push({
+        question: q.question,
+        answerHash: await hashText(normalize(q.answer))
+      });
+    }
+
+    const now = new Date().toISOString();
+
+    const user = {
+      id,
+      his: $("his").value.trim(),
+      doj,
+      name,
+      age,
+      birthday,
+      gender,
+      pinHash: await hashText(pin),
+      securityQuestions: hashedQuestions,
+      createdAt: now,
+      updatedAt: now
+    };
+
+    await saveUser(user);
+
+    $("loginPin").value = "";
+    showView("loginView");
+    setMessage(
+      "loginMsg",
+      "Registration successful. Enter your 4-digit PIN to log in.",
+      "ok"
+    );
+
+  } catch (error) {
+    setMessage("registerMsg", error.message || "Registration failed.", "error");
+  }
+});
+
+/* LOGIN */
+async function login() {
+  const pin = $("loginPin").value;
+
+  if (!validPin(pin)) {
+    setMessage("loginMsg", "Enter a valid 4-digit PIN.", "error");
+    return;
+  }
+
+  const button = $("loginBtn");
+  button.disabled = true;
+  setMessage("loginMsg", "Checking PIN...");
+
+  try {
+    const users = await getAllUsers();
+
+    if (!users.length) {
+      setMessage("loginMsg", "No account found. Click New User to register.", "error");
+      return;
+    }
+
+    const pinHash = await hashText(pin);
+    const matches = users.filter(user => user.pinHash === pinHash);
+
+    if (matches.length !== 1) {
+      setMessage("loginMsg", "Incorrect PIN. Please try again or use Forget PIN.", "error");
+      $("loginPin").value = "";
+      return;
+    }
+
+    const user = matches[0];
+    authenticatedUserId = user.id;
+
+    /*
+      This flag is only a basic client-side session marker.
+      It is not server-enforced authentication.
+    */
+    sessionStorage.setItem("swayam_logged_in", "1");
+    sessionStorage.setItem("swayam_user_id", user.id);
+
+    /*
+      For your separate PWA, redirect to the existing dashboard.
+      Change this to "./" if your dashboard is the root index.html.
+    */
+    window.location.replace("./index.html");
+
+  } catch (error) {
+    setMessage("loginMsg", "Login error: " + (error.message || error), "error");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+$("loginBtn").addEventListener("click", login);
+
+$("loginPin").addEventListener("keydown", event => {
+  if (event.key === "Enter") login();
+});
+
+/* FORGET PIN: START RECOVERY */
+$("forgotBtn").addEventListener("click", () => {
+  clearRecoveryState();
+  showView("recoveryView");
+});
+
+/* FIND ACCOUNT */
+$("findAccountBtn").addEventListener("click", async () => {
+  const token = ++recoveryAttemptToken;
+
+  recoveryUserId = null;
+  identityVerified = false;
+  $("recoveryChoices").classList.add("hidden");
+  $("resetArea").classList.add("hidden");
+  $("verifyBirthday").value = "";
+  $("recoveryAnswer").value = "";
+  $("newPin").value = "";
+  $("newPin2").value = "";
+
+  setMessage("recoveryMsg", "Searching for account...");
+
+  try {
+    const id = cleanId($("recoveryId").value);
+
+    if (!id) {
+      throw new Error("Enter your registered HIS / User ID.");
+    }
+
+    const user = await getUser(id);
+
+    if (token !== recoveryAttemptToken) return;
+
+    if (!user) {
+      throw new Error("Account not found. Check your registered ID.");
+    }
+
+    if (!Array.isArray(user.securityQuestions) ||
+        user.securityQuestions.length === 0) {
+      throw new Error("No recovery questions are registered for this account.");
+    }
+
+    recoveryUserId = user.id;
+
+    const select = $("recoveryQuestion");
+    select.innerHTML = "";
+
+    const firstOption = document.createElement("option");
+    firstOption.value = "";
+    firstOption.textContent = "Select a question";
+    select.appendChild(firstOption);
+
+    user.securityQuestions.forEach(q => {
+      const questionIndex = Number(q.question);
+
+      if (!Number.isInteger(questionIndex) ||
+          questionIndex < 0 ||
+          questionIndex >= questions.length) return;
+
+      const option = document.createElement("option");
+      option.value = q.question;
+      option.textContent = questions[questionIndex];
+      select.appendChild(option);
+    });
+
+    $("recoveryChoices").classList.remove("hidden");
+
+    setMessage(
+      "recoveryMsg",
+      "Account found. Complete BOTH verification steps."
+    );
+
+  } catch (error) {
+    if (token === recoveryAttemptToken) {
+      setMessage("recoveryMsg", error.message || "Could not find account.", "error");
+    }
+  }
+});
+
+/*
+ VERIFY BOTH:
+ 1. Birthday must match.
+ 2. One selected security answer must match.
+ If either fails, reset PIN remains unavailable.
+*/
+$("verifyBtn").addEventListener("click", async () => {
+  if (!recoveryUserId) {
+    setMessage("recoveryMsg", "Find your account first.", "error");
+    return;
+  }
+
+  identityVerified = false;
+  $("resetArea").classList.add("hidden");
+
+  const token = ++recoveryAttemptToken;
+  const button = $("verifyBtn");
+  button.disabled = true;
+
+  try {
+    const birthday = $("verifyBirthday").value;
+    const questionId = $("recoveryQuestion").value;
+    const answer = $("recoveryAnswer").value.trim();
+
+    if (!birthday) {
+      throw new Error("Enter your registered birthday.");
+    }
+
+    if (!questionId) {
+      throw new Error("Select one security question from the dropdown.");
+    }
+
+    if (!answer) {
+      throw new Error("Enter the answer to your selected security question.");
+    }
+
+    setMessage("recoveryMsg", "Checking birthday and security answer...");
+
+    const user = await getUser(recoveryUserId);
+
+    if (token !== recoveryAttemptToken) return;
+    if (!user) throw new Error("Account no longer exists.");
+
+    /* Check 1: birthday */
+    const birthdayMatches = birthday === user.birthday;
+
+    /* Check 2: selected question's answer */
+    const record = user.securityQuestions.find(
+      q => String(q.question) === String(questionId)
+    );
+
+    let answerMatches = false;
+
+    if (record) {
+      const suppliedHash = await hashText(normalize(answer));
+      if (token !== recoveryAttemptToken) return;
+      answerMatches = suppliedHash === record.answerHash;
+    }
+
+    /* Both checks are mandatory */
+    if (!birthdayMatches && !answerMatches) {
+      throw new Error("Birthday and security answer do not match. Please check both.");
+    }
+
+    if (!birthdayMatches) {
+      throw new Error("Birthday does not match. Please enter your registered birthday.");
+    }
+
+    if (!answerMatches) {
+      throw new Error("Security answer does not match. Please check your answer.");
+    }
+
+    identityVerified = true;
+    $("resetArea").classList.remove("hidden");
+
+    setMessage(
+      "recoveryMsg",
+      "Both checks passed. You may now create a new PIN.",
+      "ok"
+    );
+
+  } catch (error) {
+    identityVerified = false;
+    $("resetArea").classList.add("hidden");
+    setMessage("recoveryMsg", error.message || "Verification failed.", "error");
+
+  } finally {
+    button.disabled = false;
+  }
+});
+
+/* SAVE NEW PIN */
+$("resetBtn").addEventListener("click", async () => {
+  if (!identityVerified || !recoveryUserId) {
+    setMessage("recoveryMsg", "Verify your birthday and security answer first.", "error");
+    $("resetArea").classList.add("hidden");
+    return;
+  }
+
+  const pin = $("newPin").value;
+  const confirm = $("newPin2").value;
+
+  if (!validPin(pin)) {
+    setMessage("recoveryMsg", "New PIN must contain exactly four digits.", "error");
+    return;
+  }
+
+  if (pin !== confirm) {
+    setMessage("recoveryMsg", "New PIN and confirmation do not match.", "error");
+    return;
+  }
+
+  const button = $("resetBtn");
+  button.disabled = true;
+
+  try {
+    const user = await getUser(recoveryUserId);
+
+    if (!user) throw new Error("Account not found.");
+
+    user.pinHash = await hashText(pin);
+    user.updatedAt = new Date().toISOString();
+
+    await saveUser(user);
+
+    identityVerified = false;
+    recoveryUserId = null;
+
+    $("newPin").value = "";
+    $("newPin2").value = "";
+    $("recoveryId").value = "";
+    $("verifyBirthday").value = "";
+    $("recoveryAnswer").value = "";
+    $("recoveryQuestion").innerHTML =
+      '<option value="">Select a question</option>';
+
+    $("recoveryChoices").classList.add("hidden");
+    $("resetArea").classList.add("hidden");
+
+    showView("loginView");
+    setMessage(
+      "loginMsg",
+      "PIN reset successfully. Please log in with your new PIN.",
+      "ok"
+    );
+
+  } catch (error) {
+    setMessage("recoveryMsg", error.message || "Could not save the new PIN.", "error");
+  } finally {
+    button.disabled = false;
+  }
+});
+
+/* NAVIGATION */
+document.querySelectorAll("[data-back]").forEach(button => {
+  button.addEventListener("click", () => {
+    clearRecoveryState();
+    showView("loginView");
+  });
+});
+
+$("logoutBtn").addEventListener("click", () => {
+  authenticatedUserId = null;
+  sessionStorage.removeItem("swayam_logged_in");
+  sessionStorage.removeItem("swayam_user_id");
+
+  $("loginPin").value = "";
+  showView("loginView");
+  setMessage("loginMsg", "You have been logged out.", "ok");
+});
+
+/* STARTUP */
+async function startApp() {
+  try {
+    await openDatabase();
+    buildQuestionFields();
+  } catch (error) {
+    document.body.innerHTML =
+      '<div style="max-width:500px;margin:40px auto;padding:20px;font-family:Arial">' +
+      '<h2>Storage unavailable</h2><p>' +
+      String(error.message || error).replace(/[&<>"]/g, c => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"
+      }[c])) +
+      '</p><p>Try a current browser or run the app on localhost / HTTPS.</p></div>';
+  }
+}
+
+startApp();
+</script>
+</body>
+</html>
