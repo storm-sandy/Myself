@@ -18,6 +18,7 @@ function autoCacheAllFiles() {
   const filesToCache = new Set([
     "./",
     "./index.html",
+    "./login.html",
     "./home.html",
     "./start.html",
     "./apps-data.json",
