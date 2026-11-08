@@ -284,13 +284,14 @@ body.modal-open{overflow:hidden}
  *{scroll-behavior:auto!important;transition:none!important}
 }
 </style>
+<link rel="stylesheet" href="/Myself/theme.css">
 </head>
 
 <body>
 <header class="header">
  <div class="brand">
   <div class="brand-mark">🌿</div>
-  <div class="title">Swayam <span class="version">LIFESUITE · v1.2</span></div>
+  <div class="title">🌿Swayam <span class="version">v1.2</span></div>
  </div>
 
 <div class="header-right">
@@ -436,100 +437,6 @@ const QUICK_PAGES={
 
 };
 
-/* Theme palettes */
-const themeInfo=[
-['forest','🌲 Forest',120],['ocean','🌊 Ocean',198],['meadow','🌼 Meadow',83],
-['mint','🍃 Mint',158],['sunset','🌇 Sunset',23],['lavender','🪻 Lavender',267],
-['rose','🌹 Rose Garden',340],['sky','☁️ Sky',213],['sand','🏜️ Sand & Earth',36],
-['night','🌌 Night Forest',145],
-['snow','❄️ Snow',205],['water','💧 Water',190],['fire','🔥 Fire',8],
-['earth','🌍 Earth',32],['rain','🌧️ Rain',207],['thunder','⛈️ Thunder',254],
-['glacier','🧊 Glacier',187],['volcano','🌋 Volcano',2],['desert','🏜️ Desert Dunes',42],
-['jungle','🌴 Tropical Jungle',132],['bamboo','🎋 Bamboo Grove',103],
-['autumn','🍂 Autumn Leaves',25],['spring','🌷 Spring Blossom',328],
-['winter','🌨️ Winter Pine',196],['coral','🪸 Coral Reef',174],
-['lagoon','🏝️ Blue Lagoon',184],['river','🏞️ Riverbank',164],
-['waterfall','💦 Waterfall',190],['lake','🛶 Alpine Lake',202],
-['mountain','⛰️ Mountain Mist',220],['moss','🌿 Moss Garden',94],
-['fern','🌱 Fern Valley',111],['olive','🫒 Olive Grove',78],
-['palm','🌴 Palm Island',153],['orchid','🌺 Orchid',305],
-['cherry','🌸 Cherry Blossom',350],['lotus','🪷 Lotus Pond',326],
-['sunrise','🌄 Sunrise',28],['dusk','🌆 Dusk',277],
-['dawn','🌅 Dawn Glow',15],['moonlight','🌙 Moonlight',235],
-['starlight','✨ Starlight',249],['aurora','🌌 Aurora',169],
-['rainforest','🌳 Rainforest',143],['wildflower','🌻 Wildflower',48],
-['canyon','🪨 Red Canyon',15],['clay','🏺 Terracotta Earth',17],
-['stone','🪨 Stone & Slate',215],['crystal','💎 Crystal',188],
-['rainbow','🌈 Rainbow Garden',285],['honey','🍯 Honey Meadow',39],
-['lavenderfield','💜 Lavender Fields',280],['pine','🌲 Pine Forest',151],
-['cactus','🌵 Cactus Garden',91],['savanna','🦒 Savanna',46],
-['tundra','🐾 Arctic Tundra',200],['deepsea','🐋 Deep Sea',218],
-['seaglass','🫧 Sea Glass',168],['pebble','🪨 River Pebbles',174],
-['earthnight','🌑 Earth at Night',135],['cosmos','🪐 Cosmic Nature',263]
-];
-
-function hsl(h,s,l){return 'hsl('+h+' '+s+'% '+l+'%)'}
-
-const themes=themeInfo.map((v,i)=>{
- const [id,name,h]=v;
- const dark=id==='night'||id==='earthnight'||id==='deepsea';
- const primary=hsl(h,dark?57:65,dark?64:37);
- const deep=hsl(h,dark?42:65,dark?75:27);
- const head1=hsl(h,62,dark?13:27);
- const head2=hsl((h+35)%360,65,dark?29:53);
- const bg=dark?hsl(h,26,11):hsl(h,42,97);
- const panel=dark?hsl(h,25,16):(i%3===0?'#ffffff':hsl(h,35,99));
- const text=hsl(h,35,dark?92:20);
- const muted=hsl(h,18,dark?69:47);
- const soft=hsl(h,30,dark?23:91);
- const line=hsl(h,25,dark?29:87);
- return {id,name,h,bg,panel,text,muted,primary,deep,soft,line,head1,head2,dark};
-});
-
-function setTheme(id,save=true){
- const t=themes.find(x=>x.id===id)||themes[0];
- const root=document.documentElement;
- ['bg','panel','text','muted','primary','deep','soft','line','head1','head2']
- .forEach(k=>root.style.setProperty('--'+k,t[k]));
- root.style.setProperty('--shadow',
-  t.dark?'0 8px 28px #0005':'0 8px 28px #14412619');
- document.querySelector('meta[name="theme-color"]').content=t.head1;
- document.querySelector('meta[name="color-scheme"]')
-  ?.setAttribute('content',t.dark?'dark':'light');
- document.querySelectorAll('.theme-option').forEach(b=>{
-  b.setAttribute('aria-pressed',String(b.dataset.theme===t.id));
- });
- if(save){
-  try{localStorage.setItem('swayam_nature_theme',t.id)}catch(e){}
- }
-}
-
-function buildThemes(){
- const box=$('themeOptions');
- themes.forEach(t=>{
-  const b=document.createElement('button');
-  b.type='button';b.className='theme-option';b.dataset.theme=t.id;
-  b.setAttribute('aria-pressed','false');
-  b.setAttribute('aria-label','Apply '+t.name+' theme');
-  const sw=document.createElement('span');
-  sw.className='swatch';
-  sw.style.setProperty('--s1',t.head1);
-  sw.style.setProperty('--s2',t.head2);
-  const label=document.createElement('span');
-  label.className='theme-label';
-  label.append(document.createTextNode(t.name));
-  const small=document.createElement('small');
-  small.textContent=t.dark?'Dark nature palette':'Nature colour palette';
-  label.append(small);
-  b.append(sw,label);
-  b.addEventListener('click',()=>{
-   setTheme(t.id);
-   $('themePanel').classList.remove('open');
-  });
-  box.append(b);
- });
- $('themeCount').textContent=themes.length+' themes available';
-}
 
 function filterThemes(){
  const q=$('themeSearch').value.trim().toLowerCase();
@@ -541,26 +448,11 @@ function filterThemes(){
  });
  $('themeCount').textContent=count+' theme'+(count===1?'':'s')+' found';
 }
-buildThemes();
-$('themeSearch').addEventListener('input',filterThemes);
-try{
- setTheme(localStorage.getItem('swayam_nature_theme')||'forest',false);
-}catch(e){setTheme('forest',false)}
 
-function openThemes(){
- closeQuick();
- $('calendarPop').classList.remove('open');
- $('clock').setAttribute('aria-expanded','false');
- $('themePanel').classList.add('open');
- $('themeSearch').value='';
- filterThemes();
- $('closeThemes').focus();
-}
-$('openThemes').addEventListener('click',openThemes);
-$('closeThemes').addEventListener('click',()=>$('themePanel').classList.remove('open'));
-$('themePanel').addEventListener('click',e=>{
- if(e.target===$('themePanel'))$('themePanel').classList.remove('open');
-});
+$('themeSearch').addEventListener('input',filterThemes);
+
+
+
 
 /* Floating external HTML shortcuts */
 let currentQuickUrl='';
@@ -754,7 +646,7 @@ links.forEach(a=>{
 });
 })();
 </script>
-
+<script src="/Myself/theme.js"></script>
 <script src="/Myself/app.js" defer></script>
 </body>
 </html>

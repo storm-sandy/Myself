@@ -5,17 +5,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#138a4b">
-<meta name="color-scheme" content="light">
 <title>Swayam — Personal LifeSuite</title>
+
+<!-- CENTRAL SWAYAM THEME SYSTEM -->
+<link rel="stylesheet" href="/Myself/theme.css">
 
 <style>
 *{box-sizing:border-box}
+
 :root{
- --primary:#138a4b;--deep:#086b38;--soft:#e8f7ef;
- --bg:#f2f7f3;--card:#fff;--text:#183327;--muted:#6b7c71;
- --border:#dce9df;--shadow:0 4px 14px rgba(20,65,39,.07);
- --hero1:#138a4b;--hero2:#075b34;
+ --card:var(--panel);
+ --border:var(--line);
+ --hero1:var(--head1);
+ --hero2:var(--head2);
 }
+
 html{
  min-height:100%;
  overflow-y:auto;
@@ -26,101 +30,179 @@ html{
 html::-webkit-scrollbar{width:9px}
 html::-webkit-scrollbar-track{background:var(--soft)}
 html::-webkit-scrollbar-thumb{
- background:var(--primary);border-radius:10px;
+ background:var(--primary);
+ border-radius:10px;
  border:2px solid var(--soft);
 }
+
 body{
- margin:0;min-height:100vh;overflow-x:hidden;
+ margin:0;
+ min-height:100vh;
+ overflow-x:hidden;
  font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
- background:var(--bg);color:var(--text);
+ background:var(--bg);
+ color:var(--text);
  transition:background .18s,color .18s;
 }
-button,select,a{-webkit-tap-highlight-color:transparent}
-button,select{font:inherit}
+
+button,a{-webkit-tap-highlight-color:transparent}
+button{font:inherit}
 
 /* HEADER */
 .header{
- position:sticky;top:0;z-index:20;
- display:flex;align-items:center;justify-content:space-between;gap:8px;
- padding:10px 15px;color:white;
+ position:sticky;
+ top:0;
+ z-index:20;
+ display:flex;
+ align-items:center;
+ justify-content:flex-end;
+ gap:8px;
+ padding:10px 15px;
+ color:white;
  background:linear-gradient(120deg,var(--hero1),var(--hero2));
  box-shadow:0 3px 12px #00000012;
 }
-.header-left{display:flex;align-items:center;gap:8px;min-width:0}
-.brand{display:flex;align-items:center;gap:10px;min-width:0}
-.logo{
- display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;
- border-radius:14px;background:#ffffff20;font-size:25px;
-}
-.brand h1{font-size:20px;margin:0;letter-spacing:.2px}
-.brand small{font-size:10px;opacity:.85}
 
 /* TEXT SIZE CONTROLS */
 .text-size-control{
- display:flex;align-items:center;gap:3px;flex-shrink:0;
- padding:3px;border:1px solid #ffffff45;
- border-radius:11px;background:#ffffff16;
+ display:flex;
+ align-items:center;
+ gap:3px;
+ flex-shrink:0;
+ padding:3px;
+ border:1px solid #ffffff45;
+ border-radius:11px;
+ background:#ffffff16;
 }
+
 .text-size-control button{
- display:grid;place-items:center;width:28px;height:29px;padding:0;
- border:0;border-radius:7px;background:#ffffff20;color:white;
- font-size:16px;font-weight:800;cursor:pointer;
+ display:grid;
+ place-items:center;
+ width:28px;
+ height:29px;
+ padding:0;
+ border:0;
+ border-radius:7px;
+ background:#ffffff20;
+ color:white;
+ font-size:16px;
+ font-weight:800;
+ cursor:pointer;
 }
+
 .text-size-control button:disabled{opacity:.45}
+
 .text-size-control output{
- min-width:30px;text-align:center;font-size:10px;font-weight:750;
-}
-.theme-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.theme-wrap label{font-size:12px}
-.theme-select{
- width:132px;max-width:40vw;padding:9px 8px;
- border:1px solid #ffffff50;border-radius:10px;
- background:#ffffffed;color:#183327;outline:none;font-size:12px;
+ min-width:30px;
+ text-align:center;
+ font-size:10px;
+ font-weight:750;
 }
 
-
-main{max-width:1200px;margin:auto;padding:15px}
+main{
+ max-width:1200px;
+ margin:auto;
+ padding:15px;
+}
 
 /* HERO */
 .hero{
- position:relative;overflow:hidden;border-radius:23px;
- padding:25px 22px;margin-bottom:19px;color:#fff;
+ position:relative;
+ overflow:hidden;
+ border-radius:23px;
+ padding:25px 22px;
+ margin-bottom:19px;
+ color:#fff;
  background:linear-gradient(120deg,var(--hero1),var(--hero2));
 }
+
 .hero:after{
- content:"🌿";position:absolute;right:16px;bottom:-22px;
- font-size:104px;opacity:.13;transform:rotate(-15deg);
+ content:"🌿";
+ position:absolute;
+ right:16px;
+ bottom:-22px;
+ font-size:104px;
+ opacity:.13;
+ transform:rotate(-15deg);
  pointer-events:none;
 }
-.hero-content{position:relative;z-index:1}
-.hero h2{font-size:clamp(25px,4vw,36px);margin:0 0 8px}
-.hero p{
- font-size:14px;line-height:1.6;max-width:680px;
- margin:0 0 14px;opacity:.93;
+
+.hero-content{
+ position:relative;
+ z-index:1;
 }
+
+.hero h2{
+ font-size:clamp(25px,4vw,36px);
+ margin:0 0 8px;
+}
+
+.hero p{
+ font-size:14px;
+ line-height:1.6;
+ max-width:680px;
+ margin:0 0 14px;
+ opacity:.93;
+}
+
 .hero-quote{
- display:inline-block;padding:8px 11px;border-radius:10px;
- background:#ffffff20;font-size:12px;line-height:1.5;
+ display:inline-block;
+ padding:8px 11px;
+ border-radius:10px;
+ background:#ffffff20;
+ font-size:12px;
+ line-height:1.5;
 }
 
 /* SECTION HEADINGS */
 .section-head{
- display:flex;align-items:center;justify-content:space-between;
- gap:10px;margin:22px 1px 10px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:10px;
+ margin:22px 1px 10px;
 }
-.section-head h2{font-size:19px;margin:0}
-.section-head p{font-size:12px;color:var(--muted);margin:4px 0 0}
-.head-icon{font-size:23px}
-.launch-tools{display:flex;align-items:center;gap:6px}
-.scroll-btn{
- display:grid;place-items:center;
- border:1px solid var(--border);background:var(--card);color:var(--text);
- border-radius:9px;min-width:32px;height:32px;cursor:pointer;
-}
-.scroll-btn:active{transform:scale(.95)}
-.scroll-hint{font-size:10px;color:var(--muted);white-space:nowrap}
 
-/* APP PANEL: HORIZONTAL SCROLLING */
+.section-head h2{
+ font-size:19px;
+ margin:0;
+}
+
+.section-head p{
+ font-size:12px;
+ color:var(--muted);
+ margin:4px 0 0;
+}
+
+.head-icon{font-size:23px}
+
+.launch-tools{
+ display:flex;
+ align-items:center;
+ gap:6px;
+}
+
+.scroll-btn{
+ display:grid;
+ place-items:center;
+ border:1px solid var(--border);
+ background:var(--card);
+ color:var(--text);
+ border-radius:9px;
+ min-width:32px;
+ height:32px;
+ cursor:pointer;
+}
+
+.scroll-btn:active{transform:scale(.95)}
+
+.scroll-hint{
+ font-size:10px;
+ color:var(--muted);
+ white-space:nowrap;
+}
+
+/* APP PANEL */
 .app-grid{
  display:grid;
  grid-template-rows:repeat(2,minmax(140px,auto));
@@ -139,165 +221,182 @@ main{max-width:1200px;margin:auto;padding:15px}
  -webkit-overflow-scrolling:touch;
  align-items:stretch;
 }
+
 .app-grid::-webkit-scrollbar{height:8px}
 .app-grid::-webkit-scrollbar-track{
- background:var(--soft);border-radius:8px;
+ background:var(--soft);
+ border-radius:8px;
 }
 .app-grid::-webkit-scrollbar-thumb{
- background:var(--primary);border-radius:8px;
+ background:var(--primary);
+ border-radius:8px;
 }
+
 .app-card{
- min-width:0;width:100%;min-height:140px;height:100%;
- display:flex;flex-direction:column;align-items:flex-start;
- padding:12px;border:1px solid var(--border);
- border-radius:15px;background:var(--card);color:var(--text);
- text-decoration:none;box-shadow:var(--shadow);
- overflow-wrap:anywhere;word-break:normal;
+ min-width:0;
+ width:100%;
+ min-height:140px;
+ height:100%;
+ display:flex;
+ flex-direction:column;
+ align-items:flex-start;
+ padding:12px;
+ border:1px solid var(--border);
+ border-radius:15px;
+ background:var(--card);
+ color:var(--text);
+ text-decoration:none;
+ box-shadow:var(--shadow);
+ overflow-wrap:anywhere;
+ word-break:normal;
  transition:border-color .15s,transform .15s;
 }
+
 .app-card:active{transform:scale(.98)}
+
 .app-icon{
- width:38px;height:38px;display:grid;place-items:center;
- flex-shrink:0;margin-bottom:8px;border-radius:12px;
- background:var(--soft);font-size:22px;
+ width:38px;
+ height:38px;
+ display:grid;
+ place-items:center;
+ flex-shrink:0;
+ margin-bottom:8px;
+ border-radius:12px;
+ background:var(--soft);
+ font-size:22px;
 }
+
 .app-card h3{
- width:100%;font-size:13px;line-height:1.4;
- margin:0 0 6px;overflow-wrap:anywhere;
-}
-.app-card p{
- width:100%;color:var(--muted);
- font-size:11px;line-height:1.5;margin:0;
+ width:100%;
+ font-size:13px;
+ line-height:1.4;
+ margin:0 0 6px;
  overflow-wrap:anywhere;
 }
+
+.app-card p{
+ width:100%;
+ color:var(--muted);
+ font-size:11px;
+ line-height:1.5;
+ margin:0;
+ overflow-wrap:anywhere;
+}
+
 .open-text{
- margin-top:auto;padding-top:9px;
- color:var(--primary);font-size:11px;font-weight:750;
+ margin-top:auto;
+ padding-top:9px;
+ color:var(--primary);
+ font-size:11px;
+ font-weight:750;
 }
 
 /* WELLNESS */
 .wellness{
- display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:10px;
 }
-.wellness-card{
- min-width:0;padding:14px;border-radius:15px;
- background:var(--card);border:1px solid var(--border);
-}
-.wellness-card .emoji{font-size:24px}
-.wellness-card h3{font-size:14px;margin:6px 0 4px}
-.wellness-card p{
- font-size:11px;line-height:1.5;color:var(--muted);margin:0;
-}
-.balance{
- margin-top:20px;padding:18px;border-radius:18px;
- background:linear-gradient(120deg,var(--soft),var(--card));
- border:1px solid var(--border);border-left:4px solid var(--primary);
-}
-.balance h2{font-size:19px;margin:0 0 7px}
-.balance>p{
- font-size:12px;line-height:1.5;color:var(--muted);margin:0 0 13px;
-}
-.balance-grid{
- display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;
-}
-.balance-item{
- min-width:0;text-align:center;padding:10px 3px;
- border-radius:12px;background:var(--card);
-}
-.balance-item strong{display:block;font-size:22px}
-.balance-item span{font-size:10px;color:var(--muted)}
-.footer{
- text-align:center;padding:23px 12px;color:var(--muted);
- font-size:12px;line-height:1.7;
-}
-.footer strong{color:var(--primary)}
 
-/* TEN NATURE THEMES */
-body[data-theme="forest"]{
- --primary:#138a4b;--deep:#086b38;--soft:#e8f7ef;--bg:#f2f7f3;
- --card:#fff;--text:#183327;--muted:#6b7c71;--border:#dce9df;
- --hero1:#138a4b;--hero2:#075b34;
+.wellness-card{
+ min-width:0;
+ padding:14px;
+ border-radius:15px;
+ background:var(--card);
+ border:1px solid var(--border);
 }
-body[data-theme="ocean"]{
- --primary:#087eaf;--deep:#075985;--soft:#e0f5fc;--bg:#eff8fc;
- --card:#fff;--text:#163345;--muted:#637d8b;--border:#d4e9f2;
- --hero1:#0798be;--hero2:#075985;
+
+.wellness-card .emoji{font-size:24px}
+
+.wellness-card h3{
+ font-size:14px;
+ margin:6px 0 4px;
 }
-body[data-theme="meadow"]{
- --primary:#678d27;--deep:#41651b;--soft:#edf6d9;--bg:#f7f9ee;
- --card:#fff;--text:#303c20;--muted:#778064;--border:#e1e8ce;
- --hero1:#8bac42;--hero2:#41651b;
+
+.wellness-card p{
+ font-size:11px;
+ line-height:1.5;
+ color:var(--muted);
+ margin:0;
 }
-body[data-theme="mint"]{
- --primary:#168c83;--deep:#08685f;--soft:#ddf6f0;--bg:#f0faf7;
- --card:#fff;--text:#173b36;--muted:#66817b;--border:#d4ebe4;
- --hero1:#2ab6a3;--hero2:#08685f;
+
+/* DAILY BALANCE */
+.balance{
+ margin-top:20px;
+ padding:18px;
+ border-radius:18px;
+ background:linear-gradient(120deg,var(--soft),var(--card));
+ border:1px solid var(--border);
+ border-left:4px solid var(--primary);
 }
-body[data-theme="sunset"]{
- --primary:#d76a35;--deep:#984321;--soft:#fff0e3;--bg:#fff7f0;
- --card:#fff;--text:#442e25;--muted:#887469;--border:#f0dfd2;
- --hero1:#ed9250;--hero2:#a73d35;
+
+.balance h2{
+ font-size:19px;
+ margin:0 0 7px;
 }
-body[data-theme="lavender"]{
- --primary:#7959bd;--deep:#52368e;--soft:#f0eaff;--bg:#f7f4ff;
- --card:#fff;--text:#302747;--muted:#79708c;--border:#e5dcf5;
- --hero1:#9879d9;--hero2:#52368e;
+
+.balance>p{
+ font-size:12px;
+ line-height:1.5;
+ color:var(--muted);
+ margin:0 0 13px;
 }
-body[data-theme="rose"]{
- --primary:#c04f72;--deep:#8b294e;--soft:#ffebf1;--bg:#fff5f7;
- --card:#fff;--text:#422632;--muted:#8b717c;--border:#f0dce4;
- --hero1:#e57894;--hero2:#8b294e;
+
+.balance-grid{
+ display:grid;
+ grid-template-columns:repeat(7,minmax(0,1fr));
+ gap:8px;
 }
-body[data-theme="sky"]{
- --primary:#397bd0;--deep:#204f9b;--soft:#e8f2ff;--bg:#f3f8ff;
- --card:#fff;--text:#1c3048;--muted:#687e98;--border:#dbe7f7;
- --hero1:#65a5ed;--hero2:#204f9b;
+
+.balance-item{
+ min-width:0;
+ text-align:center;
+ padding:10px 3px;
+ border-radius:12px;
+ background:var(--card);
 }
-body[data-theme="sand"]{
- --primary:#a47b3d;--deep:#75552b;--soft:#f8efdc;--bg:#fbf7ee;
- --card:#fffefa;--text:#3e3527;--muted:#837866;--border:#eae0cb;
- --hero1:#c4a16a;--hero2:#75552b;
+
+.balance-item strong{
+ display:block;
+ font-size:22px;
 }
-body[data-theme="night"]{
- --primary:#61c89a;--deep:#183f30;--soft:#223a30;--bg:#101a16;
- --card:#19251f;--text:#eef7f0;--muted:#b1c2b7;--border:#30483a;
- --hero1:#205f48;--hero2:#101f19;
+
+.balance-item span{
+ font-size:10px;
+ color:var(--muted);
 }
-body[data-theme="night"] .clock{color:#baf2d2}
-body[data-theme="night"] .theme-select{
- background:#19251f;color:#eef7f0;border-color:#405447;
+
+.footer{
+ text-align:center;
+ padding:23px 12px;
+ color:var(--muted);
+ font-size:12px;
+ line-height:1.7;
 }
-body[data-theme="night"] .app-card,
-body[data-theme="night"] .wellness-card,
-body[data-theme="night"] .balance-item,
-body[data-theme="night"] .scroll-btn{box-shadow:none}
-body[data-theme="night"] .balance{
- background:linear-gradient(120deg,#223a30,#19251f);
-}
+
+.footer strong{color:var(--primary)}
 
 /* RESPONSIVE */
 @media(hover:hover){
- .app-card:hover{transform:translateY(-2px);border-color:var(--primary)}
+ .app-card:hover{
+  transform:translateY(-2px);
+  border-color:var(--primary);
+ }
  .scroll-btn:hover{border-color:var(--primary)}
  .text-size-control button:hover{background:#ffffff35}
 }
+
 @media(max-width:900px){
  .app-grid{grid-auto-columns:calc((100% - 24px)/3)}
  .balance-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
+
 @media(max-width:700px){
  main{padding:11px}
- .header{padding:9px 10px;gap:6px}
- .header-left{gap:6px}
- .brand{gap:7px}
- .brand h1{font-size:18px}
- .brand small{font-size:9px}
- .logo{width:36px;height:36px;font-size:21px}
+ .header{padding:9px 10px}
  .text-size-control{gap:2px;padding:2px}
  .text-size-control button{width:23px;height:26px;font-size:14px}
  .text-size-control output{min-width:25px;font-size:9px}
- .theme-wrap label{display:none}
- .theme-select{width:115px;padding:8px 5px}
  .hero{padding:21px 17px;border-radius:19px}
  .hero h2{font-size:26px}
  .hero p{font-size:13px;max-width:88%}
@@ -306,23 +405,19 @@ body[data-theme="night"] .balance{
  .app-grid{
   grid-template-rows:repeat(2,minmax(140px,auto));
   grid-auto-columns:calc((100% - 10px)/2);
-  gap:10px;padding-bottom:12px;
+  gap:10px;
+  padding-bottom:12px;
  }
  .app-card{min-height:140px;padding:10px}
  .wellness{grid-template-columns:repeat(2,minmax(0,1fr))}
  .wellness-card{padding:12px}
  .scroll-hint{font-size:9px}
 }
+
 @media(max-width:420px){
  .header{padding:8px 7px}
- .header-left{gap:4px}
- .brand{gap:5px}
- .brand h1{font-size:15px}
- .brand small{display:none}
- .logo{width:30px;height:30px;font-size:18px;border-radius:9px}
  .text-size-control button{width:20px;height:25px;font-size:13px}
  .text-size-control output{min-width:22px;font-size:8px}
- .theme-select{width:94px;max-width:29vw;font-size:10px}
  .section-head{align-items:flex-start}
  .launch-tools{gap:4px}
  .scroll-hint{display:none}
@@ -330,49 +425,39 @@ body[data-theme="night"] .balance{
  .balance-grid{gap:5px}
  .balance-item{padding:9px 2px}
 }
+
 @media(max-width:340px){
- .brand h1{font-size:14px}
  .text-size-control{gap:1px}
  .text-size-control button{width:18px}
  .text-size-control output{min-width:20px}
- .theme-select{width:82px}
- .app-grid{gap:7px;grid-auto-columns:calc((100% - 7px)/2)}
+ .app-grid{
+  gap:7px;
+  grid-auto-columns:calc((100% - 7px)/2);
+ }
  .app-card{padding:8px}
 }
+
 @media(prefers-reduced-motion:reduce){
- *,*::before,*::after{scroll-behavior:auto!important;transition:none!important}
+ *,*::before,*::after{
+  scroll-behavior:auto!important;
+  transition:none!important;
+ }
 }
 </style>
 </head>
 
-<body data-theme="forest">
+<body>
 
 <header class="header">
- <div class="header-left">
-  <div class="text-size-control" role="group" aria-label="Text size controls">
-   <button id="textDecrease" type="button" aria-label="Decrease text size">A−</button>
-   <output id="textSizeValue" aria-live="polite">100%</output>
-   <button id="textIncrease" type="button" aria-label="Increase text size">A+</button>
-  </div>
-
- <div class="theme-wrap">
-  <label for="themeSelector">Theme</label>
-  <select id="themeSelector" class="theme-select" aria-label="Choose nature theme">
-   <option value="forest">🌲 Forest</option>
-   <option value="ocean">🌊 Ocean</option>
-   <option value="meadow">🌼 Meadow</option>
-   <option value="mint">🍃 Mint</option>
-   <option value="sunset">🌅 Sunset</option>
-   <option value="lavender">💜 Lavender</option>
-   <option value="rose">🌸 Rose</option>
-   <option value="sky">☁️ Sky</option>
-   <option value="sand">🏜️ Sand</option>
-   <option value="night">🌙 Night</option>
-  </select>
+ <div class="text-size-control" role="group" aria-label="Text size controls">
+  <button id="textDecrease" type="button" aria-label="Decrease text size">A−</button>
+  <output id="textSizeValue" aria-live="polite">100%</output>
+  <button id="textIncrease" type="button" aria-label="Increase text size">A+</button>
  </div>
 </header>
 
 <main>
+
  <section class="hero">
   <div class="hero-content">
    <h2>🌿 Welcome to Swayam</h2>
@@ -395,91 +480,176 @@ body[data-theme="night"] .balance{
   </div>
 
   <div class="app-grid" id="appGrid">
+
    <a href="/Myself/school/idea.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">☕</div><h3>Every Day Thoughts!</h3>
-    <p>Welcome and enrich your life with engaging thoughts.</p><span class="open-text">Open →</span>
+    <div class="app-icon">☕</div>
+    <h3>Every Day Thoughts!</h3>
+    <p>Welcome and enrich your life with engaging thoughts.</p>
+    <span class="open-text">Open →</span>
    </a>
+
    <a href="/Myself/festival/festival.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">💃🙏🏹</div><h3>Indian Festivals</h3>
-    <p>Fill your life with happiness through festivals and wishes.</p><span class="open-text">Open →</span>
+    <div class="app-icon">💃🙏🏹</div>
+    <h3>Indian Festivals</h3>
+    <p>Fill your life with happiness through festivals and wishes.</p>
+    <span class="open-text">Open →</span>
    </a>
+
    <a href="/Myself/school/todo1.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">✏️</div><h3>To-do List</h3>
-    <p>Plan your everyday tasks and stay organized.</p><span class="open-text">Open →</span>
+    <div class="app-icon">✏️</div>
+    <h3>To-do List</h3>
+    <p>Plan your everyday tasks and stay organized.</p>
+    <span class="open-text">Open →</span>
    </a>
+
    <a href="util/Util_quick.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">⚡</div><h3>Quick Notes</h3>
-    <p>Capture fast thoughts, reminders and spontaneous ideas.</p><span class="open-text">Open →</span>
+    <div class="app-icon">⚡</div>
+    <h3>Quick Notes</h3>
+    <p>Capture fast thoughts, reminders and spontaneous ideas.</p>
+    <span class="open-text">Open →</span>
    </a>
+
    <a href="util/Util_fin.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">🏠</div><h3>Life &amp; Home</h3>
-    <p>Manage family, household, travel and daily responsibilities.</p><span class="open-text">Open →</span>
+    <div class="app-icon">🏠</div>
+    <h3>Life &amp; Home</h3>
+    <p>Manage family, household, travel and daily responsibilities.</p>
+    <span class="open-text">Open →</span>
    </a>
+
    <a href="util/Util_karya.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">💼</div><h3>Work &amp; Career</h3>
-    <p>Organize work, attendance, training and interview preparation.</p><span class="open-text">Open →</span>
+    <div class="app-icon">💼</div>
+    <h3>Work &amp; Career</h3>
+    <p>Organize work, attendance, training and interview preparation.</p>
+    <span class="open-text">Open →</span>
    </a>
+
    <a href="util/Util_laxmi.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">👨‍🎓</div><h3>Kids</h3>
-    <p>Track children's wellness, learning and extracurricular activities.</p><span class="open-text">Open →</span>
+    <div class="app-icon">👨‍🎓</div>
+    <h3>Kids</h3>
+    <p>Track children's wellness, learning and extracurricular activities.</p>
+    <span class="open-text">Open →</span>
    </a>
+
    <a href="nari/nariraksha.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">👩</div><h3>Women &amp; Safety</h3>
-    <p>Prioritize wellness, confidence and personal safety.</p><span class="open-text">Open →</span>
+    <div class="app-icon">👩</div>
+    <h3>Women &amp; Safety</h3>
+    <p>Prioritize wellness, confidence and personal safety.</p>
+    <span class="open-text">Open →</span>
    </a>
+
    <a href="util/Util_yog.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">🧘</div><h3>Health &amp; Fitness</h3>
-    <p>Support exercise, food awareness and healthy routines.</p><span class="open-text">Open →</span>
+    <div class="app-icon">🧘</div>
+    <h3>Health &amp; Fitness</h3>
+    <p>Support exercise, food awareness and healthy routines.</p>
+    <span class="open-text">Open →</span>
    </a>
+
    <a href="util/Util_sutra.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">📚</div><h3>Learning</h3>
-    <p>Organize study material, mathematics and knowledge resources.</p><span class="open-text">Open →</span>
+    <div class="app-icon">📚</div>
+    <h3>Learning</h3>
+    <p>Organize study material, mathematics and knowledge resources.</p>
+    <span class="open-text">Open →</span>
    </a>
+
    <a href="util/Util_smart.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">🛠️</div><h3>Smart Tools</h3>
-    <p>Access calculators, productivity tools and useful utilities.</p><span class="open-text">Open →</span>
+    <div class="app-icon">🛠️</div>
+    <h3>Smart Tools</h3>
+    <p>Access calculators, productivity tools and useful utilities.</p>
+    <span class="open-text">Open →</span>
    </a>
+
    <a href="util/Util_chitra.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">🎨</div><h3>Creativity</h3>
-    <p>Work with images, documents, scanning and PDF utilities.</p><span class="open-text">Open →</span>
+    <div class="app-icon">🎨</div>
+    <h3>Creativity</h3>
+    <p>Work with images, documents, scanning and PDF utilities.</p>
+    <span class="open-text">Open →</span>
    </a>
+
    <a href="util/Util_sanskar.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">🌱</div><h3>Sanskar</h3>
-    <p>Explore values, personal growth and meaningful living.</p><span class="open-text">Open →</span>
+    <div class="app-icon">🌱</div>
+    <h3>Sanskar</h3>
+    <p>Explore values, personal growth and meaningful living.</p>
+    <span class="open-text">Open →</span>
    </a>
+
    <a href="util/Util_ranjan.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">🎮</div><h3>Relax &amp; Enjoy</h3>
-    <p>Take healthy breaks with games, jokes and puzzles.</p><span class="open-text">Open →</span>
+    <div class="app-icon">🎮</div>
+    <h3>Relax &amp; Enjoy</h3>
+    <p>Take healthy breaks with games, jokes and puzzles.</p>
+    <span class="open-text">Open →</span>
    </a>
+
    <a href="util/Util_lang.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">🌐</div><h3>Language Learning</h3>
-    <p>Learn languages, build vocabulary and improve communication.</p><span class="open-text">Open →</span>
+    <div class="app-icon">🌐</div>
+    <h3>Language Learning</h3>
+    <p>Learn languages, build vocabulary and improve communication.</p>
+    <span class="open-text">Open →</span>
    </a>
+
    <a href="util/Util_planet.html" class="app-card" onclick="openSwayamPage(event,this.href)">
-    <div class="app-icon">🧭</div><h3>Navigation</h3>
-    <p>Explore maps, find directions and discover destinations.</p><span class="open-text">Open →</span>
+    <div class="app-icon">🧭</div>
+    <h3>Navigation</h3>
+    <p>Explore maps, find directions and discover destinations.</p>
+    <span class="open-text">Open →</span>
    </a>
+
   </div>
  </section>
 
  <section>
   <div class="section-head">
-   <div><h2>🌿 Healthy Lifestyle</h2><p>Small actions. Better everyday living.</p></div>
+   <div>
+    <h2>🌿 Healthy Lifestyle</h2>
+    <p>Small actions. Better everyday living.</p>
+   </div>
    <span class="head-icon">🌳</span>
   </div>
+
   <div class="wellness">
-   <div class="wellness-card"><div class="emoji">💧</div><h3>Hydration</h3><p>Keep water intake visible and make hydration a daily habit.</p></div>
-   <div class="wellness-card"><div class="emoji">🥗</div><h3>Better Food</h3><p>Plan meals and make simple, balanced food choices.</p></div>
-   <div class="wellness-card"><div class="emoji">🚶</div><h3>Movement</h3><p>Walk, stretch or exercise regularly throughout the day.</p></div>
-   <div class="wellness-card"><div class="emoji">😴</div><h3>Good Sleep</h3><p>Protect your sleep schedule and allow time to recover.</p></div>
-   <div class="wellness-card"><div class="emoji">🧘</div><h3>Calm Mind</h3><p>Take breaks, breathe slowly and reduce screen pressure.</p></div>
-   <div class="wellness-card"><div class="emoji">❤️</div><h3>Family Time</h3><p>Make time for conversations and meaningful moments.</p></div>
+
+   <div class="wellness-card">
+    <div class="emoji">💧</div>
+    <h3>Hydration</h3>
+    <p>Keep water intake visible and make hydration a daily habit.</p>
+   </div>
+
+   <div class="wellness-card">
+    <div class="emoji">🥗</div>
+    <h3>Better Food</h3>
+    <p>Plan meals and make simple, balanced food choices.</p>
+   </div>
+
+   <div class="wellness-card">
+    <div class="emoji">🚶</div>
+    <h3>Movement</h3>
+    <p>Walk, stretch or exercise regularly throughout the day.</p>
+   </div>
+
+   <div class="wellness-card">
+    <div class="emoji">😴</div>
+    <h3>Good Sleep</h3>
+    <p>Protect your sleep schedule and allow time to recover.</p>
+   </div>
+
+   <div class="wellness-card">
+    <div class="emoji">🧘</div>
+    <h3>Calm Mind</h3>
+    <p>Take breaks, breathe slowly and reduce screen pressure.</p>
+   </div>
+
+   <div class="wellness-card">
+    <div class="emoji">❤️</div>
+    <h3>Family Time</h3>
+    <p>Make time for conversations and meaningful moments.</p>
+   </div>
+
   </div>
  </section>
 
  <section class="balance">
   <h2>🌅 A Simple Daily Balance</h2>
   <p>Life is more than managing tasks. Make enough space for yourself, too.</p>
+
   <div class="balance-grid">
    <div class="balance-item"><strong>🧠</strong><span>Learn</span></div>
    <div class="balance-item"><strong>💼</strong><span>Work</span></div>
@@ -490,6 +660,7 @@ body[data-theme="night"] .balance{
    <div class="balance-item"><strong>😴</strong><span>Sleep</span></div>
   </div>
  </section>
+
 </main>
 
 <footer class="footer">
@@ -497,36 +668,11 @@ body[data-theme="night"] .balance{
  Personal Governance Simplified.
 </footer>
 
+<!-- CENTRAL THEME ENGINE -->
+<script src="/Myself/theme.js" defer></script>
+
 <script>
 "use strict";
-
-/* NATURE THEMES */
-const themeSelector=document.getElementById("themeSelector");
-
-const themeColors={
- forest:"#138a4b",ocean:"#087eaf",meadow:"#678d27",
- mint:"#168c83",sunset:"#d76a35",lavender:"#7959bd",
- rose:"#c04f72",sky:"#397bd0",sand:"#a47b3d",night:"#101a16"
-};
-
-function changeTheme(theme){
- if(!Object.prototype.hasOwnProperty.call(themeColors,theme)){
-  theme="forest";
- }
- document.body.dataset.theme=theme;
- themeSelector.value=theme;
- document.querySelector('meta[name="theme-color"]').content=themeColors[theme];
- try{localStorage.setItem("swayam_home_theme",theme)}catch(e){}
-}
-
-try{
- const savedTheme=localStorage.getItem("swayam_home_theme");
- if(savedTheme)changeTheme(savedTheme);
-}catch(e){}
-
-themeSelector.addEventListener("change",function(){
- changeTheme(this.value);
-});
 
 /* TEXT SIZE CONTROL */
 const decreaseButton=document.getElementById("textDecrease");
@@ -534,11 +680,12 @@ const increaseButton=document.getElementById("textIncrease");
 const textSizeValue=document.getElementById("textSizeValue");
 
 const textSelectors=[
- ".brand h1",".brand small",".hero h2",".hero p",".hero-quote",
- ".section-head h2",".section-head p",".app-card h3",".app-card p",
- ".open-text",".wellness-card h3",".wellness-card p",
- ".balance h2",".balance>p",".balance-item span",".footer",
- ".clock",".theme-wrap label"
+ ".hero h2",".hero p",".hero-quote",
+ ".section-head h2",".section-head p",
+ ".app-card h3",".app-card p",".open-text",
+ ".wellness-card h3",".wellness-card p",
+ ".balance h2",".balance>p",
+ ".balance-item span",".footer"
 ];
 
 let textScale=1;
@@ -552,6 +699,7 @@ function collectTextElements(){
   document.querySelectorAll(selector).forEach(function(el){
    if(seen.has(el))return;
    seen.add(el);
+
    textElements.push({
     element:el,
     baseSize:parseFloat(getComputedStyle(el).fontSize)
@@ -566,6 +714,7 @@ function applyTextScale(){
  });
 
  textSizeValue.textContent=Math.round(textScale*100)+"%";
+
  decreaseButton.disabled=textScale<=0.8;
  increaseButton.disabled=textScale>=1.4;
 
@@ -583,6 +732,7 @@ collectTextElements();
 
 try{
  const savedScale=parseFloat(localStorage.getItem("swayam_home_text_scale"));
+
  if(Number.isFinite(savedScale)&&savedScale>=0.8&&savedScale<=1.4){
   textScale=savedScale;
  }
@@ -593,6 +743,7 @@ applyTextScale();
 decreaseButton.addEventListener("click",function(){
  setTextScale(textScale-0.1);
 });
+
 increaseButton.addEventListener("click",function(){
  setTextScale(textScale+0.1);
 });
@@ -601,6 +752,7 @@ increaseButton.addEventListener("click",function(){
 function scrollApps(direction){
  const grid=document.getElementById("appGrid");
  const firstCard=grid.querySelector(".app-card");
+
  if(!firstCard)return;
 
  const cardWidth=firstCard.getBoundingClientRect().width;
@@ -612,7 +764,7 @@ function scrollApps(direction){
  });
 }
 
-/* PARENT HUB IFRAME NAVIGATION WITH DIRECT-OPEN FALLBACK */
+/* PARENT HUB IFRAME NAVIGATION */
 function openSwayamPage(event,url){
  event.preventDefault();
 
@@ -631,19 +783,25 @@ function openSwayamPage(event,url){
     }catch(e){}
 
     const menuLinks=parentDoc.querySelectorAll(".menu-button");
+
     menuLinks.forEach(function(link){
      link.classList.remove("active");
+
      const href=link.getAttribute("href");
 
      if(href&&href.split("/").pop()===url.split("/").pop()){
       link.classList.add("active");
+
       try{
        link.scrollIntoView({
-        behavior:"smooth",block:"nearest",inline:"center"
+        behavior:"smooth",
+        block:"nearest",
+        inline:"center"
        });
       }catch(e){}
      }
     });
+
     return;
    }
   }
@@ -653,8 +811,7 @@ function openSwayamPage(event,url){
 
  window.location.href=url;
 }
-
-
 </script>
+
 </body>
 </html>
