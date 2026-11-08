@@ -7,20 +7,18 @@
 <meta name="theme-color" content="#138a4b">
 <title>Swayam Smart Settings</title>
 
+<!-- CENTRALIZED SWAYAM THEME CSS -->
+<link rel="stylesheet" href="/Myself/theme.css">
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-
 :root{
- --bg:#eff7f0;
- --panel:#fff;
- --text:#203b2b;
- --muted:#718176;
- --primary:#138a4b;
- --deep:#086b38;
- --soft:#e4f5e8;
- --border:#d9e9dc;
- --shadow:0 4px 15px rgba(0,0,0,.07);
+ --accent:var(--primary,#138a4b);
+ --border:var(--line,#dcebdd);
+ --hero1:var(--head1,#086b38);
+ --hero2:var(--head2,#65bd71);
 }
+
 
 body{
  font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
@@ -30,87 +28,55 @@ body{
  transition:background .25s,color .25s;
 }
 
-body[data-theme="forest"]{
- --bg:#eaf5eb;--panel:#fff;--text:#173b25;--muted:#64806b;
- --primary:#138a4b;--deep:#086b38;--soft:#dff2e3;--border:#cce2d0;
-}
-body[data-theme="ocean"]{
- --bg:#eaf7fc;--panel:#fff;--text:#163b50;--muted:#607f90;
- --primary:#0288a8;--deep:#005b78;--soft:#d9f2fa;--border:#c6e6ef;
-}
-body[data-theme="meadow"]{
- --bg:#f2f8e8;--panel:#fff;--text:#34451d;--muted:#7b8964;
- --primary:#689f38;--deep:#47751f;--soft:#eaf4d9;--border:#dce8c9;
-}
-body[data-theme="mint"]{
- --bg:#e9f8f3;--panel:#fff;--text:#174b40;--muted:#6c9187;
- --primary:#159b83;--deep:#08745e;--soft:#d9f3eb;--border:#c7e9df;
-}
-body[data-theme="sunset"]{
- --bg:#fff1e8;--panel:#fff;--text:#60351f;--muted:#a07a64;
- --primary:#e87536;--deep:#b94c20;--soft:#ffe5d5;--border:#f3d3c1;
-}
-body[data-theme="lavender"]{
- --bg:#f3efff;--panel:#fff;--text:#3c315c;--muted:#81769c;
- --primary:#8060c9;--deep:#593ba2;--soft:#e9e1ff;--border:#ddd1f7;
-}
-body[data-theme="rose"]{
- --bg:#fff0f3;--panel:#fff;--text:#592c3b;--muted:#9a7582;
- --primary:#d94e79;--deep:#a82b55;--soft:#ffe0e9;--border:#f3ccd9;
-}
-body[data-theme="sky"]{
- --bg:#edf5ff;--panel:#fff;--text:#213d62;--muted:#7186a5;
- --primary:#347bd2;--deep:#2058a2;--soft:#dfebff;--border:#cfdef5;
-}
-body[data-theme="sand"]{
- --bg:#f8f2e7;--panel:#fffdf8;--text:#51432e;--muted:#92836a;
- --primary:#a77a3c;--deep:#785321;--soft:#f1e5cf;--border:#e8dac0;
-}
-body[data-theme="night"]{
- --bg:#121b20;--panel:#202d33;--text:#e6f1f3;--muted:#a0b2b8;
- --primary:#62c6a2;--deep:#329b79;--soft:#293e3c;--border:#3c5055;
- --shadow:0 4px 15px rgba(0,0,0,.2);
-}
-
 .module-header{
- position:sticky;
- top:0;
- z-index:20;
  display:flex;
  align-items:center;
  justify-content:space-between;
  gap:12px;
- padding:13px 16px;
+ padding:17px;
+ border-radius:23px;
  color:white;
- background:linear-gradient(135deg,var(--deep),var(--primary));
- box-shadow:0 3px 12px rgba(0,0,0,.15);
+ background:linear-gradient(130deg,var(--hero1),var(--hero2));
+ box-shadow:0 8px 25px #0002;
+ position:relative;
+ overflow:hidden;
 }
 
-.title-area{display:flex;align-items:center;gap:10px;min-width:0}
-.watch-icon{font-size:29px}
-.title-area h1{font-size:clamp(18px,3vw,25px);line-height:1.2}
-.subtitle{font-size:11px;opacity:.88;margin-top:3px}
+.title-area{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ min-width:0;
+}
 
-.theme-box{display:flex;align-items:center;gap:6px}
-.theme-label{font-size:12px;white-space:nowrap}
-.theme-box select{
- max-width:145px;
- min-height:38px;
- padding:7px 9px;
- border:1px solid rgba(255,255,255,.5);
- border-radius:9px;
- background:#fff;
- color:#26382b;
- font:inherit;
- font-size:12px;
- cursor:pointer;
+.watch-icon{font-size:29px}
+
+.title-area h1{
+ font-size:clamp(18px,3vw,25px);
+ line-height:1.2;
+}
+
+.subtitle{
+ font-size:11px;
+ opacity:.88;
+ margin-top:3px;
 }
 
 .page-intro{padding:16px 15px 10px}
-.page-intro h2{font-size:20px;color:var(--primary)}
-.page-intro p{font-size:12px;color:var(--muted);margin-top:4px}
+
+.page-intro h2{
+ font-size:20px;
+ color:var(--primary);
+}
+
+.page-intro p{
+ font-size:12px;
+ color:var(--muted);
+ margin-top:4px;
+}
 
 .shortcut-section{margin:0 0 18px}
+
 .section-heading{
  display:flex;
  align-items:center;
@@ -118,8 +84,16 @@ body[data-theme="night"]{
  gap:8px;
  padding:0 15px 9px;
 }
-.section-heading h2{font-size:16px;color:var(--text)}
-.section-heading span{font-size:11px;color:var(--muted)}
+
+.section-heading h2{
+ font-size:16px;
+ color:var(--text);
+}
+
+.section-heading span{
+ font-size:11px;
+ color:var(--muted);
+}
 
 .shortcut-row{
  display:flex;
@@ -132,12 +106,17 @@ body[data-theme="night"]{
  scrollbar-color:var(--primary) var(--soft);
  -webkit-overflow-scrolling:touch;
 }
+
 .shortcut-row::-webkit-scrollbar{height:5px}
+
 .shortcut-row::-webkit-scrollbar-track{
- background:var(--soft);border-radius:10px
+ background:var(--soft);
+ border-radius:10px;
 }
+
 .shortcut-row::-webkit-scrollbar-thumb{
- background:var(--primary);border-radius:10px
+ background:var(--primary);
+ border-radius:10px;
 }
 
 .shortcut{
@@ -161,8 +140,14 @@ body[data-theme="night"]{
  cursor:pointer;
  transition:transform .18s,background .18s;
 }
-.shortcut:hover{transform:translateY(-3px);background:var(--soft)}
+
+.shortcut:hover{
+ transform:translateY(-3px);
+ background:var(--soft);
+}
+
 .shortcut:active{transform:scale(.97)}
+
 .shortcut-icon{
  display:flex;
  align-items:center;
@@ -173,8 +158,18 @@ body[data-theme="night"]{
  background:var(--soft);
  font-size:27px;
 }
-.shortcut-title{font-size:12px;font-weight:700;line-height:1.3}
-.shortcut-subtitle{font-size:10px;color:var(--muted);line-height:1.25}
+
+.shortcut-title{
+ font-size:12px;
+ font-weight:700;
+ line-height:1.3;
+}
+
+.shortcut-subtitle{
+ font-size:10px;
+ color:var(--muted);
+ line-height:1.25;
+}
 
 .info-box{
  margin:4px 15px 18px;
@@ -186,28 +181,69 @@ body[data-theme="night"]{
  font-size:12px;
  line-height:1.6;
 }
-.footer{text-align:center;padding:0 15px 20px;color:var(--muted);font-size:11px}
+
+.footer{
+ text-align:center;
+ padding:0 15px 20px;
+ color:var(--muted);
+ font-size:11px;
+}
+
+.theme-status{
+ font-size:10px;
+ color:var(--muted);
+ margin-top:5px;
+}
 
 @media(max-width:450px){
- .module-header{padding:11px 10px;gap:7px}
+
+ .module-header{
+  padding:11px 12px;
+  gap:7px;
+ }
+
  .watch-icon{font-size:24px}
+
  .title-area{gap:7px}
+
  .title-area h1{font-size:17px}
+
  .subtitle{font-size:9px}
- .theme-label{display:none}
- .theme-box select{max-width:115px;min-height:35px;font-size:11px;padding:5px}
+
  .page-intro{padding:14px 12px 9px}
- .shortcut-row{padding-left:12px;padding-right:12px}
- .section-heading{padding-left:12px;padding-right:12px}
- .shortcut{flex-basis:112px;min-height:116px}
- .shortcut-icon{width:44px;height:44px;font-size:24px}
+
+ .shortcut-row{
+  padding-left:12px;
+  padding-right:12px;
+ }
+
+ .section-heading{
+  padding-left:12px;
+  padding-right:12px;
+ }
+
+ .shortcut{
+  flex-basis:112px;
+  min-height:116px;
+ }
+
+ .shortcut-icon{
+  width:44px;
+  height:44px;
+  font-size:24px;
+ }
+
  .shortcut-title{font-size:11px}
- .info-box{margin-left:12px;margin-right:12px}
+
+ .info-box{
+  margin-left:12px;
+  margin-right:12px;
+ }
 }
 </style>
 </head>
 
-<body data-theme="forest">
+<body>
 
 <header class="module-header">
  <div class="title-area">
@@ -217,27 +253,14 @@ body[data-theme="night"]{
    <div class="subtitle">Swayam Smart Settings</div>
   </div>
  </div>
-
- <div class="theme-box">
-  <span class="theme-label">🌿 Theme</span>
-  <select id="themeSelect" aria-label="Choose nature theme" onchange="changeTheme(this.value)">
-   <option value="forest">🌲 Forest</option>
-   <option value="ocean">🌊 Ocean</option>
-   <option value="meadow">🌿 Meadow</option>
-   <option value="mint">🍃 Mint</option>
-   <option value="sunset">🌅 Sunset</option>
-   <option value="lavender">💜 Lavender</option>
-   <option value="rose">🌹 Rose</option>
-   <option value="sky">☁️ Sky</option>
-   <option value="sand">🏜️ Sand</option>
-   <option value="night">🌙 Night</option>
-  </select>
- </div>
 </header>
 
 <div class="page-intro">
  <h2>🌱 Settings & Utilities</h2>
  <p>Swipe horizontally through each row to explore shortcuts.</p>
+ <div class="theme-status" id="themeStatus">
+  Connecting to Swayam Theme Engine...
+ </div>
 </div>
 
 <!-- ROW 1: ADMIN -->
@@ -249,25 +272,25 @@ body[data-theme="night"]{
 
  <div class="shortcut-row">
 
-<a class="shortcut" href="/Myself/admin/phonechk.html" onclick="openSwayamPage(event,this.href)">
+  <a class="shortcut" href="/Myself/admin/phonechk.html" onclick="openSwayamPage(event,this.href)">
    <span class="shortcut-icon">📱</span>
    <span class="shortcut-title">Phone Status</span>
    <span class="shortcut-subtitle">Device Info</span>
   </a>
 
-<a class="shortcut" href="/Myself/admin/apm.html" onclick="openSwayamPage(event,this.href)">
+  <a class="shortcut" href="/Myself/admin/apm.html" onclick="openSwayamPage(event,this.href)">
    <span class="shortcut-icon">📱</span>
    <span class="shortcut-title">Swayam apps</span>
    <span class="shortcut-subtitle">Apps info</span>
- </a>
+  </a>
 
-<a class="shortcut" href="/Myself/util/install.html" onclick="openSwayamPage(event,this.href)">
+  <a class="shortcut" href="/Myself/util/install.html" onclick="openSwayamPage(event,this.href)">
    <span class="shortcut-icon">📱</span>
    <span class="shortcut-title">Install Apps</span>
    <span class="shortcut-subtitle">Install</span>
   </a>
 
-<a class="shortcut" href="/Myself/admin/sqlchk.html" onclick="openSwayamPage(event,this.href)">
+  <a class="shortcut" href="/Myself/admin/sqlchk.html" onclick="openSwayamPage(event,this.href)">
    <span class="shortcut-icon">🗄️</span>
    <span class="shortcut-title">SQLite Offline Status</span>
    <span class="shortcut-subtitle">Database status</span>
@@ -296,6 +319,7 @@ body[data-theme="night"]{
    <span class="shortcut-title">Backup Center</span>
    <span class="shortcut-subtitle">Coming soon</span>
   </a>
+
  </div>
 </section>
 
@@ -307,6 +331,7 @@ body[data-theme="night"]{
  </div>
 
  <div class="shortcut-row">
+
   <a class="shortcut" href="/Myself/test/a.html" onclick="openSwayamPage(event,this.href)">
    <span class="shortcut-icon">🧪</span>
    <span class="shortcut-title">Test App 1</span>
@@ -342,10 +367,11 @@ body[data-theme="night"]{
    <span class="shortcut-title">Preview Center</span>
    <span class="shortcut-subtitle">Coming soon</span>
   </a>
+
  </div>
 </section>
 
-<!-- ROW 3: DUMMY SHORTCUTS -->
+<!-- ROW 3: MORE SHORTCUTS -->
 <section class="shortcut-section">
  <div class="section-heading">
   <h2>🌍 More Shortcuts</h2>
@@ -353,6 +379,7 @@ body[data-theme="night"]{
  </div>
 
  <div class="shortcut-row">
+
   <a class="shortcut" href="#" onclick="showDummy(event,'Nature Gallery')">
    <span class="shortcut-icon">🌳</span>
    <span class="shortcut-title">Nature Gallery</span>
@@ -412,123 +439,172 @@ body[data-theme="night"]{
    <span class="shortcut-title">Help Center</span>
    <span class="shortcut-subtitle">Guides & help</span>
   </a>
+
  </div>
 </section>
 
 <div class="info-box" id="infoBox">
- ℹ️ Select a shortcut to open it in the Swayam center area. Dummy shortcuts are placeholders and can be connected to pages later.
+ ℹ️ Select a shortcut to open it in the Swayam center area.
+ Dummy shortcuts are placeholders and can be connected to pages later.
 </div>
 
-<footer class="footer">🌿 Swayam Smart Settings · Personal LifeSuite</footer>
+<footer class="footer">
+ 🌿 Swayam Smart Settings · Personal LifeSuite
+</footer>
+
+<!-- CENTRALIZED THEME ENGINE -->
+<script src="/Myself/theme.js"></script>
 
 <script>
-/* OPEN PAGE IN PARENT SWAYAM CENTER */
+"use strict";
+
+/* ==========================================
+   CENTRALIZED THEME ENGINE
+   No local theme selector.
+   Parent index controls the active theme.
+========================================== */
+
+const themeStatus=document.getElementById("themeStatus");
+
+function checkCentralTheme(){
+
+ const engine=window.SwayamTheme;
+
+ if(engine && typeof engine.getCurrent==="function"){
+
+  themeStatus.textContent=
+   "✓ Connected to centralized Swayam Theme Engine";
+
+  return true;
+ }
+
+ themeStatus.textContent=
+  "⚠️ Waiting for centralized Swayam Theme Engine";
+
+ return false;
+}
+
+/* Initial connection */
+function initializeCentralTheme(){
+
+ if(checkCentralTheme()) return;
+
+ setTimeout(function(){
+
+  if(!checkCentralTheme()){
+
+   themeStatus.textContent=
+    "⚠️ Check centralized theme.js and theme.css paths.";
+
+  }
+
+ },300);
+}
+
+/* Listen for parent theme changes */
+window.addEventListener("swayam:themechange",function(){
+
+ checkCentralTheme();
+
+});
+
+/* ==========================================
+   OPEN PAGE IN PARENT SWAYAM CENTER
+========================================== */
+
 function openSwayamPage(event,url){
+
  event.preventDefault();
 
  try{
+
   if(window.parent && window.parent!==window){
+
    var frame=window.parent.document.getElementById("swayamFrame");
 
    if(frame){
+
     frame.src=url;
 
     var pageName=url.split("/").pop();
-    var menuLinks=window.parent.document.querySelectorAll(".menu-button");
+
+    var menuLinks=
+     window.parent.document.querySelectorAll(".menu-button");
 
     for(var i=0;i<menuLinks.length;i++){
      menuLinks[i].classList.remove("active");
     }
 
     for(var j=0;j<menuLinks.length;j++){
+
      var href=menuLinks[j].getAttribute("href")||"";
+
      if(href===pageName || href.endsWith("/"+pageName)){
+
       menuLinks[j].classList.add("active");
+
       try{
        menuLinks[j].scrollIntoView({
-        behavior:"smooth",block:"nearest",inline:"center"
+        behavior:"smooth",
+        block:"nearest",
+        inline:"center"
        });
       }catch(e){}
+
       break;
      }
     }
 
     try{
-     window.parent.localStorage.setItem("swayam_selected_page",pageName);
+
+     window.parent.localStorage.setItem(
+      "swayam_selected_page",
+      pageName
+     );
+
     }catch(e){}
 
     return;
    }
   }
+
  }catch(error){
+
   console.log("Parent navigation error:",error);
+
  }
 
  window.location.href=url;
 }
 
-/* DUMMY SHORTCUTS */
+/* ==========================================
+   DUMMY SHORTCUTS
+========================================== */
+
 function showDummy(event,name){
+
  event.preventDefault();
 
  var info=document.getElementById("infoBox");
- info.textContent="✨ "+name+" is a placeholder shortcut. Add its HTML page URL when this feature is ready.";
+
+ info.textContent=
+  "✨ "+name+
+  " is a placeholder shortcut. Add its HTML page URL when this feature is ready.";
 
  try{
-  info.scrollIntoView({behavior:"smooth",block:"nearest"});
+
+  info.scrollIntoView({
+   behavior:"smooth",
+   block:"nearest"
+  });
+
  }catch(e){}
+
 }
 
-/* TEN NATURE THEMES */
-function changeTheme(theme){
- var validThemes=[
-  "forest","ocean","meadow","mint","sunset",
-  "lavender","rose","sky","sand","night"
- ];
+/* START */
+initializeCentralTheme();
 
- if(validThemes.indexOf(theme)===-1) theme="forest";
-
- document.body.setAttribute("data-theme",theme);
-
- try{
-  localStorage.setItem("swayam_watch_theme",theme);
- }catch(e){}
-
- var colors={
-  forest:"#138a4b",
-  ocean:"#0288a8",
-  meadow:"#689f38",
-  mint:"#159b83",
-  sunset:"#e87536",
-  lavender:"#8060c9",
-  rose:"#d94e79",
-  sky:"#347bd2",
-  sand:"#a77a3c",
-  night:"#121b20"
- };
-
- var meta=document.querySelector('meta[name="theme-color"]');
- if(meta) meta.setAttribute("content",colors[theme]||colors.forest);
-}
-
-/* RESTORE SAVED THEME */
-(function(){
- var saved="forest";
-
- try{
-  saved=localStorage.getItem("swayam_watch_theme")||"forest";
- }catch(e){}
-
- var select=document.getElementById("themeSelect");
- var valid=Array.from(select.options).some(function(option){
-  return option.value===saved;
- });
-
- if(!valid) saved="forest";
-
- select.value=saved;
- changeTheme(saved);
-})();
 </script>
 
 </body>
