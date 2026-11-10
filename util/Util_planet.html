@@ -1,789 +1,523 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#16a36a">
 
 <title>Planet Dashboard - Swayam</title>
 
 <style>
 
-/* =========================================================
-   SWAYAM FITNESS / AWPL DASHBOARD
-   CENTER AREA / IFRAME COMPATIBLE
-========================================================= */
-
 *{
     box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
 body{
-    margin:0;
-    font-family:Arial, Helvetica, sans-serif;
-    transition:0.3s;
+    font-family:Arial,Helvetica,sans-serif;
     min-height:100vh;
+    transition:0.3s;
 }
 
-
-/* =========================================================
-   HEADER
-========================================================= */
+/* HEADER */
 
 .header{
-    padding:12px 16px;
-
+    padding:13px 16px;
     display:flex;
     justify-content:space-between;
     align-items:center;
-
     gap:10px;
-
-    background:linear-gradient(
-        135deg,
-        #00a86b,
-        #008f5a
-    );
-
+    background:linear-gradient(135deg,#00a86b,#008f5a);
     color:white;
-
-    box-shadow:
-        0 3px 10px rgba(0,0,0,0.18);
+    box-shadow:0 3px 10px rgba(0,0,0,0.18);
 }
 
 .header h2{
-    margin:0;
-    font-size:22px;
+    font-size:21px;
 }
 
-.header select{
-    padding:9px 12px;
+/* THEME BUTTON */
 
+.theme-wrap{
+    position:relative;
+}
+
+.theme-btn{
+    width:43px;
+    height:43px;
     border:none;
-
-    border-radius:10px;
-
-    font-size:14px;
-
-    cursor:pointer;
-
-    outline:none;
-}
-
-
-/* =========================================================
-   CLOCK
-========================================================= */
-
-.clock-bar{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(3,1fr);
-
-    gap:10px;
-
-    padding:12px;
-}
-
-.clock-box{
-
-    padding:12px;
-
     border-radius:14px;
+    background:rgba(255,255,255,0.2);
+    color:white;
+    font-size:22px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
 
-    text-align:center;
+.theme-btn:active{
+    transform:scale(.92);
+}
 
+.theme-menu{
+    display:none;
+    position:absolute;
+    right:0;
+    top:50px;
+    width:155px;
+    background:white;
+    color:#18352a;
+    border-radius:13px;
+    padding:7px;
+    box-shadow:0 5px 20px rgba(0,0,0,.2);
+    z-index:100;
+}
+
+.theme-menu.show{
+    display:block;
+}
+
+.theme-option{
+    width:100%;
+    padding:11px;
+    border:none;
+    border-radius:9px;
+    background:transparent;
+    text-align:left;
     font-size:14px;
+    cursor:pointer;
+}
 
+.theme-option:hover{
+    background:#e5f5eb;
+}
+
+/* INTRO */
+
+.fitness-panel{
+    margin:15px;
+    padding:20px 12px;
+    border-radius:18px;
+    text-align:center;
     font-weight:bold;
-
-    background:
-        rgba(255,255,255,0.75);
-
-    box-shadow:
-        0 4px 12px rgba(0,0,0,0.10);
-
-    backdrop-filter:blur(8px);
+    background:linear-gradient(
+        135deg,
+        rgba(0,168,107,.13),
+        rgba(0,208,132,.08)
+    );
 }
 
-.clock-label{
-
+.big-icon{
     display:block;
-
-    font-size:11px;
-
-    opacity:0.7;
-
-    margin-bottom:5px;
-
-    text-transform:uppercase;
+    font-size:42px;
+    margin-bottom:9px;
 }
 
-.clock-value{
-
+.fitness-panel small{
     display:block;
-
-    font-size:15px;
+    font-weight:normal;
+    opacity:.75;
+    margin-top:8px;
+    font-size:13px;
 }
 
-
-/* =========================================================
-   MAIN GRID
-========================================================= */
+/* MAIN GRID */
 
 .list-grid{
-
     display:grid;
-
-    grid-template-columns:
-        repeat(auto-fit,minmax(230px,1fr));
-
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
     gap:15px;
-
     padding:15px;
 }
 
-
-/* =========================================================
-   CARD
-========================================================= */
+/* CARD */
 
 .card{
-
     padding:18px;
-
     border-radius:18px;
-
-    box-shadow:
-        0 5px 15px rgba(0,0,0,0.12);
-
-    transition:
-        transform 0.25s,
-        box-shadow 0.25s;
-
+    box-shadow:0 5px 15px rgba(0,0,0,.12);
+    transition:.25s;
     position:relative;
-
     overflow:hidden;
 }
 
 .card::before{
-
     content:"";
-
     position:absolute;
-
     top:0;
     left:0;
-
     width:100%;
     height:4px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #00a86b,
-            #00d084
-        );
-}
-
-.card:hover{
-
-    transform:translateY(-4px);
-
-    box-shadow:
-        0 10px 25px rgba(0,0,0,0.18);
+    background:linear-gradient(90deg,#00a86b,#00d084);
 }
 
 .card h3{
-
-    margin:4px 0 15px 0;
-
+    margin:5px 0 17px;
     font-size:18px;
+    display:flex;
+    align-items:center;
+    gap:9px;
 }
 
+.card-heading-icon{
+    width:35px;
+    height:35px;
+    border-radius:11px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,168,107,.13);
+    font-size:19px;
+}
 
-/* =========================================================
-   LIST
-========================================================= */
+/* ICON BUTTON GRID */
 
 ul{
-
-    padding:0;
-
-    margin:0;
-
     list-style:none;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:13px;
 }
 
 li{
-
-    margin:8px 0;
+    min-width:0;
 }
 
-
-/* =========================================================
-   APP LINK
-========================================================= */
-
 .app-link{
-
     display:flex;
-
+    flex-direction:column;
     align-items:center;
-
-    gap:10px;
-
-    width:100%;
-
-    padding:14px;
-
-    border-radius:12px;
-
+    justify-content:center;
+    gap:9px;
+    min-height:112px;
+    padding:13px 7px;
+    border-radius:16px;
     text-decoration:none;
-
-    font-size:16px;
-
+    text-align:center;
+    font-size:13px;
     font-weight:bold;
-
-    transition:
-        background 0.2s,
-        transform 0.2s,
-        box-shadow 0.2s;
-
+    transition:.2s;
     cursor:pointer;
+    border:1px solid rgba(0,168,107,.12);
 }
 
 .app-icon{
-
-    width:40px;
-    height:40px;
-
+    width:53px;
+    height:53px;
+    border-radius:17px;
     display:flex;
-
     align-items:center;
     justify-content:center;
-
-    border-radius:11px;
-
-    font-size:21px;
-
-    background:
-        rgba(0,168,107,0.12);
-
+    font-size:27px;
+    background:rgba(0,168,107,.13);
     flex-shrink:0;
+    box-shadow:0 3px 8px rgba(0,0,0,.07);
 }
 
 .app-link:hover{
-
-    transform:translateX(4px);
-
-    background:
-        rgba(0,168,107,0.12);
-
-    box-shadow:
-        0 4px 10px rgba(0,0,0,0.10);
+    transform:translateY(-4px);
+    box-shadow:0 7px 16px rgba(0,0,0,.12);
 }
 
 .app-link:active{
-
-    transform:scale(0.97);
+    transform:scale(.94);
 }
 
+/* INFORMATION */
 
-/* =========================================================
-   FITNESS HIGHLIGHT
-========================================================= */
-
-.fitness-panel{
-
-    margin:0 15px 5px 15px;
-
-    padding:16px;
-
-    border-radius:16px;
-
+.info{
+    margin:0 15px 15px;
+    padding:13px;
+    border-radius:14px;
     text-align:center;
-
-    font-weight:bold;
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(0,168,107,0.12),
-            rgba(0,208,132,0.08)
-        );
+    font-size:13px;
+    opacity:.8;
 }
-
-.fitness-panel .big-icon{
-
-    font-size:35px;
-
-    display:block;
-
-    margin-bottom:6px;
-}
-
-.fitness-panel small{
-
-    display:block;
-
-    font-weight:normal;
-
-    opacity:0.7;
-
-    margin-top:5px;
-}
-
-
-/* =========================================================
-   THEMES
-========================================================= */
-
 
 /* LIGHT */
 
 .light{
-
     background:#f3f7f5;
-
     color:#17231e;
 }
 
 .light .card{
-
-    background:
-        rgba(255,255,255,0.95);
-}
-
-.light .clock-box{
-
-    color:#17231e;
+    background:#fff;
 }
 
 .light .app-link{
-
     color:#126b4b;
+    background:#f7fcf9;
 }
 
-
-/* =========================================================
-   DARK
-========================================================= */
+/* DARK */
 
 .dark{
-
     background:#101513;
-
     color:white;
 }
 
 .dark .header{
-
-    background:
-        linear-gradient(
-            135deg,
-            #063d2c,
-            #001f16
-        );
+    background:linear-gradient(135deg,#063d2c,#001f16);
 }
 
 .dark .card{
-
     background:#1b2521;
-
-    box-shadow:
-        0 5px 18px rgba(0,0,0,0.40);
-}
-
-.dark .clock-box{
-
-    background:#1b2521;
-
-    color:white;
+    box-shadow:0 5px 18px rgba(0,0,0,.4);
 }
 
 .dark .app-link{
-
     color:#8ff0c5;
-}
-
-.dark .app-link:hover{
-
-    background:#263a32;
+    background:#202e28;
+    border-color:#30483d;
 }
 
 .dark .app-icon{
-
-    background:
-        rgba(0,220,145,0.14);
+    background:rgba(0,220,145,.14);
 }
 
 .dark .fitness-panel{
-
     background:#1b3028;
 }
 
-
-/* =========================================================
-   BLUE
-========================================================= */
+/* BLUE */
 
 .blue{
-
     background:#eaf4ff;
-
     color:#122033;
 }
 
 .blue .header{
-
-    background:
-        linear-gradient(
-            135deg,
-            #1976d2,
-            #1255a0
-        );
+    background:linear-gradient(135deg,#1976d2,#1255a0);
 }
 
 .blue .card{
-
-    background:white;
-}
-
-.blue .clock-box{
-
     background:white;
 }
 
 .blue .app-link{
-
     color:#1565c0;
+    background:#f5f9ff;
+    border-color:#d8e8fb;
 }
 
 .blue .app-icon{
-
-    background:
-        rgba(25,118,210,0.12);
+    background:rgba(25,118,210,.12);
 }
 
-
-/* =========================================================
-   INFORMATION
-========================================================= */
-
-.info{
-
-    margin:
-        0 15px 15px 15px;
-
-    padding:12px;
-
-    border-radius:14px;
-
-    text-align:center;
-
-    font-size:13px;
-
-    opacity:0.75;
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
+/* MOBILE */
 
 @media(max-width:700px){
 
     .header{
-
-        padding:12px;
+        padding:11px 13px;
     }
 
     .header h2{
-
-        font-size:18px;
-    }
-
-    .clock-bar{
-
-        grid-template-columns:1fr;
+        font-size:19px;
     }
 
     .list-grid{
-
         grid-template-columns:1fr;
-
         padding:12px;
     }
 
     .card{
-
-        padding:16px;
+        padding:15px;
     }
 
     .app-link{
-
-        font-size:16px;
-
-        padding:14px;
+        min-height:105px;
     }
 
 }
 
+@media(max-width:350px){
 
-/* =========================================================
-   SMALL MOBILE
-========================================================= */
-
-@media(max-width:400px){
-
-    .header{
-
-        flex-direction:column;
-
-        align-items:stretch;
+    ul{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:8px;
     }
 
-    .header select{
-
-        width:100%;
-    }
-
-    .clock-value{
-
-        font-size:14px;
+    .app-link{
+        font-size:12px;
+        padding:10px 5px;
     }
 
 }
 
 </style>
-
 </head>
-
 
 <body class="light">
 
-
-<!-- =======================================================
-     HEADER
-======================================================= -->
+<!-- HEADER -->
 
 <div class="header">
 
     <h2>🌍 Earth</h2>
 
-    <select
-        id="themeSelector"
-        onchange="changeTheme(this.value)">
+    <div class="theme-wrap">
 
-        <option value="light">
-            ☀️ Light Theme
-        </option>
+        <button class="theme-btn"
+                id="themeBtn"
+                onclick="toggleThemeMenu()"
+                title="Change Theme">
+            🎨
+        </button>
 
-        <option value="dark">
-            🌙 Dark Theme
-        </option>
+        <div class="theme-menu" id="themeMenu">
 
-        <option value="blue">
-            💙 Blue Theme
-        </option>
+            <button class="theme-option"
+                    onclick="changeTheme('light')">
+                ☀️ Light Theme
+            </button>
 
-    </select>
+            <button class="theme-option"
+                    onclick="changeTheme('dark')">
+                🌙 Dark Theme
+            </button>
 
-</div>
+            <button class="theme-option"
+                    onclick="changeTheme('blue')">
+                💙 Blue Theme
+            </button>
 
-
-<!-- =======================================================
-     CLOCK
-======================================================= -->
-
-<div class="clock-bar">
-
-    <div class="clock-box">
-
-        <span class="clock-label">
-            📅 Date
-        </span>
-
-        <span
-            class="clock-value"
-            id="mdate">
-        </span>
-
-    </div>
-
-
-    <div class="clock-box">
-
-        <span class="clock-label">
-            🕐 12 Hour
-        </span>
-
-        <span
-            class="clock-value"
-            id="mtime12">
-        </span>
-
-    </div>
-
-
-    <div class="clock-box">
-
-        <span class="clock-label">
-            ⏱️ 24 Hour
-        </span>
-
-        <span
-            class="clock-value"
-            id="mtime24">
-        </span>
+        </div>
 
     </div>
 
 </div>
 
-
-<!-- =======================================================
-     FITNESS INTRO
-======================================================= -->
+<!-- FITNESS INTRO -->
 
 <div class="fitness-panel">
 
-    <span class="big-icon">
-       🌍🌎  
-    </span>
+    <span class="big-icon">🌍🌎</span>
 
-    🌲🌳🏕️ Our Planet and it's Ecosystem
+    🌲🌳🏕️ Our Planet and its Ecosystem
 
     <small>
-     🔍 Know your World and It's Habitat.
+        🔍 Know your World and its Habitat.
     </small>
 
 </div>
 
-
-<!-- =======================================================
-     PLANET
-======================================================= -->
+<!-- PLANET -->
 
 <div class="list-grid">
 
-
     <div class="card">
 
-        <h3>Planet</h3>
+        <h3>
+            <span class="card-heading-icon">🌎</span>
+            Planet
+        </h3>
 
-<ul>
+        <ul>
 
-<li>
-<a
-class="app-link" href="/Myself/apps/Earth.html"                   onclick="openSwayamPage(event,this.href)">
-<span class="app-icon">🌍</span>
-<span>Earth</span>
-</a>
-</li>
+            <li>
+                <a class="app-link"
+                   href="/Myself/apps/Earth.html"
+                   onclick="openSwayamPage(event,this.href)">
+                    <span class="app-icon">🌍</span>
+                    <span>Earth</span>
+                </a>
+            </li>
 
-<li>
-<a
-class="app-link" href="/Myself/smart/Smart_sensor.html"                   onclick="openSwayamPage(event,this.href)">
-<span class="app-icon">📡</span>
-<span>Sensor</span>
-</a>
-</li>
+            <li>
+                <a class="app-link"
+                   href="/Myself/smart/Smart_sensor.html"
+                   onclick="openSwayamPage(event,this.href)">
+                    <span class="app-icon">📡</span>
+                    <span>Sensor</span>
+                </a>
+            </li>
 
-<li>
-<a
-class="app-link" href="/Myself/smart/Smart_zone.html"                   onclick="openSwayamPage(event,this.href)">
-<span class="app-icon">🌐</span>
-<span>TimeZone</span>
-</a>
-</li>
+            <li>
+                <a class="app-link"
+                   href="/Myself/smart/Smart_zone.html"
+                   onclick="openSwayamPage(event,this.href)">
+                    <span class="app-icon">🌐</span>
+                    <span>TimeZone</span>
+                </a>
+            </li>
 
+            <li>
+                <a class="app-link"
+                   href="/Myself/smart/walk.html"
+                   onclick="openSwayamPage(event,this.href)">
+                    <span class="app-icon">🚶</span>
+                    <span>Walk</span>
+                </a>
+            </li>
 
+            <li>
+                <a class="app-link"
+                   href="/Myself/smart/walk2fast.html"
+                   onclick="openSwayamPage(event,this.href)">
+                    <span class="app-icon">📏</span>
+                    <span>Get Distance and Time</span>
+                </a>
+            </li>
 
-<li>
-<a
-class="app-link" href="/Myself/smart/walk.html"                   onclick="openSwayamPage(event,this.href)">
-<span class="app-icon">🌲</span>
-<span>Walk</span>
-</a>
-</li>
+            <li>
+                <a class="app-link"
+                   href="/Myself/smart/walk2c.html"
+                   onclick="openSwayamPage(event,this.href)">
+                    <span class="app-icon">🧭</span>
+                    <span>Drive: Live Navigation</span>
+                </a>
+            </li>
 
-<li>
-<a
-class="app-link" href="/Myself/smart/walk2fast.html"                   onclick="openSwayamPage(event,this.href)">
-<span class="app-icon">🌲</span>
-<span>Get Distance and Time </span>
-</a>
-</li>
+            <li>
+                <a class="app-link"
+                   href="/Myself/smart/walk3.html"
+                   onclick="openSwayamPage(event,this.href)">
+                    <span class="app-icon">🛣️</span>
+                    <span>Drive: Multi-Path</span>
+                </a>
+            </li>
 
-<li>
-<a
-class="app-link" href="/Myself/smart/walk2c.html"                   onclick="openSwayamPage(event,this.href)">
-<span class="app-icon">🌲</span>
-<span>Drive : Live Navigation 🧭</span>
-</a>
-</li>
-
-<li>
-<a
-class="app-link" href="/Myself/smart/walk3.html"                   onclick="openSwayamPage(event,this.href)">
-<span class="app-icon">🌲</span>
-<span>Drive : Multi-Path</span>
-</a>
-</li>
-
-<li>
-<a
-class="app-link" href="/Myself/smart/walk4.html"                   onclick="openSwayamPage(event,this.href)">
-<span class="app-icon">🌲</span>
-<span>Drive : Add GPS/Area</span>
-</a>
-</li>
-
-
-
-
-
-
-
-
-
-
-
-
-
+            <li>
+                <a class="app-link"
+                   href="/Myself/smart/walk4.html"
+                   onclick="openSwayamPage(event,this.href)">
+                    <span class="app-icon">📍</span>
+                    <span>Drive: Add GPS/Area</span>
+                </a>
+            </li>
 
         </ul>
 
     </div>
 
-
 </div>
 
-
-<!-- =======================================================
-     INFORMATION
-======================================================= -->
+<!-- INFORMATION -->
 
 <div class="info">
-
-     🌿 <b>Planet Dashboard</b> —
+    🌿 <b>Planet Dashboard</b> —
     Know about your Air, Water and Life.
-
 </div>
-
 
 <script>
 
-/* =========================================================
-   THEME
-========================================================= */
+/* THEME MENU */
+
+function toggleThemeMenu(){
+
+    document.getElementById("themeMenu")
+        .classList.toggle("show");
+
+}
+
+/* CHANGE THEME */
 
 function changeTheme(theme){
 
@@ -794,96 +528,42 @@ function changeTheme(theme){
         theme
     );
 
+    document.getElementById("themeMenu")
+        .classList.remove("show");
+
 }
 
-
-/* =========================================================
-   LOAD SAVED THEME
-========================================================= */
+/* LOAD SAVED THEME */
 
 let savedTheme =
-    localStorage.getItem(
-        "swayam_fitness_theme"
-    );
+    localStorage.getItem("swayam_fitness_theme");
 
-if(savedTheme){
+if(["light","dark","blue"].includes(savedTheme)){
 
-    document.body.className =
-        savedTheme;
-
-    document.getElementById(
-        "themeSelector"
-    ).value = savedTheme;
+    document.body.className = savedTheme;
 
 }
 
+/* CLOSE THEME MENU ON OUTSIDE CLICK */
 
-/* =========================================================
-   CLOCK
-========================================================= */
+document.addEventListener("click",function(event){
 
-function updateClock(){
+    const wrap = document.querySelector(".theme-wrap");
 
-    let now = new Date();
+    if(!wrap.contains(event.target)){
 
+        document.getElementById("themeMenu")
+            .classList.remove("show");
 
-    document.getElementById(
-        "mtime24"
-    ).innerHTML =
-        now.toLocaleTimeString(
-            "en-IN"
-        );
+    }
 
+});
 
-    document.getElementById(
-        "mtime12"
-    ).innerHTML =
-        now.toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit",
-                second:"2-digit",
-                hour12:true
-            }
-        );
-
-
-    document.getElementById(
-        "mdate"
-    ).innerHTML =
-        now.toLocaleDateString(
-            "en-IN",
-            {
-                weekday:"long",
-                year:"numeric",
-                month:"long",
-                day:"numeric"
-            }
-        );
-
-}
-
-
-updateClock();
-
-setInterval(
-    updateClock,
-    1000
-);
-
-
-/* =========================================================
-   SWAYAM PARENT NAVIGATION
-
-   Opens AWPL inside the Swayam center iframe
-   while keeping the main Swayam menu visible.
-========================================================= */
+/* SWAYAM PARENT NAVIGATION */
 
 function openSwayamPage(event,url){
 
     event.preventDefault();
-
 
     try{
 
@@ -894,104 +574,55 @@ function openSwayamPage(event,url){
 
             var frame =
                 window.parent.document
-                .getElementById(
-                    "swayamFrame"
-                );
-
+                .getElementById("swayamFrame");
 
             if(frame){
 
-                /*
-                 * Open AWPL in the
-                 * Swayam center area.
-                 */
-
                 frame.src = url;
-
-
-                /*
-                 * Remember selected page.
-                 */
 
                 try{
 
-                    window.parent.localStorage
-                    .setItem(
+                    window.parent.localStorage.setItem(
                         "swayam_selected_page",
                         url.split("/").pop()
                     );
 
                 }catch(e){}
 
-
-                /*
-                 * Clear current active
-                 * Swayam menu state.
-                 */
-
                 var menuLinks =
                     window.parent.document
-                    .querySelectorAll(
-                        ".menu-button"
-                    );
+                    .querySelectorAll(".menu-button");
 
-
-                for(
-                    var i=0;
-                    i<menuLinks.length;
-                    i++
-                ){
+                for(var i=0;i<menuLinks.length;i++){
 
                     menuLinks[i]
-                    .classList
-                    .remove("active");
+                        .classList.remove("active");
 
                 }
 
-
-                /*
-                 * Activate matching
-                 * Swayam menu item.
-                 */
-
-                for(
-                    var j=0;
-                    j<menuLinks.length;
-                    j++
-                ){
+                for(var j=0;j<menuLinks.length;j++){
 
                     var menuHref =
-                        menuLinks[j]
-                        .getAttribute("href");
-
+                        menuLinks[j].getAttribute("href");
 
                     if(
                         menuHref &&
-                        menuHref
-                        .split("/")
-                        .pop()
-                        ===
-                        url
-                        .split("/")
-                        .pop()
+                        menuHref.split("/").pop() ===
+                        url.split("/").pop()
                     ){
 
                         menuLinks[j]
-                        .classList
-                        .add("active");
-
+                            .classList.add("active");
 
                         try{
 
-                            menuLinks[j]
-                            .scrollIntoView({
+                            menuLinks[j].scrollIntoView({
                                 behavior:"smooth",
                                 block:"nearest",
                                 inline:"center"
                             });
 
                         }catch(e){}
-
 
                         break;
 
@@ -1005,9 +636,7 @@ function openSwayamPage(event,url){
 
         }
 
-    }
-
-    catch(error){
+    }catch(error){
 
         console.log(
             "Swayam parent navigation error:",
@@ -1016,19 +645,11 @@ function openSwayamPage(event,url){
 
     }
 
-
-    /*
-     * Normal navigation when
-     * page is opened independently.
-     */
-
     window.location.href = url;
 
 }
 
 </script>
 
-
 </body>
-
 </html>

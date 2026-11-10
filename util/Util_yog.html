@@ -1,773 +1,338 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width,
-    initial-scale=1.0,
-    maximum-scale=1.0,
-    user-scalable=no"
->
-
-<meta name="theme-color" content="#16a34a">
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#138a4b">
 <title>Swayam - Fitness Dashboard</title>
 
 <style>
-
-/* =========================================================
-   SWAYAM FITNESS DASHBOARD
-   Center-area / iframe compatible
-========================================================= */
-
 *{
     box-sizing:border-box;
-}
-
-html,
-body{
     margin:0;
     padding:0;
-    min-height:100%;
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Arial,
-        sans-serif;
+}
+
+:root{
+    --primary:#138a4b;
+    --deep:#086b38;
+    --bg:#f1f8f2;
+    --card:#ffffff;
+    --text:#193324;
+    --muted:#718276;
+    --border:#dcebe0;
+    --soft:#e8f5ec;
 }
 
 body{
-    transition:
-        background .3s ease,
-        color .3s ease;
+    font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
 }
 
-/* =========================================================
-   THEMES
-========================================================= */
-
-body.light{
-    --bg:#f3f7f4;
-    --header1:#16a34a;
-    --header2:#15803d;
-    --card:#ffffff;
-    --text:#172017;
-    --muted:#607060;
-    --border:#dce9df;
-    --shadow:0 8px 24px rgba(0,0,0,.10);
-    --soft:#eaf7ee;
-    --link:#15803d;
-}
-
-body.dark{
-    --bg:#101412;
-    --header1:#166534;
-    --header2:#14532d;
-    --card:#1b241e;
-    --text:#f2f7f3;
-    --muted:#b8c7bb;
-    --border:#2d3b31;
-    --shadow:0 8px 24px rgba(0,0,0,.35);
-    --soft:#1d3224;
-    --link:#86efac;
-}
-
-body.blue{
-    --bg:#eef7ff;
-    --header1:#15803d;
-    --header2:#166534;
-    --card:#ffffff;
-    --text:#142019;
-    --muted:#5f7065;
-    --border:#d6e8dc;
-    --shadow:0 8px 24px rgba(0,0,0,.10);
-    --soft:#e7f6ed;
-    --link:#166534;
-}
-
-/* =========================================================
-   HEADER
-========================================================= */
+/* HEADER */
 
 .header{
-    width:100%;
-    padding:14px 16px;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:12px;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--header1),
-            var(--header2)
-        );
-
+    background:linear-gradient(135deg,var(--primary),var(--deep));
     color:white;
-
-    box-shadow:
-        0 4px 14px rgba(0,0,0,.18);
-
-    position:relative;
-    z-index:2;
+    padding:20px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    box-shadow:0 4px 14px rgba(0,0,0,.14);
 }
 
-.header-title{
-    min-width:0;
-}
-
-.header-title h2{
-    margin:0;
-    font-size:clamp(20px,5vw,28px);
+.header h2{
+    font-size:clamp(20px,5vw,27px);
     font-weight:800;
-    letter-spacing:.2px;
 }
 
-.header-title small{
-    display:block;
-    margin-top:3px;
+.header p{
     font-size:12px;
+    margin-top:4px;
     opacity:.9;
 }
 
-/* =========================================================
-   THEME SELECTOR
-========================================================= */
-
-.theme-select{
-    border:1px solid rgba(255,255,255,.35);
-    border-radius:12px;
-
-    padding:9px 10px;
-
-    background:rgba(255,255,255,.16);
-    color:white;
-
-    font-size:13px;
-    font-weight:700;
-
-    outline:none;
-    cursor:pointer;
-}
-
-.theme-select option{
-    color:#111;
-    background:white;
-}
-
-/* =========================================================
-   CLOCK PANEL
-========================================================= */
-
-.clock-panel{
-    display:grid;
-    grid-template-columns:
-        repeat(auto-fit,minmax(150px,1fr));
-
-    gap:10px;
-
-    padding:14px 16px;
-}
-
-.clock-card{
-    background:var(--card);
-
-    border:1px solid var(--border);
-
-    border-radius:16px;
-
-    padding:12px 14px;
-
-    box-shadow:var(--shadow);
-
-    text-align:center;
-
-    transition:
-        transform .2s ease,
-        box-shadow .2s ease;
-}
-
-.clock-card:hover{
-    transform:translateY(-2px);
-}
-
-.clock-label{
-    display:block;
-    color:var(--muted);
-    font-size:11px;
-    font-weight:800;
-    text-transform:uppercase;
-    letter-spacing:.8px;
-}
-
-.clock-value{
-    display:block;
-    margin-top:4px;
-
-    color:var(--text);
-
-    font-size:15px;
-    font-weight:750;
-}
-
-/* =========================================================
-   INTRO
-========================================================= */
-
-.intro{
-    margin:0 16px 14px;
-
-    padding:16px;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--soft),
-            var(--card)
-        );
-
-    border:
-        1px solid var(--border);
-
-    border-radius:18px;
-
-    box-shadow:var(--shadow);
-}
-
-.intro h3{
-    margin:0 0 6px;
-
-    font-size:20px;
-
-    color:var(--text);
-}
-
-.intro p{
-    margin:0;
-
-    color:var(--muted);
-
-    line-height:1.55;
-
-    font-size:14px;
-}
-
-/* =========================================================
-   GRID
-========================================================= */
-
-.list-grid{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(240px,1fr)
-        );
-
-    gap:16px;
-
-    padding:
-        0 16px
-        16px;
-}
-
-/* =========================================================
-   CARD
-========================================================= */
-
-.card{
-
-    background:var(--card);
-
-    border:
-        1px solid var(--border);
-
-    border-radius:20px;
-
-    padding:18px;
-
-    box-shadow:var(--shadow);
-
-    transition:
-        transform .22s ease,
-        box-shadow .22s ease,
-        border-color .22s ease;
-
-    overflow:hidden;
-}
-
-.card:hover{
-
-    transform:
-        translateY(-4px);
-
-    box-shadow:
-        0 14px 30px rgba(0,0,0,.14);
-
-}
-
-.card-icon{
-
-    width:54px;
-    height:54px;
-
+.header-icon{
+    width:48px;
+    height:48px;
+    border-radius:15px;
+    background:rgba(255,255,255,.18);
     display:flex;
     align-items:center;
     justify-content:center;
-
-    border-radius:16px;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--header1),
-            var(--header2)
-        );
-
-    color:white;
-
     font-size:27px;
-
-    margin-bottom:12px;
-
-    box-shadow:
-        0 7px 16px rgba(22,163,74,.22);
-}
-
-.card h3{
-
-    margin:
-        0 0 10px;
-
-    color:var(--text);
-
-    font-size:19px;
-}
-
-.card-description{
-
-    margin:
-        0 0 14px;
-
-    color:var(--muted);
-
-    font-size:13px;
-
-    line-height:1.5;
-}
-
-/* =========================================================
-   APP LINK
-========================================================= */
-
-.app-link{
-
-    display:flex;
-
-    align-items:center;
-    justify-content:space-between;
-
-    gap:10px;
-
-    padding:13px 14px;
-
-    background:var(--soft);
-
-    border:
-        1px solid var(--border);
-
-    border-radius:14px;
-
-    color:var(--link);
-
-    text-decoration:none;
-
-    font-size:15px;
-
-    font-weight:750;
-
-    transition:
-        transform .2s ease,
-        background .2s ease,
-        box-shadow .2s ease;
-
-    -webkit-tap-highlight-color:transparent;
-}
-
-.app-link:hover{
-
-    transform:
-        translateX(3px);
-
-    box-shadow:
-        0 5px 14px rgba(0,0,0,.10);
-
-}
-
-.app-link:active{
-
-    transform:
-        scale(.98);
-
-}
-
-.arrow{
-
-    font-size:20px;
-
     flex-shrink:0;
 }
 
-/* =========================================================
-   FOOTER
-========================================================= */
+/* INTRO */
 
-.info-footer{
-
-    margin:
-        0 16px
-        18px;
-
-    padding:13px;
-
-    text-align:center;
-
-    border-radius:14px;
-
+.intro{
+    margin:16px;
+    padding:17px;
     background:var(--card);
+    border:1px solid var(--border);
+    border-radius:17px;
+    box-shadow:0 4px 15px rgba(0,0,0,.05);
+}
 
-    border:
-        1px solid var(--border);
+.intro h3{
+    font-size:19px;
+    margin-bottom:6px;
+}
 
+.intro p{
+    font-size:13px;
     color:var(--muted);
+    line-height:1.6;
+}
 
+/* SECTION */
+
+.section-title{
+    padding:5px 17px 13px;
+    font-size:16px;
+    font-weight:800;
+}
+
+/* ICON GRID */
+
+.icon-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:13px;
+    padding:0 16px 20px;
+}
+
+/* ICON BUTTON */
+
+.icon-button{
+    text-decoration:none;
+    color:var(--text);
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:19px;
+    min-height:145px;
+    padding:17px 10px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    text-align:center;
+    box-shadow:0 4px 13px rgba(0,0,0,.055);
+    transition:transform .2s ease,box-shadow .2s ease;
+    -webkit-tap-highlight-color:transparent;
+}
+
+.icon-button:hover{
+    transform:translateY(-4px);
+    box-shadow:0 9px 20px rgba(0,0,0,.10);
+}
+
+.icon-button:active{
+    transform:scale(.95);
+}
+
+.icon-circle{
+    width:65px;
+    height:65px;
+    border-radius:21px;
+    background:var(--soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:33px;
+}
+
+.icon-name{
+    font-size:14px;
+    font-weight:800;
+}
+
+.icon-arrow{
     font-size:12px;
-
-    box-shadow:
-        0 5px 15px rgba(0,0,0,.06);
+    color:var(--primary);
 }
 
-/* =========================================================
-   MOBILE
-========================================================= */
+/* FOOTER */
 
-@media(max-width:600px){
-
-    .header{
-
-        padding:
-            12px;
-
-    }
-
-    .header-title h2{
-
-        font-size:20px;
-
-    }
-
-    .theme-select{
-
-        max-width:110px;
-
-        font-size:12px;
-
-        padding:
-            8px;
-
-    }
-
-    .clock-panel{
-
-        grid-template-columns:
-            1fr 1fr;
-
-        padding:
-            12px;
-
-    }
-
-    .clock-card{
-
-        padding:
-            10px;
-
-    }
-
-    .clock-value{
-
-        font-size:13px;
-
-    }
-
-    .intro{
-
-        margin:
-            0 12px 12px;
-
-        padding:
-            14px;
-
-    }
-
-    .list-grid{
-
-        grid-template-columns:1fr;
-
-        padding:
-            0 12px
-            12px;
-
-        gap:12px;
-
-    }
-
-    .card{
-
-        padding:
-            16px;
-
-    }
-
-    .info-footer{
-
-        margin:
-            0 12px
-            15px;
-
-    }
-
+.footer{
+    margin:0 16px 18px;
+    padding:14px;
+    border-radius:15px;
+    background:var(--soft);
+    text-align:center;
+    color:var(--deep);
+    font-size:12px;
+    font-weight:700;
 }
 
-/* =========================================================
-   VERY SMALL SCREENS
-========================================================= */
+.footer p{
+    margin-top:4px;
+    font-weight:500;
+    color:var(--muted);
+}
+
+/* SMALL SCREENS */
 
 @media(max-width:360px){
-
-    .clock-panel{
-
-        grid-template-columns:1fr;
-
+    .icon-grid{
+        gap:9px;
+        padding-left:11px;
+        padding-right:11px;
     }
 
-    .header{
-
-        align-items:flex-start;
-
+    .icon-button{
+        min-height:130px;
+        padding:12px 6px;
     }
 
-    .header-title h2{
-
-        font-size:18px;
-
+    .icon-circle{
+        width:57px;
+        height:57px;
+        font-size:29px;
     }
-
 }
 
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
+/* ACCESSIBILITY */
 
 @media(prefers-reduced-motion:reduce){
-
     *{
-
-        transition:none !important;
-
-        scroll-behavior:auto !important;
-
+        transition:none!important;
     }
-
 }
-
 </style>
-
 </head>
 
-<body class="light">
+<body>
 
-<!-- =======================================================
-     HEADER
-======================================================= -->
+<!-- HEADER -->
 
 <header class="header">
 
-    <div class="header-title">
-
+    <div>
         <h2>💪 Fitness Dashboard</h2>
-
-        <small>
-            Swayam • Fitness & Wellness
-        </small>
-
+        <p>Swayam • Fitness & Wellness</p>
     </div>
 
-    <select
-        id="themeSelector"
-        class="theme-select"
-        onchange="changeTheme(this.value)"
-    >
-
-        <option value="light">
-            ☀️ Light
-        </option>
-
-        <option value="dark">
-            🌙 Dark
-        </option>
-
-        <option value="blue">
-            💧 Blue
-        </option>
-
-    </select>
+    <div class="header-icon">🌿</div>
 
 </header>
 
-
-<!-- =======================================================
-     CLOCK
-======================================================= -->
-
-<section class="clock-panel">
-
-    <div class="clock-card">
-
-        <span class="clock-label">
-            Date
-        </span>
-
-        <span
-            id="mdate"
-            class="clock-value"
-        >
-            --
-        </span>
-
-    </div>
-
-
-    <div class="clock-card">
-
-        <span class="clock-label">
-            12 Hour
-        </span>
-
-        <span
-            id="mtime12"
-            class="clock-value"
-        >
-            --
-        </span>
-
-    </div>
-
-
-    <div class="clock-card">
-
-        <span class="clock-label">
-            24 Hour
-        </span>
-
-        <span
-            id="mtime24"
-            class="clock-value"
-        >
-            --
-        </span>
-
-    </div>
-
-</section>
-
-
-<!-- =======================================================
-     INTRO
-======================================================= -->
+<!-- INTRO -->
 
 <section class="intro">
 
-    <h3>
-        🏃 Fitness & Wellness
-    </h3>
+    <h3>🏃 Fitness & Wellness</h3>
 
     <p>
         Manage your health, fitness activities,
-        daily wellness records and personal
-        fitness tracking from one place.
+        medicine and daily wellness records
+        from one place.
     </p>
 
 </section>
 
+<!-- APPLICATIONS -->
 
-<!-- =======================================================
-     FITNESS GRID
-======================================================= -->
+<h3 class="section-title">⚡ Quick Access</h3>
 
-<main class="list-grid">
+<main class="icon-grid">
 
-<section class="card">         <div class="card-icon"> 🏃         </div>         <h3>             Fitness        </h3>         <p class="card-description">             Track your health and fitness             activities using the Fitness Manager.         </p>         <a             class="app-link"             href="/Myself/finance/finfit.html"             onclick="openSwayamPage(event,this.href)"         >             <span>                 🏋️ Health & Fitness Tracker             </span>             <span class="arrow">                 →             </span>         </a>     </section>
+    <!-- FITNESS -->
 
-<section class="card">         <div class="card-icon">   🏃     </div>         <h3>             Medical        </h3>         <p class="card-description">             Track your Medicine.         </p>         <a             class="app-link"             href="/Myself/finance/finmed.html"             onclick="openSwayamPage(event,this.href)"         >             <span>🏃 Medicine Tracker             </span>             <span class="arrow">                 →             </span>         </a>     </section>
+    <a class="icon-button"
+       href="/Myself/finance/finfit.html"
+       onclick="openSwayamPage(event,this.href)">
 
-<section class="card">         <div class="card-icon">   🏃     </div>         <h3>             Medicine    </h3>         <p class="card-description">             Track your Medicine.         </p>         <a             class="app-link"             href="/Myself/clinic/medremind.html"             onclick="openSwayamPage(event,this.href)"         >             <span>🏃 Medicine Reminder          </span>             <span class="arrow">                 →             </span>         </a>     </section>
+        <div class="icon-circle">🏋️</div>
 
+        <div class="icon-name">
+            Fitness Tracker
+        </div>
 
+        <div class="icon-arrow">
+            OPEN APP ➜
+        </div>
 
+    </a>
 
+    <!-- MEDICAL -->
 
+    <a class="icon-button"
+       href="/Myself/finance/finmed.html"
+       onclick="openSwayamPage(event,this.href)">
 
-<section class="card">         <div class="card-icon">   🏃     </div>         <h3>             Calorie      </h3>         <p class="card-description">             Track your Medicine.         </p>         <a             class="app-link"             href="/Myself/clinic/calorie.html"             onclick="openSwayamPage(event,this.href)"         >             <span>🏃 Calorie Calculator           </span>             <span class="arrow">                 →             </span>         </a>     </section>
+        <div class="icon-circle">🏥</div>
 
+        <div class="icon-name">
+            Medical Tracker
+        </div>
 
+        <div class="icon-arrow">
+            OPEN APP ➜
+        </div>
 
+    </a>
 
+    <!-- MEDICINE -->
 
+    <a class="icon-button"
+       href="/Myself/clinic/medremind.html"
+       onclick="openSwayamPage(event,this.href)">
 
+        <div class="icon-circle">💊</div>
+
+        <div class="icon-name">
+            Medicine Reminder
+        </div>
+
+        <div class="icon-arrow">
+            OPEN APP ➜
+        </div>
+
+    </a>
+
+    <!-- CALORIE -->
+
+    <a class="icon-button"
+       href="/Myself/clinic/calorie.html"
+       onclick="openSwayamPage(event,this.href)">
+
+        <div class="icon-circle">🥗</div>
+
+        <div class="icon-name">
+            Calorie Calculator
+        </div>
+
+        <div class="icon-arrow">
+            OPEN APP ➜
+        </div>
+
+    </a>
 
 </main>
 
+<!-- FOOTER -->
 
-<!-- =======================================================
-     FOOTER
-======================================================= -->
-
-<footer class="info-footer">
-
+<footer class="footer">
     💚 Swayam Fitness Dashboard
-    • Personal Governance Simplified
-
+    <p>Personal Governance Simplified</p>
 </footer>
-
 
 <script>
 
-/* =========================================================
-   SWAYAM CENTER-AREA NAVIGATION
-========================================================= */
+/* SWAYAM CENTER-AREA NAVIGATION */
 
 function openSwayamPage(event,url){
 
     event.preventDefault();
 
     try{
-
-        /*
-         * When this page is loaded inside the
-         * Swayam parent iframe, change the
-         * parent iframe source instead of
-         * navigating inside this page.
-         */
 
         if(
             window.parent &&
@@ -776,269 +341,67 @@ function openSwayamPage(event,url){
 
             var frame =
                 window.parent.document
-                .getElementById(
-                    "swayamFrame"
-                );
+                .getElementById("swayamFrame");
 
             if(frame){
 
                 frame.src = url;
 
-                /*
-                 * Remember selected page
-                 */
-
                 try{
 
-                    window.parent.localStorage
-                    .setItem(
+                    window.parent.localStorage.setItem(
                         "swayam_selected_page",
                         url.split("/").pop()
                     );
 
                 }catch(e){}
 
-
-                /*
-                 * Update parent menu active state
-                 */
-
                 var menuLinks =
                     window.parent.document
-                    .querySelectorAll(
-                        ".menu-button"
-                    );
+                    .querySelectorAll(".menu-button");
 
-                for(
-                    var i=0;
-                    i<menuLinks.length;
-                    i++
-                ){
-
-                    menuLinks[i]
-                    .classList
-                    .remove(
-                        "active"
-                    );
-
+                for(var i=0;i<menuLinks.length;i++){
+                    menuLinks[i].classList.remove("active");
                 }
 
-
-                for(
-                    var j=0;
-                    j<menuLinks.length;
-                    j++
-                ){
+                for(var j=0;j<menuLinks.length;j++){
 
                     var menuHref =
-                        menuLinks[j]
-                        .getAttribute(
-                            "href"
-                        );
+                        menuLinks[j].getAttribute("href");
 
                     if(
                         menuHref &&
-                        menuHref
-                        .split("/")
-                        .pop()
-                        ===
-                        url
-                        .split("/")
-                        .pop()
+                        menuHref.split("/").pop() ===
+                        url.split("/").pop()
                     ){
 
-                        menuLinks[j]
-                        .classList
-                        .add(
-                            "active"
-                        );
+                        menuLinks[j].classList.add("active");
 
                         try{
-
-                            menuLinks[j]
-                            .scrollIntoView({
+                            menuLinks[j].scrollIntoView({
                                 behavior:"smooth",
                                 block:"nearest",
                                 inline:"center"
                             });
-
                         }catch(e){}
 
                         break;
-
                     }
-
                 }
 
                 return;
-
             }
-
         }
 
-    }
-    catch(error){
+    }catch(error){
 
-        console.log(
-            "Swayam navigation error:",
-            error
-        );
+        console.log("Swayam navigation error:",error);
 
     }
-
-
-    /*
-     * Normal standalone fallback
-     */
 
     window.location.href = url;
 
 }
-
-
-/* =========================================================
-   THEME
-========================================================= */
-
-function changeTheme(theme){
-
-    if(
-        theme !== "light" &&
-        theme !== "dark" &&
-        theme !== "blue"
-    ){
-
-        theme = "light";
-
-    }
-
-    document.body.className = theme;
-
-    localStorage.setItem(
-        "swayam_fitness_theme",
-        theme
-    );
-
-}
-
-
-/* =========================================================
-   LOAD SAVED THEME
-========================================================= */
-
-(function(){
-
-    var savedTheme =
-        localStorage.getItem(
-            "swayam_fitness_theme"
-        );
-
-    if(
-        savedTheme === "light" ||
-        savedTheme === "dark" ||
-        savedTheme === "blue"
-    ){
-
-        document.body.className =
-            savedTheme;
-
-        document.getElementById(
-            "themeSelector"
-        ).value =
-            savedTheme;
-
-    }
-
-})();
-
-
-/* =========================================================
-   CLOCK
-========================================================= */
-
-function updateClock(){
-
-    var now =
-        new Date();
-
-
-    var dateElement =
-        document.getElementById(
-            "mdate"
-        );
-
-    var time12Element =
-        document.getElementById(
-            "mtime12"
-        );
-
-    var time24Element =
-        document.getElementById(
-            "mtime24"
-        );
-
-
-    if(dateElement){
-
-        dateElement.textContent =
-            now.toLocaleDateString(
-                "en-IN",
-                {
-                    weekday:"short",
-                    year:"numeric",
-                    month:"short",
-                    day:"numeric"
-                }
-            );
-
-    }
-
-
-    if(time12Element){
-
-        time12Element.textContent =
-            now.toLocaleTimeString(
-                "en-IN",
-                {
-                    hour:"2-digit",
-                    minute:"2-digit",
-                    second:"2-digit",
-                    hour12:true
-                }
-            );
-
-    }
-
-
-    if(time24Element){
-
-        time24Element.textContent =
-            now.toLocaleTimeString(
-                "en-IN",
-                {
-                    hour:"2-digit",
-                    minute:"2-digit",
-                    second:"2-digit",
-                    hour12:false
-                }
-            );
-
-    }
-
-}
-
-
-/*
- * Run immediately so the page doesn't
- * show "--" for the first second.
- */
-
-updateClock();
-
-setInterval(
-    updateClock,
-    1000
-);
 
 </script>
 

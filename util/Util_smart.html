@@ -1,898 +1,604 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport"
-content="width=device-width,
-initial-scale=1.0,
-maximum-scale=1.0">
 
-<meta name="theme-color" content="#2e7d32"><title>Smart Watch</title><style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2e7d32">
+<title>Smart Watch</title>
 
+<style>
 *{
     box-sizing:border-box;
     margin:0;
     padding:0;
 }
 
-html,
-body{
+html,body{
     width:100%;
     min-height:100%;
 }
 
 body{
-
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Arial,
-        sans-serif;
-
-    background:
-        linear-gradient(
-            135deg,
-            #f8fff8,
-            #ffffff
-        );
-
+    font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+    background:linear-gradient(135deg,#f8fff8,#fff);
     color:#222;
-
     transition:.3s;
 }
 
-
-/* =========================================================
-   HEADER
-========================================================= */
+/* HEADER */
 
 .module-header{
-
     padding:14px 18px;
-
     display:flex;
-
     align-items:center;
-
     justify-content:space-between;
-
     gap:12px;
-
     color:white;
-
-    background:
-        linear-gradient(
-            135deg,
-            #43a047,
-            #66bb6a
-        );
-
-    box-shadow:
-        0 3px 12px rgba(0,0,0,.15);
-
+    background:linear-gradient(135deg,#43a047,#66bb6a);
+    box-shadow:0 3px 12px rgba(0,0,0,.15);
     position:sticky;
-
     top:0;
-
     z-index:10;
 }
 
 .title-area{
-
     display:flex;
-
     align-items:center;
-
     gap:10px;
 }
 
 .watch-icon{
-
     font-size:30px;
 }
 
 .title-area h1{
-
-    font-size:
-        clamp(20px,3vw,30px);
+    font-size:clamp(20px,3vw,30px);
 }
 
 .subtitle{
-
     font-size:11px;
-
     opacity:.85;
 }
 
+/* THEME BUTTON - TOP RIGHT */
 
-/* =========================================================
-   THEME
-========================================================= */
-
-.theme-box select{
-
-    min-height:36px;
-
-    padding:6px 10px;
-
-    border:0;
-
-    border-radius:8px;
-
-    background:white;
-
-    color:#222;
-
-    cursor:pointer;
+.theme-box{
+    flex-shrink:0;
 }
 
-
-/* =========================================================
-   CLOCK
-========================================================= */
-
-.clock-panel{
-
-    margin:15px;
-
-    padding:14px;
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(3,1fr);
-
-    gap:10px;
-
-    background:white;
-
-    border-radius:15px;
-
-    box-shadow:
-        0 3px 15px rgba(0,0,0,.08);
-}
-
-.time-box{
-
-    padding:10px;
-
-    text-align:center;
-
+.theme-button{
+    min-height:38px;
+    padding:7px 13px;
+    border:1px solid rgba(255,255,255,.5);
     border-radius:10px;
-
-    background:#f1f8e9;
-}
-
-.time-label{
-
-    display:block;
-
-    font-size:10px;
-
-    color:#777;
-
-    text-transform:uppercase;
-}
-
-.time-value{
-
-    display:block;
-
-    margin-top:4px;
-
-    color:#2e7d32;
-
-    font-size:
-        clamp(12px,2vw,17px);
-
+    background:rgba(255,255,255,.18);
+    color:white;
+    font-size:13px;
     font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:.2s;
+    -webkit-tap-highlight-color:transparent;
 }
 
+.theme-button:hover{
+    background:rgba(255,255,255,.3);
+}
 
-/* =========================================================
-   CARDS
-========================================================= */
+.theme-button:active{
+    transform:scale(.94);
+}
+
+/* CARD LAYOUT */
 
 .list-grid{
-
     display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(
-                230px,
-                1fr
-            )
-        );
-
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
     gap:15px;
-
-    padding:
-        0 15px 15px;
+    padding:15px;
 }
 
 .card{
-
-    padding:18px;
-
+    padding:16px;
     border-radius:16px;
-
     background:white;
-
-    box-shadow:
-        0 3px 15px rgba(0,0,0,.08);
-
+    box-shadow:0 3px 15px rgba(0,0,0,.08);
     transition:.2s;
+    min-width:0;
 }
 
 .card:hover{
-
-    transform:
-        translateY(-3px);
-
-    box-shadow:
-        0 7px 20px rgba(0,0,0,.12);
+    box-shadow:0 7px 20px rgba(0,0,0,.12);
 }
 
 .card-header{
-
     display:flex;
-
     align-items:center;
-
     gap:10px;
-
-    margin-bottom:10px;
-
+    margin-bottom:14px;
     padding-bottom:10px;
-
     border-bottom:1px solid #e5e5e5;
 }
 
 .card-icon{
-
     font-size:27px;
 }
 
 .card h2{
-
     color:#2e7d32;
-
     font-size:18px;
 }
 
-
-/* =========================================================
-   LINKS
-========================================================= */
+/* ICON BUTTON GRID */
 
 .card ul{
-
     list-style:none;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
 }
 
 .card li{
-
-    margin:5px 0;
+    min-width:0;
 }
 
+/* ICON BUTTON */
+
 .card a{
+    min-height:105px;
+    padding:12px 6px;
 
     display:flex;
-
+    flex-direction:column;
+    justify-content:center;
     align-items:center;
+    gap:8px;
 
-    min-height:44px;
+    border-radius:13px;
+    border:1px solid #e4eee4;
 
-    padding:9px 11px;
-
-    border-radius:9px;
+    background:linear-gradient(145deg,#f7fff7,#edf7ed);
 
     color:#333;
-
     text-decoration:none;
+    text-align:center;
 
-    font-size:14px;
-
-    font-weight:500;
+    font-size:12px;
+    font-weight:600;
+    line-height:1.3;
 
     cursor:pointer;
+    transition:transform .2s,background .2s,box-shadow .2s;
+    -webkit-tap-highlight-color:transparent;
+}
 
-    transition:.2s;
+.button-icon{
+    width:43px;
+    height:43px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:27px;
+
+    background:white;
+    border-radius:12px;
+
+    box-shadow:0 2px 7px rgba(0,0,0,.07);
+}
+
+.button-label{
+    display:block;
+    max-width:100%;
+    overflow-wrap:anywhere;
 }
 
 .card a:hover{
-
-    background:#e8f5e9;
-
-    color:#2e7d32;
-
-    transform:
-        translateX(3px);
+    background:#e1f3e2;
+    color:#1b5e20;
+    border-color:#81c784;
+    transform:translateY(-3px);
+    box-shadow:0 5px 12px rgba(46,125,50,.12);
 }
 
+.card a:active{
+    transform:scale(.95);
+}
 
-/* =========================================================
-   INFO
-========================================================= */
+/* INFO */
 
 .info-box{
-
-    margin:
-        0 15px 15px;
-
+    margin:0 15px 15px;
     padding:13px 15px;
-
     border-radius:12px;
-
     background:#e8f5e9;
-
     color:#2e7d32;
-
     font-size:12px;
 }
 
-
-/* =========================================================
-   DARK
-========================================================= */
+/* DARK THEME */
 
 body.dark{
-
     background:#181818;
-
     color:#eee;
 }
 
 body.dark .module-header{
-
-    background:
-        linear-gradient(
-            135deg,
-            #1b5e20,
-            #2e7d32
-        );
+    background:linear-gradient(135deg,#1b5e20,#2e7d32);
 }
 
-body.dark .clock-panel,
 body.dark .card{
-
     background:#252525;
 }
 
-body.dark .time-box{
-
-    background:#303030;
-}
-
-body.dark .time-label{
-
-    color:#aaa;
-}
-
-body.dark .time-value{
-
+body.dark .card h2{
     color:#81c784;
 }
 
 body.dark .card-header{
-
     border-bottom-color:#444;
 }
 
-body.dark .card h2{
-
-    color:#81c784;
-}
-
 body.dark .card a{
-
+    background:#303630;
+    border-color:#444;
     color:#eee;
 }
 
+body.dark .button-icon{
+    background:#252525;
+}
+
 body.dark .card a:hover{
-
-    background:#303030;
-
-    color:#81c784;
+    background:#354b36;
+    border-color:#81c784;
 }
 
 body.dark .info-box{
-
     background:#263d27;
-
     color:#a5d6a7;
 }
 
-
-/* =========================================================
-   BLUE
-========================================================= */
+/* BLUE THEME */
 
 body.blue{
-
-    background:
-        linear-gradient(
-            135deg,
-            #eef7ff,
-            #ffffff
-        );
+    background:linear-gradient(135deg,#eef7ff,#fff);
 }
 
 body.blue .module-header{
-
-    background:
-        linear-gradient(
-            135deg,
-            #1565c0,
-            #42a5f5
-        );
-}
-
-body.blue .time-box{
-
-    background:#e3f2fd;
-}
-
-body.blue .time-value{
-
-    color:#1565c0;
+    background:linear-gradient(135deg,#1565c0,#42a5f5);
 }
 
 body.blue .card h2{
-
     color:#1565c0;
+}
+
+body.blue .card a{
+    background:linear-gradient(145deg,#f5faff,#eaf4ff);
+    border-color:#d5e8fa;
 }
 
 body.blue .card a:hover{
-
-    background:#e3f2fd;
-
+    background:#dceeff;
     color:#1565c0;
+    border-color:#64b5f6;
 }
 
 body.blue .info-box{
-
     background:#e3f2fd;
-
     color:#1565c0;
 }
 
-
-/* =========================================================
-   MOBILE
-========================================================= */
+/* MOBILE */
 
 @media(max-width:700px){
 
     .module-header{
-
         padding:11px;
-
     }
 
     .watch-icon{
-
         font-size:24px;
     }
 
     .title-area h1{
-
         font-size:19px;
     }
 
     .subtitle{
-
         font-size:9px;
     }
 
-    .theme-box select{
-
-        font-size:11px;
-
+    .theme-button{
         min-height:34px;
-    }
-
-    .clock-panel{
-
-        margin:10px;
-
-        padding:8px;
-
-        gap:6px;
-    }
-
-    .time-box{
-
-        padding:8px 4px;
-    }
-
-    .time-label{
-
-        font-size:8px;
-    }
-
-    .time-value{
-
+        padding:6px 9px;
         font-size:11px;
     }
 
     .list-grid{
-
-        grid-template-columns:1fr;
-
-        padding:
-            0 10px 10px;
-
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        padding:10px;
         gap:10px;
     }
 
     .card{
+        padding:11px;
+    }
 
-        padding:14px;
+    .card-header{
+        gap:7px;
+    }
+
+    .card-icon{
+        font-size:22px;
+    }
+
+    .card h2{
+        font-size:15px;
+    }
+
+    .card ul{
+        gap:8px;
     }
 
     .card a{
+        min-height:95px;
+        padding:9px 4px;
+        font-size:11px;
+    }
 
-        min-height:44px;
-
-        font-size:14px;
+    .button-icon{
+        width:39px;
+        height:39px;
+        font-size:24px;
     }
 
     .info-box{
-
-        margin:
-            0 10px 10px;
+        margin:0 10px 10px;
     }
-
 }
 
+/* SMALL MOBILE */
 
-/* =========================================================
-   SMALL MOBILE
-========================================================= */
+@media(max-width:360px){
 
-@media(max-width:400px){
-
-    .clock-panel{
-
+    .list-grid{
         grid-template-columns:1fr;
     }
 
-}
-
-
-/* =========================================================
-   LANDSCAPE
-========================================================= */
-
-@media(max-width:700px)
-       and (orientation:landscape){
-
-    .list-grid{
-
-        grid-template-columns:
-            repeat(3,1fr);
+    .card ul{
+        grid-template-columns:repeat(3,minmax(0,1fr));
     }
 
     .card a{
-
-        font-size:12px;
-
-        min-height:36px;
+        min-height:88px;
+        font-size:10px;
     }
-
 }
 
-</style></head><body class="light"><!-- =======================================================
-     HEADER
-======================================================= --><header class="module-header"><div class="title-area">
+/* LANDSCAPE */
 
-    <div class="watch-icon">
-        ⌚
-    </div>
+@media(max-width:700px) and (orientation:landscape){
 
-    <div>
+    .list-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+}
 
-        <h1>
-            Smart Watch
-        </h1>
+</style>
+</head>
 
-        <div class="subtitle">
-            Swayam Smart Utilities
+<body class="light">
+
+<!-- HEADER -->
+
+<header class="module-header">
+
+    <div class="title-area">
+
+        <div class="watch-icon">⌚</div>
+
+        <div>
+            <h1>Smart Watch</h1>
+            <div class="subtitle">Swayam Smart Utilities</div>
         </div>
 
     </div>
 
-</div>
+    <!-- DIRECT THEME BUTTON -->
 
+    <div class="theme-box">
 
-<div class="theme-box">
-
-    <select
-        id="themeSelect"
-        onchange="changeTheme(this.value)">
-
-        <option value="light">
-            Light
-        </option>
-
-        <option value="dark">
-            Dark
-        </option>
-
-        <option value="blue">
-            Blue
-        </option>
-
-    </select>
-
-</div>
-
-</header><!-- =======================================================
-     CLOCK
-======================================================= --><section class="clock-panel"><div class="time-box">
-
-    <span class="time-label">
-        Date
-    </span>
-
-    <span
-        class="time-value"
-        id="mdate">
-        --
-    </span>
-
-</div>
-
-
-<div class="time-box">
-
-    <span class="time-label">
-        12 Hour
-    </span>
-
-    <span
-        class="time-value"
-        id="mtime12">
-        --
-    </span>
-
-</div>
-
-
-<div class="time-box">
-
-    <span class="time-label">
-        24 Hour
-    </span>
-
-    <span
-        class="time-value"
-        id="mtime24">
-        --
-    </span>
-
-</div>
-
-</section><!-- =======================================================
-     CARDS
-======================================================= --><main class="list-grid"><!-- UTILITIES -->
-
-<section class="card">
-
-    <div class="card-header">
-
-        <div class="card-icon">
-            🧰
-        </div>
-
-        <h2>
-            Utilities
-        </h2>
+        <button
+            class="theme-button"
+            id="themeButton"
+            onclick="changeTheme()"
+            type="button">
+            ☀️ Light
+        </button>
 
     </div>
 
+</header>
 
-    <ul>
+<!-- ICON BUTTON CARDS -->
 
-        <li>
-            <a href="/Myself/smart/Smart_Cal.html"
-               onclick="openSwayamPage(event,this.href)">
-                📅 Panchang Calendar
-            </a>
-        </li>
+<main class="list-grid">
 
-<li>
-            <a href="/Myself/apps/fullcalender.html"
-               onclick="openSwayamPage(event,this.href)">
-                📅 Event Calendar
-            </a>
-        </li>
+    <!-- UTILITIES -->
 
-        <li>
-            <a href="/Myself/smart/kidcal.html"
-               onclick="openSwayamPage(event,this.href)">
-                🧮 Calculator
-            </a>
-        </li>
-<li>
-            <a href="/Myself/school/mycono.html"
-               onclick="openSwayamPage(event,this.href)">
-                🔑 Contact Manager
-            </a>
-        </li>
+    <section class="card">
 
-
-
-    </ul>
-
-</section>
-
-
-
-<!-- Note -->
-
-<section class="card">
-
-    <div class="card-header">
-
-        <div class="card-icon">
-            📝
+        <div class="card-header">
+            <div class="card-icon">🧰</div>
+            <h2>Utilities</h2>
         </div>
 
-        <h2>
-            Notes
-        </h2>
+        <ul>
 
-    </div>
+            <li>
+                <a href="/Myself/smart/Smart_Cal.html" onclick="openSwayamPage(event,this.href)">
+                    <span class="button-icon">📅</span>
+                    <span class="button-label">Panchang Calendar</span>
+                </a>
+            </li>
 
+            <li>
+                <a href="/Myself/apps/fullcalender.html" onclick="openSwayamPage(event,this.href)">
+                    <span class="button-icon">🗓️</span>
+                    <span class="button-label">Event Calendar</span>
+                </a>
+            </li>
 
-<ul>
+            <li>
+                <a href="/Myself/smart/kidcal.html" onclick="openSwayamPage(event,this.href)">
+                    <span class="button-icon">🧮</span>
+                    <span class="button-label">Calculator</span>
+                </a>
+            </li>
 
+            <li>
+                <a href="/Myself/school/mycono.html" onclick="openSwayamPage(event,this.href)">
+                    <span class="button-icon">🔑</span>
+                    <span class="button-label">Contact Manager</span>
+                </a>
+            </li>
 
-<li>
-            <a href="/Myself/smart/Smart_notes.html"
-               onclick="openSwayamPage(event,this.href)">
-                📝 Mini Notes
-            </a>
-        </li>
+        </ul>
 
-        <li>
-            <a href="/Myself/smart/mynote.html"
-               onclick="openSwayamPage(event,this.href)">
-                📒 Mini Pad
-            </a>
-        </li>
+    </section>
 
-<li>
-            <a href="/Myself/smart/textclean.html"
-               onclick="openSwayamPage(event,this.href)">
-                📒 Text Cleaner
-            </a>
-        </li>
+    <!-- NOTES -->
 
+    <section class="card">
 
-
-
-
-</ul>
-
-</section>
-
-
-
-
-
-
-
-
-
-
-<!-- STUDIO -->
-
-<section class="card">
-
-    <div class="card-header">
-
-        <div class="card-icon">
-            🎬
+        <div class="card-header">
+            <div class="card-icon">📝</div>
+            <h2>Notes</h2>
         </div>
 
-        <h2>
-            Studio
-        </h2>
+        <ul>
 
-    </div>
+            <li>
+                <a href="/Myself/smart/Smart_notes.html" onclick="openSwayamPage(event,this.href)">
+                    <span class="button-icon">📝</span>
+                    <span class="button-label">Mini Notes</span>
+                </a>
+            </li>
 
+            <li>
+                <a href="/Myself/smart/mynote.html" onclick="openSwayamPage(event,this.href)">
+                    <span class="button-icon">📒</span>
+                    <span class="button-label">Mini Pad</span>
+                </a>
+            </li>
 
-    <ul>
+            <li>
+                <a href="/Myself/smart/textclean.html" onclick="openSwayamPage(event,this.href)">
+                    <span class="button-icon">🧹</span>
+                    <span class="button-label">Text Cleaner</span>
+                </a>
+            </li>
 
-<li>
-<a href="/Myself/smart/Smart_Audio.html"
-               onclick="openSwayamPage(event,this.href)">
-                🎵 Audio Player
-            </a>
-        </li>
+        </ul>
 
-        <li>
-            <a href="/Myself/smart/Smart_Video.html"
-               onclick="openSwayamPage(event,this.href)">
-                🎬 Video Player
-            </a>
-        </li>
+    </section>
 
-    </ul>
+    <!-- STUDIO -->
 
-</section>
+    <section class="card">
 
-
-
-<!-- SMARTWATCH -->
-
-<section class="card">
-
-    <div class="card-header">
-
-        <div class="card-icon">
-            ⌚
+        <div class="card-header">
+            <div class="card-icon">🎬</div>
+            <h2>Studio</h2>
         </div>
 
-        <h2>
-            Smartwatch
-        </h2>
+        <ul>
 
-    </div>
+            <li>
+                <a href="/Myself/smart/Smart_Audio.html" onclick="openSwayamPage(event,this.href)">
+                    <span class="button-icon">🎵</span>
+                    <span class="button-label">Audio Player</span>
+                </a>
+            </li>
 
+            <li>
+                <a href="/Myself/smart/Smart_Video.html" onclick="openSwayamPage(event,this.href)">
+                    <span class="button-icon">🎬</span>
+                    <span class="button-label">Video Player</span>
+                </a>
+            </li>
 
-    <ul>
+        </ul>
 
-<li>
-<a href="/Myself/smart/walk.html"          onclick="openSwayamPage(event,this.href)">
-🗺️ Smart Walk</a>
-</li>
+    </section>
 
-<li>
-<a href="/Myself/smart/walk2fast.html"          onclick="openSwayamPage(event,this.href)">
- 🗺️ Get Distance and Time</a>
-</li>
+    <!-- SMARTWATCH -->
 
+    <section class="card">
 
-<li>
-<a href="/Myself/smart/Stepcnt.html"             onclick="openSwayamPage(event,this.href)">
-                🚶 Step Counter
-            </a>
-        </li>
+        <div class="card-header">
+            <div class="card-icon">⌚</div>
+            <h2>Smartwatch</h2>
+        </div>
 
-<li>
-<a href="/Myself/age/Aug26_clock.html"
-               onclick="openSwayamPage(event,this.href)">
-                ⏰ Alarm Clock
-            </a>
-        </li>
+        <ul>
 
-<li>
- <a href="/Myself/smart/Stopwatch.html"
-               onclick="openSwayamPage(event,this.href)">
-                ⏱️ Stop Watch
-            </a>
-        </li>
+            <li>
+                <a href="/Myself/smart/walk.html" onclick="openSwayamPage(event,this.href)">
+                    <span class="button-icon">🗺️</span>
+                    <span class="button-label">Smart Walk</span>
+                </a>
+            </li>
 
-<li>
-<a href="/Myself/smart/Countdown.html"
-               onclick="openSwayamPage(event,this.href)">
-                ⏳ Count Down
-            </a>
-        </li>
+            <li>
+                <a href="/Myself/smart/walk2fast.html" onclick="openSwayamPage(event,this.href)">
+                    <span class="button-icon">📍</span>
+                    <span class="button-label">Distance & Time</span>
+                </a>
+            </li>
 
-    </ul>
+            <li>
+                <a href="/Myself/smart/Stepcnt.html" onclick="openSwayamPage(event,this.href)">
+                    <span class="button-icon">🚶</span>
+                    <span class="button-label">Step Counter</span>
+                </a>
+            </li>
 
-</section>
+            <li>
+                <a href="/Myself/age/Aug26_clock.html" onclick="openSwayamPage(event,this.href)">
+                    <span class="button-icon">⏰</span>
+                    <span class="button-label">Alarm Clock</span>
+                </a>
+            </li>
 
-</main><div class="info-box">ℹ️
-Select any utility to open it in the
-Swayam center area.
+            <li>
+                <a href="/Myself/smart/Stopwatch.html" onclick="openSwayamPage(event,this.href)">
+                    <span class="button-icon">⏱️</span>
+                    <span class="button-label">Stop Watch</span>
+                </a>
+            </li>
 
-</div><script>
+            <li>
+                <a href="/Myself/smart/Countdown.html" onclick="openSwayamPage(event,this.href)">
+                    <span class="button-icon">⏳</span>
+                    <span class="button-label">Count Down</span>
+                </a>
+            </li>
+
+        </ul>
+
+    </section>
+
+</main>
+
+<div class="info-box">
+    ℹ️ Select any icon to open its utility in the Swayam center area.
+</div>
+
+<script>
 
 /* =========================================================
    OPEN PAGE IN PARENT SWAYAM CENTER
@@ -902,233 +608,146 @@ function openSwayamPage(event,url){
 
     event.preventDefault();
 
-
-    /*
-     * We are inside the Swayam iframe.
-     *
-     * window.parent = Swayam index page
-     */
-
     try{
 
-        if(
-            window.parent &&
-            window.parent !== window
-        ){
+        if(window.parent && window.parent !== window){
 
             var frame =
-                window.parent.document
-                .getElementById(
-                    "swayamFrame"
-                );
-
+                window.parent.document.getElementById("swayamFrame");
 
             if(frame){
 
-                frame.src = url;
-
-
-                /*
-                 * Tell parent to update
-                 * the menu selection.
-                 */
+                frame.src=url;
 
                 var menuLinks =
-                    window.parent.document
-                    .querySelectorAll(
-                        ".menu-button"
-                    );
+                    window.parent.document.querySelectorAll(".menu-button");
 
-
-                for(
-                    var i=0;
-                    i<menuLinks.length;
-                    i++
-                ){
-
-                    menuLinks[i]
-                        .classList
-                        .remove("active");
-
+                for(var i=0;i<menuLinks.length;i++){
+                    menuLinks[i].classList.remove("active");
                 }
 
+                for(var j=0;j<menuLinks.length;j++){
 
-                /*
-                 * Find matching Swayam menu.
-                 */
+                    if(menuLinks[j].getAttribute("href") === url.split("/").pop()){
 
-                for(
-                    var j=0;
-                    j<menuLinks.length;
-                    j++
-                ){
-
-                    if(
-                        menuLinks[j]
-                        .getAttribute("href")
-                        === url.split("/").pop()
-                    ){
-
-                        menuLinks[j]
-                            .classList
-                            .add("active");
+                        menuLinks[j].classList.add("active");
 
                         try{
-
-                            menuLinks[j]
-                                .scrollIntoView({
-                                    behavior:"smooth",
-                                    block:"nearest",
-                                    inline:"center"
-                                });
-
+                            menuLinks[j].scrollIntoView({
+                                behavior:"smooth",
+                                block:"nearest",
+                                inline:"center"
+                            });
                         }catch(e){}
 
                         break;
-
                     }
-
                 }
 
-
-                /*
-                 * Save page.
-                 */
-
                 try{
-
-                    window.parent.localStorage
-                    .setItem(
+                    window.parent.localStorage.setItem(
                         "swayam_selected_page",
                         url.split("/").pop()
                     );
-
                 }catch(e){}
 
-
                 return;
-
             }
-
         }
 
-    }
-    catch(error){
+    }catch(error){
 
-        console.log(
-            "Parent navigation error:",
-            error
-        );
+        console.log("Parent navigation error:",error);
 
     }
 
-
-    /*
-     * Fallback if this page is opened
-     * directly instead of inside Swayam.
-     */
-
-    window.location.href = url;
-
+    window.location.href=url;
 }
-
 
 /* =========================================================
-   THEME
+   DIRECT CLICK THEME SWITCHER
+   LIGHT -> DARK -> BLUE -> LIGHT
 ========================================================= */
 
-function changeTheme(theme){
+var themes = ["light","dark","blue"];
 
-    document.body.className =
-        theme;
+var themeLabels = {
+    light:"☀️ Light",
+    dark:"🌙 Dark",
+    blue:"🌊 Blue"
+};
 
-    localStorage.setItem(
-        "swayam_watch_theme",
-        theme
+var currentTheme = "light";
+
+/* LOAD SAVED THEME */
+
+try{
+
+    var savedTheme =
+        localStorage.getItem("swayam_watch_theme");
+
+    if(themes.includes(savedTheme)){
+        currentTheme = savedTheme;
+    }
+
+}catch(e){
+
+    currentTheme = "light";
+
+}
+
+/* APPLY THEME */
+
+function applyTheme(){
+
+    document.body.classList.remove(
+        "light","dark","blue"
     );
 
-}
+    document.body.classList.add(currentTheme);
 
+    document.getElementById("themeButton").textContent =
+        themeLabels[currentTheme];
 
-var savedTheme =
-    localStorage.getItem(
-        "swayam_watch_theme"
-    );
+    /* Update browser theme color */
 
+    var colors = {
+        light:"#43a047",
+        dark:"#1b5e20",
+        blue:"#1565c0"
+    };
 
-if(savedTheme){
+    document.querySelector('meta[name="theme-color"]')
+        .setAttribute("content",colors[currentTheme]);
 
-    document.body.className =
-        savedTheme;
-
-    document.getElementById(
-        "themeSelect"
-    ).value =
-        savedTheme;
-
-}
-
-
-/* =========================================================
-   CLOCK
-========================================================= */
-
-function updateClock(){
-
-    var now =
-        new Date();
-
-
-    document.getElementById(
-        "mtime24"
-    ).textContent =
-        now.toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit",
-                second:"2-digit",
-                hour12:false
-            }
+    try{
+        localStorage.setItem(
+            "swayam_watch_theme",
+            currentTheme
         );
-
-
-    document.getElementById(
-        "mtime12"
-    ).textContent =
-        now.toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit",
-                second:"2-digit",
-                hour12:true
-            }
-        );
-
-
-    document.getElementById(
-        "mdate"
-    ).textContent =
-        now.toLocaleDateString(
-            "en-IN",
-            {
-                weekday:"long",
-                year:"numeric",
-                month:"long",
-                day:"numeric"
-            }
-        );
+    }catch(e){}
 
 }
 
+/* CHANGE THEME ON EVERY CLICK */
 
-updateClock();
+function changeTheme(){
 
+    var index = themes.indexOf(currentTheme);
 
-setInterval(
-    updateClock,
-    1000
-);
+    currentTheme = themes[
+        (index + 1) % themes.length
+    ];
 
-</script></body></html>
+    applyTheme();
+
+}
+
+/* INITIALIZE */
+
+applyTheme();
+
+</script>
+
+</body>
+</html>

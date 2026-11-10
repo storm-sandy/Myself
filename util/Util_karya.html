@@ -1,1098 +1,864 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#138a4b">
 <title>Karya Kaksha - Swayam</title>
 
 <style>
-
-/* =========================================================
-   SWAYAM KARYA KAKSHA
-   CENTER AREA / IFRAME COMPATIBLE
-========================================================= */
-
 *{
     box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --primary:#138a4b;
+    --primary-dark:#086b38;
+    --primary-soft:#e8f7ef;
+    --background:#f4f7f5;
+    --card:#ffffff;
+    --text:#17231c;
+    --muted:#66736b;
+    --shadow:0 7px 22px rgba(0,0,0,.09);
 }
 
 body{
-    margin:0;
-    font-family:Arial, Helvetica, sans-serif;
-    transition:0.3s;
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--background);
+    color:var(--text);
     min-height:100vh;
+    transition:.3s;
 }
 
-
-/* =========================================================
-   HEADER
-========================================================= */
+/* HEADER */
 
 .header{
-    padding:12px 16px;
-
+    padding:15px 18px;
     display:flex;
     justify-content:space-between;
     align-items:center;
-
-    gap:10px;
-
-    background:linear-gradient(
-        135deg,
-        #00a86b,
-        #008f5a
-    );
-
+    gap:12px;
+    flex-wrap:wrap;
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
     color:white;
+    box-shadow:0 4px 14px rgba(0,0,0,.16);
+}
 
-    box-shadow:
-        0 3px 10px rgba(0,0,0,0.18);
+.brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.brand-icon{
+    width:43px;
+    height:43px;
+    background:rgba(255,255,255,.18);
+    border-radius:13px;
+    display:grid;
+    place-items:center;
+    font-size:25px;
 }
 
 .header h2{
-    margin:0;
-    font-size:22px;
+    font-size:21px;
 }
 
-.header select{
-    padding:9px 12px;
+.header small{
+    display:block;
+    margin-top:3px;
+    font-size:12px;
+    opacity:.85;
+}
 
-    border:none;
+/* THEME ICON BUTTONS */
 
-    border-radius:10px;
+.theme-buttons{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
 
-    font-size:14px;
-
+.theme-btn{
+    width:40px;
+    height:40px;
+    border:2px solid rgba(255,255,255,.45);
+    border-radius:12px;
+    background:rgba(255,255,255,.15);
+    color:white;
+    font-size:19px;
     cursor:pointer;
-
-    outline:none;
-}
-
-
-/* =========================================================
-   CLOCK
-========================================================= */
-
-.clock-bar{
-
     display:grid;
-
-    grid-template-columns:
-        repeat(3,1fr);
-
-    gap:10px;
-
-    padding:12px;
+    place-items:center;
+    transition:.2s;
 }
 
-.clock-box{
+.theme-btn:hover{
+    background:rgba(255,255,255,.3);
+    transform:translateY(-2px);
+}
 
-    padding:12px;
+.theme-btn.active{
+    background:white;
+    border-color:white;
+    color:#126b4b;
+    transform:scale(1.08);
+    box-shadow:0 3px 8px rgba(0,0,0,.2);
+}
 
-    border-radius:14px;
+.theme-btn:active{
+    transform:scale(.92);
+}
 
-    text-align:center;
+/* MAIN */
 
+.main{
+    max-width:1100px;
+    margin:auto;
+    padding:20px;
+}
+
+/* INTRO */
+
+.intro{
+    background:linear-gradient(135deg,var(--primary-soft),var(--card));
+    border-left:5px solid var(--primary);
+    border-radius:17px;
+    padding:20px;
+    margin-bottom:22px;
+    box-shadow:var(--shadow);
+}
+
+.intro h1{
+    font-size:23px;
+    margin-bottom:8px;
+}
+
+.intro p{
+    color:var(--muted);
+    line-height:1.5;
     font-size:14px;
-
-    font-weight:bold;
-
-    background:
-        rgba(255,255,255,0.75);
-
-    box-shadow:
-        0 4px 12px rgba(0,0,0,0.10);
-
-    backdrop-filter:blur(8px);
 }
 
-.clock-label{
+/* SECTION */
 
-    display:block;
-
-    font-size:11px;
-
-    opacity:0.7;
-
-    margin-bottom:5px;
-
-    text-transform:uppercase;
+.section-title{
+    font-size:18px;
+    margin:0 0 15px 3px;
 }
 
-.clock-value{
-
-    display:block;
-
-    font-size:15px;
-}
-
-
-/* =========================================================
-   MAIN GRID
-========================================================= */
+/* GRID */
 
 .list-grid{
-
     display:grid;
-
-    grid-template-columns:
-        repeat(auto-fit,minmax(230px,1fr));
-
-    gap:15px;
-
-    padding:15px;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:18px;
 }
 
-
-/* =========================================================
-   CARD
-========================================================= */
+/* CARD */
 
 .card{
-
-    padding:18px;
-
+    background:var(--card);
+    padding:19px;
     border-radius:18px;
-
-    box-shadow:
-        0 5px 15px rgba(0,0,0,0.12);
-
-    transition:
-        transform 0.25s,
-        box-shadow 0.25s;
-
+    box-shadow:var(--shadow);
+    transition:.25s;
     position:relative;
-
     overflow:hidden;
 }
 
 .card::before{
-
     content:"";
-
     position:absolute;
-
     top:0;
     left:0;
-
     width:100%;
     height:4px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #00a86b,
-            #00d084
-        );
+    background:linear-gradient(90deg,var(--primary),#52c98a);
 }
 
 .card:hover{
-
-    transform:translateY(-4px);
-
-    box-shadow:
-        0 10px 25px rgba(0,0,0,0.18);
+    transform:translateY(-3px);
 }
 
-.card h3{
-
-    margin:4px 0 15px 0;
-
-    font-size:18px;
-}
-
-
-/* =========================================================
-   LIST
-========================================================= */
-
-ul{
-
-    padding:0;
-
-    margin:0;
-
-    list-style:none;
-}
-
-li{
-
-    margin:8px 0;
-}
-
-
-/* =========================================================
-   APP LINKS
-========================================================= */
-
-.app-link{
-
+.card-header{
     display:flex;
-
     align-items:center;
-
-    gap:10px;
-
-    width:100%;
-
-    padding:12px 14px;
-
-    border-radius:12px;
-
-    text-decoration:none;
-
-    font-size:15px;
-
-    font-weight:bold;
-
-    transition:
-        background 0.2s,
-        transform 0.2s,
-        box-shadow 0.2s;
-
-    cursor:pointer;
+    gap:12px;
+    margin-bottom:18px;
 }
 
-.app-icon{
-
-    width:36px;
-    height:36px;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    border-radius:10px;
-
-    font-size:18px;
-
-    background:
-        rgba(0,168,107,0.12);
-
+.card-main-icon{
+    width:48px;
+    height:48px;
+    display:grid;
+    place-items:center;
+    border-radius:14px;
+    background:var(--primary-soft);
+    font-size:25px;
     flex-shrink:0;
 }
 
-.app-link:hover{
-
-    transform:translateX(4px);
-
-    background:
-        rgba(0,168,107,0.12);
-
-    box-shadow:
-        0 4px 10px rgba(0,0,0,0.10);
+.card-header h3{
+    font-size:18px;
 }
 
-.app-link:active{
-
-    transform:scale(0.97);
+.card-header p{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:4px;
 }
 
+/* ICON BUTTONS */
 
-/* =========================================================
-   THEMES
-========================================================= */
-
-
-/* LIGHT */
-
-.light{
-
-    background:#f3f7f5;
-
-    color:#17231e;
+.icon-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:11px;
 }
 
-.light .card{
-
-    background:
-        rgba(255,255,255,0.95);
-}
-
-.light .clock-box{
-
-    color:#17231e;
-}
-
-.light .app-link{
-
-    color:#126b4b;
-}
-
-
-/* =========================================================
-   DARK
-========================================================= */
-
-.dark{
-
-    background:#101513;
-
-    color:white;
-}
-
-.dark .header{
-
-    background:
-        linear-gradient(
-            135deg,
-            #063d2c,
-            #001f16
-        );
-}
-
-.dark .card{
-
-    background:#1b2521;
-
-    box-shadow:
-        0 5px 18px rgba(0,0,0,0.40);
-}
-
-.dark .clock-box{
-
-    background:#1b2521;
-
-    color:white;
-}
-
-.dark .app-link{
-
-    color:#8ff0c5;
-}
-
-.dark .app-link:hover{
-
-    background:#263a32;
-}
-
-.dark .app-icon{
-
-    background:
-        rgba(0,220,145,0.14);
-}
-
-
-/* =========================================================
-   BLUE
-========================================================= */
-
-.blue{
-
-    background:#eaf4ff;
-
-    color:#122033;
-}
-
-.blue .header{
-
-    background:
-        linear-gradient(
-            135deg,
-            #1976d2,
-            #1255a0
-        );
-}
-
-.blue .card{
-
-    background:white;
-}
-
-.blue .clock-box{
-
-    background:white;
-}
-
-.blue .app-link{
-
-    color:#1565c0;
-}
-
-.blue .app-icon{
-
-    background:
-        rgba(25,118,210,0.12);
-}
-
-
-/* =========================================================
-   INFORMATION
-========================================================= */
-
-.info{
-
-    margin:
-        0 15px 15px 15px;
-
-    padding:12px;
-
-    border-radius:14px;
-
+.icon-button{
+    min-width:0;
+    min-height:105px;
+    padding:12px 5px;
+    border-radius:15px;
+    border:1px solid rgba(19,138,75,.14);
+    background:var(--primary-soft);
+    color:var(--text);
+    text-decoration:none;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
     text-align:center;
-
-    font-size:13px;
-
-    opacity:0.75;
+    cursor:pointer;
+    transition:.2s;
 }
 
+.icon-button:hover{
+    background:var(--primary);
+    color:white;
+    transform:translateY(-3px);
+    box-shadow:0 6px 15px rgba(19,138,75,.2);
+}
 
-/* =========================================================
-   MOBILE
-========================================================= */
+.icon-button:active{
+    transform:scale(.95);
+}
 
-@media(max-width:700px){
+.symbol{
+    font-size:29px;
+    line-height:1;
+}
+
+.button-label{
+    font-size:12px;
+    font-weight:bold;
+    line-height:1.3;
+}
+
+/* INFORMATION */
+
+.info-card{
+    margin-top:22px;
+    padding:19px;
+    background:var(--card);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+}
+
+.info-card h3{
+    font-size:17px;
+    margin-bottom:14px;
+}
+
+.info-item{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:11px 0;
+    border-bottom:1px solid rgba(120,120,120,.13);
+}
+
+.info-item:last-child{
+    border-bottom:none;
+}
+
+.info-icon{
+    width:36px;
+    height:36px;
+    flex-shrink:0;
+    display:grid;
+    place-items:center;
+    border-radius:11px;
+    background:var(--primary-soft);
+    font-size:19px;
+}
+
+.info-item strong{
+    font-size:14px;
+}
+
+.info-item p{
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.5;
+    margin-top:4px;
+}
+
+/* FOOTER */
+
+.footer{
+    text-align:center;
+    padding:22px 10px;
+    color:var(--muted);
+    font-size:12px;
+}
+
+/* DARK THEME */
+
+body.dark{
+    --background:#101513;
+    --card:#1c2420;
+    --text:#f2f6f3;
+    --muted:#b7c4bd;
+    --primary-soft:#263d30;
+    --primary:#237e4b;
+    --primary-dark:#104d31;
+}
+
+body.dark .icon-button{
+    border-color:#344c3b;
+}
+
+/* BLUE THEME */
+
+body.blue{
+    --primary:#1565c0;
+    --primary-dark:#0d47a1;
+    --primary-soft:#e3f2fd;
+    --background:#eef6fd;
+    --card:#ffffff;
+    --text:#17202a;
+    --muted:#637487;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
 
     .header{
-
         padding:12px;
     }
 
     .header h2{
-
         font-size:18px;
     }
 
-    .clock-bar{
-
-        grid-template-columns:1fr;
-    }
-
-    .list-grid{
-
-        grid-template-columns:1fr;
-
-        padding:12px;
-    }
-
-    .card{
-
-        padding:16px;
-    }
-
-    .app-link{
-
-        font-size:16px;
-
+    .main{
         padding:13px;
     }
 
+    .intro{
+        padding:16px;
+    }
+
+    .intro h1{
+        font-size:20px;
+    }
+
+    .list-grid{
+        grid-template-columns:1fr;
+        gap:14px;
+    }
+
+    .card{
+        padding:15px;
+    }
+
+    .icon-grid{
+        gap:9px;
+    }
+
+    .icon-button{
+        min-height:95px;
+    }
+
+    .symbol{
+        font-size:27px;
+    }
+
+    .button-label{
+        font-size:11px;
+    }
+    
+    .theme-btn{
+        width:37px;
+        height:37px;
+    }
 }
 
-
-/* =========================================================
-   SMALL MOBILE
-========================================================= */
-
-@media(max-width:400px){
-
-    .header{
-
-        flex-direction:column;
-
-        align-items:stretch;
+@media(hover:none){
+    .card:hover,
+    .icon-button:hover{
+        transform:none;
     }
-
-    .header select{
-
-        width:100%;
-    }
-
-    .clock-value{
-
-        font-size:14px;
-    }
-
 }
-
 </style>
-
 </head>
-
 
 <body class="light">
 
+<!-- HEADER -->
 
-<!-- =======================================================
-     HEADER
-======================================================= -->
+<header class="header">
 
-<div class="header">
+    <div class="brand">
 
-    <h2>💼 Karya Kaksha</h2>
+        <div class="brand-icon">💼</div>
 
-    <select
-        id="themeSelector"
-        onchange="changeTheme(this.value)">
-
-        <option value="light">
-            ☀️ Light Theme
-        </option>
-
-        <option value="dark">
-            🌙 Dark Theme
-        </option>
-
-        <option value="blue">
-            💙 Blue Theme
-        </option>
-
-    </select>
-
-</div>
-
-
-<!-- =======================================================
-     CLOCK
-======================================================= -->
-
-<div class="clock-bar">
-
-    <div class="clock-box">
-
-        <span class="clock-label">
-            📅 Date
-        </span>
-
-        <span
-            class="clock-value"
-            id="mdate">
-        </span>
+        <div>
+            <h2>Karya Kaksha</h2>
+            <small>Work & Professional Dashboard</small>
+        </div>
 
     </div>
 
+    <!-- THEME BUTTONS -->
 
-    <div class="clock-box">
+    <div class="theme-buttons">
 
-        <span class="clock-label">
-            🕐 12 Hour
-        </span>
+        <button type="button"
+                class="theme-btn"
+                data-theme="light"
+                onclick="changeTheme('light')"
+                title="Light Theme"
+                aria-label="Light Theme">☀️</button>
 
-        <span
-            class="clock-value"
-            id="mtime12">
-        </span>
+        <button type="button"
+                class="theme-btn"
+                data-theme="dark"
+                onclick="changeTheme('dark')"
+                title="Dark Theme"
+                aria-label="Dark Theme">🌙</button>
 
-    </div>
-
-
-    <div class="clock-box">
-
-        <span class="clock-label">
-            ⏱️ 24 Hour
-        </span>
-
-        <span
-            class="clock-value"
-            id="mtime24">
-        </span>
-
-    </div>
-
-</div>
-
-
-<!-- =======================================================
-     MAIN DASHBOARD
-======================================================= -->
-
-<div class="list-grid">
-
-
-    <!-- ===================================================
-         WORK / JOB
-    ==================================================== -->
-
-<div class="card">
-<h3>💼 Work / Office Manager</h3>
-
-<ul>        
-
-<li>
-<a
-class="app-link"
-href="/Myself/apps/workmanager.html"
-onclick="openSwayamPage(event,this.href)">
-<spanclass="app-icon">
-💼
-</span>
-<span>
-Work Tracker
-</span>
-</a>
-</li>
-
-
-<li>
-<a
-class="app-link"
-href="/Myself/finance/finwork1.html"
-onclick="openSwayamPage(event,this.href)">
-<spanclass="app-icon">
-💼
-</span>
-<span>
-Work Spends
-</span>
-</a>
-</li>
-
-<li>
-<a
-class="app-link"
-href="/Myself/finance/finattendw.html"
-onclick="openSwayamPage(event,this.href)">
-<spanclass="app-icon">
-💼
-</span>
-<span>
-Work Attendance
-</span>
-</a>
-</li>
-
-
-</ul>
-</div>
-
-
-    <!-- ===================================================
-         TRAVEL
-    ==================================================== -->
-
-    
-
-
-    <!-- ===================================================
-         CLASS / TRAINING
-    ==================================================== -->
-
-    <div class="card">
-
-        <h3>🎓 Class / Training Manager</h3>
-
-        <ul>
-
-<li>
-
-                <a
-                    class="app-link"
- href="/Myself/apps/classmanager.html"
-                    onclick="openSwayamPage(event,this.href)">
-
-                    <span class="app-icon">
-                        🎓
-                    </span>
-
-                    <span>
-                        Class Tracker
-                    </span>
-
-                </a>
-
-            </li>
-
-
-
-
-
-            <li>
-
-                <a
-                    class="app-link"
- href="/Myself/finance/finclass1.html"
-                    onclick="openSwayamPage(event,this.href)">
-
-                    <span class="app-icon">
-                        🎓
-                    </span>
-
-                    <span>
-                        Class Spends
-                    </span>
-
-                </a>
-
-            </li>
-
-
-            <li>
-
-                <a
-                    class="app-link"
-                    href="/Myself/finance/finattendc.html"
-                    onclick="openSwayamPage(event,this.href)">
-
-                    <span class="app-icon">
-                        📋
-                    </span>
-
-                    <span>
-                        Class Attendance
-                    </span>
-
-                </a>
-
-            </li>
-
-        </ul>
+        <button type="button"
+                class="theme-btn"
+                data-theme="blue"
+                onclick="changeTheme('blue')"
+                title="Blue Theme"
+                aria-label="Blue Theme">💙</button>
 
     </div>
 
+</header>
 
-    <!-- ===================================================
-         INTERVIEW TRACKER
-    ==================================================== -->
+<!-- MAIN -->
 
-    <div class="card">
+<main class="main">
 
-        <h3>🎯 Interview Manager</h3>
+    <section class="intro">
 
-        <ul>
+        <h1>💼 Karya Kaksha</h1>
 
+        <p>
+            Manage work, office activities, classes,
+            interviews, professional expenses and
+            Agile tasks from one convenient dashboard.
+        </p>
 
-<li>
+    </section>
 
-                <a
-                    class="app-link"
-href="/Myself/Interview/interviewtrack.html"
-                    onclick="openSwayamPage(event,this.href)">
+    <section class="list-grid">
 
-                    <span class="app-icon">
-                        🎯
-                    </span>
+        <!-- WORK / OFFICE -->
 
-                    <span>
-                        Interview Tracker
-                    </span>
+        <div class="card">
 
-                </a>
+            <div class="card-header">
 
-            </li>
+                <div class="card-main-icon">💼</div>
 
+                <div>
+                    <h3>Work / Office Manager</h3>
+                    <p>Manage your professional activities</p>
+                </div>
 
+            </div>
 
+            <div class="icon-grid">
 
+                <a class="icon-button"
+                   href="/Myself/apps/workmanager.html"
+                   onclick="openSwayamPage(event,this.href)">
 
-
-            <li>
-
-                <a
-                    class="app-link"
- href="/Myself/finance/fininterview.html"
-                    onclick="openSwayamPage(event,this.href)">
-
-                    <span class="app-icon">
-                        🎯
-                    </span>
-
-                    <span>
-                        Interview Spends
-                    </span>
+                    <span class="symbol">📊</span>
+                    <span class="button-label">Work Tracker</span>
 
                 </a>
 
-            </li>
+                <a class="icon-button"
+                   href="/Myself/finance/finwork1.html"
+                   onclick="openSwayamPage(event,this.href)">
 
-        </ul>
-
-    </div>
-
-
-    <!-- ===================================================
-         AGILE SYSTEM
-    ==================================================== -->
-
-    <div class="card">
-
-        <h3>🔄 Agile System</h3>
-
-        <ul>
-
-            <li>
-
-                <a
-                    class="app-link"
-                    href="/Myself/agile/agile.html"
-                    onclick="openSwayamPage(event,this.href)">
-
-                    <span class="app-icon">
-                        ⏳
-                    </span>
-
-                    <span>
-                        Agile
-                    </span>
+                    <span class="symbol">💰</span>
+                    <span class="button-label">Work Spends</span>
 
                 </a>
 
-            </li>
+                <a class="icon-button"
+                   href="/Myself/finance/finattendw.html"
+                   onclick="openSwayamPage(event,this.href)">
 
-
-            <li>
-
-                <a
-                    class="app-link"
-                    href="/Myself/agile/kanban.html"
-                    onclick="openSwayamPage(event,this.href)">
-
-                    <span class="app-icon">
-                        📌
-                    </span>
-
-                    <span>
-                        Kanban
-                    </span>
+                    <span class="symbol">📅</span>
+                    <span class="button-label">Work Attendance</span>
 
                 </a>
 
-            </li>
+            </div>
 
-        </ul>
+        </div>
 
-    </div>
+        <!-- CLASS / TRAINING -->
 
+        <div class="card">
 
-    <!-- ===================================================
-         NOTES
-    ==================================================== -->
+            <div class="card-header">
 
-    
+                <div class="card-main-icon">🎓</div>
 
-</div>
+                <div>
+                    <h3>Class / Training Manager</h3>
+                    <p>Manage learning and training</p>
+                </div>
 
+            </div>
 
-<!-- =======================================================
-     INFORMATION
-======================================================= -->
+            <div class="icon-grid">
 
-<div class="info">
+                <a class="icon-button"
+                   href="/Myself/apps/classmanager.html"
+                   onclick="openSwayamPage(event,this.href)">
 
-    💼 <b>Karya Kaksha</b> —
-    Manage Work, Jobs, Travel, Training,
-    Interviews, Agile Tasks and Professional
-    Learning from Swayam.
+                    <span class="symbol">📚</span>
+                    <span class="button-label">Class Tracker</span>
 
-</div>
+                </a>
 
+                <a class="icon-button"
+                   href="/Myself/finance/finclass1.html"
+                   onclick="openSwayamPage(event,this.href)">
+
+                    <span class="symbol">💰</span>
+                    <span class="button-label">Class Spends</span>
+
+                </a>
+
+                <a class="icon-button"
+                   href="/Myself/finance/finattendc.html"
+                   onclick="openSwayamPage(event,this.href)">
+
+                    <span class="symbol">📋</span>
+                    <span class="button-label">Class Attendance</span>
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- INTERVIEW -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <div class="card-main-icon">🎯</div>
+
+                <div>
+                    <h3>Interview Manager</h3>
+                    <p>Manage job interviews and expenses</p>
+                </div>
+
+            </div>
+
+            <div class="icon-grid">
+
+                <a class="icon-button"
+                   href="/Myself/Interview/interviewtrack.html"
+                   onclick="openSwayamPage(event,this.href)">
+
+                    <span class="symbol">🎯</span>
+                    <span class="button-label">Interview Tracker</span>
+
+                </a>
+
+                <a class="icon-button"
+                   href="/Myself/finance/fininterview.html"
+                   onclick="openSwayamPage(event,this.href)">
+
+                    <span class="symbol">💳</span>
+                    <span class="button-label">Interview Spends</span>
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- AGILE -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <div class="card-main-icon">🔄</div>
+
+                <div>
+                    <h3>Agile System</h3>
+                    <p>Manage tasks and project workflow</p>
+                </div>
+
+            </div>
+
+            <div class="icon-grid">
+
+                <a class="icon-button"
+                   href="/Myself/agile/agile.html"
+                   onclick="openSwayamPage(event,this.href)">
+
+                    <span class="symbol">🔄</span>
+                    <span class="button-label">Agile</span>
+
+                </a>
+
+                <a class="icon-button"
+                   href="/Myself/agile/kanban.html"
+                   onclick="openSwayamPage(event,this.href)">
+
+                    <span class="symbol">📌</span>
+                    <span class="button-label">Kanban</span>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- INFORMATION -->
+
+    <section class="info-card">
+
+        <h3>📌 Dashboard Information</h3>
+
+        <div class="info-item">
+
+            <div class="info-icon">💼</div>
+
+            <div>
+                <strong>Work / Office</strong>
+                <p>
+                    Track professional activities,
+                    office attendance and work expenses.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="info-item">
+
+            <div class="info-icon">🎓</div>
+
+            <div>
+                <strong>Class / Training</strong>
+                <p>
+                    Organize classes, training sessions,
+                    attendance and learning expenses.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="info-item">
+
+            <div class="info-icon">🎯</div>
+
+            <div>
+                <strong>Interview Manager</strong>
+                <p>
+                    Maintain interview records,
+                    job application progress and expenses.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="info-item">
+
+            <div class="info-icon">🔄</div>
+
+            <div>
+                <strong>Agile System</strong>
+                <p>
+                    Organize projects, tasks,
+                    Kanban boards and work progress.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer class="footer">
+    🌿 Swayam • Personal Governance Simplified
+</footer>
 
 <script>
 
-/* =========================================================
-   THEME
-========================================================= */
+/* =========================================
+   THEME MANAGEMENT
+========================================= */
 
 function changeTheme(theme){
 
-    document.body.className = theme;
+    var allowed = ["light","dark","blue"];
 
-    localStorage.setItem(
-        "swayam_work_theme",
-        theme
-    );
+    if(!allowed.includes(theme)){
+        theme = "light";
+    }
+
+    document.body.classList.remove("light","dark","blue");
+    document.body.classList.add(theme);
+
+    try{
+
+        localStorage.setItem(
+            "swayam_work_theme",
+            theme
+        );
+
+    }catch(e){}
+
+    updateThemeButtons(theme);
 
 }
 
 
-/* =========================================================
+/* =========================================
+   UPDATE ACTIVE THEME BUTTON
+========================================= */
+
+function updateThemeButtons(theme){
+
+    document.querySelectorAll(".theme-btn").forEach(function(btn){
+
+        btn.classList.toggle(
+            "active",
+            btn.dataset.theme === theme
+        );
+
+    });
+
+}
+
+
+/* =========================================
    LOAD SAVED THEME
-========================================================= */
+========================================= */
 
-let savedTheme =
-    localStorage.getItem(
-        "swayam_work_theme"
-    );
+(function(){
 
-if(savedTheme){
+    var savedTheme = "light";
 
-    document.body.className =
-        savedTheme;
+    try{
 
-    document.getElementById(
-        "themeSelector"
-    ).value = savedTheme;
+        savedTheme =
+            localStorage.getItem(
+                "swayam_work_theme"
+            ) || "light";
 
-}
+    }catch(e){}
 
+    if(!["light","dark","blue"].includes(savedTheme)){
+        savedTheme = "light";
+    }
 
-/* =========================================================
-   CLOCK
-========================================================= */
+    document.body.classList.remove("light","dark","blue");
+    document.body.classList.add(savedTheme);
 
-function updateClock(){
+    updateThemeButtons(savedTheme);
 
-    let now = new Date();
-
-
-    document.getElementById(
-        "mtime24"
-    ).innerHTML =
-        now.toLocaleTimeString(
-            "en-IN"
-        );
+})();
 
 
-    document.getElementById(
-        "mtime12"
-    ).innerHTML =
-        now.toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit",
-                second:"2-digit",
-                hour12:true
-            }
-        );
-
-
-    document.getElementById(
-        "mdate"
-    ).innerHTML =
-        now.toLocaleDateString(
-            "en-IN",
-            {
-                weekday:"long",
-                year:"numeric",
-                month:"long",
-                day:"numeric"
-            }
-        );
-
-}
-
-
-updateClock();
-
-setInterval(
-    updateClock,
-    1000
-);
-
-
-/* =========================================================
+/* =========================================
    SWAYAM PARENT NAVIGATION
-========================================================= */
+========================================= */
 
 function openSwayamPage(event,url){
 
     event.preventDefault();
 
-
     try{
-
-        /*
-         * Check whether this page
-         * is running inside Swayam.
-         */
 
         if(
             window.parent &&
             window.parent !== window
         ){
 
-            /*
-             * Find main Swayam iframe.
-             */
-
             var frame =
-                window.parent.document
-                .getElementById(
+                window.parent.document.getElementById(
                     "swayamFrame"
                 );
 
-
             if(frame){
-
-                /*
-                 * Load selected page
-                 * in Swayam center area.
-                 */
 
                 frame.src = url;
 
-
-                /*
-                 * Remember selected page.
-                 */
-
                 try{
 
-                    window.parent.localStorage
-                    .setItem(
+                    window.parent.localStorage.setItem(
                         "swayam_selected_page",
                         url.split("/").pop()
                     );
 
                 }catch(e){}
 
-
-                /*
-                 * Remove previous
-                 * active menu.
-                 */
-
                 var menuLinks =
-                    window.parent.document
-                    .querySelectorAll(
+                    window.parent.document.querySelectorAll(
                         ".menu-button"
                     );
 
+                for(var i=0;i<menuLinks.length;i++){
 
-                for(
-                    var i=0;
-                    i<menuLinks.length;
-                    i++
-                ){
-
-                    menuLinks[i]
-                    .classList
-                    .remove("active");
+                    menuLinks[i].classList.remove("active");
 
                 }
 
-
-                /*
-                 * Try to activate
-                 * matching parent menu.
-                 */
-
-                for(
-                    var j=0;
-                    j<menuLinks.length;
-                    j++
-                ){
+                for(var j=0;j<menuLinks.length;j++){
 
                     var menuHref =
-                        menuLinks[j]
-                        .getAttribute("href");
-
+                        menuLinks[j].getAttribute("href");
 
                     if(
                         menuHref &&
-                        menuHref
-                        .split("/")
-                        .pop()
-                        ===
-                        url
-                        .split("/")
-                        .pop()
+                        menuHref.split("/").pop() ===
+                        url.split("/").pop()
                     ){
 
-                        menuLinks[j]
-                        .classList
-                        .add("active");
+                        menuLinks[j].classList.add("active");
 
                         try{
 
-                            menuLinks[j]
-                            .scrollIntoView({
+                            menuLinks[j].scrollIntoView({
                                 behavior:"smooth",
                                 block:"nearest",
                                 inline:"center"
@@ -1101,20 +867,14 @@ function openSwayamPage(event,url){
                         }catch(e){}
 
                         break;
-
                     }
-
                 }
 
                 return;
-
             }
-
         }
 
-    }
-
-    catch(error){
+    }catch(error){
 
         console.log(
             "Swayam parent navigation error:",
@@ -1123,11 +883,7 @@ function openSwayamPage(event,url){
 
     }
 
-
-    /*
-     * Browser fallback
-     * when page is opened directly.
-     */
+    /* Direct browser fallback */
 
     window.location.href = url;
 
@@ -1135,7 +891,5 @@ function openSwayamPage(event,url){
 
 </script>
 
-
 </body>
-
 </html>

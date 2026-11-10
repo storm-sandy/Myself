@@ -1,479 +1,426 @@
-<!DOCTYPE html><html lang="en">
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Swayam Language Dashboard</title><style>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#138a4b">
+
+<title>Swayam Language Dashboard</title>
+
+<style>
 
 /* =========================================================
    SWAYAM LANGUAGE DASHBOARD
-   Mobile + Desktop
+   ICON STYLE
 ========================================================= */
 
 *{
     box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    transition:.3s;
 }
 
 :root{
-
     --green:#138a4b;
     --green-dark:#086b38;
     --green-light:#e8f7ef;
-
     --bg:#f4f7f5;
     --card:#ffffff;
     --text:#17231c;
     --muted:#66736b;
-
-    --shadow:
-        0 8px 24px rgba(0,0,0,.10);
+    --shadow:0 8px 24px rgba(0,0,0,.10);
 }
-
-body{
-
-    margin:0;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    background:var(--bg);
-    color:var(--text);
-
-    transition:
-        background .3s,
-        color .3s;
-}
-
 
 /* =========================================================
    HEADER
 ========================================================= */
 
 .header{
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--green),
-            var(--green-dark)
-        );
+    background:linear-gradient(
+        135deg,
+        var(--green),
+        var(--green-dark)
+    );
 
     color:white;
-
-    padding:
-        12px
-        15px;
+    padding:12px 15px;
 
     display:flex;
-
     justify-content:space-between;
-
     align-items:center;
-
     gap:10px;
 
-    flex-wrap:wrap;
-
-    box-shadow:
-        0 4px 14px rgba(0,0,0,.18);
+    box-shadow:0 4px 14px rgba(0,0,0,.18);
 }
 
 .header h2{
-
-    margin:0;
-
     font-size:21px;
-
     letter-spacing:.3px;
 }
 
-.header-right{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:8px;
-}
-
-.theme-select{
-
-    border:none;
-
-    border-radius:10px;
-
-    padding:
-        9px
-        10px;
-
-    font-size:14px;
-
-    background:white;
-
-    color:#222;
-
-    outline:none;
-}
-
-
 /* =========================================================
-   CLOCK BAR
+   THEME BUTTON
 ========================================================= */
 
-.clock-bar{
+.theme-wrap{
+    position:relative;
+}
 
-    background:var(--card);
-
-    padding:10px 15px;
+.theme-btn{
+    width:43px;
+    height:43px;
+    border:none;
+    border-radius:14px;
+    background:rgba(255,255,255,.20);
+    color:white;
+    font-size:22px;
 
     display:flex;
-
+    align-items:center;
     justify-content:center;
 
-    align-items:center;
+    cursor:pointer;
+    transition:.2s;
+}
 
-    flex-wrap:wrap;
+.theme-btn:active{
+    transform:scale(.92);
+}
 
-    gap:8px;
+.theme-menu{
+    display:none;
+    position:absolute;
+    right:0;
+    top:50px;
 
-    box-shadow:
-        0 2px 8px rgba(0,0,0,.06);
+    width:155px;
+    padding:7px;
 
+    background:white;
+    color:#18352a;
+    border-radius:13px;
+
+    box-shadow:0 5px 20px rgba(0,0,0,.2);
+    z-index:100;
+}
+
+.theme-menu.show{
+    display:block;
+}
+
+.theme-option{
+    display:block;
+    width:100%;
+    padding:11px;
+
+    border:none;
+    border-radius:9px;
+    background:transparent;
+
+    text-align:left;
     font-size:14px;
-
-    color:var(--muted);
+    cursor:pointer;
 }
 
-.clock-item{
-
-    background:
-        var(--green-light);
-
-    color:
-        var(--green-dark);
-
-    padding:
-        7px
-        11px;
-
-    border-radius:10px;
-
-    font-weight:bold;
+.theme-option:hover{
+    background:#e5f5eb;
 }
-
 
 /* =========================================================
    MAIN
 ========================================================= */
 
 .main{
-
     padding:18px;
-
     max-width:1100px;
-
     margin:auto;
 }
-
 
 /* =========================================================
    INTRO
 ========================================================= */
 
 .intro{
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--green-light),
-            var(--card)
-        );
+    background:linear-gradient(
+        135deg,
+        var(--green-light),
+        var(--card)
+    );
 
     border-radius:18px;
-
-    padding:18px;
+    padding:20px;
 
     margin-bottom:18px;
 
     box-shadow:var(--shadow);
-
-    border-left:
-        5px solid var(--green);
+    border-left:5px solid var(--green);
 }
 
 .intro h1{
-
-    margin:
-        0 0 7px 0;
-
+    margin:0 0 9px;
     font-size:24px;
 }
 
 .intro p{
-
-    margin:0;
-
     color:var(--muted);
-
     font-size:15px;
-
     line-height:1.5;
 }
-
 
 /* =========================================================
    GRID
 ========================================================= */
 
 .list-grid{
-
     display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(
-                250px,
-                1fr
-            )
-        );
-
+    grid-template-columns:repeat(
+        auto-fit,
+        minmax(250px,1fr)
+    );
     gap:18px;
 }
-
 
 /* =========================================================
    CARD
 ========================================================= */
 
 .card{
-
     background:var(--card);
-
     padding:20px;
-
     border-radius:18px;
-
     box-shadow:var(--shadow);
+    transition:.2s;
+    position:relative;
+    overflow:hidden;
+}
 
-    transition:
-        transform .2s,
-        box-shadow .2s;
+.card::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:4px;
+
+    background:linear-gradient(
+        90deg,
+        var(--green),
+        #00d084
+    );
 }
 
 .card:hover{
-
-    transform:
-        translateY(-4px);
-
-    box-shadow:
-        0 14px 30px rgba(0,0,0,.15);
+    transform:translateY(-4px);
+    box-shadow:0 14px 30px rgba(0,0,0,.15);
 }
 
 .card-title{
-
     display:flex;
-
     align-items:center;
-
     gap:10px;
-
-    margin-bottom:14px;
+    margin-bottom:17px;
 }
 
 .card-icon{
-
     width:46px;
-
     height:46px;
-
     display:flex;
-
     align-items:center;
-
     justify-content:center;
 
     border-radius:14px;
-
-    background:
-        var(--green-light);
-
+    background:var(--green-light);
     font-size:25px;
 }
 
 .card h3{
-
-    margin:0;
-
     font-size:19px;
 }
 
-
 /* =========================================================
-   APP LINK
+   ICON BUTTON GRID
 ========================================================= */
 
+.language-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:13px;
+}
+
 .app-link{
-
     display:flex;
-
+    flex-direction:column;
     align-items:center;
+    justify-content:center;
 
-    gap:10px;
+    gap:9px;
+    min-height:115px;
+    padding:13px 7px;
 
     text-decoration:none;
+    text-align:center;
 
-    background:
-        #f7faf8;
-
+    background:#f7faf8;
     color:var(--text);
 
-    padding:13px;
+    border:1px solid rgba(19,138,75,.12);
+    border-radius:16px;
 
-    margin-top:10px;
-
-    border-radius:12px;
-
-    border:
-        1px solid rgba(19,138,75,.12);
-
-    font-size:16px;
-
+    font-size:13px;
     font-weight:bold;
 
     transition:.2s;
+    cursor:pointer;
+}
+
+.app-icon{
+    width:54px;
+    height:54px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:17px;
+
+    background:var(--green-light);
+    font-size:28px;
+
+    box-shadow:0 3px 8px rgba(0,0,0,.07);
 }
 
 .app-link:hover{
-
-    background:
-        var(--green-light);
-
-    color:
-        var(--green-dark);
-
-    transform:
-        translateX(5px);
+    background:var(--green-light);
+    color:var(--green-dark);
+    transform:translateY(-4px);
+    box-shadow:0 7px 16px rgba(0,0,0,.12);
 }
 
 .app-link:active{
-
-    transform:
-        scale(.97);
+    transform:scale(.94);
 }
-
 
 /* =========================================================
    INFORMATION
 ========================================================= */
 
 .info-card{
-
     margin-top:20px;
-
     background:var(--card);
-
     border-radius:18px;
-
     padding:18px;
-
     box-shadow:var(--shadow);
 }
 
-.info-card h3{
+.info-heading{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:13px;
+}
 
-    margin-top:0;
+.info-icon{
+    width:40px;
+    height:40px;
+    border-radius:13px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:var(--green-light);
+    font-size:22px;
 }
 
 .info-card li{
-
-    margin:
-        9px 0;
-
-    line-height:1.4;
-
+    margin:11px 0;
+    padding-left:5px;
+    line-height:1.5;
     color:var(--muted);
+    font-size:14px;
 }
-
 
 /* =========================================================
    FOOTER
 ========================================================= */
 
 .footer{
-
     text-align:center;
-
-    padding:
-        20px 10px;
-
+    padding:20px 10px;
     color:var(--muted);
-
     font-size:13px;
 }
-
 
 /* =========================================================
    DARK THEME
 ========================================================= */
 
 body.dark{
-
     --bg:#101513;
-
     --card:#1c2420;
-
     --text:#f2f6f3;
-
     --muted:#b7c4bd;
-
     --green-light:#213d2e;
 }
 
+body.dark .header{
+    background:linear-gradient(135deg,#063d2c,#001f16);
+}
+
 body.dark .app-link{
-
     background:#26302b;
-
     color:#f2f6f3;
+    border-color:#30483d;
 }
 
 body.dark .app-link:hover{
-
     background:#304a3a;
 }
 
-body.dark .clock-item{
-
-    background:#213d2e;
-
-    color:#a9e0bd;
+body.dark .theme-menu{
+    background:#1c2420;
+    color:white;
 }
 
+body.dark .theme-option{
+    color:white;
+}
+
+body.dark .theme-option:hover{
+    background:#304a3a;
+}
 
 /* =========================================================
    BLUE THEME
 ========================================================= */
 
 body.blue{
-
     --green:#1565c0;
-
     --green-dark:#0d47a1;
-
     --green-light:#e3f2fd;
-
     --bg:#eef6fd;
-
     --card:#ffffff;
-
     --text:#17202a;
+    --muted:#64748b;
+}
+
+body.blue .header{
+    background:linear-gradient(135deg,#1976d2,#1255a0);
 }
 
 body.blue .app-link:hover{
-
     color:#0d47a1;
 }
-
 
 /* =========================================================
    MOBILE
@@ -482,60 +429,52 @@ body.blue .app-link:hover{
 @media(max-width:600px){
 
     .header{
-
-        padding:11px;
+        padding:11px 13px;
     }
 
     .header h2{
-
-        font-size:18px;
+        font-size:19px;
     }
 
     .main{
-
         padding:12px;
     }
 
     .intro{
-
-        padding:15px;
+        padding:16px;
     }
 
     .intro h1{
-
         font-size:21px;
     }
 
     .card{
-
         padding:16px;
     }
 
     .list-grid{
-
         grid-template-columns:1fr;
-
         gap:14px;
     }
 
-    .clock-bar{
+}
 
-        font-size:12px;
-    }
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
 
-    .clock-item{
+@media(max-width:350px){
 
-        padding:6px 8px;
+    .language-grid{
+        gap:8px;
     }
 
     .app-link{
-
-        min-height:50px;
-
-        font-size:16px;
+        font-size:12px;
+        padding:10px 5px;
     }
-}
 
+}
 
 /* =========================================================
    TOUCH DEVICES
@@ -544,16 +483,14 @@ body.blue .app-link:hover{
 @media(hover:none){
 
     .card:hover{
-
         transform:none;
     }
 
     .app-link:hover{
-
         transform:none;
     }
-}
 
+}
 
 /* =========================================================
    REDUCED MOTION
@@ -562,179 +499,273 @@ body.blue .app-link:hover{
 @media(prefers-reduced-motion:reduce){
 
     *{
-
-        transition:none !important;
+        transition:none!important;
     }
+
 }
 
-</style></head><body class="light"><!-- =======================================================
+</style>
+</head>
+
+<body class="light">
+
+<!-- =======================================================
      HEADER
-======================================================= --><header class="header"><h2>
-    🌐 Swayam Bhasha
-</h2>
+======================================================= -->
 
-<div class="header-right">
+<header class="header">
 
-    <select
-        class="theme-select"
-        onchange="changeTheme(this.value)"
-        aria-label="Select theme">
+    <h2>🌐 Swayam Bhasha</h2>
 
-        <option value="light">
-            ☀️ Light Theme
-        </option>
+    <div class="theme-wrap">
 
-        <option value="dark">
-            🌙 Dark Theme
-        </option>
+        <button
+            class="theme-btn"
+            id="themeBtn"
+            onclick="toggleThemeMenu()"
+            title="Change Theme"
+            aria-label="Change theme"
+            aria-expanded="false">
 
-        <option value="blue">
-            💙 Blue Theme
-        </option>
+            🎨
 
-    </select>
+        </button>
 
-</div>
+        <div class="theme-menu" id="themeMenu">
 
-</header><!-- =======================================================
-     CLOCK
-======================================================= --><div class="clock-bar"><span
-    class="clock-item"
-    id="mdate">
-    📅 Loading...
-</span>
+            <button class="theme-option"
+                onclick="changeTheme('light')">
+                ☀️ Light Theme
+            </button>
 
-<span
-    class="clock-item"
-    id="mtime12">
-    🕐 Loading...
-</span>
+            <button class="theme-option"
+                onclick="changeTheme('dark')">
+                🌙 Dark Theme
+            </button>
 
-<span
-    class="clock-item"
-    id="mtime24">
-    🕑 Loading...
-</span>
+            <button class="theme-option"
+                onclick="changeTheme('blue')">
+                💙 Blue Theme
+            </button>
 
-</div><!-- =======================================================
-     MAIN
-======================================================= --><main class="main"><!-- =======================================================
-     INTRO
-======================================================= --><section class="intro"><h1>
-    🌐 Language Dashboard
-</h1>
-
-<p>
-    Explore languages, improve communication skills,
-    learn useful words and phrases, and make language
-    learning simple and accessible from one place.
-</p>
-
-</section><!-- =======================================================
-     LANGUAGE GRID
-======================================================= --><section class="list-grid"><!-- LANGUAGE LEARNING -->
-
-<div class="card">
-
-    <div class="card-title">
-
-        <div class="card-icon">
-            🌐
         </div>
-
-        <h3>
-            Languages
-        </h3>
 
     </div>
 
+</header>
 
-    <a
-        class="app-link"
-        href="/Myself/english/English.html"
-        onclick="openSwayamPage(event,this.href)">
+<!-- =======================================================
+     MAIN
+======================================================= -->
 
-        🗣️
+<main class="main">
 
-        <span>
-            Spoken English : The Guide
-        </span>
+    <!-- INTRO -->
 
-    </a>
+    <section class="intro">
 
+        <h1>🌐 Language Dashboard</h1>
 
-<a
-        class="app-link"
-        href="/Myself/english/verbs.html"
-        onclick="openSwayamPage(event,this.href)">
+        <p>
+            Explore languages, improve communication skills,
+            learn useful words and phrases, and make language
+            learning simple and accessible from one place.
+        </p>
 
-        🗣️
+    </section>
 
-        <span>
-      Spoken English : Verbs (V1-V2-V3)
-        </span>
+    <!-- LANGUAGE GRID -->
 
-    </a>
+    <section class="list-grid">
 
+        <div class="card">
 
-<a
-        class="app-link"
-        href="/Myself/english/urdu.html"
-        onclick="openSwayamPage(event,this.href)">
+            <div class="card-title">
 
-        🗣️
+                <div class="card-icon">
+                    🌐
+                </div>
 
-        <span>
-      Spoken Urdu : Basics
-        </span>
+                <h3>Languages</h3>
 
-    </a>
+            </div>
 
+            <div class="language-grid">
 
+                <a
+                    class="app-link"
+                    href="/Myself/english/English.html"
+                    onclick="openSwayamPage(event,this.href)">
 
+                    <span class="app-icon">🗣️</span>
 
+                    <span>
+                        Spoken English : The Guide
+                    </span>
 
+                </a>
 
+                <a
+                    class="app-link"
+                    href="/Myself/english/verbs.html"
+                    onclick="openSwayamPage(event,this.href)">
 
+                    <span class="app-icon">📚</span>
 
+                    <span>
+                        Spoken English : Verbs (V1-V2-V3)
+                    </span>
 
+                </a>
 
-</div>
+                <a
+                    class="app-link"
+                    href="/Myself/english/urdu.html"
+                    onclick="openSwayamPage(event,this.href)">
 
-</section><!-- =======================================================
-     INFORMATION
-======================================================= --><section class="info-card"><h3>
-    💡 Language Learning Tips
-</h3>
+                    <span class="app-icon">🕌</span>
 
-<ul>
+                    <span>
+                        Spoken Urdu : Basics
+                    </span>
 
-    <li>
-        Practice a few new words and phrases every day.
-    </li>
+                </a>
 
-    <li>
-        Use the language regularly in conversations,
-        reading and writing.
-    </li>
+            </div>
 
-    <li>
-        Learn useful everyday vocabulary before moving
-        to advanced words.
-    </li>
+        </div>
 
-    <li>
-        Keep practicing consistently to improve
-        confidence and communication skills.
-    </li>
+    </section>
 
-</ul>
+    <!-- INFORMATION -->
 
-</section></main><!-- =======================================================
-     FOOTER
-======================================================= --><footer class="footer">Swayam • Language & Communication • Personal Governance Simplified
+    <section class="info-card">
 
-</footer><script>
+        <div class="info-heading">
+
+            <span class="info-icon">💡</span>
+
+            <h3>Language Learning Tips</h3>
+
+        </div>
+
+        <ul>
+
+            <li>
+                Practice a few new words and phrases every day.
+            </li>
+
+            <li>
+                Use the language regularly in conversations,
+                reading and writing.
+            </li>
+
+            <li>
+                Learn useful everyday vocabulary before moving
+                to advanced words.
+            </li>
+
+            <li>
+                Keep practicing consistently to improve
+                confidence and communication skills.
+            </li>
+
+        </ul>
+
+    </section>
+
+</main>
+
+<!-- FOOTER -->
+
+<footer class="footer">
+
+    🌿 Swayam • Language & Communication
+    • Personal Governance Simplified
+
+</footer>
+
+<script>
+
+/* =========================================================
+   THEME MENU
+========================================================= */
+
+function toggleThemeMenu(){
+
+    const menu = document.getElementById("themeMenu");
+    const button = document.getElementById("themeBtn");
+
+    menu.classList.toggle("show");
+
+    button.setAttribute(
+        "aria-expanded",
+        menu.classList.contains("show")
+    );
+
+}
+
+/* =========================================================
+   CHANGE THEME
+========================================================= */
+
+function changeTheme(theme){
+
+    if(!["light","dark","blue"].includes(theme)){
+        return;
+    }
+
+    document.body.className = theme;
+
+    localStorage.setItem(
+        "swayam_language_theme",
+        theme
+    );
+
+    closeThemeMenu();
+
+}
+
+/* =========================================================
+   CLOSE THEME MENU
+========================================================= */
+
+function closeThemeMenu(){
+
+    document.getElementById("themeMenu")
+        .classList.remove("show");
+
+    document.getElementById("themeBtn")
+        .setAttribute("aria-expanded","false");
+
+}
+
+document.addEventListener("click",function(event){
+
+    const wrap = document.querySelector(".theme-wrap");
+
+    if(!wrap.contains(event.target)){
+        closeThemeMenu();
+    }
+
+});
+
+/* =========================================================
+   LOAD SAVED THEME
+========================================================= */
+
+(function(){
+
+    const savedTheme =
+        localStorage.getItem("swayam_language_theme");
+
+    if(["light","dark","blue"].includes(savedTheme)){
+
+        document.body.className = savedTheme;
+
+    }
+
+})();
 
 /* =========================================================
    SWAYAM PARENT NAVIGATION
@@ -753,9 +784,7 @@ function openSwayamPage(event,url){
 
             var frame =
                 window.parent.document
-                .getElementById(
-                    "swayamFrame"
-                );
+                .getElementById("swayamFrame");
 
             if(frame){
 
@@ -763,20 +792,16 @@ function openSwayamPage(event,url){
 
                 try{
 
-                    window.parent.localStorage
-                    .setItem(
+                    window.parent.localStorage.setItem(
                         "swayam_selected_page",
                         url.split("/").pop()
                     );
 
                 }catch(e){}
 
-
                 var menuLinks =
                     window.parent.document
-                    .querySelectorAll(
-                        ".menu-button"
-                    );
+                    .querySelectorAll(".menu-button");
 
                 for(
                     var i=0;
@@ -785,11 +810,9 @@ function openSwayamPage(event,url){
                 ){
 
                     menuLinks[i]
-                    .classList
-                    .remove("active");
+                        .classList.remove("active");
 
                 }
-
 
                 for(
                     var j=0;
@@ -798,28 +821,20 @@ function openSwayamPage(event,url){
                 ){
 
                     var menuHref =
-                        menuLinks[j]
-                        .getAttribute("href");
+                        menuLinks[j].getAttribute("href");
 
                     if(
                         menuHref &&
-                        menuHref
-                        .split("/")
-                        .pop()
-                        ===
-                        url
-                        .split("/")
-                        .pop()
+                        menuHref.split("/").pop() ===
+                        url.split("/").pop()
                     ){
 
                         menuLinks[j]
-                        .classList
-                        .add("active");
+                            .classList.add("active");
 
                         try{
 
-                            menuLinks[j]
-                            .scrollIntoView({
+                            menuLinks[j].scrollIntoView({
                                 behavior:"smooth",
                                 block:"nearest",
                                 inline:"center"
@@ -828,16 +843,18 @@ function openSwayamPage(event,url){
                         }catch(e){}
 
                         break;
+
                     }
 
                 }
 
                 return;
+
             }
+
         }
 
-    }
-    catch(error){
+    }catch(error){
 
         console.log(
             "Swayam navigation error:",
@@ -847,107 +864,10 @@ function openSwayamPage(event,url){
     }
 
     window.location.href = url;
+
 }
 
+</script>
 
-/* =========================================================
-   THEME
-========================================================= */
-
-function changeTheme(theme){
-
-    document.body.className = theme;
-
-    localStorage.setItem(
-        "swayam_language_theme",
-        theme
-    );
-}
-
-
-/* =========================================================
-   LOAD SAVED THEME
-========================================================= */
-
-(function(){
-
-    var savedTheme =
-        localStorage.getItem(
-            "swayam_language_theme"
-        );
-
-    if(savedTheme){
-
-        document.body.className =
-            savedTheme;
-
-    }
-
-})();
-
-
-/* =========================================================
-   CLOCK
-========================================================= */
-
-function updateClock(){
-
-    var now = new Date();
-
-
-    document.getElementById(
-        "mtime24"
-    ).innerHTML =
-        "🕑 " +
-        now.toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit",
-                second:"2-digit",
-                hour12:false
-            }
-        );
-
-
-    document.getElementById(
-        "mtime12"
-    ).innerHTML =
-        "🕐 " +
-        now.toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit",
-                second:"2-digit",
-                hour12:true
-            }
-        );
-
-
-    document.getElementById(
-        "mdate"
-    ).innerHTML =
-        "📅 " +
-        now.toLocaleDateString(
-            "en-IN",
-            {
-                weekday:"long",
-                year:"numeric",
-                month:"long",
-                day:"numeric"
-            }
-        );
-}
-
-
-updateClock();
-
-
-setInterval(
-    updateClock,
-    1000
-);
-
-</script></body>
+</body>
 </html>

@@ -1,1038 +1,487 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width,
-    initial-scale=1.0,
-    maximum-scale=1.0,
-    user-scalable=no"
->
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <meta name="theme-color" content="#16a34a">
 
 <title>Swayam - Sutra Kaksha</title>
 
 <style>
-
-/* =========================================================
-   SWAYAM SUTRA KAKSHA
-========================================================= */
-
 *{
     box-sizing:border-box;
 }
 
-html,
-body{
+html,body{
     margin:0;
     padding:0;
     min-height:100%;
-
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Arial,
-        sans-serif;
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
 }
 
 body{
     background:var(--bg);
     color:var(--text);
-
-    transition:
-        background .3s ease,
-        color .3s ease;
+    transition:background .3s ease,color .3s ease;
 }
 
-
-/* =========================================================
-   THEMES
-========================================================= */
+/* THEMES */
 
 body.light{
-
     --bg:#f3f7f4;
-
     --header1:#16a34a;
     --header2:#15803d;
-
     --card:#ffffff;
-
     --text:#172017;
-
     --muted:#607060;
-
     --border:#dce9df;
-
-    --shadow:
-        0 8px 24px rgba(0,0,0,.10);
-
+    --shadow:0 8px 24px rgba(0,0,0,.10);
     --soft:#eaf7ee;
-
     --link:#15803d;
-
 }
-
 
 body.dark{
-
     --bg:#101412;
-
     --header1:#166534;
     --header2:#14532d;
-
     --card:#1b241e;
-
     --text:#f2f7f3;
-
     --muted:#b8c7bb;
-
     --border:#2d3b31;
-
-    --shadow:
-        0 8px 24px rgba(0,0,0,.35);
-
+    --shadow:0 8px 24px rgba(0,0,0,.35);
     --soft:#1d3224;
-
     --link:#86efac;
-
 }
-
 
 body.blue{
-
     --bg:#eef7ff;
-
     --header1:#15803d;
     --header2:#166534;
-
     --card:#ffffff;
-
     --text:#142019;
-
     --muted:#5f7065;
-
     --border:#d6e8dc;
-
-    --shadow:
-        0 8px 24px rgba(0,0,0,.10);
-
+    --shadow:0 8px 24px rgba(0,0,0,.10);
     --soft:#e7f6ed;
-
     --link:#166534;
-
 }
 
-
-/* =========================================================
-   HEADER
-========================================================= */
+/* HEADER */
 
 .header{
-
     width:100%;
-
-    padding:
-        14px 16px;
-
+    padding:14px 16px;
     display:flex;
-
     justify-content:space-between;
-
     align-items:center;
-
     gap:12px;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--header1),
-            var(--header2)
-        );
-
+    background:linear-gradient(135deg,var(--header1),var(--header2));
     color:white;
-
-    box-shadow:
-        0 4px 14px rgba(0,0,0,.18);
-
+    box-shadow:0 4px 14px rgba(0,0,0,.18);
     position:relative;
-
-    z-index:2;
-
+    z-index:10;
 }
-
 
 .header-title{
-
     min-width:0;
-
 }
-
 
 .header-title h2{
-
     margin:0;
-
-    font-size:
-        clamp(
-            20px,
-            5vw,
-            28px
-        );
-
+    font-size:clamp(20px,5vw,28px);
     font-weight:800;
-
     letter-spacing:.2px;
-
 }
-
 
 .header-title small{
-
     display:block;
-
     margin-top:3px;
-
     font-size:12px;
-
     opacity:.9;
-
 }
 
+/* THEME BUTTON */
 
-/* =========================================================
-   THEME SELECTOR
-========================================================= */
+.theme-area{
+    position:relative;
+    flex-shrink:0;
+}
 
-.theme-select{
-
-    border:
-        1px solid
-        rgba(255,255,255,.35);
-
-    border-radius:12px;
-
-    padding:
-        9px 10px;
-
-    background:
-        rgba(255,255,255,.16);
-
+.theme-button{
+    width:44px;
+    height:44px;
+    border:1px solid rgba(255,255,255,.4);
+    border-radius:13px;
+    background:rgba(255,255,255,.18);
     color:white;
-
-    font-size:13px;
-
-    font-weight:700;
-
-    outline:none;
-
+    font-size:23px;
     cursor:pointer;
-
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:.2s;
 }
 
-
-.theme-select option{
-
-    color:#111;
-
-    background:white;
-
+.theme-button:hover{
+    background:rgba(255,255,255,.3);
+    transform:scale(1.05);
 }
 
+.theme-menu{
+    display:none;
+    position:absolute;
+    top:52px;
+    right:0;
+    width:145px;
+    padding:7px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    z-index:100;
+}
 
-/* =========================================================
-   CLOCK
-========================================================= */
+.theme-menu.show{
+    display:block;
+}
 
-.clock-panel{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(
-                150px,
-                1fr
-            )
-        );
-
+.theme-option{
+    width:100%;
+    display:flex;
+    align-items:center;
     gap:10px;
-
-    padding:
-        14px 16px;
-
+    padding:11px;
+    border:0;
+    border-radius:9px;
+    background:transparent;
+    color:var(--text);
+    font-size:14px;
+    font-weight:700;
+    text-align:left;
+    cursor:pointer;
 }
 
-
-.clock-card{
-
-    background:
-        var(--card);
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:16px;
-
-    padding:
-        12px 14px;
-
-    box-shadow:
-        var(--shadow);
-
-    text-align:center;
-
-    transition:
-        transform .2s ease,
-        box-shadow .2s ease;
-
+.theme-option:hover{
+    background:var(--soft);
 }
 
-
-.clock-card:hover{
-
-    transform:
-        translateY(-2px);
-
+.theme-option.active{
+    background:var(--soft);
+    color:var(--link);
 }
 
-
-.clock-label{
-
-    display:block;
-
-    color:
-        var(--muted);
-
-    font-size:11px;
-
-    font-weight:800;
-
-    text-transform:uppercase;
-
-    letter-spacing:.8px;
-
-}
-
-
-.clock-value{
-
-    display:block;
-
-    margin-top:4px;
-
-    color:
-        var(--text);
-
-    font-size:15px;
-
-    font-weight:750;
-
-}
-
-
-/* =========================================================
-   INTRO
-========================================================= */
+/* INTRO */
 
 .intro{
-
-    margin:
-        0 16px 14px;
-
+    margin:14px 16px;
     padding:16px;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--soft),
-            var(--card)
-        );
-
-    border:
-        1px solid
-        var(--border);
-
+    background:linear-gradient(135deg,var(--soft),var(--card));
+    border:1px solid var(--border);
     border-radius:18px;
-
-    box-shadow:
-        var(--shadow);
-
+    box-shadow:var(--shadow);
 }
-
 
 .intro h3{
-
-    margin:
-        0 0 6px;
-
+    margin:0 0 6px;
     font-size:20px;
-
-    color:
-        var(--text);
-
+    color:var(--text);
 }
-
 
 .intro p{
-
     margin:0;
-
-    color:
-        var(--muted);
-
+    color:var(--muted);
     line-height:1.55;
-
     font-size:14px;
-
 }
 
-
-/* =========================================================
-   GRID
-========================================================= */
+/* MAIN GRID */
 
 .list-grid{
-
     display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(
-                260px,
-                1fr
-            )
-        );
-
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
     gap:16px;
-
-    padding:
-        0 16px
-        16px;
-
+    padding:0 16px 16px;
 }
 
-
-/* =========================================================
-   CARD
-========================================================= */
+/* CARD */
 
 .card{
-
-    background:
-        var(--card);
-
-    border:
-        1px solid
-        var(--border);
-
+    background:var(--card);
+    border:1px solid var(--border);
     border-radius:20px;
-
     padding:18px;
-
-    box-shadow:
-        var(--shadow);
-
-    transition:
-        transform .22s ease,
-        box-shadow .22s ease;
-
+    box-shadow:var(--shadow);
+    transition:transform .22s ease,box-shadow .22s ease;
 }
-
 
 .card:hover{
-
-    transform:
-        translateY(-4px);
-
-    box-shadow:
-        0 14px 30px
-        rgba(0,0,0,.14);
-
+    transform:translateY(-3px);
+    box-shadow:0 14px 30px rgba(0,0,0,.14);
 }
 
-
-/* =========================================================
-   CARD ICON
-========================================================= */
+/* CARD ICON */
 
 .card-icon{
-
     width:56px;
-
     height:56px;
-
     display:flex;
-
     align-items:center;
-
     justify-content:center;
-
     border-radius:17px;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--header1),
-            var(--header2)
-        );
-
+    background:linear-gradient(135deg,var(--header1),var(--header2));
     color:white;
-
     font-size:28px;
-
     margin-bottom:12px;
-
-    box-shadow:
-        0 7px 16px
-        rgba(22,163,74,.22);
-
+    box-shadow:0 7px 16px rgba(22,163,74,.22);
 }
-
 
 .card h3{
-
-    margin:
-        0 0 8px;
-
-    color:
-        var(--text);
-
+    margin:0 0 8px;
+    color:var(--text);
     font-size:20px;
-
 }
-
 
 .card-description{
-
-    margin:
-        0 0 14px;
-
-    color:
-        var(--muted);
-
+    margin:0 0 16px;
+    color:var(--muted);
     font-size:13px;
-
     line-height:1.5;
-
 }
 
-
-/* =========================================================
-   MATH LINKS
-========================================================= */
+/* ICON BUTTON GRID */
 
 .math-grid{
-
     display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(
-                150px,
-                1fr
-            )
-        );
-
-    gap:10px;
-
+    grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+    gap:12px;
 }
-
 
 .math-link{
-
     display:flex;
-
+    flex-direction:column;
     align-items:center;
-
-    justify-content:space-between;
-
-    gap:8px;
-
-    min-height:52px;
-
-    padding:
-        12px 13px;
-
-    background:
-        var(--soft);
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:14px;
-
-    color:
-        var(--link);
-
+    justify-content:center;
+    gap:9px;
+    min-height:125px;
+    padding:14px 10px;
+    background:var(--soft);
+    border:1px solid var(--border);
+    border-radius:17px;
+    color:var(--link);
     text-decoration:none;
-
     font-size:14px;
-
     font-weight:750;
-
-    transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        background .2s ease;
-
-    -webkit-tap-highlight-color:
-        transparent;
-
+    text-align:center;
+    transition:transform .2s ease,box-shadow .2s ease,background .2s ease;
+    -webkit-tap-highlight-color:transparent;
 }
-
 
 .math-link:hover{
-
-    transform:
-        translateY(-2px);
-
-    box-shadow:
-        0 6px 15px
-        rgba(0,0,0,.10);
-
+    transform:translateY(-3px);
+    box-shadow:0 7px 17px rgba(0,0,0,.12);
 }
-
 
 .math-link:active{
-
-    transform:
-        scale(.97);
-
+    transform:scale(.96);
 }
-
 
 .math-icon{
-
-    font-size:20px;
-
-    flex-shrink:0;
-
+    width:52px;
+    height:52px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:15px;
+    background:linear-gradient(135deg,var(--header1),var(--header2));
+    color:white;
+    font-size:27px;
+    box-shadow:0 5px 12px rgba(22,163,74,.2);
 }
-
 
 .math-name{
-
-    flex:1;
-
+    display:block;
 }
 
-
-/* =========================================================
-   FOOTER
-========================================================= */
+/* FOOTER */
 
 .info-footer{
-
-    margin:
-        0 16px
-        18px;
-
+    margin:0 16px 18px;
     padding:13px;
-
     text-align:center;
-
     border-radius:14px;
-
-    background:
-        var(--card);
-
-    border:
-        1px solid
-        var(--border);
-
-    color:
-        var(--muted);
-
+    background:var(--card);
+    border:1px solid var(--border);
+    color:var(--muted);
     font-size:12px;
-
-    box-shadow:
-        0 5px 15px
-        rgba(0,0,0,.06);
-
+    box-shadow:0 5px 15px rgba(0,0,0,.06);
 }
 
-
-/* =========================================================
-   MOBILE
-========================================================= */
+/* MOBILE */
 
 @media(max-width:600px){
 
     .header{
-
         padding:12px;
-
     }
-
 
     .header-title h2{
-
         font-size:20px;
-
     }
-
-
-    .theme-select{
-
-        max-width:110px;
-
-        font-size:12px;
-
-        padding:8px;
-
-    }
-
-
-    .clock-panel{
-
-        grid-template-columns:
-            1fr 1fr;
-
-        padding:12px;
-
-    }
-
-
-    .clock-card{
-
-        padding:10px;
-
-    }
-
-
-    .clock-value{
-
-        font-size:13px;
-
-    }
-
 
     .intro{
-
-        margin:
-            0 12px 12px;
-
+        margin:12px;
         padding:14px;
-
     }
-
 
     .list-grid{
-
-        grid-template-columns:
-            1fr;
-
-        padding:
-            0 12px
-            12px;
-
+        grid-template-columns:1fr;
+        padding:0 12px 12px;
         gap:12px;
-
     }
-
 
     .card{
-
         padding:16px;
-
     }
-
 
     .math-grid{
-
-        grid-template-columns:
-            1fr 1fr;
-
+        grid-template-columns:repeat(2,minmax(0,1fr));
     }
-
 
     .math-link{
-
-        min-height:56px;
-
-        font-size:14px;
-
+        min-height:115px;
+        font-size:13px;
     }
-
 
     .info-footer{
-
-        margin:
-            0 12px
-            15px;
-
+        margin:0 12px 15px;
     }
-
 }
-
-
-/* =========================================================
-   VERY SMALL SCREEN
-========================================================= */
 
 @media(max-width:360px){
 
-    .clock-panel{
-
-        grid-template-columns:
-            1fr;
-
+    .header-title h2{
+        font-size:18px;
     }
-
 
     .math-grid{
-
-        grid-template-columns:
-            1fr;
-
+        grid-template-columns:1fr 1fr;
     }
-
-
-    .header{
-
-        align-items:
-            flex-start;
-
-    }
-
-
-    .header-title h2{
-
-        font-size:18px;
-
-    }
-
 }
 
-
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
+/* REDUCED MOTION */
 
 @media(prefers-reduced-motion:reduce){
-
     *{
-
         transition:none !important;
-
     }
-
 }
-
 </style>
-
 </head>
-
 
 <body class="light">
 
-
-<!-- =======================================================
-     HEADER
-======================================================= -->
+<!-- HEADER -->
 
 <header class="header">
 
     <div class="header-title">
-
-        <h2>
-            📐 Sutra Kaksha
-        </h2>
-
-        <small>
-            Swayam • Knowledge & Learning
-        </small>
-
+        <h2>📐 Sutra Kaksha</h2>
+        <small>Swayam • Knowledge & Learning</small>
     </div>
 
+    <div class="theme-area">
 
-    <select
-        id="themeSelector"
-        class="theme-select"
-        onchange="changeTheme(this.value)"
-    >
+        <button
+            type="button"
+            class="theme-button"
+            id="themeButton"
+            aria-label="Change theme"
+            aria-expanded="false"
+            onclick="toggleThemeMenu()"
+        >🎨</button>
 
-        <option value="light">
-            ☀️ Light
-        </option>
+        <div class="theme-menu" id="themeMenu">
 
-        <option value="dark">
-            🌙 Dark
-        </option>
+            <button class="theme-option" data-theme="light" onclick="changeTheme('light')">
+                ☀️ Light
+            </button>
 
-        <option value="blue">
-            💧 Blue
-        </option>
+            <button class="theme-option" data-theme="dark" onclick="changeTheme('dark')">
+                🌙 Dark
+            </button>
 
-    </select>
+            <button class="theme-option" data-theme="blue" onclick="changeTheme('blue')">
+                💧 Blue
+            </button>
+
+        </div>
+
+    </div>
 
 </header>
 
-
-<!-- =======================================================
-     CLOCK
-======================================================= -->
-
-<section class="clock-panel">
-
-    <div class="clock-card">
-
-        <span class="clock-label">
-            Date
-        </span>
-
-        <span
-            id="mdate"
-            class="clock-value"
-        >
-            --
-        </span>
-
-    </div>
-
-
-    <div class="clock-card">
-
-        <span class="clock-label">
-            12 Hour
-        </span>
-
-        <span
-            id="mtime12"
-            class="clock-value"
-        >
-            --
-        </span>
-
-    </div>
-
-
-    <div class="clock-card">
-
-        <span class="clock-label">
-            24 Hour
-        </span>
-
-        <span
-            id="mtime24"
-            class="clock-value"
-        >
-            --
-        </span>
-
-    </div>
-
-</section>
-
-
-<!-- =======================================================
-     INTRO
-======================================================= -->
+<!-- INTRO -->
 
 <section class="intro">
 
-    <h3>
-        🧠 Sutra
-    </h3>
+    <h3>🧠 Sutra</h3>
 
     <p>
-Your learning space for geometry, algebra, logarithms, trigonometry,derivatives, limits and others
-        topics.
+        Your learning space for geometry, algebra, logarithms,
+        trigonometry, derivatives, limits and other topics.
     </p>
 
 </section>
 
-
-<!-- =======================================================
-     MAIN GRID
-======================================================= -->
+<!-- MAIN GRID -->
 
 <main class="list-grid">
 
+    <section class="card">
 
-    <!-- ===================================================
-         SUTRA
-    ==================================================== -->
+        <div class="card-icon">🔢</div>
 
-<section class="card">
+        <h3>Sutra</h3>
 
-<div class="card-icon">
-            🔢
-        </div>
-        <h3>
-           Sutra
-        </h3>
         <p class="card-description">
-            Select a topic to open
-            the corresponding learning    tool.</p>
+            Select a topic to open the corresponding learning tool.
+        </p>
 
-<div class="math-grid">
+        <div class="math-grid">
 
-<a
-class="math-link"
-href="/Myself/formula/formula.html"             onclick="openSwayamPage(event,this.href)"
->
-<span class="math-icon">
-                    📐
-                </span>
-                <span class="math-name">
-                    Formula Page
-                </span>
-                <span>
-                    →
-                </span>
-</a>
+            <a
+                class="math-link"
+                href="/Myself/formula/formula.html"
+                onclick="openSwayamPage(event,this.href)"
+            >
+                <span class="math-icon">📐</span>
+                <span class="math-name">Formula Page</span>
+            </a>
 
+        </div>
 
-      
+    </section>
 
-</div>
-</section>
 </main>
 
-<!-- =======================================================
-     FOOTER
-======================================================= -->
+<!-- FOOTER -->
 
 <footer class="info-footer">
-
     💚 Swayam Sutra Kaksha
     • Personal Governance Simplified
-
 </footer>
-
 
 <script>
 
-/* =========================================================
-   SWAYAM CENTER-AREA NAVIGATION
-========================================================= */
+/* SWAYAM CENTER-AREA NAVIGATION */
 
 function openSwayamPage(event,url){
 
     event.preventDefault();
 
-
     try{
-
-        /*
-         * If running inside the Swayam iframe,
-         * load the selected Maths page into
-         * the parent iframe.
-         */
 
         if(
             window.parent &&
@@ -1040,150 +489,83 @@ function openSwayamPage(event,url){
         ){
 
             var frame =
-                window.parent.document
-                .getElementById(
-                    "swayamFrame"
-                );
-
+                window.parent.document.getElementById("swayamFrame");
 
             if(frame){
 
                 frame.src = url;
 
-
-                /*
-                 * Remember selected page.
-                 */
-
                 try{
 
-                    window.parent.localStorage
-                    .setItem(
+                    window.parent.localStorage.setItem(
                         "swayam_selected_page",
                         url.split("/").pop()
                     );
 
                 }catch(e){}
 
-
-                /*
-                 * Remove active state from
-                 * all parent Swayam menu buttons.
-                 */
-
                 var menuLinks =
-                    window.parent.document
-                    .querySelectorAll(
-                        ".menu-button"
-                    );
+                    window.parent.document.querySelectorAll(".menu-button");
 
-
-                for(
-                    var i=0;
-                    i<menuLinks.length;
-                    i++
-                ){
-
-                    menuLinks[i]
-                    .classList
-                    .remove(
-                        "active"
-                    );
-
+                for(var i=0;i<menuLinks.length;i++){
+                    menuLinks[i].classList.remove("active");
                 }
 
-
-                /*
-                 * Highlight the matching
-                 * parent menu button.
-                 */
-
-                for(
-                    var j=0;
-                    j<menuLinks.length;
-                    j++
-                ){
+                for(var j=0;j<menuLinks.length;j++){
 
                     var menuHref =
-                        menuLinks[j]
-                        .getAttribute(
-                            "href"
-                        );
-
+                        menuLinks[j].getAttribute("href");
 
                     if(
                         menuHref &&
-                        menuHref
-                        .split("/")
-                        .pop()
-                        ===
-                        url
-                        .split("/")
-                        .pop()
+                        menuHref.split("/").pop() ===
+                        url.split("/").pop()
                     ){
 
-                        menuLinks[j]
-                        .classList
-                        .add(
-                            "active"
-                        );
-
+                        menuLinks[j].classList.add("active");
 
                         try{
-
-                            menuLinks[j]
-                            .scrollIntoView({
-
-                                behavior:
-                                    "smooth",
-
-                                block:
-                                    "nearest",
-
-                                inline:
-                                    "center"
-
+                            menuLinks[j].scrollIntoView({
+                                behavior:"smooth",
+                                block:"nearest",
+                                inline:"center"
                             });
-
                         }catch(e){}
 
-
                         break;
-
                     }
-
                 }
 
-
                 return;
-
             }
-
         }
 
     }
     catch(error){
 
-        console.log(
-            "Swayam navigation error:",
-            error
-        );
+        console.log("Swayam navigation error:",error);
 
     }
 
-
-    /*
-     * Standalone fallback.
-     */
-
     window.location.href = url;
-
 }
 
+/* THEME MENU */
 
-/* =========================================================
-   THEME
-========================================================= */
+function toggleThemeMenu(){
+
+    var menu = document.getElementById("themeMenu");
+    var button = document.getElementById("themeButton");
+
+    menu.classList.toggle("show");
+
+    button.setAttribute(
+        "aria-expanded",
+        menu.classList.contains("show") ? "true" : "false"
+    );
+}
+
+/* CHANGE THEME */
 
 function changeTheme(theme){
 
@@ -1192,144 +574,83 @@ function changeTheme(theme){
         theme !== "dark" &&
         theme !== "blue"
     ){
-
         theme = "light";
-
     }
 
+    document.body.className = theme;
 
-    document.body.className =
-        theme;
+    try{
+        localStorage.setItem("swayam_sutra_theme",theme);
+    }catch(e){}
 
+    updateThemeButtons();
 
-    localStorage.setItem(
-        "swayam_sutra_theme",
-        theme
+    document.getElementById("themeMenu").classList.remove("show");
+
+    document.getElementById("themeButton").setAttribute(
+        "aria-expanded",
+        "false"
     );
-
 }
 
+/* UPDATE ACTIVE THEME */
 
-/* =========================================================
-   LOAD SAVED THEME
-========================================================= */
+function updateThemeButtons(){
+
+    var currentTheme = document.body.className;
+
+    document.querySelectorAll(".theme-option").forEach(function(button){
+
+        button.classList.toggle(
+            "active",
+            button.dataset.theme === currentTheme
+        );
+
+    });
+}
+
+/* LOAD SAVED THEME */
 
 (function(){
 
-    var savedTheme =
-        localStorage.getItem(
-            "swayam_sutra_theme"
-        );
+    var savedTheme = "light";
 
+    try{
+        savedTheme = localStorage.getItem("swayam_sutra_theme") || "light";
+    }catch(e){}
 
     if(
-        savedTheme === "light" ||
-        savedTheme === "dark" ||
-        savedTheme === "blue"
+        savedTheme !== "light" &&
+        savedTheme !== "dark" &&
+        savedTheme !== "blue"
     ){
-
-        document.body.className =
-            savedTheme;
-
-
-        document.getElementById(
-            "themeSelector"
-        ).value =
-            savedTheme;
-
+        savedTheme = "light";
     }
+
+    document.body.className = savedTheme;
+
+    updateThemeButtons();
 
 })();
 
+/* CLOSE THEME MENU ON OUTSIDE CLICK */
 
-/* =========================================================
-   CLOCK
-========================================================= */
+document.addEventListener("click",function(event){
 
-function updateClock(){
+    var area = document.querySelector(".theme-area");
+    var menu = document.getElementById("themeMenu");
 
-    var now =
-        new Date();
+    if(!area.contains(event.target)){
 
+        menu.classList.remove("show");
 
-    var dateElement =
-        document.getElementById(
-            "mdate"
+        document.getElementById("themeButton").setAttribute(
+            "aria-expanded",
+            "false"
         );
-
-
-    var time12Element =
-        document.getElementById(
-            "mtime12"
-        );
-
-
-    var time24Element =
-        document.getElementById(
-            "mtime24"
-        );
-
-
-    if(dateElement){
-
-        dateElement.textContent =
-            now.toLocaleDateString(
-                "en-IN",
-                {
-                    weekday:"short",
-                    year:"numeric",
-                    month:"short",
-                    day:"numeric"
-                }
-            );
-
     }
 
-
-    if(time12Element){
-
-        time12Element.textContent =
-            now.toLocaleTimeString(
-                "en-IN",
-                {
-                    hour:"2-digit",
-                    minute:"2-digit",
-                    second:"2-digit",
-                    hour12:true
-                }
-            );
-
-    }
-
-
-    if(time24Element){
-
-        time24Element.textContent =
-            now.toLocaleTimeString(
-                "en-IN",
-                {
-                    hour:"2-digit",
-                    minute:"2-digit",
-                    second:"2-digit",
-                    hour12:false
-                }
-            );
-
-    }
-
-}
-
-
-/* =========================================================
-   START CLOCK
-========================================================= */
-
-updateClock();
-
-setInterval(
-    updateClock,
-    1000
-);
+});
 
 </script>
 
