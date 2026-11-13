@@ -1,0 +1,558 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#176b4a">
+<title>Nature TaskFlow</title>
+<style>
+:root{
+--bg:#f2f7f3;--panel:#fff;--panel2:#e8f2eb;
+--text:#18352a;--muted:#6d8175;--line:#d8e5dc;
+--accent:#198754;--accent2:#11613b;--soft:#dff2e5;
+--danger:#c94b4b;--shadow:0 12px 35px rgba(23,70,44,.09);
+--radius:19px
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+font-family:Inter,system-ui,sans-serif;min-height:100vh}
+body[data-theme="ocean"]{--bg:#edf6fa;--panel2:#e1f0f6;--text:#17384a;--muted:#678291;--line:#d2e5ed;--accent:#1685a5;--accent2:#0b607d;--soft:#d9f1f7}
+body[data-theme="sunset"]{--bg:#fff4ed;--panel2:#ffeadf;--text:#4a3028;--muted:#94766b;--line:#f0d9ce;--accent:#df7047;--accent2:#a9482c;--soft:#ffe2d2}
+body[data-theme="meadow"]{--bg:#f5f8e9;--panel2:#edf3d8;--text:#354329;--muted:#7c8967;--line:#e0e8ca;--accent:#789b36;--accent2:#506d20;--soft:#e8f2ce}
+body[data-theme="lavender"]{--bg:#f6f2fb;--panel2:#eee7f8;--text:#392e4d;--muted:#82758f;--line:#e4dced;--accent:#8964b5;--accent2:#63418c;--soft:#eee4fb}
+body[data-theme="rose"]{--bg:#fff2f4;--panel2:#fbe5e9;--text:#4b3039;--muted:#92727d;--line:#f0d9df;--accent:#cf6680;--accent2:#9d3f5b;--soft:#fbe1e8}
+body[data-theme="sky"]{--bg:#f0f6ff;--panel2:#e4efff;--text:#253954;--muted:#73849b;--line:#d9e5f5;--accent:#4c83cf;--accent2:#315fa0;--soft:#e0edff}
+body[data-theme="sand"]{--bg:#f8f4eb;--panel2:#f0e9d9;--text:#443b2d;--muted:#8c806d;--line:#e8dfce;--accent:#ad8950;--accent2:#80602e;--soft:#f3ead8}
+body[data-theme="night"]{--bg:#111c19;--panel:#1b2a25;--panel2:#263a32;--text:#e6f2e9;--muted:#a0b4a8;--line:#344b40;--accent:#65c68d;--accent2:#3d9b68;--soft:#294b39;--shadow:0 12px 35px #0004}
+body[data-theme="autumn"]{--bg:#faf1e8;--panel2:#f4e5d5;--text:#493426;--muted:#927966;--line:#ead8c7;--accent:#bb7135;--accent2:#8a4d22;--soft:#f7e4d1}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:1250px;margin:auto;padding:18px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:49px;height:49px;border-radius:16px;background:var(--accent);display:grid;place-items:center;color:white;font-size:25px}
+h1{font-size:clamp(21px,3vw,29px);margin:0}
+.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:10px 14px;border-radius:12px;background:var(--panel2);color:var(--text);font-weight:650;border:1px solid var(--line)}
+.btn.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.btn.danger{color:var(--danger)}
+.btn.small{padding:7px 10px;font-size:12px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:5px 2px 14px}
+.tab{flex:0 0 auto;min-width:100px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;color:var(--muted);font-size:12px;font-weight:700}
+.tab.active{background:var(--soft);border-color:var(--accent);color:var(--accent2)}
+.tab .ico{font-size:19px;display:block;margin-bottom:4px}
+.count{display:inline-grid;place-items:center;min-width:19px;height:19px;border-radius:20px;background:var(--panel2);font-size:10px;margin-left:4px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+.view{display:none}
+.view.active{display:block}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:17px}
+.section-head h2{margin:0;font-size:19px}
+.muted{color:var(--muted)}
+/* CONTROL CENTER */
+.welcome{background:linear-gradient(120deg,var(--accent2),var(--accent));color:white;border-radius:19px;padding:24px;margin-bottom:18px}
+.welcome h2{font-size:23px;margin:0 0 7px}
+.welcome p{margin:0;opacity:.85;font-size:13px}
+.quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.quick-card{border:1px solid var(--line);border-radius:17px;background:var(--panel);color:var(--text);padding:17px 12px;text-align:left;transition:.2s;min-height:125px;box-shadow:var(--shadow)}
+.quick-card:hover{transform:translateY(-3px);border-color:var(--accent)}
+.quick-icon{width:45px;height:45px;display:grid;place-items:center;border-radius:14px;background:var(--soft);font-size:24px;margin-bottom:12px}
+.quick-title{font-size:14px;font-weight:800}
+.quick-count{font-size:12px;color:var(--muted);margin-top:5px}
+.quick-card.add{background:var(--soft);border-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.stat{background:var(--panel2);border:1px solid var(--line);padding:14px;border-radius:15px}
+.stat .n{font-size:25px;font-weight:800}
+.stat .l{font-size:12px;color:var(--muted)}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}
+.toolbar input{flex:1;min-width:170px}
+input,textarea,select{width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:11px;padding:11px 12px;outline:none}
+textarea{resize:vertical;min-height:90px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.form-group label{display:block;font-size:12px;font-weight:750;margin-bottom:6px;color:var(--muted)}
+.full{grid-column:1/-1}
+.form-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:17px}
+.task-list{display:grid;gap:11px}
+.task{border:1px solid var(--line);background:var(--panel);border-radius:15px;padding:15px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px}
+.task-title{font-weight:800;font-size:15px;overflow-wrap:anywhere}
+.task-desc{font-size:13px;color:var(--muted);margin-top:5px;white-space:pre-wrap;overflow-wrap:anywhere}
+.task-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--muted)}
+.pill{border-radius:30px;padding:5px 9px;background:var(--panel2);font-size:11px;font-weight:750;color:var(--text)}
+.status{background:var(--soft);color:var(--accent2)}
+.task-actions{display:flex;gap:6px;align-items:flex-start;flex-wrap:wrap;justify-content:flex-end}
+.task-actions select{width:auto;min-width:125px;padding:7px;font-size:11px}
+.empty{text-align:center;padding:40px 15px;color:var(--muted)}
+.empty .big{font-size:40px}
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:11px}
+.theme-card{border:1px solid var(--line);border-radius:15px;padding:12px;background:var(--panel);text-align:left;color:var(--text)}
+.swatches{display:flex;gap:5px;margin-bottom:9px}
+.swatches i{width:23px;height:23px;border-radius:50%;display:block}
+.theme-card.selected{outline:2px solid var(--accent);background:var(--soft)}
+.format-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.format-btn{padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);color:var(--text);font-weight:750;text-align:left}
+.format-btn span{display:block;font-size:21px;margin-bottom:6px}
+.note{background:var(--panel2);padding:13px;border-radius:13px;color:var(--muted);font-size:12px;line-height:1.6;margin-top:14px}
+.modal-backdrop{display:none;position:fixed;inset:0;background:#0b1b14a8;z-index:10;padding:15px;overflow:auto;align-items:center;justify-content:center}
+.modal-backdrop.show{display:flex}
+.modal{width:min(720px,100%);max-height:94vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:20px}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.modal-head h2{margin:0}
+.close{background:var(--panel2);color:var(--text);border-radius:10px;padding:8px 11px;border:0}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
+@media(max-width:760px){
+.app{padding:12px}
+.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.quick-card{min-height:115px;padding:13px 11px}
+.stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+.stats .stat:last-child{grid-column:span 2}
+.panel{padding:14px}
+.task{grid-template-columns:1fr}
+.task-actions{justify-content:flex-start}
+.task-actions select{flex:1}
+.form-grid{grid-template-columns:1fr}
+.full{grid-column:auto}
+}
+@media(min-width:900px){.tabs{display:grid;grid-template-columns:repeat(7,1fr);overflow:visible}.tab{min-width:0}}
+</style>
+</head>
+<body data-theme="forest">
+<div class="app">
+<header>
+ <div class="brand"><div class="logo">🌿</div><div><h1>Nature TaskFlow</h1><div class="sub">A calm space to plan, track and complete your work</div></div></div>
+ <div class="header-actions">
+  <button class="btn" id="quickExport">⬇ Export</button>
+  <button class="btn primary" id="newTop">＋ New Task</button>
+ </div>
+</header>
+
+<nav class="tabs" id="tabs">
+ <button class="tab active" data-view="home"><span class="ico">🏠</span>Home</button>
+ <button class="tab" data-view="all"><span class="ico">🗂️</span>All Tasks <b class="count" id="c-all">0</b></button>
+ <button class="tab" data-view="new"><span class="ico">✨</span>New <b class="count" id="c-new">0</b></button>
+ <button class="tab" data-view="pending"><span class="ico">⏳</span>Pending <b class="count" id="c-pending">0</b></button>
+ <button class="tab" data-view="progress"><span class="ico">🔄</span>In Progress <b class="count" id="c-progress">0</b></button>
+ <button class="tab" data-view="hold"><span class="ico">⏸️</span>On Hold <b class="count" id="c-hold">0</b></button>
+ <button class="tab" data-view="completed"><span class="ico">✅</span>Completed <b class="count" id="c-completed">0</b></button>
+ <button class="tab" data-view="settings"><span class="ico">🎨</span>Themes & Data</button>
+</nav>
+
+<!-- STARTING TAB: ALL NAVIGATION ICONS -->
+<section class="view active" id="view-home">
+ <div class="welcome">
+  <h2>🌿 Welcome to your Task Control Center</h2>
+  <p>One place to navigate, organize and monitor all your tasks. Select an icon to open a workspace.</p>
+ </div>
+ <div class="section-head"><h2>🚀 Quick Navigation</h2><span class="muted">Select a module</span></div>
+ <div class="quick-grid">
+  <button class="quick-card add" data-go="all">
+   <div class="quick-icon">🗂️</div><div class="quick-title">All Tasks</div><div class="quick-count" id="home-all">0 tasks</div>
+  </button>
+  <button class="quick-card" data-go="new">
+   <div class="quick-icon">✨</div><div class="quick-title">New Tasks</div><div class="quick-count" id="home-new">0 tasks</div>
+  </button>
+  <button class="quick-card" data-go="pending">
+   <div class="quick-icon">⏳</div><div class="quick-title">Pending Tasks</div><div class="quick-count" id="home-pending">0 tasks</div>
+  </button>
+  <button class="quick-card" data-go="progress">
+   <div class="quick-icon">🔄</div><div class="quick-title">In Progress</div><div class="quick-count" id="home-progress">0 tasks</div>
+  </button>
+  <button class="quick-card" data-go="hold">
+   <div class="quick-icon">⏸️</div><div class="quick-title">On Hold</div><div class="quick-count" id="home-hold">0 tasks</div>
+  </button>
+  <button class="quick-card" data-go="completed">
+   <div class="quick-icon">✅</div><div class="quick-title">Completed</div><div class="quick-count" id="home-completed">0 tasks</div>
+  </button>
+  <button class="quick-card" data-go="settings">
+   <div class="quick-icon">🎨</div><div class="quick-title">Themes & Data</div><div class="quick-count">Customize and backup</div>
+  </button>
+  <button class="quick-card add" id="homeAdd">
+   <div class="quick-icon">➕</div><div class="quick-title">Create Task</div><div class="quick-count">Add a new task</div>
+  </button>
+ </div>
+ <div style="height:18px"></div>
+ <div class="stats">
+  <div class="stat"><div class="n" id="s-total">0</div><div class="l">Total tasks</div></div>
+  <div class="stat"><div class="n" id="s-pending">0</div><div class="l">Pending</div></div>
+  <div class="stat"><div class="n" id="s-progress">0</div><div class="l">In progress</div></div>
+  <div class="stat"><div class="n" id="s-hold">0</div><div class="l">On hold</div></div>
+  <div class="stat"><div class="n" id="s-completed">0</div><div class="l">Completed</div></div>
+ </div>
+ <div class="panel">
+  <div class="section-head"><h2>📌 Recently Updated Tasks</h2><button class="btn small" data-go="all">View All →</button></div>
+  <div class="task-list" id="recentList"></div>
+ </div>
+</section>
+
+<section class="view" id="view-all">
+ <div class="panel"><div class="section-head"><h2>🗂️ All Tasks</h2><button class="btn primary" id="newMain">＋ Add Task</button></div>
+ <div class="toolbar"><input id="search" placeholder="🔎 Search title, description, remarks or comments…"><select id="sort" style="max-width:180px"><option value="updated">Recently updated</option><option value="start">Start date</option><option value="end">End date</option><option value="title">Title A–Z</option></select></div>
+ <div class="task-list" id="taskList"></div></div>
+</section>
+
+<section class="view" id="view-new"><div class="panel"><div class="section-head"><h2>✨ New Tasks</h2><button class="btn primary" id="newNew">＋ Create Task</button></div><div class="task-list" id="list-new"></div></div></section>
+<section class="view" id="view-pending"><div class="panel"><div class="section-head"><h2>⏳ Pending Tasks</h2></div><div class="task-list" id="list-pending"></div></div></section>
+<section class="view" id="view-progress"><div class="panel"><div class="section-head"><h2>🔄 In Progress</h2></div><div class="task-list" id="list-progress"></div></div></section>
+<section class="view" id="view-hold"><div class="panel"><div class="section-head"><h2>⏸️ On Hold</h2></div><div class="task-list" id="list-hold"></div></div></section>
+<section class="view" id="view-completed"><div class="panel"><div class="section-head"><h2>✅ Completed Tasks</h2></div><div class="task-list" id="list-completed"></div></div></section>
+
+<section class="view" id="view-settings">
+ <div class="panel">
+ <div class="section-head"><h2>🎨 Nature Themes</h2><span class="muted">Choose your workspace look</span></div><div class="theme-grid" id="themeGrid"></div>
+ <hr style="border:0;border-top:1px solid var(--line);margin:24px 0">
+ <div class="section-head"><h2>📦 Import & Export</h2><span class="muted">Backup or move your tasks</span></div>
+ <h3 style="font-size:14px">Export tasks</h3>
+ <div class="format-grid">
+  <button class="format-btn" data-export="json"><span>🧩</span>JSON backup</button>
+  <button class="format-btn" data-export="csv"><span>📊</span>CSV spreadsheet</button>
+  <button class="format-btn" data-export="txt"><span>📝</span>Text file</button>
+  <button class="format-btn" data-export="html"><span>🌐</span>HTML report</button>
+  <button class="format-btn" data-export="xml"><span>🗃️</span>XML data</button>
+  <button class="format-btn" data-export="tsv"><span>📋</span>TSV spreadsheet</button>
+ </div>
+ <h3 style="font-size:14px;margin-top:23px">Import tasks</h3>
+ <div class="toolbar"><input type="file" id="importFile" accept=".json,.csv,.txt,.html,.xml,.tsv,text/*,application/json"><button class="btn primary" id="importBtn">⬆ Import file</button></div>
+ <div class="note">JSON is recommended for complete backups. CSV, TSV, TXT, HTML and XML are supported for data exchange. Import adds tasks to your current list. Data is stored locally in this browser.</div>
+ <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:20px"><span class="muted" id="storageInfo">Saved locally</span><button class="btn danger" id="clearAll">Delete all tasks</button></div>
+ </div>
+</section>
+
+<footer>Nature TaskFlow · Private local task manager · Your tasks stay in this browser</footer>
+</div>
+
+<div class="modal-backdrop" id="modal">
+ <div class="modal">
+ <div class="modal-head"><h2 id="modalTitle">Create a task</h2><button class="close" id="closeModal">✕</button></div>
+ <form id="taskForm">
+ <input type="hidden" id="taskId">
+ <div class="form-grid">
+  <div class="form-group"><label for="title">Task title *</label><input id="title" required maxlength="160" placeholder="What needs to be done?"></div>
+  <div class="form-group"><label for="status">Status</label><select id="status"><option>New</option><option>Pending</option><option>In Progress</option><option>On Hold</option><option>Completed</option></select></div>
+  <div class="form-group"><label for="start">Start date</label><input id="start" type="date"></div>
+  <div class="form-group"><label for="end">End date</label><input id="end" type="date"></div>
+  <div class="form-group"><label for="duration">Duration</label><input id="duration" placeholder="Auto-calculated or e.g. 3 days"></div>
+  <div class="form-group full"><label for="description">Description</label><textarea id="description" placeholder="Task details, steps or objectives…"></textarea></div>
+  <div class="form-group full"><label for="remarks">Remarks</label><textarea id="remarks" placeholder="Additional notes…"></textarea></div>
+  <div class="form-group full"><label for="comment">Comment</label><textarea id="comment" placeholder="Latest update or discussion…"></textarea></div>
+ </div>
+ <div class="form-actions"><button type="button" class="btn" id="cancelForm">Cancel</button><button type="submit" class="btn primary">💾 Save Task</button></div>
+ </form>
+ </div>
+</div>
+
+<script>
+(()=>{
+'use strict';
+const KEY='natureTaskFlow_v1';
+const statuses=['New','Pending','In Progress','On Hold','Completed'];
+const themes=[
+['forest','🌲 Forest',['#176b4a','#dcefe1','#f2f7f3']],
+['ocean','🌊 Ocean',['#1685a5','#d9f1f7','#edf6fa']],
+['sunset','🌅 Sunset',['#df7047','#ffe2d2','#fff4ed']],
+['meadow','🌼 Meadow',['#789b36','#e8f2ce','#f5f8e9']],
+['lavender','💜 Lavender',['#8964b5','#eee4fb','#f6f2fb']],
+['rose','🌸 Rose',['#cf6680','#fbe1e8','#fff2f4']],
+['sky','☁️ Sky',['#4c83cf','#e0edff','#f0f6ff']],
+['sand','🏜️ Sand',['#ad8950','#f3ead8','#f8f4eb']],
+['night','🌙 Night',['#65c68d','#294b39','#111c19']],
+['autumn','🍂 Autumn',['#bb7135','#f7e4d1','#faf1e8']]
+];
+const $=id=>document.getElementById(id);
+let tasks=load(),currentView='home';
+
+function uid(){return 'T'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function normalize(t){
+return {
+id:t.id||uid(),title:t.title||'Untitled task',
+start:t.start||t.startDate||'',end:t.end||t.endDate||'',
+duration:t.duration||'',description:t.description||'',
+status:statuses.includes(t.status)?t.status:'New',
+remarks:t.remarks||'',comment:t.comment||'',
+created:t.created||new Date().toISOString(),
+updated:t.updated||new Date().toISOString()
+}}
+function load(){
+try{
+let data=JSON.parse(localStorage.getItem(KEY)||'[]');
+return Array.isArray(data)?data.map(normalize):[];
+}catch(e){return []}
+}
+function save(){
+try{localStorage.setItem(KEY,JSON.stringify(tasks))}
+catch(e){alert('Storage is full. Please export your data.')}
+render();
+}
+function esc(s){
+return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
+}
+function dateFmt(s){
+if(!s)return '—';
+let d=new Date(s+'T00:00:00');
+return isNaN(d)?s:d.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
+}
+function calcDuration(a,b){
+if(!a||!b)return '';
+let x=new Date(a+'T00:00:00'),y=new Date(b+'T00:00:00');
+return Math.max(0,Math.round((y-x)/86400000)+1)+' days';
+}
+
+function switchView(v){
+if(!document.getElementById('view-'+v))return;
+currentView=v;
+document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
+document.querySelectorAll('.view').forEach(el=>el.classList.toggle('active',el.id==='view-'+v));
+render();
+window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function taskCard(t){
+return `<article class="task">
+<div>
+<div class="task-title">${esc(t.title)}</div>
+<div class="task-desc">${esc(t.description||'No description added')}</div>
+<div class="task-meta">
+<span class="pill status">${esc(t.status)}</span>
+<span>📅 ${dateFmt(t.start)} → ${dateFmt(t.end)}</span>
+<span>⏱ ${esc(t.duration||'—')}</span>
+</div>
+${t.remarks?`<div class="task-meta">🗒️ ${esc(t.remarks)}</div>`:''}
+${t.comment?`<div class="task-meta">💬 ${esc(t.comment)}</div>`:''}
+</div>
+<div class="task-actions">
+<select aria-label="Change task status" data-status="${esc(t.id)}">
+${statuses.map(s=>`<option value="${s}" ${s===t.status?'selected':''}>${s}</option>`).join('')}
+</select>
+<button class="btn small" data-edit="${esc(t.id)}">✏️ Edit</button>
+<button class="btn small danger" data-delete="${esc(t.id)}">🗑</button>
+</div>
+</article>`;
+}
+function renderList(el,arr){
+if(!el)return;
+el.innerHTML=arr.length?arr.map(taskCard).join(''):
+'<div class="empty"><div class="big">🍃</div><b>No tasks here yet</b><div style="font-size:12px;margin-top:5px">Add a task or change a task status to see it here.</div></div>';
+}
+
+function render(){
+let counts={New:0,Pending:0,'In Progress':0,'On Hold':0,Completed:0};
+tasks.forEach(t=>counts[t.status]=(counts[t.status]||0)+1);
+const values={
+all:tasks.length,new:counts.New,pending:counts.Pending,
+progress:counts['In Progress'],hold:counts['On Hold'],
+completed:counts.Completed
+};
+Object.entries(values).forEach(([k,v])=>{
+let el=$('c-'+k);if(el)el.textContent=v;
+let home=$('home-'+k);if(home)home.textContent=v+' task'+(v===1?'':'s');
+});
+$('s-total').textContent=tasks.length;
+$('s-pending').textContent=counts.Pending;
+$('s-progress').textContent=counts['In Progress'];
+$('s-hold').textContent=counts['On Hold'];
+$('s-completed').textContent=counts.Completed;
+
+let q=($('search')?.value||'').toLowerCase();
+let sort=$('sort')?.value||'updated';
+let arr=tasks.filter(t=>[t.title,t.description,t.remarks,t.comment,t.status].join(' ').toLowerCase().includes(q));
+arr.sort((a,b)=>sort==='title'?a.title.localeCompare(b.title):
+sort==='start'||sort==='end'?(a[sort]||'9999').localeCompare(b[sort]||'9999'):
+b.updated.localeCompare(a.updated));
+
+renderList($('taskList'),arr);
+renderList($('recentList'),[...tasks].sort((a,b)=>b.updated.localeCompare(a.updated)).slice(0,4));
+
+const map={new:'New',pending:'Pending',progress:'In Progress',hold:'On Hold',completed:'Completed'};
+Object.entries(map).forEach(([k,s])=>{
+renderList($('list-'+k),tasks.filter(t=>t.status===s).sort((a,b)=>b.updated.localeCompare(a.updated)));
+});
+$('storageInfo').textContent=`${tasks.length} task${tasks.length===1?'':'s'} · Saved in this browser`;
+}
+
+function openForm(t){
+$('taskForm').reset();
+$('taskId').value=t?.id||'';
+$('modalTitle').textContent=t?'Edit task':'Create a task';
+['title','start','end','duration','description','status','remarks','comment'].forEach(k=>{
+$(k).value=t?.[k]??(k==='status'?'New':'');
+});
+$('modal').classList.add('show');
+setTimeout(()=>$('title').focus(),80);
+}
+function closeForm(){$('modal').classList.remove('show')}
+
+function saveForm(e){
+e.preventDefault();
+let id=$('taskId').value,old=tasks.find(t=>t.id===id);
+let start=$('start').value,end=$('end').value;
+if(start&&end&&end<start){alert('End date cannot be earlier than start date.');return}
+let t=normalize({
+id:id||uid(),title:$('title').value.trim(),start,end,
+duration:$('duration').value.trim()||calcDuration(start,end),
+description:$('description').value,status:$('status').value,
+remarks:$('remarks').value,comment:$('comment').value,
+created:old?.created,updated:new Date().toISOString()
+});
+if(old)tasks=tasks.map(x=>x.id===id?t:x);
+else tasks.unshift(t);
+closeForm();save();switchView('all');
+}
+
+function download(name,data,type){
+let blob=new Blob([data],{type}),url=URL.createObjectURL(blob);
+let a=document.createElement('a');a.href=url;a.download=name;a.click();
+setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+const fields=['id','title','start','end','duration','description','status','remarks','comment','created','updated'];
+function csvCell(v){return '"'+String(v??'').replace(/"/g,'""')+'"'}
+function exportData(fmt){
+let stamp=new Date().toISOString().slice(0,10),name='nature-taskflow-'+stamp;
+if(fmt==='json')download(name+'.json',JSON.stringify({app:'Nature TaskFlow',version:1,exportedAt:new Date().toISOString(),tasks},null,2),'application/json');
+else if(fmt==='csv'||fmt==='tsv'){
+let sep=fmt==='csv'?',':'\t';
+let out=[fields.join(sep),...tasks.map(t=>fields.map(k=>csvCell(t[k])).join(sep))].join('\r\n');
+download(name+'.'+fmt,'\ufeff'+out,fmt==='csv'?'text/csv':'text/tab-separated-values');
+}
+else if(fmt==='txt')download(name+'.txt',tasks.map(t=>fields.map(k=>k.toUpperCase()+': '+(t[k]||'')).join('\n')).join('\n\n')||'No tasks','text/plain');
+else if(fmt==='html'){
+let rows=tasks.map(t=>'<tr>'+fields.map(k=>'<td>'+esc(t[k])+'</td>').join('')+'</tr>').join('');
+download(name+'.html','<!doctype html><meta charset="utf-8"><title>TaskFlow Export</title><h1>Nature TaskFlow</h1><table border="1"><thead><tr>'+fields.map(k=>'<th>'+k+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody></table>','text/html');
+}
+else if(fmt==='xml'){
+let x=tasks.map(t=>'<task>'+fields.map(k=>'<'+k+'>'+esc(t[k])+'</'+k+'>').join('')+'</task>').join('');
+download(name+'.xml','<?xml version="1.0" encoding="UTF-8"?><tasks>'+x+'</tasks>','application/xml');
+}
+}
+function parseCSV(text,sep=','){
+let rows=[],row=[],cell='',quoted=false;
+for(let i=0;i<text.length;i++){
+let c=text[i];
+if(quoted){
+if(c==='"'&&text[i+1]==='"'){cell+='"';i++}
+else if(c==='"')quoted=false;else cell+=c;
+}else if(c==='"')quoted=true;
+else if(c===sep){row.push(cell);cell=''}
+else if(c==='\n'){row.push(cell);rows.push(row);row=[];cell=''}
+else if(c!=='\r')cell+=c;
+}
+row.push(cell);if(row.some(x=>x!==''))rows.push(row);
+return rows;
+}
+function importRows(rows){
+if(!rows.length)return [];
+let heads=rows.shift().map(x=>x.trim().toLowerCase());
+return rows.filter(r=>r.some(x=>x.trim())).map(r=>{
+let o={};heads.forEach((h,i)=>o[h]=r[i]||'');return normalize(o);
+});
+}
+async function importFile(){
+let f=$('importFile').files[0];
+if(!f){alert('Choose a file first.');return}
+try{
+let txt=await f.text(),ext=f.name.split('.').pop().toLowerCase(),incoming=[];
+if(ext==='json'){
+let obj=JSON.parse(txt);incoming=Array.isArray(obj)?obj:(obj.tasks||[]);
+if(!Array.isArray(incoming))throw Error('No task list found in JSON');
+incoming=incoming.map(normalize);
+}else if(ext==='csv'||ext==='tsv'){
+incoming=importRows(parseCSV(txt,ext==='tsv'?'\t':','));
+}else if(ext==='txt'){
+let blocks=txt.split(/\n\s*\n/);
+incoming=blocks.map(b=>{
+let o={};b.split(/\r?\n/).forEach(line=>{
+let i=line.indexOf(':');if(i>0)o[line.slice(0,i).trim().toLowerCase()]=line.slice(i+1).trim();
+});return normalize(o);
+}).filter(t=>t.title!=='Untitled task'||t.description);
+}else if(ext==='xml'||ext==='html'){
+let doc=new DOMParser().parseFromString(txt,ext==='xml'?'application/xml':'text/html');
+if(ext==='xml'){
+if(doc.querySelector('parsererror'))throw Error('Invalid XML file');
+incoming=[...doc.querySelectorAll('task')].map(node=>{
+let o={};fields.forEach(k=>o[k]=node.querySelector(k)?.textContent||'');return normalize(o);
+});
+}else{
+let table=doc.querySelector('table');if(!table)throw Error('No task table found in HTML');
+let heads=[...table.querySelectorAll('thead th')].map(x=>x.textContent.toLowerCase());
+incoming=[...table.querySelectorAll('tbody tr')].map(tr=>{
+let o={};[...tr.children].forEach((td,i)=>o[heads[i]]=td.textContent);return normalize(o);
+});
+}
+}else throw Error('Unsupported file type');
+if(!incoming.length){alert('No tasks found in this file.');return}
+let existing=new Set(tasks.map(t=>t.id));
+incoming.forEach(t=>{if(existing.has(t.id))t.id=uid();existing.add(t.id)});
+tasks=[...incoming,...tasks];save();$('importFile').value='';
+alert(`Imported ${incoming.length} task(s).`);switchView('all');
+}catch(err){alert('Import failed: '+err.message)}
+}
+
+/* Navigation from top tabs and home dashboard icons */
+$('tabs').addEventListener('click',e=>{
+let b=e.target.closest('[data-view]');
+if(b)switchView(b.dataset.view);
+});
+document.addEventListener('click',e=>{
+let go=e.target.closest('[data-go]');
+if(go)switchView(go.dataset.go);
+});
+$('homeAdd').onclick=$('newTop').onclick=$('newMain').onclick=$('newNew').onclick=()=>openForm();
+
+$('quickExport').onclick=()=>exportData('json');
+$('closeModal').onclick=$('cancelForm').onclick=closeForm;
+$('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeForm()});
+$('taskForm').addEventListener('submit',saveForm);
+
+['start','end'].forEach(id=>$(id).addEventListener('change',()=>{
+let d=calcDuration($('start').value,$('end').value);
+if(d)$('duration').value=d;
+}));
+$('search').addEventListener('input',render);
+$('sort').addEventListener('change',render);
+
+document.addEventListener('click',e=>{
+let edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete]');
+if(edit){let t=tasks.find(x=>x.id===edit.dataset.edit);if(t)openForm(t)}
+if(del&&confirm('Delete this task permanently?')){
+tasks=tasks.filter(t=>t.id!==del.dataset.delete);save();
+}
+});
+document.addEventListener('change',e=>{
+if(e.target.matches('[data-status]')){
+let t=tasks.find(x=>x.id===e.target.dataset.status);
+if(t){
+t.status=e.target.value;t.updated=new Date().toISOString();
+save();
+}
+}
+});
+
+document.querySelectorAll('[data-export]').forEach(b=>b.onclick=()=>exportData(b.dataset.export));
+$('importBtn').onclick=importFile;
+$('clearAll').onclick=()=>{
+if(confirm('Delete every task? This cannot be undone. Export a backup first if needed.')){
+tasks=[];save();
+}
+};
+
+/* Themes */
+$('themeGrid').innerHTML=themes.map(([id,name,colors])=>
+`<button class="theme-card" data-theme-choice="${id}">
+<div class="swatches">${colors.map(c=>`<i style="background:${c}"></i>`).join('')}</div>
+<b>${name}</b></button>`).join('');
+let activeTheme=localStorage.getItem('natureTaskFlow_theme')||'forest';
+function setTheme(t){
+if(!themes.some(x=>x[0]===t))t='forest';
+activeTheme=t;document.body.dataset.theme=t;
+localStorage.setItem('natureTaskFlow_theme',t);
+document.querySelectorAll('[data-theme-choice]').forEach(b=>
+b.classList.toggle('selected',b.dataset.themeChoice===t));
+}
+$('themeGrid').addEventListener('click',e=>{
+let b=e.target.closest('[data-theme-choice]');
+if(b)setTheme(b.dataset.themeChoice);
+});
+setTheme(activeTheme);
+render();
+})();
+</script>
+</body>
+</html>
