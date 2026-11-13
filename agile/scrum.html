@@ -1,0 +1,1376 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#176b4a">
+<title>Nature AgileFlow — Scrum & Kanban</title>
+<style>
+:root{
+--bg:#f2f7f3;--panel:#fff;--panel2:#e8f2eb;
+--text:#18352a;--muted:#6d8175;--line:#d8e5dc;
+--accent:#198754;--accent2:#11613b;--soft:#dff2e5;
+--danger:#c94b4b;--warn:#b7791f;
+--shadow:0 12px 35px rgba(23,70,44,.09);
+--radius:18px
+}
+*{box-sizing:border-box}
+body{
+margin:0;background:var(--bg);color:var(--text);
+font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif
+}
+body[data-theme="ocean"]{--bg:#edf6fa;--panel:#fff;--panel2:#e1f0f6;--text:#17384a;--muted:#678291;--line:#d2e5ed;--accent:#1685a5;--accent2:#0b607d;--soft:#d9f1f7}
+body[data-theme="sunset"]{--bg:#fff4ed;--panel:#fff;--panel2:#ffeadf;--text:#4a3028;--muted:#94766b;--line:#f0d9ce;--accent:#df7047;--accent2:#a9482c;--soft:#ffe2d2}
+body[data-theme="meadow"]{--bg:#f5f8e9;--panel:#fff;--panel2:#edf3d8;--text:#354329;--muted:#7c8967;--line:#e0e8ca;--accent:#789b36;--accent2:#506d20;--soft:#e8f2ce}
+body[data-theme="lavender"]{--bg:#f6f2fb;--panel:#fff;--panel2:#eee7f8;--text:#392e4d;--muted:#82758f;--line:#e4dced;--accent:#8964b5;--accent2:#63418c;--soft:#eee4fb}
+body[data-theme="rose"]{--bg:#fff2f4;--panel:#fff;--panel2:#fbe5e9;--text:#4b3039;--muted:#92727d;--line:#f0d9df;--accent:#cf6680;--accent2:#9d3f5b;--soft:#fbe1e8}
+body[data-theme="sky"]{--bg:#f0f6ff;--panel:#fff;--panel2:#e4efff;--text:#253954;--muted:#73849b;--line:#d9e5f5;--accent:#4c83cf;--accent2:#315fa0;--soft:#e0edff}
+body[data-theme="sand"]{--bg:#f8f4eb;--panel:#fff;--panel2:#f0e9d9;--text:#443b2d;--muted:#8c806d;--line:#e8dfce;--accent:#ad8950;--accent2:#80602e;--soft:#f3ead8}
+body[data-theme="night"]{--bg:#111c19;--panel:#1b2a25;--panel2:#263a32;--text:#e6f2e9;--muted:#a0b4a8;--line:#344b40;--accent:#65c68d;--accent2:#3d9b68;--soft:#294b39;--shadow:0 12px 35px #0004}
+body[data-theme="autumn"]{--bg:#faf1e8;--panel:#fff;--panel2:#f4e5d5;--text:#493426;--muted:#927966;--line:#ead8c7;--accent:#bb7135;--accent2:#8a4d22;--soft:#f7e4d1}
+
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:1450px;margin:auto;padding:18px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:48px;height:48px;border-radius:15px;background:var(--accent);display:grid;place-items:center;color:white;font-size:24px}
+h1{font-size:clamp(21px,3vw,29px);margin:0}
+.sub{font-size:12px;color:var(--muted);margin-top:3px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);border-radius:11px;padding:9px 13px;background:var(--panel2);color:var(--text);font-weight:700}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:white}
+.btn.danger{color:var(--danger)}
+.btn.sm{padding:6px 9px;font-size:11px}
+.tabs{display:flex;gap:7px;overflow-x:auto;padding:4px 2px 13px}
+.tab{flex:0 0 auto;min-width:92px;padding:10px 12px;border:1px solid var(--line);border-radius:13px;background:var(--panel);color:var(--muted);font-size:12px;font-weight:750}
+.tab .ico{display:block;font-size:19px;margin-bottom:3px}
+.tab.active{background:var(--soft);color:var(--accent2);border-color:var(--accent)}
+.view{display:none}
+.view.active{display:block}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:17px;box-shadow:var(--shadow)}
+.head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:15px}
+.head h2{font-size:19px;margin:0}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:13px}
+.stat b{font-size:24px;display:block}
+.stat span{font-size:11px;color:var(--muted)}
+input,select,textarea{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);outline:none}
+textarea{min-height:80px;resize:vertical}
+label{font-size:12px;font-weight:750;color:var(--muted);display:block;margin-bottom:5px}
+.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.full{grid-column:1/-1}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.toolbar input{flex:1;min-width:170px}
+.cards{display:grid;gap:10px}
+.item{border:1px solid var(--line);border-radius:14px;padding:13px;background:var(--panel);min-width:0}
+.itemtop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.item h3{font-size:14px;margin:0 0 5px;overflow-wrap:anywhere}
+.meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.chip{display:inline-block;padding:4px 8px;border-radius:30px;background:var(--panel2);font-size:10px;font-weight:750;color:var(--muted)}
+.chip.accent{background:var(--soft);color:var(--accent2)}
+.chip.warn{color:var(--warn)}
+.chip.red{color:var(--danger)}
+.desc{font-size:12px;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
+.itemactions{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+.empty{text-align:center;color:var(--muted);padding:35px 12px}
+.empty b{display:block;color:var(--text);margin:7px}
+.board{display:grid;grid-template-columns:repeat(5,minmax(205px,1fr));gap:10px;overflow-x:auto;padding-bottom:8px}
+.column{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:10px;min-height:260px}
+.colhead{display:flex;justify-content:space-between;font-size:12px;font-weight:800;margin:2px 2px 10px}
+.dropzone{min-height:200px;display:grid;align-content:start;gap:8px}
+.storycard{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:10px;cursor:grab}
+.storycard h4{font-size:12px;margin:0 0 7px}
+.storycard.dragging{opacity:.4}
+.column.over{outline:2px dashed var(--accent)}
+.sprintbox{background:var(--panel2);border-radius:13px;padding:13px;margin-bottom:12px}
+.progress{height:9px;background:var(--line);border-radius:20px;overflow:hidden;margin-top:8px}
+.progress i{display:block;height:100%;background:var(--accent);width:0}
+.modalbg{display:none;position:fixed;inset:0;background:#07150fb3;z-index:9;padding:14px;overflow:auto;align-items:center;justify-content:center}
+.modalbg.show{display:flex}
+.modal{width:min(760px,100%);max-height:95vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}
+.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.modalhead h2{font-size:18px;margin:0}
+.modalfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.themegrid,.exportgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:9px}
+.theme{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:11px;text-align:left}
+.theme.sel{outline:2px solid var(--accent)}
+.swatches{display:flex;gap:4px;margin-bottom:7px}
+.swatches i{width:20px;height:20px;border-radius:50%}
+.export{border:1px solid var(--line);border-radius:12px;background:var(--panel2);padding:13px;text-align:left;color:var(--text);font-weight:750}
+.export span{display:block;font-size:20px;margin-bottom:5px}
+.note{background:var(--panel2);padding:12px;border-radius:12px;color:var(--muted);font-size:11px;line-height:1.6;margin-top:12px}
+footer{text-align:center;padding:20px;color:var(--muted);font-size:11px}
+
+/* FIRST TAB: RESPONSIVE ICON GRID */
+.quickwelcome{background:var(--panel2);border:1px solid var(--line);padding:17px;border-radius:16px;margin-bottom:15px}
+.quickwelcome h2{margin:0 0 6px;font-size:19px}
+.quickwelcome p{margin:0;color:var(--muted);font-size:12px;line-height:1.6}
+.quickstats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:14px}
+.quickstats div{background:var(--panel);border:1px solid var(--line);padding:10px;border-radius:12px}
+.quickstats b{font-size:20px;display:block}
+.quickstats span{font-size:10px;color:var(--muted)}
+
+/* Icon cards grid */
+.quicknav{
+display:grid;
+grid-template-columns:repeat(4,minmax(0,1fr));
+gap:13px;
+}
+
+.navcard{
+position:relative;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+text-align:center;
+gap:8px;
+min-width:0;
+min-height:155px;
+padding:16px 10px;
+border:1px solid var(--line);
+border-radius:18px;
+background:var(--panel);
+color:var(--text);
+box-shadow:var(--shadow);
+transition:transform .2s,border-color .2s,background .2s;
+}
+
+.navcard:hover{
+transform:translateY(-4px);
+border-color:var(--accent);
+background:var(--soft);
+}
+
+.navcard:active{transform:scale(.97)}
+
+.navicon{
+width:65px;
+height:65px;
+border-radius:19px;
+background:var(--panel2);
+display:grid;
+place-items:center;
+font-size:34px;
+margin:0 auto 3px;
+border:1px solid var(--line);
+}
+
+.navcard strong{
+display:block;
+font-size:13px;
+line-height:1.35;
+}
+
+.navcard small{
+display:block;
+color:var(--muted);
+font-size:10px;
+line-height:1.45;
+max-width:190px;
+}
+
+.navcard .navarrow{
+position:absolute;
+right:11px;
+top:9px;
+color:var(--accent);
+font-weight:900;
+font-size:15px;
+}
+
+@media(max-width:1000px){
+.quicknav{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+@media(max-width:760px){
+.app{padding:12px}
+.stats{grid-template-columns:repeat(2,1fr)}
+.stats .stat:last-child{grid-column:span 2}
+.formgrid{grid-template-columns:1fr}
+.full{grid-column:auto}
+.panel{padding:13px}
+.headeractions{max-width:150px}
+.board{grid-template-columns:repeat(5,235px)}
+.quicknav{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.navcard{min-height:135px;padding:12px 7px}
+.navicon{width:57px;height:57px;font-size:30px;border-radius:16px}
+.quickstats{grid-template-columns:repeat(2,1fr)}
+}
+
+@media(max-width:380px){
+.quicknav{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.navcard{min-height:120px;padding:10px 5px}
+.navicon{width:49px;height:49px;font-size:26px}
+.navcard strong{font-size:11px}
+.navcard small{font-size:9px}
+}
+
+@media(min-width:1000px){
+.tabs{display:grid;grid-template-columns:repeat(10,1fr);overflow:visible}
+.tab{min-width:0}
+}
+</style>
+</head>
+<body data-theme="forest">
+<div class="app">
+
+<header>
+<div class="brand">
+<div class="logo">🌿</div>
+<div>
+<h1>Nature AgileFlow</h1>
+<div class="sub">Connected Scrum · Epics · Product Backlog · Sprints · Kanban</div>
+</div>
+</div>
+<div class="actions">
+<button class="btn" id="backupTop">⬇ Backup</button>
+<button class="btn primary" id="addStoryTop">＋ Add Story</button>
+</div>
+</header>
+
+<nav class="tabs" id="tabs">
+<button class="tab active" data-view="home"><span class="ico">🏡</span>Quick Menu</button>
+<button class="tab" data-view="dashboard"><span class="ico">📊</span>Dashboard</button>
+<button class="tab" data-view="epics"><span class="ico">🧭</span>Epics</button>
+<button class="tab" data-view="backlog"><span class="ico">📚</span>Backlog</button>
+<button class="tab" data-view="sprints"><span class="ico">🏃</span>Sprints</button>
+<button class="tab" data-view="board"><span class="ico">🗃️</span>Kanban</button>
+<button class="tab" data-view="scrum"><span class="ico">🤝</span>Daily Scrum</button>
+<button class="tab" data-view="reports"><span class="ico">📈</span>Reports</button>
+<button class="tab" data-view="settings"><span class="ico">🎨</span>Themes & Data</button>
+<button class="tab" data-view="guide"><span class="ico">🔗</span>Workflow Guide</button>
+</nav>
+
+<!-- FIRST TAB: QUICK MENU ICON GRID -->
+<section class="view active" id="view-home">
+
+<div class="quickwelcome">
+<h2>🌿 Welcome to your Agile workspace</h2>
+<p>Choose a module below to navigate directly. All modules share the same stories, epics, sprint plans and task status.</p>
+<div class="quickstats">
+<div><b id="q-epics">0</b><span>Epics</span></div>
+<div><b id="q-stories">0</b><span>Stories</span></div>
+<div><b id="q-sprints">0</b><span>Sprints</span></div>
+<div><b id="q-done">0</b><span>Completed</span></div>
+</div>
+</div>
+
+<div class="panel">
+<div class="head">
+<h2>🧭 Quick Navigation</h2>
+<span class="muted small">Select any icon</span>
+</div>
+
+<div class="quicknav">
+
+<button class="navcard" data-go-view="dashboard">
+<span class="navarrow">↗</span>
+<div class="navicon">📊</div>
+<strong>Dashboard</strong>
+<small>Workspace summary and recent work</small>
+</button>
+
+<button class="navcard" data-go-view="epics">
+<span class="navarrow">↗</span>
+<div class="navicon">🧭</div>
+<strong>Epics</strong>
+<small>Initiatives and business goals</small>
+</button>
+
+<button class="navcard" data-go-view="backlog">
+<span class="navarrow">↗</span>
+<div class="navicon">📚</div>
+<strong>Product Backlog</strong>
+<small>Stories, tasks and priorities</small>
+</button>
+
+<button class="navcard" data-go-view="sprints">
+<span class="navarrow">↗</span>
+<div class="navicon">🏃</div>
+<strong>Sprint Planning</strong>
+<small>Plan iterations and capacity</small>
+</button>
+
+<button class="navcard" data-go-view="board">
+<span class="navarrow">↗</span>
+<div class="navicon">🗃️</div>
+<strong>Kanban Board</strong>
+<small>Track task workflow</small>
+</button>
+
+<button class="navcard" data-go-view="scrum">
+<span class="navarrow">↗</span>
+<div class="navicon">🤝</div>
+<strong>Daily Scrum</strong>
+<small>Team updates and blockers</small>
+</button>
+
+<button class="navcard" data-go-view="reports">
+<span class="navarrow">↗</span>
+<div class="navicon">📈</div>
+<strong>Reports & Insights</strong>
+<small>Sprint progress and completion</small>
+</button>
+
+<button class="navcard" data-go-view="settings">
+<span class="navarrow">↗</span>
+<div class="navicon">🎨</div>
+<strong>Themes & Data</strong>
+<small>Customize and backup workspace</small>
+</button>
+
+<button class="navcard" data-go-view="guide">
+<span class="navarrow">↗</span>
+<div class="navicon">🔗</div>
+<strong>Workflow Guide</strong>
+<small>Understand the Agile process</small>
+</button>
+
+</div>
+
+<div class="actions" style="margin-top:15px">
+<button class="btn primary" id="homeAddStory">＋ Create Story</button>
+<button class="btn" id="homeAddEpic">＋ Create Epic</button>
+<button class="btn" id="homeAddSprint">＋ Create Sprint</button>
+</div>
+</div>
+</section>
+
+<section class="view" id="view-dashboard">
+<div class="stats">
+<div class="stat"><b id="n-epics">0</b><span>Epics</span></div>
+<div class="stat"><b id="n-stories">0</b><span>Stories / tasks</span></div>
+<div class="stat"><b id="n-open">0</b><span>Open backlog</span></div>
+<div class="stat"><b id="n-active">0</b><span>Active sprint</span></div>
+<div class="stat"><b id="n-done">0</b><span>Completed</span></div>
+</div>
+<div class="panel">
+<div class="head"><h2>🚀 Agile workspace</h2><span class="muted small" id="today"></span></div>
+<div id="activeSprintDash"></div>
+<div class="head" style="margin-top:20px"><h2>Recently updated work</h2><button class="btn primary" id="dashAdd">＋ Add Story</button></div>
+<div id="recentStories" class="cards"></div>
+</div>
+<div class="panel" style="margin-top:13px">
+<div class="head"><h2>🔗 Work hierarchy</h2></div>
+<p class="muted small">Product vision → Epic → User Story / Task → Product Backlog → Sprint → Kanban workflow → Review & Retrospective. A story can be planned into a sprint, moved across board columns, and its status is reflected everywhere.</p>
+</div>
+</section>
+
+<section class="view" id="view-epics">
+<div class="panel">
+<div class="head"><h2>🧭 Epics</h2><button class="btn primary" id="addEpic">＋ Create Epic</button></div>
+<div class="toolbar"><input id="epicSearch" placeholder="Search epics…"></div>
+<div id="epicList" class="cards"></div>
+</div>
+</section>
+
+<section class="view" id="view-backlog">
+<div class="panel">
+<div class="head"><h2>📚 Product Backlog</h2><button class="btn primary" id="addStory">＋ Add Story / Task</button></div>
+<div class="toolbar">
+<input id="storySearch" placeholder="Search stories, acceptance criteria, assignee…">
+<select id="backlogEpic" style="max-width:190px"><option value="">All epics</option></select>
+<select id="backlogStatus" style="max-width:170px">
+<option value="">All statuses</option>
+<option>Backlog</option><option>To Do</option><option>In Progress</option>
+<option>In Review</option><option>Done</option><option>Blocked</option>
+</select>
+</div>
+<div id="backlogList" class="cards"></div>
+</div>
+</section>
+
+<section class="view" id="view-sprints">
+<div class="panel">
+<div class="head"><h2>🏃 Sprint planning</h2><button class="btn primary" id="addSprint">＋ Create Sprint</button></div>
+<p class="muted small">Create a sprint, set its goal and dates, then pull backlog stories into it. Only one sprint should normally be active at a time.</p>
+<div id="sprintList"></div>
+</div>
+</section>
+
+<section class="view" id="view-board">
+<div class="panel">
+<div class="head">
+<div><h2>🗃️ Sprint Kanban board</h2><div class="muted small" id="boardSprintLabel">Choose a sprint to view its board</div></div>
+<select id="boardSprint" style="max-width:240px"></select>
+</div>
+<div id="board"></div>
+</div>
+</section>
+
+<section class="view" id="view-scrum">
+<div class="panel">
+<div class="head"><h2>🤝 Daily Scrum</h2><button class="btn primary" id="addScrum">＋ Add Update</button></div>
+<p class="muted small">Capture each person's progress, today's plan and blockers. Updates are linked to a sprint.</p>
+<div class="formgrid" style="margin-bottom:14px">
+<div><label>Sprint</label><select id="scrumSprint"></select></div>
+<div><label>Meeting date</label><input type="date" id="scrumDate"></div>
+</div>
+<div id="scrumList" class="cards"></div>
+</div>
+</section>
+
+<section class="view" id="view-reports">
+<div class="panel">
+<div class="head"><h2>📈 Sprint insights</h2><select id="reportSprint" style="max-width:230px"></select></div>
+<div id="reportContent"></div>
+</div>
+</section>
+
+<section class="view" id="view-settings">
+<div class="panel">
+<div class="head"><h2>🎨 Nature themes</h2><span class="muted small">10 workspace palettes</span></div>
+<div class="themegrid" id="themeGrid"></div>
+<hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+<div class="head"><h2>📦 Import & Export</h2></div>
+<div class="exportgrid">
+<button class="export" data-export="json"><span>🧩</span>JSON full backup</button>
+<button class="export" data-export="csv"><span>📊</span>CSV stories</button>
+<button class="export" data-export="tsv"><span>📋</span>TSV stories</button>
+<button class="export" data-export="html"><span>🌐</span>HTML report</button>
+<button class="export" data-export="xml"><span>🗃️</span>XML data</button>
+<button class="export" data-export="txt"><span>📝</span>Text summary</button>
+</div>
+<div class="toolbar" style="margin-top:13px">
+<input type="file" id="importFile" accept=".json,.csv,.tsv">
+<button class="btn primary" id="importBtn">⬆ Import</button>
+</div>
+<div class="note">JSON preserves epics, stories, sprints and daily scrum notes, and is the recommended full backup. CSV/TSV imports stories only. Import merges records into the current workspace. Data is stored locally in this browser. Export JSON regularly.</div>
+<div class="actions" style="justify-content:space-between;margin-top:17px">
+<span class="muted small" id="dataCount"></span>
+<button class="btn danger" id="resetAll">Reset workspace</button>
+</div>
+</div>
+</section>
+
+<section class="view" id="view-guide">
+<div class="panel">
+<div class="head"><h2>🔗 How the Agile flow connects</h2></div>
+<div class="cards">
+<div class="item"><h3>1 · Define Epics</h3><div class="desc">Create large outcomes or initiatives. Epics group related stories and show their delivery progress.</div></div>
+<div class="item"><h3>2 · Build the Product Backlog</h3><div class="desc">Create user stories or tasks and connect each to an epic. Add priority, story points, assignee and acceptance criteria. Order the backlog using priority.</div></div>
+<div class="item"><h3>3 · Plan a Sprint</h3><div class="desc">Create a sprint with a goal and dates. Add stories from the product backlog to the sprint. Planned points and capacity are visible in sprint planning.</div></div>
+<div class="item"><h3>4 · Execute on the Kanban board</h3><div class="desc">Move sprint stories through To Do → In Progress → In Review → Done (or Blocked). Drag cards between columns or change status from the card. All views update together.</div></div>
+<div class="item"><h3>5 · Daily Scrum</h3><div class="desc">Record yesterday's progress, today's plan and blockers for each team member. Scrum notes attach to a sprint.</div></div>
+<div class="item"><h3>6 · Review, retrospective and reports</h3><div class="desc">Review completed stories, remaining work, sprint completion and epic progress. Close a sprint to archive its outcome; unfinished stories return to the product backlog.</div></div>
+</div>
+<div class="note">This is a local Agile planning workspace, not a multi-user server. It does not synchronize changes between devices or provide live collaboration. For team-wide Scrum, connect it to a shared backend or project platform.</div>
+</div>
+</section>
+
+<footer>Nature AgileFlow · Local-first Agile workspace · Scrum and Kanban connected</footer>
+</div>
+
+<div class="modalbg" id="modal">
+<div class="modal">
+<div class="modalhead"><h2 id="modalTitle">Create</h2><button class="btn" id="modalClose">✕</button></div>
+<form id="modalForm">
+<div id="modalFields" class="formgrid"></div>
+<div class="modalfoot">
+<button type="button" class="btn" id="modalCancel">Cancel</button>
+<button class="btn primary" type="submit">💾 Save</button>
+</div>
+</form>
+</div>
+</div>
+
+<script>
+(()=>{'use strict';
+
+const KEY='natureAgileFlow_v1';
+const STATES=['Backlog','To Do','In Progress','In Review','Done','Blocked'];
+
+const themes=[
+['forest','🌲 Forest',['#176b4a','#dcefe1','#f2f7f3']],
+['ocean','🌊 Ocean',['#1685a5','#d9f1f7','#edf6fa']],
+['sunset','🌅 Sunset',['#df7047','#ffe2d2','#fff4ed']],
+['meadow','🌼 Meadow',['#789b36','#e8f2ce','#f5f8e9']],
+['lavender','💜 Lavender',['#8964b5','#eee4fb','#f6f2fb']],
+['rose','🌸 Rose',['#cf6680','#fbe1e8','#fff2f4']],
+['sky','☁️ Sky',['#4c83cf','#e0edff','#f0f6ff']],
+['sand','🏜️ Sand',['#ad8950','#f3ead8','#f8f4eb']],
+['night','🌙 Night',['#65c68d','#294b39','#111c19']],
+['autumn','🍂 Autumn',['#bb7135','#f7e4d1','#faf1e8']]
+];
+
+const uid=p=>p+'-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7);
+const today=()=>new Date().toISOString().slice(0,10);
+
+let db=load(),modalType='',editingId='';
+
+function blank(){
+return {epics:[],stories:[],sprints:[],scrums:[]};
+}
+
+function load(){
+try{
+let d=JSON.parse(localStorage.getItem(KEY)||'{}');
+return {
+...blank(),...d,
+epics:d.epics||[],
+stories:(d.stories||[]).map(s=>({
+...s,
+points:Number(s.points)||0,
+priority:s.priority||'Medium',
+status:STATES.includes(s.status)?s.status:'Backlog'
+})),
+sprints:d.sprints||[],
+scrums:d.scrums||[]
+};
+}catch(e){return blank()}
+}
+
+function persist(){
+localStorage.setItem(KEY,JSON.stringify(db));
+render();
+}
+
+const $=id=>document.getElementById(id);
+
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({
+'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+}[c]));
+
+function date(v){
+if(!v)return '—';
+let d=new Date(v+'T00:00:00');
+return isNaN(d)?v:d.toLocaleDateString(undefined,{
+day:'numeric',month:'short',year:'numeric'
+});
+}
+
+function epicName(id){
+return db.epics.find(x=>x.id===id)?.name||'No epic';
+}
+
+function sprintName(id){
+return db.sprints.find(x=>x.id===id)?.name||'Product backlog';
+}
+
+function activeSprint(){
+return db.sprints.find(s=>s.state==='Active');
+}
+
+function sprintStories(id){
+return db.stories.filter(s=>s.sprintId===id);
+}
+
+function points(list){
+return list.reduce((n,s)=>n+(Number(s.points)||0),0);
+}
+
+function progress(list){
+let total=points(list);
+let done=points(list.filter(s=>s.status==='Done'));
+return total?Math.round(done/total*100):
+(list.length?Math.round(list.filter(s=>s.status==='Done').length/list.length*100):0);
+}
+
+/* NAVIGATION */
+function go(v){
+document.querySelectorAll('.tab').forEach(b=>
+b.classList.toggle('active',b.dataset.view===v)
+);
+document.querySelectorAll('.view').forEach(x=>
+x.classList.toggle('active',x.id==='view-'+v)
+);
+render();
+window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function options(items,selected,first){
+return (first?`<option value="">${first}</option>`:'')+
+items.map(x=>`<option value="${esc(x.id)}" ${x.id===selected?'selected':''}>${esc(x.name)}</option>`).join('');
+}
+
+function storyCard(s,board=false){
+return `<article class="${board?'storycard':'item'}" ${board?'draggable="true"':''} data-story="${esc(s.id)}">
+<div class="itemtop">
+<div style="min-width:0">
+<h3>${esc(s.key||'STORY')} · ${esc(s.title)}</h3>
+<div class="desc">${esc(s.description||'')}</div>
+</div>
+<span class="chip ${s.priority==='High'?'red':s.priority==='Low'?'':'warn'}">${esc(s.priority)}</span>
+</div>
+<div class="meta">
+<span class="chip">${esc(s.points)} pts</span>
+<span class="chip">${esc(epicName(s.epicId))}</span>
+<span class="chip">${esc(s.assignee||'Unassigned')}</span>
+${!board?`<span class="chip accent">${esc(s.status)}</span>`:''}
+</div>
+${board?`<div class="meta"><span class="chip">${esc(s.key)}</span></div>`:
+`<div class="itemactions">
+<button class="btn sm" data-edit-story="${esc(s.id)}">✏️ Edit</button>
+<button class="btn sm" data-plan="${esc(s.id)}">＋ Sprint</button>
+<button class="btn sm danger" data-delete-story="${esc(s.id)}">Delete</button>
+</div>`}
+</article>`;
+}
+
+function empty(msg){
+return `<div class="empty">🌱<b>${msg}</b><span class="small">Create an item to get started.</span></div>`;
+}
+
+function epicCard(e){
+let linked=db.stories.filter(s=>s.epicId===e.id);
+return `<div class="item">
+<div class="itemtop">
+<div><h3>${esc(e.name)}</h3><div class="desc">${esc(e.description||'No description')}</div></div>
+<span class="chip accent">${progress(linked)}% done</span>
+</div>
+<div class="meta">
+<span class="chip">${linked.length} stories</span>
+<span class="chip">${points(linked)} pts</span>
+<span class="chip">${esc(e.owner||'No owner')}</span>
+</div>
+<div class="progress"><i style="width:${progress(linked)}%"></i></div>
+<div class="itemactions">
+<button class="btn sm" data-edit-epic="${esc(e.id)}">✏️ Edit</button>
+<button class="btn sm" data-add-to-epic="${esc(e.id)}">＋ Story</button>
+<button class="btn sm danger" data-delete-epic="${esc(e.id)}">Delete</button>
+</div>
+</div>`;
+}
+
+function sprintCard(s){
+let list=sprintStories(s.id);
+let pct=progress(list);
+let remaining=points(list.filter(x=>x.status!=='Done'));
+
+return `<div class="sprintbox">
+<div class="itemtop">
+<div><h3 style="margin:0 0 5px">${esc(s.name)}</h3><div class="desc">${esc(s.goal||'No sprint goal')}</div></div>
+<span class="chip ${s.state==='Active'?'accent':''}">${esc(s.state)}</span>
+</div>
+<div class="meta">
+<span class="chip">📅 ${date(s.start)} – ${date(s.end)}</span>
+<span class="chip">${list.length} stories</span>
+<span class="chip">${points(list)} pts planned</span>
+<span class="chip">${remaining} pts remaining</span>
+</div>
+<div class="progress"><i style="width:${pct}%"></i></div>
+<div class="small muted" style="margin-top:5px">${pct}% complete</div>
+<div class="itemactions">
+<button class="btn sm" data-sprint-board="${esc(s.id)}">Open board</button>
+<button class="btn sm" data-plan-sprint="${esc(s.id)}">Plan stories</button>
+<button class="btn sm" data-edit-sprint="${esc(s.id)}">✏️ Edit</button>
+${s.state!=='Completed'?`
+<button class="btn sm primary" data-start-sprint="${esc(s.id)}">${s.state==='Active'?'Active':'Start sprint'}</button>
+<button class="btn sm" data-close-sprint="${esc(s.id)}">Complete sprint</button>`:''}
+<button class="btn sm danger" data-delete-sprint="${esc(s.id)}">Delete</button>
+</div>
+</div>`;
+}
+
+function render(){
+let active=activeSprint();
+
+$('n-epics').textContent=db.epics.length;
+$('n-stories').textContent=db.stories.length;
+$('n-open').textContent=db.stories.filter(s=>!s.sprintId&&s.status!=='Done').length;
+$('n-active').textContent=active?1:0;
+$('n-done').textContent=db.stories.filter(s=>s.status==='Done').length;
+
+$('q-epics').textContent=db.epics.length;
+$('q-stories').textContent=db.stories.length;
+$('q-sprints').textContent=db.sprints.length;
+$('q-done').textContent=db.stories.filter(s=>s.status==='Done').length;
+
+$('today').textContent=new Date().toLocaleDateString(undefined,{
+weekday:'long',day:'numeric',month:'long',year:'numeric'
+});
+
+$('activeSprintDash').innerHTML=active?
+`<div class="sprintbox">
+<div class="itemtop">
+<div><b>🏃 ${esc(active.name)}</b><div class="desc">${esc(active.goal||'Sprint goal not set')}</div></div>
+<span class="chip accent">ACTIVE</span>
+</div>
+<div class="meta">
+<span class="chip">${sprintStories(active.id).length} stories</span>
+<span class="chip">${points(sprintStories(active.id))} points</span>
+<span class="chip">${progress(sprintStories(active.id))}% complete</span>
+</div>
+<div class="progress"><i style="width:${progress(sprintStories(active.id))}%"></i></div>
+<div class="itemactions"><button class="btn sm primary" data-sprint-board="${esc(active.id)}">Open sprint board</button></div>
+</div>`:
+empty('No active sprint. Plan and start a sprint from Sprint Planning.');
+
+$('recentStories').innerHTML=db.stories.length?
+db.stories.slice().sort((a,b)=>(b.updated||'').localeCompare(a.updated||'')).slice(0,5).map(s=>storyCard(s)).join(''):
+empty('No stories yet');
+
+$('epicList').innerHTML=db.epics.length?
+db.epics.filter(e=>(e.name+' '+e.description).toLowerCase().includes(($('epicSearch').value||'').toLowerCase())).map(epicCard).join(''):
+empty('No epics yet');
+
+$('backlogEpic').innerHTML=options(db.epics,$('backlogEpic').value,'All epics');
+
+let q=$('storySearch').value.toLowerCase();
+let ef=$('backlogEpic').value;
+let sf=$('backlogStatus').value;
+
+let backlog=db.stories.filter(s=>
+(!ef||s.epicId===ef)&&
+(!sf||s.status===sf)&&
+[s.key,s.title,s.description,s.acceptance,s.assignee].join(' ').toLowerCase().includes(q)
+).sort((a,b)=>
+({High:0,Medium:1,Low:2}[a.priority]-
+({High:0,Medium:1,Low:2}[b.priority])
+));
+
+$('backlogList').innerHTML=backlog.length?
+backlog.map(storyCard).join(''):
+empty('No matching backlog stories');
+
+$('sprintList').innerHTML=db.sprints.length?
+db.sprints.slice().sort((a,b)=>b.start.localeCompare(a.start)).map(sprintCard).join(''):
+empty('No sprints created');
+
+fillSprintSelects();
+renderBoard();
+renderScrum();
+renderReport();
+
+$('dataCount').textContent=
+`${db.epics.length} epics · ${db.stories.length} stories · ${db.sprints.length} sprints · ${db.scrums.length} scrum updates`;
+}
+
+function fillSprintSelects(){
+let opts=db.sprints.map(s=>({id:s.id,name:s.name+' · '+s.state}));
+let b=$('boardSprint').value;
+let r=$('reportSprint').value;
+let c=$('scrumSprint').value;
+
+['boardSprint','reportSprint','scrumSprint'].forEach(id=>
+$(id).innerHTML=options(opts,$(id).value,'Select sprint')
+);
+
+if(!db.sprints.length){
+$('boardSprintLabel').textContent='Create a sprint first';
+return;
+}
+
+if(!db.sprints.some(s=>s.id===b))
+$('boardSprint').value=(activeSprint()||db.sprints[0]).id;
+
+if(!db.sprints.some(s=>s.id===r))
+$('reportSprint').value=(activeSprint()||db.sprints[0]).id;
+
+if(!db.sprints.some(s=>s.id===c))
+$('scrumSprint').value=(activeSprint()||db.sprints[0]).id;
+}
+
+function renderBoard(){
+let id=$('boardSprint').value;
+let s=db.sprints.find(x=>x.id===id);
+
+$('boardSprintLabel').textContent=s?s.name+' · '+s.state:'Choose a sprint';
+
+if(!s){
+$('board').innerHTML=empty('Select or create a sprint');
+return;
+}
+
+let list=sprintStories(id);
+
+$('board').innerHTML=`<div class="board">
+${STATES.filter(x=>x!=='Backlog').map(st=>{
+let a=list.filter(x=>x.status===st);
+return `<div class="column" data-column="${st}">
+<div class="colhead">
+<span>${st==='To Do'?'📥':st==='In Progress'?'⚙️':st==='In Review'?'👀':st==='Done'?'✅':'🚧'} ${st}</span>
+<span>${a.length}</span>
+</div>
+<div class="dropzone">
+${a.length?a.map(x=>storyCard(x,true)).join(''):'<div class="empty small">Drop story here</div>'}
+</div>
+</div>`;
+}).join('')}
+</div>
+<div class="note">Drag a card to another column to change its status. Status changes are immediately reflected in the backlog, epic progress and sprint reports. To add backlog items, use “Plan stories” in Sprint Planning.</div>`;
+}
+
+function renderScrum(){
+let id=$('scrumSprint').value;
+let items=db.scrums.filter(x=>x.sprintId===id).sort((a,b)=>b.date.localeCompare(a.date));
+
+$('scrumList').innerHTML=items.length?
+items.map(x=>`<div class="item">
+<div class="itemtop"><h3>${esc(x.member)} · ${date(x.date)}</h3><button class="btn sm danger" data-delete-scrum="${esc(x.id)}">Delete</button></div>
+<div class="formgrid">
+<div><b class="small">Yesterday</b><div class="desc">${esc(x.yesterday)}</div></div>
+<div><b class="small">Today</b><div class="desc">${esc(x.today)}</div></div>
+<div class="full"><b class="small">Blockers</b><div class="desc">${esc(x.blockers||'None reported')}</div></div>
+</div>
+</div>`).join(''):
+empty('No daily scrum updates for this sprint');
+}
+
+function renderReport(){
+let s=db.sprints.find(x=>x.id===$('reportSprint').value);
+
+if(!s){
+$('reportContent').innerHTML=empty('Select a sprint');
+return;
+}
+
+let a=sprintStories(s.id);
+let done=a.filter(x=>x.status==='Done');
+let remaining=a.filter(x=>x.status!=='Done');
+let total=points(a);
+let finished=points(done);
+let by=STATES.map(st=>[st,a.filter(x=>x.status===st).length]);
+
+$('reportContent').innerHTML=`
+<div class="stats">
+<div class="stat"><b>${a.length}</b><span>Committed stories</span></div>
+<div class="stat"><b>${total}</b><span>Committed points</span></div>
+<div class="stat"><b>${finished}</b><span>Done points</span></div>
+<div class="stat"><b>${total-finished}</b><span>Remaining points</span></div>
+<div class="stat"><b>${progress(a)}%</b><span>Completion</span></div>
+</div>
+<h3 class="small">Sprint status distribution</h3>
+${by.map(([st,n])=>`
+<div style="display:flex;justify-content:space-between;font-size:12px;margin:9px 0"><span>${st}</span><b>${n}</b></div>
+<div class="progress"><i style="width:${a.length?n/a.length*100:0}%"></i></div>
+`).join('')}
+<h3 class="small" style="margin-top:20px">Completed work</h3>
+${done.length?done.map(x=>`<div class="meta"><span class="chip accent">${esc(x.key)} · ${esc(x.title)} · ${x.points} pts</span></div>`).join(''):'<p class="muted small">No completed stories yet.</p>'}
+<h3 class="small" style="margin-top:20px">Unfinished work</h3>
+${remaining.length?remaining.map(x=>`<div class="meta"><span class="chip warn">${esc(x.key)} · ${esc(x.title)} · ${x.points} pts · ${esc(x.status)}</span></div>`).join(''):'<p class="muted small">All sprint work is done.</p>'}
+`;
+}
+
+/* MODAL FORMS */
+function field(name,label,type='text',value='',extra=''){
+return `<div class="field"><label>${label}</label>${type==='textarea'?
+`<textarea name="${name}" ${extra}>${esc(value)}</textarea>`:
+`<input name="${name}" type="${type}" value="${esc(value)}" ${extra}>`}</div>`;
+}
+
+function selectField(name,label,opts,value,first){
+return `<div class="field">
+<label>${label}</label>
+<select name="${name}">
+${first?`<option value="">${first}</option>`:''}
+${opts.map(o=>`<option value="${esc(o.value)}" ${o.value===value?'selected':''}>${esc(o.label)}</option>`).join('')}
+</select>
+</div>`;
+}
+
+function openModal(type,obj={}){
+modalType=type;
+editingId=obj.id||'';
+
+$('modalTitle').textContent=(editingId?'Edit ':'Create ')+
+({epic:'Epic',story:'Story / Task',sprint:'Sprint',scrum:'Daily Scrum update',plan:'Add stories to sprint'}[type]||'');
+
+let f='';
+
+if(type==='epic'){
+f=field('name','Epic name *','text',obj.name||'','required maxlength="120"')+
+field('owner','Epic owner','text',obj.owner||'')+
+`<div class="field full"><label>Description / business outcome</label><textarea name="description">${esc(obj.description||'')}</textarea></div>`;
+}
+
+if(type==='story'){
+f=field('title','Story / task title *','text',obj.title||'','required maxlength="180"')+
+selectField('type','Work type',[{value:'Story',label:'User Story'},{value:'Task',label:'Task'},{value:'Bug',label:'Bug'},{value:'Spike',label:'Spike'}],obj.type||'Story')+
+selectField('epicId','Parent epic',db.epics.map(e=>({value:e.id,label:e.name})),obj.epicId||'','No epic')+
+selectField('priority','Priority',['High','Medium','Low'].map(x=>({value:x,label:x})),obj.priority||'Medium')+
+field('assignee','Assignee','text',obj.assignee||'')+
+field('points','Story points','number',obj.points??1,'min="0" max="100" step="1"')+
+selectField('status','Status',STATES.map(x=>({value:x,label:x})),obj.status||'Backlog')+
+selectField('sprintId','Sprint',db.sprints.filter(s=>s.state!=='Completed').map(s=>({value:s.id,label:s.name})),obj.sprintId||'','Product backlog')+
+`<div class="field full"><label>Description / user story</label><textarea name="description" placeholder="As a … I want … so that …">${esc(obj.description||'')}</textarea></div>
+<div class="field full"><label>Acceptance criteria</label><textarea name="acceptance" placeholder="Given … when … then …">${esc(obj.acceptance||'')}</textarea></div>
+<div class="field full"><label>Comments / notes</label><textarea name="notes">${esc(obj.notes||'')}</textarea></div>`;
+}
+
+if(type==='sprint'){
+f=field('name','Sprint name *','text',obj.name||'Sprint '+(db.sprints.length+1),'required')+
+field('start','Start date','date',obj.start||today())+
+field('end','End date','date',obj.end||'')+
+field('capacity','Team capacity (points)','number',obj.capacity??30,'min="0"')+
+selectField('state','Sprint state',['Planning','Active','Completed'].map(x=>({value:x,label:x})),obj.state||'Planning')+
+`<div class="field full"><label>Sprint goal *</label><textarea name="goal" required>${esc(obj.goal||'')}</textarea></div>`;
+}
+
+if(type==='scrum'){
+f=selectField('sprintId','Sprint',db.sprints.map(s=>({value:s.id,label:s.name})),obj.sprintId||$('scrumSprint').value,'Choose sprint')+
+field('member','Team member *','text',obj.member||'','required')+
+field('date','Meeting date','date',obj.date||today())+
+`<div class="field full"><label>What did you do yesterday?</label><textarea name="yesterday">${esc(obj.yesterday||'')}</textarea></div>
+<div class="field full"><label>What will you do today?</label><textarea name="today">${esc(obj.today||'')}</textarea></div>
+<div class="field full"><label>Blockers / impediments</label><textarea name="blockers">${esc(obj.blockers||'')}</textarea></div>`;
+}
+
+if(type==='plan'){
+let sp=obj.sprintId||$('boardSprint').value||activeSprint()?.id;
+f=selectField('sprintId','Target sprint',db.sprints.filter(s=>s.state!=='Completed').map(s=>({value:s.id,label:s.name})),sp,'Choose sprint')+
+`<div class="field full">
+<label>Select backlog stories to add</label>
+<div style="max-height:300px;overflow:auto;border:1px solid var(--line);padding:10px;border-radius:10px">
+${db.stories.filter(s=>!s.sprintId&&s.status!=='Done').map(s=>`
+<label style="display:flex;gap:8px;align-items:center;margin:9px 0;color:var(--text)">
+<input type="checkbox" name="storyIds" value="${esc(s.id)}" style="width:auto">
+<span>${esc(s.key)} · ${esc(s.title)} (${s.points} pts)</span>
+</label>`).join('')||'<span class="muted small">No unassigned backlog stories.</span>'}
+</div>
+</div>`;
+}
+
+$('modalFields').innerHTML=f;
+$('modal').classList.add('show');
+}
+
+function closeModal(){
+$('modal').classList.remove('show');
+}
+
+function submitModal(e){
+e.preventDefault();
+
+let fd=new FormData(e.target);
+let o=Object.fromEntries(fd.entries());
+let now=new Date().toISOString();
+
+if(modalType==='epic'){
+if(editingId)
+Object.assign(db.epics.find(x=>x.id===editingId),o,{updated:now});
+else db.epics.push({id:uid('E'),...o,created:now});
+}
+
+if(modalType==='story'){
+let old=editingId?db.stories.find(x=>x.id===editingId):null;
+
+let s={
+...o,
+id:editingId||uid('S'),
+key:editingId?(old?.key||''):'US-'+String(db.stories.length+1).padStart(3,'0'),
+points:Number(o.points)||0,
+created:old?.created||now,
+updated:now
+};
+
+if(s.sprintId&&s.status==='Backlog')s.status='To Do';
+
+if(editingId)
+db.stories=db.stories.map(x=>x.id===editingId?s:x);
+else db.stories.push(s);
+}
+
+if(modalType==='sprint'){
+if(o.start&&o.end&&o.end<o.start){
+alert('Sprint end date cannot be before start date.');
+return;
+}
+
+if(o.state==='Active')
+db.sprints.forEach(s=>{
+if(s.id!==editingId&&s.state==='Active')s.state='Planning';
+});
+
+let old=editingId?db.sprints.find(x=>x.id===editingId):null;
+let s={...o,id:editingId||uid('SP'),capacity:Number(o.capacity)||0,created:old?.created||now};
+
+if(editingId)
+db.sprints=db.sprints.map(x=>x.id===editingId?s:x);
+else db.sprints.push(s);
+}
+
+if(modalType==='scrum'){
+if(!o.sprintId){alert('Choose a sprint.');return}
+db.scrums.push({...o,id:uid('DS'),created:now});
+}
+
+if(modalType==='plan'){
+if(!o.sprintId){alert('Choose a sprint.');return}
+let ids=fd.getAll('storyIds');
+
+ids.forEach(id=>{
+let s=db.stories.find(x=>x.id===id);
+if(s){
+s.sprintId=o.sprintId;
+if(s.status==='Backlog')s.status='To Do';
+s.updated=now;
+}
+});
+}
+
+closeModal();
+persist();
+}
+
+/* NAVIGATION EVENTS */
+$('tabs').addEventListener('click',e=>{
+let b=e.target.closest('[data-view]');
+if(b)go(b.dataset.view);
+});
+
+/* FIRST TAB GRID CLICK */
+document.addEventListener('click',e=>{
+let nav=e.target.closest('[data-go-view]');
+if(nav){
+go(nav.dataset.goView);
+return;
+}
+});
+
+function deleteConfirm(msg,fn){
+if(confirm(msg)){fn();persist()}
+}
+
+$('addEpic').onclick=$('homeAddEpic').onclick=()=>openModal('epic');
+
+$('addStory').onclick=$('addStoryTop').onclick=$('dashAdd').onclick=$('homeAddStory').onclick=()=>openModal('story');
+
+$('addSprint').onclick=$('homeAddSprint').onclick=()=>openModal('sprint');
+
+$('addScrum').onclick=()=>openModal('scrum');
+
+$('modalClose').onclick=$('modalCancel').onclick=closeModal;
+
+$('modal').addEventListener('click',e=>{
+if(e.target.id==='modal')closeModal();
+});
+
+$('modalForm').addEventListener('submit',submitModal);
+
+$('epicSearch').oninput=render;
+$('storySearch').oninput=render;
+$('backlogEpic').onchange=render;
+$('backlogStatus').onchange=render;
+$('boardSprint').onchange=render;
+$('reportSprint').onchange=render;
+$('scrumSprint').onchange=render;
+
+/* ITEM ACTIONS */
+document.addEventListener('click',e=>{
+let b=e.target.closest('button');
+if(!b)return;
+let d=b.dataset;
+
+if(d.editEpic)openModal('epic',db.epics.find(x=>x.id===d.editEpic));
+
+if(d.addToEpic)openModal('story',{epicId:d.addToEpic});
+
+if(d.deleteEpic)deleteConfirm('Delete epic? Its stories will remain but become unassigned.',()=>{
+db.epics=db.epics.filter(x=>x.id!==d.deleteEpic);
+db.stories.forEach(s=>{if(s.epicId===d.deleteEpic)s.epicId=''});
+});
+
+if(d.editStory)openModal('story',db.stories.find(x=>x.id===d.editStory));
+
+if(d.deleteStory)deleteConfirm('Delete this story?',()=>{
+db.stories=db.stories.filter(x=>x.id!==d.deleteStory);
+});
+
+if(d.plan)openModal('plan',{sprintId:activeSprint()?.id||''});
+
+if(d.planSprint)openModal('plan',{sprintId:d.planSprint});
+
+if(d.sprintBoard){
+$('boardSprint').value=d.sprintBoard;
+go('board');
+}
+
+if(d.editSprint)openModal('sprint',db.sprints.find(x=>x.id===d.editSprint));
+
+if(d.startSprint){
+let s=db.sprints.find(x=>x.id===d.startSprint);
+if(s){
+db.sprints.forEach(x=>{if(x.state==='Active')x.state='Planning'});
+s.state='Active';
+persist();
+}
+}
+
+if(d.closeSprint){
+let s=db.sprints.find(x=>x.id===d.closeSprint);
+
+if(s&&confirm('Complete this sprint? Unfinished stories will return to the product backlog.')){
+s.state='Completed';
+
+db.stories.filter(x=>x.sprintId===s.id&&x.status!=='Done').forEach(x=>{
+x.sprintId='';
+x.status='Backlog';
+});
+
+persist();
+}
+}
+
+if(d.deleteSprint)deleteConfirm('Delete sprint? Its unfinished stories will return to backlog.',()=>{
+db.stories.filter(x=>x.sprintId===d.deleteSprint).forEach(x=>{
+x.sprintId='';
+if(x.status!=='Done')x.status='Backlog';
+});
+
+db.scrums=db.scrums.filter(x=>x.sprintId!==d.deleteSprint);
+db.sprints=db.sprints.filter(x=>x.id!==d.deleteSprint);
+});
+
+if(d.deleteScrum)deleteConfirm('Delete this scrum update?',()=>{
+db.scrums=db.scrums.filter(x=>x.id!==d.deleteScrum);
+});
+});
+
+/* KANBAN DRAG AND DROP */
+$('board').addEventListener('dragstart',e=>{
+let c=e.target.closest('[data-story]');
+if(c){
+e.dataTransfer.setData('text/plain',c.dataset.story);
+e.dataTransfer.effectAllowed='move';
+c.classList.add('dragging');
+}
+});
+
+$('board').addEventListener('dragend',e=>{
+let c=e.target.closest('[data-story]');
+if(c)c.classList.remove('dragging');
+document.querySelectorAll('.column').forEach(x=>x.classList.remove('over'));
+});
+
+$('board').addEventListener('dragover',e=>{
+let col=e.target.closest('.column');
+if(col){
+e.preventDefault();
+col.classList.add('over');
+}
+});
+
+$('board').addEventListener('dragleave',e=>{
+let col=e.target.closest('.column');
+if(col&&!col.contains(e.relatedTarget))col.classList.remove('over');
+});
+
+$('board').addEventListener('drop',e=>{
+let col=e.target.closest('.column');
+if(!col)return;
+
+e.preventDefault();
+
+let id=e.dataTransfer.getData('text/plain');
+let s=db.stories.find(x=>x.id===id);
+
+if(s){
+s.status=col.dataset.column;
+s.updated=new Date().toISOString();
+persist();
+}
+});
+
+/* EXPORT */
+function exportFile(fmt){
+let stamp=today();
+let base='nature-agileflow-'+stamp;
+let fields=['key','title','type','epicId','sprintId','priority','points','assignee','status','description','acceptance','notes','created','updated'];
+
+const csvCell=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+
+let content='',mime='text/plain',ext=fmt;
+
+if(fmt==='json'){
+content=JSON.stringify({
+app:'Nature AgileFlow',
+version:1,
+exportedAt:new Date().toISOString(),
+...db
+},null,2);
+mime='application/json';
+}
+
+else if(fmt==='csv'||fmt==='tsv'){
+let sep=fmt==='csv'?',':'\t';
+content=[
+fields.join(sep),
+...db.stories.map(s=>fields.map(k=>csvCell(s[k])).join(sep))
+].join('\r\n');
+mime=fmt==='csv'?'text/csv':'text/tab-separated-values';
+}
+
+else if(fmt==='txt'){
+content='NATURE AGILEFLOW REPORT\n\nEPICS\n'+
+db.epics.map(e=>e.name+' — '+e.description).join('\n')+
+'\n\nSTORIES\n'+
+db.stories.map(s=>`${s.key} ${s.title} | ${s.status} | ${s.points} points | Epic: ${epicName(s.epicId)} | Sprint: ${sprintName(s.sprintId)}\n${s.description}\nAcceptance: ${s.acceptance}`).join('\n\n')+
+'\n\nSPRINTS\n'+
+db.sprints.map(s=>`${s.name} (${s.state}) ${s.start} to ${s.end}: ${s.goal}`).join('\n');
+}
+
+else if(fmt==='html'){
+content='<!doctype html><meta charset="utf-8"><title>AgileFlow report</title><h1>Nature AgileFlow</h1><h2>Epics</h2><ul>'+
+db.epics.map(e=>'<li>'+esc(e.name)+' — '+esc(e.description)+'</li>').join('')+
+'</ul><h2>Stories</h2><table border="1" cellpadding="6"><tr>'+
+fields.map(x=>'<th>'+x+'</th>').join('')+
+'</tr>'+
+db.stories.map(s=>'<tr>'+fields.map(k=>'<td>'+esc(s[k])+'</td>').join('')+'</tr>').join('')+
+'</table><h2>Sprints</h2><ul>'+
+db.sprints.map(s=>'<li>'+esc(s.name)+' · '+esc(s.state)+' · '+esc(s.goal)+'</li>').join('')+
+'</ul>';
+mime='text/html';
+}
+
+else if(fmt==='xml'){
+content='<?xml version="1.0" encoding="UTF-8"?><agileflow><epics>'+
+db.epics.map(e=>'<epic id="'+esc(e.id)+'"><name>'+esc(e.name)+'</name><description>'+esc(e.description)+'</description></epic>').join('')+
+'</epics><stories>'+
+db.stories.map(s=>'<story>'+fields.map(k=>'<'+k+'>'+esc(s[k])+'</'+k+'>').join('')+'</story>').join('')+
+'</stories><sprints>'+
+db.sprints.map(s=>'<sprint><name>'+esc(s.name)+'</name><goal>'+esc(s.goal)+'</goal><state>'+esc(s.state)+'</state></sprint>').join('')+
+'</sprints></agileflow>';
+mime='application/xml';
+}
+
+let blob=new Blob([content],{type:mime});
+let url=URL.createObjectURL(blob);
+let a=document.createElement('a');
+a.href=url;
+a.download=base+'.'+ext;
+a.click();
+setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+document.querySelectorAll('[data-export]').forEach(b=>
+b.onclick=()=>exportFile(b.dataset.export)
+);
+
+$('backupTop').onclick=()=>exportFile('json');
+
+/* IMPORT */
+$('importBtn').onclick=async()=>{
+let f=$('importFile').files[0];
+
+if(!f){
+alert('Choose a JSON, CSV or TSV file.');
+return;
+}
+
+try{
+let txt=await f.text();
+let ext=f.name.split('.').pop().toLowerCase();
+
+if(ext==='json'){
+let x=JSON.parse(txt);
+
+if(!confirm('Import and merge '+(x.stories||[]).length+' stories, '+(x.epics||[]).length+' epics and '+(x.sprints||[]).length+' sprints?'))return;
+
+let imported={...blank(),...x};
+
+let ids=new Set(db.epics.map(x=>x.id));
+imported.epics.forEach(e=>{
+if(ids.has(e.id))e.id=uid('E');
+ids.add(e.id);
+});
+
+let sid=new Set(db.stories.map(x=>x.id));
+imported.stories.forEach(s=>{
+if(sid.has(s.id))s.id=uid('S');
+sid.add(s.id);
+});
+
+let spid=new Set(db.sprints.map(x=>x.id));
+imported.sprints.forEach(s=>{
+if(spid.has(s.id))s.id=uid('SP');
+spid.add(s.id);
+});
+
+db.epics.push(...imported.epics);
+db.stories.push(...imported.stories);
+db.sprints.push(...imported.sprints);
+db.scrums.push(...(imported.scrums||[]));
+}
+
+else if(ext==='csv'||ext==='tsv'){
+let sep=ext==='csv'?',':'\t';
+let rows=[],row=[],cell='',q=false;
+
+for(let i=0;i<txt.length;i++){
+let c=txt[i];
+
+if(q){
+if(c==='"'&&txt[i+1]==='"'){cell+='"';i++}
+else if(c==='"')q=false;
+else cell+=c;
+}
+else if(c==='"')q=true;
+else if(c===sep){row.push(cell);cell=''}
+else if(c==='\n'){row.push(cell);rows.push(row);row=[];cell=''}
+else if(c!=='\r')cell+=c;
+}
+
+row.push(cell);
+rows.push(row);
+
+let h=rows.shift().map(x=>x.toLowerCase());
+
+rows.filter(r=>r.some(Boolean)).forEach(r=>{
+let o={};
+h.forEach((k,i)=>o[k]=r[i]||'');
+
+db.stories.push({
+...o,
+id:uid('S'),
+key:'US-'+String(db.stories.length+1).padStart(3,'0'),
+points:Number(o.points)||0,
+created:new Date().toISOString(),
+updated:new Date().toISOString(),
+sprintId:''
+});
+});
+}
+else throw Error('Unsupported file type');
+
+$('importFile').value='';
+persist();
+alert('Import complete.');
+
+}catch(err){
+alert('Import failed: '+err.message);
+}
+};
+
+$('resetAll').onclick=()=>{
+if(confirm('Delete all epics, stories, sprints and scrum notes? Export a backup first.')){
+db=blank();
+persist();
+}
+};
+
+/* THEMES */
+$('themeGrid').innerHTML=themes.map(([id,name,c])=>
+`<button class="theme" data-theme="${id}">
+<div class="swatches">${c.map(x=>`<i style="background:${x}"></i>`).join('')}</div>
+<b>${name}</b>
+</button>`
+).join('');
+
+function setTheme(t){
+document.body.dataset.theme=t;
+localStorage.setItem('natureAgileFlow_theme',t);
+document.querySelectorAll('#themeGrid [data-theme]').forEach(b=>
+b.classList.toggle('sel',b.dataset.theme===t)
+);
+}
+
+$('themeGrid').onclick=e=>{
+let b=e.target.closest('[data-theme]');
+if(b)setTheme(b.dataset.theme);
+};
+
+setTheme(localStorage.getItem('natureAgileFlow_theme')||'forest');
+
+$('scrumDate').value=today();
+render();
+
+})();
+</script>
+</body>
+</html>
