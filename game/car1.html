@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Retro Road Racer</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#10151d;color:white;font-family:monospace;text-align:center;overflow:hidden}
+header{padding:10px;background:#172c2c;color:#7dff9b;font-size:20px;font-weight:bold}
+#stats{display:flex;justify-content:space-around;padding:9px;background:#202a32;font-size:13px}
+canvas{display:block;margin:auto;background:#333;width:min(100vw,420px);height:auto;max-height:68vh;touch-action:none}
+.controls{display:flex;justify-content:center;gap:35px;padding:12px}
+button{background:#176b4a;color:white;border:2px solid #75e99d;border-radius:10px;padding:13px 23px;font:bold 17px monospace}
+button:active{background:#70c98b;color:#111}
+#overlay{position:fixed;inset:0;background:#000c;display:flex;align-items:center;justify-content:center}
+.panel{background:#182c2b;border:3px solid #70ec92;padding:25px;width:85%;max-width:330px}
+.panel h1{color:#78ff9b}
+.panel p{line-height:1.7}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<header>🏎️ RETRO ROAD RACER</header>
+
+<div id="stats">
+ <span>SCORE: <b id="score">0</b></span>
+ <span>SPEED: <b id="speed">0</b></span>
+ <span>BEST: <b id="best">0</b></span>
+</div>
+
+<canvas id="game" width="420" height="650"></canvas>
+
+<div class="controls">
+ <button id="left">◀ LEFT</button>
+ <button id="pause">Ⅱ</button>
+ <button id="right">RIGHT ▶</button>
+</div>
+
+<div id="overlay">
+ <div class="panel">
+  <h1>🏁 ROAD RACER</h1>
+  <p>CLASSIC 8-BIT ARCADE GAME</p>
+  <p>⬅️ ➡️ Avoid traffic<br>Survive as long as possible!</p>
+  <button id="start">START GAME</button>
+ </div>
+</div>
+
+<script>
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+const W=420,H=650;
+
+let player={x:190,y:520,w:40,h:68};
+let cars=[],trees=[];
+let score=0,speed=4,frame=0;
+let running=false,paused=false,gameover=false;
+let keys={};
+let best=+(localStorage.retroBest||0);
+
+document.getElementById("best").textContent=best;
+
+function rect(x,y,w,h,c){
+ ctx.fillStyle=c;ctx.fillRect(x,y,w,h);
+}
+
+function car(x,y,color){
+ // Pixel-art car
+ rect(x+5,y,30,8,color);
+ rect(x,y+8,40,47,color);
+ rect(x+5,y+48,30,10,color);
+ rect(x+7,y+12,26,17,"#a8e9ef");
+ rect(x+8,y+33,24,12,"#183d4c");
+ rect(x+4,y+20,5,13,"#fff2a0");
+ rect(x+31,y+20,5,13,"#fff2a0");
+ rect(x+3,y+8,5,13,"#111");
+ rect(x+32,y+8,5,13,"#111");
+ rect(x+3,y+44,5,13,"#111");
+ rect(x+32,y+44,5,13,"#111");
+ rect(x+8,y+2,24,5,"#fff");
+}
+
+function road(){
+ rect(0,0,W,H,"#287a40");
+ rect(45,0,330,H,"#444");
+ rect(45,0,8,H,"#fff");
+ rect(367,0,8,H,"#fff");
+
+ // Roadside grass and trees
+ for(let i=0;i<12;i++){
+  let y=(i*75+(frame*speed)%75);
+  rect(12,y,19,23,"#704323");
+  rect(5,y-10,34,25,"#0b572a");
+  rect(389,y,19,23,"#704323");
+  rect(382,y-10,34,25,"#0b572a");
+ }
+
+ // Road lane markings
+ for(let y=-50+(frame*speed*1.5)%100;y<H;y+=100){
+  rect(151,y,6,48,"#f7e9a6");
+  rect(263,y,6,48,"#f7e9a6");
+ }
+}
+
+function reset(){
+ player.x=190;
+ cars=[];
+ score=0;speed=4;frame=0;
+ gameover=false;paused=false;
+ running=true;
+ document.getElementById("overlay").classList.add("hidden");
+}
+
+function spawnCar(){
+ let lanes=[75,185,295];
+ let lane=lanes[Math.floor(Math.random()*3)];
+ cars.push({
+  x:lane,y:-90,w:40,h:68,
+  color:["#e63d3d","#e8bc35","#428bdf","#bb61d8"][Math.floor(Math.random()*4)]
+ });
+}
+
+function collision(a,b){
+ return a.x+5<b.x+b.w-5 &&
+ a.x+a.w-5>b.x+5 &&
+ a.y+8<b.y+b.h-5 &&
+ a.y+a.h-5>b.y+8;
+}
+
+function endGame(){
+ running=false;gameover=true;
+ if(score>best){
+  best=score;
+  localStorage.retroBest=best;
+  document.getElementById("best").textContent=best;
+ }
+ document.querySelector(".panel").innerHTML=`
+ <h1>💥 GAME OVER</h1>
+ <p>YOUR SCORE: ${score}</p>
+ <p>BEST SCORE: ${best}</p>
+ <button onclick="reset()">PLAY AGAIN</button>`;
+ document.getElementById("overlay").classList.remove("hidden");
+}
+
+function update(){
+ if(!running||paused)return;
+
+ frame++;
+ score++;
+ speed=4+Math.min(score/500,9);
+
+ if(keys.ArrowLeft||keys.a)player.x-=6;
+ if(keys.ArrowRight||keys.d)player.x+=6;
+
+ player.x=Math.max(55,Math.min(325,player.x));
+
+ if(frame%Math.max(25,65-Math.floor(speed*3))===0)spawnCar();
+
+ cars.forEach(c=>{
+  c.y+=speed*1.1;
+  if(c.y>H)c.remove=true;
+  if(collision(player,c))endGame();
+ });
+ cars=cars.filter(c=>!c.remove);
+
+ document.getElementById("score").textContent=score;
+ document.getElementById("speed").textContent=Math.floor(speed*10);
+}
+
+function draw(){
+ ctx.clearRect(0,0,W,H);
+ road();
+
+ cars.forEach(c=>car(c.x,c.y,c.color));
+ car(player.x,player.y,"#13d8e9");
+
+ if(paused){
+  rect(0,0,W,H,"#0009");
+  ctx.fillStyle="white";
+  ctx.font="bold 38px monospace";
+  ctx.textAlign="center";
+  ctx.fillText("PAUSED",210,320);
+ }
+}
+
+function loop(){
+ update();
+ draw();
+ requestAnimationFrame(loop);
+}
+
+document.getElementById("start").onclick=reset;
+document.getElementById("left").ontouchstart=e=>{e.preventDefault();keys.ArrowLeft=true};
+document.getElementById("left").ontouchend=()=>keys.ArrowLeft=false;
+document.getElementById("right").ontouchstart=e=>{e.preventDefault();keys.ArrowRight=true};
+document.getElementById("right").ontouchend=()=>keys.ArrowRight=false;
+
+document.getElementById("left").onmousedown=()=>keys.ArrowLeft=true;
+document.getElementById("left").onmouseup=()=>keys.ArrowLeft=false;
+document.getElementById("right").onmousedown=()=>keys.ArrowRight=true;
+document.getElementById("right").onmouseup=()=>keys.ArrowRight=false;
+
+document.getElementById("pause").onclick=()=>{
+ if(running)paused=!paused;
+};
+
+document.addEventListener("keydown",e=>{
+ if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"," "].includes(e.key))e.preventDefault();
+ keys[e.key]=true;
+ if(e.key==="Escape"&&running)paused=!paused;
+});
+document.addEventListener("keyup",e=>keys[e.key]=false);
+
+loop();
+</script>
+</body>
+</html>

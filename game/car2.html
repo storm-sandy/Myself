@@ -1,0 +1,617 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#10151d">
+<title>Retro Road Racer Pro</title>
+
+<style>
+*{box-sizing:border-box}
+html,body{
+ margin:0;width:100%;height:100%;overflow:hidden;
+ background:#10151d;color:white;font-family:monospace;
+}
+body{
+ display:flex;flex-direction:column;align-items:center;
+}
+header{
+ flex:none;width:100%;height:37px;padding:8px;
+ background:#172c2c;color:#7dff9b;
+ font-size:19px;font-weight:bold;text-align:center;
+}
+#stats{
+ flex:none;width:100%;min-height:39px;
+ display:flex;justify-content:space-around;align-items:center;
+ gap:4px;padding:5px 3px;background:#202a32;
+ font-size:11px;white-space:nowrap;
+}
+.stat{display:flex;gap:4px;align-items:center}
+#fuelbar{
+ width:42px;height:7px;background:#444;border-radius:5px;
+ overflow:hidden;display:inline-block;
+}
+#fuelFill{height:100%;width:100%;background:#50e58a}
+#settings{
+ flex:none;width:100%;height:34px;display:flex;
+ align-items:center;justify-content:center;gap:7px;
+ background:#18232c;padding:3px;
+}
+#settings label{font-size:10px;color:#b9d9c6}
+select{
+ max-width:105px;padding:4px 3px;border-radius:5px;
+ border:1px solid #5e9d78;background:#243b35;color:white;
+ font:10px monospace;
+}
+#gameArea{
+ flex:1;min-height:0;width:100%;
+ display:flex;justify-content:center;align-items:stretch;
+ background:#10151d;
+}
+canvas{
+ display:block;width:min(100%,520px);height:100%;
+ background:#333;touch-action:none;
+}
+.controls{
+ flex:none;width:100%;height:57px;
+ display:flex;justify-content:center;align-items:center;
+ gap:clamp(10px,5vw,35px);background:#17232a;
+}
+button{
+ background:#176b4a;color:white;
+ border:2px solid #75e99d;border-radius:9px;
+ padding:9px 18px;font:bold 15px monospace;
+ touch-action:none;user-select:none;
+}
+button:active{background:#70c98b;color:#111}
+.smallBtn{padding:7px 11px;font-size:12px}
+#overlay{
+ position:fixed;inset:0;background:#000c;
+ display:flex;align-items:center;justify-content:center;
+ z-index:10;padding:15px;
+}
+.panel{
+ background:#182c2b;border:3px solid #70ec92;
+ padding:22px;width:85%;max-width:340px;text-align:center;
+}
+.panel h1{color:#78ff9b;font-size:23px}
+.panel p{line-height:1.6;font-size:13px}
+.hidden{display:none!important}
+</style>
+</head>
+
+<body>
+
+<header>🏎️ RETRO ROAD RACER PRO</header>
+
+<div id="stats">
+ <span class="stat">SCORE <b id="score">0</b></span>
+ <span class="stat">BEST <b id="best">0</b></span>
+ <span class="stat">LAP <b id="lap">1</b></span>
+ <span class="stat">LV <b id="level">1</b></span>
+ <span class="stat">⛽ <span id="fuelbar"><span id="fuelFill"></span></span></span>
+</div>
+
+<div id="settings">
+ <label>🚘 CAR</label>
+ <select id="carColor">
+  <option value="#13d8e9">Cyan</option>
+  <option value="#ff3333">Red</option>
+  <option value="#ffcc22">Yellow</option>
+  <option value="#ffffff">White</option>
+  <option value="#bb61d8">Purple</option>
+  <option value="#42e85c">Green</option>
+  <option value="#ff8c32">Orange</option>
+ </select>
+ <label>🛣️ ROAD</label>
+ <select id="roadColor">
+  <option value="#444444">Classic</option>
+  <option value="#343d50">Blue</option>
+  <option value="#494047">Purple</option>
+  <option value="#354b43">Green</option>
+  <option value="#242424">Dark</option>
+  <option value="#696969">Grey</option>
+ </select>
+ <button class="smallBtn" id="sound">🔊</button>
+</div>
+
+<div id="gameArea">
+ <canvas id="game" width="420" height="650"></canvas>
+</div>
+
+<div class="controls">
+ <button id="left">◀ LEFT</button>
+ <button id="pause">Ⅱ</button>
+ <button id="right">RIGHT ▶</button>
+</div>
+
+<div id="overlay">
+ <div class="panel" id="panel">
+  <h1>🏁 ROAD RACER</h1>
+  <p>CLASSIC PIXEL ARCADE GAME</p>
+  <p>
+   ⬅️ ➡️ Avoid traffic<br>
+   ⛽ Collect petrol cans<br>
+   🚧 Avoid roadblocks<br>
+   🕳️ Watch out for potholes<br>
+   🏁 Complete laps and levels!
+  </p>
+  <button id="start">START GAME</button>
+ </div>
+</div>
+
+<script>
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+const W=420,H=650;
+
+const $=id=>document.getElementById(id);
+
+let player={x:190,y:520,w:40,h:68};
+let objects=[];
+let score=0,best=+(localStorage.retroBest||0);
+let speed=4,frame=0,distance=0;
+let fuel=100,lap=1,level=1;
+let running=false,paused=false;
+let keys={};
+let roadColor="#444444";
+let carColor="#13d8e9";
+let soundOn=true;
+let audio=null;
+let lastTime=0,spawnTimer=0;
+let roadOffset=0;
+let fuelTimer=0;
+
+$("best").textContent=best;
+
+// ---------- SOUND ----------
+function beep(freq=500,duration=.08,type="square",volume=.035){
+ if(!soundOn)return;
+ try{
+  audio=audio||new(window.AudioContext||window.webkitAudioContext)();
+  if(audio.state==="suspended")audio.resume();
+  let osc=audio.createOscillator();
+  let gain=audio.createGain();
+  osc.type=type;
+  osc.frequency.value=freq;
+  gain.gain.value=volume;
+  gain.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);
+  osc.connect(gain);
+  gain.connect(audio.destination);
+  osc.start();
+  osc.stop(audio.currentTime+duration);
+ }catch(e){}
+}
+function crashSound(){
+ beep(130,.35,"sawtooth",.08);
+ setTimeout(()=>beep(75,.3,"square",.06),100);
+}
+$("sound").onclick=()=>{
+ soundOn=!soundOn;
+ $("sound").textContent=soundOn?"🔊":"🔇";
+ if(soundOn)beep(650);
+};
+
+// ---------- DRAW HELPERS ----------
+function rect(x,y,w,h,c){
+ ctx.fillStyle=c;
+ ctx.fillRect(x,y,w,h);
+}
+
+function car(x,y,color){
+ // Wheels
+ rect(x+1,y+10,6,17,"#080808");
+ rect(x+33,y+10,6,17,"#080808");
+ rect(x+1,y+43,6,17,"#080808");
+ rect(x+33,y+43,6,17,"#080808");
+
+ // Body
+ rect(x+5,y,30,8,color);
+ rect(x,y+8,40,47,color);
+ rect(x+5,y+48,30,10,color);
+
+ // Windows
+ rect(x+7,y+12,26,17,"#a8e9ef");
+ rect(x+8,y+33,24,12,"#183d4c");
+ rect(x+10,y+14,5,12,"#e7ffff");
+
+ // Lights
+ rect(x+4,y+20,5,13,"#fff2a0");
+ rect(x+31,y+20,5,13,"#fff2a0");
+ rect(x+8,y+2,24,5,"#fff");
+
+ // Bumper
+ rect(x+9,y+56,22,4,"#aaa");
+}
+
+// ---------- ROAD ----------
+function road(){
+ rect(0,0,W,H,"#287a40");
+
+ // Grass side
+ rect(45,0,330,H,roadColor);
+
+ // Road borders
+ rect(45,0,7,H,"#eeeeee");
+ rect(368,0,7,H,"#eeeeee");
+
+ // Side strips
+ rect(53,0,5,H,"#777");
+ rect(362,0,5,H,"#777");
+
+ // Roadside grass and trees
+ for(let i=0;i<12;i++){
+  let y=(i*75+roadOffset)%750-75;
+
+  rect(12,y,19,23,"#704323");
+  rect(5,y-10,34,25,"#0b572a");
+
+  rect(389,y,19,23,"#704323");
+  rect(382,y-10,34,25,"#0b572a");
+
+  // Roadside flags
+  if(i%3===0){
+   rect(25,y-22,3,18,"#ddd");
+   rect(28,y-22,15,9,i%2?"#ff3333":"#ffdb31");
+   rect(392,y-22,3,18,"#ddd");
+   rect(395,y-22,15,9,"#ff3333");
+  }
+ }
+
+ // Lane markings
+ for(let y=-50+roadOffset%100;y<H;y+=100){
+  rect(151,y,6,48,"#f7e9a6");
+  rect(263,y,6,48,"#f7e9a6");
+ }
+}
+
+// ---------- OBJECTS ----------
+function spawnObject(){
+ let lanes=[75,185,295];
+ let lane=lanes[Math.floor(Math.random()*3)];
+
+ let r=Math.random();
+ let type;
+
+ if(fuel<65 && r<.23)type="fuel";
+ else if(r<.43)type="block";
+ else if(r<.61)type="pothole";
+ else type="car";
+
+ let colors=["#e63d3d","#e8bc35","#428bdf","#bb61d8"];
+
+ objects.push({
+  x:lane,y:-90,w:40,h:68,
+  type,
+  color:colors[Math.floor(Math.random()*colors.length)],
+  hit:false
+ });
+}
+
+function drawObject(o){
+ if(o.type==="car"){
+  car(o.x,o.y,o.color);
+ }
+
+ if(o.type==="fuel"){
+  rect(o.x+9,o.y+15,22,38,"#18d66a");
+  rect(o.x+14,o.y+9,12,8,"#ddd");
+  rect(o.x+14,o.y+23,12,18,"#fff");
+  rect(o.x+18,o.y+25,4,13,"#18a84c");
+  ctx.fillStyle="#fff";
+  ctx.font="bold 10px monospace";
+  ctx.fillText("F",o.x+18,o.y+50);
+ }
+
+ if(o.type==="block"){
+  rect(o.x,o.y+18,40,32,"#777");
+  rect(o.x-3,o.y+15,46,7,"#aaa");
+  for(let i=0;i<4;i++){
+   rect(o.x+i*11,o.y+23,7,20,i%2?"#ffdf21":"#e72d2d");
+  }
+  rect(o.x+2,o.y+50,5,8,"#222");
+  rect(o.x+33,o.y+50,5,8,"#222");
+ }
+
+ if(o.type==="pothole"){
+  ctx.fillStyle="#151515";
+  ctx.beginPath();
+  ctx.ellipse(o.x+20,o.y+36,19,11,0,0,Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle="#777";
+  ctx.lineWidth=3;
+  ctx.stroke();
+ }
+}
+
+// ---------- COLLISION ----------
+function collision(a,b){
+ return a.x+7<b.x+b.w-7 &&
+ a.x+a.w-7>b.x+7 &&
+ a.y+10<b.y+b.h-5 &&
+ a.y+a.h-8>b.y+8;
+}
+
+// ---------- RESET ----------
+function reset(){
+ player.x=190;
+ objects=[];
+ score=0;
+ speed=4;
+ frame=0;
+ distance=0;
+ fuel=100;
+ lap=1;
+ level=1;
+ roadOffset=0;
+ spawnTimer=0;
+ fuelTimer=0;
+ paused=false;
+ running=true;
+ lastTime=0;
+
+ $("panel").innerHTML=`
+  <h1>🏁 ROAD RACER</h1>
+  <p>GET READY! GOOD LUCK!</p>
+ `;
+ $("overlay").classList.add("hidden");
+ updateStats();
+ beep(600,.12);
+}
+
+// ---------- GAME OVER ----------
+function endGame(reason){
+ if(!running)return;
+
+ running=false;
+ crashSound();
+
+ if(score>best){
+  best=score;
+  localStorage.retroBest=best;
+ }
+
+ $("best").textContent=best;
+
+ $("panel").innerHTML=`
+  <h1>💥 GAME OVER</h1>
+  <p>${reason}</p>
+  <p>YOUR SCORE: ${score}</p>
+  <p>BEST SCORE: ${best}</p>
+  <p>LAP: ${lap} | LEVEL: ${level}</p>
+  <button id="again">PLAY AGAIN</button>
+ `;
+ $("overlay").classList.remove("hidden");
+ $("again").onclick=reset;
+}
+
+// ---------- STATS ----------
+function updateStats(){
+ $("score").textContent=score;
+ $("best").textContent=best;
+ $("lap").textContent=lap;
+ $("level").textContent=level;
+ $("fuelFill").style.width=fuel+"%";
+ $("fuelFill").style.background=
+  fuel<25?"#ff3333":fuel<50?"#ffcc22":"#50e58a";
+}
+
+// ---------- UPDATE ----------
+function update(dt){
+ if(!running||paused)return;
+
+ // Stable frame-independent movement
+ let step=Math.min(dt,35)/16.67;
+
+ frame++;
+ fuel-=.014*step;
+ distance+=speed*step;
+ roadOffset=(roadOffset+speed*step)%750;
+
+ // Score
+ score+=Math.floor(step);
+
+ // Lap and level
+ let newLap=Math.floor(distance/1800)+1;
+ let newLevel=Math.floor((newLap-1)/2)+1;
+
+ if(newLap>lap){
+  lap=newLap;
+  beep(850,.18,"square");
+  score+=100;
+ }
+ if(newLevel>level){
+  level=newLevel;
+  beep(1100,.25,"triangle");
+ }
+
+ // Speed progression
+ speed=4+Math.min((level-1)*.65,5)+Math.min(score/1500,2);
+
+ // Player movement
+ let movement=5.5*step;
+ if(keys.ArrowLeft||keys.a||keys.A)player.x-=movement;
+ if(keys.ArrowRight||keys.d||keys.D)player.x+=movement;
+
+ player.x=Math.max(55,Math.min(325,player.x));
+
+ // Fuel
+ if(fuel<=0){
+  fuel=0;
+  updateStats();
+  endGame("⛽ PETROL FINISHED!");
+  return;
+ }
+
+ // Spawn traffic and obstacles
+ spawnTimer+=dt;
+ let spawnGap=Math.max(430,1050-(level-1)*80);
+
+ if(spawnTimer>spawnGap){
+  spawnTimer=0;
+  spawnObject();
+ }
+
+ // Move objects
+ for(let o of objects){
+  o.y+=speed*1.15*step;
+
+  if(o.y>H+100)o.remove=true;
+
+  if(collision(player,o)&&!o.hit){
+   o.hit=true;
+   o.remove=true;
+
+   if(o.type==="fuel"){
+    fuel=Math.min(100,fuel+28);
+    score+=50;
+    beep(950,.2,"sine");
+   }
+   else if(o.type==="pothole"){
+    fuel=Math.max(0,fuel-5);
+    speed=Math.max(2,speed-1.5);
+    beep(180,.16);
+   }
+   else{
+    endGame(o.type==="block"?
+     "🚧 YOU HIT A ROADBLOCK!":
+     "🚘 YOU CRASHED INTO TRAFFIC!");
+    return;
+   }
+  }
+ }
+
+ objects=objects.filter(o=>!o.remove);
+
+ // Small background engine sound
+ fuelTimer+=dt;
+ if(fuelTimer>2500){
+  fuelTimer=0;
+  // No continuous sound to avoid distraction
+ }
+
+ updateStats();
+}
+
+// ---------- DRAW ----------
+function draw(){
+ ctx.clearRect(0,0,W,H);
+ road();
+
+ objects.forEach(drawObject);
+
+ // Player car
+ car(player.x,player.y,carColor);
+
+ // Dashboard overlays on canvas
+ ctx.fillStyle="rgba(0,0,0,.45)";
+ ctx.fillRect(60,8,100,24);
+ ctx.fillStyle="#fff";
+ ctx.font="12px monospace";
+ ctx.textAlign="left";
+ ctx.fillText("LEVEL "+level,68,25);
+
+ ctx.fillStyle="rgba(0,0,0,.45)";
+ ctx.fillRect(270,8,90,24);
+ ctx.fillStyle="#fff";
+ ctx.fillText("LAP "+lap,280,25);
+
+ if(paused){
+  rect(0,0,W,H,"#0009");
+  ctx.fillStyle="white";
+  ctx.font="bold 38px monospace";
+  ctx.textAlign="center";
+  ctx.fillText("PAUSED",210,320);
+  ctx.font="14px monospace";
+  ctx.fillText("PRESS PAUSE TO RESUME",210,350);
+ }
+}
+
+// ---------- GAME LOOP ----------
+function loop(time){
+ if(!lastTime)lastTime=time;
+ let dt=time-lastTime;
+ lastTime=time;
+
+ update(dt);
+ draw();
+ requestAnimationFrame(loop);
+}
+
+// ---------- CONTROLS ----------
+$("start").onclick=reset;
+
+function bindMove(id,direction){
+ let btn=$(id);
+
+ btn.addEventListener("pointerdown",e=>{
+  e.preventDefault();
+  keys[direction]=true;
+  btn.setPointerCapture(e.pointerId);
+ });
+
+ function release(e){
+  keys[direction]=false;
+ }
+ btn.addEventListener("pointerup",release);
+ btn.addEventListener("pointercancel",release);
+ btn.addEventListener("lostpointercapture",release);
+ btn.addEventListener("pointerleave",e=>{
+  if(e.buttons===0)release(e);
+ });
+}
+
+bindMove("left","ArrowLeft");
+bindMove("right","ArrowRight");
+
+$("pause").onclick=()=>{
+ if(!running)return;
+ paused=!paused;
+ $("pause").textContent=paused?"▶":"Ⅱ";
+ beep(paused?300:650,.08);
+};
+
+document.addEventListener("keydown",e=>{
+ if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"," "].includes(e.key)){
+  e.preventDefault();
+ }
+ keys[e.key]=true;
+
+ if(e.key==="Escape"&&running){
+  paused=!paused;
+  $("pause").textContent=paused?"▶":"Ⅱ";
+ }
+});
+
+document.addEventListener("keyup",e=>{
+ keys[e.key]=false;
+});
+
+// Settings
+$("carColor").onchange=e=>{
+ carColor=e.target.value;
+ beep(700,.06);
+};
+
+$("roadColor").onchange=e=>{
+ roadColor=e.target.value;
+ beep(700,.06);
+};
+
+// Prevent stuck movement when leaving app
+window.addEventListener("blur",()=>{
+ keys.ArrowLeft=false;
+ keys.ArrowRight=false;
+ keys.a=false;
+ keys.d=false;
+});
+
+// Initial screen
+updateStats();
+$("best").textContent=best;
+requestAnimationFrame(loop);
+
+</script>
+</body>
+</html>
