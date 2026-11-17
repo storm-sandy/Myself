@@ -1,0 +1,602 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#167b50">
+<title>Daily Life Planner Pro 2.0</title>
+<style>
+:root{
+--bg:#f2f7f3;--card:#fff;--text:#20382c;--muted:#718078;
+--primary:#167b50;--soft:#e4f2e9;--border:#e0e9e2;
+--red:#d64e4e;--orange:#c98524;--shadow:0 2px 12px #163a2510
+}
+body[data-theme="ocean"]{--primary:#167c91;--soft:#e1f2f5;--bg:#f0f7f8}
+body[data-theme="sunset"]{--primary:#bc673e;--soft:#f9eae1;--bg:#faf4ee}
+body[data-theme="lavender"]{--primary:#7956a6;--soft:#eee6f8;--bg:#f7f4fb}
+body[data-theme="dark"]{--bg:#111b18;--card:#1c2923;--text:#e6f1e9;--muted:#a0b2a6;--border:#33453a;--soft:#263d30;--shadow:none}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px system-ui,-apple-system,Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+header{background:var(--primary);color:white;padding:12px 15px;position:sticky;top:0;z-index:10}
+.head{max-width:1150px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.brand{font-weight:850;font-size:18px}.sub{font-size:11px;opacity:.85}
+.head button{border:1px solid #ffffff60;background:#ffffff20;color:white;border-radius:9px;padding:8px 11px}
+main{max-width:1150px;margin:auto;padding:12px}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:9px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:9px 10px;box-shadow:var(--shadow);min-width:0}
+.stat small{color:var(--muted);font-size:10px}.stat strong{display:block;font-size:21px;margin-top:2px}
+.stat.late strong{color:var(--red)}
+.progresscard{background:var(--card);border:1px solid var(--border);padding:10px 12px;border-radius:11px;margin-bottom:10px}
+.progresshead{display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px}
+.progress{height:7px;background:var(--soft);border-radius:10px;overflow:hidden}
+.progress div{height:100%;width:0;background:var(--primary);transition:width .2s}
+.tabs{display:flex;gap:5px;overflow-x:auto;padding:3px 0 10px;position:sticky;top:49px;background:var(--bg);z-index:5;scrollbar-width:none}
+.tabs button{white-space:nowrap;border:1px solid var(--border);background:var(--card);color:var(--muted);padding:9px 12px;border-radius:9px;font-weight:650}
+.tabs button.active{background:var(--primary);color:white;border-color:var(--primary)}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px;margin-bottom:10px;box-shadow:var(--shadow)}
+.section{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+h3{font-size:15px;margin:0}
+.muted{font-size:11px;color:var(--muted)}
+.btn{border:0;border-radius:9px;padding:9px 12px;background:var(--primary);color:white;font-weight:650}
+.btn.secondary{background:var(--soft);color:var(--primary)}
+.btn.danger{background:#ffeded;color:var(--red)}
+.btn.small{padding:6px 9px;font-size:11px}
+.row{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.row>*{min-width:0}
+.event{display:flex;gap:9px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.event:last-child{border-bottom:0}
+.event input[type=checkbox]{width:19px;height:19px;accent-color:var(--primary);flex-shrink:0}
+.eventbody{flex:1;min-width:0}
+.eventname{font-weight:700;overflow-wrap:anywhere}
+.event.done .eventname{text-decoration:line-through;color:var(--muted)}
+.eventmeta{font-size:10px;color:var(--muted);margin-top:3px;overflow-wrap:anywhere}
+.pill{font-size:9px;padding:4px 7px;border-radius:20px;background:var(--soft);color:var(--primary);white-space:nowrap}
+.pill.red{background:#ffeded;color:var(--red)}
+.pill.orange{background:#fff1dc;color:#a46c19}
+.actions{display:flex;gap:2px;align-items:center}
+.iconbtn{border:0;background:transparent;color:var(--muted);padding:5px;font-size:14px}
+.empty{text-align:center;padding:25px 10px;color:var(--muted);font-size:12px}
+input,select,textarea{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px;width:100%;min-width:0}
+label{display:block;font-size:11px;color:var(--muted);margin:9px 0 5px}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.full{grid-column:1/-1}
+textarea{min-height:60px;resize:vertical}
+.search{margin-bottom:9px}
+.calendarhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.calendarhead button{background:var(--soft);color:var(--primary);border:0;border-radius:8px;padding:8px 13px}
+.weekdays,.heatgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.weekdays{text-align:center;font-size:10px;color:var(--muted);margin-bottom:5px}
+.daycell{min-height:43px;border:1px solid var(--border);border-radius:6px;padding:4px 1px;text-align:center;background:var(--card);font-size:10px;cursor:pointer}
+.daycell b{display:block;font-size:12px;margin-bottom:3px}
+.daycell .dot{font-size:9px;color:var(--primary)}
+.daycell.level1{background:#e0f1e5}.daycell.level2{background:#b4dfc1}.daycell.level3{background:#6fbc8a;color:#123d25}.daycell.level4{background:#167b50;color:white}
+.daycell.level3 .dot,.daycell.level4 .dot{color:inherit}
+.daycell.selected{outline:2px solid var(--orange)}
+.legend{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:10px;color:var(--muted);margin-top:10px}
+.square{width:10px;height:10px;border-radius:3px;display:inline-block}
+.modal{position:fixed;inset:0;background:#0009;z-index:30;display:none;align-items:center;justify-content:center;padding:10px}
+.modal.show{display:flex}
+.dialog{background:var(--bg);border-radius:14px;padding:16px;width:min(510px,100%);max-height:94vh;overflow:auto}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#173d2c;color:white;padding:11px 16px;border-radius:10px;display:none;z-index:50;max-width:90%;text-align:center}
+.badgecount{background:#ffe8d2;color:#9b551c;padding:2px 6px;border-radius:15px;font-size:10px}
+.streak{font-size:12px;color:var(--primary);font-weight:700}
+.settingrow{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--border);padding:9px 0}
+.settingrow:last-child{border:0}
+@media(min-width:720px){
+ main{padding:17px}.summary{grid-template-columns:repeat(4,1fr)}
+ .twocol{display:grid;grid-template-columns:1.35fr 1fr;gap:10px}
+}
+@media(max-width:420px){
+ main{padding:8px}.summary{gap:5px}.stat{padding:8px}.stat strong{font-size:19px}
+ .tabs button{padding:8px 10px;font-size:12px}
+ .event{gap:6px}.actions .iconbtn{padding:3px;font-size:12px}
+ .pill{font-size:8px;padding:3px 5px}
+}
+</style>
+</head>
+<body data-theme="forest">
+<header>
+<div class="head">
+ <div><div class="brand">🌿 Life Planner Pro <span style="font-size:10px">2.0</span></div>
+ <div class="sub" id="dateLabel">Your personal daily organiser</div></div>
+ <div class="row">
+  <button onclick="testNotification()" title="Test reminder">🔔</button>
+  <button onclick="openForm()">＋ Add</button>
+ </div>
+</div>
+</header>
+<main>
+<div class="summary">
+ <div class="stat"><small>Today's tasks</small><strong id="sTotal">0</strong></div>
+ <div class="stat"><small>Completed</small><strong id="sDone">0</strong></div>
+ <div class="stat"><small>Pending</small><strong id="sPending">0</strong></div>
+ <div class="stat late"><small>Missed / overdue</small><strong id="sLate">0</strong></div>
+</div>
+<div class="progresscard">
+ <div class="progresshead"><span id="progressText">Daily progress</span><b id="progressPct">0%</b></div>
+ <div class="progress"><div id="progressBar"></div></div>
+</div>
+<nav class="tabs">
+ <button class="active" data-tab="upcoming">📌 Upcoming</button>
+ <button data-tab="today">☑ Today</button>
+ <button data-tab="calendar">📅 Calendar</button>
+ <button data-tab="all">📋 All Tasks</button>
+ <button data-tab="stats">📊 Insights</button>
+ <button data-tab="settings">⚙ Settings</button>
+</nav>
+
+<section id="upcoming" class="panel active">
+ <div class="twocol">
+  <div class="card">
+   <div class="section"><h3>Upcoming events</h3><span class="muted">Next 30 days</span></div>
+   <div id="upcomingList"></div>
+  </div>
+  <div>
+   <div class="card">
+    <div class="section"><h3>🚨 Missed tasks</h3><span id="missedCount" class="badgecount">0</span></div>
+    <div id="missedList"></div>
+   </div>
+   <div class="card">
+    <div class="section"><h3>⭐ Important</h3></div>
+    <div id="importantList"></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section id="today" class="panel">
+ <div class="card">
+  <div class="section"><h3>Today's checklist</h3><span class="streak" id="todayLabel"></span></div>
+  <div id="todayList"></div>
+ </div>
+ <div class="card">
+  <h3>Quick add task</h3>
+  <div class="row" style="margin-top:10px">
+   <input id="quickTitle" placeholder="Enter a task..." style="flex:1">
+   <button class="btn" onclick="quickAdd()">Add</button>
+  </div>
+ </div>
+</section>
+
+<section id="calendar" class="panel">
+ <div class="card">
+  <div class="calendarhead">
+   <button onclick="changeMonth(-1)">‹</button><b id="monthTitle"></b>
+   <button onclick="changeMonth(1)">›</button>
+  </div>
+  <div class="weekdays"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+  <div class="heatgrid" id="heatmap"></div>
+  <div class="legend">Completion:
+   <i class="square" style="background:#e0f1e5"></i>
+   <i class="square" style="background:#b4dfc1"></i>
+   <i class="square" style="background:#6fbc8a"></i>
+   <i class="square" style="background:#167b50"></i> Full
+  </div>
+ </div>
+ <div class="card">
+  <div class="section"><h3 id="selectedTitle">Selected date</h3>
+   <button class="btn small" onclick="openForm(selectedDate)">＋ Add</button></div>
+  <div id="selectedList"></div>
+ </div>
+</section>
+
+<section id="all" class="panel">
+ <div class="card">
+  <h3 style="margin-bottom:10px">Manage all events</h3>
+  <input id="search" class="search" placeholder="🔍 Search title, notes or category..." oninput="renderAll()">
+  <div class="row">
+   <select id="filter" onchange="renderAll()" style="flex:1">
+    <option value="all">All events</option><option value="pending">Pending today</option>
+    <option value="done">Completed today</option><option value="important">Important</option>
+    <option value="overdue">Overdue</option>
+   </select>
+   <button class="btn" onclick="openForm()">＋ Add</button>
+  </div>
+  <div id="allList" style="margin-top:8px"></div>
+ </div>
+</section>
+
+<section id="stats" class="panel">
+ <div class="summary">
+  <div class="stat"><small>This month</small><strong id="mTotal">0</strong></div>
+  <div class="stat"><small>Finished</small><strong id="mDone">0</strong></div>
+  <div class="stat"><small>Completion</small><strong id="mRate">0%</strong></div>
+  <div class="stat"><small>Active streak</small><strong id="streak">0</strong></div>
+ </div>
+ <div class="card">
+  <h3>Monthly performance</h3>
+  <div id="monthStats" style="margin-top:12px"></div>
+ </div>
+ <div class="card">
+  <h3>Category summary</h3>
+  <div id="categoryStats" style="margin-top:10px"></div>
+ </div>
+</section>
+
+<section id="settings" class="panel">
+ <div class="card">
+  <h3>🔔 Reminder settings</h3>
+  <p class="muted">Notifications require browser permission. Keep this page open for in-page reminder checks.</p>
+  <div class="row">
+   <button class="btn" onclick="enableNotifications()">Enable notifications</button>
+   <button class="btn secondary" onclick="testNotification()">Test</button>
+  </div>
+  <p class="muted" id="permissionText"></p>
+  <label>Default reminder</label>
+  <select id="defaultReminder">
+   <option value="0">At event time</option><option value="5">5 minutes before</option>
+   <option value="10">10 minutes before</option><option value="15">15 minutes before</option>
+   <option value="30">30 minutes before</option><option value="60">1 hour before</option>
+   <option value="1440">1 day before</option>
+  </select>
+  <label>Reminder sound</label>
+  <select id="soundSetting"><option value="on">On</option><option value="off">Off</option></select>
+  <button class="btn secondary" style="margin-top:10px" onclick="saveSettings()">Save settings</button>
+ </div>
+ <div class="card">
+  <h3>🎨 Appearance</h3>
+  <label>Choose theme</label>
+  <select id="themeSelect" onchange="setTheme(this.value)">
+   <option value="forest">Forest Green</option><option value="ocean">Ocean Blue</option>
+   <option value="sunset">Warm Sunset</option><option value="lavender">Lavender</option>
+   <option value="dark">Dark Mode</option>
+  </select>
+ </div>
+ <div class="card">
+  <h3>💾 Backup & data</h3>
+  <p class="muted">Export your events and settings to a JSON file. Store a copy safely.</p>
+  <div class="row">
+   <button class="btn" onclick="exportJSON()">Export JSON</button>
+   <button class="btn secondary" onclick="$('importFile').click()">Import JSON</button>
+   <input hidden type="file" id="importFile" accept=".json,application/json" onchange="importJSON(event)">
+  </div>
+  <div class="row" style="margin-top:9px">
+   <button class="btn secondary" onclick="exportCSV()">Export CSV</button>
+   <button class="btn danger" onclick="clearCompleted()">Clean completed</button>
+  </div>
+  <p class="muted" id="storageInfo"></p>
+ </div>
+ <div class="card">
+  <h3>About reminders</h3>
+  <p class="muted">This single-file version checks reminders every 15 seconds while the page is running. Browser notifications may be blocked when the app is closed or the device suspends it. For reliable closed-app reminders, a push server or native scheduled notification service is needed.</p>
+  <button class="btn secondary" onclick="showHelp()">Reminder help</button>
+ </div>
+</section>
+<footer class="muted" style="text-align:center;padding:16px">Life Planner Pro 2.0 · Local private storage · Single HTML</footer>
+</main>
+
+<div class="modal" id="eventModal">
+<div class="dialog">
+ <div class="section"><h3 id="formHeading">Add event</h3><button class="iconbtn" onclick="closeForm()">✕</button></div>
+ <form id="eventForm">
+  <input type="hidden" id="editId">
+  <div class="formgrid">
+   <div class="full"><label>Task / Event name *</label><input id="fTitle" maxlength="120" required placeholder="e.g. Doctor appointment"></div>
+   <div><label>Date *</label><input id="fDate" type="date" required></div>
+   <div><label>Time</label><input id="fTime" type="time"></div>
+   <div><label>Category</label><select id="fCategory">
+    <option>Personal</option><option>Work</option><option>Family</option><option>Health</option>
+    <option>Finance</option><option>Birthday</option><option>Appointment</option><option>Learning</option><option>Other</option>
+   </select></div>
+   <div><label>Priority</label><select id="fPriority">
+    <option value="normal">Normal</option><option value="important">Important</option><option value="urgent">Urgent</option>
+   </select></div>
+   <div><label>Repeat</label><select id="fRepeat">
+    <option value="none">One time</option><option value="daily">Daily</option>
+    <option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option>
+   </select></div>
+   <div><label>Repeat until (optional)</label><input type="date" id="fUntil"></div>
+   <div><label>Reminder</label><select id="fReminder">
+    <option value="-1">Use default</option><option value="0">At event time</option>
+    <option value="5">5 min before</option><option value="10">10 min before</option>
+    <option value="15">15 min before</option><option value="30">30 min before</option>
+    <option value="60">1 hour before</option><option value="1440">1 day before</option>
+   </select></div>
+   <div class="full"><label>Notes / Location / Details</label><textarea id="fNotes" placeholder="Add useful details..."></textarea></div>
+  </div>
+  <div class="row" style="margin-top:14px">
+   <button class="btn" type="submit">Save event</button><button class="btn secondary" type="button" onclick="closeForm()">Cancel</button>
+  </div>
+ </form>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const DB='lifeplanner_pro_2_events';
+const SET='lifeplanner_pro_2_settings';
+const today=()=>key(new Date());
+const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const date=s=>{let [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const addDays=(s,n)=>{let d=date(s);d.setDate(d.getDate()+n);return key(d)};
+const fmt=s=>date(s).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let events=[],settings={reminder:10,sound:'on',theme:'forest'};
+let month=new Date();month.setDate(1);
+let selectedDate=today(),alerted=new Set(),audioCtx=null;
+try{events=JSON.parse(localStorage.getItem(DB)||'[]');if(!Array.isArray(events))events=[]}catch(e){events=[]}
+try{settings={...settings,...JSON.parse(localStorage.getItem(SET)||'{}')}}catch(e){}
+events=events.filter(e=>e&&e.title&&e.date).map(e=>({...e,doneDates:e.doneDates||[],notified:e.notified||[],snoozes:e.snoozes||{}}));
+function persist(){try{localStorage.setItem(DB,JSON.stringify(events));}catch(e){toast('Storage full. Export a backup.')}render()}
+function persistSettings(){localStorage.setItem(SET,JSON.stringify(settings))}
+function toast(s){let t=$('toast');t.textContent=s;t.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display='none',2600)}
+function setTheme(t){settings.theme=t;document.body.dataset.theme=t;persistSettings()}
+function saveSettings(){settings.reminder=+$('defaultReminder').value;settings.sound=$('soundSetting').value;persistSettings();toast('Settings saved')}
+function switchTab(t){
+ document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+ document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===t));
+ if(t==='calendar')renderCalendar();if(t==='stats')renderStats();if(t==='all')renderAll();
+}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
+function occurs(e,d){
+ if(d<e.date||(e.until&&d>e.until))return false;
+ let diff=Math.round((date(d)-date(e.date))/86400000);
+ if(e.repeat==='none')return diff===0;
+ if(e.repeat==='daily')return true;
+ if(e.repeat==='weekly')return diff>=0&&diff%7===0;
+ if(e.repeat==='monthly')return date(d).getDate()===date(e.date).getDate();
+ if(e.repeat==='yearly')return date(d).getDate()===date(e.date).getDate()&&date(d).getMonth()===date(e.date).getMonth();
+ return diff===0;
+}
+function itemsOn(d){return events.filter(e=>occurs(e,d)).sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99'))}
+function doneKey(e,d){return d}
+function isDone(e,d){return (e.doneDates||[]).includes(doneKey(e,d))}
+function toggleDone(id,d){
+ let e=events.find(x=>x.id===id);if(!e)return;
+ e.doneDates=e.doneDates||[];
+ if(isDone(e,d))e.doneDates=e.doneDates.filter(x=>x!==d);else e.doneDates.push(d);
+ persist();toast(isDone(e,d)?'Task completed ✓':'Completion undone');
+}
+function isMissed(e,d){
+ if(d>=today()||isDone(e,d))return false;
+ if(e.time)return new Date(d+'T'+e.time).getTime()<Date.now();
+ return true;
+}
+function eventHTML(e,d,opts={}){
+ let done=isDone(e,d),late=isMissed(e,d);
+ let status=done?'<span class="pill">Done</span>':late?'<span class="pill red">Missed</span>':
+ e.priority==='urgent'?'<span class="pill red">Urgent</span>':e.priority==='important'?'<span class="pill orange">Important</span>':'<span class="pill">'+esc(e.category)+'</span>';
+ return `<div class="event ${done?'done':''}">
+ <input type="checkbox" ${done?'checked':''} aria-label="Complete task" onchange="toggleDone('${e.id}','${d}')">
+ <div class="eventbody">
+ <div class="eventname">${esc(e.title)}</div>
+ <div class="eventmeta">${e.time?esc(e.time)+' · ':''}${fmt(d)} · ${esc(e.category)}${e.repeat!=='none'?' · ↻ '+e.repeat:''}</div>
+ ${e.notes?`<div class="eventmeta">${esc(e.notes)}</div>`:''}
+ </div>${status}
+ <div class="actions">
+ <button class="iconbtn" title="Snooze" onclick="snooze('${e.id}','${d}')">⏰</button>
+ <button class="iconbtn" title="Edit" onclick="editEvent('${e.id}')">✏️</button>
+ <button class="iconbtn" title="Delete" onclick="deleteEvent('${e.id}')">🗑</button>
+ </div></div>`;
+}
+function renderSummary(){
+ let list=itemsOn(today()),done=list.filter(e=>isDone(e,today())).length;
+ let missed=events.reduce((n,e)=>n+pastMisses(e),0);
+ $('sTotal').textContent=list.length;$('sDone').textContent=done;
+ $('sPending').textContent=list.length-done;$('sLate').textContent=missed;
+ let pct=list.length?Math.round(done/list.length*100):0;
+ $('progressPct').textContent=pct+'%';$('progressBar').style.width=pct+'%';
+ $('progressText').textContent='Today · '+done+' of '+list.length+' completed';
+}
+function pastMisses(e){
+ let n=0;
+ for(let i=1;i<=30;i++){let d=addDays(today(),-i);if(occurs(e,d)&&isMissed(e,d))n++}
+ return n;
+}
+function renderToday(){
+ $('todayLabel').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'short'});
+ let a=itemsOn(today());$('todayList').innerHTML=a.length?a.map(e=>eventHTML(e,today())).join(''):'<div class="empty">🌿 Nothing scheduled today. Enjoy your day!</div>';
+}
+function renderUpcoming(){
+ let a=[];
+ for(let i=0;i<=30;i++){let d=addDays(today(),i);for(let e of itemsOn(d))if(!isDone(e,d))a.push({e,d})}
+ a.sort((x,y)=>(x.d+(x.e.time||'99:99')).localeCompare(y.d+(y.e.time||'99:99')));
+ $('upcomingList').innerHTML=a.length?a.slice(0,50).map(x=>eventHTML(x.e,x.d)).join(''):'<div class="empty">No upcoming events. Add your first event!</div>';
+ let missed=[];
+ for(let i=1;i<=30;i++){let d=addDays(today(),-i);for(let e of itemsOn(d))if(isMissed(e,d))missed.push({e,d})}
+ missed.sort((a,b)=>b.d.localeCompare(a.d));
+ $('missedCount').textContent=missed.length;
+ $('missedList').innerHTML=missed.length?missed.slice(0,12).map(x=>eventHTML(x.e,x.d)).join(''):'<div class="empty">🎉 No missed tasks.</div>';
+ let imp=a.filter(x=>['important','urgent'].includes(x.e.priority));
+ $('importantList').innerHTML=imp.length?imp.slice(0,12).map(x=>eventHTML(x.e,x.d)).join(''):'<div class="empty">No pending priority events.</div>';
+}
+function renderAll(){
+ let q=($('search').value||'').toLowerCase(),f=$('filter').value;
+ let a=events.filter(e=>{
+  let match=(e.title+' '+e.category+' '+(e.notes||'')).toLowerCase().includes(q);
+  let d=isDone(e,today()),late=pastMisses(e)>0;
+  return match&&(f==='all'||(f==='done'&&d)||(f==='pending'&&!d&&occurs(e,today()))||(f==='important'&&['important','urgent'].includes(e.priority))||(f==='overdue'&&late));
+ }).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
+ $('allList').innerHTML=a.length?a.map(e=>eventHTML(e,occurs(e,today())?today():e.date)).join(''):'<div class="empty">No matching events.</div>';
+}
+function renderCalendar(){
+ let y=month.getFullYear(),m=month.getMonth(),first=new Date(y,m,1).getDay(),last=new Date(y,m+1,0).getDate();
+ $('monthTitle').textContent=month.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+ let h='';for(let i=0;i<first;i++)h+='<div></div>';
+ for(let n=1;n<=last;n++){
+  let d=key(new Date(y,m,n)),a=itemsOn(d),dn=a.filter(e=>isDone(e,d)).length;
+  let level=a.length?(dn===0?1:dn/a.length<.5?2:dn<a.length?3:4):0;
+  h+=`<div class="daycell ${level?'level'+level:''} ${selectedDate===d?'selected':''}" onclick="selectDay('${d}')"><b>${n}</b><span class="dot">${a.length?dn+'/'+a.length:' '}</span></div>`;
+ }
+ $('heatmap').innerHTML=h;
+ $('selectedTitle').textContent=fmt(selectedDate);
+ let a=itemsOn(selectedDate);
+ $('selectedList').innerHTML=a.length?a.map(e=>eventHTML(e,selectedDate)).join(''):'<div class="empty">No events on this date.</div>';
+}
+function selectDay(d){selectedDate=d;renderCalendar()}
+function changeMonth(n){month.setMonth(month.getMonth()+n);renderCalendar()}
+function renderStats(){
+ let y=month.getFullYear(),m=month.getMonth(),total=0,finished=0,cats={};
+ let days=new Date(y,m+1,0).getDate();
+ for(let n=1;n<=days;n++){
+  let d=key(new Date(y,m,n));
+  for(let e of itemsOn(d)){
+   total++;if(isDone(e,d))finished++;
+   cats[e.category]=(cats[e.category]||0)+1;
+  }
+ }
+ $('mTotal').textContent=total;$('mDone').textContent=finished;
+ $('mRate').textContent=(total?Math.round(finished/total*100):0)+'%';
+ let streak=0;
+ for(let i=0;i<365;i++){
+  let d=addDays(today(),-i),a=itemsOn(d);
+  if(!a.length)continue;
+  if(a.every(e=>isDone(e,d)))streak++;else break;
+ }
+ $('streak').textContent=streak;
+ $('monthStats').innerHTML=`<div class="section"><span class="muted">Completed activities</span><b>${finished}/${total}</b></div><div class="progress"><div style="width:${total?finished/total*100:0}%"></div></div><p class="muted">Remaining: ${total-finished} · Missed in last 30 days: ${events.reduce((n,e)=>n+pastMisses(e),0)}</p>`;
+ $('categoryStats').innerHTML=Object.keys(cats).length?Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([c,n])=>`<div class="settingrow"><span>${esc(c)}</span><b>${n}</b></div>`).join(''):'<div class="empty">No activity this month.</div>';
+}
+function render(){
+ $('dateLabel').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'short'});
+ renderSummary();renderToday();renderUpcoming();renderAll();
+ if($('calendar').classList.contains('active'))renderCalendar();
+ if($('stats').classList.contains('active'))renderStats();
+ $('storageInfo').textContent=events.length+' events saved on this device.';
+}
+function openForm(d=today()){
+ $('eventForm').reset();$('editId').value='';$('formHeading').textContent='Add new event';
+ $('fDate').value=d;$('fReminder').value='-1';$('eventModal').classList.add('show');
+ setTimeout(()=>$('fTitle').focus(),80);
+}
+function closeForm(){$('eventModal').classList.remove('show')}
+function editEvent(id){
+ let e=events.find(x=>x.id===id);if(!e)return;
+ $('editId').value=id;$('formHeading').textContent='Edit event';
+ $('fTitle').value=e.title;$('fDate').value=e.date;$('fTime').value=e.time||'';
+ $('fCategory').value=e.category;$('fPriority').value=e.priority;
+ $('fRepeat').value=e.repeat;$('fUntil').value=e.until||'';
+ $('fReminder').value=e.reminder??-1;$('fNotes').value=e.notes||'';
+ $('eventModal').classList.add('show');
+}
+$('eventForm').addEventListener('submit',ev=>{
+ ev.preventDefault();let id=$('editId').value,old=events.find(x=>x.id===id);
+ let e={
+ id:id||uid(),title:$('fTitle').value.trim(),date:$('fDate').value,
+ time:$('fTime').value,category:$('fCategory').value,priority:$('fPriority').value,
+ repeat:$('fRepeat').value,until:$('fUntil').value,reminder:+$('fReminder').value,
+ notes:$('fNotes').value.trim(),doneDates:old?.doneDates||[],notified:old?.notified||[],snoozes:old?.snoozes||{}
+ };
+ if(!e.title||!e.date)return;
+ if(e.until&&e.until<e.date){alert('Repeat-until date must be after the start date.');return}
+ if(old)Object.assign(old,e);else events.push(e);
+ closeForm();persist();toast(old?'Event updated':'Event saved ✓');
+});
+function deleteEvent(id){
+ if(!confirm('Delete this event and all its history?'))return;
+ events=events.filter(e=>e.id!==id);persist();toast('Event deleted');
+}
+function quickAdd(){
+ let t=$('quickTitle').value.trim();if(!t)return;
+ events.push({id:uid(),title:t,date:today(),time:'',category:'Personal',priority:'normal',repeat:'none',until:'',reminder:-1,notes:'',doneDates:[],notified:[],snoozes:{}});
+ $('quickTitle').value='';persist();toast('Task added');
+}
+function snooze(id,d){
+ let e=events.find(x=>x.id===id);if(!e)return;
+ let choice=prompt('Snooze for how many minutes? Enter 5, 10, 15 or 30','10');
+ let n=Number(choice);if(![5,10,15,30].includes(n))return;
+ e.snoozes=e.snoozes||{};e.snoozes[d]=Date.now()+n*60000;
+ e.notified=(e.notified||[]).filter(k=>k!==d);
+ persist();toast('Snoozed for '+n+' minutes');
+}
+function sound(){
+ if(settings.sound==='off')return;
+ try{
+  audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+  let o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.connect(g);g.connect(audioCtx.destination);o.frequency.value=780;
+  g.gain.setValueAtTime(.12,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.5);
+  o.start();o.stop(audioCtx.currentTime+.5);
+ }catch(e){}
+}
+function notify(title,body){
+ if('Notification'in window&&Notification.permission==='granted'){
+  try{let n=new Notification(title,{body,tag:'planner-'+title});n.onclick=()=>{window.focus();switchTab('today');n.close()}}catch(e){}
+ }
+ sound();
+}
+async function enableNotifications(){
+ if(!('Notification'in window)){alert('Notifications are not supported in this browser.');return}
+ try{let p=await Notification.requestPermission();$('permissionText').textContent='Permission: '+p;toast(p==='granted'?'Notifications enabled':'Permission not granted')}catch(e){toast('Unable to request permission')}
+}
+function testNotification(){
+ if(!('Notification'in window)){alert('Notifications unsupported');return}
+ if(Notification.permission!=='granted'){enableNotifications();return}
+ notify('Life Planner Pro','Your reminder notification is working!');
+}
+function checkReminders(){
+ let now=Date.now(),d=today(),hm=new Date().toTimeString().slice(0,5);
+ for(let e of events){
+  if(!e.time||!occurs(e,d)||isDone(e,d))continue;
+  let target=new Date(d+'T'+e.time).getTime();
+  let rem=e.reminder===-1?settings.reminder:e.reminder;
+  let keyDay=d;
+  let snooze=e.snoozes?.[keyDay]||0;
+  let due=snooze>0?snooze:target-rem*60000;
+  let notifyKey=d;
+  e.notified=e.notified||[];
+  if(now>=due&&now<=target+60000&&!e.notified.includes(notifyKey)){
+   notify('⏰ '+e.title,snooze>0?'Your snoozed reminder is due':(rem?'Starts in '+rem+' minutes':'Event time now')+' · '+e.category);
+   e.notified.push(notifyKey);if(e.snoozes)e.snoozes[keyDay]=0;
+   localStorage.setItem(DB,JSON.stringify(events));
+  }
+ }
+}
+function exportJSON(){
+ let blob=new Blob([JSON.stringify({version:2,exported:new Date().toISOString(),events,settings},null,2)],{type:'application/json'});
+ download(blob,'life-planner-pro-backup.json');
+}
+function download(blob,name){
+ let a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
+}
+function importJSON(ev){
+ let f=ev.target.files[0];if(!f)return;
+ let r=new FileReader();
+ r.onload=()=>{
+  try{
+   let d=JSON.parse(r.result),arr=Array.isArray(d)?d:d.events;
+   if(!Array.isArray(arr)||arr.some(e=>!e.title||!e.date||! /^\d{4}-\d{2}-\d{2}$/.test(e.date)))throw Error();
+   if(!confirm('Replace existing data with '+arr.length+' imported events?'))return;
+   events=arr.map(e=>({...e,id:e.id||uid(),doneDates:e.doneDates||[],notified:e.notified||[],snoozes:e.snoozes||{}}));
+   if(d.settings)settings={...settings,...d.settings};
+   persistSettings();applySettings();persist();toast('Backup restored');
+  }catch(e){alert('Invalid backup file.')}
+  ev.target.value='';
+ };r.readAsText(f);
+}
+function exportCSV(){
+ let rows=[['Title','Date','Time','Category','Priority','Repeat','Until','Notes','Completed dates']];
+ events.forEach(e=>rows.push([e.title,e.date,e.time,e.category,e.priority,e.repeat,e.until,e.notes,(e.doneDates||[]).join(';')]));
+ let csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ download(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}),'life-planner-events.csv');
+}
+function clearCompleted(){
+ if(!confirm('Remove completed one-time events?'))return;
+ events=events.filter(e=>e.repeat!=='none'||!isDone(e,today()));persist();toast('Completed events cleaned');
+}
+function showHelp(){alert('1. Enable browser notifications.\n2. Add an event with date and time.\n3. Select how early to remind you.\n4. Keep the page open for reminder checks.\n\nClosing the browser or device sleep can interrupt reminders.')}
+function applySettings(){
+ document.body.dataset.theme=settings.theme||'forest';
+ $('defaultReminder').value=settings.reminder;
+ $('soundSetting').value=settings.sound;
+ $('themeSelect').value=settings.theme||'forest';
+ $('permissionText').textContent='Permission: '+(window.Notification?Notification.permission:'Unsupported');
+}
+$('quickTitle').addEventListener('keydown',e=>{if(e.key==='Enter')quickAdd()});
+$('defaultReminder').value=settings.reminder;
+applySettings();render();checkReminders();
+setInterval(()=>{checkReminders();},15000);
+setInterval(()=>{renderSummary();},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkReminders();render()}});
+window.addEventListener('focus',()=>{checkReminders();render()});
+</script>
+</body>
+</html>
